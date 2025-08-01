@@ -27,11 +27,25 @@ The project is a static HTML/CSS/JavaScript website with the following structure
 
 ## Development Commands
 
-This is a static website with no build process or package.json. Development involves:
+This is a static website with Node.js tooling for validation and testing. Development commands:
 
-- Direct editing of HTML files for content changes
-- SASS compilation if modifying styles (though compiled CSS is already included)
-- Local web server for testing (e.g., `python -m http.server` or similar)
+**Local Development:**
+- `npm run dev` - Build for development and start local server
+- `npm run serve` - Start local server on port 3000
+- `npm run build:dev` - Build for development environment
+
+**Testing & Validation:**
+- `npm run precommit` - Run all pre-commit validation checks
+- `npm run test:local` - Run complete local validation suite
+- `npm run validate:html` - Validate HTML structure
+- `npm run validate:schema` - Validate Schema.org structured data
+
+**Production:**
+- `npm run build` - Build for production
+- `npm run build:staging` - Build for staging environment
+
+**Pre-commit Hooks:**
+Pre-commit hooks are automatically configured via Husky and will run validation on staged files before each commit. This prevents broken code from reaching the repository.
 
 ## File Organization
 

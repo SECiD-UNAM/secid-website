@@ -50,8 +50,21 @@ jobs:
           node-version: '18'
           cache: 'npm'
       
+      - name: Verify package-lock.json exists
+        run: |
+          if [ ! -f package-lock.json ]; then
+            echo "❌ Error: package-lock.json not found!"
+            echo "This is required for consistent dependency versions."
+            echo "Run 'npm install' locally and commit the package-lock.json file."
+            exit 1
+          fi
+          echo "✅ package-lock.json found"
+      
       - name: Install dependencies
-        run: npm ci
+        run: |
+          echo "📦 Installing dependencies..."
+          npm ci
+          echo "✅ Dependencies installed successfully"
       
       - name: Determine environment
         id: env

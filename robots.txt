@@ -3,7 +3,7 @@ Allow: /
 
 # Allow all bots to access the site
 # Sitemap location
-Sitemap: https://secid.mx/sitemap.xml
+Sitemap: http://localhost:3000/sitemap.xml
 
 # Disallow crawling of template and development files
 Disallow: /raw_template/

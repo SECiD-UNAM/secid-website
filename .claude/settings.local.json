@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(npm run validate:schema:*)",
+      "Bash(npm run precommit:*)",
+      "Bash(npx lint-staged:*)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }
