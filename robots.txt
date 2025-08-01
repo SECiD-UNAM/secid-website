@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Allow all bots to access the site
+# Sitemap location
+Sitemap: https://secid.mx/sitemap.xml
+
+# Disallow crawling of template and development files
+Disallow: /raw_template/
+Disallow: /.git/
+Disallow: /CLAUDE.md
+Disallow: /README.md
+
+# Allow important pages explicitly
+Allow: /index.html
+Allow: /aboutus.html
+Allow: /job-submission.html
+Allow: /registro.html
+Allow: /assets/
+Allow: /images/

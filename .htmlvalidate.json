@@ -1,0 +1,33 @@
+{
+  "extends": ["html-validate:recommended"],
+  "rules": {
+    "no-inline-style": "warn",
+    "require-sri": "off",
+    "no-trailing-whitespace": "off",
+    "void-style": "off",
+    "attr-quotes": "error",
+    "close-tag": "error",
+    "doctype-html": "error",
+    "element-required-attributes": "error",
+    "no-dup-attr": "error",
+    "no-dup-id": "error",
+    "no-missing-references": "error",
+    "script-element": "error",
+    "wcag/h30": "error",
+    "wcag/h32": "error",
+    "wcag/h36": "error",
+    "wcag/h37": "error",
+    "wcag/h63": "error",
+    "wcag/h64": "error",
+    "wcag/h65": "error",
+    "wcag/h67": "error",
+    "wcag/h71": "error"
+  },
+  "elements": [
+    "html5"
+  ],
+  "plugins": ["<rootDir>/node_modules/html-validate"],
+  "transform": {
+    "^.*\\.html$": "html-validate/jest"
+  }
+}

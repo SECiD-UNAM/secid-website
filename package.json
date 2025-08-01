@@ -1,0 +1,40 @@
+{
+  "name": "secid-website",
+  "version": "2.0.0",
+  "description": "SECiD - Sociedad de Egresados en Ciencia de Datos website",
+  "scripts": {
+    "build": "node build.js production",
+    "build:dev": "node build.js development",
+    "build:staging": "node build.js staging",
+    "validate:html": "html-validate *.html",
+    "validate:schema": "node validate-schema.js",
+    "test:accessibility": "pa11y --sitemap http://localhost:3000/sitemap.xml",
+    "test:lighthouse": "lighthouse-ci autorun",
+    "serve": "npx http-server . -p 3000",
+    "dev": "npm run build:dev && npm run serve"
+  },
+  "keywords": [
+    "data-science",
+    "alumni",
+    "unam",
+    "networking",
+    "static-site"
+  ],
+  "author": "SECiD",
+  "license": "MIT",
+  "devDependencies": {
+    "@lhci/cli": "^0.13.0",
+    "html-validate": "^8.0.0",
+    "http-server": "^14.1.1",
+    "pa11y": "^7.0.0",
+    "pa11y-ci": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/secid/secid-website.git"
+  },
+  "homepage": "https://secid.mx"
+}

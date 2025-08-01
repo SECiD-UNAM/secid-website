@@ -1,19 +1,34 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+# Enhanced CI/CD workflow for SECiD website
+name: Build, Test & Deploy
 
 on:
   # Runs on pushes targeting the default branch
   push:
     branches: ["main"]
+  
+  # Runs on pull requests for testing
+  pull_request:
+    branches: ["main"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+          - development
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
+  pull-requests: write # For PR comments
 
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
@@ -22,22 +37,91 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
+  # Build and test job
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Determine environment
+        id: env
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "environment=staging" >> $GITHUB_OUTPUT
+          else
+            echo "environment=production" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Build website
+        run: node build.js ${{ steps.env.outputs.environment }}
+      
+      - name: Validate HTML
+        run: npm run validate:html
+        continue-on-error: false
+      
+      - name: Validate Schema.org structured data
+        run: npm run validate:schema
+        continue-on-error: false
+      
+      - name: Test accessibility
+        run: |
+          npm run serve &
+          sleep 5
+          npm run test:accessibility
+        continue-on-error: true
+      
+      - name: Run Lighthouse CI
+        run: |
+          npm install -g @lhci/cli
+          npm run serve &
+          sleep 5
+          lhci autorun --config=lighthouserc.js
+        continue-on-error: true
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-website-${{ steps.env.outputs.environment }}
+          path: |
+            .
+            !node_modules
+            !.git
+            !*.template
+      
+      # Only deploy on main branch pushes or manual dispatch
+      - name: Setup Pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+      
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+  
+  # Deploy job (only runs for main branch)
   deploy:
+    if: github.event_name != 'pull_request'
+    needs: build-and-test
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: '.'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

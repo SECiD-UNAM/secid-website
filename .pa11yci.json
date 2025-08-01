@@ -1,0 +1,24 @@
+{
+  "defaults": {
+    "timeout": 20000,
+    "wait": 500,
+    "chromeLaunchConfig": {
+      "args": ["--no-sandbox", "--disable-setuid-sandbox"]
+    },
+    "standard": "WCAG2AA",
+    "level": "error",
+    "reporters": [
+      "cli",
+      "json"
+    ],
+    "ignore": [
+      "color-contrast",
+      "notice"
+    ]
+  },
+  "urls": [
+    "http://localhost:3000",
+    "http://localhost:3000/aboutus.html",
+    "http://localhost:3000/job-submission.html"
+  ]
+}

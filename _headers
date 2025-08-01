@@ -1,0 +1,50 @@
+# Security headers for SECiD website
+# This file is used by Netlify and other static hosting providers
+
+/*
+  # Content Security Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.amplitude.com https://static.klaviyo.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.amplitude.com; frame-src https://docs.google.com; object-src 'none'; base-uri 'self'; form-action 'self' https://docs.google.com;
+  
+  # Security headers
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  
+  # Cache control
+  Cache-Control: public, max-age=3600
+
+# Specific headers for different file types
+/*.html
+  Cache-Control: public, max-age=3600
+
+/*.css
+  Cache-Control: public, max-age=31536000
+
+/*.js
+  Cache-Control: public, max-age=31536000
+
+/*.png
+  Cache-Control: public, max-age=31536000
+
+/*.jpg
+  Cache-Control: public, max-age=31536000
+
+/*.ico
+  Cache-Control: public, max-age=31536000
+
+/*.woff
+  Cache-Control: public, max-age=31536000
+
+/*.woff2
+  Cache-Control: public, max-age=31536000
+
+/manifest.json
+  Cache-Control: public, max-age=86400
+
+/robots.txt
+  Cache-Control: public, max-age=3600
+
+/sitemap.xml
+  Cache-Control: public, max-age=3600

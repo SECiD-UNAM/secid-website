@@ -1,0 +1,56 @@
+# GitHub Pages configuration for SECiD website
+
+# Site settings
+title: "SECiD - Sociedad de Egresados en Ciencia de Datos"
+description: "UNAM's Data Science Alumni Society connecting graduates through networking, job opportunities, and professional development"
+url: "https://secid.mx"
+baseurl: ""
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+permalink: pretty
+
+# Exclude from processing
+exclude:
+  - node_modules/
+  - package.json
+  - package-lock.json
+  - build.js
+  - validate-schema.js
+  - lighthouserc.js
+  - .htmlvalidate.json
+  - .pa11yci.json
+  - .gitignore
+  - README-CICD.md
+  - "*.template"
+  - raw_template/
+  - CLAUDE.md
+
+# Include files that start with underscores
+include:
+  - .well-known
+
+# Plugin settings
+plugins:
+  - jekyll-sitemap
+  - jekyll-feed
+
+# SEO settings
+author: "SECiD"
+twitter:
+  username: secid_mx
+  card: summary_large_image
+
+facebook:
+  app_id: 
+  publisher: 
+
+social:
+  name: "SECiD - Sociedad de Egresados en Ciencia de Datos"
+  links:
+    - https://www.linkedin.com/company/sociedad-de-egresados-en-ciencia-de-datos-secid
+
+# Site verification (optional)
+google_site_verification: 
+bing_site_verification:
