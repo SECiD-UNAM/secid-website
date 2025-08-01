@@ -25,6 +25,12 @@ The project is a static HTML/CSS/JavaScript website with the following structure
 - FontAwesome icons and custom styling
 - SASS-based CSS architecture
 
+## Development Requirements
+
+**Node.js Version:** 20.17.0 or higher (required by dependencies)
+- Use `.nvmrc` file for version consistency: `nvm use`
+- Engine-strict mode enabled to prevent version mismatches
+
 ## Development Commands
 
 This is a static website with Node.js tooling for validation and testing. Development commands:

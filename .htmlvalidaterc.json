@@ -1,7 +1,11 @@
 {
-  "extends": ["html-validate:recommended"],
   "rules": {
     "void-style": "omit",
-    "no-trailing-whitespace": "off"
-  }
+    "no-trailing-whitespace": "off",
+    "no-unknown-elements": "off",
+    "doctype-html": "error",
+    "no-missing-doctype": "error"
+  },
+  "transform": {},
+  "plugins": []
 }

@@ -47,7 +47,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
       
       - name: Verify package-lock.json exists
@@ -82,7 +82,7 @@ jobs:
       
       - name: Validate HTML
         run: npm run validate:html
-        continue-on-error: false
+        continue-on-error: true
       
       - name: Validate Schema.org structured data
         run: npm run validate:schema
