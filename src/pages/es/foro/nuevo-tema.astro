@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ForumPost from '../../../components/forums/ForumPost';
+import { getLanguageFromUrl } from '../../../i18n/translations';
+
+const language = getLanguageFromUrl(Astro.url);
+const url = new URL(Astro.request.url);
+const categorySlug = url.searchParams.get('categoria');
+
+// Check if user is authenticated (this would be replaced with actual auth logic)
+const currentUser = undefined; // Replace with actual user from auth context
+
+// Redirect if not authenticated
+if (!currentUser) {
+  return Astro.redirect('/es/login?redirect=/es/foro/nuevo-tema');
+}
+---
+
+<BaseLayout
+  title="Nuevo Tema - Foro - SECiD"
+  description="Crear un nuevo tema en el foro SECiD"
+>
+  <ForumPost
+    mode="create-topic"
+    language={language}
+    categorySlug={categorySlug}
+    currentUser={currentUser}
+    client:load
+  />
+</BaseLayout>

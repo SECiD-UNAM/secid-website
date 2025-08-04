@@ -1,0 +1,248 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('es');
+---
+
+<BaseLayout
+  title="Publicar Empleo - SECiD"
+  description="Publica oportunidades laborales y encuentra el mejor talento en ciencia de datos de la UNAM"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <!-- Hero Section -->
+  <section class="secid-hero secid-hero--job-submission">
+    <div class="secid-hero__container">
+      <div class="secid-hero__content">
+        <h1 class="secid-hero__title">Encuentra Talento SECiD</h1>
+        <p class="secid-hero__subtitle">
+          Conecta con los mejores profesionales en ciencia de datos egresados de
+          la UNAM
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <section class="secid-section">
+    <div class="secid-container">
+      <div class="secid-content">
+        <div class="secid-intro-box">
+          <h2>Publica tu oportunidad laboral</h2>
+          <p>
+            Accede a una red exclusiva de profesionales altamente calificados en
+            ciencia de datos, machine learning, análisis de datos y tecnologías
+            emergentes. Nuestros miembros son egresados de los programas de
+            ciencia de datos de la UNAM, reconocidos por su excelencia académica
+            y preparación técnica.
+          </p>
+        </div>
+
+        <div class="secid-benefits">
+          <h3>¿Por qué publicar en SECiD?</h3>
+          <div class="secid-grid secid-grid--3">
+            <div class="secid-benefit-item">
+              <div class="secid-benefit-item__icon">
+                <i class="fas fa-graduation-cap"></i>
+              </div>
+              <h4>Talento de Elite</h4>
+              <p>
+                Egresados de la UNAM con formación sólida en ciencias exactas y
+                datos
+              </p>
+            </div>
+            <div class="secid-benefit-item">
+              <div class="secid-benefit-item__icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <h4>Red Activa</h4>
+              <p>
+                Comunidad comprometida y en constante crecimiento profesional
+              </p>
+            </div>
+            <div class="secid-benefit-item">
+              <div class="secid-benefit-item__icon">
+                <i class="fas fa-bullseye"></i>
+              </div>
+              <h4>Alcance Dirigido</h4>
+              <p>Tu oferta llega directamente a profesionales especializados</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Google Form Embed -->
+        <div class="secid-form-container">
+          <h3>Completa el formulario para publicar tu vacante</h3>
+          <iframe
+            src="https://docs.google.com/forms/d/e/1FAIpQLScwhEE7a8JYIdvkH0q2h1ghSiu8RKpoFT6kmVSrzfkTnmy87A/viewform?embedded=true"
+            width="100%"
+            height="1200"
+            frameborder="0"
+            marginheight="0"
+            marginwidth="0"
+            title="Formulario de Publicación de Empleo SECiD"
+            loading="lazy"
+          >
+            Cargando formulario de publicación de empleo…
+          </iframe>
+        </div>
+
+        <div class="secid-contact-box">
+          <h3>¿Necesitas ayuda?</h3>
+          <p>
+            Si tienes preguntas sobre el proceso de publicación o necesitas
+            asistencia adicional, no dudes en contactarnos.
+          </p>
+          <a
+            href="mailto:contacto@secid.mx"
+            class="secid-button secid-button--primary"
+          >
+            <i class="fas fa-envelope secid-button__icon"></i>
+            Contáctanos
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer lang="es" />
+</BaseLayout>
+
+<style>
+  .secid-hero--job-submission {
+    background: linear-gradient(
+      135deg,
+      var(--secid-secondary) 0%,
+      var(--secid-dark-blue) 100%
+    );
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .secid-hero--job-submission .secid-hero__title {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .secid-hero--job-submission .secid-hero__subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .secid-content {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .secid-intro-box {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .secid-intro-box h2 {
+    font-size: 2rem;
+    color: var(--secid-dark-blue);
+    margin-bottom: 1rem;
+  }
+
+  .secid-intro-box p {
+    font-size: 1.125rem;
+    color: var(--secid-gray-700);
+    line-height: 1.8;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .secid-benefits {
+    margin-bottom: 3rem;
+  }
+
+  .secid-benefits h3 {
+    font-size: 1.75rem;
+    color: var(--secid-dark-blue);
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .secid-benefit-item {
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .secid-benefit-item__icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1rem;
+    background: var(--secid-gray-100);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--secid-primary);
+  }
+
+  .secid-benefit-item h4 {
+    font-size: 1.25rem;
+    color: var(--secid-dark-blue);
+    margin-bottom: 0.5rem;
+  }
+
+  .secid-benefit-item p {
+    color: var(--secid-gray-600);
+    line-height: 1.6;
+  }
+
+  .secid-form-container {
+    background: var(--secid-gray-50);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    margin-bottom: 3rem;
+  }
+
+  .secid-form-container h3 {
+    font-size: 1.5rem;
+    color: var(--secid-dark-blue);
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .secid-form-container iframe {
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .secid-contact-box {
+    text-align: center;
+    padding: 2rem;
+    background: var(--secid-cream);
+    border-radius: var(--radius-lg);
+  }
+
+  .secid-contact-box h3 {
+    font-size: 1.5rem;
+    color: var(--secid-dark-blue);
+    margin-bottom: 1rem;
+  }
+
+  .secid-contact-box p {
+    color: var(--secid-gray-700);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .secid-grid--3 {
+      grid-template-columns: 1fr;
+    }
+
+    .secid-form-container {
+      padding: 1rem;
+    }
+  }
+</style>

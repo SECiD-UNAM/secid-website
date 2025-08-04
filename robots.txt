@@ -1,20 +1,183 @@
+# robots.txt for SECiD (Sociedad de Egresados en Ciencia de Datos UNAM)
+# Website: https://secid.mx
+# Contact: info@secid.mx
+
+# Allow all web crawlers to access the site
 User-agent: *
 Allow: /
 
-# Allow all bots to access the site
-# Sitemap location
-Sitemap: http://localhost:3000/sitemap.xml
-
-# Disallow crawling of template and development files
-Disallow: /raw_template/
+# Block access to sensitive areas
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /_astro/
+Disallow: /node_modules/
+Disallow: /src/
 Disallow: /.git/
-Disallow: /CLAUDE.md
-Disallow: /README.md
+Disallow: /functions/
 
-# Allow important pages explicitly
-Allow: /index.html
-Allow: /aboutus.html
-Allow: /job-submission.html
-Allow: /registro.html
-Allow: /assets/
+# Block access to private user data
+Disallow: /profile/*/private
+Disallow: /members/*/private
+Disallow: /applications/
+Disallow: /messages/
+
+# Block access to dynamic API endpoints
+Disallow: /api/auth/
+Disallow: /api/admin/
+Disallow: /api/private/
+Disallow: /*?*token=*
+Disallow: /*?*session=*
+
+# Block access to file types that shouldn't be indexed
+Disallow: /*.json$
+Disallow: /*.xml$ 
+Disallow: /*.txt$
+Disallow: /*.log$
+Disallow: /*.env$
+Disallow: /*.config$
+
+# Block access to duplicate content with query parameters
+Disallow: /*?page=*
+Disallow: /*?sort=*
+Disallow: /*?filter=*
+Disallow: /*?search=*
+Disallow: /*?ref=*
+Disallow: /*?utm_*
+
+# Block access to staging and test environments
+Disallow: /staging/
+Disallow: /test/
+Disallow: /dev/
+Disallow: /preview/
+
+# Allow specific file types
+Allow: *.css
+Allow: *.js
+Allow: *.png
+Allow: *.jpg
+Allow: *.jpeg
+Allow: *.gif
+Allow: *.webp
+Allow: *.svg
+Allow: *.ico
+Allow: *.woff
+Allow: *.woff2
+Allow: *.ttf
+Allow: *.eot
+
+# Special rules for major search engines
+
+# Google Bot - full access with rate limiting
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Bing Bot - full access
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2
+
+# Yandex Bot - limited access
+User-agent: YandexBot
+Allow: /
+Disallow: /dashboard/
+Crawl-delay: 3
+
+# Facebook Bot - for Open Graph
+User-agent: facebookexternalhit
+Allow: /
 Allow: /images/
+Allow: /en/
+Allow: /es/
+
+# Twitter Bot - for Twitter Cards
+User-agent: Twitterbot
+Allow: /
+Allow: /images/
+Allow: /en/
+Allow: /es/
+
+# LinkedIn Bot - for professional content
+User-agent: LinkedInBot
+Allow: /
+Allow: /en/jobs
+Allow: /es/empleos
+Allow: /en/members
+Allow: /es/miembros
+
+# WhatsApp Bot - for link previews
+User-agent: WhatsApp
+Allow: /
+Allow: /images/
+
+# Block problematic bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MegaIndex
+Disallow: /
+
+# Block AI training bots
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+# Sitemaps
+Sitemap: https://secid.mx/sitemap.xml
+Sitemap: https://secid.mx/sitemap-images.xml
+
+# Additional information
+# This site is the official platform for SECiD (Sociedad de Egresados en Ciencia de Datos UNAM)
+# UNAM's Data Science Alumni Society
+# 
+# For questions about this robots.txt file or crawling permissions:
+# Contact: info@secid.mx
+# Website: https://secid.mx
+# 
+# Last updated: $(date +%Y-%m-%d)
+# 
+# Note: This robots.txt follows the Robots Exclusion Protocol
+# and is designed to optimize crawling while protecting sensitive areas.
+# 
+# Language versions:
+# - Spanish (primary): https://secid.mx/es/
+# - English: https://secid.mx/en/
+# - Default: https://secid.mx/ (redirects to Spanish)
+#
+# Key public sections for indexing:
+# - Homepage and language variants
+# - Job listings (/jobs, /empleos)
+# - Member directory (/members, /miembros)
+# - Events (/events, /eventos)
+# - Resources (/resources, /recursos)
+# - About pages (/about-us, /sobre-nosotros)
+# - Blog content (/blog)
+# - Forum public discussions (/forum, /foro)
+#
+# Protected sections:
+# - User dashboards and private profiles
+# - Administrative interfaces
+# - API endpoints
+# - Authentication pages
+# - Private user data

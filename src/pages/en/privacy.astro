@@ -1,0 +1,565 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('en');
+
+const lastUpdated = 'January 15, 2024';
+---
+
+<BaseLayout
+  title="Privacy Policy - SECiD"
+  description="Privacy Policy of the UNAM Data Science Alumni Society"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Privacy Policy</h1>
+          <p class="secid-hero__subtitle">
+            Last updated: {lastUpdated}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Legal Content -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-legal">
+          <!-- Table of Contents -->
+          <aside class="secid-legal__toc">
+            <h3>Table of Contents</h3>
+            <nav>
+              <ol>
+                <li><a href="#introduction">Introduction</a></li>
+                <li>
+                  <a href="#information-collected">Information We Collect</a>
+                </li>
+                <li><a href="#information-use">Use of Information</a></li>
+                <li><a href="#information-sharing">Information Sharing</a></li>
+                <li><a href="#data-security">Data Security</a></li>
+                <li><a href="#cookies">Cookies and Technologies</a></li>
+                <li><a href="#your-rights">Your Rights</a></li>
+                <li><a href="#minors">Minors</a></li>
+                <li><a href="#policy-changes">Policy Changes</a></li>
+                <li><a href="#contact">Contact</a></li>
+              </ol>
+            </nav>
+          </aside>
+
+          <!-- Main Content -->
+          <div class="secid-legal__content">
+            <section id="introduction">
+              <h2>1. Introduction</h2>
+              <p>
+                The UNAM Data Science Alumni Society (SECiD) respects your
+                privacy and is committed to protecting your personal data. This
+                Privacy Policy describes how we collect, use, store, and protect
+                your personal information when you use our website and services.
+              </p>
+              <p>
+                This policy applies to all information we collect through our
+                website (secid.mx), mobile applications, events, and any other
+                services we offer.
+              </p>
+            </section>
+
+            <section id="information-collected">
+              <h2>2. Information We Collect</h2>
+
+              <h3>2.1 Information You Provide Directly</h3>
+              <ul>
+                <li>
+                  <strong>Registration information:</strong> Name, last name, email,
+                  phone number, academic and professional information
+                </li>
+                <li>
+                  <strong>Profile information:</strong> Profile picture, biography,
+                  skills, work experience, education
+                </li>
+                <li>
+                  <strong>Communication information:</strong> Messages you send us,
+                  event comments, forum participation
+                </li>
+                <li>
+                  <strong>Event information:</strong> Event registration, preferences,
+                  feedback
+                </li>
+              </ul>
+
+              <h3>2.2 Information Collected Automatically</h3>
+              <ul>
+                <li>
+                  <strong>Technical information:</strong> IP address, browser type,
+                  operating system, pages visited
+                </li>
+                <li>
+                  <strong>Cookies and similar technologies:</strong> To improve your
+                  user experience
+                </li>
+                <li>
+                  <strong>Usage analytics:</strong> Browsing patterns, time on site,
+                  features used
+                </li>
+              </ul>
+
+              <h3>2.3 Information from Third Parties</h3>
+              <ul>
+                <li>
+                  <strong>Social networks:</strong> If you choose to connect your
+                  social media accounts
+                </li>
+                <li>
+                  <strong>Employers:</strong> Information shared by companies for
+                  job opportunities
+                </li>
+              </ul>
+            </section>
+
+            <section id="information-use">
+              <h2>3. Use of Information</h2>
+
+              <p>We use your personal information to:</p>
+
+              <h3>3.1 Provide Our Services</h3>
+              <ul>
+                <li>Create and maintain your member account</li>
+                <li>Facilitate networking between members</li>
+                <li>Organize and manage events</li>
+                <li>Post and manage job opportunities</li>
+              </ul>
+
+              <h3>3.2 Communication</h3>
+              <ul>
+                <li>Send notifications about events and opportunities</li>
+                <li>Respond to your inquiries and requests</li>
+                <li>Send newsletters and community updates</li>
+              </ul>
+
+              <h3>3.3 Service Improvement</h3>
+              <ul>
+                <li>Analyze the use of our services</li>
+                <li>Develop new functionalities</li>
+                <li>Personalize your experience</li>
+              </ul>
+
+              <h3>3.4 Legal Compliance</h3>
+              <ul>
+                <li>Comply with legal obligations</li>
+                <li>Protect our rights and those of our users</li>
+                <li>Prevent fraud and abuse</li>
+              </ul>
+            </section>
+
+            <section id="information-sharing">
+              <h2>4. Information Sharing</h2>
+
+              <p>
+                We do not sell your personal information. We may share your
+                information in the following circumstances:
+              </p>
+
+              <h3>4.1 With Your Consent</h3>
+              <ul>
+                <li>
+                  When you expressly authorize sharing specific information
+                </li>
+                <li>To connect with other members or employers</li>
+              </ul>
+
+              <h3>4.2 Service Providers</h3>
+              <ul>
+                <li>Companies that help us operate our services</li>
+                <li>Hosting, analytics, and communication services</li>
+                <li>All under strict confidentiality agreements</li>
+              </ul>
+
+              <h3>4.3 Legal Requirements</h3>
+              <ul>
+                <li>When required by law or competent authorities</li>
+                <li>To protect our legal rights</li>
+                <li>In case of emergency to protect safety</li>
+              </ul>
+
+              <h3>4.4 Mergers or Acquisitions</h3>
+              <ul>
+                <li>In case of merger, acquisition, or asset sale</li>
+                <li>Data would be transferred under the same privacy terms</li>
+              </ul>
+            </section>
+
+            <section id="data-security">
+              <h2>5. Data Security</h2>
+
+              <p>
+                We implement technical, administrative, and physical security
+                measures to protect your personal information:
+              </p>
+
+              <ul>
+                <li>
+                  <strong>Encryption:</strong> We use SSL/TLS to protect data in
+                  transit
+                </li>
+                <li>
+                  <strong>Restricted access:</strong> Only authorized personnel have
+                  access to personal data
+                </li>
+                <li>
+                  <strong>Regular audits:</strong> We review and update our security
+                  measures
+                </li>
+                <li>
+                  <strong>Secure backup:</strong> We maintain encrypted backup copies
+                </li>
+                <li>
+                  <strong>Monitoring:</strong> We detect and respond to suspicious
+                  activities
+                </li>
+              </ul>
+
+              <p>
+                However, no system is 100% secure. We recommend keeping your
+                access credentials safe.
+              </p>
+            </section>
+
+            <section id="cookies">
+              <h2>6. Cookies and Similar Technologies</h2>
+
+              <p>We use cookies and similar technologies to:</p>
+
+              <ul>
+                <li>
+                  <strong>Functionality:</strong> Remember your preferences and settings
+                </li>
+                <li>
+                  <strong>Security:</strong> Protect your account and prevent fraud
+                </li>
+                <li>
+                  <strong>Analytics:</strong> Understand how you use our services
+                </li>
+                <li>
+                  <strong>Personalization:</strong> Show relevant content for you
+                </li>
+              </ul>
+
+              <p>
+                You can manage cookies through your browser settings. For more
+                information, see our <a href="/en/cookies">Cookie Policy</a>.
+              </p>
+            </section>
+
+            <section id="your-rights">
+              <h2>7. Your Rights</h2>
+
+              <p>
+                According to applicable data protection laws, you have the right
+                to:
+              </p>
+
+              <h3>7.1 Data Subject Rights</h3>
+              <ul>
+                <li>
+                  <strong>Access:</strong> Request information about the data we
+                  have about you
+                </li>
+                <li>
+                  <strong>Rectification:</strong> Correct inaccurate or incomplete
+                  data
+                </li>
+                <li><strong>Erasure:</strong> Request deletion of your data</li>
+                <li>
+                  <strong>Objection:</strong> Object to certain uses of your data
+                </li>
+              </ul>
+
+              <h3>7.2 Other Rights</h3>
+              <ul>
+                <li>
+                  <strong>Portability:</strong> Receive your data in structured format
+                </li>
+                <li>
+                  <strong>Restriction:</strong> Restrict the processing of your data
+                </li>
+                <li>
+                  <strong>Withdraw consent:</strong> When processing is based on
+                  consent
+                </li>
+              </ul>
+
+              <p>
+                To exercise these rights, contact us at
+                <a href="mailto:privacy@secid.mx">privacy@secid.mx</a>
+              </p>
+            </section>
+
+            <section id="minors">
+              <h2>8. Minors</h2>
+
+              <p>
+                Our services are directed at professionals and university
+                students. We do not intentionally collect personal information
+                from minors under 18 years of age without parental or guardian
+                consent.
+              </p>
+
+              <p>
+                If we discover that we have collected information from a minor
+                without appropriate consent, we will delete that information
+                immediately.
+              </p>
+            </section>
+
+            <section id="policy-changes">
+              <h2>9. Policy Changes</h2>
+
+              <p>
+                We may update this Privacy Policy occasionally to reflect
+                changes in our services or legal requirements. Significant
+                changes will be notified by:
+              </p>
+
+              <ul>
+                <li>Prominent notice on our website</li>
+                <li>Email notification</li>
+                <li>In-app notification (if applicable)</li>
+              </ul>
+
+              <p>
+                The date of the last update is indicated at the beginning of
+                this policy.
+              </p>
+            </section>
+
+            <section id="contact">
+              <h2>10. Contact</h2>
+
+              <p>
+                For any questions about this Privacy Policy or our data
+                practices:
+              </p>
+
+              <div class="secid-legal__contact">
+                <div class="secid-legal__contact-item">
+                  <h4>Privacy Officer</h4>
+                  <p>
+                    <strong>Email:</strong>
+                    <a href="mailto:privacy@secid.mx">privacy@secid.mx</a><br />
+                    <strong>Response:</strong> Within 30 business days
+                  </p>
+                </div>
+
+                <div class="secid-legal__contact-item">
+                  <h4>Mailing Address</h4>
+                  <p>
+                    Data Science Alumni Society<br />
+                    Faculty of Sciences, UNAM<br />
+                    Ciudad Universitaria<br />
+                    Mexico City, Mexico
+                  </p>
+                </div>
+
+                <div class="secid-legal__contact-item">
+                  <h4>General Contact</h4>
+                  <p>
+                    <strong>Email:</strong>
+                    <a href="mailto:contact@secid.mx">contact@secid.mx</a><br />
+                    <strong>Phone:</strong> +52 (55) 5622-4985
+                  </p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</BaseLayout>
+
+<style>
+  .secid-legal {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: var(--space-3xl);
+    align-items: start;
+  }
+
+  .secid-legal__toc {
+    position: sticky;
+    top: var(--space-xl);
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+  }
+
+  .secid-legal__toc h3 {
+    margin: 0 0 var(--space-lg) 0;
+    color: var(--color-text-primary);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .secid-legal__toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: toc-counter;
+  }
+
+  .secid-legal__toc li {
+    counter-increment: toc-counter;
+    margin-bottom: var(--space-sm);
+  }
+
+  .secid-legal__toc a {
+    display: block;
+    padding: var(--space-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+    font-size: 0.875rem;
+  }
+
+  .secid-legal__toc a:before {
+    content: counter(toc-counter) '. ';
+    font-weight: 600;
+    color: var(--secid-primary);
+  }
+
+  .secid-legal__toc a:hover {
+    background: var(--color-surface-alt);
+    color: var(--color-text-primary);
+  }
+
+  .secid-legal__content {
+    max-width: none;
+  }
+
+  .secid-legal__content section {
+    margin-bottom: var(--space-3xl);
+    scroll-margin-top: var(--space-xl);
+  }
+
+  .secid-legal__content h2 {
+    color: var(--color-text-primary);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 var(--space-lg) 0;
+    padding-bottom: var(--space-sm);
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  .secid-legal__content h3 {
+    color: var(--color-text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: var(--space-xl) 0 var(--space-md) 0;
+  }
+
+  .secid-legal__content h4 {
+    color: var(--color-text-primary);
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: var(--space-lg) 0 var(--space-sm) 0;
+  }
+
+  .secid-legal__content p {
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-legal__content ul {
+    margin: 0 0 var(--space-lg) 0;
+    padding-left: var(--space-lg);
+  }
+
+  .secid-legal__content li {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-sm);
+  }
+
+  .secid-legal__content strong {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  .secid-legal__content a {
+    color: var(--secid-primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .secid-legal__content a:hover {
+    text-decoration: underline;
+  }
+
+  .secid-legal__contact {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-xl);
+    margin-top: var(--space-xl);
+  }
+
+  .secid-legal__contact-item {
+    background: var(--color-surface-alt);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+  }
+
+  .secid-legal__contact-item h4 {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--secid-primary);
+  }
+
+  .secid-legal__contact-item p {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    .secid-legal {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+
+    .secid-legal__toc {
+      position: static;
+      order: -1;
+    }
+
+    .secid-legal__toc ol {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .secid-legal__toc li {
+      margin-bottom: 0;
+    }
+
+    .secid-legal__toc a {
+      padding: var(--space-xs) var(--space-sm);
+      white-space: nowrap;
+      font-size: 0.75rem;
+    }
+
+    .secid-legal__contact {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,14 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import EventDetail from '@/components/events/EventDetail';
+
+const { id } = Astro.params;
+---
+
+<DashboardLayout
+  title="Detalle del Evento - SECiD"
+  description="Ver detalles y registrarse para este evento"
+  lang="es"
+>
+  <EventDetail client:load eventId={id} lang="es" />
+</DashboardLayout>

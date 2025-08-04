@@ -1,0 +1,581 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('es');
+
+const lastUpdated = '15 de enero de 2024';
+---
+
+<BaseLayout
+  title="Política de Privacidad - SECiD"
+  description="Política de Privacidad de la Sociedad de Egresados en Ciencia de Datos UNAM"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Política de Privacidad</h1>
+          <p class="secid-hero__subtitle">
+            Última actualización: {lastUpdated}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Legal Content -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-legal">
+          <!-- Table of Contents -->
+          <aside class="secid-legal__toc">
+            <h3>Índice</h3>
+            <nav>
+              <ol>
+                <li><a href="#introduccion">Introducción</a></li>
+                <li>
+                  <a href="#informacion-recopilada"
+                    >Información que Recopilamos</a>
+                </li>
+                <li><a href="#uso-informacion">Uso de la Información</a></li>
+                <li>
+                  <a href="#compartir-informacion">Compartir Información</a>
+                </li>
+                <li><a href="#seguridad">Seguridad de Datos</a></li>
+                <li><a href="#cookies">Cookies y Tecnologías</a></li>
+                <li><a href="#derechos">Sus Derechos</a></li>
+                <li><a href="#menores">Menores de Edad</a></li>
+                <li><a href="#cambios">Cambios a esta Política</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+              </ol>
+            </nav>
+          </aside>
+
+          <!-- Main Content -->
+          <div class="secid-legal__content">
+            <section id="introduccion">
+              <h2>1. Introducción</h2>
+              <p>
+                La Sociedad de Egresados en Ciencia de Datos de la UNAM (SECiD)
+                respeta su privacidad y está comprometida con la protección de
+                sus datos personales. Esta Política de Privacidad describe cómo
+                recopilamos, utilizamos, almacenamos y protegemos su información
+                personal cuando utiliza nuestro sitio web y servicios.
+              </p>
+              <p>
+                Esta política se aplica a toda la información que recopilamos a
+                través de nuestro sitio web (secid.mx), aplicaciones móviles,
+                eventos y cualquier otro servicio que ofrecemos.
+              </p>
+            </section>
+
+            <section id="informacion-recopilada">
+              <h2>2. Información que Recopilamos</h2>
+
+              <h3>2.1 Información que nos proporciona directamente</h3>
+              <ul>
+                <li>
+                  <strong>Información de registro:</strong> Nombre, apellidos, correo
+                  electrónico, número de teléfono, información académica y profesional
+                </li>
+                <li>
+                  <strong>Información de perfil:</strong> Foto de perfil, biografía,
+                  habilidades, experiencia laboral, educación
+                </li>
+                <li>
+                  <strong>Información de comunicación:</strong> Mensajes que nos
+                  envía, comentarios en eventos, participación en foros
+                </li>
+                <li>
+                  <strong>Información de eventos:</strong> Registro a eventos, preferencias,
+                  feedback
+                </li>
+              </ul>
+
+              <h3>2.2 Información recopilada automáticamente</h3>
+              <ul>
+                <li>
+                  <strong>Información técnica:</strong> Dirección IP, tipo de navegador,
+                  sistema operativo, páginas visitadas
+                </li>
+                <li>
+                  <strong>Cookies y tecnologías similares:</strong> Para mejorar
+                  su experiencia de usuario
+                </li>
+                <li>
+                  <strong>Análisis de uso:</strong> Patrones de navegación, tiempo
+                  en el sitio, funciones utilizadas
+                </li>
+              </ul>
+
+              <h3>2.3 Información de terceros</h3>
+              <ul>
+                <li>
+                  <strong>Redes sociales:</strong> Si decide conectar sus cuentas
+                  de redes sociales
+                </li>
+                <li>
+                  <strong>Empleadores:</strong> Información compartida por empresas
+                  para oportunidades laborales
+                </li>
+              </ul>
+            </section>
+
+            <section id="uso-informacion">
+              <h2>3. Uso de la Información</h2>
+
+              <p>Utilizamos su información personal para:</p>
+
+              <h3>3.1 Proporcionar nuestros servicios</h3>
+              <ul>
+                <li>Crear y mantener su cuenta de miembro</li>
+                <li>Facilitar networking entre miembros</li>
+                <li>Organizar y gestionar eventos</li>
+                <li>Publicar y gestionar ofertas de empleo</li>
+              </ul>
+
+              <h3>3.2 Comunicación</h3>
+              <ul>
+                <li>Enviar notificaciones sobre eventos y oportunidades</li>
+                <li>Responder a sus consultas y solicitudes</li>
+                <li>Enviar newsletters y actualizaciones de la comunidad</li>
+              </ul>
+
+              <h3>3.3 Mejora de servicios</h3>
+              <ul>
+                <li>Analizar el uso de nuestros servicios</li>
+                <li>Desarrollar nuevas funcionalidades</li>
+                <li>Personalizar su experiencia</li>
+              </ul>
+
+              <h3>3.4 Cumplimiento legal</h3>
+              <ul>
+                <li>Cumplir con obligaciones legales</li>
+                <li>Proteger nuestros derechos y los de nuestros usuarios</li>
+                <li>Prevenir fraudes y abusos</li>
+              </ul>
+            </section>
+
+            <section id="compartir-informacion">
+              <h2>4. Compartir Información</h2>
+
+              <p>
+                No vendemos su información personal. Podemos compartir su
+                información en las siguientes circunstancias:
+              </p>
+
+              <h3>4.1 Con su consentimiento</h3>
+              <ul>
+                <li>
+                  Cuando autoriza expresamente el compartir información
+                  específica
+                </li>
+                <li>Para conectar con otros miembros o empleadores</li>
+              </ul>
+
+              <h3>4.2 Proveedores de servicios</h3>
+              <ul>
+                <li>Empresas que nos ayudan a operar nuestros servicios</li>
+                <li>Servicios de hosting, análisis y comunicación</li>
+                <li>Todos bajo acuerdos de confidencialidad estrictos</li>
+              </ul>
+
+              <h3>4.3 Requisitos legales</h3>
+              <ul>
+                <li>Cuando sea requerido por ley o autoridades competentes</li>
+                <li>Para proteger nuestros derechos legales</li>
+                <li>En caso de emergencia para proteger la seguridad</li>
+              </ul>
+
+              <h3>4.4 Fusiones o adquisiciones</h3>
+              <ul>
+                <li>En caso de fusión, adquisición o venta de activos</li>
+                <li>
+                  Los datos se transferirían bajo los mismos términos de
+                  privacidad
+                </li>
+              </ul>
+            </section>
+
+            <section id="seguridad">
+              <h2>5. Seguridad de Datos</h2>
+
+              <p>
+                Implementamos medidas de seguridad técnicas, administrativas y
+                físicas para proteger su información personal:
+              </p>
+
+              <ul>
+                <li>
+                  <strong>Encriptación:</strong> Utilizamos SSL/TLS para proteger
+                  datos en tránsito
+                </li>
+                <li>
+                  <strong>Acceso restringido:</strong> Solo personal autorizado tiene
+                  acceso a datos personales
+                </li>
+                <li>
+                  <strong>Auditorías regulares:</strong> Revisamos y actualizamos
+                  nuestras medidas de seguridad
+                </li>
+                <li>
+                  <strong>Backup seguro:</strong> Mantenemos copias de seguridad
+                  encriptadas
+                </li>
+                <li>
+                  <strong>Monitoreo:</strong> Detectamos y respondemos a actividades
+                  sospechosas
+                </li>
+              </ul>
+
+              <p>
+                Sin embargo, ningún sistema es 100% seguro. Le recomendamos
+                mantener seguras sus credenciales de acceso.
+              </p>
+            </section>
+
+            <section id="cookies">
+              <h2>6. Cookies y Tecnologías Similares</h2>
+
+              <p>Utilizamos cookies y tecnologías similares para:</p>
+
+              <ul>
+                <li>
+                  <strong>Funcionalidad:</strong> Recordar sus preferencias y configuraciones
+                </li>
+                <li>
+                  <strong>Seguridad:</strong> Proteger su cuenta y prevenir fraudes
+                </li>
+                <li>
+                  <strong>Análisis:</strong> Entender cómo usa nuestros servicios
+                </li>
+                <li>
+                  <strong>Personalización:</strong> Mostrar contenido relevante para
+                  usted
+                </li>
+              </ul>
+
+              <p>
+                Puede gestionar las cookies a través de la configuración de su
+                navegador. Para más información, consulte nuestra <a
+                  href="/es/cookies">Política de Cookies</a
+                >.
+              </p>
+            </section>
+
+            <section id="derechos">
+              <h2>7. Sus Derechos</h2>
+
+              <p>
+                De acuerdo con las leyes de protección de datos aplicables,
+                usted tiene derecho a:
+              </p>
+
+              <h3>7.1 Derechos ARCO</h3>
+              <ul>
+                <li>
+                  <strong>Acceso:</strong> Solicitar información sobre los datos
+                  que tenemos sobre usted
+                </li>
+                <li>
+                  <strong>Rectificación:</strong> Corregir datos inexactos o incompletos
+                </li>
+                <li>
+                  <strong>Cancelación:</strong> Solicitar la eliminación de sus datos
+                </li>
+                <li>
+                  <strong>Oposición:</strong> Oponerse a ciertos usos de sus datos
+                </li>
+              </ul>
+
+              <h3>7.2 Otros derechos</h3>
+              <ul>
+                <li>
+                  <strong>Portabilidad:</strong> Recibir sus datos en formato estructurado
+                </li>
+                <li>
+                  <strong>Limitación:</strong> Restringir el procesamiento de sus
+                  datos
+                </li>
+                <li>
+                  <strong>Retirar consentimiento:</strong> Cuando el procesamiento
+                  se base en consentimiento
+                </li>
+              </ul>
+
+              <p>
+                Para ejercer estos derechos, contacte con nosotros a través de
+                <a href="mailto:privacidad@secid.mx">privacidad@secid.mx</a>
+              </p>
+            </section>
+
+            <section id="menores">
+              <h2>8. Menores de Edad</h2>
+
+              <p>
+                Nuestros servicios están dirigidos a profesionales y estudiantes
+                universitarios. No recopilamos intencionalmente información
+                personal de menores de 18 años sin el consentimiento de los
+                padres o tutores.
+              </p>
+
+              <p>
+                Si descubrimos que hemos recopilado información de un menor sin
+                el consentimiento adecuado, eliminaremos esa información
+                inmediatamente.
+              </p>
+            </section>
+
+            <section id="cambios">
+              <h2>9. Cambios a esta Política</h2>
+
+              <p>
+                Podemos actualizar esta Política de Privacidad ocasionalmente
+                para reflejar cambios en nuestros servicios o requisitos
+                legales. Los cambios significativos serán notificados por:
+              </p>
+
+              <ul>
+                <li>Aviso prominente en nuestro sitio web</li>
+                <li>Notificación por correo electrónico</li>
+                <li>Notificación in-app (si aplica)</li>
+              </ul>
+
+              <p>
+                La fecha de la última actualización se indica al inicio de esta
+                política.
+              </p>
+            </section>
+
+            <section id="contacto">
+              <h2>10. Contacto</h2>
+
+              <p>
+                Para cualquier pregunta sobre esta Política de Privacidad o
+                nuestras prácticas de datos:
+              </p>
+
+              <div class="secid-legal__contact">
+                <div class="secid-legal__contact-item">
+                  <h4>Oficial de Privacidad</h4>
+                  <p>
+                    <strong>Email:</strong>
+                    <a href="mailto:privacidad@secid.mx">privacidad@secid.mx</a
+                    ><br />
+                    <strong>Respuesta:</strong> Dentro de 30 días hábiles
+                  </p>
+                </div>
+
+                <div class="secid-legal__contact-item">
+                  <h4>Dirección Postal</h4>
+                  <p>
+                    Sociedad de Egresados en Ciencia de Datos<br />
+                    Facultad de Ciencias, UNAM<br />
+                    Ciudad Universitaria<br />
+                    Ciudad de México, México
+                  </p>
+                </div>
+
+                <div class="secid-legal__contact-item">
+                  <h4>Contacto General</h4>
+                  <p>
+                    <strong>Email:</strong>
+                    <a href="mailto:contacto@secid.mx">contacto@secid.mx</a><br
+                    />
+                    <strong>Teléfono:</strong> +52 (55) 5622-4985
+                  </p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="es" />
+</BaseLayout>
+
+<style>
+  .secid-legal {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: var(--space-3xl);
+    align-items: start;
+  }
+
+  .secid-legal__toc {
+    position: sticky;
+    top: var(--space-xl);
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+  }
+
+  .secid-legal__toc h3 {
+    margin: 0 0 var(--space-lg) 0;
+    color: var(--color-text-primary);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .secid-legal__toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: toc-counter;
+  }
+
+  .secid-legal__toc li {
+    counter-increment: toc-counter;
+    margin-bottom: var(--space-sm);
+  }
+
+  .secid-legal__toc a {
+    display: block;
+    padding: var(--space-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+    font-size: 0.875rem;
+  }
+
+  .secid-legal__toc a:before {
+    content: counter(toc-counter) '. ';
+    font-weight: 600;
+    color: var(--secid-primary);
+  }
+
+  .secid-legal__toc a:hover {
+    background: var(--color-surface-alt);
+    color: var(--color-text-primary);
+  }
+
+  .secid-legal__content {
+    max-width: none;
+  }
+
+  .secid-legal__content section {
+    margin-bottom: var(--space-3xl);
+    scroll-margin-top: var(--space-xl);
+  }
+
+  .secid-legal__content h2 {
+    color: var(--color-text-primary);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 var(--space-lg) 0;
+    padding-bottom: var(--space-sm);
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  .secid-legal__content h3 {
+    color: var(--color-text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: var(--space-xl) 0 var(--space-md) 0;
+  }
+
+  .secid-legal__content h4 {
+    color: var(--color-text-primary);
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: var(--space-lg) 0 var(--space-sm) 0;
+  }
+
+  .secid-legal__content p {
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-legal__content ul {
+    margin: 0 0 var(--space-lg) 0;
+    padding-left: var(--space-lg);
+  }
+
+  .secid-legal__content li {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-sm);
+  }
+
+  .secid-legal__content strong {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  .secid-legal__content a {
+    color: var(--secid-primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .secid-legal__content a:hover {
+    text-decoration: underline;
+  }
+
+  .secid-legal__contact {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-xl);
+    margin-top: var(--space-xl);
+  }
+
+  .secid-legal__contact-item {
+    background: var(--color-surface-alt);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+  }
+
+  .secid-legal__contact-item h4 {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--secid-primary);
+  }
+
+  .secid-legal__contact-item p {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    .secid-legal {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+
+    .secid-legal__toc {
+      position: static;
+      order: -1;
+    }
+
+    .secid-legal__toc ol {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .secid-legal__toc li {
+      margin-bottom: 0;
+    }
+
+    .secid-legal__toc a {
+      padding: var(--space-xs) var(--space-sm);
+      white-space: nowrap;
+      font-size: 0.75rem;
+    }
+
+    .secid-legal__contact {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

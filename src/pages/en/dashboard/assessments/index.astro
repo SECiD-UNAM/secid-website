@@ -1,0 +1,24 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import AssessmentHub from '@/components/assessment/AssessmentHub';
+---
+
+<DashboardLayout
+  title="Assessment Center - SECiD"
+  description="SECiD Skills Assessment Center - Evaluate and certify your data science skills"
+  lang="en"
+>
+  <AssessmentHub
+    client:load
+    userId="user123"
+    onStartAssessment={(assessmentId) => {
+      window.location.href = `/en/dashboard/assessments/take/${assessmentId}`;
+    }}
+    onViewHistory={() => {
+      window.location.href = '/en/dashboard/assessments/history';
+    }}
+    onViewCertificates={() => {
+      window.location.href = '/en/dashboard/assessments/certificates';
+    }}
+  />
+</DashboardLayout>

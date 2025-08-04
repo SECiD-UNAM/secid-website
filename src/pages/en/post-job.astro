@@ -1,0 +1,220 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('en');
+---
+
+<BaseLayout
+  title="Post a Job - SECiD"
+  description="Post your data science job opportunities and connect with top talent from UNAM"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <!-- Hero Section -->
+  <section class="secid-hero secid-hero--job-post">
+    <div class="secid-hero__container">
+      <div class="secid-hero__content">
+        <h1 class="secid-hero__title">Post a Job</h1>
+        <p class="secid-hero__subtitle">
+          Connect with the best data science talent from UNAM
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <section class="secid-section">
+    <div class="secid-container">
+      <div class="secid-job-post-content">
+        <div class="secid-info-box">
+          <h2>How does it work?</h2>
+          <ol class="secid-process-list">
+            <li>Fill out the job posting form with your requirements</li>
+            <li>Our team will review and approve your posting</li>
+            <li>
+              Your job will be featured on our platform and sent to our members
+            </li>
+            <li>Receive qualified applications directly</li>
+          </ol>
+        </div>
+
+        <div class="secid-form-embed">
+          <h2>Submit Your Job Posting</h2>
+          <p>
+            Use the form below to submit your job opportunity. All fields marked
+            with * are required.
+          </p>
+
+          <!-- Google Forms Embed -->
+          <iframe
+            src="https://docs.google.com/forms/d/e/1FAIpQLSfZ8Y7X9Z0Z1Z2Z3Z4Z5Z6Z7Z8Z9Z0Z1Z2Z3Z4Z5Z6Z7Z8Z9Z0/viewform?embedded=true"
+            width="100%"
+            height="1200"
+            frameborder="0"
+            marginheight="0"
+            marginwidth="0"
+            class="secid-google-form"
+          >
+            Loading...
+          </iframe>
+        </div>
+
+        <div class="secid-benefits-box">
+          <h3>Benefits of posting with SECiD</h3>
+          <ul class="secid-benefits-list">
+            <li>
+              <i class="fas fa-check-circle"></i> Access to qualified data science
+              professionals
+            </li>
+            <li>
+              <i class="fas fa-check-circle"></i> Targeted distribution to our alumni
+              network
+            </li>
+            <li>
+              <i class="fas fa-check-circle"></i> 30-day visibility on our job board
+            </li>
+            <li>
+              <i class="fas fa-check-circle"></i> Featured in our monthly newsletter
+            </li>
+            <li>
+              <i class="fas fa-check-circle"></i> Direct connection with candidates
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer lang="en" />
+</BaseLayout>
+
+<style>
+  .secid-hero--job-post {
+    background: linear-gradient(
+      135deg,
+      var(--secid-gold) 0%,
+      var(--secid-primary) 100%
+    );
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .secid-hero--job-post .secid-hero__title {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .secid-hero--job-post .secid-hero__subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .secid-job-post-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .secid-info-box,
+  .secid-benefits-box {
+    background: var(--secid-gray-50);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    margin-bottom: 3rem;
+  }
+
+  .secid-info-box h2,
+  .secid-benefits-box h3 {
+    color: var(--secid-dark-blue);
+    margin-bottom: 1.5rem;
+  }
+
+  .secid-process-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .secid-process-list li {
+    position: relative;
+    padding-left: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--secid-gray-700);
+    line-height: 1.6;
+  }
+
+  .secid-process-list li::before {
+    content: counter(list-item);
+    counter-increment: list-item;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2rem;
+    height: 2rem;
+    background: var(--secid-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+  }
+
+  .secid-form-embed {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 3rem;
+  }
+
+  .secid-form-embed h2 {
+    color: var(--secid-dark-blue);
+    margin-bottom: 1rem;
+  }
+
+  .secid-form-embed p {
+    color: var(--secid-gray-600);
+    margin-bottom: 2rem;
+  }
+
+  .secid-google-form {
+    border: 1px solid var(--secid-gray-200);
+    border-radius: var(--radius-md);
+  }
+
+  .secid-benefits-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .secid-benefits-list li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: var(--secid-gray-700);
+  }
+
+  .secid-benefits-list li i {
+    color: var(--secid-success);
+    font-size: 1.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .secid-info-box,
+    .secid-benefits-box,
+    .secid-form-embed {
+      padding: 1.5rem;
+    }
+
+    .secid-google-form {
+      height: 1400px;
+    }
+  }
+</style>

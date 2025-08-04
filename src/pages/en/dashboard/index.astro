@@ -1,0 +1,60 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import DashboardStats from '@/components/dashboard/DashboardStats';
+import RecentActivity from '@/components/dashboard/RecentActivity';
+import QuickActions from '@/components/dashboard/QuickActions';
+import UpcomingEvents from '@/components/dashboard/UpcomingEvents';
+import JobMatches from '@/components/dashboard/JobMatches';
+---
+
+<DashboardLayout
+  title="Dashboard - SECiD"
+  description="SECiD Member Dashboard"
+  lang="en"
+>
+  <!-- Welcome Section -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+      Welcome to Your Dashboard
+    </h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">
+      Manage your profile, explore job opportunities, and connect with the
+      community.
+    </p>
+  </div>
+
+  <!-- Stats Overview -->
+  <DashboardStats client:load lang="en" />
+
+  <!-- Quick Actions -->
+  <div class="mt-8">
+    <QuickActions client:load lang="en" />
+  </div>
+
+  <!-- Main Grid -->
+  <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+    <!-- Recent Activity -->
+    <div>
+      <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
+        Recent Activity
+      </h2>
+      <RecentActivity client:load lang="en" />
+    </div>
+
+    <!-- Job Matches -->
+    <div>
+      <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
+        Recommended Jobs
+      </h2>
+      <JobMatches client:load lang="en" />
+    </div>
+  </div>
+
+  <!-- Upcoming Events -->
+  <div class="mt-8">
+    <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
+      Upcoming Events
+    </h2>
+    <UpcomingEvents client:load lang="en" />
+  </div>
+</DashboardLayout>

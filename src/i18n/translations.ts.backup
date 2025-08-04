@@ -1,0 +1,5299 @@
+export type Language = 'es' | 'en';
+
+export interface Translations {
+  site: {
+    name: string;
+    title: string;
+    description: string;
+  };
+  nav: {
+    home: string;
+    about: string;
+    jobs: string;
+    contact: string;
+    pricing: string;
+    commissions: string;
+  };
+  common: {
+    loading: string;
+    error: string;
+    success: string;
+    cancel: string;
+    close: string;
+    save: string;
+    back: string;
+    next: string;
+    previous: string;
+  };
+  payment: {
+    planSummary: string;
+    billingInformation: string;
+    paymentMethod: string;
+    fullName: string;
+    fullNamePlaceholder: string;
+    email: string;
+    emailPlaceholder: string;
+    address: string;
+    addressPlaceholder: string;
+    city: string;
+    cityPlaceholder: string;
+    state: string;
+    statePlaceholder: string;
+    postalCode: string;
+    optional: string;
+    newCard: string;
+    otherMethods: string;
+    securityNotice: string;
+    processing: string;
+    payNow: string;
+    success: string;
+    genericError: string;
+    stripeNotLoaded: string;
+    monthly: string;
+    yearly: string;
+    total: string;
+  };
+  pricing: {
+    title: string;
+    subtitle: string;
+    monthly: string;
+    yearly: string;
+    save17: string;
+    mostPopular: string;
+    free: string;
+    year: string;
+    month: string;
+    perMonth: string;
+    popular: string;
+    recommended: string;
+    advanced: string;
+    currentPlan: string;
+    getStarted: string;
+    upgrade: string;
+    checkout: string;
+    chooseCommission: string;
+    commissionDescription: string;
+    faq: string;
+    faq1Question: string;
+    faq1Answer: string;
+    faq2Question: string;
+    faq2Answer: string;
+    faq3Question: string;
+    faq3Answer: string;
+    faq4Question: string;
+    faq4Answer: string;
+  };
+  commission: {
+    overview: string;
+    projects: string;
+    members: string;
+    resources: string;
+    notFound: string;
+    monthlyActivity: string;
+    skillAreas: string;
+    tools: string;
+    projectOverview: string;
+    projectsComingSoon: string;
+    memberDirectory: string;
+    membersComingSoon: string;
+    resourceLibrary: string;
+    resourcesComingSoon: string;
+    activeProjects: string;
+    upcomingEvents: string;
+    engagementScore: string;
+    events: string;
+    newMembers: string;
+  };
+  analytics: {
+    performanceMetrics: string;
+    dataQuality: string;
+    avgProcessingTime: string;
+    activeDashboards: string;
+    sampleVisualization: string;
+    chartTemplates: string;
+    viewAll: string;
+    visualizationPlayground: string;
+    chartType: string;
+    lineChart: string;
+    barChart: string;
+    pieChart: string;
+    scatterPlot: string;
+    dataSource: string;
+    selectDataset: string;
+    month: string;
+    category: string;
+    revenue: string;
+    users: string;
+    generateChart: string;
+    livePreview: string;
+    sampleDatasets: string;
+    useDataset: string;
+    statisticalTools: string;
+    correlation: string;
+    correlationDesc: string;
+    regression: string;
+    regressionDesc: string;
+    clustering: string;
+    clusteringDesc: string;
+    forecasting: string;
+    forecastingDesc: string;
+    useTemplate: string;
+  };
+  nlp: {
+    performanceMetrics: string;
+    sentimentAccuracy: string;
+    avgProcessingTime: string;
+    apiCallsToday: string;
+    languageDistribution: string;
+    textAnalysisPlayground: string;
+    selectModel: string;
+    inputText: string;
+    textPlaceholder: string;
+    analyzing: string;
+    analyzeText: string;
+    analysisResults: string;
+    model: string;
+    sentiment: string;
+    confidence: string;
+    entities: string;
+    category: string;
+    summary: string;
+    noResults: string;
+    modelPerformance: string;
+    accuracyTrend: string;
+    processingByLanguage: string;
+    availableModels: string;
+    language: string;
+    accuracy: string;
+    usage: string;
+    lastTrained: string;
+    useModel: string;
+    details: string;
+    toolsAndResources: string;
+    textPreprocessing: string;
+    textPreprocessingDesc: string;
+    languageDetection: string;
+    languageDetectionDesc: string;
+    speechProcessing: string;
+    speechProcessingDesc: string;
+    modelTraining: string;
+    modelTrainingDesc: string;
+  };
+  ml: {
+    performanceMetrics: string;
+    avgAccuracy: string;
+    totalTrainingTime: string;
+    featuresEngineered: string;
+    modelPerformance: string;
+    experimentTracker: string;
+    viewDetails: string;
+    stop: string;
+    algorithmComparison: string;
+    deploymentTools: string;
+    hyperparameterTuning: string;
+    crossValidation: string;
+    featureSelection: string;
+    modelMonitoring: string;
+  };
+  validation: {
+    nameRequired: string;
+    emailRequired: string;
+    emailInvalid: string;
+    rfcInvalid: string;
+    addressRequired: string;
+    cityRequired: string;
+    stateRequired: string;
+    postalCodeRequired: string;
+  };
+  hero: {
+    title: string;
+    subtitle: string;
+    description: string;
+    joinButton: string;
+    jobsButton: string;
+  };
+  features: {
+    title: string;
+    networking: {
+      title: string;
+      description: string;
+    };
+    jobs: {
+      title: string;
+      description: string;
+    };
+    growth: {
+      title: string;
+      description: string;
+    };
+    community: {
+      title: string;
+      description: string;
+    };
+  };
+  cta: {
+    title: string;
+    jobs: {
+      title: string;
+      description: string;
+      button: string;
+    };
+    register: {
+      title: string;
+      description: string;
+      button: string;
+    };
+  };
+  search: {
+    placeholder: string;
+  };
+  sidebar: {
+    menu: string;
+    getInTouch: string;
+    description: string;
+  };
+  footer: {
+    rights: string;
+    design: string;
+  };
+  common: {
+    loading: string;
+    error: string;
+    success: string;
+    submit: string;
+    cancel: string;
+    close: string;
+    save: string;
+    delete: string;
+    edit: string;
+    back: string;
+    next: string;
+    previous: string;
+    retry: string;
+    all: string;
+    any: string;
+    more: string;
+    from: string;
+    to: string;
+    optional: string;
+    add: string;
+    remove: string;
+    clearFilters: string;
+    correct: string;
+    incorrect: string;
+  };
+  
+  messaging: {
+    messages: string;
+    directMessage: string;
+    groupConversation: string;
+    selectConversation: string;
+    selectConversationDescription: string;
+    searchMessages: string;
+    noConversations: string;
+    noArchivedConversations: string;
+    noSearchResults: string;
+    searchResults: string;
+    typeMessage: string;
+    send: string;
+    reply: string;
+    edit: string;
+    addReaction: string;
+    attachFile: string;
+    addEmoji: string;
+    archive: string;
+    unarchive: string;
+    showActive: string;
+    showArchived: string;
+    deleteConversationConfirm: string;
+    deleteMessageConfirm: string;
+    removeAttachment: string;
+    maxFileSize: string;
+    sendShortcut: string;
+    invalidFileType: string;
+    fileTooLarge: string;
+    justNow: string;
+    minutesAgo: string;
+    hoursAgo: string;
+    daysAgo: string;
+    edited: string;
+    replyingTo: string;
+    typingOne: string;
+    typingMultiple: string;
+    unknown: string;
+    unknownUser: string;
+    recommended: string;
+  };
+
+  learning: {
+    title: string;
+    subtitle: string;
+    learningPaths: string;
+    allCourses: string;
+    myLearning: string;
+    allCategories: string;
+    python: string;
+    sql: string;
+    machineLearning: string;
+    dataVisualization: string;
+    statistics: string;
+    deepLearning: string;
+    dataEngineering: string;
+    businessIntelligence: string;
+    rProgramming: string;
+    bigData: string;
+    cloudComputing: string;
+    dataScienceFundamentals: string;
+    allDifficulties: string;
+    beginner: string;
+    intermediate: string;
+    advanced: string;
+    clearFilters: string;
+    search: string;
+    searchPlaceholder: string;
+    category: string;
+    difficulty: string;
+    recommendedForYou: string;
+    coursesCount: string;
+    lessonsCount: string;
+    hoursDuration: string;
+    minutesDuration: string;
+    daysDuration: string;
+    youWillLearn: string;
+    enrolledCount: string;
+    startPath: string;
+    enroll: string;
+    enrollFree: string;
+    enrollNow: string;
+    enrolling: string;
+    premium: string;
+    free: string;
+    start: string;
+    continue: string;
+    preview: string;
+    progress: string;
+    lessonsCompleted: string;
+    completed: string;
+    inProgress: string;
+    notStarted: string;
+    markComplete: string;
+    overview: string;
+    curriculum: string;
+    reviews: string;
+    resources: string;
+    aboutCourse: string;
+    learningObjectives: string;
+    prerequisites: string;
+    prerequisitesDescription: string;
+    courseIncludes: string;
+    videoLessons: string;
+    quizzes: string;
+    downloadableResources: string;
+    certificateOfCompletion: string;
+    courseStats: string;
+    totalEnrollments: string;
+    averageRating: string;
+    totalReviews: string;
+    quiz: string;
+    submitQuiz: string;
+    quizResults: string;
+    scoreDisplay: string;
+    quizPassed: string;
+    quizFailed: string;
+    yourAnswer: string;
+    courseNotFound: string;
+    courseNotFoundDescription: string;
+    enrollmentTerms: string;
+    reviewsComingSoon: string;
+    resourcesComingSoon: string;
+    noResults: string;
+    noResultsDescription: string;
+    noEnrollments: string;
+    noEnrollmentsDescription: string;
+    overallProgress: string;
+    dayStreak: string;
+    timeSpent: string;
+    enrolledOn: string;
+    lastAccessed: string;
+    completedOn: string;
+    lessonProgress: string;
+    quizScores: string;
+    attempts: string;
+    perLesson: string;
+    completionRate: string;
+    lessons: string;
+    currentStreak: string;
+    consecutiveDays: string;
+    estimatedCompletion: string;
+    remaining: string;
+    estimated: string;
+    achievements: string;
+    firstLesson: string;
+    streakMaster: string;
+    streakChampion: string;
+    weekStreak: string;
+    streakStarter: string;
+    courseCompleted: string;
+    almostThere: string;
+    halfwayHero: string;
+    goodStart: string;
+    timeChampion: string;
+    dedicatedLearner: string;
+    timeInvestor: string;
+    justStarted: string;
+    quarterWay: string;
+    halfWay: string;
+    almostDone: string;
+    learningAnalytics: string;
+    averageSessionTime: string;
+    video: string;
+    reading: string;
+    exercise: string;
+    project: string;
+    unknownLesson: string;
+    minutesSpent: string;
+    hoursSpent: string;
+    hoursMinutesSpent: string;
+  };
+
+  payments: {
+    chooseSubscription: string;
+    monthly: string;
+    yearly: string;
+    save20: string;
+    mostPopular: string;
+    unlimited: string;
+    courses: string;
+    downloads: string;
+    support: string;
+    paymentMethod: string;
+    addPaymentMethod: string;
+    addNewCard: string;
+    cardDetails: string;
+    adding: string;
+    addCard: string;
+    expires: string;
+    default: string;
+    setDefault: string;
+    deletePaymentMethodConfirm: string;
+    processing: string;
+    subscribe: string;
+    subscriptionTerms: string;
+    subscriptionSummary: string;
+    loadError: string;
+    selectTier: string;
+    selectPaymentMethod: string;
+    stripeNotLoaded: string;
+    addPaymentMethodError: string;
+    subscriptionError: string;
+    deletePaymentMethodError: string;
+    setDefaultError: string;
+    currentSubscription: string;
+    noActiveSubscription: string;
+    noActiveSubscriptionDescription: string;
+    unknownPlan: string;
+    nextBilling: string;
+    billingCycle: string;
+    subscriptionCanceling: string;
+    subscriptionCancelingDescription: string;
+    cancelSubscription: string;
+    resumeSubscription: string;
+    manageBilling: string;
+    upcomingBilling: string;
+    nextPayment: string;
+    upgradeOptions: string;
+    upgrade: string;
+    noUpgradeOptions: string;
+    manage: string;
+    noPaymentMethods: string;
+    cancelConfirm: string;
+    billingHistory: string;
+    transactions: string;
+    invoices: string;
+    billingSettings: string;
+    transaction: string;
+    amount: string;
+    status: string;
+    date: string;
+    actions: string;
+    succeeded: string;
+    pending: string;
+    failed: string;
+    requestRefund: string;
+    viewDetails: string;
+    noTransactions: string;
+    noTransactionsDescription: string;
+    invoice: string;
+    total: string;
+    tax: string;
+    download: string;
+    noInvoices: string;
+    noInvoicesDescription: string;
+    billingAddress: string;
+    addressLine1: string;
+    addressLine2: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+    subscriptionSettings: string;
+    autoRenewSubscriptions: string;
+    invoiceEmails: string;
+    addEmail: string;
+    dateRange: string;
+    allTime: string;
+    last30Days: string;
+    last6Months: string;
+    lastYear: string;
+    allStatuses: string;
+    refundConfirm: string;
+    paid: string;
+    open: string;
+    uncollectible: string;
+    canceled: string;
+    void: string;
+    subscription: string;
+    course: string;
+    refund: string;
+    credit: string;
+    saved: string;
+  };
+  auth: {
+    signIn: {
+      title: string;
+      subtitle: string;
+      button: string;
+      google: string;
+    };
+    signUp: {
+      title: string;
+      subtitle: string;
+      button: string;
+      google: string;
+      haveAccount: string;
+      signIn: string;
+    };
+    fields: {
+      email: string;
+      password: string;
+      confirmPassword: string;
+      firstName: string;
+      lastName: string;
+    };
+    rememberMe: string;
+    forgotPassword: string;
+    or: string;
+    acceptTerms: {
+      prefix: string;
+      link: string;
+    };
+    errors: Record<string, string>;
+    unauthorized: {
+      title: string;
+      message: string;
+      signIn: string;
+      signUp: string;
+    };
+    // OAuth & Social Login
+    oauth: {
+      providers: {
+        google: string;
+        github: string;
+        linkedin: string;
+      };
+      linkAccount: string;
+      unlinkAccount: string;
+      linkSuccess: string;
+      unlinkSuccess: string;
+      alreadyLinked: string;
+      linkError: string;
+      unlinkError: string;
+    };
+    // Two-Factor Authentication
+    twoFactor: {
+      title: string;
+      subtitle: string;
+      setup: {
+        title: string;
+        subtitle: string;
+        step1: string;
+        step2: string;
+        step3: string;
+        scanQR: string;
+        manualEntry: string;
+        verificationCode: string;
+        enable: string;
+        cancel: string;
+      };
+      verification: {
+        title: string;
+        subtitle: string;
+        enterCode: string;
+        useBackupCode: string;
+        backupCodeTitle: string;
+        backupCodeSubtitle: string;
+        verify: string;
+        back: string;
+        timeRemaining: string;
+        attemptsRemaining: string;
+        sessionExpired: string;
+        tooManyAttempts: string;
+      };
+      backupCodes: {
+        title: string;
+        subtitle: string;
+        download: string;
+        copy: string;
+        regenerate: string;
+        used: string;
+        unused: string;
+        warning: string;
+      };
+      status: {
+        enabled: string;
+        disabled: string;
+        enable: string;
+        disable: string;
+        setup: string;
+        configured: string;
+        notConfigured: string;
+      };
+      messages: {
+        setupSuccess: string;
+        enableSuccess: string;
+        disableSuccess: string;
+        verificationSuccess: string;
+        invalidCode: string;
+        backupCodeUsed: string;
+        regenerateSuccess: string;
+      };
+    };
+    // Password Strength
+    passwordStrength: {
+      title: string;
+      veryWeak: string;
+      weak: string;
+      fair: string;
+      strong: string;
+      veryStrong: string;
+      requirements: {
+        length: string;
+        uppercase: string;
+        lowercase: string;
+        number: string;
+        special: string;
+      };
+    };
+    // Security Settings
+    security: {
+      title: string;
+      subtitle: string;
+      changePassword: {
+        title: string;
+        subtitle: string;
+        currentPassword: string;
+        newPassword: string;
+        confirmPassword: string;
+        update: string;
+        success: string;
+        incorrectCurrent: string;
+      };
+      activeSessions: {
+        title: string;
+        subtitle: string;
+        current: string;
+        device: string;
+        location: string;
+        lastActivity: string;
+        revoke: string;
+        revokeSuccess: string;
+        timeAgo: {
+          now: string;
+          minutesAgo: string;
+          hoursAgo: string;
+          daysAgo: string;
+        };
+      };
+      loginHistory: {
+        title: string;
+        subtitle: string;
+        successful: string;
+        failed: string;
+        provider: string;
+        device: string;
+        location: string;
+        timestamp: string;
+      };
+      linkedAccounts: {
+        title: string;
+        subtitle: string;
+        notLinked: string;
+        link: string;
+        unlink: string;
+      };
+    };
+  };
+  userMenu: {
+    user: string;
+    profile: string;
+    dashboard: string;
+    settings: string;
+    signOut: string;
+  };
+  mentorship: {
+    dashboard: {
+      title: string;
+      welcome: string;
+      findMentor: string;
+      editProfile: string;
+      scheduleSession: string;
+      overview: string;
+      matches: string;
+      sessions: string;
+      profile: string;
+      activeMatches: string;
+      completedSessions: string;
+      upcomingSessions: string;
+      averageRating: string;
+      recentActivity: string;
+      pendingRequests: string;
+      newMenteeRequest: string;
+      mentorRequestPending: string;
+      view: string;
+      join: string;
+      programStats: string;
+      totalMentors: string;
+      totalMentees: string;
+      globalActiveMatches: string;
+      successRate: string;
+      yourMatches: string;
+      noMatches: string;
+      noMatchesDescription: string;
+      becomeMentor: string;
+      menteeMatch: string;
+      mentorMatch: string;
+      compatibility: string;
+      goals: string;
+      acceptRequest: string;
+      viewRequest: string;
+      declineRequest: string;
+      sendMessage: string;
+      noSessions: string;
+      noSessionsDescription: string;
+      minutes: string;
+      agenda: string;
+      joinSession: string;
+      editSession: string;
+      cancelSession: string;
+      yourProfile: string;
+      mentorProfile: string;
+      menteeProfile: string;
+      rating: string;
+      sessions: string;
+      mentees: string;
+      expertise: string;
+      interests: string;
+      yearsExperience: string;
+      noProfile: string;
+      noProfileDescription: string;
+      createMentorProfile: string;
+      createMenteeProfile: string;
+    };
+    profile: {
+      createProfile: string;
+      editProfile: string;
+      formDescription: string;
+      saveSuccess: string;
+      profileImage: string;
+      changeImage: string;
+      displayName: string;
+      displayNamePlaceholder: string;
+      bio: string;
+      bioPlaceholder: string;
+      characters: string;
+      basicInfo: string;
+      experience: string;
+      currentPosition: string;
+      currentCompany: string;
+      yearsInField: string;
+      previousRoles: string;
+      jobTitle: string;
+      company: string;
+      duration: string;
+      expertise: string;
+      expertiseAreas: string;
+      additionalSkills: string;
+      addSkillPlaceholder: string;
+      mentorshipStyle: string;
+      preferredStyle: string;
+      maxMentees: string;
+      maxMenteesHelp: string;
+      availability: string;
+      hoursPerWeek: string;
+      preferredDays: string;
+      timezone: string;
+      preferredMeetingTimes: string;
+      languages: string;
+      spokenLanguages: string;
+      about: string;
+      skills: string;
+      current: string;
+      requestMentorship: string;
+      sendMessage: string;
+      totalSessions: string;
+      mentees: string;
+      yearsExperience: string;
+    };
+    matcher: {
+      title: string;
+      description: string;
+      loading: string;
+      createProfile: string;
+      createProfileDescription: string;
+      createMenteeProfile: string;
+      availableMentors: string;
+      matches: string;
+      filters: string;
+      sortBy: string;
+      compatibility: string;
+      rating: string;
+      experience: string;
+      recalculate: string;
+      calculating: string;
+      analyzingProfiles: string;
+      calculatingCompatibility: string;
+      noMatches: string;
+      noMatchesDescription: string;
+      adjustFilters: string;
+      excellent: string;
+      veryGood: string;
+      good: string;
+      fair: string;
+      poor: string;
+      compatibilityBreakdown: string;
+      skills: string;
+      availability: string;
+      style: string;
+      language: string;
+      whyThisMatch: string;
+      expertise: string;
+      viewProfile: string;
+      requestPending: string;
+      requestMentorship: string;
+      filterOptions: string;
+      minimumRating: string;
+      stars: string;
+      experienceLevel: string;
+      anyExperience: string;
+      juniorLevel: string;
+      midLevel: string;
+      seniorLevel: string;
+      minimumHours: string;
+      hoursPerWeek: string;
+      clearFilters: string;
+      yearsExperience: string;
+      sessions: string;
+      mentees: string;
+      requestModalDescription: string;
+      yourGoals: string;
+      continueRequest: string;
+    };
+    request: {
+      createTitle: string;
+      viewTitle: string;
+      respondTitle: string;
+      respondDescription: string;
+      errorLoading: string;
+      errorSubmitting: string;
+      errorResponding: string;
+      submitSuccess: string;
+      responseSubmitted: string;
+      steps: {
+        introduction: string;
+        preferences: string;
+        commitment: string;
+        expectations: string;
+      };
+      introDescription: string;
+      personalMessage: string;
+      messagePlaceholder: string;
+      characters: string;
+      minimumCharacters: string;
+      yourGoals: string;
+      addGoalPlaceholder: string;
+      goalsHelp: string;
+      preferencesDescription: string;
+      expectedDuration: string;
+      meetingFrequency: string;
+      communicationPreference: string;
+      commitmentDescription: string;
+      timeCommitment: string;
+      timeCommitmentPlaceholder: string;
+      previousExperience: string;
+      previousExperiencePlaceholder: string;
+      expectationsDescription: string;
+      expectations: string;
+      expectationsPlaceholder: string;
+      summary: string;
+      goals: string;
+      duration: string;
+      frequency: string;
+      communication: string;
+      previous: string;
+      next: string;
+      submitRequest: string;
+      message: string;
+      mentee: string;
+      mentor: string;
+      preferences: string;
+      response: string;
+      submitted: string;
+      accepted: string;
+      rejected: string;
+      theirMessage: string;
+      theirGoals: string;
+      yourResponse: string;
+      acceptRequest: string;
+      rejectRequest: string;
+      acceptanceMessage: string;
+      rejectionMessage: string;
+      acceptancePlaceholder: string;
+      rejectionPlaceholder: string;
+      confirmAccept: string;
+      confirmReject: string;
+      yearsExperience: string;
+      validation: {
+        messageMinLength: string;
+        goalsRequired: string;
+        durationRequired: string;
+        timeCommitmentRequired: string;
+        expectationsRequired: string;
+      };
+      status: {
+        pending: string;
+        accepted: string;
+        rejected: string;
+      };
+    };
+    sessions: {
+      title: string;
+      description: string;
+      loading: string;
+      errorLoading: string;
+      errorSaving: string;
+      createSession: string;
+      editSession: string;
+      createSuccess: string;
+      updateSuccess: string;
+      scheduleNew: string;
+      allSessions: string;
+      upcoming: string;
+      completed: string;
+      cancelled: string;
+      sortByDate: string;
+      sortByMatch: string;
+      sortByStatus: string;
+      showing: string;
+      sessions: string;
+      noSessions: string;
+      noSessionsDescription: string;
+      scheduleFirst: string;
+      join: string;
+      edit: string;
+      moreItems: string;
+      more: string;
+      homework: string;
+      resources: string;
+      basicInfo: string;
+      title: string;
+      titlePlaceholder: string;
+      description: string;
+      descriptionPlaceholder: string;
+      dateTime: string;
+      duration: string;
+      sessionType: string;
+      meetingType: string;
+      meetingUrl: string;
+      meetingUrlHelp: string;
+      location: string;
+      locationPlaceholder: string;
+      agenda: string;
+      addAgendaItem: string;
+      resourceTitle: string;
+      resourceUrl: string;
+      notes: string;
+      notesPlaceholder: string;
+      unknownUser: string;
+      status: {
+        scheduled: string;
+        completed: string;
+        cancelled: string;
+        'no-show': string;
+      };
+      validation: {
+        titleRequired: string;
+        dateRequired: string;
+        dateInFuture: string;
+        durationMinimum: string;
+        urlRequired: string;
+        locationRequired: string;
+      };
+    };
+    status: {
+      pending: string;
+      accepted: string;
+      rejected: string;
+      active: string;
+      completed: string;
+      paused: string;
+    };
+    frequency: {
+      weekly: string;
+      biweekly: string;
+      monthly: string;
+    };
+    communication: {
+      video: string;
+      voice: string;
+      chat: string;
+      'in-person': string;
+    };
+    sessionType: {
+      video: string;
+      voice: string;
+      chat: string;
+      'in-person': string;
+    };
+    level: {
+      beginner: string;
+      intermediate: string;
+      advanced: string;
+    };
+    errors: {
+      loadProfile: string;
+      saveProfile: string;
+    };
+    validation: {
+      displayNameRequired: string;
+      bioMinLength: string;
+      expertiseRequired: string;
+      positionRequired: string;
+      companyRequired: string;
+      experienceMinimum: string;
+      hoursMinimum: string;
+      daysRequired: string;
+      styleRequired: string;
+    };
+  };
+  forum: {
+    title: string;
+    description: string;
+    categories: string;
+    topics: string;
+    posts: string;
+    members: string;
+    latestActivity: string;
+    createTopic: string;
+    reply: string;
+    search: string;
+    searchPlaceholder: string;
+    searchResults: string;
+    noResults: string;
+    noResultsDescription: string;
+    filters: string;
+    sortBy: string;
+    sortByDate: string;
+    sortByVotes: string;
+    sortByReplies: string;
+    sortByRelevance: string;
+    filterByCategory: string;
+    filterByTags: string;
+    filterByAuthor: string;
+    filterByDate: string;
+    clearFilters: string;
+    categoryList: {
+      careerAdvice: {
+        name: string;
+        description: string;
+      };
+      technicalDiscussion: {
+        name: string;
+        description: string;
+      };
+      industryNews: {
+        name: string;
+        description: string;
+      };
+      jobOpportunities: {
+        name: string;
+        description: string;
+      };
+      networking: {
+        name: string;
+        description: string;
+      };
+      generalDiscussion: {
+        name: string;
+        description: string;
+      };
+    };
+    topic: {
+      title: string;
+      content: string;
+      tags: string;
+      category: string;
+      author: string;
+      created: string;
+      lastActivity: string;
+      views: string;
+      replies: string;
+      votes: string;
+      pinned: string;
+      locked: string;
+      solved: string;
+      markSolved: string;
+      pin: string;
+      unpin: string;
+      lock: string;
+      unlock: string;
+      edit: string;
+      delete: string;
+      report: string;
+      share: string;
+      subscribe: string;
+      unsubscribe: string;
+      newTopic: string;
+      createTopic: string;
+      topicTitle: string;
+      topicContent: string;
+      selectCategory: string;
+      addTags: string;
+      tagPlaceholder: string;
+      preview: string;
+      publish: string;
+      draft: string;
+      guidelines: string;
+      formatting: string;
+      attachments: string;
+      uploadFile: string;
+      maxFileSize: string;
+      allowedTypes: string;
+    };
+    post: {
+      reply: string;
+      quote: string;
+      edit: string;
+      delete: string;
+      report: string;
+      markSolution: string;
+      unmarkSolution: string;
+      reactions: string;
+      addReaction: string;
+      mentions: string;
+      attachments: string;
+      editHistory: string;
+      lastEdited: string;
+      editedBy: string;
+      originalPost: string;
+      showMore: string;
+      showLess: string;
+      loadMore: string;
+      noReplies: string;
+      writeReply: string;
+      replyPlaceholder: string;
+      postReply: string;
+      formatHelp: string;
+      codeBlock: string;
+      bold: string;
+      italic: string;
+      link: string;
+      image: string;
+      quote: string;
+      list: string;
+    };
+    user: {
+      profile: string;
+      reputation: string;
+      points: string;
+      level: string;
+      badges: string;
+      achievements: string;
+      joinDate: string;
+      lastSeen: string;
+      totalPosts: string;
+      totalTopics: string;
+      solutionsProvided: string;
+      helpfulVotes: string;
+      moderator: string;
+      admin: string;
+      online: string;
+      offline: string;
+      banned: string;
+      suspended: string;
+    };
+    moderation: {
+      moderate: string;
+      pin: string;
+      unpin: string;
+      lock: string;
+      unlock: string;
+      delete: string;
+      edit: string;
+      move: string;
+      merge: string;
+      ban: string;
+      warn: string;
+      reports: string;
+      reportReason: string;
+      moderatorNotes: string;
+      takeAction: string;
+      dismiss: string;
+      resolve: string;
+      pending: string;
+      resolved: string;
+    };
+    notifications: {
+      title: string;
+      center: string;
+      recent: string;
+      history: string;
+      empty: string;
+      historyEmpty: string;
+      historyDescription: string;
+      toggle: string;
+      markAsRead: string;
+      markAllRead: string;
+      deleteSelected: string;
+      clearSelection: string;
+      selectedCount: string;
+      selectAll: string;
+      viewAll: string;
+      loadMore: string;
+      delete: string;
+      expires: string;
+      sentVia: string;
+      moreActions: string;
+      category: {
+        jobs: string;
+        events: string;
+        messages: string;
+        connections: string;
+        mentorship: string;
+        forum: string;
+        achievements: string;
+        system: string;
+        security: string;
+        billing: string;
+      };
+      type: {
+        job_match: string;
+        job_application: string;
+        job_expiring: string;
+        event_reminder: string;
+        event_update: string;
+        event_cancelled: string;
+        message_received: string;
+        message_reply: string;
+        connection_request: string;
+        connection_accepted: string;
+        mentorship_request: string;
+        mentorship_accepted: string;
+        mentorship_session: string;
+        forum_mention: string;
+        forum_reply: string;
+        forum_topic_update: string;
+        badge_earned: string;
+        achievement_unlocked: string;
+        profile_view: string;
+        newsletter: string;
+        system_announcement: string;
+        maintenance: string;
+        security_alert: string;
+        payment_reminder: string;
+        membership_expiring: string;
+        data_export_ready: string;
+      };
+      typeDesc: {
+        job_match: string;
+        job_application: string;
+        job_expiring: string;
+        event_reminder: string;
+        event_update: string;
+        event_cancelled: string;
+        message_received: string;
+        message_reply: string;
+        connection_request: string;
+        connection_accepted: string;
+        mentorship_request: string;
+        mentorship_accepted: string;
+        mentorship_session: string;
+        forum_mention: string;
+        forum_reply: string;
+        forum_topic_update: string;
+        badge_earned: string;
+        achievement_unlocked: string;
+        profile_view: string;
+        newsletter: string;
+        system_announcement: string;
+        maintenance: string;
+        security_alert: string;
+        payment_reminder: string;
+        membership_expiring: string;
+        data_export_ready: string;
+      };
+      delivery: {
+        app: string;
+        email: string;
+        push: string;
+        sms: string;
+      };
+      frequency: {
+        immediate: string;
+        hourly: string;
+        daily: string;
+        weekly: string;
+        monthly: string;
+        never: string;
+      };
+      filter: {
+        all: string;
+        unread: string;
+        urgent: string;
+      };
+      sort: {
+        date: string;
+        priority: string;
+        category: string;
+      };
+      settings: {
+        title: string;
+        description: string;
+        categories: string;
+        global: string;
+        advanced: string;
+        sound: string;
+        soundDesc: string;
+        doNotDisturb: string;
+        doNotDisturbDesc: string;
+        groupSimilar: string;
+        groupSimilarDesc: string;
+        maxDaily: string;
+        maxDailyDesc: string;
+        emailDigest: string;
+        digestEnabled: string;
+        digestEnabledDesc: string;
+        digestFrequency: string;
+        digestTime: string;
+        pushNotifications: string;
+        browserPush: string;
+        browserPushDesc: string;
+        enablePush: string;
+        pushDenied: string;
+        deliveryMethods: string;
+        frequency: string;
+        errorLoading: string;
+        errorSaving: string;
+        errorPush: string;
+        saved: string;
+      };
+    };
+    badges: {
+      welcomeNewcomer: {
+        name: string;
+        description: string;
+      };
+      firstPost: {
+        name: string;
+        description: string;
+      };
+      helpfulMember: {
+        name: string;
+        description: string;
+      };
+      solutionProvider: {
+        name: string;
+        description: string;
+      };
+      topContributor: {
+        name: string;
+        description: string;
+      };
+      veteranMember: {
+        name: string;
+        description: string;
+      };
+    };
+    errors: {
+      loadingFailed: string;
+      postingFailed: string;
+      votingFailed: string;
+      unauthorized: string;
+      notFound: string;
+      validation: {
+        titleRequired: string;
+        contentRequired: string;
+        categoryRequired: string;
+        titleTooLong: string;
+        contentTooLong: string;
+        invalidTags: string;
+      };
+    };
+    success: {
+      topicCreated: string;
+      postCreated: string;
+      voteSubmitted: string;
+      reportSubmitted: string;
+      subscribed: string;
+      unsubscribed: string;
+    };
+  };
+  memberDirectory: {
+    title: string;
+    subtitle: string;
+    searchPlaceholder: string;
+    viewModes: {
+      grid: string;
+      list: string;
+      compact: string;
+    };
+    filters: {
+      title: string;
+      skills: string;
+      companies: string;
+      locations: string;
+      experienceLevel: string;
+      availability: string;
+      specialFilters: string;
+      onlineOnly: string;
+      hasPortfolio: string;
+      premiumMembers: string;
+      memberSince: string;
+      clearAll: string;
+      clearFilters: string;
+    };
+    experienceLevels: {
+      junior: string;
+      mid: string;
+      senior: string;
+      lead: string;
+      executive: string;
+    };
+    availability: {
+      mentoring: string;
+      opportunities: string;
+      networking: string;
+    };
+    sorting: {
+      sortBy: string;
+      relevance: string;
+      name: string;
+      joinDate: string;
+      activity: string;
+      reputation: string;
+      ascending: string;
+      descending: string;
+    };
+    stats: {
+      totalMembers: string;
+      onlineMembers: string;
+      newThisMonth: string;
+      topSkill: string;
+    };
+    results: {
+      showing: string;
+      of: string;
+      members: string;
+      filtered: string;
+      noMembers: string;
+      noMembersFiltered: string;
+      adjustFilters: string;
+    };
+    memberCard: {
+      connect: string;
+      connected: string;
+      requestSent: string;
+      message: string;
+      viewProfile: string;
+      follow: string;
+      following: string;
+      unfollow: string;
+      downloadContact: string;
+      shareProfile: string;
+      connections: string;
+      views: string;
+      reputation: string;
+      posts: string;
+      online: string;
+      lastSeen: string;
+      yearsExperience: string;
+    };
+    memberProfile: {
+      editProfile: string;
+      memberSince: string;
+      lastSeen: string;
+      activeHours: string;
+      activeDays: string;
+      profileViews: string;
+      about: string;
+      experience: string;
+      skills: string;
+      workExperience: string;
+      links: string;
+      portfolio: string;
+      projects: string;
+      achievements: string;
+      certifications: string;
+      activity: string;
+      connections: string;
+      noPortfolio: string;
+      noPortfolioDescription: string;
+      recentActivity: string;
+      recentActivityDescription: string;
+      viewDemo: string;
+      liveDemo: string;
+      github: string;
+      linkedin: string;
+      website: string;
+      verified: string;
+      present: string;
+    };
+    networking: {
+      title: string;
+      subtitle: string;
+      refresh: string;
+      connections: string;
+      requests: string;
+      messages: string;
+      recommendations: string;
+      searchConnections: string;
+      noConnections: string;
+      noConnectionsDescription: string;
+      noRequests: string;
+      noRequestsDescription: string;
+      noConversations: string;
+      noRecommendations: string;
+      noRecommendationsDescription: string;
+      accept: string;
+      reject: string;
+      sendMessage: string;
+      typeMessage: string;
+      selectConversation: string;
+      noMessages: string;
+      matchReasons: {
+        similarSkills: string;
+        sameCompany: string;
+        sameLocation: string;
+        mutualConnections: string;
+        similarInterests: string;
+      };
+      compatibility: string;
+    };
+    privacy: {
+      profileVisibility: string;
+      public: string;
+      membersOnly: string;
+      connectionsOnly: string;
+      private: string;
+      showEmail: string;
+      showPhone: string;
+      showLocation: string;
+      showCompany: string;
+      showOnlineStatus: string;
+      showLastSeen: string;
+      allowMessages: string;
+      allowConnectionRequests: string;
+      messageSettings: {
+        all: string;
+        connectionsOnly: string;
+        none: string;
+      };
+    };
+    actions: {
+      connecting: string;
+      sendingMessage: string;
+      loadingProfile: string;
+      updatingProfile: string;
+      uploadingImage: string;
+    };
+    errors: {
+      loadMembers: string;
+      searchError: string;
+      connectionError: string;
+      messageError: string;
+      profileUpdateError: string;
+      imageUploadError: string;
+      tryAgain: string;
+    };
+  };
+  analytics: {
+    title: string;
+    loading: string;
+    error: string;
+    retry: string;
+    refresh: string;
+    export: string;
+    autoRefresh: string;
+    lastUpdated: string;
+    tabs: {
+      overview: string;
+      users: string;
+      content: string;
+      engagement: string;
+      revenue: string;
+      geographic: string;
+      performance: string;
+      errors: string;
+      funnels: string;
+      search: string;
+      technology: string;
+    };
+    dateRange: {
+      today: string;
+      yesterday: string;
+      last7days: string;
+      last30days: string;
+      last90days: string;
+      last12months: string;
+      custom: string;
+    };
+    realTime: {
+      activeUsers: string;
+      currentSessions: string;
+      pageViewsPerMinute: string;
+    };
+    systemStatus: string;
+    metrics: {
+      totalUsers: string;
+      newUsers: string;
+      activeUsers: string;
+      returningUsers: string;
+      userRetention: string;
+      registrationTrend: string;
+      jobViews: string;
+      jobApplications: string;
+      eventRegistrations: string;
+      forumPosts: string;
+      mentorshipSessions: string;
+      totalRevenue: string;
+      monthlyRevenue: string;
+      conversionRate: string;
+      pageLoadTime: string;
+      errorRate: string;
+      apiResponseTime: string;
+    };
+    charts: {
+      userRegistrations: string;
+      jobApplications: string;
+      deviceDistribution: string;
+      revenueGrowth: string;
+      conversionFunnel: string;
+      performanceMetrics: string;
+      engagementHeatmap: string;
+      goalProgress: string;
+    };
+    export: {
+      pdf: string;
+      csv: string;
+      excel: string;
+      generating: string;
+      success: string;
+      error: string;
+    };
+    alerts: {
+      performanceIssue: string;
+      highErrorRate: string;
+      slowResponse: string;
+      systemDown: string;
+    };
+  };
+  resources: {
+    library: string;
+    libraryDescription: string;
+    all: string;
+    popular: string;
+    recent: string;
+    bookmarks: string;
+    upload: string;
+    categories: {
+      title: string;
+      tutorials: string;
+      templates: string;
+      tools: string;
+      books: string;
+      courses: string;
+      datasets: string;
+      research: string;
+      documentation: string;
+    };
+    fileTypes: string;
+    accessLevel: string;
+    accessLevels: {
+      free: string;
+      premium: string;
+      member: string;
+      restricted: string;
+    };
+    difficulty: {
+      title: string;
+      beginner: string;
+      intermediate: string;
+      advanced: string;
+    };
+    title: string;
+    titlePlaceholder: string;
+    description: string;
+    descriptionPlaceholder: string;
+    summary: string;
+    summaryPlaceholder: string;
+    tags: string;
+    addTag: string;
+    prerequisites: string;
+    addPrerequisite: string;
+    language: string;
+    bilingual: string;
+    estimatedTime: string;
+    type: string;
+    category: string;
+    download: string;
+    downloading: string;
+    downloadError: string;
+    preview: string;
+    viewDetails: string;
+    bookmark: string;
+    addBookmark: string;
+    removeBookmark: string;
+    share: string;
+    report: string;
+    downloads: string;
+    views: string;
+    rating: string;
+    reviews: string;
+    totalResources: string;
+    totalDownloads: string;
+    contributors: string;
+    averageRating: string;
+    results: string;
+    resources: string;
+    uploadResource: string;
+    uploading: string;
+    uploadSuccess: string;
+    uploadError: string;
+    uploadNotice: string;
+    loginToUpload: string;
+    loginRequired: string;
+    basicInfo: string;
+    fileUpload: string;
+    metadata: string;
+    mainFile: string;
+    includePreview: string;
+    selectPreviewFile: string;
+    withPreview: string;
+    withoutPreview: string;
+    thumbnail: string;
+    selectThumbnail: string;
+    dragDropFile: string;
+    browseFiles: string;
+    submitForReview: string;
+    searchPlaceholder: string;
+    advancedSearch: string;
+    sortBy: string;
+    sortOptions: {
+      relevance: string;
+      newest: string;
+      oldest: string;
+      mostDownloaded: string;
+      highestRated: string;
+      alphabetical: string;
+    };
+    minimumRating: string;
+    dateRange: string;
+    details: string;
+    tabs: {
+      overview: string;
+      reviews: string;
+      versions: string;
+    };
+    related: string;
+    versions: string;
+    writeReview: string;
+    reviewPlaceholder: string;
+    comment: string;
+    submitting: string;
+    reviewRequired: string;
+    reviewError: string;
+    noReviews: string;
+    validation: {
+      titleRequired: string;
+      descriptionRequired: string;
+      summaryRequired: string;
+      fileRequired: string;
+      tagsRequired: string;
+    };
+    notFound: string;
+    notFoundDescription: string;
+    noResults: string;
+    noResultsDescription: string;
+    contributeFirst: string;
+    verified: string;
+  };
+}
+
+const translations: Record<Language, Translations> = {
+  es: {
+    site: {
+      name: 'SECiD',
+      title: 'SECiD - Sociedad de Egresados en Ciencia de Datos UNAM',
+      description: 'Conectando egresados en ciencia de datos de la UNAM. Oportunidades laborales, networking y crecimiento profesional.',
+    },
+    nav: {
+      home: 'Inicio',
+      about: 'Nosotros',
+      jobs: 'Empleos',
+      contact: 'Contacto',
+    },
+    hero: {
+      title: 'Conectando el futuro de los datos',
+      subtitle: 'Sociedad de Egresados en Ciencia de Datos UNAM',
+      description: 'Una comunidad vibrante de profesionales en ciencia de datos, unidos por nuestra formación en la UNAM y nuestro compromiso con la excelencia en el análisis de datos.',
+      joinButton: 'Únete a SECiD',
+      jobsButton: 'Ver Empleos',
+    },
+    features: {
+      title: '¿Por qué unirse a SECiD?',
+      networking: {
+        title: 'Networking Profesional',
+        description: 'Conecta con otros egresados de ciencia de datos de la UNAM y expande tu red profesional en la industria.',
+      },
+      jobs: {
+        title: 'Oportunidades Laborales',
+        description: 'Accede a ofertas de empleo exclusivas y oportunidades de carrera en empresas líderes del sector.',
+      },
+      growth: {
+        title: 'Crecimiento Profesional',
+        description: 'Participa en eventos, talleres y conferencias para mantenerte actualizado con las últimas tendencias.',
+      },
+      community: {
+        title: 'Comunidad Sólida',
+        description: 'Forma parte de una comunidad comprometida con el intercambio de conocimientos y experiencias.',
+      },
+    },
+    cta: {
+      title: 'Comienza tu journey',
+      jobs: {
+        title: 'Encuentra tu próximo empleo',
+        description: 'Explora oportunidades laborales exclusivas para miembros de SECiD en empresas innovadoras.',
+        button: 'Ver empleos',
+      },
+      register: {
+        title: 'Únete a nuestra comunidad',
+        description: 'Regístrate como miembro de SECiD y accede a todos los beneficios de nuestra red profesional.',
+        button: 'Registrarse',
+      },
+    },
+    search: {
+      placeholder: 'Buscar...',
+    },
+    sidebar: {
+      menu: 'Menú',
+      getInTouch: 'Mantente en contacto',
+      description: 'Síguenos en nuestras redes sociales y mantente al día con las últimas noticias y oportunidades.',
+    },
+    footer: {
+      rights: 'Todos los derechos reservados.',
+      design: 'Diseño',
+    },
+    common: {
+      loading: 'Cargando...',
+      error: 'Error',
+      success: 'Éxito',
+      submit: 'Enviar',
+      cancel: 'Cancelar',
+      close: 'Cerrar',
+      save: 'Guardar',
+      delete: 'Eliminar',
+      edit: 'Editar',
+      back: 'Atrás',
+      next: 'Siguiente',
+      previous: 'Anterior',
+      retry: 'Reintentar',
+      all: 'Todos',
+      any: 'Cualquiera',
+      more: 'más',
+      from: 'Desde',
+      to: 'Hasta',
+      optional: 'Opcional',
+      add: 'Agregar',
+      clearFilters: 'Limpiar filtros',
+    },
+    auth: {
+      signIn: {
+        title: 'Iniciar sesión',
+        subtitle: 'Accede a tu cuenta de SECiD',
+        button: 'Iniciar sesión',
+        google: 'Continuar con Google',
+      },
+      signUp: {
+        title: 'Crear cuenta',
+        subtitle: 'Únete a la comunidad SECiD',
+        button: 'Crear cuenta',
+        google: 'Registrarse con Google',
+        haveAccount: '¿Ya tienes cuenta?',
+        signIn: 'Inicia sesión',
+      },
+      fields: {
+        email: 'Correo electrónico',
+        password: 'Contraseña',
+        confirmPassword: 'Confirmar contraseña',
+        firstName: 'Nombre',
+        lastName: 'Apellido(s)',
+      },
+      rememberMe: 'Recordarme',
+      forgotPassword: '¿Olvidaste tu contraseña?',
+      or: 'o',
+      acceptTerms: {
+        prefix: 'Acepto los',
+        link: 'términos y condiciones',
+      },
+      errors: {
+        'auth/user-not-found': 'No existe una cuenta con este correo',
+        'auth/wrong-password': 'Contraseña incorrecta',
+        'auth/email-already-in-use': 'Este correo ya está registrado',
+        'auth/weak-password': 'La contraseña es muy débil',
+        'auth/invalid-email': 'Correo electrónico inválido',
+        'auth/operation-not-allowed': 'Operación no permitida',
+        'auth/popup-closed-by-user': 'Ventana cerrada antes de completar el proceso',
+        'auth/account-exists-with-different-credential': 'Ya existe una cuenta con este correo',
+        'auth/network-request-failed': 'Error de conexión',
+        'auth/too-many-requests': 'Demasiados intentos. Por favor intenta más tarde',
+        default: 'Ha ocurrido un error. Por favor intenta de nuevo',
+      },
+      unauthorized: {
+        title: 'Acceso restringido',
+        message: 'Necesitas iniciar sesión para acceder a esta página',
+        signIn: 'Iniciar sesión',
+        signUp: 'Crear cuenta',
+      },
+      // OAuth & Social Login
+      oauth: {
+        providers: {
+          google: 'Google',
+          github: 'GitHub',
+          linkedin: 'LinkedIn',
+        },
+        linkAccount: 'Vincular cuenta',
+        unlinkAccount: 'Desvincular cuenta',
+        linkSuccess: 'Cuenta vinculada exitosamente',
+        unlinkSuccess: 'Cuenta desvinculada exitosamente',
+        alreadyLinked: 'Esta cuenta ya está vinculada',
+        linkError: 'Error al vincular cuenta',
+        unlinkError: 'Error al desvincular cuenta',
+      },
+      // Two-Factor Authentication
+      twoFactor: {
+        title: 'Autenticación de Dos Factores',
+        subtitle: 'Protege tu cuenta con una capa adicional de seguridad',
+        setup: {
+          title: 'Configurar Autenticación de Dos Factores',
+          subtitle: 'Configura 2FA para mayor seguridad de tu cuenta',
+          step1: 'Instalar aplicación',
+          step2: 'Escanear código QR',
+          step3: 'Verificar código',
+          scanQR: 'Escanea el código QR con tu aplicación de autenticación',
+          manualEntry: 'O ingresa manualmente este código',
+          verificationCode: 'Código de verificación (6 dígitos)',
+          enable: 'Habilitar',
+          cancel: 'Cancelar',
+        },
+        verification: {
+          title: 'Verificación de Dos Factores',
+          subtitle: 'Ingresa el código de tu aplicación de autenticación',
+          enterCode: 'Código de autenticación (6 dígitos)',
+          useBackupCode: '¿Perdiste tu dispositivo? Usa un código de respaldo',
+          backupCodeTitle: 'Usar Código de Respaldo',
+          backupCodeSubtitle: 'Ingresa uno de tus códigos de respaldo de 8 dígitos',
+          verify: 'Verificar',
+          back: 'Volver',
+          timeRemaining: 'Tiempo restante',
+          attemptsRemaining: 'intentos restantes',
+          sessionExpired: 'Sesión expirada',
+          tooManyAttempts: 'Demasiados intentos fallidos',
+        },
+        backupCodes: {
+          title: 'Códigos de Respaldo',
+          subtitle: 'Guarda estos códigos en un lugar seguro',
+          download: 'Descargar',
+          copy: 'Copiar',
+          regenerate: 'Regenerar Códigos',
+          used: 'Usado',
+          unused: 'Sin usar',
+          warning: 'Por favor descarga los códigos antes de continuar',
+        },
+        status: {
+          enabled: 'Activado',
+          disabled: 'Desactivado',
+          enable: 'Activar',
+          disable: 'Desactivar',
+          setup: 'Configurar',
+          configured: 'Configurado y activo',
+          notConfigured: 'No configurado',
+        },
+        messages: {
+          setupSuccess: 'Autenticación de dos factores configurada exitosamente',
+          enableSuccess: 'Autenticación de dos factores activada exitosamente',
+          disableSuccess: 'Autenticación de dos factores desactivada',
+          verificationSuccess: 'Verificación exitosa',
+          invalidCode: 'Código de verificación inválido',
+          backupCodeUsed: 'Código de respaldo válido',
+          regenerateSuccess: 'Códigos de respaldo regenerados',
+        },
+      },
+      // Password Strength
+      passwordStrength: {
+        title: 'Fortaleza de contraseña',
+        veryWeak: 'Muy débil',
+        weak: 'Débil',
+        fair: 'Regular',
+        strong: 'Fuerte',
+        veryStrong: 'Muy fuerte',
+        requirements: {
+          length: '8+ caracteres',
+          uppercase: 'Mayúscula',
+          lowercase: 'Minúscula',
+          number: 'Número',
+          special: 'Especial',
+        },
+      },
+      // Security Settings
+      security: {
+        title: 'Configuración de Seguridad',
+        subtitle: 'Gestiona la seguridad de tu cuenta',
+        changePassword: {
+          title: 'Cambiar Contraseña',
+          subtitle: 'Actualiza tu contraseña para mantener tu cuenta segura',
+          currentPassword: 'Contraseña actual',
+          newPassword: 'Nueva contraseña',
+          confirmPassword: 'Confirmar contraseña',
+          update: 'Actualizar Contraseña',
+          success: 'Contraseña actualizada exitosamente',
+          incorrectCurrent: 'Contraseña actual incorrecta',
+        },
+        activeSessions: {
+          title: 'Sesiones Activas',
+          subtitle: 'Gestiona las sesiones activas en diferentes dispositivos',
+          current: 'Actual',
+          device: 'Dispositivo',
+          location: 'Ubicación',
+          lastActivity: 'Última actividad',
+          revoke: 'Revocar',
+          revokeSuccess: 'Sesión revocada',
+          timeAgo: {
+            now: 'Ahora',
+            minutesAgo: 'min',
+            hoursAgo: 'h',
+            daysAgo: 'd',
+          },
+        },
+        loginHistory: {
+          title: 'Historial de Inicios de Sesión',
+          subtitle: 'Revisa la actividad reciente de tu cuenta',
+          successful: 'Inicio exitoso',
+          failed: 'Intento fallido',
+          provider: 'Proveedor',
+          device: 'Dispositivo',
+          location: 'Ubicación',
+          timestamp: 'Fecha y hora',
+        },
+        linkedAccounts: {
+          title: 'Cuentas Vinculadas',
+          subtitle: 'Gestiona las cuentas externas vinculadas a tu perfil',
+          notLinked: 'No vinculado',
+          link: 'Vincular',
+          unlink: 'Desvincular',
+        },
+      },
+    },
+    userMenu: {
+      user: 'Usuario',
+      profile: 'Mi perfil',
+      dashboard: 'Dashboard',
+      settings: 'Configuración',
+      signOut: 'Cerrar sesión',
+    },
+    mentorship: {
+      dashboard: {
+        title: 'Panel de Mentoría',
+        welcome: 'Bienvenido a tu panel de mentoría',
+        findMentor: 'Encontrar Mentor',
+        editProfile: 'Editar Perfil',
+        scheduleSession: 'Programar Sesión',
+        overview: 'Resumen',
+        matches: 'Coincidencias',
+        sessions: 'Sesiones',
+        profile: 'Perfil',
+        activeMatches: 'Coincidencias Activas',
+        completedSessions: 'Sesiones Completadas',
+        upcomingSessions: 'Próximas Sesiones',
+        averageRating: 'Calificación Promedio',
+        recentActivity: 'Actividad Reciente',
+        pendingRequests: 'Solicitudes Pendientes',
+        newMenteeRequest: 'Nueva solicitud de mentee',
+        mentorRequestPending: 'Solicitud de mentor pendiente',
+        view: 'Ver',
+        join: 'Unirse',
+        programStats: 'Estadísticas del Programa',
+        totalMentors: 'Total de Mentores',
+        totalMentees: 'Total de Mentees',
+        globalActiveMatches: 'Coincidencias Activas Globales',
+        successRate: 'Tasa de Éxito',
+        yourMatches: 'Tus Coincidencias',
+        noMatches: 'Sin Coincidencias',
+        noMatchesDescription: 'Aún no tienes coincidencias de mentoría. Busca mentores que se ajusten a tus objetivos.',
+        becomeMentor: 'Convertirse en Mentor',
+        menteeMatch: 'Coincidencia de Mentee',
+        mentorMatch: 'Coincidencia de Mentor',
+        compatibility: 'Compatibilidad',
+        goals: 'Objetivos',
+        acceptRequest: 'Aceptar Solicitud',
+        viewRequest: 'Ver Solicitud',
+        declineRequest: 'Rechazar Solicitud',
+        sendMessage: 'Enviar Mensaje',
+        noSessions: 'Sin Sesiones',
+        noSessionsDescription: 'No tienes sesiones programadas. Programa tu primera sesión con un mentor.',
+        minutes: 'minutos',
+        agenda: 'Agenda',
+        joinSession: 'Unirse a la Sesión',
+        editSession: 'Editar Sesión',
+        cancelSession: 'Cancelar Sesión',
+        yourProfile: 'Tu Perfil',
+        mentorProfile: 'Perfil de Mentor',
+        menteeProfile: 'Perfil de Mentee',
+        rating: 'Calificación',
+        mentees: 'Mentees',
+        expertise: 'Experiencia',
+        interests: 'Intereses',
+        yearsExperience: 'años de experiencia',
+        noProfile: 'Sin Perfil',
+        noProfileDescription: 'Necesitas crear un perfil para participar en el programa de mentoría.',
+        createMentorProfile: 'Crear Perfil de Mentor',
+        createMenteeProfile: 'Crear Perfil de Mentee',
+      },
+      profile: {
+        createProfile: 'Crear Perfil',
+        editProfile: 'Editar Perfil',
+        formDescription: 'Completa tu perfil para conectar con mentores y mentees compatibles.',
+        saveSuccess: 'Perfil guardado exitosamente',
+        profileImage: 'Foto de Perfil',
+        changeImage: 'Cambiar Imagen',
+        displayName: 'Nombre a Mostrar',
+        displayNamePlaceholder: 'Tu nombre completo',
+        bio: 'Biografía',
+        bioPlaceholder: 'Cuéntanos sobre ti, tu experiencia y lo que te apasiona...',
+        characters: 'caracteres',
+        basicInfo: 'Información Básica',
+        experience: 'Experiencia',
+        currentPosition: 'Posición Actual',
+        currentCompany: 'Empresa Actual',
+        yearsInField: 'Años en el Campo',
+        previousRoles: 'Roles Anteriores',
+        jobTitle: 'Título del Trabajo',
+        company: 'Empresa',
+        duration: 'Duración',
+        expertise: 'Experiencia',
+        expertiseAreas: 'Áreas de Especialización',
+        additionalSkills: 'Habilidades Adicionales',
+        addSkillPlaceholder: 'Agregar nueva habilidad',
+        mentorshipStyle: 'Estilo de Mentoría',
+        preferredStyle: 'Estilo Preferido',
+        maxMentees: 'Máximo de Mentees',
+        maxMenteesHelp: 'Número máximo de mentees que puedes manejar simultáneamente',
+        availability: 'Disponibilidad',
+        hoursPerWeek: 'Horas por Semana',
+        preferredDays: 'Días Preferidos',
+        timezone: 'Zona Horaria',
+        preferredMeetingTimes: 'Horarios Preferidos de Reunión',
+        languages: 'Idiomas',
+        spokenLanguages: 'Idiomas que Hablas',
+        about: 'Acerca de',
+        skills: 'Habilidades',
+        current: 'Actual',
+        requestMentorship: 'Solicitar Mentoría',
+        sendMessage: 'Enviar Mensaje',
+        totalSessions: 'Total de Sesiones',
+        mentees: 'Mentees',
+        yearsExperience: 'años de experiencia',
+      },
+      matcher: {
+        title: 'Buscar Mentores',
+        description: 'Encuentra mentores compatibles basados en tus objetivos y preferencias.',
+        loading: 'Cargando coincidencias...',
+        createProfile: 'Crear Perfil de Mentee',
+        createProfileDescription: 'Necesitas un perfil de mentee para buscar mentores compatibles.',
+        createMenteeProfile: 'Crear Perfil de Mentee',
+        availableMentors: 'Mentores Disponibles',
+        matches: 'Coincidencias',
+        filters: 'Filtros',
+        sortBy: 'Ordenar por',
+        compatibility: 'Compatibilidad',
+        rating: 'Calificación',
+        experience: 'Experiencia',
+        recalculate: 'Recalcular',
+        calculating: 'Calculando...',
+        analyzingProfiles: 'Analizando Perfiles',
+        calculatingCompatibility: 'Calculando compatibilidad basada en objetivos, habilidades y disponibilidad...',
+        noMatches: 'Sin Coincidencias',
+        noMatchesDescription: 'No se encontraron mentores que coincidan con tus criterios. Intenta ajustar los filtros.',
+        adjustFilters: 'Ajustar Filtros',
+        excellent: 'Excelente',
+        veryGood: 'Muy Bueno',
+        good: 'Bueno',
+        fair: 'Regular',
+        poor: 'Pobre',
+        compatibilityBreakdown: 'Desglose de Compatibilidad',
+        skills: 'Habilidades',
+        availability: 'Disponibilidad',
+        style: 'Estilo',
+        language: 'Idioma',
+        whyThisMatch: '¿Por qué esta coincidencia?',
+        expertise: 'Experiencia',
+        viewProfile: 'Ver Perfil',
+        requestPending: 'Solicitud Pendiente',
+        requestMentorship: 'Solicitar Mentoría',
+        filterOptions: 'Opciones de Filtro',
+        minimumRating: 'Calificación Mínima',
+        stars: 'estrellas',
+        experienceLevel: 'Nivel de Experiencia',
+        anyExperience: 'Cualquier Experiencia',
+        juniorLevel: 'Nivel Junior (1-3 años)',
+        midLevel: 'Nivel Medio (3-7 años)',
+        seniorLevel: 'Nivel Senior (7+ años)',
+        minimumHours: 'Horas Mínimas',
+        hoursPerWeek: 'horas por semana',
+        clearFilters: 'Limpiar Filtros',
+        yearsExperience: 'años de experiencia',
+        sessions: 'sesiones',
+        mentees: 'mentees',
+        requestModalDescription: 'Estás a punto de enviar una solicitud de mentoría a este mentor.',
+        yourGoals: 'Tus Objetivos',
+        continueRequest: 'Continuar Solicitud',
+      },
+      request: {
+        createTitle: 'Solicitar Mentoría',
+        viewTitle: 'Solicitud de Mentoría',
+        respondTitle: 'Responder Solicitud',
+        respondDescription: 'Un mentee ha solicitado tu orientación. Revisa los detalles y decide si aceptar.',
+        errorLoading: 'Error al cargar la solicitud',
+        errorSubmitting: 'Error al enviar la solicitud',
+        errorResponding: 'Error al responder la solicitud',
+        submitSuccess: 'Solicitud enviada exitosamente',
+        responseSubmitted: 'Respuesta enviada exitosamente',
+        steps: {
+          introduction: 'Introducción',
+          preferences: 'Preferencias',
+          commitment: 'Compromiso',
+          expectations: 'Expectativas',
+        },
+        introDescription: 'Preséntate y explica por qué estás buscando mentoría.',
+        personalMessage: 'Mensaje Personal',
+        messagePlaceholder: 'Escribe un mensaje personal explicando por qué estás interesado en este mentor y qué esperas lograr...',
+        characters: 'caracteres',
+        minimumCharacters: 'Mínimo 50 caracteres',
+        yourGoals: 'Tus Objetivos',
+        addGoalPlaceholder: 'Agregar nuevo objetivo',
+        goalsHelp: 'Lista los objetivos específicos que quieres lograr con esta mentoría.',
+        preferencesDescription: 'Establece tus preferencias de comunicación y cronograma.',
+        expectedDuration: 'Duración Esperada',
+        meetingFrequency: 'Frecuencia de Reuniones',
+        communicationPreference: 'Preferencia de Comunicación',
+        commitmentDescription: 'Explica tu compromiso y experiencia previa.',
+        timeCommitment: 'Compromiso de Tiempo',
+        timeCommitmentPlaceholder: 'Describe cuánto tiempo puedes dedicar a la mentoría por semana...',
+        previousExperience: 'Experiencia Previa',
+        previousExperiencePlaceholder: 'Describe cualquier experiencia previa con mentoría o desarrollo profesional...',
+        expectationsDescription: 'Define qué esperas de esta relación de mentoría.',
+        expectations: 'Expectativas',
+        expectationsPlaceholder: 'Describe qué esperas de tu mentor y cómo te gustaría que se desarrolle la relación...',
+        summary: 'Resumen',
+        goals: 'Objetivos',
+        duration: 'Duración',
+        frequency: 'Frecuencia',
+        communication: 'Comunicación',
+        previous: 'Anterior',
+        next: 'Siguiente',
+        submitRequest: 'Enviar Solicitud',
+        message: 'Mensaje',
+        mentee: 'Mentee',
+        mentor: 'Mentor',
+        preferences: 'Preferencias',
+        response: 'Respuesta',
+        submitted: 'Enviado',
+        accepted: 'Aceptado',
+        rejected: 'Rechazado',
+        theirMessage: 'Su Mensaje',
+        theirGoals: 'Sus Objetivos',
+        yourResponse: 'Tu Respuesta',
+        acceptRequest: 'Aceptar Solicitud',
+        rejectRequest: 'Rechazar Solicitud',
+        acceptanceMessage: 'Mensaje de Aceptación',
+        rejectionMessage: 'Mensaje de Rechazo',
+        acceptancePlaceholder: 'Escribe un mensaje de bienvenida y próximos pasos...',
+        rejectionPlaceholder: 'Explica por qué no puedes aceptar esta solicitud en este momento...',
+        confirmAccept: 'Confirmar Aceptación',
+        confirmReject: 'Confirmar Rechazo',
+        yearsExperience: 'años de experiencia',
+        validation: {
+          messageMinLength: 'El mensaje debe tener al menos 50 caracteres',
+          goalsRequired: 'Debes especificar al menos un objetivo',
+          durationRequired: 'La duración esperada es requerida',
+          timeCommitmentRequired: 'El compromiso de tiempo es requerido',
+          expectationsRequired: 'Las expectativas son requeridas',
+        },
+        status: {
+          pending: 'Pendiente',
+          accepted: 'Aceptado',
+          rejected: 'Rechazado',
+        },
+      },
+      sessions: {
+        title: 'Sesiones de Mentoría',
+        description: 'Programa y gestiona tus sesiones de mentoría.',
+        loading: 'Cargando sesiones...',
+        errorLoading: 'Error al cargar las sesiones',
+        errorSaving: 'Error al guardar la sesión',
+        createSession: 'Crear Sesión',
+        editSession: 'Editar Sesión',
+        createSuccess: 'Sesión creada exitosamente',
+        updateSuccess: 'Sesión actualizada exitosamente',
+        scheduleNew: 'Programar Nueva',
+        allSessions: 'Todas las Sesiones',
+        upcoming: 'Próximas',
+        completed: 'Completadas',
+        cancelled: 'Canceladas',
+        sortByDate: 'Ordenar por Fecha',
+        sortByMatch: 'Ordenar por Coincidencia',
+        sortByStatus: 'Ordenar por Estado',
+        showing: 'Mostrando',
+        sessions: 'sesiones',
+        noSessions: 'Sin Sesiones',
+        noSessionsDescription: 'No tienes sesiones programadas. Programa tu primera sesión.',
+        scheduleFirst: 'Programar Primera Sesión',
+        join: 'Unirse',
+        edit: 'Editar',
+        moreItems: 'elementos más',
+        more: 'más',
+        homework: 'Tarea',
+        resources: 'Recursos',
+        basicInfo: 'Información Básica',
+        sessionTitle: 'Título',
+        titlePlaceholder: 'Título de la sesión',
+        sessionDescription: 'Descripción',
+        descriptionPlaceholder: 'Describe el propósito y contenido de esta sesión...',
+        dateTime: 'Fecha y Hora',
+        duration: 'Duración',
+        sessionType: 'Tipo de Sesión',
+        meetingType: 'Tipo de Reunión',
+        meetingUrl: 'URL de la Reunión',
+        meetingUrlHelp: 'Enlace de Zoom, Google Meet, etc.',
+        location: 'Ubicación',
+        locationPlaceholder: 'Dirección o lugar de encuentro',
+        agenda: 'Agenda',
+        addAgendaItem: 'Agregar elemento a la agenda',
+        resourceTitle: 'Título del Recurso',
+        resourceUrl: 'URL del Recurso',
+        notes: 'Notas',
+        notesPlaceholder: 'Notas adicionales para la sesión...',
+        unknownUser: 'Usuario Desconocido',
+        status: {
+          scheduled: 'Programada',
+          completed: 'Completada',
+          cancelled: 'Cancelada',
+          'no-show': 'No Asistió',
+        },
+        validation: {
+          titleRequired: 'El título es requerido',
+          dateRequired: 'La fecha es requerida',
+          dateInFuture: 'La fecha debe ser en el futuro',
+          durationMinimum: 'La duración mínima es 15 minutos',
+          urlRequired: 'La URL de la reunión es requerida para videollamadas',
+          locationRequired: 'La ubicación es requerida para reuniones presenciales',
+        },
+      },
+      status: {
+        pending: 'Pendiente',
+        accepted: 'Aceptado',
+        rejected: 'Rechazado',
+        active: 'Activo',
+        completed: 'Completado',
+        paused: 'Pausado',
+      },
+      frequency: {
+        weekly: 'Semanal',
+        biweekly: 'Quincenal',
+        monthly: 'Mensual',
+      },
+      communication: {
+        video: 'Videollamada',
+        voice: 'Llamada de Voz',
+        chat: 'Chat/Texto',
+        'in-person': 'Presencial',
+      },
+      sessionType: {
+        video: 'Videollamada',
+        voice: 'Llamada de Voz',
+        chat: 'Chat',
+        'in-person': 'Presencial',
+      },
+      level: {
+        beginner: 'Principiante',
+        intermediate: 'Intermedio',
+        advanced: 'Avanzado',
+      },
+      errors: {
+        loadProfile: 'Error al cargar el perfil',
+        saveProfile: 'Error al guardar el perfil',
+      },
+      validation: {
+        displayNameRequired: 'El nombre a mostrar es requerido',
+        bioMinLength: 'La biografía debe tener al menos 50 caracteres',
+        expertiseRequired: 'Debes seleccionar al menos un área de especialización',
+        positionRequired: 'La posición actual es requerida',
+        companyRequired: 'La empresa actual es requerida',
+        experienceMinimum: 'Se requiere al menos 1 año de experiencia',
+        hoursMinimum: 'Se requiere al menos 1 hora por semana',
+        daysRequired: 'Debes seleccionar al menos un día preferido',
+        styleRequired: 'Debes seleccionar al menos un estilo de mentoría',
+      },
+    },
+    forum: {
+      title: 'Foro de Discusión',
+      description: 'Espacio para compartir conocimientos, resolver dudas y conectar con la comunidad SECiD',
+      categories: 'Categorías',
+      topics: 'Temas',
+      posts: 'Publicaciones',
+      members: 'Miembros',
+      latestActivity: 'Última Actividad',
+      createTopic: 'Crear Tema',
+      reply: 'Responder',
+      search: 'Buscar',
+      searchPlaceholder: 'Buscar en el foro...',
+      searchResults: 'Resultados de búsqueda',
+      noResults: 'Sin resultados',
+      noResultsDescription: 'No se encontraron resultados para tu búsqueda. Intenta con términos diferentes.',
+      filters: 'Filtros',
+      sortBy: 'Ordenar por',
+      sortByDate: 'Fecha',
+      sortByVotes: 'Votos',
+      sortByReplies: 'Respuestas',
+      sortByRelevance: 'Relevancia',
+      filterByCategory: 'Filtrar por categoría',
+      filterByTags: 'Filtrar por etiquetas',
+      filterByAuthor: 'Filtrar por autor',
+      filterByDate: 'Filtrar por fecha',
+      clearFilters: 'Limpiar filtros',
+      categoryList: {
+        careerAdvice: {
+          name: 'Consejos Profesionales',
+          description: 'Comparte y recibe consejos sobre desarrollo profesional, entrevistas y crecimiento en carrera'
+        },
+        technicalDiscussion: {
+          name: 'Discusión Técnica',
+          description: 'Debates sobre tecnologías, metodologías y mejores prácticas en ciencia de datos'
+        },
+        industryNews: {
+          name: 'Noticias de la Industria',
+          description: 'Últimas noticias y tendencias en el mundo de la ciencia de datos y analytics'
+        },
+        jobOpportunities: {
+          name: 'Oportunidades Laborales',
+          description: 'Comparte ofertas de trabajo y oportunidades profesionales'
+        },
+        networking: {
+          name: 'Networking',
+          description: 'Conecta con otros profesionales y expande tu red de contactos'
+        },
+        generalDiscussion: {
+          name: 'Discusión General',
+          description: 'Conversaciones generales sobre temas relacionados con la comunidad'
+        }
+      },
+      topic: {
+        title: 'Título',
+        content: 'Contenido',
+        tags: 'Etiquetas',
+        category: 'Categoría',
+        author: 'Autor',
+        created: 'Creado',
+        lastActivity: 'Última actividad',
+        views: 'Vistas',
+        replies: 'Respuestas',
+        votes: 'Votos',
+        pinned: 'Fijado',
+        locked: 'Bloqueado',
+        solved: 'Resuelto',
+        markSolved: 'Marcar como resuelto',
+        pin: 'Fijar',
+        unpin: 'Desfijar',
+        lock: 'Bloquear',
+        unlock: 'Desbloquear',
+        edit: 'Editar',
+        delete: 'Eliminar',
+        report: 'Reportar',
+        share: 'Compartir',
+        subscribe: 'Suscribirse',
+        unsubscribe: 'Desuscribirse',
+        newTopic: 'Nuevo Tema',
+        createTopic: 'Crear Tema',
+        topicTitle: 'Título del tema',
+        topicContent: 'Contenido del tema',
+        selectCategory: 'Seleccionar categoría',
+        addTags: 'Agregar etiquetas',
+        tagPlaceholder: 'Agregar etiqueta...',
+        preview: 'Vista previa',
+        publish: 'Publicar',
+        draft: 'Borrador',
+        guidelines: 'Pautas',
+        formatting: 'Formato',
+        attachments: 'Archivos adjuntos',
+        uploadFile: 'Subir archivo',
+        maxFileSize: 'Tamaño máximo: 10MB',
+        allowedTypes: 'Tipos permitidos: PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, PNG, JPG, GIF'
+      },
+      post: {
+        reply: 'Responder',
+        quote: 'Citar',
+        edit: 'Editar',
+        delete: 'Eliminar',
+        report: 'Reportar',
+        markSolution: 'Marcar como solución',
+        unmarkSolution: 'Desmarcar solución',
+        reactions: 'Reacciones',
+        addReaction: 'Agregar reacción',
+        mentions: 'Menciones',
+        attachments: 'Archivos adjuntos',
+        editHistory: 'Historial de ediciones',
+        lastEdited: 'Última edición',
+        editedBy: 'Editado por',
+        originalPost: 'Publicación original',
+        showMore: 'Mostrar más',
+        showLess: 'Mostrar menos',
+        loadMore: 'Cargar más',
+        noReplies: 'Sin respuestas aún',
+        writeReply: 'Escribir respuesta',
+        replyPlaceholder: 'Escribe tu respuesta...',
+        postReply: 'Publicar respuesta',
+        formatHelp: 'Ayuda de formato',
+        codeBlock: 'Bloque de código',
+        bold: 'Negrita',
+        italic: 'Cursiva',
+        link: 'Enlace',
+        image: 'Imagen',
+        blockquote: 'Cita',
+        list: 'Lista'
+      },
+      user: {
+        profile: 'Perfil',
+        reputation: 'Reputación',
+        points: 'Puntos',
+        level: 'Nivel',
+        badges: 'Insignias',
+        achievements: 'Logros',
+        joinDate: 'Fecha de ingreso',
+        lastSeen: 'Última vez visto',
+        totalPosts: 'Total de publicaciones',
+        totalTopics: 'Total de temas',
+        solutionsProvided: 'Soluciones proporcionadas',
+        helpfulVotes: 'Votos útiles',
+        moderator: 'Moderador',
+        admin: 'Administrador',
+        online: 'En línea',
+        offline: 'Desconectado',
+        banned: 'Baneado',
+        suspended: 'Suspendido'
+      },
+      moderation: {
+        moderate: 'Moderar',
+        pin: 'Fijar',
+        unpin: 'Desfijar',
+        lock: 'Bloquear',
+        unlock: 'Desbloquear',
+        delete: 'Eliminar',
+        edit: 'Editar',
+        move: 'Mover',
+        merge: 'Fusionar',
+        ban: 'Banear',
+        warn: 'Advertir',
+        reports: 'Reportes',
+        reportReason: 'Razón del reporte',
+        moderatorNotes: 'Notas del moderador',
+        takeAction: 'Tomar acción',
+        dismiss: 'Descartar',
+        resolve: 'Resolver',
+        pending: 'Pendiente',
+        resolved: 'Resuelto'
+      },
+      notifications: {
+        title: 'Notificaciones',
+        center: 'Centro de Notificaciones',
+        recent: 'Recientes',
+        history: 'Historial',
+        empty: 'No tienes notificaciones',
+        historyEmpty: 'No hay historial de notificaciones',
+        historyDescription: 'Aquí puedes ver todas tus notificaciones anteriores.',
+        toggle: 'Alternar notificaciones',
+        markAsRead: 'Marcar como leído',
+        markAllRead: 'Marcar todas como leídas',
+        deleteSelected: 'Eliminar seleccionadas',
+        clearSelection: 'Limpiar selección',
+        selectedCount: '{{count}} seleccionadas',
+        selectAll: 'Seleccionar todo',
+        viewAll: 'Ver todas las notificaciones',
+        loadMore: 'Cargar más',
+        delete: 'Eliminar',
+        expires: 'Expira en',
+        sentVia: 'Enviado por',
+        moreActions: 'Más acciones',
+        category: {
+          jobs: 'Empleos',
+          events: 'Eventos',
+          messages: 'Mensajes',
+          connections: 'Conexiones',
+          mentorship: 'Mentoría',
+          forum: 'Foro',
+          achievements: 'Logros',
+          system: 'Sistema',
+          security: 'Seguridad',
+          billing: 'Facturación'
+        },
+        type: {
+          job_match: 'Coincidencia de empleo',
+          job_application: 'Aplicación de empleo',
+          job_expiring: 'Empleo por expirar',
+          event_reminder: 'Recordatorio de evento',
+          event_update: 'Actualización de evento',
+          event_cancelled: 'Evento cancelado',
+          message_received: 'Mensaje recibido',
+          message_reply: 'Respuesta a mensaje',
+          connection_request: 'Solicitud de conexión',
+          connection_accepted: 'Conexión aceptada',
+          mentorship_request: 'Solicitud de mentoría',
+          mentorship_accepted: 'Mentoría aceptada',
+          mentorship_session: 'Sesión de mentoría',
+          forum_mention: 'Mención en el foro',
+          forum_reply: 'Respuesta en el foro',
+          forum_topic_update: 'Actualización de tema',
+          badge_earned: 'Insignia obtenida',
+          achievement_unlocked: 'Logro desbloqueado',
+          profile_view: 'Perfil visto',
+          newsletter: 'Boletín',
+          system_announcement: 'Anuncio del sistema',
+          maintenance: 'Mantenimiento',
+          security_alert: 'Alerta de seguridad',
+          payment_reminder: 'Recordatorio de pago',
+          membership_expiring: 'Membresía por expirar',
+          data_export_ready: 'Exportación de datos lista'
+        },
+        typeDesc: {
+          job_match: 'Recibe notificaciones cuando un empleo coincida con tu perfil',
+          job_application: 'Actualizaciones sobre tus aplicaciones de empleo',
+          job_expiring: 'Avisos cuando los empleos estén por expirar',
+          event_reminder: 'Recordatorios de eventos próximos',
+          event_update: 'Cambios en eventos a los que te has registrado',
+          event_cancelled: 'Notificaciones de eventos cancelados',
+          message_received: 'Nuevos mensajes privados',
+          message_reply: 'Respuestas a tus mensajes',
+          connection_request: 'Nuevas solicitudes de conexión',
+          connection_accepted: 'Cuando alguien acepta tu solicitud',
+          mentorship_request: 'Solicitudes de mentoría',
+          mentorship_accepted: 'Cuando se acepta tu solicitud de mentoría',
+          mentorship_session: 'Recordatorios de sesiones de mentoría',
+          forum_mention: 'Cuando te mencionan en el foro',
+          forum_reply: 'Respuestas a tus publicaciones',
+          forum_topic_update: 'Actualizaciones en temas que sigues',
+          badge_earned: 'Nuevas insignias obtenidas',
+          achievement_unlocked: 'Logros desbloqueados',
+          profile_view: 'Cuando alguien ve tu perfil',
+          newsletter: 'Boletín informativo',
+          system_announcement: 'Anuncios importantes del sistema',
+          maintenance: 'Notificaciones de mantenimiento',
+          security_alert: 'Alertas de seguridad importantes',
+          payment_reminder: 'Recordatorios de pagos pendientes',
+          membership_expiring: 'Avisos de membresía por vencer',
+          data_export_ready: 'Cuando tu exportación de datos esté lista'
+        },
+        delivery: {
+          app: 'Aplicación',
+          email: 'Correo electrónico',
+          push: 'Push',
+          sms: 'SMS'
+        },
+        frequency: {
+          immediate: 'Inmediato',
+          hourly: 'Cada hora',
+          daily: 'Diario',
+          weekly: 'Semanal',
+          monthly: 'Mensual',
+          never: 'Nunca'
+        },
+        filter: {
+          all: 'Todas',
+          unread: 'No leídas',
+          urgent: 'Urgentes'
+        },
+        sort: {
+          date: 'Fecha',
+          priority: 'Prioridad',
+          category: 'Categoría'
+        },
+        settings: {
+          title: 'Configuración de Notificaciones',
+          description: 'Gestiona cómo y cuándo recibes notificaciones',
+          categories: 'Categorías',
+          global: 'Configuración Global',
+          advanced: 'Configuración Avanzada',
+          sound: 'Sonido',
+          soundDesc: 'Reproduce sonido para nuevas notificaciones',
+          doNotDisturb: 'No Molestar',
+          doNotDisturbDesc: 'Silencia todas las notificaciones temporalmente',
+          groupSimilar: 'Agrupar Similares',
+          groupSimilarDesc: 'Agrupa notificaciones del mismo tipo',
+          maxDaily: 'Máximo Diario',
+          maxDailyDesc: 'Número máximo de notificaciones por día',
+          emailDigest: 'Resumen por Correo',
+          digestEnabled: 'Habilitar Resumen',
+          digestEnabledDesc: 'Recibe un resumen de notificaciones por correo',
+          digestFrequency: 'Frecuencia del Resumen',
+          digestTime: 'Hora del Resumen',
+          pushNotifications: 'Notificaciones Push',
+          browserPush: 'Push del Navegador',
+          browserPushDesc: 'Recibe notificaciones push en tu navegador',
+          enablePush: 'Habilitar Push',
+          pushDenied: 'Las notificaciones push están bloqueadas. Habilítalas en la configuración de tu navegador.',
+          deliveryMethods: 'Métodos de Entrega',
+          frequency: 'Frecuencia',
+          errorLoading: 'Error al cargar la configuración',
+          errorSaving: 'Error al guardar la configuración',
+          errorPush: 'Error al habilitar notificaciones push',
+          saved: 'Configuración guardada exitosamente'
+        }
+      },
+      badges: {
+        welcomeNewcomer: {
+          name: 'Bienvenido',
+          description: 'Te uniste a la comunidad SECiD'
+        },
+        firstPost: {
+          name: 'Primera Publicación',
+          description: 'Creaste tu primera publicación en el foro'
+        },
+        helpfulMember: {
+          name: 'Miembro Útil',
+          description: 'Recibiste 10 votos positivos'
+        },
+        solutionProvider: {
+          name: 'Proveedor de Soluciones',
+          description: 'Proporcionaste 5 soluciones marcadas como correctas'
+        },
+        topContributor: {
+          name: 'Contribuidor Destacado',
+          description: 'Creaste 50 publicaciones de calidad'
+        },
+        veteranMember: {
+          name: 'Miembro Veterano',
+          description: 'Llevas más de un año en la comunidad'
+        }
+      },
+      errors: {
+        loadingFailed: 'Error al cargar el contenido',
+        postingFailed: 'Error al publicar',
+        votingFailed: 'Error al votar',
+        unauthorized: 'No tienes permisos para realizar esta acción',
+        notFound: 'Contenido no encontrado',
+        validation: {
+          titleRequired: 'El título es obligatorio',
+          contentRequired: 'El contenido es obligatorio',
+          categoryRequired: 'La categoría es obligatoria',
+          titleTooLong: 'El título es demasiado largo',
+          contentTooLong: 'El contenido es demasiado largo',
+          invalidTags: 'Etiquetas inválidas'
+        }
+      },
+      success: {
+        topicCreated: 'Tema creado exitosamente',
+        postCreated: 'Publicación creada exitosamente',
+        voteSubmitted: 'Voto registrado',
+        reportSubmitted: 'Reporte enviado',
+        subscribed: 'Te has suscrito al tema',
+        unsubscribed: 'Te has desuscrito del tema'
+      }
+    },
+  },
+  admin: {
+    navigation: {
+      dashboard: 'Panel Principal',
+      users: 'Usuarios',
+      moderation: 'Moderación',
+      analytics: 'Analytics',
+      settings: 'Configuración',
+      backups: 'Respaldos',
+      support: 'Soporte',
+      documentation: 'Documentación',
+    },
+    dashboard: {
+      title: 'Panel de Administración',
+      welcome: 'Bienvenido de vuelta',
+      overview: 'Resumen General',
+      stats: {
+        totalUsers: 'Usuarios Totales',
+        newUsersThisMonth: 'Nuevos Usuarios Este Mes',
+        activeJobs: 'Empleos Activos',
+        pendingJobs: 'Empleos Pendientes',
+        upcomingEvents: 'Próximos Eventos',
+        monthlyRevenue: 'Ingresos Mensuales',
+        systemHealth: 'Estado del Sistema',
+        pendingReports: 'Reportes Pendientes',
+      },
+      quickActions: {
+        title: 'Acciones Rápidas',
+        approveJobs: 'Aprobar Empleos',
+        reviewReports: 'Revisar Reportes',
+        viewAnalytics: 'Ver Analytics',
+        systemLogs: 'Logs del Sistema',
+        pending: 'pendientes',
+        detailed: 'Reportes detallados',
+        recent: 'Actividad reciente',
+      },
+      recentActivity: {
+        title: 'Actividad Reciente',
+        noActivity: 'No hay actividad reciente',
+        userRegistration: 'Registro de usuario',
+        jobPosted: 'Empleo publicado',
+        eventCreated: 'Evento creado',
+        forumReport: 'Reporte del foro',
+        paymentReceived: 'Pago recibido',
+      },
+      systemHealth: {
+        good: 'Bueno',
+        warning: 'Advertencia',
+        critical: 'Crítico',
+      },
+    },
+    users: {
+      title: 'Gestión de Usuarios',
+      subtitle: 'Administrar y moderar usuarios de la plataforma',
+      totalUsers: 'Total de usuarios',
+      newUsers: 'Usuarios nuevos',
+      activeUsers: 'Usuarios activos',
+      verifiedUsers: 'Verificados',
+      filters: {
+        search: 'Buscar',
+        role: 'Rol',
+        membership: 'Membresía',
+        verified: 'Verificado',
+        status: 'Estado',
+        all: 'Todos',
+        member: 'Miembro',
+        moderator: 'Moderador',
+        administrator: 'Administrador',
+        company: 'Empresa',
+        free: 'Gratuita',
+        premium: 'Premium',
+        corporate: 'Corporativa',
+        active: 'Activos',
+        inactive: 'Inactivos',
+      },
+      table: {
+        user: 'Usuario',
+        role: 'Rol',
+        status: 'Estado',
+        membership: 'Membresía',
+        joined: 'Registro',
+        actions: 'Acciones',
+        verified: 'Verificado',
+        unverified: 'No verificado',
+      },
+      actions: {
+        view: 'Ver detalles',
+        edit: 'Editar',
+        verify: 'Verificar',
+        unverify: 'Quitar verificación',
+        activate: 'Activar',
+        deactivate: 'Desactivar',
+        delete: 'Eliminar',
+        suspend: 'Suspender',
+        makeAdmin: 'Hacer Administrador',
+        makeModerator: 'Hacer Moderador',
+        makeMember: 'Hacer Miembro',
+        export: 'Exportar',
+        newUser: 'Nuevo Usuario',
+        bulkActions: 'Acciones masivas',
+        selectAll: 'Seleccionar todo',
+        selected: 'seleccionados',
+        apply: 'Aplicar',
+      },
+      bulkActions: {
+        verify: 'Verificar',
+        unverify: 'No verificar',
+        activate: 'Activar',
+        deactivate: 'Desactivar',
+        delete: 'Eliminar',
+        changeRole: 'Cambiar rol',
+      },
+      messages: {
+        userUpdated: 'Usuario actualizado exitosamente',
+        userDeleted: 'Usuario eliminado',
+        usersExported: 'Usuarios exportados',
+        bulkActionCompleted: 'Acción masiva completada',
+        confirmDelete: '¿Estás seguro de eliminar este usuario?',
+        unauthorized: 'Se requieren privilegios de administrador para gestionar usuarios.',
+      },
+    },
+    moderation: {
+      title: 'Moderación de Contenido',
+      subtitle: 'Revisar y aprobar contenido de la plataforma',
+      queue: {
+        title: 'Cola de Moderación',
+        pending: 'Pendientes',
+        approved: 'Aprobados Hoy',
+        rejected: 'Rechazados Hoy',
+        flagged: 'Marcados',
+        approvedToday: 'Aprobados Hoy',
+        rejectedToday: 'Rechazados Hoy',
+        pendingReports: 'Reportes Pendientes',
+        flaggedUsers: 'Usuarios Marcados',
+        averageReviewTime: 'Tiempo Promedio',
+      },
+      content: {
+        type: 'Tipo',
+        priority: 'Prioridad',
+        author: 'Autor',
+        submitted: 'Enviado',
+        actions: 'Acciones',
+        approve: 'Aprobar',
+        reject: 'Rechazar',
+        flag: 'Marcar',
+        urgent: 'urgente',
+        high: 'alta',
+        medium: 'media',
+        low: 'baja',
+      },
+      reports: {
+        title: 'Reportes',
+        reason: 'Razón',
+        description: 'Descripción',
+        reportedBy: 'Reportado por',
+        reportedItem: 'Elemento reportado',
+        resolve: 'Resolver',
+        dismiss: 'Descartar',
+        noReports: '¡Sin reportes!',
+      },
+      filters: {
+        type: 'Tipo',
+        status: 'Estado',
+        priority: 'Prioridad',
+        search: 'Buscar',
+        jobs: 'Empleos',
+        events: 'Eventos',
+        forumPosts: 'Posts del Foro',
+        replies: 'Respuestas',
+      },
+      messages: {
+        contentApproved: 'Contenido aprobado',
+        contentRejected: 'Contenido rechazado',
+        contentFlagged: 'Contenido marcado',
+        reportResolved: 'Reporte resuelto',
+        reportDismissed: 'Reporte descartado',
+        noContent: 'No hay elementos pendientes de moderación.',
+        allCaughtUp: '¡Todo al día!',
+        rejectionReason: 'Razón del rechazo:',
+        flagReason: 'Razón de la marca:',
+        actionDescription: 'Descripción de la acción tomada:',
+      },
+    },
+    adminAnalytics: {
+      title: 'Analytics',
+      subtitle: 'Métricas y reportes de la plataforma',
+      timeRanges: {
+        last7Days: 'Últimos 7 días',
+        last30Days: 'Últimos 30 días',
+        last90Days: 'Últimos 90 días',
+        lastYear: 'Último año',
+      },
+      metrics: {
+        dailyActiveUsers: 'Usuarios Activos Diarios',
+        weeklyActiveUsers: 'Usuarios Activos Semanales',
+        monthlyActiveUsers: 'Usuarios Activos Mensuales',
+        pageViews: 'Vistas de Página',
+        bounceRate: 'Tasa de Rebote',
+        sessionTime: 'Tiempo Promedio de Sesión',
+        userGrowth: 'Crecimiento de Usuarios',
+        jobMetrics: 'Métricas de Empleos',
+        forumActivity: 'Actividad del Foro',
+        membershipDistribution: 'Distribución de Membresías',
+        topSkills: 'Habilidades Más Populares',
+        topCompanies: 'Empresas Principales',
+        geographicDistribution: 'Distribución Geográfica',
+        engagement: 'Métricas de Engagement',
+        revenue: 'Métricas de Ingresos',
+      },
+      charts: {
+        newUsers: 'Nuevos Usuarios',
+        activeUsers: 'Usuarios Activos',
+        posted: 'Publicados',
+        applied: 'Aplicaciones',
+        filled: 'Llenados',
+        posts: 'Posts',
+        replies: 'Respuestas',
+        views: 'Vistas',
+        users: 'usuarios',
+        jobs: 'empleos',
+        total: 'total',
+      },
+      export: 'Exportar',
+      refresh: 'Actualizar',
+      loading: 'Cargando analytics...',
+    },
+    settings: {
+      title: 'Configuración del Sistema',
+      subtitle: 'Administrar la configuración global de la plataforma',
+      tabs: {
+        general: 'General',
+        email: 'Email',
+        moderation: 'Moderación',
+        payments: 'Pagos',
+        analytics: 'Analytics',
+        security: 'Seguridad',
+        notifications: 'Notificaciones',
+        backups: 'Respaldos',
+        features: 'Características',
+      },
+      general: {
+        siteName: 'Nombre del Sitio',
+        siteDescription: 'Descripción del Sitio',
+        supportEmail: 'Email de Soporte',
+        maxUsers: 'Límite Máximo de Usuarios',
+        defaultLanguage: 'Idioma por Defecto',
+        features: 'Características de la Plataforma',
+        maintenanceMode: 'Modo de Mantenimiento',
+        registrationEnabled: 'Registro Habilitado',
+        jobPostingEnabled: 'Publicación de Empleos',
+        eventCreationEnabled: 'Creación de Eventos',
+        forumEnabled: 'Foro Habilitado',
+      },
+      email: {
+        smtpHost: 'Servidor SMTP',
+        smtpPort: 'Puerto SMTP',
+        smtpUser: 'Usuario SMTP',
+        smtpPassword: 'Contraseña SMTP',
+        fromEmail: 'Email Remitente',
+        fromName: 'Nombre Remitente',
+        emailEnabled: 'Email Habilitado',
+        testEmail: 'Probar Email',
+      },
+      payments: {
+        premiumPrice: 'Precio Premium',
+        corporatePrice: 'Precio Corporativo',
+        eventPrice: 'Precio Base de Eventos',
+        paymentEnabled: 'Pagos Habilitados',
+        stripeKey: 'Clave de Stripe',
+        paypalId: 'ID de PayPal',
+      },
+      security: {
+        twoFactorRequired: 'Autenticación de Dos Factores Requerida',
+        passwordLength: 'Longitud Mínima de Contraseña',
+        sessionTimeout: 'Tiempo de Sesión (minutos)',
+        maxLoginAttempts: 'Máximo Intentos de Login',
+        allowedDomains: 'Dominios Permitidos',
+        blockedIPs: 'IPs Bloqueadas',
+      },
+      backups: {
+        title: 'Gestión de Respaldos',
+        createBackup: 'Crear Respaldo',
+        backupHistory: 'Historial de Respaldos',
+        download: 'Descargar',
+        delete: 'Eliminar',
+        automatic: 'automático',
+        manual: 'manual',
+        completed: 'completado',
+        inProgress: 'en progreso',
+        failed: 'fallido',
+      },
+      messages: {
+        settingsSaved: 'Configuración guardada exitosamente',
+        testEmailSent: 'Email de prueba enviado',
+        backupCreated: 'Respaldo iniciado',
+        invalidSettings: 'Configuración inválida',
+        unauthorized: 'Se requieren privilegios de administrador para acceder a la configuración.',
+      },
+      save: 'Guardar',
+      saving: 'Guardando...',
+    },
+    permissions: {
+      title: 'Permisos',
+      admin: 'Administrador',
+      moderator: 'Moderador',
+      member: 'Miembro',
+      required: 'Se requieren privilegios de',
+      insufficient: 'Permisos insuficientes',
+      contact: 'Contactar Soporte',
+    },
+    notifications: {
+      title: 'Notificaciones',
+      markAsRead: 'Marcar como leído',
+      markAllRead: 'Marcar todas como leídas',
+      noNotifications: 'No hay notificaciones',
+      systemAlert: 'Alerta del sistema',
+      userReport: 'Reporte de usuario',
+      contentFlag: 'Contenido marcado',
+      paymentIssue: 'Problema de pago',
+    },
+    errors: {
+      loadingFailed: 'Error al cargar datos',
+      savingFailed: 'Error al guardar',
+      deleteFailed: 'Error al eliminar',
+      unauthorized: 'Acceso no autorizado',
+      notFound: 'No encontrado',
+      serverError: 'Error del servidor',
+      networkError: 'Error de conexión',
+      validationError: 'Error de validación',
+    },
+    success: {
+      saved: 'Guardado exitosamente',
+      deleted: 'Eliminado exitosamente',
+      updated: 'Actualizado exitosamente',
+      created: 'Creado exitosamente',
+      sent: 'Enviado exitosamente',
+      exported: 'Exportado exitosamente',
+    },
+    memberDirectory: {
+      title: 'Directorio de Miembros',
+      subtitle: 'Conecta con los mejores profesionales de ciencia de datos en México',
+      searchPlaceholder: 'Buscar por nombre, empresa o habilidad...',
+      viewModes: {
+        grid: 'Cuadrícula',
+        list: 'Lista',
+        compact: 'Compacto',
+      },
+      filters: {
+        title: 'Filtros Avanzados',
+        skills: 'Habilidades',
+        companies: 'Empresas',
+        locations: 'Ubicaciones',
+        experienceLevel: 'Nivel de Experiencia',
+        availability: 'Disponibilidad',
+        specialFilters: 'Filtros Especiales',
+        onlineOnly: 'Solo en línea',
+        hasPortfolio: 'Con portafolio',
+        premiumMembers: 'Miembros Premium',
+        memberSince: 'Miembro desde',
+        clearAll: 'Limpiar todo',
+        clearFilters: 'Limpiar Filtros',
+      },
+      experienceLevels: {
+        junior: 'Junior (0-2 años)',
+        mid: 'Semi-Senior (3-5 años)',
+        senior: 'Senior (6-10 años)',
+        lead: 'Lead (10+ años)',
+        executive: 'Ejecutivo',
+      },
+      availability: {
+        mentoring: 'Mentoría disponible',
+        opportunities: 'Abierto a oportunidades',
+        networking: 'Networking activo',
+      },
+      sorting: {
+        sortBy: 'Ordenar por',
+        relevance: 'Relevancia',
+        name: 'Nombre',
+        joinDate: 'Fecha de ingreso',
+        activity: 'Actividad',
+        reputation: 'Reputación',
+        ascending: 'Asc',
+        descending: 'Desc',
+      },
+      stats: {
+        totalMembers: 'Total Miembros',
+        onlineMembers: 'En Línea',
+        newThisMonth: 'Nuevos Este Mes',
+        topSkill: 'Skill Principal',
+      },
+      results: {
+        showing: 'Mostrando',
+        of: 'de',
+        members: 'miembros',
+        filtered: 'Filtrado',
+        noMembers: 'No se encontraron miembros',
+        noMembersFiltered: 'Intenta ajustar los filtros de búsqueda',
+        adjustFilters: 'No hay miembros disponibles en este momento',
+      },
+      memberCard: {
+        connect: 'Conectar',
+        connected: 'Conectado',
+        requestSent: 'Solicitud enviada',
+        message: 'Mensaje',
+        viewProfile: 'Ver perfil',
+        follow: 'Seguir',
+        following: 'Siguiendo',
+        unfollow: 'Dejar de seguir',
+        downloadContact: 'Descargar contacto',
+        shareProfile: 'Compartir perfil',
+        connections: 'Conexiones',
+        views: 'Vistas',
+        reputation: 'Reputación',
+        posts: 'Publicaciones',
+        online: 'En línea',
+        lastSeen: 'Hace',
+        yearsExperience: 'años de experiencia',
+      },
+      memberProfile: {
+        editProfile: 'Editar perfil',
+        memberSince: 'Miembro desde',
+        lastSeen: 'Último acceso',
+        activeHours: 'Activo hace',
+        activeDays: 'Activo hace',
+        profileViews: 'Vistas del perfil',
+        about: 'Acerca de',
+        experience: 'Experiencia',
+        skills: 'Habilidades',
+        workExperience: 'Experiencia Laboral',
+        links: 'Enlaces',
+        portfolio: 'Portafolio',
+        projects: 'Proyectos',
+        achievements: 'Logros',
+        certifications: 'Certificaciones',
+        activity: 'Actividad',
+        connections: 'Conexiones',
+        noPortfolio: 'Sin portafolio',
+        noPortfolioDescription: 'Este miembro aún no ha agregado proyectos a su portafolio',
+        recentActivity: 'Actividad reciente',
+        recentActivityDescription: 'La actividad del miembro se mostrará aquí',
+        viewDemo: 'Ver',
+        liveDemo: 'Ver en vivo',
+        github: 'GitHub',
+        linkedin: 'LinkedIn',
+        website: 'Sitio web',
+        verified: 'Verificado',
+        present: 'Presente',
+      },
+      networking: {
+        title: 'Hub de Networking',
+        subtitle: 'Conecta con otros profesionales de datos',
+        refresh: 'Actualizar',
+        connections: 'Conexiones',
+        requests: 'Solicitudes',
+        messages: 'Mensajes',
+        recommendations: 'Recomendaciones',
+        searchConnections: 'Buscar conexiones...',
+        noConnections: 'Sin conexiones',
+        noConnectionsDescription: 'Comienza conectando con otros miembros',
+        noRequests: 'Sin solicitudes',
+        noRequestsDescription: 'No tienes solicitudes de conexión pendientes',
+        noConversations: 'Sin conversaciones',
+        noRecommendations: 'Sin recomendaciones',
+        noRecommendationsDescription: 'Completa tu perfil para obtener mejores recomendaciones',
+        accept: 'Aceptar',
+        reject: 'Rechazar',
+        sendMessage: 'Enviar mensaje',
+        typeMessage: 'Escribe un mensaje...',
+        selectConversation: 'Selecciona una conversación para comenzar',
+        noMessages: 'Sin mensajes aún',
+        matchReasons: {
+          similarSkills: 'Habilidades similares',
+          sameCompany: 'Misma empresa',
+          sameLocation: 'Misma ubicación',
+          mutualConnections: 'Conexiones mutuas',
+          similarInterests: 'Intereses similares',
+        },
+        compatibility: 'compatible',
+      },
+      privacy: {
+        profileVisibility: 'Visibilidad del perfil',
+        public: 'Público',
+        membersOnly: 'Solo miembros',
+        connectionsOnly: 'Solo conexiones',
+        private: 'Privado',
+        showEmail: 'Mostrar email',
+        showPhone: 'Mostrar teléfono',
+        showLocation: 'Mostrar ubicación',
+        showCompany: 'Mostrar empresa actual',
+        showOnlineStatus: 'Mostrar estado en línea',
+        showLastSeen: 'Mostrar último acceso',
+        allowMessages: 'Permitir mensajes',
+        allowConnectionRequests: 'Permitir solicitudes de conexión',
+        messageSettings: {
+          all: 'Todos',
+          connectionsOnly: 'Solo conexiones',
+          none: 'Ninguno',
+        },
+      },
+      actions: {
+        connecting: 'Conectando...',
+        sendingMessage: 'Enviando mensaje...',
+        loadingProfile: 'Cargando perfil...',
+        updatingProfile: 'Actualizando perfil...',
+        uploadingImage: 'Subiendo imagen...',
+      },
+      errors: {
+        loadMembers: 'Error al cargar miembros',
+        searchError: 'Error en la búsqueda',
+        connectionError: 'Error al conectar',
+        messageError: 'Error al enviar mensaje',
+        profileUpdateError: 'Error al actualizar perfil',
+        imageUploadError: 'Error al subir imagen',
+        tryAgain: 'Intentar de nuevo',
+      },
+    },
+    analytics: {
+      title: 'Panel de Analíticas',
+      loading: 'Cargando datos de analíticas...',
+      error: 'Error al cargar datos',
+      retry: 'Reintentar',
+      refresh: 'Actualizar',
+      exportButton: 'Exportar',
+      autoRefresh: 'Actualización Automática',
+      lastUpdated: 'Última actualización: {{date}}',
+      tabs: {
+        overview: 'Resumen',
+        users: 'Usuarios',
+        content: 'Contenido',
+        engagement: 'Participación',
+        revenue: 'Ingresos',
+        geographic: 'Geográfico',
+        performance: 'Rendimiento',
+        errors: 'Errores',
+        funnels: 'Embudos',
+        search: 'Búsqueda',
+        technology: 'Tecnología'
+      },
+      dateRange: {
+        today: 'Hoy',
+        yesterday: 'Ayer',
+        last7days: 'Últimos 7 días',
+        last30days: 'Últimos 30 días',
+        last90days: 'Últimos 90 días',
+        last12months: 'Últimos 12 meses',
+        custom: 'Personalizado'
+      },
+      realTime: {
+        activeUsers: '{{count}} usuarios activos',
+        currentSessions: '{{count}} sesiones',
+        pageViewsPerMinute: '{{count}} vistas/min'
+      },
+      systemStatus: 'Sistema: {{status}}',
+      metrics: {
+        totalUsers: 'Total de Usuarios',
+        newUsers: 'Nuevos Usuarios',
+        activeUsers: 'Usuarios Activos',
+        returningUsers: 'Usuarios Recurrentes',
+        userRetention: 'Retención de Usuarios',
+        registrationTrend: 'Tendencia de Registro',
+        jobViews: 'Vistas de Empleo',
+        jobApplications: 'Aplicaciones de Empleo',
+        eventRegistrations: 'Registros de Eventos',
+        forumPosts: 'Publicaciones del Foro',
+        mentorshipSessions: 'Sesiones de Mentoría',
+        totalRevenue: 'Ingresos Totales',
+        monthlyRevenue: 'Ingresos Mensuales',
+        conversionRate: 'Tasa de Conversión',
+        pageLoadTime: 'Tiempo de Carga',
+        errorRate: 'Tasa de Error',
+        apiResponseTime: 'Tiempo de Respuesta API'
+      },
+      charts: {
+        userRegistrations: 'Registros de Usuario en el Tiempo',
+        jobApplications: 'Aplicaciones por Categoría',
+        deviceDistribution: 'Distribución de Dispositivos',
+        revenueGrowth: 'Crecimiento de Ingresos',
+        conversionFunnel: 'Embudo de Conversión',
+        performanceMetrics: 'Métricas de Rendimiento',
+        engagementHeatmap: 'Mapa de Calor de Participación',
+        goalProgress: 'Progreso de Objetivos'
+      },
+      export: {
+        pdf: 'Exportar a PDF',
+        csv: 'Exportar a CSV',
+        excel: 'Exportar a Excel',
+        generating: 'Generando reporte...',
+        success: 'Reporte generado exitosamente',
+        error: 'Error al generar reporte'
+      },
+      alerts: {
+        performanceIssue: 'Problema de rendimiento detectado',
+        highErrorRate: 'Tasa de error alta',
+        slowResponse: 'Respuesta lenta detectada',
+        systemDown: 'Sistema caído'
+      }
+    },
+    resources: {
+      library: 'Biblioteca de Recursos',
+      libraryDescription: 'Descubre y comparte materiales de aprendizaje, plantillas, herramientas y conjuntos de datos para acelerar tu viaje en ciencia de datos.',
+      all: 'Todos',
+      popular: 'Populares',
+      recent: 'Recientes',
+      bookmarks: 'Favoritos',
+      upload: 'Subir',
+      categories: {
+        title: 'Categorías',
+        tutorials: 'Tutoriales',
+        templates: 'Plantillas',
+        tools: 'Herramientas',
+        books: 'Libros',
+        courses: 'Cursos',
+        datasets: 'Conjuntos de Datos',
+        research: 'Investigación',
+        documentation: 'Documentación'
+      },
+      fileTypes: 'Tipos de Archivo',
+      accessLevel: 'Nivel de Acceso',
+      accessLevels: {
+        free: 'Gratuito',
+        premium: 'Premium',
+        member: 'Solo Miembros',
+        restricted: 'Restringido'
+      },
+      difficulty: {
+        title: 'Dificultad',
+        beginner: 'Principiante',
+        intermediate: 'Intermedio',
+        advanced: 'Avanzado'
+      },
+      title: 'Título',
+      titlePlaceholder: 'Ingresa un título descriptivo...',
+      description: 'Descripción',
+      descriptionPlaceholder: 'Descripción detallada del recurso...',
+      summary: 'Resumen',
+      summaryPlaceholder: 'Resumen breve (1-2 oraciones)...',
+      tags: 'Etiquetas',
+      addTag: 'Agregar etiqueta',
+      prerequisites: 'Prerrequisitos',
+      addPrerequisite: 'Agregar prerrequisito',
+      language: 'Idioma',
+      bilingual: 'Bilingüe',
+      estimatedTime: 'Tiempo Estimado',
+      type: 'Tipo',
+      category: 'Categoría',
+      download: 'Descargar',
+      downloading: 'Descargando...',
+      downloadError: 'Error al descargar el recurso',
+      preview: 'Vista Previa',
+      viewDetails: 'Ver Detalles',
+      bookmark: 'Favorito',
+      addBookmark: 'Agregar a favoritos',
+      removeBookmark: 'Quitar de favoritos',
+      share: 'Compartir',
+      report: 'Reportar',
+      downloads: 'descargas',
+      views: 'visualizaciones',
+      rating: 'Calificación',
+      reviews: 'Reseñas',
+      totalResources: 'Total de Recursos',
+      totalDownloads: 'Descargas',
+      contributors: 'Colaboradores',
+      averageRating: 'Calificación Promedio',
+      results: 'resultados',
+      resources: 'recursos',
+      uploadResource: 'Subir Recurso',
+      uploading: 'Subiendo...',
+      uploadSuccess: '¡Recurso subido exitosamente! Será revisado antes de la publicación.',
+      uploadError: 'Error al subir el recurso. Por favor intenta de nuevo.',
+      uploadNotice: 'Tu recurso será revisado por nuestro equipo antes de ser publicado. Se te notificará una vez que la revisión esté completa.',
+      loginToUpload: 'Por favor inicia sesión para subir recursos.',
+      loginRequired: 'Por favor inicia sesión para continuar.',
+      basicInfo: 'Información Básica',
+      fileUpload: 'Subida de Archivo',
+      metadata: 'Metadatos',
+      mainFile: 'Archivo Principal',
+      includePreview: 'Incluir Archivo de Vista Previa',
+      selectPreviewFile: 'Seleccionar Archivo de Vista Previa',
+      withPreview: 'Con Vista Previa',
+      withoutPreview: 'Sin Vista Previa',
+      thumbnail: 'Miniatura',
+      selectThumbnail: 'Seleccionar Imagen de Miniatura',
+      dragDropFile: 'Arrastra y suelta tu archivo aquí, o',
+      browseFiles: 'buscar archivos',
+      submitForReview: 'Enviar para Revisión',
+      searchPlaceholder: 'Buscar recursos...',
+      advancedSearch: 'Búsqueda Avanzada',
+      sortBy: 'Ordenar por',
+      sortOptions: {
+        relevance: 'Relevancia',
+        newest: 'Más Recientes',
+        oldest: 'Más Antiguos',
+        mostDownloaded: 'Más Descargados',
+        highestRated: 'Mejor Calificados',
+        alphabetical: 'A-Z'
+      },
+      minimumRating: 'Calificación Mínima',
+      dateRange: 'Rango de Fechas',
+      details: 'Detalles',
+      tabs: {
+        overview: 'Vista General',
+        reviews: 'Reseñas',
+        versions: 'Versiones'
+      },
+      related: 'Recursos Relacionados',
+      versions: 'Versiones',
+      writeReview: 'Escribir una Reseña',
+      reviewPlaceholder: 'Comparte tus pensamientos sobre este recurso...',
+      comment: 'Comentario',
+      submitting: 'Enviando...',
+      reviewRequired: 'Por favor ingresa un comentario para la reseña',
+      reviewError: 'Error al enviar la reseña',
+      noReviews: 'Aún no hay reseñas. ¡Sé el primero en reseñar!',
+      validation: {
+        titleRequired: 'El título es requerido',
+        descriptionRequired: 'La descripción es requerida',
+        summaryRequired: 'El resumen es requerido',
+        fileRequired: 'El archivo es requerido',
+        tagsRequired: 'Al menos una etiqueta es requerida'
+      },
+      notFound: 'Recurso no encontrado',
+      notFoundDescription: 'El recurso solicitado no pudo ser encontrado.',
+      noResults: 'No se encontraron recursos',
+      noResultsDescription: 'Intenta ajustar tus filtros de búsqueda o navegar por categoría.',
+      contributeFirst: '¡Sé el primero en contribuir!',
+      verified: 'Verificado'
+    },
+  },
+  en: {
+    site: {
+      name: 'SECiD',
+      title: 'SECiD - UNAM Data Science Alumni Society',
+      description: 'Connecting UNAM data science alumni. Job opportunities, networking, and professional growth.',
+    },
+    nav: {
+      home: 'Home',
+      about: 'About',
+      jobs: 'Jobs',
+      contact: 'Contact',
+    },
+    hero: {
+      title: 'Connecting the future of data',
+      subtitle: 'UNAM Data Science Alumni Society',
+      description: 'A vibrant community of data science professionals, united by our UNAM education and commitment to excellence in data analysis.',
+      joinButton: 'Join SECiD',
+      jobsButton: 'View Jobs',
+    },
+    features: {
+      title: 'Why join SECiD?',
+      networking: {
+        title: 'Professional Networking',
+        description: 'Connect with other UNAM data science alumni and expand your professional network in the industry.',
+      },
+      jobs: {
+        title: 'Job Opportunities',
+        description: 'Access exclusive job offers and career opportunities at leading companies in the sector.',
+      },
+      growth: {
+        title: 'Professional Growth',
+        description: 'Participate in events, workshops, and conferences to stay updated with the latest trends.',
+      },
+      community: {
+        title: 'Strong Community',
+        description: 'Be part of a community committed to knowledge and experience sharing.',
+      },
+    },
+    cta: {
+      title: 'Start your journey',
+      jobs: {
+        title: 'Find your next job',
+        description: 'Explore exclusive job opportunities for SECiD members at innovative companies.',
+        button: 'View jobs',
+      },
+      register: {
+        title: 'Join our community',
+        description: 'Register as a SECiD member and access all the benefits of our professional network.',
+        button: 'Register',
+      },
+    },
+    search: {
+      placeholder: 'Search...',
+    },
+    sidebar: {
+      menu: 'Menu',
+      getInTouch: 'Get in touch',
+      description: 'Follow us on our social networks and stay up to date with the latest news and opportunities.',
+    },
+    footer: {
+      rights: 'All rights reserved.',
+      design: 'Design',
+    },
+    common: {
+      loading: 'Loading...',
+      error: 'Error',
+      success: 'Success',
+      submit: 'Submit',
+      cancel: 'Cancel',
+      close: 'Close',
+      save: 'Save',
+      delete: 'Delete',
+      edit: 'Edit',
+      back: 'Back',
+      next: 'Next',
+      previous: 'Previous',
+      retry: 'Retry',
+      all: 'All',
+      any: 'Any',
+      more: 'more',
+      from: 'From',
+      to: 'To',
+      optional: 'Optional',
+      add: 'Add',
+      clearFilters: 'Clear filters',
+    },
+    auth: {
+      signIn: {
+        title: 'Sign In',
+        subtitle: 'Access your SECiD account',
+        button: 'Sign In',
+        google: 'Continue with Google',
+      },
+      signUp: {
+        title: 'Create Account',
+        subtitle: 'Join the SECiD community',
+        button: 'Create Account',
+        google: 'Sign up with Google',
+        haveAccount: 'Already have an account?',
+        signIn: 'Sign in',
+      },
+      fields: {
+        email: 'Email',
+        password: 'Password',
+        confirmPassword: 'Confirm Password',
+        firstName: 'First Name',
+        lastName: 'Last Name',
+      },
+      rememberMe: 'Remember me',
+      forgotPassword: 'Forgot your password?',
+      or: 'or',
+      acceptTerms: {
+        prefix: 'I accept the',
+        link: 'terms and conditions',
+      },
+      errors: {
+        'auth/user-not-found': 'No account exists with this email',
+        'auth/wrong-password': 'Incorrect password',
+        'auth/email-already-in-use': 'This email is already registered',
+        'auth/weak-password': 'Password is too weak',
+        'auth/invalid-email': 'Invalid email address',
+        'auth/operation-not-allowed': 'Operation not allowed',
+        'auth/popup-closed-by-user': 'Window closed before completing the process',
+        'auth/account-exists-with-different-credential': 'An account already exists with this email',
+        'auth/network-request-failed': 'Connection error',
+        'auth/too-many-requests': 'Too many attempts. Please try again later',
+        default: 'An error occurred. Please try again',
+      },
+      unauthorized: {
+        title: 'Access Restricted',
+        message: 'You need to sign in to access this page',
+        signIn: 'Sign In',
+        signUp: 'Create Account',
+      },
+      // OAuth & Social Login
+      oauth: {
+        providers: {
+          google: 'Google',
+          github: 'GitHub',
+          linkedin: 'LinkedIn',
+        },
+        linkAccount: 'Link account',
+        unlinkAccount: 'Unlink account',
+        linkSuccess: 'Account linked successfully',
+        unlinkSuccess: 'Account unlinked successfully',
+        alreadyLinked: 'This account is already linked',
+        linkError: 'Error linking account',
+        unlinkError: 'Error unlinking account',
+      },
+      // Two-Factor Authentication
+      twoFactor: {
+        title: 'Two-Factor Authentication',
+        subtitle: 'Protect your account with an additional layer of security',
+        setup: {
+          title: 'Set Up Two-Factor Authentication',
+          subtitle: 'Configure 2FA for enhanced account security',
+          step1: 'Install app',
+          step2: 'Scan QR code',
+          step3: 'Verify code',
+          scanQR: 'Scan the QR code with your authenticator app',
+          manualEntry: 'Or manually enter this code',
+          verificationCode: 'Verification code (6 digits)',
+          enable: 'Enable',
+          cancel: 'Cancel',
+        },
+        verification: {
+          title: 'Two-Factor Verification',
+          subtitle: 'Enter the code from your authenticator app',
+          enterCode: 'Authentication code (6 digits)',
+          useBackupCode: 'Lost your device? Use a backup code',
+          backupCodeTitle: 'Use Backup Code',
+          backupCodeSubtitle: 'Enter one of your 8-digit backup codes',
+          verify: 'Verify',
+          back: 'Back',
+          timeRemaining: 'Time remaining',
+          attemptsRemaining: 'attempts remaining',
+          sessionExpired: 'Session expired',
+          tooManyAttempts: 'Too many failed attempts',
+        },
+        backupCodes: {
+          title: 'Backup Codes',
+          subtitle: 'Save these codes in a safe place',
+          download: 'Download',
+          copy: 'Copy',
+          regenerate: 'Regenerate Codes',
+          used: 'Used',
+          unused: 'Unused',
+          warning: 'Please download the codes before continuing',
+        },
+        status: {
+          enabled: 'Enabled',
+          disabled: 'Disabled',
+          enable: 'Enable',
+          disable: 'Disable',
+          setup: 'Set up',
+          configured: 'Configured and active',
+          notConfigured: 'Not configured',
+        },
+        messages: {
+          setupSuccess: 'Two-factor authentication set up successfully',
+          enableSuccess: 'Two-factor authentication enabled successfully',
+          disableSuccess: 'Two-factor authentication disabled',
+          verificationSuccess: 'Verification successful',
+          invalidCode: 'Invalid verification code',
+          backupCodeUsed: 'Valid backup code',
+          regenerateSuccess: 'Backup codes regenerated',
+        },
+      },
+      // Password Strength
+      passwordStrength: {
+        title: 'Password strength',
+        veryWeak: 'Very weak',
+        weak: 'Weak',
+        fair: 'Fair',
+        strong: 'Strong',
+        veryStrong: 'Very strong',
+        requirements: {
+          length: '8+ characters',
+          uppercase: 'Uppercase',
+          lowercase: 'Lowercase',
+          number: 'Number',
+          special: 'Special',
+        },
+      },
+      // Security Settings
+      security: {
+        title: 'Security Settings',
+        subtitle: 'Manage your account security',
+        changePassword: {
+          title: 'Change Password',
+          subtitle: 'Update your password to keep your account secure',
+          currentPassword: 'Current password',
+          newPassword: 'New password',
+          confirmPassword: 'Confirm password',
+          update: 'Update Password',
+          success: 'Password updated successfully',
+          incorrectCurrent: 'Current password is incorrect',
+        },
+        activeSessions: {
+          title: 'Active Sessions',
+          subtitle: 'Manage active sessions on different devices',
+          current: 'Current',
+          device: 'Device',
+          location: 'Location',
+          lastActivity: 'Last activity',
+          revoke: 'Revoke',
+          revokeSuccess: 'Session revoked',
+          timeAgo: {
+            now: 'Now',
+            minutesAgo: 'min ago',
+            hoursAgo: 'h ago',
+            daysAgo: 'd ago',
+          },
+        },
+        loginHistory: {
+          title: 'Login History',
+          subtitle: 'Review recent activity on your account',
+          successful: 'Successful login',
+          failed: 'Failed attempt',
+          provider: 'Provider',
+          device: 'Device',
+          location: 'Location',
+          timestamp: 'Date and time',
+        },
+        linkedAccounts: {
+          title: 'Linked Accounts',
+          subtitle: 'Manage external accounts linked to your profile',
+          notLinked: 'Not linked',
+          link: 'Link',
+          unlink: 'Unlink',
+        },
+      },
+    },
+    userMenu: {
+      user: 'User',
+      profile: 'My Profile',
+      dashboard: 'Dashboard',
+      settings: 'Settings',
+      signOut: 'Sign Out',
+    },
+    mentorship: {
+      dashboard: {
+        title: 'Mentorship Dashboard',
+        welcome: 'Welcome to your mentorship dashboard',
+        findMentor: 'Find Mentor',
+        editProfile: 'Edit Profile',
+        scheduleSession: 'Schedule Session',
+        overview: 'Overview',
+        matches: 'Matches',
+        sessions: 'Sessions',
+        profile: 'Profile',
+        activeMatches: 'Active Matches',
+        completedSessions: 'Completed Sessions',
+        upcomingSessions: 'Upcoming Sessions',
+        averageRating: 'Average Rating',
+        recentActivity: 'Recent Activity',
+        pendingRequests: 'Pending Requests',
+        newMenteeRequest: 'New mentee request',
+        mentorRequestPending: 'Mentor request pending',
+        view: 'View',
+        join: 'Join',
+        programStats: 'Program Statistics',
+        totalMentors: 'Total Mentors',
+        totalMentees: 'Total Mentees',
+        globalActiveMatches: 'Global Active Matches',
+        successRate: 'Success Rate',
+        yourMatches: 'Your Matches',
+        noMatches: 'No Matches',
+        noMatchesDescription: 'You don\'t have any mentorship matches yet. Find mentors that align with your goals.',
+        becomeMentor: 'Become a Mentor',
+        menteeMatch: 'Mentee Match',
+        mentorMatch: 'Mentor Match',
+        compatibility: 'Compatibility',
+        goals: 'Goals',
+        acceptRequest: 'Accept Request',
+        viewRequest: 'View Request',
+        declineRequest: 'Decline Request',
+        sendMessage: 'Send Message',
+        noSessions: 'No Sessions',
+        noSessionsDescription: 'You don\'t have any scheduled sessions. Schedule your first session with a mentor.',
+        minutes: 'minutes',
+        agenda: 'Agenda',
+        joinSession: 'Join Session',
+        editSession: 'Edit Session',
+        cancelSession: 'Cancel Session',
+        yourProfile: 'Your Profile',
+        mentorProfile: 'Mentor Profile',
+        menteeProfile: 'Mentee Profile',
+        rating: 'Rating',
+        mentees: 'Mentees',
+        expertise: 'Expertise',
+        interests: 'Interests',
+        yearsExperience: 'years of experience',
+        noProfile: 'No Profile',
+        noProfileDescription: 'You need to create a profile to participate in the mentorship program.',
+        createMentorProfile: 'Create Mentor Profile',
+        createMenteeProfile: 'Create Mentee Profile',
+      },
+      profile: {
+        createProfile: 'Create Profile',
+        editProfile: 'Edit Profile',
+        formDescription: 'Complete your profile to connect with compatible mentors and mentees.',
+        saveSuccess: 'Profile saved successfully',
+        profileImage: 'Profile Image',
+        changeImage: 'Change Image',
+        displayName: 'Display Name',
+        displayNamePlaceholder: 'Your full name',
+        bio: 'Bio',
+        bioPlaceholder: 'Tell us about yourself, your experience, and what you\'re passionate about...',
+        characters: 'characters',
+        basicInfo: 'Basic Information',
+        experience: 'Experience',
+        currentPosition: 'Current Position',
+        currentCompany: 'Current Company',
+        yearsInField: 'Years in Field',
+        previousRoles: 'Previous Roles',
+        jobTitle: 'Job Title',
+        company: 'Company',
+        duration: 'Duration',
+        expertise: 'Expertise',
+        expertiseAreas: 'Areas of Expertise',
+        additionalSkills: 'Additional Skills',
+        addSkillPlaceholder: 'Add new skill',
+        mentorshipStyle: 'Mentorship Style',
+        preferredStyle: 'Preferred Style',
+        maxMentees: 'Maximum Mentees',
+        maxMenteesHelp: 'Maximum number of mentees you can handle simultaneously',
+        availability: 'Availability',
+        hoursPerWeek: 'Hours Per Week',
+        preferredDays: 'Preferred Days',
+        timezone: 'Timezone',
+        preferredMeetingTimes: 'Preferred Meeting Times',
+        languages: 'Languages',
+        spokenLanguages: 'Languages You Speak',
+        about: 'About',
+        skills: 'Skills',
+        current: 'Current',
+        requestMentorship: 'Request Mentorship',
+        sendMessage: 'Send Message',
+        totalSessions: 'Total Sessions',
+        mentees: 'Mentees',
+        yearsExperience: 'years of experience',
+      },
+      matcher: {
+        title: 'Find Mentors',
+        description: 'Find compatible mentors based on your goals and preferences.',
+        loading: 'Loading matches...',
+        createProfile: 'Create Mentee Profile',
+        createProfileDescription: 'You need a mentee profile to find compatible mentors.',
+        createMenteeProfile: 'Create Mentee Profile',
+        availableMentors: 'Available Mentors',
+        matches: 'Matches',
+        filters: 'Filters',
+        sortBy: 'Sort by',
+        compatibility: 'Compatibility',
+        rating: 'Rating',
+        experience: 'Experience',
+        recalculate: 'Recalculate',
+        calculating: 'Calculating...',
+        analyzingProfiles: 'Analyzing Profiles',
+        calculatingCompatibility: 'Calculating compatibility based on goals, skills, and availability...',
+        noMatches: 'No Matches',
+        noMatchesDescription: 'No mentors found matching your criteria. Try adjusting the filters.',
+        adjustFilters: 'Adjust Filters',
+        excellent: 'Excellent',
+        veryGood: 'Very Good',
+        good: 'Good',
+        fair: 'Fair',
+        poor: 'Poor',
+        compatibilityBreakdown: 'Compatibility Breakdown',
+        skills: 'Skills',
+        availability: 'Availability',
+        style: 'Style',
+        language: 'Language',
+        whyThisMatch: 'Why this match?',
+        expertise: 'Expertise',
+        viewProfile: 'View Profile',
+        requestPending: 'Request Pending',
+        requestMentorship: 'Request Mentorship',
+        filterOptions: 'Filter Options',
+        minimumRating: 'Minimum Rating',
+        stars: 'stars',
+        experienceLevel: 'Experience Level',
+        anyExperience: 'Any Experience',
+        juniorLevel: 'Junior Level (1-3 years)',
+        midLevel: 'Mid Level (3-7 years)',
+        seniorLevel: 'Senior Level (7+ years)',
+        minimumHours: 'Minimum Hours',
+        hoursPerWeek: 'hours per week',
+        clearFilters: 'Clear Filters',
+        yearsExperience: 'years of experience',
+        sessions: 'sessions',
+        mentees: 'mentees',
+        requestModalDescription: 'You\'re about to send a mentorship request to this mentor.',
+        yourGoals: 'Your Goals',
+        continueRequest: 'Continue Request',
+      },
+      request: {
+        createTitle: 'Request Mentorship',
+        viewTitle: 'Mentorship Request',
+        respondTitle: 'Respond to Request',
+        respondDescription: 'A mentee has requested your guidance. Review the details and decide whether to accept.',
+        errorLoading: 'Error loading request',
+        errorSubmitting: 'Error submitting request',
+        errorResponding: 'Error responding to request',
+        submitSuccess: 'Request submitted successfully',
+        responseSubmitted: 'Response submitted successfully',
+        steps: {
+          introduction: 'Introduction',
+          preferences: 'Preferences',
+          commitment: 'Commitment',
+          expectations: 'Expectations',
+        },
+        introDescription: 'Introduce yourself and explain why you\'re seeking mentorship.',
+        personalMessage: 'Personal Message',
+        messagePlaceholder: 'Write a personal message explaining why you\'re interested in this mentor and what you hope to achieve...',
+        characters: 'characters',
+        minimumCharacters: 'Minimum 50 characters',
+        yourGoals: 'Your Goals',
+        addGoalPlaceholder: 'Add new goal',
+        goalsHelp: 'List the specific goals you want to achieve with this mentorship.',
+        preferencesDescription: 'Set your communication and scheduling preferences.',
+        expectedDuration: 'Expected Duration',
+        meetingFrequency: 'Meeting Frequency',
+        communicationPreference: 'Communication Preference',
+        commitmentDescription: 'Explain your commitment and previous experience.',
+        timeCommitment: 'Time Commitment',
+        timeCommitmentPlaceholder: 'Describe how much time you can dedicate to mentorship per week...',
+        previousExperience: 'Previous Experience',
+        previousExperiencePlaceholder: 'Describe any previous experience with mentorship or professional development...',
+        expectationsDescription: 'Define what you expect from this mentorship relationship.',
+        expectations: 'Expectations',
+        expectationsPlaceholder: 'Describe what you expect from your mentor and how you\'d like the relationship to develop...',
+        summary: 'Summary',
+        goals: 'Goals',
+        duration: 'Duration',
+        frequency: 'Frequency',
+        communication: 'Communication',
+        previous: 'Previous',
+        next: 'Next',
+        submitRequest: 'Submit Request',
+        message: 'Message',
+        mentee: 'Mentee',
+        mentor: 'Mentor',
+        preferences: 'Preferences',
+        response: 'Response',
+        submitted: 'Submitted',
+        accepted: 'Accepted',
+        rejected: 'Rejected',
+        theirMessage: 'Their Message',
+        theirGoals: 'Their Goals',
+        yourResponse: 'Your Response',
+        acceptRequest: 'Accept Request',
+        rejectRequest: 'Reject Request',
+        acceptanceMessage: 'Acceptance Message',
+        rejectionMessage: 'Rejection Message',
+        acceptancePlaceholder: 'Write a welcome message and next steps...',
+        rejectionPlaceholder: 'Explain why you can\'t accept this request at this time...',
+        confirmAccept: 'Confirm Accept',
+        confirmReject: 'Confirm Reject',
+        yearsExperience: 'years of experience',
+        validation: {
+          messageMinLength: 'Message must be at least 50 characters',
+          goalsRequired: 'You must specify at least one goal',
+          durationRequired: 'Expected duration is required',
+          timeCommitmentRequired: 'Time commitment is required',
+          expectationsRequired: 'Expectations are required',
+        },
+        status: {
+          pending: 'Pending',
+          accepted: 'Accepted',
+          rejected: 'Rejected',
+        },
+      },
+      sessions: {
+        title: 'Mentorship Sessions',
+        description: 'Schedule and manage your mentorship sessions.',
+        loading: 'Loading sessions...',
+        errorLoading: 'Error loading sessions',
+        errorSaving: 'Error saving session',
+        createSession: 'Create Session',
+        editSession: 'Edit Session',
+        createSuccess: 'Session created successfully',
+        updateSuccess: 'Session updated successfully',
+        scheduleNew: 'Schedule New',
+        allSessions: 'All Sessions',
+        upcoming: 'Upcoming',
+        completed: 'Completed',
+        cancelled: 'Cancelled',
+        sortByDate: 'Sort by Date',
+        sortByMatch: 'Sort by Match',
+        sortByStatus: 'Sort by Status',
+        showing: 'Showing',
+        sessions: 'sessions',
+        noSessions: 'No Sessions',
+        noSessionsDescription: 'You don\'t have any scheduled sessions. Schedule your first session.',
+        scheduleFirst: 'Schedule First Session',
+        join: 'Join',
+        edit: 'Edit',
+        moreItems: 'more items',
+        more: 'more',
+        homework: 'Homework',
+        resources: 'Resources',
+        basicInfo: 'Basic Information',
+        sessionTitle: 'Title',
+        titlePlaceholder: 'Session title',
+        sessionDescription: 'Description',
+        descriptionPlaceholder: 'Describe the purpose and content of this session...',
+        dateTime: 'Date & Time',
+        duration: 'Duration',
+        sessionType: 'Session Type',
+        meetingType: 'Meeting Type',
+        meetingUrl: 'Meeting URL',
+        meetingUrlHelp: 'Zoom, Google Meet, etc. link',
+        location: 'Location',
+        locationPlaceholder: 'Address or meeting place',
+        agenda: 'Agenda',
+        addAgendaItem: 'Add agenda item',
+        resourceTitle: 'Resource Title',
+        resourceUrl: 'Resource URL',
+        notes: 'Notes',
+        notesPlaceholder: 'Additional notes for the session...',
+        unknownUser: 'Unknown User',
+        status: {
+          scheduled: 'Scheduled',
+          completed: 'Completed',
+          cancelled: 'Cancelled',
+          'no-show': 'No Show',
+        },
+        validation: {
+          titleRequired: 'Title is required',
+          dateRequired: 'Date is required',
+          dateInFuture: 'Date must be in the future',
+          durationMinimum: 'Minimum duration is 15 minutes',
+          urlRequired: 'Meeting URL is required for video calls',
+          locationRequired: 'Location is required for in-person meetings',
+        },
+      },
+      status: {
+        pending: 'Pending',
+        accepted: 'Accepted',
+        rejected: 'Rejected',
+        active: 'Active',
+        completed: 'Completed',
+        paused: 'Paused',
+      },
+      frequency: {
+        weekly: 'Weekly',
+        biweekly: 'Bi-weekly',
+        monthly: 'Monthly',
+      },
+      communication: {
+        video: 'Video Call',
+        voice: 'Voice Call',
+        chat: 'Text/Chat',
+        'in-person': 'In Person',
+      },
+      sessionType: {
+        video: 'Video Call',
+        voice: 'Voice Call',
+        chat: 'Chat',
+        'in-person': 'In Person',
+      },
+      level: {
+        beginner: 'Beginner',
+        intermediate: 'Intermediate',
+        advanced: 'Advanced',
+      },
+      errors: {
+        loadProfile: 'Error loading profile',
+        saveProfile: 'Error saving profile',
+      },
+      validation: {
+        displayNameRequired: 'Display name is required',
+        bioMinLength: 'Bio must be at least 50 characters',
+        expertiseRequired: 'You must select at least one area of expertise',
+        positionRequired: 'Current position is required',
+        companyRequired: 'Current company is required',
+        experienceMinimum: 'At least 1 year of experience is required',
+        hoursMinimum: 'At least 1 hour per week is required',
+        daysRequired: 'You must select at least one preferred day',
+        styleRequired: 'You must select at least one mentorship style',
+      },
+    },
+    forum: {
+      title: 'Discussion Forum',
+      description: 'Space to share knowledge, solve questions and connect with the SECiD community',
+      categories: 'Categories',
+      topics: 'Topics',
+      posts: 'Posts',
+      members: 'Members',
+      latestActivity: 'Latest Activity',
+      createTopic: 'Create Topic',
+      reply: 'Reply',
+      search: 'Search',
+      searchPlaceholder: 'Search in forum...',
+      searchResults: 'Search results',
+      noResults: 'No results',
+      noResultsDescription: 'No results found for your search. Try different terms.',
+      filters: 'Filters',
+      sortBy: 'Sort by',
+      sortByDate: 'Date',
+      sortByVotes: 'Votes',
+      sortByReplies: 'Replies',
+      sortByRelevance: 'Relevance',
+      filterByCategory: 'Filter by category',
+      filterByTags: 'Filter by tags',
+      filterByAuthor: 'Filter by author',
+      filterByDate: 'Filter by date',
+      clearFilters: 'Clear filters',
+      categoryList: {
+        careerAdvice: {
+          name: 'Career Advice',
+          description: 'Share and receive advice on professional development, interviews and career growth'
+        },
+        technicalDiscussion: {
+          name: 'Technical Discussion',
+          description: 'Debates about technologies, methodologies and best practices in data science'
+        },
+        industryNews: {
+          name: 'Industry News',
+          description: 'Latest news and trends in the world of data science and analytics'
+        },
+        jobOpportunities: {
+          name: 'Job Opportunities',
+          description: 'Share job offers and professional opportunities'
+        },
+        networking: {
+          name: 'Networking',
+          description: 'Connect with other professionals and expand your contact network'
+        },
+        generalDiscussion: {
+          name: 'General Discussion',
+          description: 'General conversations about community-related topics'
+        }
+      },
+      topic: {
+        title: 'Title',
+        content: 'Content',
+        tags: 'Tags',
+        category: 'Category',
+        author: 'Author',
+        created: 'Created',
+        lastActivity: 'Last activity',
+        views: 'Views',
+        replies: 'Replies',
+        votes: 'Votes',
+        pinned: 'Pinned',
+        locked: 'Locked',
+        solved: 'Solved',
+        markSolved: 'Mark as solved',
+        pin: 'Pin',
+        unpin: 'Unpin',
+        lock: 'Lock',
+        unlock: 'Unlock',
+        edit: 'Edit',
+        delete: 'Delete',
+        report: 'Report',
+        share: 'Share',
+        subscribe: 'Subscribe',
+        unsubscribe: 'Unsubscribe',
+        newTopic: 'New Topic',
+        createTopic: 'Create Topic',
+        topicTitle: 'Topic title',
+        topicContent: 'Topic content',
+        selectCategory: 'Select category',
+        addTags: 'Add tags',
+        tagPlaceholder: 'Add tag...',
+        preview: 'Preview',
+        publish: 'Publish',
+        draft: 'Draft',
+        guidelines: 'Guidelines',
+        formatting: 'Formatting',
+        attachments: 'Attachments',
+        uploadFile: 'Upload file',
+        maxFileSize: 'Max size: 10MB',
+        allowedTypes: 'Allowed types: PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, PNG, JPG, GIF'
+      },
+      post: {
+        reply: 'Reply',
+        quote: 'Quote',
+        edit: 'Edit',
+        delete: 'Delete',
+        report: 'Report',
+        markSolution: 'Mark as solution',
+        unmarkSolution: 'Unmark solution',
+        reactions: 'Reactions',
+        addReaction: 'Add reaction',
+        mentions: 'Mentions',
+        attachments: 'Attachments',
+        editHistory: 'Edit history',
+        lastEdited: 'Last edited',
+        editedBy: 'Edited by',
+        originalPost: 'Original post',
+        showMore: 'Show more',
+        showLess: 'Show less',
+        loadMore: 'Load more',
+        noReplies: 'No replies yet',
+        writeReply: 'Write reply',
+        replyPlaceholder: 'Write your reply...',
+        postReply: 'Post reply',
+        formatHelp: 'Format help',
+        codeBlock: 'Code block',
+        bold: 'Bold',
+        italic: 'Italic',
+        link: 'Link',
+        image: 'Image',
+        blockquote: 'Quote',
+        list: 'List'
+      },
+      user: {
+        profile: 'Profile',
+        reputation: 'Reputation',
+        points: 'Points',
+        level: 'Level',
+        badges: 'Badges',
+        achievements: 'Achievements',
+        joinDate: 'Join date',
+        lastSeen: 'Last seen',
+        totalPosts: 'Total posts',
+        totalTopics: 'Total topics',
+        solutionsProvided: 'Solutions provided',
+        helpfulVotes: 'Helpful votes',
+        moderator: 'Moderator',
+        admin: 'Administrator',
+        online: 'Online',
+        offline: 'Offline',
+        banned: 'Banned',
+        suspended: 'Suspended'
+      },
+      moderation: {
+        moderate: 'Moderate',
+        pin: 'Pin',
+        unpin: 'Unpin',
+        lock: 'Lock',
+        unlock: 'Unlock',
+        delete: 'Delete',
+        edit: 'Edit',
+        move: 'Move',
+        merge: 'Merge',
+        ban: 'Ban',
+        warn: 'Warn',
+        reports: 'Reports',
+        reportReason: 'Report reason',
+        moderatorNotes: 'Moderator notes',
+        takeAction: 'Take action',
+        dismiss: 'Dismiss',
+        resolve: 'Resolve',
+        pending: 'Pending',
+        resolved: 'Resolved'
+      },
+      notifications: {
+        title: 'Notifications',
+        center: 'Notification Center',
+        recent: 'Recent',
+        history: 'History',
+        empty: 'You have no notifications',
+        historyEmpty: 'No notification history',
+        historyDescription: 'Here you can view all your past notifications.',
+        toggle: 'Toggle notifications',
+        markAsRead: 'Mark as read',
+        markAllRead: 'Mark all as read',
+        deleteSelected: 'Delete selected',
+        clearSelection: 'Clear selection',
+        selectedCount: '{{count}} selected',
+        selectAll: 'Select all',
+        viewAll: 'View all notifications',
+        loadMore: 'Load more',
+        delete: 'Delete',
+        expires: 'Expires in',
+        sentVia: 'Sent via',
+        moreActions: 'More actions',
+        category: {
+          jobs: 'Jobs',
+          events: 'Events',
+          messages: 'Messages',
+          connections: 'Connections',
+          mentorship: 'Mentorship',
+          forum: 'Forum',
+          achievements: 'Achievements',
+          system: 'System',
+          security: 'Security',
+          billing: 'Billing'
+        },
+        type: {
+          job_match: 'Job match',
+          job_application: 'Job application',
+          job_expiring: 'Job expiring',
+          event_reminder: 'Event reminder',
+          event_update: 'Event update',
+          event_cancelled: 'Event cancelled',
+          message_received: 'Message received',
+          message_reply: 'Message reply',
+          connection_request: 'Connection request',
+          connection_accepted: 'Connection accepted',
+          mentorship_request: 'Mentorship request',
+          mentorship_accepted: 'Mentorship accepted',
+          mentorship_session: 'Mentorship session',
+          forum_mention: 'Forum mention',
+          forum_reply: 'Forum reply',
+          forum_topic_update: 'Topic update',
+          badge_earned: 'Badge earned',
+          achievement_unlocked: 'Achievement unlocked',
+          profile_view: 'Profile view',
+          newsletter: 'Newsletter',
+          system_announcement: 'System announcement',
+          maintenance: 'Maintenance',
+          security_alert: 'Security alert',
+          payment_reminder: 'Payment reminder',
+          membership_expiring: 'Membership expiring',
+          data_export_ready: 'Data export ready'
+        },
+        typeDesc: {
+          job_match: 'Get notified when a job matches your profile',
+          job_application: 'Updates about your job applications',
+          job_expiring: 'Alerts when jobs are about to expire',
+          event_reminder: 'Reminders for upcoming events',
+          event_update: 'Changes to events you\'ve registered for',
+          event_cancelled: 'Notifications of cancelled events',
+          message_received: 'New private messages',
+          message_reply: 'Replies to your messages',
+          connection_request: 'New connection requests',
+          connection_accepted: 'When someone accepts your request',
+          mentorship_request: 'Mentorship requests',
+          mentorship_accepted: 'When your mentorship request is accepted',
+          mentorship_session: 'Mentorship session reminders',
+          forum_mention: 'When you\'re mentioned in the forum',
+          forum_reply: 'Replies to your posts',
+          forum_topic_update: 'Updates to topics you follow',
+          badge_earned: 'New badges earned',
+          achievement_unlocked: 'Achievements unlocked',
+          profile_view: 'When someone views your profile',
+          newsletter: 'Newsletter updates',
+          system_announcement: 'Important system announcements',
+          maintenance: 'Maintenance notifications',
+          security_alert: 'Important security alerts',
+          payment_reminder: 'Pending payment reminders',
+          membership_expiring: 'Membership expiration notices',
+          data_export_ready: 'When your data export is ready'
+        },
+        delivery: {
+          app: 'App',
+          email: 'Email',
+          push: 'Push',
+          sms: 'SMS'
+        },
+        frequency: {
+          immediate: 'Immediate',
+          hourly: 'Hourly',
+          daily: 'Daily',
+          weekly: 'Weekly',
+          monthly: 'Monthly',
+          never: 'Never'
+        },
+        filter: {
+          all: 'All',
+          unread: 'Unread',
+          urgent: 'Urgent'
+        },
+        sort: {
+          date: 'Date',
+          priority: 'Priority',
+          category: 'Category'
+        },
+        settings: {
+          title: 'Notification Settings',
+          description: 'Manage how and when you receive notifications',
+          categories: 'Categories',
+          global: 'Global Settings',
+          advanced: 'Advanced Settings',
+          sound: 'Sound',
+          soundDesc: 'Play sound for new notifications',
+          doNotDisturb: 'Do Not Disturb',
+          doNotDisturbDesc: 'Temporarily silence all notifications',
+          groupSimilar: 'Group Similar',
+          groupSimilarDesc: 'Group notifications of the same type',
+          maxDaily: 'Daily Maximum',
+          maxDailyDesc: 'Maximum number of notifications per day',
+          emailDigest: 'Email Digest',
+          digestEnabled: 'Enable Digest',
+          digestEnabledDesc: 'Receive a summary of notifications by email',
+          digestFrequency: 'Digest Frequency',
+          digestTime: 'Digest Time',
+          pushNotifications: 'Push Notifications',
+          browserPush: 'Browser Push',
+          browserPushDesc: 'Receive push notifications in your browser',
+          enablePush: 'Enable Push',
+          pushDenied: 'Push notifications are blocked. Please enable them in your browser settings.',
+          deliveryMethods: 'Delivery Methods',
+          frequency: 'Frequency',
+          errorLoading: 'Error loading settings',
+          errorSaving: 'Error saving settings',
+          errorPush: 'Error enabling push notifications',
+          saved: 'Settings saved successfully'
+        }
+      },
+      badges: {
+        welcomeNewcomer: {
+          name: 'Welcome',
+          description: 'You joined the SECiD community'
+        },
+        firstPost: {
+          name: 'First Post',
+          description: 'You created your first post in the forum'
+        },
+        helpfulMember: {
+          name: 'Helpful Member',
+          description: 'You received 10 upvotes'
+        },
+        solutionProvider: {
+          name: 'Solution Provider',
+          description: 'You provided 5 solutions marked as correct'
+        },
+        topContributor: {
+          name: 'Top Contributor',
+          description: 'You created 50 quality posts'
+        },
+        veteranMember: {
+          name: 'Veteran Member',
+          description: 'You have been in the community for over a year'
+        }
+      },
+      errors: {
+        loadingFailed: 'Error loading content',
+        postingFailed: 'Error posting',
+        votingFailed: 'Error voting',
+        unauthorized: 'You don\'t have permission to perform this action',
+        notFound: 'Content not found',
+        validation: {
+          titleRequired: 'Title is required',
+          contentRequired: 'Content is required',
+          categoryRequired: 'Category is required',
+          titleTooLong: 'Title is too long',
+          contentTooLong: 'Content is too long',
+          invalidTags: 'Invalid tags'
+        }
+      },
+      success: {
+        topicCreated: 'Topic created successfully',
+        postCreated: 'Post created successfully',
+        voteSubmitted: 'Vote registered',
+        reportSubmitted: 'Report submitted',
+        subscribed: 'You have subscribed to the topic',
+        unsubscribed: 'You have unsubscribed from the topic'
+      }
+    },
+    admin: {
+    navigation: {
+      dashboard: 'Dashboard',
+      users: 'Users',
+      moderation: 'Moderation',
+      analytics: 'Analytics',
+      settings: 'Settings',
+      backups: 'Backups',
+      support: 'Support',
+      documentation: 'Documentation',
+    },
+    dashboard: {
+      title: 'Admin Dashboard',
+      welcome: 'Welcome back',
+      overview: 'Overview',
+      stats: {
+        totalUsers: 'Total Users',
+        newUsersThisMonth: 'New Users This Month',
+        activeJobs: 'Active Jobs',
+        pendingJobs: 'Pending Jobs',
+        upcomingEvents: 'Upcoming Events',
+        monthlyRevenue: 'Monthly Revenue',
+        systemHealth: 'System Health',
+        pendingReports: 'Pending Reports',
+      },
+      quickActions: {
+        title: 'Quick Actions',
+        approveJobs: 'Approve Jobs',
+        reviewReports: 'Review Reports',
+        viewAnalytics: 'View Analytics',
+        systemLogs: 'System Logs',
+        pending: 'pending',
+        detailed: 'Detailed reports',
+        recent: 'Recent activity',
+      },
+      recentActivity: {
+        title: 'Recent Activity',
+        noActivity: 'No recent activity',
+        userRegistration: 'User registration',
+        jobPosted: 'Job posted',
+        eventCreated: 'Event created',
+        forumReport: 'Forum report',
+        paymentReceived: 'Payment received',
+      },
+      systemHealth: {
+        good: 'Good',
+        warning: 'Warning',
+        critical: 'Critical',
+      },
+    },
+    users: {
+      title: 'User Management',
+      subtitle: 'Manage and moderate platform users',
+      totalUsers: 'Total users',
+      newUsers: 'New users',
+      activeUsers: 'Active users',
+      verifiedUsers: 'Verified',
+      filters: {
+        search: 'Search',
+        role: 'Role',
+        membership: 'Membership',
+        verified: 'Verified',
+        status: 'Status',
+        all: 'All',
+        member: 'Member',
+        moderator: 'Moderator',
+        administrator: 'Administrator',
+        company: 'Company',
+        free: 'Free',
+        premium: 'Premium',
+        corporate: 'Corporate',
+        active: 'Active',
+        inactive: 'Inactive',
+      },
+      table: {
+        user: 'User',
+        role: 'Role',
+        status: 'Status',
+        membership: 'Membership',
+        joined: 'Joined',
+        actions: 'Actions',
+        verified: 'Verified',
+        unverified: 'Unverified',
+      },
+      actions: {
+        view: 'View details',
+        edit: 'Edit',
+        verify: 'Verify',
+        unverify: 'Unverify',
+        activate: 'Activate',
+        deactivate: 'Deactivate',
+        delete: 'Delete',
+        suspend: 'Suspend',
+        makeAdmin: 'Make Admin',
+        makeModerator: 'Make Moderator',
+        makeMember: 'Make Member',
+        export: 'Export',
+        newUser: 'New User',
+        bulkActions: 'Bulk actions',
+        selectAll: 'Select all',
+        selected: 'selected',
+        apply: 'Apply',
+      },
+      bulkActions: {
+        verify: 'Verify',
+        unverify: 'Unverify',
+        activate: 'Activate',
+        deactivate: 'Deactivate',
+        delete: 'Delete',
+        changeRole: 'Change role',
+      },
+      messages: {
+        userUpdated: 'User updated successfully',
+        userDeleted: 'User deleted',
+        usersExported: 'Users exported',
+        bulkActionCompleted: 'Bulk action completed',
+        confirmDelete: 'Are you sure you want to delete this user?',
+        unauthorized: 'Administrator privileges are required to manage users.',
+      },
+    },
+    moderation: {
+      title: 'Content Moderation',
+      subtitle: 'Review and approve platform content',
+      queue: {
+        title: 'Moderation Queue',
+        pending: 'Pending',
+        approved: 'Approved Today',
+        rejected: 'Rejected Today',
+        flagged: 'Flagged',
+        approvedToday: 'Approved Today',
+        rejectedToday: 'Rejected Today',
+        pendingReports: 'Pending Reports',
+        flaggedUsers: 'Flagged Users',
+        averageReviewTime: 'Avg Review Time',
+      },
+      content: {
+        type: 'Type',
+        priority: 'Priority',
+        author: 'Author',
+        submitted: 'Submitted',
+        actions: 'Actions',
+        approve: 'Approve',
+        reject: 'Reject',
+        flag: 'Flag',
+        urgent: 'urgent',
+        high: 'high',
+        medium: 'medium',
+        low: 'low',
+      },
+      reports: {
+        title: 'Reports',
+        reason: 'Reason',
+        description: 'Description',
+        reportedBy: 'Reported by',
+        reportedItem: 'Reported item',
+        resolve: 'Resolve',
+        dismiss: 'Dismiss',
+        noReports: 'No reports!',
+      },
+      filters: {
+        type: 'Type',
+        status: 'Status',
+        priority: 'Priority',
+        search: 'Search',
+        jobs: 'Jobs',
+        events: 'Events',
+        forumPosts: 'Forum Posts',
+        replies: 'Replies',
+      },
+      messages: {
+        contentApproved: 'Content approved',
+        contentRejected: 'Content rejected',
+        contentFlagged: 'Content flagged',
+        reportResolved: 'Report resolved',
+        reportDismissed: 'Report dismissed',
+        noContent: 'No pending moderation items.',
+        allCaughtUp: 'All caught up!',
+        rejectionReason: 'Rejection reason:',
+        flagReason: 'Flag reason:',
+        actionDescription: 'Action taken description:',
+      },
+    },
+    adminAnalytics: {
+      title: 'Analytics',
+      subtitle: 'Platform metrics and reports',
+      timeRanges: {
+        last7Days: 'Last 7 days',
+        last30Days: 'Last 30 days',
+        last90Days: 'Last 90 days',
+        lastYear: 'Last year',
+      },
+      metrics: {
+        dailyActiveUsers: 'Daily Active Users',
+        weeklyActiveUsers: 'Weekly Active Users',
+        monthlyActiveUsers: 'Monthly Active Users',
+        pageViews: 'Page Views',
+        bounceRate: 'Bounce Rate',
+        sessionTime: 'Avg Session Time',
+        userGrowth: 'User Growth',
+        jobMetrics: 'Job Metrics',
+        forumActivity: 'Forum Activity',
+        membershipDistribution: 'Membership Distribution',
+        topSkills: 'Top Skills',
+        topCompanies: 'Top Companies',
+        geographicDistribution: 'Geographic Distribution',
+        engagement: 'Engagement Metrics',
+        revenue: 'Revenue Metrics',
+      },
+      charts: {
+        newUsers: 'New Users',
+        activeUsers: 'Active Users',
+        posted: 'Posted',
+        applied: 'Applied',
+        filled: 'Filled',
+        posts: 'Posts',
+        replies: 'Replies',
+        views: 'Views',
+        users: 'users',
+        jobs: 'jobs',
+        total: 'total',
+      },
+      export: 'Export',
+      refresh: 'Refresh',
+      loading: 'Loading analytics...',
+    },
+    settings: {
+      title: 'System Settings',
+      subtitle: 'Manage global platform configuration',
+      tabs: {
+        general: 'General',
+        email: 'Email',
+        moderation: 'Moderation',
+        payments: 'Payments',
+        analytics: 'Analytics',
+        security: 'Security',
+        notifications: 'Notifications',
+        backups: 'Backups',
+        features: 'Features',
+      },
+      general: {
+        siteName: 'Site Name',
+        siteDescription: 'Site Description',
+        supportEmail: 'Support Email',
+        maxUsers: 'Max Users Limit',
+        defaultLanguage: 'Default Language',
+        features: 'Platform Features',
+        maintenanceMode: 'Maintenance Mode',
+        registrationEnabled: 'Registration Enabled',
+        jobPostingEnabled: 'Job Posting Enabled',
+        eventCreationEnabled: 'Event Creation Enabled',
+        forumEnabled: 'Forum Enabled',
+      },
+      email: {
+        smtpHost: 'SMTP Host',
+        smtpPort: 'SMTP Port',
+        smtpUser: 'SMTP User',
+        smtpPassword: 'SMTP Password',
+        fromEmail: 'From Email',
+        fromName: 'From Name',
+        emailEnabled: 'Email Enabled',
+        testEmail: 'Test Email',
+      },
+      payments: {
+        premiumPrice: 'Premium Price',
+        corporatePrice: 'Corporate Price',
+        eventPrice: 'Event Base Price',
+        paymentEnabled: 'Payments Enabled',
+        stripeKey: 'Stripe Key',
+        paypalId: 'PayPal ID',
+      },
+      security: {
+        twoFactorRequired: 'Two Factor Authentication Required',
+        passwordLength: 'Minimum Password Length',
+        sessionTimeout: 'Session Timeout (minutes)',
+        maxLoginAttempts: 'Max Login Attempts',
+        allowedDomains: 'Allowed Domains',
+        blockedIPs: 'Blocked IPs',
+      },
+      backups: {
+        title: 'Backup Management',
+        createBackup: 'Create Backup',
+        backupHistory: 'Backup History',
+        download: 'Download',
+        delete: 'Delete',
+        automatic: 'automatic',
+        manual: 'manual',
+        completed: 'completed',
+        inProgress: 'in progress',
+        failed: 'failed',
+      },
+      messages: {
+        settingsSaved: 'Settings saved successfully',
+        testEmailSent: 'Test email sent',
+        backupCreated: 'Backup started',
+        invalidSettings: 'Invalid settings',
+        unauthorized: 'Administrator privileges are required to access settings.',
+      },
+      save: 'Save',
+      saving: 'Saving...',
+    },
+    permissions: {
+      title: 'Permissions',
+      admin: 'Administrator',
+      moderator: 'Moderator',
+      member: 'Member',
+      required: 'Required privileges',
+      insufficient: 'Insufficient permissions',
+      contact: 'Contact Support',
+    },
+    notifications: {
+      title: 'Notifications',
+      markAsRead: 'Mark as read',
+      markAllRead: 'Mark all as read',
+      noNotifications: 'No notifications',
+      systemAlert: 'System alert',
+      userReport: 'User report',
+      contentFlag: 'Content flagged',
+      paymentIssue: 'Payment issue',
+    },
+    errors: {
+      loadingFailed: 'Error loading data',
+      savingFailed: 'Error saving',
+      deleteFailed: 'Error deleting',
+      unauthorized: 'Unauthorized access',
+      notFound: 'Not found',
+      serverError: 'Server error',
+      networkError: 'Network error',
+      validationError: 'Validation error',
+    },
+    success: {
+      saved: 'Saved successfully',
+      deleted: 'Deleted successfully',
+      updated: 'Updated successfully',
+      created: 'Created successfully',
+      sent: 'Sent successfully',
+      exported: 'Exported successfully',
+    },
+    memberDirectory: {
+      title: 'Members Directory',
+      subtitle: 'Connect with the best data science professionals in Mexico',
+      searchPlaceholder: 'Search by name, company or skill...',
+      viewModes: {
+        grid: 'Grid',
+        list: 'List',
+        compact: 'Compact',
+      },
+      filters: {
+        title: 'Advanced Filters',
+        skills: 'Skills',
+        companies: 'Companies',
+        locations: 'Locations',
+        experienceLevel: 'Experience Level',
+        availability: 'Availability',
+        specialFilters: 'Special Filters',
+        onlineOnly: 'Online only',
+        hasPortfolio: 'Has portfolio',
+        premiumMembers: 'Premium members',
+        memberSince: 'Member since',
+        clearAll: 'Clear all',
+        clearFilters: 'Clear Filters',
+      },
+      experienceLevels: {
+        junior: 'Junior (0-2 years)',
+        mid: 'Mid-level (3-5 years)',
+        senior: 'Senior (6-10 years)',
+        lead: 'Lead (10+ years)',
+        executive: 'Executive',
+      },
+      availability: {
+        mentoring: 'Available for mentoring',
+        opportunities: 'Open to opportunities',
+        networking: 'Active networking',
+      },
+      sorting: {
+        sortBy: 'Sort by',
+        relevance: 'Relevance',
+        name: 'Name',
+        joinDate: 'Join date',
+        activity: 'Activity',
+        reputation: 'Reputation',
+        ascending: 'Asc',
+        descending: 'Desc',
+      },
+      stats: {
+        totalMembers: 'Total Members',
+        onlineMembers: 'Online',
+        newThisMonth: 'New This Month',
+        topSkill: 'Top Skill',
+      },
+      results: {
+        showing: 'Showing',
+        of: 'of',
+        members: 'members',
+        filtered: 'Filtered',
+        noMembers: 'No members found',
+        noMembersFiltered: 'Try adjusting your search filters',
+        adjustFilters: 'No members available at this time',
+      },
+      memberCard: {
+        connect: 'Connect',
+        connected: 'Connected',
+        requestSent: 'Request sent',
+        message: 'Message',
+        viewProfile: 'View profile',
+        follow: 'Follow',
+        following: 'Following',
+        unfollow: 'Unfollow',
+        downloadContact: 'Download contact',
+        shareProfile: 'Share profile',
+        connections: 'Connections',
+        views: 'Views',
+        reputation: 'Reputation',
+        posts: 'Posts',
+        online: 'Online',
+        lastSeen: 'ago',
+        yearsExperience: 'years of experience',
+      },
+      memberProfile: {
+        editProfile: 'Edit profile',
+        memberSince: 'Member since',
+        lastSeen: 'Last seen',
+        activeHours: 'Active',
+        activeDays: 'Active',
+        profileViews: 'Profile views',
+        about: 'About',
+        experience: 'Experience',
+        skills: 'Skills',
+        workExperience: 'Work Experience',
+        links: 'Links',
+        portfolio: 'Portfolio',
+        projects: 'Projects',
+        achievements: 'Achievements',
+        certifications: 'Certifications',
+        activity: 'Activity',
+        connections: 'Connections',
+        noPortfolio: 'No portfolio',
+        noPortfolioDescription: 'This member hasn\'t added any projects to their portfolio yet',
+        recentActivity: 'Recent activity',
+        recentActivityDescription: 'Member activity will be shown here',
+        viewDemo: 'View',
+        liveDemo: 'Live demo',
+        github: 'GitHub',
+        linkedin: 'LinkedIn',
+        website: 'Website',
+        verified: 'Verified',
+        present: 'Present',
+      },
+      networking: {
+        title: 'Networking Hub',
+        subtitle: 'Connect with other data professionals',
+        refresh: 'Refresh',
+        connections: 'Connections',
+        requests: 'Requests',
+        messages: 'Messages',
+        recommendations: 'Recommendations',
+        searchConnections: 'Search connections...',
+        noConnections: 'No connections',
+        noConnectionsDescription: 'Start by connecting with other members',
+        noRequests: 'No requests',
+        noRequestsDescription: 'You have no pending connection requests',
+        noConversations: 'No conversations',
+        noRecommendations: 'No recommendations',
+        noRecommendationsDescription: 'Complete your profile to get better recommendations',
+        accept: 'Accept',
+        reject: 'Reject',
+        sendMessage: 'Send message',
+        typeMessage: 'Type a message...',
+        selectConversation: 'Select a conversation to start messaging',
+        noMessages: 'No messages yet',
+        matchReasons: {
+          similarSkills: 'Similar skills',
+          sameCompany: 'Same company',
+          sameLocation: 'Same location',
+          mutualConnections: 'Mutual connections',
+          similarInterests: 'Similar interests',
+        },
+        compatibility: 'match',
+      },
+      privacy: {
+        profileVisibility: 'Profile visibility',
+        public: 'Public',
+        membersOnly: 'Members only',
+        connectionsOnly: 'Connections only',
+        private: 'Private',
+        showEmail: 'Show email',
+        showPhone: 'Show phone',
+        showLocation: 'Show location',
+        showCompany: 'Show current company',
+        showOnlineStatus: 'Show online status',
+        showLastSeen: 'Show last seen',
+        allowMessages: 'Allow messages',
+        allowConnectionRequests: 'Allow connection requests',
+        messageSettings: {
+          all: 'All',
+          connectionsOnly: 'Connections only',
+          none: 'None',
+        },
+      },
+      actions: {
+        connecting: 'Connecting...',
+        sendingMessage: 'Sending message...',
+        loadingProfile: 'Loading profile...',
+        updatingProfile: 'Updating profile...',
+        uploadingImage: 'Uploading image...',
+      },
+      errors: {
+        loadMembers: 'Error loading members',
+        searchError: 'Search error',
+        connectionError: 'Error connecting',
+        messageError: 'Error sending message',
+        profileUpdateError: 'Error updating profile',
+        imageUploadError: 'Error uploading image',
+        tryAgain: 'Try again',
+      },
+    },
+    analytics: {
+      title: 'Analytics Dashboard',
+      loading: 'Loading analytics data...',
+      error: 'Error loading data',
+      retry: 'Retry',
+      refresh: 'Refresh',
+      exportButton: 'Export',
+      autoRefresh: 'Auto Refresh',
+      lastUpdated: 'Last updated: {{date}}',
+      tabs: {
+        overview: 'Overview',
+        users: 'Users',
+        content: 'Content',
+        engagement: 'Engagement',
+        revenue: 'Revenue',
+        geographic: 'Geographic',
+        performance: 'Performance',
+        errors: 'Errors',
+        funnels: 'Funnels',
+        search: 'Search',
+        technology: 'Technology'
+      },
+      dateRange: {
+        today: 'Today',
+        yesterday: 'Yesterday',
+        last7days: 'Last 7 days',
+        last30days: 'Last 30 days',
+        last90days: 'Last 90 days',
+        last12months: 'Last 12 months',
+        custom: 'Custom'
+      },
+      realTime: {
+        activeUsers: '{{count}} active users',
+        currentSessions: '{{count}} sessions',
+        pageViewsPerMinute: '{{count}} views/min'
+      },
+      systemStatus: 'System: {{status}}',
+      metrics: {
+        totalUsers: 'Total Users',
+        newUsers: 'New Users',
+        activeUsers: 'Active Users',
+        returningUsers: 'Returning Users',
+        userRetention: 'User Retention',
+        registrationTrend: 'Registration Trend',
+        jobViews: 'Job Views',
+        jobApplications: 'Job Applications',
+        eventRegistrations: 'Event Registrations',
+        forumPosts: 'Forum Posts',
+        mentorshipSessions: 'Mentorship Sessions',
+        totalRevenue: 'Total Revenue',
+        monthlyRevenue: 'Monthly Revenue',
+        conversionRate: 'Conversion Rate',
+        pageLoadTime: 'Page Load Time',
+        errorRate: 'Error Rate',
+        apiResponseTime: 'API Response Time'
+      },
+      charts: {
+        userRegistrations: 'User Registrations Over Time',
+        jobApplications: 'Applications by Category',
+        deviceDistribution: 'Device Distribution',
+        revenueGrowth: 'Revenue Growth',
+        conversionFunnel: 'Conversion Funnel',
+        performanceMetrics: 'Performance Metrics',
+        engagementHeatmap: 'Engagement Heatmap',
+        goalProgress: 'Goal Progress'
+      },
+      export: {
+        pdf: 'Export to PDF',
+        csv: 'Export to CSV',
+        excel: 'Export to Excel',
+        generating: 'Generating report...',
+        success: 'Report generated successfully',
+        error: 'Error generating report'
+      },
+      alerts: {
+        performanceIssue: 'Performance issue detected',
+        highErrorRate: 'High error rate',
+        slowResponse: 'Slow response detected',
+        systemDown: 'System down'
+      }
+    },
+    resources: {
+      library: 'Resource Library',
+      libraryDescription: 'Discover and share learning materials, templates, tools, and datasets to accelerate your data science journey.',
+      all: 'All',
+      popular: 'Popular',
+      recent: 'Recent',
+      bookmarks: 'Bookmarks',
+      upload: 'Upload',
+      categories: {
+        title: 'Categories',
+        tutorials: 'Tutorials',
+        templates: 'Templates',
+        tools: 'Tools',
+        books: 'Books',
+        courses: 'Courses',
+        datasets: 'Datasets',
+        research: 'Research',
+        documentation: 'Documentation'
+      },
+      fileTypes: 'File Types',
+      accessLevel: 'Access Level',
+      accessLevels: {
+        free: 'Free',
+        premium: 'Premium',
+        member: 'Members Only',
+        restricted: 'Restricted'
+      },
+      difficulty: {
+        title: 'Difficulty',
+        beginner: 'Beginner',
+        intermediate: 'Intermediate',
+        advanced: 'Advanced'
+      },
+      title: 'Title',
+      titlePlaceholder: 'Enter a descriptive title...',
+      description: 'Description',
+      descriptionPlaceholder: 'Detailed description of the resource...',
+      summary: 'Summary',
+      summaryPlaceholder: 'Brief summary (1-2 sentences)...',
+      tags: 'Tags',
+      addTag: 'Add tag',
+      prerequisites: 'Prerequisites',
+      addPrerequisite: 'Add prerequisite',
+      language: 'Language',
+      bilingual: 'Bilingual',
+      estimatedTime: 'Estimated Time',
+      type: 'Type',
+      category: 'Category',
+      download: 'Download',
+      downloading: 'Downloading...',
+      downloadError: 'Error downloading resource',
+      preview: 'Preview',
+      viewDetails: 'View Details',
+      bookmark: 'Bookmark',
+      addBookmark: 'Add to bookmarks',
+      removeBookmark: 'Remove from bookmarks',
+      share: 'Share',
+      report: 'Report',
+      downloads: 'downloads',
+      views: 'views',
+      rating: 'Rating',
+      reviews: 'Reviews',
+      totalResources: 'Total Resources',
+      totalDownloads: 'Downloads',
+      contributors: 'Contributors',
+      averageRating: 'Avg Rating',
+      results: 'results',
+      resources: 'resources',
+      uploadResource: 'Upload Resource',
+      uploading: 'Uploading...',
+      uploadSuccess: 'Resource uploaded successfully! It will be reviewed before publication.',
+      uploadError: 'Error uploading resource. Please try again.',
+      uploadNotice: 'Your resource will be reviewed by our team before being published. You will be notified once the review is complete.',
+      loginToUpload: 'Please sign in to upload resources.',
+      loginRequired: 'Please sign in to continue.',
+      basicInfo: 'Basic Information',
+      fileUpload: 'File Upload',
+      metadata: 'Metadata',
+      mainFile: 'Main File',
+      includePreview: 'Include Preview File',
+      selectPreviewFile: 'Select Preview File',
+      withPreview: 'With Preview',
+      withoutPreview: 'Without Preview',
+      thumbnail: 'Thumbnail',
+      selectThumbnail: 'Select Thumbnail Image',
+      dragDropFile: 'Drag and drop your file here, or',
+      browseFiles: 'browse files',
+      submitForReview: 'Submit for Review',
+      searchPlaceholder: 'Search resources...',
+      advancedSearch: 'Advanced',
+      sortBy: 'Sort by',
+      sortOptions: {
+        relevance: 'Relevance',
+        newest: 'Newest',
+        oldest: 'Oldest',
+        mostDownloaded: 'Most Downloaded',
+        highestRated: 'Highest Rated',
+        alphabetical: 'A-Z'
+      },
+      minimumRating: 'Minimum Rating',
+      dateRange: 'Date Range',
+      details: 'Details',
+      tabs: {
+        overview: 'Overview',
+        reviews: 'Reviews',
+        versions: 'Versions'
+      },
+      related: 'Related Resources',
+      versions: 'Versions',
+      writeReview: 'Write a Review',
+      reviewPlaceholder: 'Share your thoughts about this resource...',
+      comment: 'Comment',
+      submitting: 'Submitting...',
+      reviewRequired: 'Please enter a review comment',
+      reviewError: 'Error submitting review',
+      noReviews: 'No reviews yet. Be the first to review!',
+      validation: {
+        titleRequired: 'Title is required',
+        descriptionRequired: 'Description is required',
+        summaryRequired: 'Summary is required',
+        fileRequired: 'File is required',
+        tagsRequired: 'At least one tag is required'
+      },
+      notFound: 'Resource not found',
+      notFoundDescription: 'The requested resource could not be found.',
+      noResults: 'No resources found',
+      noResultsDescription: 'Try adjusting your search filters or browse by category.',
+      contributeFirst: 'Be the first to contribute!',
+      verified: 'Verified'
+    },
+  },
+};
+
+export function getTranslations(lang: Language): Translations {
+  // Type-safe language access without violating noUncheckedIndexedAccess
+  if (lang === 'en') {
+    return translations.en;
+  }
+  return translations.es;
+}
+
+export function getLanguageFromUrl(url: URL): Language {
+  const pathname = url.pathname;
+  if (pathname.startsWith('/en/')) return 'en';
+  return 'es';
+}
+
+export function getAlternateUrls(currentUrl: URL): Record<Language, string> {
+  const pathname = currentUrl.pathname;
+  
+  // Remove language prefix if present
+  const cleanPath = pathname.replace(/^\/(es|en)/, '') || '/';
+  
+  return {
+    es: `/es${cleanPath}`,
+    en: `/en${cleanPath}`,
+  };
+}
+
+export const supportedLanguages: Language[] = ['es', 'en'];
+
+export const defaultLanguage: Language = 'es';

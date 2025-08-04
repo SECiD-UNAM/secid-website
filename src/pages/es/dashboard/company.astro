@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import CompanyDashboard from '@/components/jobs/CompanyDashboard';
+---
+
+<DashboardLayout
+  title="Panel de Empresa - SECiD"
+  description="Gestiona tus publicaciones de empleo y aplicaciones"
+  lang="es"
+>
+  <CompanyDashboard client:load lang="es" />
+</DashboardLayout>

@@ -1,0 +1,19 @@
+---
+import DashboardLayout from '../../../../layouts/DashboardLayout.astro';
+---
+
+<DashboardLayout title="Bioinformatics Commission Dashboard">
+  <div id="bioinformatics-dashboard"></div>
+</DashboardLayout>
+
+<script>
+  import { createRoot } from 'react-dom/client';
+  import React from 'react';
+  import BioinformaticsDashboard from '../../../../components/commissions/BioinformaticsDashboard';
+
+  const container = document.getElementById('bioinformatics-dashboard');
+  if (container) {
+    const root = createRoot(container);
+    root.render(React.createElement(BioinformaticsDashboard));
+  }
+</script>

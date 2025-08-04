@@ -1,0 +1,263 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import ContentModeration from '@/components/admin/ContentModeration.tsx';
+import AdminAuthGuard from '@/components/admin/AdminAuthGuard.tsx';
+
+export const prerender = false;
+
+const title = 'Moderación de Contenido - Admin SECiD';
+const description = 'Revisar y aprobar contenido de la plataforma SECiD';
+---
+
+<AdminLayout
+  title={title}
+  description={description}
+  currentPath="/admin/moderation"
+>
+  <AdminAuthGuard requiredRole="moderator" client:load>
+    <ContentModeration client:load />
+  </AdminAuthGuard>
+</AdminLayout>
+
+<script>
+  // Content moderation specific functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    // Track moderation access
+    if (typeof amplitude !== 'undefined') {
+      amplitude.getInstance().logEvent('admin_moderation_accessed', {
+        timestamp: new Date().toISOString(),
+        page: 'content_moderation',
+      });
+    }
+
+    // Auto-refresh moderation queue every 2 minutes
+    setInterval(
+      () => {
+        const event = new CustomEvent('refreshModerationQueue');
+        document.dispatchEvent(event);
+      },
+      2 * 60 * 1000
+    );
+
+    // Sound notification for new moderation items (if enabled)
+    let notificationSound = null;
+    const enableNotificationSound =
+      localStorage.getItem('admin_sound_notifications') === 'true';
+
+    if (enableNotificationSound) {
+      // Create audio context for notification sounds
+      try {
+        const audioContext = new (window.AudioContext ||
+          window.webkitAudioContext)();
+        notificationSound = {
+          context: audioContext,
+          play: (frequency = 800, duration = 200) => {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(
+              0.01,
+              audioContext.currentTime + duration / 1000
+            );
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration / 1000);
+          },
+        };
+      } catch (error) {
+        console.warn('Audio notifications not supported:', error);
+      }
+    }
+
+    // Listen for new moderation items
+    document.addEventListener('newModerationItem', (e) => {
+      if (notificationSound && e.detail.priority === 'urgent') {
+        notificationSound.play(1000, 300); // Higher pitch for urgent items
+      } else if (notificationSound) {
+        notificationSound.play(600, 150); // Lower pitch for normal items
+      }
+
+      // Show browser notification if permission granted
+      if (Notification.permission === 'granted') {
+        new Notification('Nueva Moderación Requerida', {
+          body: `${e.detail.type}: ${e.detail.title}`,
+          icon: '/images/favicon-32x32.png',
+          tag: 'moderation-item',
+        });
+      }
+    });
+
+    // Request notification permission
+    if (Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+
+    // Keyboard shortcuts for moderation
+    document.addEventListener('keydown', (e) => {
+      // Only in moderation context
+      if (!window.location.pathname.includes('/admin/moderation')) return;
+
+      // Number keys 1-5 for priority shortcuts
+      if (e.key >= '1' && e.key <= '5' && !e.ctrlKey && !e.metaKey) {
+        const priorities = ['low', 'medium', 'high', 'urgent'];
+        const selectedPriority = priorities[parseInt(e.key) - 1];
+        if (selectedPriority) {
+          const priorityFilter = document.querySelector(
+            '[data-filter="priority"]'
+          );
+          if (priorityFilter) {
+            priorityFilter.value = selectedPriority;
+            priorityFilter.dispatchEvent(new Event('change'));
+          }
+        }
+      }
+
+      // A = Approve selected items
+      if (e.key === 'a' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        const approveButton = document.querySelector(
+          '[data-action="bulk-approve"]'
+        );
+        if (approveButton && !approveButton.disabled) {
+          approveButton.click();
+        }
+      }
+
+      // R = Reject selected items
+      if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        const rejectButton = document.querySelector(
+          '[data-action="bulk-reject"]'
+        );
+        if (rejectButton && !rejectButton.disabled) {
+          rejectButton.click();
+        }
+      }
+
+      // Tab switching
+      if (e.key === 'Tab' && e.ctrlKey) {
+        e.preventDefault();
+        const tabs = document.querySelectorAll('[data-tab]');
+        const activeTab = document.querySelector('[data-tab].active');
+        if (tabs.length > 0 && activeTab) {
+          const currentIndex = Array.from(tabs).indexOf(activeTab);
+          const nextIndex = e.shiftKey
+            ? (currentIndex - 1 + tabs.length) % tabs.length
+            : (currentIndex + 1) % tabs.length;
+          tabs[nextIndex].click();
+        }
+      }
+    });
+
+    // Save moderation preferences
+    const saveModerationPreferences = () => {
+      const preferences = {
+        autoRefresh:
+          document.querySelector('[data-setting="auto-refresh"]')?.checked ||
+          false,
+        soundNotifications:
+          document.querySelector('[data-setting="sound-notifications"]')
+            ?.checked || false,
+        showPreview:
+          document.querySelector('[data-setting="show-preview"]')?.checked ||
+          true,
+        itemsPerPage:
+          document.querySelector('[data-setting="items-per-page"]')?.value ||
+          '20',
+      };
+      localStorage.setItem(
+        'admin_moderation_preferences',
+        JSON.stringify(preferences)
+      );
+    };
+
+    // Auto-save preferences on change
+    document.addEventListener('change', (e) => {
+      if (e.target.hasAttribute('data-setting')) {
+        saveModerationPreferences();
+      }
+    });
+  });
+</script>
+
+<style>
+  /* Moderation specific styles */
+  .moderation-item {
+    transition: all 0.2s ease-in-out;
+    border-left: 4px solid transparent;
+  }
+
+  .moderation-item.urgent {
+    border-left-color: #ef4444;
+    background-color: #fef2f2;
+  }
+
+  .moderation-item.high {
+    border-left-color: #f97316;
+    background-color: #fff7ed;
+  }
+
+  .moderation-item.medium {
+    border-left-color: #eab308;
+    background-color: #fefce8;
+  }
+
+  .moderation-item.low {
+    border-left-color: #22c55e;
+    background-color: #f0fdf4;
+  }
+
+  .moderation-item:hover {
+    transform: translateX(2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .priority-badge {
+    animation: pulse 2s infinite;
+  }
+
+  .priority-badge.urgent {
+    animation: pulse 1s infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  .moderation-actions {
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .moderation-item:hover .moderation-actions {
+    opacity: 1;
+  }
+
+  /* Quick action buttons */
+  .quick-approve {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  }
+
+  .quick-reject {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+
+  .quick-flag {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  }
+</style>

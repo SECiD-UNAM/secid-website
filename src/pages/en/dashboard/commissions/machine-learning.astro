@@ -1,0 +1,19 @@
+---
+import DashboardLayout from '../../../../layouts/DashboardLayout.astro';
+---
+
+<DashboardLayout title="Machine Learning Commission Dashboard">
+  <div id="ml-dashboard"></div>
+</DashboardLayout>
+
+<script>
+  import { createRoot } from 'react-dom/client';
+  import React from 'react';
+  import MLDashboard from '../../../../components/commissions/MLDashboard';
+
+  const container = document.getElementById('ml-dashboard');
+  if (container) {
+    const root = createRoot(container);
+    root.render(React.createElement(MLDashboard));
+  }
+</script>

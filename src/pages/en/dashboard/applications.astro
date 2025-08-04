@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import ApplicationTracker from '@/components/jobs/ApplicationTracker';
+---
+
+<DashboardLayout
+  title="My Applications - SECiD"
+  description="Manage and track your job applications"
+  lang="en"
+>
+  <ApplicationTracker client:load lang="en" />
+</DashboardLayout>

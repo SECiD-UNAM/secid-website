@@ -1,0 +1,15 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import JobPostingForm from '@/components/jobs/JobPostingForm';
+
+// Check if user is authenticated and has permission to post jobs
+// This will be handled by the component itself with Firebase Auth
+---
+
+<DashboardLayout
+  title="Publicar Empleo - SECiD"
+  description="Publica una oportunidad laboral para la comunidad de egresados"
+  lang="es"
+>
+  <JobPostingForm client:load lang="es" />
+</DashboardLayout>

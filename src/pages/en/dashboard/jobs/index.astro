@@ -1,0 +1,62 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import JobSearchDemo from '@/components/jobs/JobSearchDemo';
+---
+
+<DashboardLayout
+  title="Job Board - SECiD"
+  description="Find data science job opportunities"
+  lang="en"
+>
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-start justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+          Job Board
+        </h1>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">
+          Explore job opportunities that match your profile
+        </p>
+      </div>
+      <a
+        href="/en/dashboard/jobs/post"
+        class="inline-flex items-center rounded-lg border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+      >
+        <svg
+          class="-ml-1 mr-2 h-5 w-5"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        Post a Job
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+      <p class="text-sm text-gray-600 dark:text-gray-400">Active Jobs</p>
+      <p class="text-2xl font-bold text-gray-900 dark:text-white">128</p>
+    </div>
+    <div class="rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+      <p class="text-sm text-gray-600 dark:text-gray-400">New This Week</p>
+      <p class="text-2xl font-bold text-gray-900 dark:text-white">24</p>
+    </div>
+    <div class="rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+      <p class="text-sm text-gray-600 dark:text-gray-400">Applications Sent</p>
+      <p class="text-2xl font-bold text-gray-900 dark:text-white">7</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <JobSearchDemo client:load lang="en" />
+</DashboardLayout>

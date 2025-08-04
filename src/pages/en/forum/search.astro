@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ForumSearch from '../../../components/forums/ForumSearch';
+import { getLanguageFromUrl } from '../../../i18n/translations';
+
+const language = getLanguageFromUrl(Astro.url);
+const url = new URL(Astro.request.url);
+const query = url.searchParams.get('q') || '';
+---
+
+<BaseLayout
+  title="Search Forum - SECiD"
+  description="Search the SECiD forum for topics and discussions"
+>
+  <ForumSearch language={language} initialQuery={query} client:load />
+</BaseLayout>

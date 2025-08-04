@@ -1,0 +1,19 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SignUpForm } from '@/components/auth/SignUpForm';
+import { getTranslations } from '@/i18n/translations';
+
+const t = getTranslations('es');
+---
+
+<BaseLayout
+  title={`${t.auth.signUp.title} - ${t.site.name}`}
+  description={t.auth.signUp.subtitle}
+  lang="es"
+>
+  <div
+    class="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 dark:bg-gray-900 sm:px-6 lg:px-8"
+  >
+    <SignUpForm client:load lang="es" />
+  </div>
+</BaseLayout>

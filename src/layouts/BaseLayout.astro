@@ -1,0 +1,200 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: 'es' | 'en';
+  ogImage?: string;
+}
+
+const {
+  title = 'SECiD - Sociedad de Egresados en Ciencia de Datos UNAM',
+  description = 'Conectando egresados en ciencia de datos de la UNAM. Oportunidades laborales, networking y crecimiento profesional.',
+  lang = 'es',
+  ogImage = '/images/logo.png',
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO Meta Tags -->
+    <title>{title}</title>
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, Astro.url)} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(ogImage, Astro.url)} />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/images/favicon-32x32.png"
+    />
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#8b5cf6" />
+
+    <!-- Preload Critical Fonts -->
+    <link
+      rel="preload"
+      href="/assets/webfonts/fa-solid-900.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <!-- View Transitions -->
+    <ViewTransitions />
+
+    <!-- Analytics - Amplitude -->
+    <script>
+      (function (e, t) {
+        var n = e.amplitude || { _q: [], _iq: {} };
+        var r = t.createElement('script');
+        r.type = 'text/javascript';
+        r.integrity =
+          'sha384-NPmUkfiWeW3a7YTqKC8NrXi0zHaJhKJpBUjgIdGhpVLhJX4DHTF+7IgGGPX6QJpD';
+        r.crossOrigin = 'anonymous';
+        r.async = true;
+        r.src = 'https://cdn.amplitude.com/libs/amplitude-8.21.9-min.gz.js';
+        r.onload = function () {
+          if (!e.amplitude.runQueuedFunctions) {
+            console.log('[Amplitude] Error: could not load SDK');
+          }
+        };
+        var i = t.getElementsByTagName('script')[0];
+        i.parentNode.insertBefore(r, i);
+        function s(e, t) {
+          e.prototype[t] = function () {
+            this._q.push([t].concat(Array.prototype.slice.call(arguments, 0)));
+            return this;
+          };
+        }
+        var o = function () {
+          this._q = [];
+          return this;
+        };
+        var a = [
+          'add',
+          'append',
+          'clearAll',
+          'prepend',
+          'set',
+          'setOnce',
+          'unset',
+          'preInsert',
+          'postInsert',
+          'remove',
+        ];
+        for (var c = 0; c < a.length; c++) {
+          s(o, a[c]);
+        }
+        n.Identify = o;
+        var u = function () {
+          this._q = [];
+          return this;
+        };
+        var l = [
+          'setProductId',
+          'setQuantity',
+          'setPrice',
+          'setRevenueType',
+          'setEventProperties',
+        ];
+        for (var p = 0; p < l.length; p++) {
+          s(u, l[p]);
+        }
+        n.Revenue = u;
+        var d = [
+          'init',
+          'logEvent',
+          'logRevenue',
+          'setUserId',
+          'setUserProperties',
+          'setOptOut',
+          'setVersionName',
+          'setDomain',
+          'setDeviceId',
+          'enableTracking',
+          'setGlobalUserProperties',
+          'identify',
+          'clearUserProperties',
+          'setGroup',
+          'logRevenueV2',
+          'regenerateDeviceId',
+          'groupIdentify',
+          'onInit',
+          'logEventWithTimestamp',
+          'logEventWithGroups',
+          'setSessionId',
+          'resetSessionId',
+        ];
+        function v(e) {
+          function t(t) {
+            e[t] = function () {
+              e._q.push([t].concat(Array.prototype.slice.call(arguments, 0)));
+            };
+          }
+          for (var n = 0; n < d.length; n++) {
+            t(d[n]);
+          }
+        }
+        v(n);
+        n.getInstance = function (e) {
+          e = (!e || e.length === 0 ? '$default_instance' : e).toLowerCase();
+          if (!Object.prototype.hasOwnProperty.call(n._iq, e)) {
+            n._iq[e] = { _q: [] };
+            v(n._iq[e]);
+          }
+          return n._iq[e];
+        };
+        e.amplitude = n;
+      })(window, document);
+
+      // Initialize Amplitude with your API key
+      amplitude.getInstance().init('YOUR_AMPLITUDE_API_KEY');
+    </script>
+  </head>
+
+  <body class="is-preload">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+      <main id="main-content" role="main" tabindex="-1">
+        <slot />
+      </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/browser.min.js"></script>
+    <script src="/assets/js/breakpoints.min.js"></script>
+    <script src="/assets/js/util.js"></script>
+    <script src="/assets/js/main.js"></script>
+  </body><style is:global>
+    /* Import global styles */
+    @import url('../styles/global.css');
+  </style>
+</html>

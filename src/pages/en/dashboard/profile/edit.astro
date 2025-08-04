@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import ProfileEdit from '@/components/profile/ProfileEdit';
+---
+
+<DashboardLayout
+  title="Edit Profile - SECiD"
+  description="Update your personal and professional information"
+  lang="en"
+>
+  <ProfileEdit client:load lang="en" />
+</DashboardLayout>

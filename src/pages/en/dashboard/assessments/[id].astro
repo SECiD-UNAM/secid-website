@@ -1,0 +1,59 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import SkillAssessment from '@/components/assessment/SkillAssessment';
+
+const { id } = Astro.params;
+
+// Map skill IDs to skill categories
+const skillMap: Record<string, any> = {
+  python: 'python',
+  sql: 'sql',
+  'machine-learning': 'machine_learning',
+  statistics: 'statistics',
+  'data-visualization': 'data_visualization',
+  'big-data': 'big_data',
+  'deep-learning': 'deep_learning',
+  'data-engineering': 'data_engineering',
+  'business-intelligence': 'business_intelligence',
+  excel: 'excel',
+  r: 'r',
+  tableau: 'tableau',
+  'power-bi': 'power_bi',
+  spark: 'spark',
+  aws: 'aws',
+  azure: 'azure',
+  gcp: 'gcp',
+  docker: 'docker',
+  git: 'git',
+  linux: 'linux',
+  apis: 'apis',
+  etl: 'etl',
+  databases: 'databases',
+  mongodb: 'mongodb',
+  hadoop: 'hadoop',
+};
+
+const skillCategory = skillMap[id as string] || 'python';
+const skillTitle = (id as string)
+  .split('-')
+  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ');
+---
+
+<DashboardLayout
+  title={`${skillTitle} Assessments - SECiD`}
+  description={`Evaluate and certify your ${skillTitle} skills`}
+  lang="en"
+>
+  <SkillAssessment
+    client:load
+    skillCategory={skillCategory}
+    userId="user123"
+    onStartAssessment={(assessmentId) => {
+      window.location.href = `/en/dashboard/assessments/take/${assessmentId}`;
+    }}
+    onViewCertificate={(certificateId) => {
+      window.location.href = `/en/dashboard/assessments/certificates/${certificateId}`;
+    }}
+  />
+</DashboardLayout>

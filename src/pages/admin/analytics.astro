@@ -1,0 +1,316 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import Analytics from '@/components/admin/Analytics.tsx';
+import AdminAuthGuard from '@/components/admin/AdminAuthGuard.tsx';
+
+export const prerender = false;
+
+const title = 'Analytics - Admin SECiD';
+const description = 'Métricas y reportes de la plataforma SECiD';
+---
+
+<AdminLayout
+  title={title}
+  description={description}
+  currentPath="/admin/analytics"
+>
+  <AdminAuthGuard requiredRole="admin" client:load>
+    <Analytics client:load />
+  </AdminAuthGuard>
+</AdminLayout>
+
+<script>
+  // Analytics page specific functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    // Track analytics access
+    if (typeof amplitude !== 'undefined') {
+      amplitude.getInstance().logEvent('admin_analytics_accessed', {
+        timestamp: new Date().toISOString(),
+        page: 'analytics_dashboard',
+      });
+    }
+
+    // Auto-refresh analytics data every 10 minutes
+    setInterval(
+      () => {
+        const event = new CustomEvent('refreshAnalytics');
+        document.dispatchEvent(event);
+      },
+      10 * 60 * 1000
+    );
+
+    // Save selected time range and filters
+    const saveAnalyticsPreferences = () => {
+      const preferences = {
+        timeRange:
+          document.querySelector('[data-filter="timeRange"]')?.value || '30d',
+        autoRefresh:
+          document.querySelector('[data-setting="auto-refresh"]')?.checked ||
+          true,
+        chartTheme:
+          document.querySelector('[data-setting="chart-theme"]')?.value ||
+          'light',
+        showGridLines:
+          document.querySelector('[data-setting="grid-lines"]')?.checked ||
+          true,
+      };
+      localStorage.setItem(
+        'admin_analytics_preferences',
+        JSON.stringify(preferences)
+      );
+    };
+
+    // Restore analytics preferences
+    const restoreAnalyticsPreferences = () => {
+      try {
+        const saved = localStorage.getItem('admin_analytics_preferences');
+        if (saved) {
+          const preferences = JSON.parse(saved);
+          Object.entries(preferences).forEach(([key, value]) => {
+            const element = document.querySelector(
+              `[data-filter="${key}"], [data-setting="${key}"]`
+            );
+            if (element) {
+              if (element.type === 'checkbox') {
+                element.checked = value;
+              } else {
+                element.value = value;
+              }
+            }
+          });
+        }
+      } catch (error) {
+        console.warn('Failed to restore analytics preferences:', error);
+      }
+    };
+
+    // Auto-save preferences
+    document.addEventListener('change', (e) => {
+      if (
+        e.target.hasAttribute('data-filter') ||
+        e.target.hasAttribute('data-setting')
+      ) {
+        saveAnalyticsPreferences();
+      }
+    });
+
+    // Keyboard shortcuts for analytics
+    document.addEventListener('keydown', (e) => {
+      // Only in analytics context
+      if (!window.location.pathname.includes('/admin/analytics')) return;
+
+      // Ctrl/Cmd + R = Refresh data
+      if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+        e.preventDefault();
+        const refreshButton = document.querySelector('[data-action="refresh"]');
+        if (refreshButton) {
+          refreshButton.click();
+        }
+      }
+
+      // Ctrl/Cmd + E = Export data
+      if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+        e.preventDefault();
+        const exportButton = document.querySelector('[data-action="export"]');
+        if (exportButton) {
+          exportButton.click();
+        }
+      }
+
+      // Number keys for time range shortcuts
+      const timeRangeMap = {
+        '1': '7d',
+        '2': '30d',
+        '3': '90d',
+        '4': '1y',
+      };
+
+      if (e.key in timeRangeMap && !e.ctrlKey && !e.metaKey) {
+        const timeRangeSelect = document.querySelector(
+          '[data-filter="timeRange"]'
+        );
+        if (timeRangeSelect) {
+          timeRangeSelect.value = timeRangeMap[e.key];
+          timeRangeSelect.dispatchEvent(new Event('change'));
+        }
+      }
+    });
+
+    // Chart interaction helpers
+    const enhanceCharts = () => {
+      // Add click handlers for chart drilldown
+      document.addEventListener('click', (e) => {
+        if (e.target.closest('chart-container')) {
+          const chart = e.target.closest('chart-container');
+          const chartType = chart.dataset.chartType;
+
+          // Log chart interaction
+          if (typeof amplitude !== 'undefined') {
+            amplitude.getInstance().logEvent('admin_chart_interaction', {
+              chartType,
+              timestamp: new Date().toISOString(),
+            });
+          }
+        }
+      });
+    };
+
+    // Performance monitoring for analytics page
+    const monitorPerformance = () => {
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (
+            entry.name.includes('chart') ||
+            entry.name.includes('analytics')
+          ) {
+            console.log(
+              `Analytics Performance: ${entry.name} took ${entry.duration}ms`
+            );
+
+            // Log slow operations
+            if (entry.duration > 1000) {
+              if (typeof amplitude !== 'undefined') {
+                amplitude.getInstance().logEvent('admin_performance_slow', {
+                  operation: entry.name,
+                  duration: entry.duration,
+                  timestamp: new Date().toISOString(),
+                });
+              }
+            }
+          }
+        }
+      });
+
+      observer.observe({ entryTypes: ['measure', 'navigation'] });
+    };
+
+    // Initialize
+    restoreAnalyticsPreferences();
+    enhanceCharts();
+    monitorPerformance();
+
+    // Real-time data updates (WebSocket would be better for production)
+    const enableRealTimeUpdates = () => {
+      // Simulate real-time updates for demo
+      setInterval(() => {
+        const event = new CustomEvent('updateRealTimeMetrics', {
+          detail: {
+            activeUsers: Math.floor(Math.random() * 50) + 200,
+            newSignups: Math.floor(Math.random() * 5),
+            timestamp: new Date(),
+          },
+        });
+        document.dispatchEvent(event);
+      }, 30000); // Every 30 seconds
+    };
+
+    enableRealTimeUpdates();
+  });
+</script>
+
+<style>
+  /* Analytics specific styles */
+  .analytics-dashboard {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+  }
+
+  .chart-container {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .chart-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  .metric-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+  }
+
+  .metric-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1);
+  }
+
+  .metric-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .metric-trend {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .metric-trend.positive {
+    color: #059669;
+  }
+
+  .metric-trend.negative {
+    color: #dc2626;
+  }
+
+  .metric-trend.neutral {
+    color: #6b7280;
+  }
+
+  /* Chart loading skeleton */
+  .chart-skeleton {
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 0.5rem;
+    height: 300px;
+  }
+
+  @keyframes loading {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .chart-container {
+      margin: 0 -1rem;
+      border-radius: 0;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+    }
+  }
+
+  /* Print styles for reports */
+  @media print {
+    .analytics-dashboard {
+      background: white !important;
+    }
+
+    .chart-container {
+      box-shadow: none !important;
+      border: 1px solid #e5e7eb !important;
+      break-inside: avoid;
+    }
+
+    .metric-card {
+      break-inside: avoid;
+    }
+  }
+</style>

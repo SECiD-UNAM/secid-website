@@ -1,0 +1,19 @@
+---
+import DashboardLayout from '../../../../layouts/DashboardLayout.astro';
+---
+
+<DashboardLayout title="Panel de Comisión de Analítica">
+  <div id="analytics-dashboard"></div>
+</DashboardLayout>
+
+<script>
+  import { createRoot } from 'react-dom/client';
+  import React from 'react';
+  import AnalyticsDashboard from '../../../../components/commissions/AnalyticsDashboard';
+
+  const container = document.getElementById('analytics-dashboard');
+  if (container) {
+    const root = createRoot(container);
+    root.render(React.createElement(AnalyticsDashboard));
+  }
+</script>

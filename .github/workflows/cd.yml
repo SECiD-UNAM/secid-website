@@ -1,0 +1,441 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      skip_tests:
+        description: 'Skip tests before deployment'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: deployment-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '20.17.0'
+  CACHE_DEPENDENCY_PATH: '**/package-lock.json'
+
+jobs:
+  # Pre-deployment validation
+  pre-deployment:
+    name: Pre-deployment Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      should_deploy: ${{ steps.validate.outputs.should_deploy }}
+      environment: ${{ steps.validate.outputs.environment }}
+      skip_tests: ${{ steps.validate.outputs.skip_tests }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate deployment conditions
+        id: validate
+        run: |
+          # Determine environment
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            ENVIRONMENT="${{ github.event.inputs.environment }}"
+            SKIP_TESTS="${{ github.event.inputs.skip_tests }}"
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            ENVIRONMENT="production"
+            SKIP_TESTS="false"
+          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            ENVIRONMENT="production"
+            SKIP_TESTS="false"
+          else
+            ENVIRONMENT="staging"
+            SKIP_TESTS="false"
+          fi
+          
+          echo "environment=${ENVIRONMENT}" >> $GITHUB_OUTPUT
+          echo "skip_tests=${SKIP_TESTS}" >> $GITHUB_OUTPUT
+          echo "should_deploy=true" >> $GITHUB_OUTPUT
+          
+          echo "🚀 Deploying to: ${ENVIRONMENT}"
+          echo "⚡ Skip tests: ${SKIP_TESTS}"
+
+      - name: Check for breaking changes
+        run: |
+          # Check for database migration files
+          if git diff --name-only HEAD~1 HEAD | grep -q "migrations/"; then
+            echo "⚠️ Database migrations detected"
+            echo "MIGRATION_REQUIRED=true" >> $GITHUB_ENV
+          fi
+          
+          # Check for environment variable changes
+          if git diff --name-only HEAD~1 HEAD | grep -q ".env.example"; then
+            echo "⚠️ Environment variable changes detected"
+            echo "ENV_CHANGES=true" >> $GITHUB_ENV
+          fi
+
+  # Run tests if not skipped
+  test:
+    name: Pre-deployment Tests
+    runs-on: ubuntu-latest
+    needs: pre-deployment
+    if: needs.pre-deployment.outputs.skip_tests != 'true'
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run critical tests
+        run: |
+          npm run test -- --run --coverage=false --reporter=verbose
+          npm run test:integration -- --run
+        env:
+          CI: true
+          NODE_ENV: test
+
+      - name: Quick E2E smoke tests
+        run: npx playwright test --grep="@smoke" --project=chromium
+        env:
+          BASE_URL: http://localhost:4173
+          CI: true
+
+  # Build application
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: [pre-deployment, test]
+    if: always() && (needs.test.result == 'success' || needs.pre-deployment.outputs.skip_tests == 'true')
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        environment: [staging, production]
+        include:
+          - environment: staging
+            build_env: staging
+          - environment: production
+            build_env: production
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build for ${{ matrix.environment }}
+        run: npm run build
+        env:
+          NODE_ENV: ${{ matrix.build_env }}
+          PUBLIC_FIREBASE_API_KEY: ${{ matrix.environment == 'production' && secrets.PROD_FIREBASE_API_KEY || secrets.STAGING_FIREBASE_API_KEY }}
+          PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ matrix.environment == 'production' && secrets.PROD_FIREBASE_AUTH_DOMAIN || secrets.STAGING_FIREBASE_AUTH_DOMAIN }}
+          PUBLIC_FIREBASE_PROJECT_ID: ${{ matrix.environment == 'production' && secrets.PROD_FIREBASE_PROJECT_ID || secrets.STAGING_FIREBASE_PROJECT_ID }}
+          PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ matrix.environment == 'production' && secrets.PROD_FIREBASE_STORAGE_BUCKET || secrets.STAGING_FIREBASE_STORAGE_BUCKET }}
+          PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ matrix.environment == 'production' && secrets.PROD_FIREBASE_MESSAGING_SENDER_ID || secrets.STAGING_FIREBASE_MESSAGING_SENDER_ID }}
+          PUBLIC_FIREBASE_APP_ID: ${{ matrix.environment == 'production' && secrets.PROD_FIREBASE_APP_ID || secrets.STAGING_FIREBASE_APP_ID }}
+          PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ matrix.environment == 'production' && secrets.PROD_FIREBASE_MEASUREMENT_ID || secrets.STAGING_FIREBASE_MEASUREMENT_ID }}
+          PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ matrix.environment == 'production' && secrets.PROD_STRIPE_PUBLISHABLE_KEY || secrets.STAGING_STRIPE_PUBLISHABLE_KEY }}
+
+      - name: Optimize build
+        run: |
+          # Gzip static assets
+          find dist -type f \( -name "*.js" -o -name "*.css" -o -name "*.html" \) -exec gzip -9 -k {} \;
+          
+          # Generate build manifest
+          echo "Build completed at: $(date)" > dist/build-info.txt
+          echo "Commit: ${{ github.sha }}" >> dist/build-info.txt
+          echo "Environment: ${{ matrix.environment }}" >> dist/build-info.txt
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.environment }}
+          path: dist/
+          retention-days: 30
+
+  # Deploy to staging
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [pre-deployment, build]
+    if: always() && needs.build.result == 'success' && (needs.pre-deployment.outputs.environment == 'staging' || github.ref != 'refs/heads/main')
+    environment:
+      name: staging
+      url: https://staging.secid.mx
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download staging build
+        uses: actions/download-artifact@v4
+        with:
+          name: build-staging
+          path: dist/
+
+      - name: Deploy to Firebase Hosting (Staging)
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}
+          channelId: staging
+          projectId: ${{ secrets.STAGING_FIREBASE_PROJECT_ID }}
+          entryPoint: ./
+
+      - name: Deploy Firebase Functions (Staging)
+        run: |
+          npm install -g firebase-tools
+          cd functions
+          npm ci
+          npm run build
+          cd ..
+          firebase deploy --only functions --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} --token ${{ secrets.FIREBASE_TOKEN }}
+
+      - name: Run smoke tests on staging
+        run: |
+          npx playwright test --grep="@smoke" --project=chromium
+        env:
+          BASE_URL: https://staging.secid.mx
+          CI: true
+
+      - name: Update staging status
+        run: |
+          echo "✅ Staging deployment completed successfully"
+          echo "🔗 Staging URL: https://staging.secid.mx"
+
+  # Deploy to production
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [pre-deployment, build, deploy-staging]
+    if: always() && needs.build.result == 'success' && needs.pre-deployment.outputs.environment == 'production' && (needs.deploy-staging.result == 'success' || needs.deploy-staging.result == 'skipped')
+    environment:
+      name: production
+      url: https://secid.mx
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download production build
+        uses: actions/download-artifact@v4
+        with:
+          name: build-production
+          path: dist/
+
+      - name: Deploy to Firebase Hosting (Production)
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PRODUCTION }}
+          channelId: live
+          projectId: ${{ secrets.PROD_FIREBASE_PROJECT_ID }}
+          entryPoint: ./
+
+      - name: Deploy Firebase Functions (Production)
+        run: |
+          npm install -g firebase-tools
+          cd functions
+          npm ci
+          npm run build
+          cd ..
+          firebase deploy --only functions --project ${{ secrets.PROD_FIREBASE_PROJECT_ID }} --token ${{ secrets.FIREBASE_TOKEN }}
+
+      - name: Run smoke tests on production
+        run: |
+          npx playwright test --grep="@smoke" --project=chromium
+        env:
+          BASE_URL: https://secid.mx
+          CI: true
+
+      - name: Update DNS and CDN
+        run: |
+          # Purge CDN cache if using Cloudflare
+          if [[ "${{ secrets.CLOUDFLARE_ZONE_ID }}" != "" ]]; then
+            curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+              -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              --data '{"purge_everything":true}'
+          fi
+
+      - name: Create GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          body: |
+            ## Changes in this Release
+            
+            🚀 **Deployed to Production**
+            
+            **Deployment Details:**
+            - Environment: Production
+            - Commit: ${{ github.sha }}
+            - Deployed at: ${{ steps.deploy.outputs.timestamp }}
+            
+            **URLs:**
+            - Production: https://secid.mx
+            - Staging: https://staging.secid.mx
+            
+            See [CHANGELOG.md](CHANGELOG.md) for detailed changes.
+          draft: false
+          prerelease: false
+
+  # Post-deployment validation
+  post-deployment:
+    name: Post-deployment Validation
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always() && (needs.deploy-staging.result == 'success' || needs.deploy-production.result == 'success')
+    timeout-minutes: 10
+    steps:
+      - name: Validate staging deployment
+        if: needs.deploy-staging.result == 'success'
+        run: |
+          # Health check
+          curl -f https://staging.secid.mx/health || exit 1
+          
+          # Basic functionality test
+          curl -f https://staging.secid.mx/api/health || exit 1
+
+      - name: Validate production deployment
+        if: needs.deploy-production.result == 'success'
+        run: |
+          # Health check
+          curl -f https://secid.mx/health || exit 1
+          
+          # Basic functionality test
+          curl -f https://secid.mx/api/health || exit 1
+
+      - name: Run performance tests
+        if: needs.deploy-production.result == 'success'
+        run: |
+          npm install -g @lhci/cli@0.13.x
+          lhci autorun --config=.lighthouserc.prod.js
+        env:
+          LHCI_BUILD_CONTEXT__CURRENT_HASH: ${{ github.sha }}
+
+      - name: Monitor deployment metrics
+        run: |
+          echo "📊 Deployment metrics:"
+          echo "- Build size: $(du -sh dist/ | cut -f1)"
+          echo "- Commit: ${{ github.sha }}"
+          echo "- Deployed at: $(date)"
+
+  # Deployment notifications
+  notify:
+    name: Deployment Notifications
+    runs-on: ubuntu-latest
+    needs: [pre-deployment, deploy-staging, deploy-production, post-deployment]
+    if: always()
+    steps:
+      - name: Send Slack notification
+        if: env.SLACK_WEBHOOK_URL != ''
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: '#deployments'
+          text: |
+            🚀 **Deployment ${{ job.status == 'success' && 'Successful' || 'Failed' }}**
+            
+            **Environment:** ${{ needs.pre-deployment.outputs.environment }}
+            **Repository:** ${{ github.repository }}
+            **Commit:** ${{ github.sha }}
+            **Author:** ${{ github.actor }}
+            **Branch:** ${{ github.ref_name }}
+            
+            **URLs:**
+            ${{ needs.deploy-staging.result == 'success' && '- Staging: https://staging.secid.mx' || '' }}
+            ${{ needs.deploy-production.result == 'success' && '- Production: https://secid.mx' || '' }}
+            
+            [View Details](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Send email notification
+        if: needs.deploy-production.result == 'success'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "🚀 Production Deployment Successful - SECiD Platform"
+          to: ${{ secrets.NOTIFICATION_EMAIL }}
+          from: ${{ secrets.EMAIL_USERNAME }}
+          body: |
+            Production deployment completed successfully!
+            
+            Commit: ${{ github.sha }}
+            Deployed at: ${{ steps.deploy.outputs.timestamp }}
+            
+            Production URL: https://secid.mx
+
+  # Rollback capability
+  rollback:
+    name: Rollback Deployment
+    runs-on: ubuntu-latest
+    if: failure() && (needs.deploy-production.result == 'failure' || needs.post-deployment.result == 'failure')
+    environment:
+      name: production-rollback
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Rollback production deployment
+        run: |
+          npm install -g firebase-tools
+          
+          # Get previous successful deployment
+          PREVIOUS_VERSION=$(firebase hosting:releases:list --project ${{ secrets.PROD_FIREBASE_PROJECT_ID }} --json | jq -r '.[1].version')
+          
+          # Rollback to previous version
+          firebase hosting:releases:restore $PREVIOUS_VERSION --project ${{ secrets.PROD_FIREBASE_PROJECT_ID }} --token ${{ secrets.FIREBASE_TOKEN }}
+          
+          echo "🔄 Rolled back to version: $PREVIOUS_VERSION"
+
+      - name: Notify rollback
+        if: env.SLACK_WEBHOOK_URL != ''
+        uses: 8398a7/action-slack@v3
+        with:
+          status: warning
+          channel: '#deployments'
+          text: |
+            🔄 **Production Rollback Executed**
+            
+            Due to deployment failure, production has been rolled back to the previous stable version.
+            
+            **Repository:** ${{ github.repository }}
+            **Failed Commit:** ${{ github.sha }}
+            
+            [View Details](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

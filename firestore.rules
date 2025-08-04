@@ -1,0 +1,344 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions for role-based access control
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getCurrentUser() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+    
+    function getUserRole() {
+      return getCurrentUser().data.role;
+    }
+    
+    function isVerified() {
+      return getCurrentUser().data.isVerified == true;
+    }
+    
+    function isActive() {
+      return getCurrentUser().data.status == 'active';
+    }
+    
+    function hasRole(role) {
+      return getUserRole() == role;
+    }
+    
+    function hasAnyRole(roles) {
+      return getUserRole() in roles;
+    }
+    
+    function isOwner(resourceUserId) {
+      return request.auth.uid == resourceUserId;
+    }
+    
+    function canModerate() {
+      return hasAnyRole(['admin', 'moderator']);
+    }
+    
+    function canAdminister() {
+      return hasRole('admin');
+    }
+    
+    function rateLimitCheck() {
+      // Basic rate limiting - can be enhanced with custom claims
+      return true; // Implement with Cloud Functions if needed
+    }
+    
+    function validateUserData() {
+      return request.resource.data.keys().hasAll(['email', 'firstName', 'lastName']) &&
+             request.resource.data.email is string &&
+             request.resource.data.firstName is string &&
+             request.resource.data.lastName is string &&
+             request.resource.data.email.size() > 0 &&
+             request.resource.data.firstName.size() > 0 &&
+             request.resource.data.lastName.size() > 0;
+    }
+    
+    function validateJobData() {
+      return request.resource.data.keys().hasAll(['title', 'company', 'description']) &&
+             request.resource.data.title is string &&
+             request.resource.data.company is string &&
+             request.resource.data.description is string &&
+             request.resource.data.title.size() >= 5 &&
+             request.resource.data.title.size() <= 100 &&
+             request.resource.data.company.size() >= 2 &&
+             request.resource.data.description.size() >= 50;
+    }
+    
+    function validateEventData() {
+      return request.resource.data.keys().hasAll(['title', 'description', 'startDate']) &&
+             request.resource.data.title is string &&
+             request.resource.data.description is string &&
+             request.resource.data.startDate is timestamp &&
+             request.resource.data.title.size() >= 5 &&
+             request.resource.data.description.size() >= 50;
+    }
+    
+    // Users collection with enhanced security
+    match /users/{userId} {
+      allow read: if isAuthenticated() && 
+                     (isOwner(userId) || 
+                      isVerified() || 
+                      canModerate());
+      
+      allow create: if isAuthenticated() && 
+                       isOwner(userId) && 
+                       validateUserData() &&
+                       request.resource.data.createdAt == request.time &&
+                       request.resource.data.role == 'member' && // New users start as members
+                       request.resource.data.status == 'pending';
+      
+      allow update: if isAuthenticated() && 
+                       isOwner(userId) && 
+                       validateUserData() &&
+                       // Prevent users from changing critical fields
+                       request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['firstName', 'lastName', 'bio', 'skills', 'interests', 
+                                  'currentTitle', 'company', 'phone', 'profileImage',
+                                  'socialMedia', 'preferences', 'updatedAt']) &&
+                       request.resource.data.updatedAt == request.time;
+      
+      // Admin-only operations
+      allow update: if isAuthenticated() && 
+                       canAdminister() &&
+                       validateUserData() &&
+                       request.resource.data.updatedAt == request.time;
+      
+      allow delete: if isAuthenticated() && canAdminister();
+      
+      // User activity logs subcollection
+      match /activity/{activityId} {
+        allow read: if isAuthenticated() && 
+                      (isOwner(userId) || canModerate());
+        allow write: if false; // Only server can write activity logs
+      }
+      
+      // User notifications subcollection
+      match /notifications/{notificationId} {
+        allow read: if isAuthenticated() && isOwner(userId);
+        allow update: if isAuthenticated() && isOwner(userId) &&
+                        request.resource.data.diff(resource.data).affectedKeys()
+                          .hasOnly(['read', 'readAt']);
+        allow delete: if isAuthenticated() && isOwner(userId);
+      }
+    }
+    
+    // Jobs collection with enhanced validation
+    match /jobs/{jobId} {
+      allow read: if isAuthenticated() && isActive();
+      
+      allow create: if isAuthenticated() && 
+                       isVerified() && 
+                       isActive() &&
+                       validateJobData() &&
+                       request.resource.data.postedBy == request.auth.uid &&
+                       request.resource.data.createdAt == request.time &&
+                       request.resource.data.status == 'draft';
+      
+      allow update: if isAuthenticated() && 
+                       isActive() &&
+                       (isOwner(resource.data.postedBy) || canModerate()) &&
+                       validateJobData() &&
+                       request.resource.data.updatedAt == request.time &&
+                       // Prevent changing ownership
+                       request.resource.data.postedBy == resource.data.postedBy;
+      
+      allow delete: if isAuthenticated() && 
+                       (isOwner(resource.data.postedBy) || canAdminister());
+      
+      // Job applications subcollection
+      match /applications/{applicationId} {
+        allow read: if isAuthenticated() && 
+                      (isOwner(resource.data.applicantId) ||
+                       isOwner(get(/databases/$(database)/documents/jobs/$(jobId)).data.postedBy) ||
+                       canModerate());
+        
+        allow create: if isAuthenticated() && 
+                        isVerified() &&
+                        isActive() &&
+                        request.resource.data.applicantId == request.auth.uid &&
+                        request.resource.data.jobId == jobId &&
+                        request.resource.data.createdAt == request.time &&
+                        request.resource.data.status == 'submitted';
+        
+        allow update: if isAuthenticated() && 
+                        isActive() &&
+                        (isOwner(resource.data.applicantId) ||
+                         isOwner(get(/databases/$(database)/documents/jobs/$(jobId)).data.postedBy) ||
+                         canModerate()) &&
+                        request.resource.data.updatedAt == request.time;
+        
+        allow delete: if isAuthenticated() && 
+                        (isOwner(resource.data.applicantId) || canAdminister());
+      }
+      
+      // Job analytics subcollection (read-only for job owners)
+      match /analytics/{analyticsId} {
+        allow read: if isAuthenticated() && 
+                      (isOwner(get(/databases/$(database)/documents/jobs/$(jobId)).data.postedBy) ||
+                       canModerate());
+        allow write: if false; // Only server can write analytics
+      }
+    }
+    
+    // Events collection with enhanced permissions
+    match /events/{eventId} {
+      allow read: if isAuthenticated();
+      
+      allow create: if isAuthenticated() && 
+                       canModerate() &&
+                       validateEventData() &&
+                       request.resource.data.createdBy == request.auth.uid &&
+                       request.resource.data.createdAt == request.time;
+      
+      allow update: if isAuthenticated() && 
+                       (isOwner(resource.data.createdBy) || canModerate()) &&
+                       validateEventData() &&
+                       request.resource.data.updatedAt == request.time;
+      
+      allow delete: if isAuthenticated() && 
+                       (isOwner(resource.data.createdBy) || canAdminister());
+      
+      // Event registrations subcollection
+      match /registrations/{registrationId} {
+        allow read: if isAuthenticated() && 
+                      (isOwner(resource.data.userId) ||
+                       isOwner(get(/databases/$(database)/documents/events/$(eventId)).data.createdBy) ||
+                       canModerate());
+        
+        allow create: if isAuthenticated() && 
+                        isVerified() &&
+                        isActive() &&
+                        request.resource.data.userId == request.auth.uid &&
+                        request.resource.data.eventId == eventId &&
+                        request.resource.data.registeredAt == request.time;
+        
+        allow update: if isAuthenticated() && 
+                        (isOwner(resource.data.userId) ||
+                         isOwner(get(/databases/$(database)/documents/events/$(eventId)).data.createdBy) ||
+                         canModerate()) &&
+                        request.resource.data.updatedAt == request.time;
+        
+        allow delete: if isAuthenticated() && 
+                        (isOwner(resource.data.userId) || canAdminister());
+      }
+    }
+    
+    // Forums collection with content moderation
+    match /forums/{forumId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated() && canModerate();
+      
+      // Forum posts with content validation
+      match /posts/{postId} {
+        allow read: if isAuthenticated();
+        
+        allow create: if isAuthenticated() && 
+                        isVerified() &&
+                        isActive() &&
+                        request.resource.data.authorId == request.auth.uid &&
+                        request.resource.data.forumId == forumId &&
+                        request.resource.data.createdAt == request.time &&
+                        request.resource.data.content is string &&
+                        request.resource.data.content.size() >= 10 &&
+                        request.resource.data.content.size() <= 5000;
+        
+        allow update: if isAuthenticated() && 
+                        isActive() &&
+                        (isOwner(resource.data.authorId) || canModerate()) &&
+                        request.resource.data.updatedAt == request.time &&
+                        // Prevent changing authorship
+                        request.resource.data.authorId == resource.data.authorId;
+        
+        allow delete: if isAuthenticated() && 
+                        (isOwner(resource.data.authorId) || canModerate());
+        
+        // Post replies subcollection
+        match /replies/{replyId} {
+          allow read: if isAuthenticated();
+          
+          allow create: if isAuthenticated() && 
+                          isVerified() &&
+                          isActive() &&
+                          request.resource.data.authorId == request.auth.uid &&
+                          request.resource.data.postId == postId &&
+                          request.resource.data.createdAt == request.time;
+          
+          allow update: if isAuthenticated() && 
+                          (isOwner(resource.data.authorId) || canModerate()) &&
+                          request.resource.data.updatedAt == request.time;
+          
+          allow delete: if isAuthenticated() && 
+                          (isOwner(resource.data.authorId) || canModerate());
+        }
+      }
+    }
+    
+    // Mentorship system with privacy controls
+    match /mentorship/{matchId} {
+      allow read: if isAuthenticated() && 
+                     (isOwner(resource.data.mentorId) || 
+                      isOwner(resource.data.menteeId) ||
+                      canModerate());
+      
+      allow create: if isAuthenticated() && 
+                       isVerified() &&
+                       isActive() &&
+                       (request.resource.data.mentorId == request.auth.uid ||
+                        request.resource.data.menteeId == request.auth.uid) &&
+                       request.resource.data.createdAt == request.time;
+      
+      allow update: if isAuthenticated() && 
+                       (isOwner(resource.data.mentorId) || 
+                        isOwner(resource.data.menteeId) ||
+                        canModerate()) &&
+                       request.resource.data.updatedAt == request.time;
+      
+      allow delete: if isAuthenticated() && 
+                       (isOwner(resource.data.mentorId) || 
+                        isOwner(resource.data.menteeId) ||
+                        canAdminister());
+    }
+    
+    // Admin-only collections
+    match /admin/{document=**} {
+      allow read, write: if isAuthenticated() && canAdminister();
+    }
+    
+    // System logs (read-only for admins)
+    match /logs/{logId} {
+      allow read: if isAuthenticated() && canAdminister();
+      allow write: if false; // Only server can write logs
+    }
+    
+    // Reports collection for content moderation
+    match /reports/{reportId} {
+      allow read: if isAuthenticated() && canModerate();
+      
+      allow create: if isAuthenticated() && 
+                       isVerified() &&
+                       request.resource.data.reportedBy == request.auth.uid &&
+                       request.resource.data.createdAt == request.time &&
+                       request.resource.data.reason is string &&
+                       request.resource.data.description is string;
+      
+      allow update: if isAuthenticated() && canModerate();
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+    
+    // Rate limiting collection (server-managed)
+    match /rate_limits/{limitId} {
+      allow read: if isAuthenticated() && canAdminister();
+      allow write: if false; // Only server can manage rate limits
+    }
+    
+    // Analytics collections (admin access only)
+    match /analytics/{document=**} {
+      allow read: if isAuthenticated() && canModerate();
+      allow write: if false; // Only server can write analytics
+    }
+  }
+}

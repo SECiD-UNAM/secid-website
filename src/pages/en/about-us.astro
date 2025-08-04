@@ -1,0 +1,145 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('en');
+---
+
+<BaseLayout
+  title="About Us - SECiD"
+  description="Learn about UNAM's Data Science Alumni Society"
+  lang="en"
+>
+  <!-- Main -->
+  <div id="main">
+    <div class="inner">
+      <!-- Header -->
+      <header id="header">
+        <a href="/en/" class="logo"><strong>{t.site.name}</strong></a>
+        <ul class="icons">
+          <li>
+            <a href="/en/login" class="button small">{t.auth.signIn.button}</a>
+          </li>
+          <li><a href="/es/sobre-nosotros" class="button small">Español</a></li>
+        </ul>
+      </header>
+
+      <!-- Content -->
+      <section>
+        <header class="main">
+          <h1>About Us</h1>
+        </header>
+
+        <span class="image main"
+          ><img src="/images/logo.png" alt="SECiD Logo" /></span
+        >
+
+        <h2>Who We Are</h2>
+        <p>
+          The Data Science Alumni Society (SECiD) is a vibrant community of
+          professionals who graduated from UNAM, united by our passion for data
+          and commitment to excellence in data analysis.
+        </p>
+
+        <h2>Our Mission</h2>
+        <p>
+          To foster continuous professional growth for our members, facilitate
+          meaningful connections between alumni and companies, and promote the
+          advancement of data science in Mexico.
+        </p>
+
+        <h2>Our Values</h2>
+        <div class="row">
+          <div class="col-6 col-12-small">
+            <h3>Excellence</h3>
+            <p>
+              We strive to maintain the highest standards in everything we do.
+            </p>
+          </div>
+          <div class="col-6 col-12-small">
+            <h3>Collaboration</h3>
+            <p>We believe in the power of community and teamwork.</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6 col-12-small">
+            <h3>Innovation</h3>
+            <p>We drive technological advancement and new ideas.</p>
+          </div>
+          <div class="col-6 col-12-small">
+            <h3>Integrity</h3>
+            <p>We act with honesty and transparency in all our activities.</p>
+          </div>
+        </div>
+
+        <hr class="major" />
+
+        <h2>Join Us</h2>
+        <p>
+          If you are a graduate of UNAM's Data Science program, we invite you to
+          be part of our community. Together we can create a positive impact in
+          the world of data.
+        </p>
+
+        <ul class="actions">
+          <li>
+            <a href="/registro" class="button primary big">Register Now</a>
+          </li>
+          <li><a href="/en/contact" class="button big">Contact Us</a></li>
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="inner">
+      <!-- Search -->
+      <section id="search" class="alt">
+        <form method="post" action="#">
+          <input type="text" name="query" id="query" placeholder="Search" />
+        </form>
+      </section>
+
+      <!-- Menu -->
+      <nav id="menu">
+        <header class="major">
+          <h2>Menu</h2>
+        </header>
+        <ul>
+          <li><a href="/en/">Home</a></li>
+          <li><a href="/en/about-us">About Us</a></li>
+          <li><a href="/en/jobs">Job Board</a></li>
+          <li><a href="/en/contact">Contact</a></li>
+          <li><a href="/en/login">Sign In</a></li>
+          <li><a href="/registro">Register</a></li>
+        </ul>
+      </nav>
+
+      <!-- Section -->
+      <section>
+        <header class="major">
+          <h2>Get in Touch</h2>
+        </header>
+        <p>Questions? We're here to help.</p>
+        <ul class="contact">
+          <li class="icon solid fa-envelope">
+            <a href="#">contacto@secid.mx</a>
+          </li>
+          <li class="icon brands fa-linkedin">
+            <a href="#">linkedin.com/company/secid</a>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <p class="copyright">
+          &copy; SECiD. All rights reserved. Design: <a
+            href="https://html5up.net">HTML5 UP</a
+          >.
+        </p>
+      </footer>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,19 @@
+---
+import DashboardLayout from '../../../../layouts/DashboardLayout.astro';
+---
+
+<DashboardLayout title="Data Visualization Commission Dashboard">
+  <div id="data-viz-dashboard"></div>
+</DashboardLayout>
+
+<script>
+  import { createRoot } from 'react-dom/client';
+  import React from 'react';
+  import DataVizDashboard from '../../../../components/commissions/DataVizDashboard';
+
+  const container = document.getElementById('data-viz-dashboard');
+  if (container) {
+    const root = createRoot(container);
+    root.render(React.createElement(DataVizDashboard));
+  }
+</script>

@@ -1,20 +1,19 @@
-# 📊 SECiD Website
+# 🚀 SECiD Alumni Platform
 
 <div align="center">
 
 ![SECiD Logo](images/logo.png)
 
 **Sociedad de Egresados en Ciencia de Datos**  
-*UNAM's Data Science Alumni Society*
+_UNAM's Data Science Alumni Society Platform_
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/secid/secid-website/static.yml?branch=main&logo=github&label=Build%20%26%20Deploy)](https://github.com/secid/secid-website/actions)
-[![Website](https://img.shields.io/website?url=https%3A%2F%2Fsecid.mx&logo=firefox&logoColor=white)](https://secid.mx)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/secid/secid-website/deploy.yml?branch=main&logo=github&label=Build%20%26%20Deploy)](https://github.com/secid/secid-website/actions)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fsecid.mx&logo=astro&logoColor=white)](https://secid.mx)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-20.17%2B-green?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](#)
-[![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)](#)
 
-[🌐 Visit Website](https://secid.mx) • [📝 Report Issues](https://github.com/secid/secid-website/issues) • [🤝 Contributing](#contributing)
+[🌐 Visit Platform](https://secid.mx) • [📖 Quick Start](QUICKSTART.md) • [💻 Developer Guide](DEVELOPMENT.md) • [🤝 Contributing](#contributing)
 
 </div>
 
@@ -25,267 +24,341 @@
 **SECiD** (Sociedad de Egresados en Ciencia de Datos) is UNAM's premier Data Science Alumni Society, dedicated to connecting graduates, fostering professional growth, and building a strong community within Mexico's data science ecosystem.
 
 Our platform serves as the central hub for:
+
 - 🤝 **Alumni Networking** - Connect with fellow data science professionals
-- 💼 **Career Opportunities** - Access exclusive job postings and career resources  
+- 💼 **Career Opportunities** - Access exclusive job postings and career resources
 - 📚 **Knowledge Sharing** - Stay updated with industry trends and best practices
 - 🎓 **Professional Development** - Participate in workshops, seminars, and events
 
 ## ✨ Features & Highlights
 
-### 🚀 **Core Features**
-- **Responsive Design** - Optimized for all devices and screen sizes
-- **Job Board Integration** - Dedicated job submission and discovery system
-- **Member Registration** - Streamlined onboarding via Google Forms integration
-- **Analytics Tracking** - Comprehensive user behavior analysis with Amplitude
-- **SEO Optimized** - Complete Schema.org structured data and meta optimization
+### 🚀 **Platform Features**
 
-### 🛠️ **Technical Excellence**
-- **Performance First** - Lighthouse score optimized static site
-- **Accessibility Compliant** - WCAG guidelines adherence with pa11y testing
-- **PWA Ready** - Progressive Web App capabilities with manifest
-- **Modern Tooling** - Automated testing, validation, and deployment pipeline
+- **🌐 Multilingual** - Full Spanish/English support with i18n
+- **🔐 Authentication** - Secure member login with Firebase Auth
+- **💼 Job Board** - Advanced job posting and discovery system
+- **👥 Member Directory** - Connect with alumni across industries
+- **📊 Analytics Dashboard** - Track engagement and community growth
+- **📱 PWA Ready** - Install as mobile app for offline access
 
-### 🎨 **Design & UX**
-- **Professional Aesthetics** - Based on HTML5 UP's Editorial template
-- **FontAwesome Integration** - Comprehensive icon library
+### 🛠️ **Technical Stack**
+
+- **[Astro](https://astro.build)** - Lightning-fast static site generator
+- **[TypeScript](https://www.typescriptlang.org/)** - Type-safe development
+- **[React](https://react.dev)** - Interactive UI components
+- **[Tailwind CSS](https://tailwindcss.com)** - Modern utility-first styling
+- **[Firebase](https://firebase.google.com)** - Backend services and authentication
+- **[GitHub Pages](https://pages.github.com)** - Zero-cost hosting
+
+### 🎨 **Modern Features**
+
+- **🌙 Dark Mode** - Automatic theme switching
+- **⚡ Performance** - 95+ Lighthouse scores
+- **♿ Accessible** - WCAG 2.1 AA compliant
+- **🔍 SEO Optimized** - Schema.org structured data
+- **📱 Responsive** - Mobile-first design
+- **🧪 Well-Tested** - Unit, integration, and E2E tests
 - **Custom Branding** - SECiD-specific styling and visual identity
 - **Multi-language Ready** - Structured for internationalization
 
-## 🚀 Quick Start
+## 🚀 Getting Started
 
-### Prerequisites
+### The Fastest Way - One Command!
 
-- **Node.js** 20.17.0 or higher
-- **npm** (comes with Node.js)
-- **Git** for version control
+```bash
+# Clone and start everything with a single command
+git clone https://github.com/secid/secid-website.git && \
+cd secid-website && \
+make start
+```
 
-### Installation
+That's it! 🎉 Your browser will automatically open to http://localhost:4321
 
-1. **Clone the repository**
+**What `make start` does:**
+
+- ✅ Checks and installs dependencies (first run only)
+- ✅ Sets up environment files
+- ✅ Starts the development server
+- ✅ Opens your browser automatically
+- ✅ Uses Mock API if no Firebase credentials
+
+### Manual Setup
+
+1. **Prerequisites**
+   - Node.js 20.17.0+ ([Download](https://nodejs.org/))
+   - Git ([Download](https://git-scm.com/))
+   - Make (usually pre-installed)
+
+2. **Clone & Install**
+
    ```bash
    git clone https://github.com/secid/secid-website.git
    cd secid-website
-   ```
-
-2. **Install dependencies**
-   ```bash
    npm install
    ```
 
-3. **Start development server**
+3. **Configure Environment**
+
    ```bash
-   npm run dev
+   cp .env.example .env
+   # Edit .env with your Firebase credentials (optional)
    ```
 
-4. **Open your browser**
-   ```
-   http://localhost:3000
-   ```
+   **Note:** Firebase credentials are optional! The platform will automatically use a mock API for local development if credentials are not provided.
 
-That's it! The website is now running locally with hot reload enabled.
+4. **Start Development**
+   ```bash
+   make dev
+   # or npm run dev
+   ```
 
 ## 🛠️ Development Workflow
 
-### **Available Commands**
+### **Essential Commands**
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | 🚀 Build for development and start local server |
-| `npm run serve` | 🌐 Start local server on port 3000 |
-| `npm run build` | 🏗️ Build for production |
-| `npm run build:dev` | 🔧 Build for development environment |
-| `npm run build:staging` | 🎭 Build for staging environment |
+| Command        | Description                                     |
+| -------------- | ----------------------------------------------- |
+| `make start`   | 🚀 Smart start - setup (if needed) + dev server |
+| `make dev`     | 💻 Start development server only                |
+| `make test`    | 🧪 Run all tests (lint, type check, unit)       |
+| `make build`   | 🏗️ Build for production                         |
+| `make preview` | 👀 Preview production build                     |
+| `make help`    | 📝 Show all available commands                  |
 
-### **Testing & Validation**
-
-| Command | Description |
-|---------|-------------|
-| `npm run precommit` | ✅ Run all pre-commit validation checks |
-| `npm run test:local` | 🧪 Run complete local validation suite |
-| `npm run validate:html` | 📝 Validate HTML structure |
-| `npm run validate:schema` | 🔍 Validate Schema.org structured data |
-| `npm run test:accessibility` | ♿ Run accessibility tests |
-| `npm run test:lighthouse` | 🔍 Run Lighthouse performance audit |
-
-### **Pre-commit Hooks**
-
-The project uses **Husky** and **lint-staged** to ensure code quality:
-
-- ✅ **Automatic validation** on staged files before commit
-- 🏗️ **Build verification** to catch environment issues early  
-- 🔍 **Schema validation** for structured data integrity
-- 🚫 **Prevents broken commits** from reaching the repository
+### **Testing**
 
 ```bash
-# Pre-commit hooks run automatically, but you can test manually:
-npm run precommit
+# Run all tests
+make test
+
+# Run specific test types
+make test-unit      # Unit tests with Vitest
+make test-e2e       # E2E tests with Playwright
+make test-lint      # ESLint checks
+make test-type      # TypeScript checks
+make test-coverage  # Coverage report
 ```
+
+### **Code Quality**
+
+```bash
+# Auto-fix issues
+make lint          # Fix ESLint issues
+make format        # Format with Prettier
+
+# Validation
+make validate      # HTML & Schema.org checks
+make health        # Environment health check
+```
+
+### **Development Tips**
+
+- 🌐 Access from other devices: `make dev-host`
+- 🔍 Debug mode: `make dev-debug`
+- 📊 Bundle analysis: `make analyze`
+- 🚀 Performance audit: `make lighthouse`
 
 ## 📁 Project Structure
 
 ```
 secid-website/
-├── 📄 index.html              # Homepage
-├── 📄 aboutus.html            # About Us page  
-├── 📄 job-submission.html     # Job posting form
-├── 📄 registro.html           # Registration redirect
-├── 📄 elements.html           # Template showcase
-├── 🎨 assets/
-│   ├── css/                   # Compiled stylesheets
-│   ├── js/                    # JavaScript functionality
-│   ├── sass/                  # SASS source files
-│   └── webfonts/              # FontAwesome fonts
-├── 🖼️ images/                 # Site images and logos
-├── ⚙️ .github/workflows/      # CI/CD automation
-├── 🏗️ build.js               # Build script
-├── ✅ validate-schema.js      # Schema validation
-├── 🎯 lighthouserc.js         # Lighthouse configuration
-├── 📦 package.json            # Dependencies and scripts
+├── 📄 src/
+│   ├── 🎨 components/         # React components
+│   │   ├── auth/            # Authentication (Login, SignUp)
+│   │   ├── layout/          # Layout components
+│   │   └── ui/              # Reusable UI components
+│   ├── 📄 pages/             # Route pages
+│   │   ├── es/              # Spanish pages
+│   │   └── en/              # English pages
+│   ├── 🏷️ layouts/           # Astro layouts
+│   ├── 🔧 lib/               # Utilities & Firebase
+│   ├── 🌍 i18n/              # Translations
+│   ├── 🎨 styles/            # Global styles
+│   └── 📝 types/             # TypeScript types
+├── 🌐 public/               # Static assets
+├── 🧪 tests/                # Test files
+├── 📦 scripts/              # Build & utility scripts
+├── ⚙️ .github/workflows/    # GitHub Actions
+├── 🔧 Makefile             # Developer commands
+└── 📝 docs/                 # Documentation
 └── 📚 raw_template/           # Original HTML5 UP template
 ```
 
-### **Key Files**
+## 🚀 Deployment
 
-- **`build.js`** - Environment-specific build processing
-- **`validate-schema.js`** - Schema.org structured data validation  
-- **`CLAUDE.md`** - AI assistant project guidance
-- **`.husky/pre-commit`** - Git hook configuration
-- **`manifest.json`** - PWA configuration
+### **GitHub Pages (Production)**
+
+Automatic deployment on push to `main` branch:
+
+```bash
+# Manual deployment
+make deploy-gh-pages
+```
+
+### **Firebase Hosting (Alternative)**
+
+```bash
+# Login to Firebase
+make firebase-login
+
+# Deploy to production
+make firebase-deploy
+
+# Create preview channel
+make firebase-preview
+```
 
 ## 🔄 CI/CD Pipeline
 
-### **GitHub Actions Workflow**
+The project uses GitHub Actions for continuous integration and deployment:
 
-Our automated pipeline ensures quality and reliability:
+**🔄 Automated on:**
 
-```yaml
-🔄 Trigger Events:
-  - Push to main branch
-  - Pull requests  
-  - Manual dispatch
+- Push to `main` branch
+- Pull requests
+- Manual dispatch
 
-✅ Quality Checks:
-  - Package lock verification
-  - Dependency installation
-  - Multi-environment builds
-  - HTML validation
-  - Schema.org validation
-  - Accessibility testing (pa11y)
-  - Performance audit (Lighthouse)
+**✅ Quality Gates:**
 
-🚀 Deployment:
-  - Automated GitHub Pages deployment
-  - Environment-specific configurations
-  - Artifact preservation
-```
+- TypeScript compilation
+- ESLint & Prettier checks
+- Unit tests (Vitest)
+- E2E tests (Playwright)
+- Build verification
+- Lighthouse CI performance audit
 
-### **Build Environments**
+**🚀 Deployment:**
 
-| Environment | Purpose | URL Pattern |
-|-------------|---------|-------------|
-| **Development** | Local testing | `http://localhost:3000` |
-| **Staging** | Pre-production testing | `https://staging-secid.github.io` |
-| **Production** | Live website | `https://secid.mx` |
+- Automatic deployment to GitHub Pages
+- Preview deployments for PRs
+- Zero-downtime updates
 
 ## 🤝 Contributing
 
 We welcome contributions from the SECiD community! Here's how to get involved:
 
-### **Development Setup**
+### **How to Contribute**
 
-1. **Fork the repository**
-2. **Create a feature branch**
+1. **Fork & Clone**
+
    ```bash
-   git checkout -b feature/amazing-feature
+   git clone https://github.com/YOUR-USERNAME/secid-website.git
+   cd secid-website
+   make setup
    ```
-3. **Make your changes**
-4. **Test locally**
+
+2. **Create Feature Branch**
+
    ```bash
-   npm run test:local
+   git checkout -b feature/your-feature-name
    ```
-5. **Commit your changes**
+
+3. **Make Changes**
+   - Follow TypeScript best practices
+   - Add tests for new features
+   - Update documentation
+
+4. **Test Your Changes**
    ```bash
-   git commit -m "Add amazing feature"
+   make test        # Run all tests
+   make health      # Check environment
    ```
-6. **Push to your branch**
+5. **Commit Changes**
+
    ```bash
-   git push origin feature/amazing-feature
+   git add .
+   git commit -m "feat: add amazing feature"
    ```
-7. **Open a Pull Request**
+
+6. **Push & Create PR**
+
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+7. **Submit Pull Request** with clear description
 
 ### **Code Standards**
 
-- ✅ **HTML5 semantic markup** with proper accessibility attributes
-- 🎨 **SASS/CSS** following BEM methodology where applicable  
-- 📱 **Mobile-first responsive design** approach
-- 🔍 **SEO optimization** with structured data
-- ⚡ **Performance considerations** for fast loading
-- ♿ **Accessibility compliance** (WCAG 2.1 AA)
+- 📦 **TypeScript** - Strict mode enabled
+- ⚛️ **React** - Functional components with hooks
+- 🎨 **Tailwind CSS** - Utility-first styling
+- 🧪 **Testing** - Unit tests for all components
+- 📝 **Documentation** - JSDoc comments
+- 🔒 **Security** - No secrets in code
 
-### **Pull Request Process**
+### **Commit Convention**
 
-1. **Ensure all tests pass** - Pre-commit hooks will verify this
-2. **Update documentation** - Keep README and comments current
-3. **Follow semantic versioning** - For version bumps
-4. **Provide clear descriptions** - Explain what and why
+We use [Conventional Commits](https://www.conventionalcommits.org/):
 
-## 🔧 Technical Documentation
+- `feat:` New features
+- `fix:` Bug fixes
+- `docs:` Documentation
+- `style:` Code style
+- `refactor:` Code refactoring
+- `test:` Testing
+- `chore:` Maintenance
 
-### **Analytics Integration**
+## 🔧 Technical Details
 
-The website uses **Amplitude Analytics** for comprehensive user behavior tracking:
+### **Architecture**
 
-- 📊 **Event Tracking** - User interactions and page views
-- 🎥 **Session Replay** - User journey visualization  
-- 📈 **Performance Monitoring** - Load times and user experience
-- 🎯 **Conversion Tracking** - Job applications and registrations
+- **🌐 JAMstack** - JavaScript, APIs, Markup
+- **🚀 Astro SSG** - Static site generation
+- **⚛️ React Islands** - Interactive components
+- **🔥 Firebase Backend** - Auth, Firestore, Storage
+- **💙 TypeScript** - End-to-end type safety
 
-### **SEO & Performance**
+### **Performance**
 
-- **Meta Optimization** - Open Graph, Twitter Cards, canonical URLs
-- **Structured Data** - JSON-LD Schema.org implementation
-- **Performance** - Optimized images, fonts, and resource loading
-- **PWA Features** - Manifest, service worker ready, offline capability
+- **💯 Lighthouse Score** - 95+ across all metrics
+- **🚀 Fast Load Times** - < 2s on 3G
+- **📦 Small Bundles** - Optimized with Vite
+- **🖼️ Image Optimization** - WebP with fallbacks
+- **📁 Code Splitting** - Per-route bundles
 
-### **Accessibility Features**
+### **Security**
 
-- **Semantic HTML** - Proper heading hierarchy and landmarks
-- **ARIA Labels** - Enhanced screen reader support
-- **Keyboard Navigation** - Full keyboard accessibility
-- **Color Contrast** - WCAG AA compliant color schemes
-- **Focus Management** - Visible focus indicators
+- **🔒 Firebase Auth** - Secure authentication
+- **🔐 Environment Variables** - Secrets management
+- **🛡️ CSP Headers** - Content Security Policy
+- **🌐 HTTPS Only** - SSL/TLS encryption
+- **🤖 Bot Protection** - Rate limiting
 
-## 🌐 Deployment & Hosting
+## 🌐 Infrastructure
 
-### **GitHub Pages Deployment**
+### **Hosting**
 
-The website is automatically deployed to GitHub Pages via GitHub Actions:
+- **💾 GitHub Pages** - Static site hosting (free)
+- **🔥 Firebase** - Backend services only
+- **🌐 Cloudflare** - DNS & CDN
+- **🔒 SSL/TLS** - Automatic HTTPS
 
-- **Custom Domain** - `secid.mx` with SSL/TLS
-- **CDN Integration** - Global content delivery
-- **Automatic Deployments** - On every main branch push
-- **Environment Variables** - Build-time configuration
+### **Environments**
 
-### **Domain Configuration**
+| Environment | URL                      | Branch      |
+| ----------- | ------------------------ | ----------- |
+| Production  | https://secid.mx         | `main`      |
+| Staging     | https://staging.secid.mx | `staging`   |
+| Development | http://localhost:4321    | `feature/*` |
 
-```
-Production: https://secid.mx
-Staging: https://staging-secid.github.io  
-Repository: https://secid.github.io/secid-website
-```
+## 📚 Resources
 
-## 📞 Support & Contact
+### **Documentation**
 
-### **Getting Help**
+- 📖 [Quick Start Guide](QUICKSTART.md)
+- 🛠️ [Developer Guide](DEVELOPMENT.md)
+- 🔧 [Troubleshooting](TROUBLESHOOTING.md)
+- 🔥 [Firebase Setup](FIREBASE-MEMBERS-HUB-PLAN.md)
+- 📋 [Feature Roadmap](SECID-FUTURE-FEATURES.md)
+- 🗺️ [Implementation Plan](SECID-IMPLEMENTATION-TODO.md)
 
-- 🐛 **Bug Reports** - [GitHub Issues](https://github.com/secid/secid-website/issues)
-- 💡 **Feature Requests** - [GitHub Discussions](https://github.com/secid/secid-website/discussions)
-- 📧 **Contact SECiD** - [Website Contact Form](https://secid.mx)
-- 💬 **Community** - Join our alumni network
+### **Support**
 
-### **Maintainers**
-
-This project is maintained by the **SECiD Tech Team** with contributions from the data science alumni community.
+- 🐛 [Report Issues](https://github.com/secid/secid-website/issues)
+- 💡 [Feature Requests](https://github.com/secid/secid-website/discussions)
+- 📧 [Contact SECiD](mailto:contacto@secid.mx)
+- 💬 [LinkedIn Community](https://linkedin.com/company/secid-unam)
 
 ---
 
@@ -306,6 +379,6 @@ Free for personal and commercial use under the CCA 3.0 license.
 
 [🌐 Website](https://secid.mx) • [📱 LinkedIn](https://linkedin.com/company/secid) • [🐙 GitHub](https://github.com/secid)
 
-*Connecting Mexico's Data Science Talent*
+_Connecting Mexico's Data Science Talent_
 
 </div>

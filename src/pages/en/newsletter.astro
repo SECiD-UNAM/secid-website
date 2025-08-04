@@ -1,0 +1,562 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('en');
+---
+
+<BaseLayout
+  title="Newsletter - SECiD"
+  description="Stay updated with the latest news, events, and opportunities from the SECiD community"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">SECiD Newsletter</h1>
+          <p class="secid-hero__subtitle">
+            The best opportunities and resources delivered to your inbox
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Newsletter Subscription -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-newsletter__main">
+          <div class="secid-newsletter__content">
+            <h2 class="secid-newsletter__title">
+              <i class="fas fa-envelope-open-text"></i>
+              Join over 5,000 professionals
+            </h2>
+            <p class="secid-newsletter__description">
+              Receive the best job opportunities, technical resources, exclusive
+              events, and news from Mexico's largest data science community
+              every week.
+            </p>
+
+            <div class="secid-newsletter__benefits">
+              <div class="secid-newsletter__benefit">
+                <i class="fas fa-check-circle"></i>
+                <span>Exclusive job opportunities</span>
+              </div>
+              <div class="secid-newsletter__benefit">
+                <i class="fas fa-check-circle"></i>
+                <span>Technical resources and tutorials</span>
+              </div>
+              <div class="secid-newsletter__benefit">
+                <i class="fas fa-check-circle"></i>
+                <span>Event and webinar invitations</span>
+              </div>
+              <div class="secid-newsletter__benefit">
+                <i class="fas fa-check-circle"></i>
+                <span>Community success stories</span>
+              </div>
+            </div>
+
+            <form class="secid-newsletter__form">
+              <div class="secid-form__group">
+                <label for="email" class="secid-form__label"
+                  >Email Address</label
+                >
+                <input
+                  type="email"
+                  id="email"
+                  class="secid-form__input"
+                  placeholder="you@email.com"
+                  required
+                />
+              </div>
+
+              <div class="secid-form__group">
+                <label for="name" class="secid-form__label">Full Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  class="secid-form__input"
+                  placeholder="John Doe"
+                  required
+                />
+              </div>
+
+              <div class="secid-form__group">
+                <label class="secid-form__label">Interests (optional)</label>
+                <div class="secid-newsletter__interests">
+                  <label class="secid-form__checkbox">
+                    <input type="checkbox" name="interests" value="jobs" />
+                    <span>Job opportunities</span>
+                  </label>
+                  <label class="secid-form__checkbox">
+                    <input type="checkbox" name="interests" value="events" />
+                    <span>Events and networking</span>
+                  </label>
+                  <label class="secid-form__checkbox">
+                    <input type="checkbox" name="interests" value="resources" />
+                    <span>Technical resources</span>
+                  </label>
+                  <label class="secid-form__checkbox">
+                    <input type="checkbox" name="interests" value="news" />
+                    <span>Industry news</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="secid-form__group">
+                <label class="secid-form__checkbox">
+                  <input type="checkbox" required />
+                  <span
+                    >I agree to receive communications from SECiD and understand
+                    that I can unsubscribe at any time.</span
+                  >
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                class="secid-button secid-button--primary secid-button--lg secid-button--full"
+              >
+                <i class="fas fa-paper-plane"></i>
+                Subscribe to Newsletter
+              </button>
+            </form>
+
+            <p class="secid-newsletter__privacy">
+              <i class="fas fa-lock"></i>
+              Your information is safe. Read our <a href="/en/privacy"
+                >privacy policy</a
+              >.
+            </p>
+          </div>
+
+          <div class="secid-newsletter__preview">
+            <h3 class="secid-newsletter__preview-title">Newsletter Example</h3>
+            <div class="secid-newsletter__preview-box">
+              <div class="secid-newsletter__preview-header">
+                <img
+                  src="/images/logo.png"
+                  alt="SECiD"
+                  class="secid-newsletter__preview-logo"
+                />
+                <span class="secid-newsletter__preview-date"
+                  >Newsletter #42 - December 2024</span
+                >
+              </div>
+
+              <div class="secid-newsletter__preview-content">
+                <h4>🚀 This Week at SECiD</h4>
+
+                <div class="secid-newsletter__preview-section">
+                  <h5>💼 Featured Opportunities</h5>
+                  <ul>
+                    <li>Senior Data Scientist - XYZ Bank ($80k-120k)</li>
+                    <li>ML Engineer - FinTech Startup (Remote)</li>
+                    <li>Data Analyst - Leading E-commerce</li>
+                  </ul>
+                </div>
+
+                <div class="secid-newsletter__preview-section">
+                  <h5>📚 Resource of the Week</h5>
+                  <p>
+                    Tutorial: MLOps Implementation with Kubernetes and Kubeflow
+                  </p>
+                </div>
+
+                <div class="secid-newsletter__preview-section">
+                  <h5>🎯 Upcoming Events</h5>
+                  <ul>
+                    <li>Webinar: NLP with Transformers (Dec 15)</li>
+                    <li>CDMX Networking Night (Dec 20)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="secid-section secid-bg-light">
+      <div class="secid-container">
+        <div class="secid-section__header">
+          <h2 class="secid-section__title">What our subscribers say</h2>
+        </div>
+
+        <div class="secid-grid secid-grid--3">
+          <div class="secid-testimonial">
+            <div class="secid-testimonial__content">
+              <i class="fas fa-quote-left secid-testimonial__quote"></i>
+              <p>
+                Thanks to the SECiD newsletter, I found my current job. The
+                opportunities they share are high quality and very relevant.
+              </p>
+            </div>
+            <div class="secid-testimonial__author">
+              <div class="secid-testimonial__avatar">MG</div>
+              <div>
+                <div class="secid-testimonial__name">Maria Gonzalez</div>
+                <div class="secid-testimonial__role">
+                  Data Scientist @ TechCorp
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="secid-testimonial">
+            <div class="secid-testimonial__content">
+              <i class="fas fa-quote-left secid-testimonial__quote"></i>
+              <p>
+                The technical resources are excellent. Every week I learn
+                something new that I can directly apply to my work.
+              </p>
+            </div>
+            <div class="secid-testimonial__author">
+              <div class="secid-testimonial__avatar">CR</div>
+              <div>
+                <div class="secid-testimonial__name">Carlos Ramirez</div>
+                <div class="secid-testimonial__role">
+                  ML Engineer @ StartupAI
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="secid-testimonial">
+            <div class="secid-testimonial__content">
+              <i class="fas fa-quote-left secid-testimonial__quote"></i>
+              <p>
+                It keeps me updated with industry trends. It's my main source of
+                professional information.
+              </p>
+            </div>
+            <div class="secid-testimonial__author">
+              <div class="secid-testimonial__avatar">AL</div>
+              <div>
+                <div class="secid-testimonial__name">Ana Lopez</div>
+                <div class="secid-testimonial__role">
+                  Head of Data @ FinanceX
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-section__header">
+          <h2 class="secid-section__title">Frequently Asked Questions</h2>
+        </div>
+
+        <div class="secid-newsletter__faq">
+          <details class="secid-faq__item">
+            <summary class="secid-faq__question">
+              How often do you send the newsletter?
+              <i class="fas fa-chevron-down secid-faq__arrow"></i>
+            </summary>
+            <div class="secid-faq__answer">
+              <p>
+                We send our main newsletter every Tuesday with the best
+                opportunities and resources of the week. Occasionally we send
+                special editions for important events or urgent opportunities.
+              </p>
+            </div>
+          </details>
+
+          <details class="secid-faq__item">
+            <summary class="secid-faq__question">
+              Can I unsubscribe?
+              <i class="fas fa-chevron-down secid-faq__arrow"></i>
+            </summary>
+            <div class="secid-faq__answer">
+              <p>
+                Of course. Every email includes an unsubscribe link. You can
+                also update your preferences at any time from your profile.
+              </p>
+            </div>
+          </details>
+
+          <details class="secid-faq__item">
+            <summary class="secid-faq__question">
+              Is it free?
+              <i class="fas fa-chevron-down secid-faq__arrow"></i>
+            </summary>
+            <div class="secid-faq__answer">
+              <p>
+                Yes, the newsletter is completely free for all SECiD community
+                members.
+              </p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</BaseLayout>
+
+<style>
+  /* Newsletter Main */
+  .secid-newsletter__main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4xl);
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .secid-newsletter__content {
+    max-width: 600px;
+  }
+
+  .secid-newsletter__title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-lg) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .secid-newsletter__title i {
+    color: var(--secid-primary);
+  }
+
+  .secid-newsletter__description {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin: 0 0 var(--space-xl) 0;
+  }
+
+  /* Benefits */
+  .secid-newsletter__benefits {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .secid-newsletter__benefit {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    font-size: 1rem;
+    color: var(--color-text-primary);
+  }
+
+  .secid-newsletter__benefit i {
+    color: var(--secid-success);
+    font-size: 1.25rem;
+  }
+
+  /* Form */
+  .secid-newsletter__form {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+  }
+
+  .secid-newsletter__interests {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .secid-button--full {
+    width: 100%;
+  }
+
+  .secid-newsletter__privacy {
+    text-align: center;
+    margin-top: var(--space-lg);
+    font-size: 0.875rem;
+    color: var(--color-text-tertiary);
+  }
+
+  .secid-newsletter__privacy a {
+    color: var(--secid-primary);
+    text-decoration: none;
+  }
+
+  .secid-newsletter__privacy a:hover {
+    text-decoration: underline;
+  }
+
+  /* Preview */
+  .secid-newsletter__preview {
+    position: sticky;
+    top: 5rem;
+  }
+
+  .secid-newsletter__preview-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-lg) 0;
+  }
+
+  .secid-newsletter__preview-box {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .secid-newsletter__preview-header {
+    background: linear-gradient(
+      135deg,
+      var(--secid-primary) 0%,
+      var(--secid-gold) 100%
+    );
+    padding: var(--space-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+  }
+
+  .secid-newsletter__preview-logo {
+    height: 2rem;
+    width: auto;
+  }
+
+  .secid-newsletter__preview-date {
+    font-size: 0.875rem;
+    opacity: 0.9;
+  }
+
+  .secid-newsletter__preview-content {
+    padding: var(--space-xl);
+  }
+
+  .secid-newsletter__preview-content h4 {
+    font-size: 1.25rem;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-lg) 0;
+  }
+
+  .secid-newsletter__preview-section {
+    margin-bottom: var(--space-lg);
+  }
+
+  .secid-newsletter__preview-section h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--secid-primary);
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .secid-newsletter__preview-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .secid-newsletter__preview-section li {
+    padding: var(--space-xs) 0;
+    color: var(--color-text-secondary);
+  }
+
+  .secid-newsletter__preview-section p {
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  /* Testimonials */
+  .secid-testimonial {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .secid-testimonial__content {
+    margin-bottom: var(--space-lg);
+  }
+
+  .secid-testimonial__quote {
+    color: var(--secid-primary);
+    font-size: 1.5rem;
+    margin-bottom: var(--space-md);
+    display: block;
+  }
+
+  .secid-testimonial__content p {
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  .secid-testimonial__author {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .secid-testimonial__avatar {
+    width: 3rem;
+    height: 3rem;
+    background: linear-gradient(
+      135deg,
+      var(--secid-primary),
+      var(--secid-gold)
+    );
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+  }
+
+  .secid-testimonial__name {
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .secid-testimonial__role {
+    font-size: 0.875rem;
+    color: var(--color-text-tertiary);
+  }
+
+  /* FAQ */
+  .secid-newsletter__faq {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    .secid-newsletter__main {
+      grid-template-columns: 1fr;
+      gap: var(--space-2xl);
+    }
+
+    .secid-newsletter__preview {
+      position: static;
+    }
+
+    .secid-newsletter__benefits {
+      margin-bottom: var(--space-xl);
+    }
+  }
+</style>

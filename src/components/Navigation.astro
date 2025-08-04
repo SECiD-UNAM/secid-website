@@ -1,0 +1,259 @@
+---
+const { lang = 'es' } = Astro.props;
+
+// Translation object
+const t = {
+  es: {
+    nav: {
+      home: 'Inicio',
+      jobs: 'Empleos',
+      members: 'Miembros',
+      about: 'Nosotros',
+      login: 'Iniciar Sesión',
+      register: 'Registrarse',
+      theme: 'Tema',
+      language: 'Idioma',
+    },
+  },
+  en: {
+    nav: {
+      home: 'Home',
+      jobs: 'Jobs',
+      members: 'Members',
+      about: 'About Us',
+      login: 'Login',
+      register: 'Register',
+      theme: 'Theme',
+      language: 'Language',
+    },
+  },
+}[lang];
+
+// Navigation links
+const navLinks = [
+  { href: `/${lang}/`, label: t.nav.home },
+  { href: `/${lang}/${lang === 'es' ? 'empleos' : 'jobs'}`, label: t.nav.jobs },
+  {
+    href: `/${lang}/${lang === 'es' ? 'miembros' : 'members'}`,
+    label: t.nav.members,
+  },
+  {
+    href: `/${lang}/${lang === 'es' ? 'sobre-nosotros' : 'about-us'}`,
+    label: t.nav.about,
+  },
+];
+
+// Get current path to highlight active link
+const currentPath = Astro.url.pathname;
+
+// Regex pattern for language paths
+const langPathRegex = /^\/(es|en)/;
+---
+
+<!-- Skip to main content link for accessibility -->
+<a 
+  href="#main-content" 
+  class="secid-skip-link"
+  tabindex="1"
+>
+  {lang === 'es' ? 'Saltar al contenido principal' : 'Skip to main content'}
+</a>
+
+<nav class="secid-navbar" role="navigation" aria-label={lang === 'es' ? 'Navegación principal' : 'Main navigation'}>
+  <div class="secid-navbar__container">
+    <a href={`/${lang}/`} class="secid-navbar__logo">
+      <img
+        src="/images/logo.png"
+        alt="SECiD Logo"
+        class="secid-navbar__logo-img"
+      />
+      <span class="secid-navbar__logo-text">SECiD</span>
+    </a>
+
+    <div class="secid-navbar__nav">
+      {
+        navLinks.map((link) => (
+          <a
+            href={link.href}
+            class={`secid-navbar__link ${currentPath === link.href ? 'secid-navbar__link--active' : ''}`}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </div>
+
+    <div class="secid-navbar__actions">
+      <!-- Language Selector -->
+      <div class="secid-navbar__lang-selector">
+        <button 
+          class="secid-navbar__lang-btn" 
+          aria-label={`${t.nav.language}. ${lang === 'es' ? 'Idioma actual: Español' : 'Current language: English'}`}
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          id="language-selector"
+        >
+          <i class="fas fa-globe" aria-hidden="true"></i>
+          <span>{lang.toUpperCase()}</span>
+        </button>
+        <div 
+          class="secid-navbar__lang-dropdown"
+          role="listbox"
+          aria-labelledby="language-selector"
+        >
+          <a
+            href={`/es${Astro.url.pathname.replace(langPathRegex, '')}`}
+            class={`secid-navbar__lang-option ${lang === 'es' ? 'active' : ''}`}
+            role="option"
+            aria-selected={lang === 'es' ? 'true' : 'false'}
+            hreflang="es"
+          >
+            <span class="sr-only">{lang === 'es' ? 'Cambiar a español (actual)' : 'Switch to Spanish'}</span>
+            ES - Español
+          </a>
+          <a
+            href={`/en${Astro.url.pathname.replace(langPathRegex, '')}`}
+            class={`secid-navbar__lang-option ${lang === 'en' ? 'active' : ''}`}
+            role="option"
+            aria-selected={lang === 'en' ? 'true' : 'false'}
+            hreflang="en"
+          >
+            <span class="sr-only">{lang === 'en' ? 'Cambiar a inglés' : 'Switch to English (current)'}</span>
+            EN - English
+          </a>
+        </div>
+      </div>
+
+      <!-- Theme Toggle -->
+      <button 
+        class="secid-navbar__theme-toggle" 
+        aria-label={`${t.nav.theme}. ${lang === 'es' ? 'Cambiar a tema oscuro' : 'Switch to dark theme'}`}
+        title={`${t.nav.theme}`}
+      >
+        <i class="fas fa-sun" data-theme-icon="light" aria-hidden="true"></i>
+        <i class="fas fa-moon" data-theme-icon="dark" aria-hidden="true"></i>
+      </button>
+
+      <a href="#" class="secid-button secid-button--outline secid-button--sm"
+        >{t.nav.login}</a
+      >
+      <a
+        href={`/${lang}/signup`}
+        class="secid-button secid-button--primary secid-button--sm"
+        >{t.nav.register}</a
+      >
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button 
+      class="secid-navbar__mobile-toggle"
+      aria-label={`${lang === 'es' ? 'Abrir menú de navegación' : 'Open navigation menu'}`}
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <!-- Mobile Menu (for tablets) -->
+  <div 
+    class="secid-navbar__mobile-menu"
+    id="mobile-menu"
+    role="menu"
+    aria-hidden="true"
+  >
+    <nav class="secid-navbar__mobile-nav">
+      {
+        navLinks.map((link) => (
+          <a
+            href={link.href}
+            class={`secid-navbar__link ${currentPath === link.href ? 'secid-navbar__link--active' : ''}`}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+    <div class="secid-navbar__mobile-actions">
+      <!-- Mobile Language Selector -->
+      <div class="secid-navbar__mobile-controls">
+        <a
+          href={`/es${Astro.url.pathname.replace(langPathRegex, '')}`}
+          class={`secid-navbar__mobile-lang ${lang === 'es' ? 'active' : ''}`}
+          >ES</a
+        >
+        <span class="secid-navbar__mobile-divider">|</span>
+        <a
+          href={`/en${Astro.url.pathname.replace(langPathRegex, '')}`}
+          class={`secid-navbar__mobile-lang ${lang === 'en' ? 'active' : ''}`}
+          >EN</a
+        >
+        <button
+          class="secid-navbar__theme-toggle secid-navbar__theme-toggle--mobile"
+          aria-label={t.nav.theme}
+        >
+          <i class="fas fa-sun" data-theme-icon="light"></i>
+          <i class="fas fa-moon" data-theme-icon="dark"></i>
+        </button>
+      </div>
+      <a href="#" class="secid-button secid-button--outline secid-button--sm"
+        >{t.nav.login}</a
+      >
+      <a
+        href={`/${lang}/signup`}
+        class="secid-button secid-button--primary secid-button--sm"
+        >{t.nav.register}</a
+      >
+    </div>
+  </div>
+</nav>
+
+<!-- Bottom Navigation (for mobile) -->
+<nav 
+  class="secid-bottom-nav" 
+  aria-label={lang === 'es' ? 'Navegación móvil' : 'Mobile navigation'}
+  role="navigation"
+>
+  <div class="secid-bottom-nav__container">
+    <a
+      href={`/${lang}/`}
+      class={`secid-bottom-nav__item ${currentPath === `/${lang}/` ? 'secid-bottom-nav__item--active' : ''}`}
+      aria-label={t.nav.home}
+    >
+      <i class="secid-bottom-nav__icon fas fa-home"></i>
+      <span class="secid-bottom-nav__label">{t.nav.home}</span>
+    </a>
+    
+    <a
+      href={`/${lang}/${lang === 'es' ? 'empleos' : 'jobs'}`}
+      class={`secid-bottom-nav__item ${currentPath === `/${lang}/${lang === 'es' ? 'empleos' : 'jobs'}` ? 'secid-bottom-nav__item--active' : ''}`}
+      aria-label={t.nav.jobs}
+    >
+      <i class="secid-bottom-nav__icon fas fa-briefcase"></i>
+      <span class="secid-bottom-nav__label">{t.nav.jobs}</span>
+      <!-- Example notification badge -->
+      <!-- <span class="secid-bottom-nav__badge">3</span> -->
+    </a>
+    
+    <a
+      href={`/${lang}/${lang === 'es' ? 'miembros' : 'members'}`}
+      class={`secid-bottom-nav__item ${currentPath === `/${lang}/${lang === 'es' ? 'miembros' : 'members'}` ? 'secid-bottom-nav__item--active' : ''}`}
+      aria-label={t.nav.members}
+    >
+      <i class="secid-bottom-nav__icon fas fa-users"></i>
+      <span class="secid-bottom-nav__label">{t.nav.members}</span>
+    </a>
+    
+    <!-- More button for additional options -->
+    <button
+      class="secid-bottom-nav__item"
+      aria-label={lang === 'es' ? 'Más opciones' : 'More options'}
+      data-bottom-nav-more
+    >
+      <i class="secid-bottom-nav__icon fas fa-ellipsis-h"></i>
+      <span class="secid-bottom-nav__label">{lang === 'es' ? 'Más' : 'More'}</span>
+    </button>
+  </div>
+</nav>

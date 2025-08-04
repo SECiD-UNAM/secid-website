@@ -1,0 +1,684 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('es');
+
+// Resources data
+const resources = {
+  learning: [
+    {
+      title: 'Python para Ciencia de Datos',
+      description:
+        'Curso completo desde básico hasta avanzado con notebooks interactivos',
+      type: 'Curso',
+      level: 'Principiante',
+      duration: '40 horas',
+      icon: 'fab fa-python',
+    },
+    {
+      title: 'Machine Learning Fundamentals',
+      description:
+        'Aprende los conceptos fundamentales de ML con ejemplos prácticos',
+      type: 'Tutorial',
+      level: 'Intermedio',
+      duration: '20 horas',
+      icon: 'fas fa-robot',
+    },
+    {
+      title: 'Deep Learning con PyTorch',
+      description: 'Guía completa para construir redes neuronales con PyTorch',
+      type: 'Guía',
+      level: 'Avanzado',
+      duration: '30 horas',
+      icon: 'fas fa-brain',
+    },
+    {
+      title: 'SQL para Análisis de Datos',
+      description: 'Domina SQL para consultas complejas y análisis de datos',
+      type: 'Curso',
+      level: 'Principiante',
+      duration: '15 horas',
+      icon: 'fas fa-database',
+    },
+  ],
+  tools: [
+    {
+      title: 'Jupyter Notebooks',
+      description: 'Entorno interactivo para desarrollo y documentación',
+      category: 'IDE',
+      icon: 'fas fa-book',
+      link: 'https://jupyter.org',
+    },
+    {
+      title: 'Apache Spark',
+      description: 'Framework para procesamiento de big data',
+      category: 'Big Data',
+      icon: 'fas fa-fire',
+      link: 'https://spark.apache.org',
+    },
+    {
+      title: 'TensorFlow',
+      description: 'Plataforma de código abierto para machine learning',
+      category: 'ML Framework',
+      icon: 'fas fa-chart-network',
+      link: 'https://tensorflow.org',
+    },
+    {
+      title: 'Docker',
+      description: 'Containerización para desarrollo y deployment',
+      category: 'DevOps',
+      icon: 'fab fa-docker',
+      link: 'https://docker.com',
+    },
+  ],
+  datasets: [
+    {
+      title: 'Dataset de Comercio México',
+      description: 'Datos históricos de comercio exterior mexicano',
+      size: '2.5 GB',
+      format: 'CSV, JSON',
+      records: '1M+',
+    },
+    {
+      title: 'Tweets en Español',
+      description: 'Corpus de tweets para análisis de sentimientos',
+      size: '500 MB',
+      format: 'JSON',
+      records: '500K',
+    },
+    {
+      title: 'Imágenes Médicas MX',
+      description: 'Dataset de radiografías anonimizadas',
+      size: '10 GB',
+      format: 'DICOM, PNG',
+      records: '50K',
+    },
+    {
+      title: 'Datos Climáticos CDMX',
+      description: '10 años de datos meteorológicos de la Ciudad de México',
+      size: '100 MB',
+      format: 'CSV',
+      records: '100K',
+    },
+  ],
+  books: [
+    {
+      title: 'Pattern Recognition and Machine Learning',
+      author: 'Christopher Bishop',
+      year: 2006,
+      level: 'Avanzado',
+      icon: 'fas fa-book-open',
+    },
+    {
+      title: 'The Elements of Statistical Learning',
+      author: 'Hastie, Tibshirani, Friedman',
+      year: 2009,
+      level: 'Avanzado',
+      icon: 'fas fa-book-open',
+    },
+    {
+      title: 'Python Data Science Handbook',
+      author: 'Jake VanderPlas',
+      year: 2016,
+      level: 'Intermedio',
+      icon: 'fas fa-book-open',
+    },
+    {
+      title: 'Deep Learning',
+      author: 'Ian Goodfellow',
+      year: 2016,
+      level: 'Avanzado',
+      icon: 'fas fa-book-open',
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title="Recursos - SECiD"
+  description="Recursos educativos, herramientas y datasets para profesionales en ciencia de datos"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Centro de Recursos</h1>
+          <p class="secid-hero__subtitle">
+            Todo lo que necesitas para crecer en ciencia de datos
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Learning Resources -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-section__header">
+          <h2 class="secid-section__title">
+            <i class="fas fa-graduation-cap"></i>
+            Recursos de Aprendizaje
+          </h2>
+          <p class="secid-section__description">
+            Cursos, tutoriales y guías seleccionados por la comunidad
+          </p>
+        </div>
+
+        <div class="secid-grid secid-grid--2">
+          {
+            resources.learning.map((resource) => (
+              <div class="secid-resource-card">
+                <div class="secid-resource-card__header">
+                  <div class="secid-resource-card__icon">
+                    <i class={resource.icon} />
+                  </div>
+                  <div class="secid-resource-card__meta">
+                    <span class="secid-resource-card__type">
+                      {resource.type}
+                    </span>
+                    <span
+                      class="secid-resource-card__level"
+                      data-level={resource.level.toLowerCase()}
+                    >
+                      {resource.level}
+                    </span>
+                  </div>
+                </div>
+
+                <h3 class="secid-resource-card__title">{resource.title}</h3>
+                <p class="secid-resource-card__description">
+                  {resource.description}
+                </p>
+
+                <div class="secid-resource-card__footer">
+                  <span class="secid-resource-card__duration">
+                    <i class="fas fa-clock" />
+                    {resource.duration}
+                  </span>
+                  <a
+                    href="#"
+                    class="secid-button secid-button--primary secid-button--sm"
+                  >
+                    Acceder
+                  </a>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Tools & Software -->
+    <section class="secid-section secid-bg-light">
+      <div class="secid-container">
+        <div class="secid-section__header">
+          <h2 class="secid-section__title">
+            <i class="fas fa-tools"></i>
+            Herramientas y Software
+          </h2>
+          <p class="secid-section__description">
+            Las mejores herramientas para tu trabajo diario
+          </p>
+        </div>
+
+        <div class="secid-grid secid-grid--4">
+          {
+            resources.tools.map((tool) => (
+              <a
+                href={tool.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="secid-tool-card"
+              >
+                <div class="secid-tool-card__icon">
+                  <i class={tool.icon} />
+                </div>
+                <h3 class="secid-tool-card__title">{tool.title}</h3>
+                <p class="secid-tool-card__category">{tool.category}</p>
+                <p class="secid-tool-card__description">{tool.description}</p>
+                <span class="secid-tool-card__link">
+                  Visitar <i class="fas fa-external-link-alt" />
+                </span>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Datasets -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-section__header">
+          <h2 class="secid-section__title">
+            <i class="fas fa-database"></i>
+            Datasets
+          </h2>
+          <p class="secid-section__description">
+            Conjuntos de datos para practicar y desarrollar proyectos
+          </p>
+        </div>
+
+        <div class="secid-datasets">
+          {
+            resources.datasets.map((dataset) => (
+              <div class="secid-dataset-card">
+                <div class="secid-dataset-card__header">
+                  <h3 class="secid-dataset-card__title">{dataset.title}</h3>
+                  <button class="secid-button secid-button--primary secid-button--sm">
+                    <i class="fas fa-download" />
+                    Descargar
+                  </button>
+                </div>
+
+                <p class="secid-dataset-card__description">
+                  {dataset.description}
+                </p>
+
+                <div class="secid-dataset-card__stats">
+                  <div class="secid-dataset-card__stat">
+                    <i class="fas fa-hdd" />
+                    <span>{dataset.size}</span>
+                  </div>
+                  <div class="secid-dataset-card__stat">
+                    <i class="fas fa-file-code" />
+                    <span>{dataset.format}</span>
+                  </div>
+                  <div class="secid-dataset-card__stat">
+                    <i class="fas fa-list-ol" />
+                    <span>{dataset.records} registros</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Books & Publications -->
+    <section class="secid-section secid-bg-cream">
+      <div class="secid-container">
+        <div class="secid-section__header">
+          <h2 class="secid-section__title">
+            <i class="fas fa-books"></i>
+            Libros Recomendados
+          </h2>
+          <p class="secid-section__description">
+            Literatura esencial para profesionales en ciencia de datos
+          </p>
+        </div>
+
+        <div class="secid-grid secid-grid--4">
+          {
+            resources.books.map((book) => (
+              <div class="secid-book-card">
+                <div class="secid-book-card__cover">
+                  <i class={book.icon} />
+                </div>
+                <h3 class="secid-book-card__title">{book.title}</h3>
+                <p class="secid-book-card__author">{book.author}</p>
+                <div class="secid-book-card__meta">
+                  <span class="secid-book-card__year">{book.year}</span>
+                  <span class="secid-book-card__level">{book.level}</span>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-resources__cta">
+          <i class="fas fa-plus-circle secid-resources__cta-icon"></i>
+          <h2 class="secid-resources__cta-title">
+            ¿Tienes un recurso para compartir?
+          </h2>
+          <p class="secid-resources__cta-description">
+            Ayuda a la comunidad compartiendo herramientas, datasets o
+            materiales educativos
+          </p>
+          <button class="secid-button secid-button--primary secid-button--lg">
+            <i class="fas fa-share"></i>
+            Compartir Recurso
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="es" />
+</BaseLayout>
+
+<style>
+  /* Resource Cards */
+  .secid-resource-card {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    transition: all var(--transition-base);
+  }
+
+  .secid-resource-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--secid-primary);
+  }
+
+  .secid-resource-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-lg);
+  }
+
+  .secid-resource-card__icon {
+    width: 3rem;
+    height: 3rem;
+    background: linear-gradient(
+      135deg,
+      var(--secid-primary),
+      var(--secid-gold)
+    );
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+  }
+
+  .secid-resource-card__meta {
+    display: flex;
+    gap: var(--space-sm);
+  }
+
+  .secid-resource-card__type {
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--color-surface-alt);
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+  }
+
+  .secid-resource-card__level {
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .secid-resource-card__level[data-level='principiante'] {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--secid-success);
+  }
+
+  .secid-resource-card__level[data-level='intermedio'] {
+    background: rgba(251, 191, 36, 0.1);
+    color: var(--secid-warning);
+  }
+
+  .secid-resource-card__level[data-level='avanzado'] {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--secid-error);
+  }
+
+  .secid-resource-card__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .secid-resource-card__description {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0 0 var(--space-lg) 0;
+  }
+
+  .secid-resource-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .secid-resource-card__duration {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--color-text-tertiary);
+    font-size: 0.875rem;
+  }
+
+  /* Tool Cards */
+  .secid-tool-card {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    transition: all var(--transition-base);
+    display: block;
+  }
+
+  .secid-tool-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--secid-primary);
+  }
+
+  .secid-tool-card__icon {
+    width: 3rem;
+    height: 3rem;
+    background: linear-gradient(
+      135deg,
+      var(--secid-secondary),
+      var(--secid-secondary-dark)
+    );
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    margin: 0 auto var(--space-md);
+  }
+
+  .secid-tool-card__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-xs) 0;
+  }
+
+  .secid-tool-card__category {
+    font-size: 0.75rem;
+    color: var(--secid-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .secid-tool-card__description {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-tool-card__link {
+    color: var(--secid-primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  /* Dataset Cards */
+  .secid-datasets {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: var(--space-xl);
+  }
+
+  .secid-dataset-card {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+  }
+
+  .secid-dataset-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-md);
+  }
+
+  .secid-dataset-card__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .secid-dataset-card__description {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0 0 var(--space-lg) 0;
+  }
+
+  .secid-dataset-card__stats {
+    display: flex;
+    gap: var(--space-lg);
+  }
+
+  .secid-dataset-card__stat {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 0.875rem;
+    color: var(--color-text-tertiary);
+  }
+
+  /* Book Cards */
+  .secid-book-card {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    text-align: center;
+    transition: all var(--transition-base);
+  }
+
+  .secid-book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .secid-book-card__cover {
+    width: 4rem;
+    height: 5rem;
+    background: linear-gradient(
+      135deg,
+      var(--secid-gold),
+      var(--secid-gold-dark)
+    );
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    margin: 0 auto var(--space-md);
+  }
+
+  .secid-book-card__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-xs) 0;
+    min-height: 2.5rem;
+  }
+
+  .secid-book-card__author {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-book-card__meta {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+    font-size: 0.75rem;
+  }
+
+  .secid-book-card__year {
+    color: var(--color-text-tertiary);
+  }
+
+  .secid-book-card__level {
+    color: var(--secid-primary);
+    font-weight: 600;
+  }
+
+  /* CTA */
+  .secid-resources__cta {
+    text-align: center;
+    padding: var(--space-3xl);
+    background: linear-gradient(
+      135deg,
+      var(--secid-primary),
+      var(--secid-gold)
+    );
+    border-radius: var(--radius-xl);
+    color: white;
+  }
+
+  .secid-resources__cta-icon {
+    font-size: 3rem;
+    margin-bottom: var(--space-lg);
+  }
+
+  .secid-resources__cta-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-resources__cta-description {
+    font-size: 1.125rem;
+    margin: 0 0 var(--space-xl) 0;
+    opacity: 0.95;
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .secid-datasets {
+      grid-template-columns: 1fr;
+    }
+
+    .secid-dataset-card__header {
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .secid-dataset-card__stats {
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+  }
+</style>

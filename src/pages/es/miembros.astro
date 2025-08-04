@@ -1,0 +1,597 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('es');
+
+// Mock member data - in production, this would come from Firebase
+const members = [
+  {
+    id: 1,
+    name: 'Ana Martínez García',
+    initials: 'AM',
+    title: 'Senior Data Scientist',
+    company: 'Google México',
+    bio: 'Especialista en machine learning y análisis predictivo con más de 5 años de experiencia.',
+    skills: ['Python', 'TensorFlow', 'SQL', 'AWS', 'Machine Learning'],
+    linkedin: 'https://linkedin.com/in/ana-martinez',
+    twitter: 'https://twitter.com/anamart',
+    email: 'ana.martinez@example.com',
+  },
+  {
+    id: 2,
+    name: 'Carlos Silva Rodríguez',
+    initials: 'CS',
+    title: 'ML Engineer',
+    company: 'Microsoft',
+    bio: 'Ingeniero especializado en implementación de modelos de ML en producción.',
+    skills: ['PyTorch', 'Docker', 'Kubernetes', 'Azure', 'MLOps'],
+    linkedin: 'https://linkedin.com/in/carlos-silva',
+    twitter: 'https://twitter.com/carlossilva',
+    email: 'carlos.silva@example.com',
+  },
+  {
+    id: 3,
+    name: 'Laura Rodríguez López',
+    initials: 'LR',
+    title: 'Data Analytics Lead',
+    company: 'Amazon',
+    bio: 'Líder en análisis de datos con enfoque en estrategia empresarial y visualización.',
+    skills: ['R', 'Tableau', 'Spark', 'GCP', 'Business Intelligence'],
+    linkedin: 'https://linkedin.com/in/laura-rodriguez',
+    twitter: 'https://twitter.com/laurarodr',
+    email: 'laura.rodriguez@example.com',
+  },
+  {
+    id: 4,
+    name: 'Miguel Hernández',
+    initials: 'MH',
+    title: 'AI Researcher',
+    company: 'UNAM - IIMAS',
+    bio: 'Investigador en inteligencia artificial con publicaciones en conferencias internacionales.',
+    skills: ['Deep Learning', 'NLP', 'Computer Vision', 'Python', 'Research'],
+    linkedin: 'https://linkedin.com/in/miguel-hernandez',
+    email: 'miguel.hernandez@example.com',
+  },
+  {
+    id: 5,
+    name: 'Patricia González',
+    initials: 'PG',
+    title: 'Chief Data Officer',
+    company: 'Banco Santander',
+    bio: 'Ejecutiva en datos con experiencia liderando transformación digital en el sector financiero.',
+    skills: [
+      'Data Strategy',
+      'Leadership',
+      'Analytics',
+      'Governance',
+      'Innovation',
+    ],
+    linkedin: 'https://linkedin.com/in/patricia-gonzalez',
+    email: 'patricia.gonzalez@example.com',
+  },
+  {
+    id: 6,
+    name: 'Roberto Méndez',
+    initials: 'RM',
+    title: 'Data Engineer',
+    company: 'Rappi',
+    bio: 'Especialista en arquitectura de datos y pipelines de procesamiento en tiempo real.',
+    skills: ['Apache Kafka', 'Airflow', 'Scala', 'Databricks', 'ETL'],
+    linkedin: 'https://linkedin.com/in/roberto-mendez',
+    twitter: 'https://twitter.com/robmendez',
+    email: 'roberto.mendez@example.com',
+  },
+];
+---
+
+<BaseLayout
+  title="Directorio de Miembros - SECiD"
+  description="Conoce a los profesionales de la comunidad SECiD - Sociedad de Egresados en Ciencia de Datos UNAM"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <!-- Hero Section -->
+  <section class="secid-hero secid-hero--members">
+    <div class="secid-hero__container">
+      <div class="secid-hero__content">
+        <h1 class="secid-hero__title">Directorio de Miembros</h1>
+        <p class="secid-hero__subtitle">
+          Conecta con los mejores profesionales en ciencia de datos de México
+        </p>
+        <div class="secid-hero__search">
+          <input
+            type="text"
+            placeholder="Buscar por nombre, empresa o habilidad..."
+            class="secid-search-input"
+          />
+          <button class="secid-button secid-button--primary">
+            <i class="fas fa-search"></i>
+            Buscar
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filters Section -->
+  <section class="secid-section secid-bg-light">
+    <div class="secid-container">
+      <div class="secid-filters">
+        <div class="secid-filter-group">
+          <label class="secid-filter-label">Empresa</label>
+          <select class="secid-filter-select">
+            <option value="">Todas las empresas</option>
+            <option value="google">Google</option>
+            <option value="microsoft">Microsoft</option>
+            <option value="amazon">Amazon</option>
+            <option value="unam">UNAM</option>
+          </select>
+        </div>
+
+        <div class="secid-filter-group">
+          <label class="secid-filter-label">Habilidades</label>
+          <select class="secid-filter-select">
+            <option value="">Todas las habilidades</option>
+            <option value="python">Python</option>
+            <option value="ml">Machine Learning</option>
+            <option value="analytics">Analytics</option>
+            <option value="engineering">Data Engineering</option>
+          </select>
+        </div>
+
+        <div class="secid-filter-group">
+          <label class="secid-filter-label">Experiencia</label>
+          <select class="secid-filter-select">
+            <option value="">Todos los niveles</option>
+            <option value="junior">Junior (0-2 años)</option>
+            <option value="mid">Mid (3-5 años)</option>
+            <option value="senior">Senior (6-10 años)</option>
+            <option value="lead">Lead (10+ años)</option>
+          </select>
+        </div>
+
+        <button class="secid-button secid-button--outline">
+          <i class="fas fa-times"></i>
+          Limpiar Filtros
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Members Grid -->
+  <section class="secid-section">
+    <div class="secid-container">
+      <div class="secid-members-header">
+        <p class="secid-members-count">
+          Mostrando {members.length} de 1,000+ miembros
+        </p>
+        <div class="secid-view-toggle">
+          <button
+            class="secid-view-toggle__btn secid-view-toggle__btn--active"
+            data-view="grid"
+          >
+            <i class="fas fa-th"></i>
+          </button>
+          <button class="secid-view-toggle__btn" data-view="list">
+            <i class="fas fa-list"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="secid-grid secid-grid--3">
+        {
+          members.map((member) => (
+            <div class="secid-member-card secid-member-card--detailed">
+              <div class="secid-member-card__header">
+                <div class="secid-member-card__avatar">{member.initials}</div>
+                <div class="secid-member-card__info">
+                  <h3 class="secid-member-card__name">{member.name}</h3>
+                  <p class="secid-member-card__title">{member.title}</p>
+                  <p class="secid-member-card__company">{member.company}</p>
+                </div>
+              </div>
+
+              <p class="secid-member-card__bio">{member.bio}</p>
+
+              <div class="secid-member-card__skills">
+                {member.skills.slice(0, 3).map((skill) => (
+                  <span class="secid-member-card__skill">{skill}</span>
+                ))}
+                {member.skills.length > 3 && (
+                  <span class="secid-member-card__skill">
+                    +{member.skills.length - 3}
+                  </span>
+                )}
+              </div>
+
+              <div class="secid-member-card__actions">
+                <button class="secid-button secid-button--primary secid-button--sm">
+                  <i class="fas fa-user-plus" />
+                  Conectar
+                </button>
+                <button class="secid-button secid-button--outline secid-button--sm">
+                  <i class="fas fa-envelope" />
+                  Mensaje
+                </button>
+              </div>
+
+              <div class="secid-member-card__social">
+                {member.linkedin && (
+                  <a
+                    href={member.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="secid-member-card__social-link"
+                  >
+                    <i class="fab fa-linkedin" />
+                  </a>
+                )}
+                {member.twitter && (
+                  <a
+                    href={member.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="secid-member-card__social-link"
+                  >
+                    <i class="fab fa-twitter" />
+                  </a>
+                )}
+                <a
+                  href={`mailto:${member.email}`}
+                  class="secid-member-card__social-link"
+                >
+                  <i class="fas fa-envelope" />
+                </a>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- Pagination -->
+      <div class="secid-pagination">
+        <button class="secid-pagination__btn" disabled>
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button
+          class="secid-pagination__number secid-pagination__number--active"
+          >1</button
+        >
+        <button class="secid-pagination__number">2</button>
+        <button class="secid-pagination__number">3</button>
+        <span class="secid-pagination__dots">...</span>
+        <button class="secid-pagination__number">10</button>
+        <button class="secid-pagination__btn">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="secid-section secid-cta-section">
+    <div class="secid-container">
+      <div class="secid-cta">
+        <h2 class="secid-cta__title">¿Aún no eres miembro?</h2>
+        <p class="secid-cta__description">
+          Únete a la comunidad de profesionales en ciencia de datos más grande
+          de México
+        </p>
+        <a
+          href="/registro"
+          class="secid-button secid-button--primary secid-button--xl"
+        >
+          <i class="fas fa-rocket secid-button__icon"></i>
+          Únete a SECiD
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer lang="es" />
+</BaseLayout>
+
+<style>
+  .secid-hero--members {
+    background: linear-gradient(
+      135deg,
+      var(--secid-secondary) 0%,
+      var(--secid-primary) 100%
+    );
+    padding: 4rem 0 6rem;
+    text-align: center;
+  }
+
+  .secid-hero--members .secid-hero__title {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .secid-hero--members .secid-hero__subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto 2rem;
+  }
+
+  .secid-hero__search {
+    display: flex;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .secid-search-input {
+    flex: 1;
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    color: white;
+    transition: all 0.3s ease;
+  }
+
+  .secid-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .secid-search-input:focus {
+    outline: none;
+    border-color: white;
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .secid-filters {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .secid-filter-group {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .secid-filter-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--secid-dark-blue);
+    margin-bottom: 0.5rem;
+  }
+
+  .secid-filter-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 2px solid var(--secid-gray-300);
+    border-radius: var(--radius-md);
+    background: white;
+    transition: border-color 0.3s ease;
+  }
+
+  .secid-filter-select:focus {
+    outline: none;
+    border-color: var(--secid-secondary);
+  }
+
+  .secid-members-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .secid-members-count {
+    color: var(--secid-gray-600);
+    font-size: 1.125rem;
+  }
+
+  .secid-view-toggle {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .secid-view-toggle__btn {
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 1px solid var(--secid-gray-300);
+    color: var(--secid-gray-600);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .secid-view-toggle__btn:first-child {
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+  }
+
+  .secid-view-toggle__btn:last-child {
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  }
+
+  .secid-view-toggle__btn--active {
+    background: var(--secid-primary);
+    color: white;
+    border-color: var(--secid-primary);
+  }
+
+  .secid-member-card--detailed {
+    padding: 2rem;
+  }
+
+  .secid-member-card__header {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .secid-member-card__info {
+    flex: 1;
+  }
+
+  .secid-member-card__bio {
+    font-size: 0.875rem;
+    color: var(--secid-gray-600);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .secid-member-card__actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .secid-member-card__social {
+    display: flex;
+    gap: 0.75rem;
+    border-top: 1px solid var(--secid-gray-200);
+    padding-top: 1rem;
+  }
+
+  .secid-member-card__social-link {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--secid-gray-100);
+    border-radius: 50%;
+    color: var(--secid-gray-600);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .secid-member-card__social-link:hover {
+    background: var(--secid-primary);
+    color: white;
+  }
+
+  .secid-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 3rem;
+  }
+
+  .secid-pagination__btn,
+  .secid-pagination__number {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 1px solid var(--secid-gray-300);
+    border-radius: var(--radius-md);
+    color: var(--secid-dark-blue);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .secid-pagination__btn:hover:not(:disabled),
+  .secid-pagination__number:hover {
+    background: var(--secid-gray-50);
+    border-color: var(--secid-primary);
+  }
+
+  .secid-pagination__btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .secid-pagination__number--active {
+    background: var(--secid-primary);
+    color: white;
+    border-color: var(--secid-primary);
+  }
+
+  .secid-pagination__dots {
+    color: var(--secid-gray-500);
+    padding: 0 0.5rem;
+  }
+
+  /* Dark mode styles */
+  [data-theme='dark'] .secid-search-input {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  [data-theme='dark'] .secid-filter-select {
+    background: var(--secid-gray-800);
+    border-color: var(--secid-gray-700);
+    color: var(--secid-gray-200);
+  }
+
+  [data-theme='dark'] .secid-members-count {
+    color: var(--secid-gray-400);
+  }
+
+  [data-theme='dark'] .secid-view-toggle__btn {
+    background: var(--secid-gray-800);
+    border-color: var(--secid-gray-700);
+    color: var(--secid-gray-400);
+  }
+
+  [data-theme='dark'] .secid-member-card__bio {
+    color: var(--secid-gray-400);
+  }
+
+  [data-theme='dark'] .secid-member-card__social {
+    border-top-color: var(--secid-gray-700);
+  }
+
+  [data-theme='dark'] .secid-member-card__social-link {
+    background: var(--secid-gray-700);
+    color: var(--secid-gray-400);
+  }
+
+  [data-theme='dark'] .secid-pagination__btn,
+  [data-theme='dark'] .secid-pagination__number {
+    background: var(--secid-gray-800);
+    border-color: var(--secid-gray-700);
+    color: var(--secid-gray-300);
+  }
+
+  [data-theme='dark'] .secid-pagination__btn:hover:not(:disabled),
+  [data-theme='dark'] .secid-pagination__number:hover {
+    background: var(--secid-gray-700);
+  }
+
+  @media (max-width: 768px) {
+    .secid-hero__search {
+      flex-direction: column;
+    }
+
+    .secid-filters {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .secid-filter-group {
+      width: 100%;
+    }
+
+    .secid-members-header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .secid-member-card__actions {
+      flex-direction: column;
+    }
+
+    .secid-member-card__actions button {
+      width: 100%;
+    }
+  }
+</style>

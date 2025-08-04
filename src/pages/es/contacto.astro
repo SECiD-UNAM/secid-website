@@ -1,0 +1,376 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('es');
+---
+
+<BaseLayout
+  title="Contacto - SECiD"
+  description="Contáctanos para conocer más sobre la Sociedad de Egresados en Ciencia de Datos de la UNAM"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <!-- Hero Section -->
+  <section class="secid-hero secid-hero--contact">
+    <div class="secid-hero__container">
+      <div class="secid-hero__content">
+        <h1 class="secid-hero__title">Contacto</h1>
+        <p class="secid-hero__subtitle">
+          Estamos aquí para responder tus preguntas y escuchar tus ideas
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <section class="secid-section">
+    <div class="secid-container">
+      <div class="secid-grid secid-grid--2">
+        <!-- Contact Form -->
+        <div class="secid-contact-form">
+          <h2>Envíanos un mensaje</h2>
+          <form class="secid-form">
+            <div class="secid-form__group">
+              <label class="secid-form__label" for="name">Nombre completo</label
+              >
+              <input
+                type="text"
+                id="name"
+                class="secid-form__input"
+                placeholder="Tu nombre completo"
+                required
+              />
+            </div>
+
+            <div class="secid-form__group">
+              <label class="secid-form__label" for="email"
+                >Correo electrónico</label
+              >
+              <input
+                type="email"
+                id="email"
+                class="secid-form__input"
+                placeholder="tu.email@ejemplo.com"
+                required
+              />
+            </div>
+
+            <div class="secid-form__group">
+              <label class="secid-form__label" for="subject">Asunto</label>
+              <input
+                type="text"
+                id="subject"
+                class="secid-form__input"
+                placeholder="¿En qué podemos ayudarte?"
+                required
+              />
+            </div>
+
+            <div class="secid-form__group">
+              <label class="secid-form__label" for="message">Mensaje</label>
+              <textarea
+                id="message"
+                class="secid-form__textarea"
+                rows="6"
+                placeholder="Escribe tu mensaje aquí..."
+                required></textarea>
+            </div>
+
+            <button
+              type="submit"
+              class="secid-button secid-button--primary secid-button--lg"
+            >
+              <i class="fas fa-paper-plane secid-button__icon"></i>
+              Enviar Mensaje
+            </button>
+          </form>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="secid-contact-info">
+          <h2>Información de contacto</h2>
+
+          <div class="secid-contact-info__item">
+            <div class="secid-contact-info__icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div class="secid-contact-info__content">
+              <h3>Correo electrónico</h3>
+              <p><a href="mailto:contacto@secid.mx">contacto@secid.mx</a></p>
+            </div>
+          </div>
+
+          <div class="secid-contact-info__item">
+            <div class="secid-contact-info__icon">
+              <i class="fab fa-linkedin"></i>
+            </div>
+            <div class="secid-contact-info__content">
+              <h3>LinkedIn</h3>
+              <p>
+                <a
+                  href="https://www.linkedin.com/company/sociedad-de-egresados-en-ciencia-de-datos-secid"
+                  target="_blank"
+                  rel="noopener noreferrer">Síguenos en LinkedIn</a>
+              </p>
+            </div>
+          </div>
+
+          <div class="secid-contact-info__item">
+            <div class="secid-contact-info__icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="secid-contact-info__content">
+              <h3>Comunidad</h3>
+              <p>
+                Únete a nuestra red de más de 1,000 profesionales en ciencia de
+                datos
+              </p>
+            </div>
+          </div>
+
+          <div class="secid-contact-info__box">
+            <h3>Sitios de Interés</h3>
+            <ul class="secid-contact-info__links">
+              <li>
+                <a
+                  href="https://www.iimas.unam.mx/ciencia-de-datos/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Licenciatura en Ciencia de Datos UNAM</a>
+              </li>
+              <li>
+                <a
+                  href="https://docencia.tic.unam.mx/diplomado-en-ciencia-de-datos"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Diplomado en Ciencia de Datos UNAM</a>
+              </li>
+              <li>
+                <a
+                  href="https://www.iimas.unam.mx/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Instituto de Investigaciones en Matemáticas Aplicadas y en
+                  Sistemas (IIMAS)</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="secid-section secid-bg-cream">
+    <div class="secid-container">
+      <h2 class="secid-section__title">Preguntas Frecuentes</h2>
+
+      <div class="secid-faq">
+        <div class="secid-faq__item">
+          <h3 class="secid-faq__question">¿Cómo puedo ser miembro de SECiD?</h3>
+          <p class="secid-faq__answer">
+            Para ser miembro de SECiD, debes ser egresado de la carrera de
+            Ciencia de Datos de la UNAM. Puedes registrarte a través de nuestro
+            formulario en línea.
+          </p>
+        </div>
+
+        <div class="secid-faq__item">
+          <h3 class="secid-faq__question">
+            ¿Cuáles son los beneficios de ser miembro?
+          </h3>
+          <p class="secid-faq__answer">
+            Los miembros tienen acceso a oportunidades laborales exclusivas,
+            eventos de networking, talleres de desarrollo profesional y
+            descuentos en cursos especializados.
+          </p>
+        </div>
+
+        <div class="secid-faq__item">
+          <h3 class="secid-faq__question">
+            ¿Cómo puedo publicar una oferta de trabajo?
+          </h3>
+          <p class="secid-faq__answer">
+            Las empresas pueden publicar ofertas de trabajo contactándonos a
+            través del formulario o enviando un correo a contacto@secid.mx.
+          </p>
+        </div>
+
+        <div class="secid-faq__item">
+          <h3 class="secid-faq__question">¿Organizan eventos presenciales?</h3>
+          <p class="secid-faq__answer">
+            Sí, organizamos eventos de networking, conferencias y talleres tanto
+            presenciales como virtuales. Consulta nuestro calendario de eventos
+            para más información.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer lang="es" />
+</BaseLayout>
+
+<style>
+  .secid-hero--contact {
+    background: linear-gradient(
+      135deg,
+      var(--secid-secondary) 0%,
+      var(--secid-primary) 100%
+    );
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .secid-hero--contact .secid-hero__title {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .secid-hero--contact .secid-hero__subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .secid-contact-form {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+
+  .secid-contact-form h2 {
+    font-size: 1.75rem;
+    color: var(--secid-dark-blue);
+    margin-bottom: 2rem;
+  }
+
+  .secid-contact-info h2 {
+    font-size: 1.75rem;
+    color: var(--secid-dark-blue);
+    margin-bottom: 2rem;
+  }
+
+  .secid-contact-info__item {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .secid-contact-info__icon {
+    width: 50px;
+    height: 50px;
+    background: var(--secid-gray-100);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.25rem;
+    color: var(--secid-primary);
+  }
+
+  .secid-contact-info__content h3 {
+    font-size: 1.125rem;
+    color: var(--secid-dark-blue);
+    margin-bottom: 0.5rem;
+  }
+
+  .secid-contact-info__content p {
+    color: var(--secid-gray-700);
+    margin: 0;
+  }
+
+  .secid-contact-info__content a {
+    color: var(--secid-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .secid-contact-info__content a:hover {
+    color: var(--secid-primary);
+  }
+
+  .secid-contact-info__box {
+    background: var(--secid-cream);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    margin-top: 2rem;
+  }
+
+  .secid-contact-info__box h3 {
+    font-size: 1.25rem;
+    color: var(--secid-dark-blue);
+    margin-bottom: 1rem;
+  }
+
+  .secid-contact-info__links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .secid-contact-info__links li {
+    margin-bottom: 0.75rem;
+  }
+
+  .secid-contact-info__links a {
+    color: var(--secid-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .secid-contact-info__links a:hover {
+    color: var(--secid-primary);
+  }
+
+  .secid-contact-info__links a::before {
+    content: '→';
+    margin-right: 0.5rem;
+    color: var(--secid-gold);
+  }
+
+  .secid-faq {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .secid-faq__item {
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .secid-faq__question {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--secid-dark-blue);
+    margin-bottom: 1rem;
+  }
+
+  .secid-faq__answer {
+    color: var(--secid-gray-700);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .secid-grid--2 {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .secid-contact-form {
+      margin-bottom: 2rem;
+    }
+  }
+</style>

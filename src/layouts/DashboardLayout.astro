@@ -1,0 +1,60 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import DashboardNavigation from '@/components/dashboard/DashboardNavigation';
+import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
+import { AuthProvider } from '@/contexts/AuthContext';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+
+export interface Props {
+  title: string;
+  description?: string;
+  lang?: 'es' | 'en';
+  requireVerified?: boolean;
+  requireRole?: ('member' | 'admin' | 'moderator' | 'company')[];
+}
+
+const {
+  title,
+  description = 'SECiD Member Dashboard',
+  lang = 'es',
+  requireVerified = false,
+  requireRole = [],
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description} lang={lang}>
+  <AuthProvider client:load>
+    <ProtectedRoute
+      client:load
+      lang={lang}
+      requireVerified={requireVerified}
+      requireRole={requireRole}
+    >
+      <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <!-- Dashboard Navigation -->
+        <DashboardNavigation client:load lang={lang} />
+
+        <div class="flex">
+          <!-- Sidebar -->
+          <DashboardSidebar client:load lang={lang} />
+
+          <!-- Main Content -->
+          <main class="flex-1 lg:ml-64">
+            <div class="px-4 py-8 sm:px-6 lg:px-8">
+              <slot />
+            </div>
+          </main>
+        </div>
+      </div>
+    </ProtectedRoute>
+  </AuthProvider>
+</BaseLayout>
+
+<style>
+  /* Ensure proper spacing with fixed sidebar */
+  @media (min-width: 1024px) {
+    main {
+      margin-left: 16rem; /* 64 * 0.25rem = 16rem */
+    }
+  }
+</style>

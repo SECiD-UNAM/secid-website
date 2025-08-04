@@ -1,0 +1,81 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import AdminDashboard from '@/components/admin/AdminDashboard.tsx';
+import AdminAuthGuard from '@/components/admin/AdminAuthGuard.tsx';
+
+export const prerender = false;
+
+const title = 'Panel de Administración - SECiD';
+const description =
+  'Panel de administración principal para la gestión de la plataforma SECiD';
+---
+
+<AdminLayout title={title} description={description} currentPath="/admin">
+  <AdminAuthGuard requiredRole="moderator" client:load>
+    <AdminDashboard client:load />
+  </AdminAuthGuard>
+</AdminLayout>
+
+<script>
+  // Admin dashboard specific functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    // Track admin dashboard access
+    if (typeof amplitude !== 'undefined') {
+      amplitude.getInstance().logEvent('admin_dashboard_accessed', {
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+      });
+    }
+
+    // Auto-refresh dashboard data every 5 minutes
+    setInterval(
+      () => {
+        const event = new CustomEvent('refreshDashboard');
+        document.dispatchEvent(event);
+      },
+      5 * 60 * 1000
+    );
+
+    // Keyboard shortcuts for admin dashboard
+    document.addEventListener('keydown', (e) => {
+      // Ctrl/Cmd + Shift + U = Users
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'U') {
+        e.preventDefault();
+        window.location.href = '/admin/users';
+      }
+
+      // Ctrl/Cmd + Shift + M = Moderation
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'M') {
+        e.preventDefault();
+        window.location.href = '/admin/moderation';
+      }
+
+      // Ctrl/Cmd + Shift + A = Analytics
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        window.location.href = '/admin/analytics';
+      }
+
+      // Ctrl/Cmd + Shift + S = Settings
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'S') {
+        e.preventDefault();
+        window.location.href = '/admin/settings';
+      }
+    });
+  });
+</script>
+
+<style>
+  /* Dashboard-specific styles */
+  .admin-dashboard {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+  }
+
+  /* Responsive adjustments for admin dashboard */
+  @media (max-width: 768px) {
+    .admin-dashboard {
+      padding: 1rem;
+    }
+  }
+</style>

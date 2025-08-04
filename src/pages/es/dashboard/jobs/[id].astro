@@ -1,0 +1,14 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import JobApplicationPage from '@/components/jobs/JobApplicationPage';
+
+const { id } = Astro.params;
+---
+
+<DashboardLayout
+  title="Detalle del Empleo - SECiD"
+  description="Ver detalles y aplicar a esta oportunidad laboral"
+  lang="es"
+>
+  <JobApplicationPage client:load jobId={id} lang="es" />
+</DashboardLayout>

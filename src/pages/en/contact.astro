@@ -1,0 +1,234 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('en');
+---
+
+<BaseLayout
+  title="Contact - SECiD"
+  description="Get in touch with the Data Science Alumni Society"
+  lang="en"
+>
+  <!-- Main -->
+  <div id="main">
+    <div class="inner">
+      <!-- Header -->
+      <header id="header">
+        <a href="/en/" class="logo"><strong>{t.site.name}</strong></a>
+        <ul class="icons">
+          <li>
+            <a href="/en/login" class="button small">{t.auth.signIn.button}</a>
+          </li>
+          <li><a href="/es/contacto" class="button small">Español</a></li>
+        </ul>
+      </header>
+
+      <!-- Content -->
+      <section>
+        <header class="main">
+          <h1>Contact</h1>
+        </header>
+
+        <p>
+          Have questions, suggestions, or want to collaborate with us? We're
+          here to listen.
+        </p>
+
+        <div class="row">
+          <div class="col-6 col-12-medium">
+            <!-- Contact Form -->
+            <h2>Send us a message</h2>
+            <form method="post" action="#">
+              <div class="row gtr-uniform">
+                <div class="col-6 col-12-xsmall">
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    placeholder="Name"
+                    required
+                  />
+                </div>
+                <div class="col-6 col-12-xsmall">
+                  <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    placeholder="Email"
+                    required
+                  />
+                </div>
+                <div class="col-12">
+                  <select name="subject" id="subject" required>
+                    <option value="">- Select a topic -</option>
+                    <option value="general">General Inquiry</option>
+                    <option value="membership">Membership</option>
+                    <option value="jobs">Job Board</option>
+                    <option value="partnership">Partnership/Sponsorship</option>
+                    <option value="events">Events</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <textarea
+                    name="message"
+                    id="message"
+                    placeholder="Your message"
+                    rows="6"
+                    required></textarea>
+                </div>
+                <div class="col-12">
+                  <ul class="actions">
+                    <li>
+                      <input
+                        type="submit"
+                        value="Send Message"
+                        class="primary"
+                      />
+                    </li>
+                    <li><input type="reset" value="Clear" /></li>
+                  </ul>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="col-6 col-12-medium">
+            <!-- Contact Information -->
+            <h2>Contact Information</h2>
+
+            <div class="box">
+              <h3>Email</h3>
+              <p>
+                <strong>General:</strong>
+                <a href="mailto:contacto@secid.mx">contacto@secid.mx</a><br />
+                <strong>Membership:</strong>
+                <a href="mailto:membresias@secid.mx">membresias@secid.mx</a><br
+                />
+                <strong>Job Board:</strong>
+                <a href="mailto:empleos@secid.mx">empleos@secid.mx</a>
+              </p>
+            </div>
+
+            <div class="box">
+              <h3>Social Media</h3>
+              <ul class="icons">
+                <li>
+                  <a href="#" class="icon brands fa-linkedin"
+                    ><span class="label">LinkedIn</span></a>
+                </li>
+                <li>
+                  <a href="#" class="icon brands fa-twitter"
+                    ><span class="label">Twitter</span></a>
+                </li>
+                <li>
+                  <a href="#" class="icon brands fa-facebook-f"
+                    ><span class="label">Facebook</span></a>
+                </li>
+                <li>
+                  <a href="#" class="icon brands fa-instagram"
+                    ><span class="label">Instagram</span></a>
+                </li>
+              </ul>
+            </div>
+
+            <div class="box">
+              <h3>Office Hours</h3>
+              <p>
+                Monday to Friday: 9:00 AM - 6:00 PM<br />
+                Saturday: 10:00 AM - 2:00 PM<br />
+                Sunday: Closed
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <hr class="major" />
+
+        <!-- FAQ Section -->
+        <h2>Frequently Asked Questions</h2>
+
+        <h3>How can I become a SECiD member?</h3>
+        <p>
+          To become a SECiD member, you must be a graduate of UNAM's Data
+          Science program. You can register through our online form.
+        </p>
+
+        <h3>What are the benefits of membership?</h3>
+        <p>
+          Members have access to exclusive job opportunities, networking events,
+          professional development workshops, and discounts on specialized
+          courses.
+        </p>
+
+        <h3>How can I post a job offer?</h3>
+        <p>
+          Companies can post job offers by contacting us through the form or
+          sending an email to empleos@secid.mx.
+        </p>
+
+        <h3>Do you organize in-person events?</h3>
+        <p>
+          Yes, we organize networking events, conferences, and workshops both
+          in-person and virtually. Check our events calendar for more
+          information.
+        </p>
+      </section>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="inner">
+      <!-- Search -->
+      <section id="search" class="alt">
+        <form method="post" action="#">
+          <input type="text" name="query" id="query" placeholder="Search" />
+        </form>
+      </section>
+
+      <!-- Menu -->
+      <nav id="menu">
+        <header class="major">
+          <h2>Menu</h2>
+        </header>
+        <ul>
+          <li><a href="/en/">Home</a></li>
+          <li><a href="/en/about-us">About Us</a></li>
+          <li><a href="/en/jobs">Job Board</a></li>
+          <li><a href="/en/contact">Contact</a></li>
+          <li><a href="/en/login">Sign In</a></li>
+          <li><a href="/registro">Register</a></li>
+        </ul>
+      </nav>
+
+      <!-- Section -->
+      <section>
+        <header class="major">
+          <h2>Need quick help?</h2>
+        </header>
+        <p>Our team is available to answer your questions.</p>
+        <ul class="contact">
+          <li class="icon solid fa-envelope">
+            <a href="#">contacto@secid.mx</a>
+          </li>
+          <li class="icon solid fa-phone">(55) 1234-5678</li>
+          <li class="icon solid fa-home">
+            Ciudad Universitaria<br />
+            CDMX, Mexico
+          </li>
+        </ul>
+      </section>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <p class="copyright">
+          &copy; SECiD. All rights reserved. Design: <a
+            href="https://html5up.net">HTML5 UP</a
+          >.
+        </p>
+      </footer>
+    </div>
+  </div>
+</BaseLayout>

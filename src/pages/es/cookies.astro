@@ -1,0 +1,1146 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('es');
+
+const lastUpdated = '15 de enero de 2024';
+---
+
+<BaseLayout
+  title="Política de Cookies - SECiD"
+  description="Política de Cookies de la Sociedad de Egresados en Ciencia de Datos UNAM"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Política de Cookies</h1>
+          <p class="secid-hero__subtitle">
+            Última actualización: {lastUpdated}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Legal Content -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-legal">
+          <!-- Table of Contents -->
+          <aside class="secid-legal__toc">
+            <h3>Índice</h3>
+            <nav>
+              <ol>
+                <li><a href="#que-son">¿Qué son las Cookies?</a></li>
+                <li><a href="#como-usamos">Cómo Usamos las Cookies</a></li>
+                <li><a href="#tipos-cookies">Tipos de Cookies</a></li>
+                <li><a href="#cookies-especificas">Cookies Específicas</a></li>
+                <li><a href="#cookies-terceros">Cookies de Terceros</a></li>
+                <li><a href="#gestion-cookies">Gestión de Cookies</a></li>
+                <li><a href="#deshabilitar">Deshabilitar Cookies</a></li>
+                <li><a href="#actualizaciones">Actualizaciones</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+              </ol>
+            </nav>
+          </aside>
+
+          <!-- Main Content -->
+          <div class="secid-legal__content">
+            <section id="que-son">
+              <h2>1. ¿Qué son las Cookies?</h2>
+              <p>
+                Las cookies son pequeños archivos de texto que se almacenan en
+                su dispositivo (computadora, tablet o móvil) cuando visita
+                nuestro sitio web. Estas cookies nos permiten reconocer su
+                dispositivo y recordar cierta información sobre sus preferencias
+                o acciones anteriores.
+              </p>
+
+              <h3>1.1 Función de las Cookies</h3>
+              <p>Las cookies sirven para:</p>
+              <ul>
+                <li>Mejorar la funcionalidad de nuestro sitio web</li>
+                <li>Recordar sus preferencias y configuraciones</li>
+                <li>Proporcionar contenido personalizado</li>
+                <li>Analizar cómo utiliza nuestros servicios</li>
+                <li>Mantener la seguridad de su sesión</li>
+              </ul>
+
+              <h3>1.2 Tipos de Almacenamiento</h3>
+              <p>Además de cookies, también utilizamos:</p>
+              <ul>
+                <li>
+                  <strong>Local Storage:</strong> Para almacenar datos localmente
+                  en su navegador
+                </li>
+                <li>
+                  <strong>Session Storage:</strong> Para datos temporales de la sesión
+                </li>
+                <li>
+                  <strong>Web Beacons:</strong> Para rastrear la efectividad de nuestras
+                  comunicaciones
+                </li>
+              </ul>
+            </section>
+
+            <section id="como-usamos">
+              <h2>2. Cómo Usamos las Cookies</h2>
+
+              <h3>2.1 Propósitos Principales</h3>
+              <p>Utilizamos cookies para:</p>
+
+              <div class="secid-cookie-purposes">
+                <div class="secid-cookie-purpose">
+                  <div class="secid-cookie-purpose__icon">
+                    <i class="fas fa-cog"></i>
+                  </div>
+                  <div class="secid-cookie-purpose__content">
+                    <h4>Funcionalidad</h4>
+                    <p>
+                      Recordar sus preferencias de idioma, tema y
+                      configuraciones de cuenta
+                    </p>
+                  </div>
+                </div>
+
+                <div class="secid-cookie-purpose">
+                  <div class="secid-cookie-purpose__icon">
+                    <i class="fas fa-shield-alt"></i>
+                  </div>
+                  <div class="secid-cookie-purpose__content">
+                    <h4>Seguridad</h4>
+                    <p>
+                      Mantener su sesión segura y proteger contra actividades
+                      maliciosas
+                    </p>
+                  </div>
+                </div>
+
+                <div class="secid-cookie-purpose">
+                  <div class="secid-cookie-purpose__icon">
+                    <i class="fas fa-chart-bar"></i>
+                  </div>
+                  <div class="secid-cookie-purpose__content">
+                    <h4>Análisis</h4>
+                    <p>
+                      Entender cómo interactúa con nuestro sitio para mejorarlo
+                    </p>
+                  </div>
+                </div>
+
+                <div class="secid-cookie-purpose">
+                  <div class="secid-cookie-purpose__icon">
+                    <i class="fas fa-user"></i>
+                  </div>
+                  <div class="secid-cookie-purpose__content">
+                    <h4>Personalización</h4>
+                    <p>
+                      Mostrar contenido relevante y personalizado para usted
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="tipos-cookies">
+              <h2>3. Tipos de Cookies</h2>
+
+              <h3>3.1 Por Duración</h3>
+              <div class="secid-cookie-types">
+                <div class="secid-cookie-type">
+                  <h4>Cookies de Sesión</h4>
+                  <p>
+                    Se eliminan cuando cierra su navegador. Se usan para
+                    mantener su sesión activa mientras navega.
+                  </p>
+                  <span
+                    class="secid-cookie-type__badge secid-cookie-type__badge--session"
+                    >Temporal</span
+                  >
+                </div>
+
+                <div class="secid-cookie-type">
+                  <h4>Cookies Persistentes</h4>
+                  <p>
+                    Permanecen en su dispositivo por un tiempo determinado.
+                    Recuerdan sus preferencias entre visitas.
+                  </p>
+                  <span
+                    class="secid-cookie-type__badge secid-cookie-type__badge--persistent"
+                    >Duradero</span
+                  >
+                </div>
+              </div>
+
+              <h3>3.2 Por Origen</h3>
+              <div class="secid-cookie-types">
+                <div class="secid-cookie-type">
+                  <h4>Cookies Propias</h4>
+                  <p>
+                    Establecidas directamente por SECiD. Tenemos control total
+                    sobre estos datos.
+                  </p>
+                  <span
+                    class="secid-cookie-type__badge secid-cookie-type__badge--first-party"
+                    >Primera Parte</span
+                  >
+                </div>
+
+                <div class="secid-cookie-type">
+                  <h4>Cookies de Terceros</h4>
+                  <p>
+                    Establecidas por servicios externos que utilizamos, como
+                    análisis o redes sociales.
+                  </p>
+                  <span
+                    class="secid-cookie-type__badge secid-cookie-type__badge--third-party"
+                    >Terceros</span
+                  >
+                </div>
+              </div>
+            </section>
+
+            <section id="cookies-especificas">
+              <h2>4. Cookies Específicas que Utilizamos</h2>
+
+              <div class="secid-cookie-list">
+                <div class="secid-cookie-item">
+                  <div class="secid-cookie-item__header">
+                    <h4>Cookies Esenciales</h4>
+                    <span class="secid-cookie-item__required">Requeridas</span>
+                  </div>
+                  <p>Necesarias para el funcionamiento básico del sitio web.</p>
+                  <div class="secid-cookie-item__details">
+                    <div class="secid-cookie-detail">
+                      <strong>secid_session</strong>
+                      <span>Mantiene su sesión de usuario activa</span>
+                      <span class="secid-cookie-detail__duration">Sesión</span>
+                    </div>
+                    <div class="secid-cookie-detail">
+                      <strong>secid_csrf</strong>
+                      <span>Protección contra ataques CSRF</span>
+                      <span class="secid-cookie-detail__duration">Sesión</span>
+                    </div>
+                    <div class="secid-cookie-detail">
+                      <strong>secid_cookies_consent</strong>
+                      <span>Recuerda sus preferencias de cookies</span>
+                      <span class="secid-cookie-detail__duration">1 año</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="secid-cookie-item">
+                  <div class="secid-cookie-item__header">
+                    <h4>Cookies de Preferencias</h4>
+                    <span class="secid-cookie-item__optional">Opcional</span>
+                  </div>
+                  <p>
+                    Recuerdan sus configuraciones y preferencias personales.
+                  </p>
+                  <div class="secid-cookie-item__details">
+                    <div class="secid-cookie-detail">
+                      <strong>secid_theme</strong>
+                      <span>Guarda su preferencia de tema (claro/oscuro)</span>
+                      <span class="secid-cookie-detail__duration">1 año</span>
+                    </div>
+                    <div class="secid-cookie-detail">
+                      <strong>secid_language</strong>
+                      <span>Recuerda su idioma preferido</span>
+                      <span class="secid-cookie-detail__duration">1 año</span>
+                    </div>
+                    <div class="secid-cookie-detail">
+                      <strong>secid_timezone</strong>
+                      <span>Almacena su zona horaria para eventos</span>
+                      <span class="secid-cookie-detail__duration">6 meses</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="secid-cookie-item">
+                  <div class="secid-cookie-item__header">
+                    <h4>Cookies Analíticas</h4>
+                    <span class="secid-cookie-item__optional">Opcional</span>
+                  </div>
+                  <p>Nos ayudan a entender cómo usa nuestro sitio web.</p>
+                  <div class="secid-cookie-item__details">
+                    <div class="secid-cookie-detail">
+                      <strong>secid_analytics</strong>
+                      <span>Recopila datos anónimos de uso</span>
+                      <span class="secid-cookie-detail__duration">2 años</span>
+                    </div>
+                    <div class="secid-cookie-detail">
+                      <strong>secid_visitor_id</strong>
+                      <span>Identifica visitantes únicos de forma anónima</span>
+                      <span class="secid-cookie-detail__duration">2 años</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="secid-cookie-item">
+                  <div class="secid-cookie-item__header">
+                    <h4>Cookies de Marketing</h4>
+                    <span class="secid-cookie-item__optional">Opcional</span>
+                  </div>
+                  <p>
+                    Utilizadas para mostrar contenido relevante y medir
+                    efectividad.
+                  </p>
+                  <div class="secid-cookie-item__details">
+                    <div class="secid-cookie-detail">
+                      <strong>secid_campaign</strong>
+                      <span>Rastrea el origen de su visita</span>
+                      <span class="secid-cookie-detail__duration">30 días</span>
+                    </div>
+                    <div class="secid-cookie-detail">
+                      <strong>secid_interests</strong>
+                      <span
+                        >Guarda sus intereses para contenido personalizado</span
+                      >
+                      <span class="secid-cookie-detail__duration">1 año</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="cookies-terceros">
+              <h2>5. Cookies de Terceros</h2>
+
+              <p>
+                Algunos servicios de terceros que utilizamos pueden establecer
+                sus propias cookies:
+              </p>
+
+              <div class="secid-third-party-cookies">
+                <div class="secid-third-party-cookie">
+                  <h4>Google Analytics</h4>
+                  <p>
+                    Utilizamos Google Analytics para entender cómo los
+                    visitantes usan nuestro sitio. Estas cookies recopilan
+                    información de forma anónima.
+                  </p>
+                  <div class="secid-third-party-cookie__info">
+                    <span><strong>Cookies:</strong> _ga, _gid, _gat</span>
+                    <span><strong>Duración:</strong> 2 años máximo</span>
+                    <a
+                      href="https://policies.google.com/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Política de Privacidad <i class="fas fa-external-link-alt"
+                      ></i>
+                    </a>
+                  </div>
+                </div>
+
+                <div class="secid-third-party-cookie">
+                  <h4>Amplitude</h4>
+                  <p>
+                    Plataforma de análisis que nos ayuda a mejorar la
+                    experiencia del usuario mediante el seguimiento de
+                    interacciones.
+                  </p>
+                  <div class="secid-third-party-cookie__info">
+                    <span><strong>Cookies:</strong> amplitude_*</span>
+                    <span><strong>Duración:</strong> 1 año</span>
+                    <a
+                      href="https://amplitude.com/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Política de Privacidad <i class="fas fa-external-link-alt"
+                      ></i>
+                    </a>
+                  </div>
+                </div>
+
+                <div class="secid-third-party-cookie">
+                  <h4>Redes Sociales</h4>
+                  <p>
+                    Cuando interactúa con botones de redes sociales, estos
+                    servicios pueden establecer cookies en su dispositivo.
+                  </p>
+                  <div class="secid-third-party-cookie__info">
+                    <span
+                      ><strong>Servicios:</strong> LinkedIn, Twitter, Facebook</span
+                    >
+                    <span
+                      ><strong>Duración:</strong> Varía según el servicio</span
+                    >
+                    <span>Consulte las políticas de privacidad respectivas</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="gestion-cookies">
+              <h2>6. Gestión de Cookies</h2>
+
+              <h3>6.1 Panel de Preferencias</h3>
+              <p>
+                Puede gestionar sus preferencias de cookies en cualquier momento
+                utilizando nuestro panel de configuración:
+              </p>
+
+              <div class="secid-cookie-settings">
+                <button
+                  class="secid-button secid-button--primary"
+                  id="openCookieSettings"
+                >
+                  <i class="fas fa-cog"></i>
+                  Configurar Cookies
+                </button>
+              </div>
+
+              <h3>6.2 Categorías Configurables</h3>
+              <div class="secid-cookie-categories">
+                <div class="secid-cookie-category">
+                  <div class="secid-cookie-category__header">
+                    <h4>Esenciales</h4>
+                    <span
+                      class="secid-cookie-category__status secid-cookie-category__status--required"
+                    >
+                      Siempre Activas
+                    </span>
+                  </div>
+                  <p>
+                    Necesarias para el funcionamiento básico. No se pueden
+                    desactivar.
+                  </p>
+                </div>
+
+                <div class="secid-cookie-category">
+                  <div class="secid-cookie-category__header">
+                    <h4>Preferencias</h4>
+                    <span
+                      class="secid-cookie-category__status secid-cookie-category__status--optional"
+                    >
+                      Configurables
+                    </span>
+                  </div>
+                  <p>Mejoran su experiencia recordando sus configuraciones.</p>
+                </div>
+
+                <div class="secid-cookie-category">
+                  <div class="secid-cookie-category__header">
+                    <h4>Análisis</h4>
+                    <span
+                      class="secid-cookie-category__status secid-cookie-category__status--optional"
+                    >
+                      Configurables
+                    </span>
+                  </div>
+                  <p>
+                    Nos ayudan a mejorar nuestros servicios mediante análisis
+                    anónimos.
+                  </p>
+                </div>
+
+                <div class="secid-cookie-category">
+                  <div class="secid-cookie-category__header">
+                    <h4>Marketing</h4>
+                    <span
+                      class="secid-cookie-category__status secid-cookie-category__status--optional"
+                    >
+                      Configurables
+                    </span>
+                  </div>
+                  <p>
+                    Permiten contenido personalizado y medición de efectividad.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <section id="deshabilitar">
+              <h2>7. Deshabilitar Cookies en su Navegador</h2>
+
+              <p>
+                También puede gestionar cookies directamente desde su navegador.
+                Aquí le explicamos cómo hacerlo en los navegadores más comunes:
+              </p>
+
+              <div class="secid-browser-instructions">
+                <div class="secid-browser-instruction">
+                  <h4>
+                    <i class="fab fa-chrome"></i>
+                    Google Chrome
+                  </h4>
+                  <ol>
+                    <li>Haga clic en el menú (tres puntos) > Configuración</li>
+                    <li>
+                      Vaya a "Privacidad y seguridad" > "Cookies y otros datos
+                      de sitios"
+                    </li>
+                    <li>Configure sus preferencias de cookies</li>
+                  </ol>
+                </div>
+
+                <div class="secid-browser-instruction">
+                  <h4>
+                    <i class="fab fa-firefox"></i>
+                    Mozilla Firefox
+                  </h4>
+                  <ol>
+                    <li>Haga clic en el menú (tres líneas) > Configuración</li>
+                    <li>Vaya a "Privacidad y Seguridad"</li>
+                    <li>
+                      En "Cookies y datos del sitio", configure sus preferencias
+                    </li>
+                  </ol>
+                </div>
+
+                <div class="secid-browser-instruction">
+                  <h4>
+                    <i class="fab fa-safari"></i>
+                    Safari
+                  </h4>
+                  <ol>
+                    <li>Safari > Preferencias > Privacidad</li>
+                    <li>Configure "Cookies y datos de sitios web"</li>
+                    <li>Elija sus preferencias de cookies</li>
+                  </ol>
+                </div>
+
+                <div class="secid-browser-instruction">
+                  <h4>
+                    <i class="fab fa-edge"></i>
+                    Microsoft Edge
+                  </h4>
+                  <ol>
+                    <li>Menú (tres puntos) > Configuración</li>
+                    <li>"Privacidad, búsqueda y servicios"</li>
+                    <li>En "Cookies", configure sus preferencias</li>
+                  </ol>
+                </div>
+              </div>
+
+              <div class="secid-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                  <h4>Importante</h4>
+                  <p>
+                    Deshabilitar ciertas cookies puede afectar la funcionalidad
+                    de nuestro sitio web. Algunas características pueden no
+                    funcionar correctamente sin cookies esenciales.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <section id="actualizaciones">
+              <h2>8. Actualizaciones de esta Política</h2>
+
+              <p>
+                Podemos actualizar esta Política de Cookies ocasionalmente para
+                reflejar:
+              </p>
+
+              <ul>
+                <li>Cambios en las cookies que utilizamos</li>
+                <li>Nuevos servicios o funcionalidades</li>
+                <li>Cambios en las regulaciones legales</li>
+                <li>Mejoras en nuestras prácticas de privacidad</li>
+              </ul>
+
+              <p>
+                Cuando realicemos cambios significativos, se lo notificaremos
+                mediante:
+              </p>
+
+              <ul>
+                <li>Un aviso prominente en nuestro sitio web</li>
+                <li>Actualización del banner de cookies</li>
+                <li>Notificación por correo electrónico (si es apropiado)</li>
+              </ul>
+            </section>
+
+            <section id="contacto">
+              <h2>9. Contacto</h2>
+
+              <p>
+                Si tiene preguntas sobre esta Política de Cookies o nuestro uso
+                de cookies, puede contactarnos a través de:
+              </p>
+
+              <div class="secid-legal__contact">
+                <div class="secid-legal__contact-item">
+                  <h4>Oficial de Privacidad</h4>
+                  <p>
+                    <strong>Email:</strong>
+                    <a href="mailto:privacidad@secid.mx">privacidad@secid.mx</a
+                    ><br />
+                    <strong>Asunto:</strong> "Consulta sobre Cookies"
+                  </p>
+                </div>
+
+                <div class="secid-legal__contact-item">
+                  <h4>Soporte Técnico</h4>
+                  <p>
+                    <strong>Email:</strong>
+                    <a href="mailto:soporte@secid.mx">soporte@secid.mx</a><br />
+                    <strong>Para:</strong> Problemas técnicos con cookies
+                  </p>
+                </div>
+
+                <div class="secid-legal__contact-item">
+                  <h4>Dirección Postal</h4>
+                  <p>
+                    Sociedad de Egresados en Ciencia de Datos<br />
+                    Facultad de Ciencias, UNAM<br />
+                    Ciudad Universitaria<br />
+                    Ciudad de México, México
+                  </p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="es" />
+</BaseLayout>
+
+<style>
+  /* Base styles from privacy page */
+  .secid-legal {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: var(--space-3xl);
+    align-items: start;
+  }
+
+  .secid-legal__toc {
+    position: sticky;
+    top: var(--space-xl);
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+  }
+
+  .secid-legal__toc h3 {
+    margin: 0 0 var(--space-lg) 0;
+    color: var(--color-text-primary);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .secid-legal__toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: toc-counter;
+  }
+
+  .secid-legal__toc li {
+    counter-increment: toc-counter;
+    margin-bottom: var(--space-sm);
+  }
+
+  .secid-legal__toc a {
+    display: block;
+    padding: var(--space-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+    font-size: 0.875rem;
+  }
+
+  .secid-legal__toc a:before {
+    content: counter(toc-counter) '. ';
+    font-weight: 600;
+    color: var(--secid-primary);
+  }
+
+  .secid-legal__toc a:hover {
+    background: var(--color-surface-alt);
+    color: var(--color-text-primary);
+  }
+
+  .secid-legal__content {
+    max-width: none;
+  }
+
+  .secid-legal__content section {
+    margin-bottom: var(--space-3xl);
+    scroll-margin-top: var(--space-xl);
+  }
+
+  .secid-legal__content h2 {
+    color: var(--color-text-primary);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 var(--space-lg) 0;
+    padding-bottom: var(--space-sm);
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  .secid-legal__content h3 {
+    color: var(--color-text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: var(--space-xl) 0 var(--space-md) 0;
+  }
+
+  .secid-legal__content h4 {
+    color: var(--color-text-primary);
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: var(--space-lg) 0 var(--space-sm) 0;
+  }
+
+  .secid-legal__content p {
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-legal__content ul {
+    margin: 0 0 var(--space-lg) 0;
+    padding-left: var(--space-lg);
+  }
+
+  .secid-legal__content li {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-sm);
+  }
+
+  .secid-legal__content strong {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  .secid-legal__content a {
+    color: var(--secid-primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .secid-legal__content a:hover {
+    text-decoration: underline;
+  }
+
+  /* Cookie-specific styles */
+  .secid-cookie-purposes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin: var(--space-xl) 0;
+  }
+
+  .secid-cookie-purpose {
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background: var(--color-surface-alt);
+    border-radius: var(--radius-lg);
+  }
+
+  .secid-cookie-purpose__icon {
+    width: 3rem;
+    height: 3rem;
+    background: var(--secid-primary);
+    color: white;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .secid-cookie-purpose__content h4 {
+    margin: 0 0 var(--space-xs) 0;
+    color: var(--color-text-primary);
+    font-size: 1rem;
+  }
+
+  .secid-cookie-purpose__content p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+
+  .secid-cookie-types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-lg);
+    margin: var(--space-lg) 0;
+  }
+
+  .secid-cookie-type {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    position: relative;
+  }
+
+  .secid-cookie-type h4 {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--color-text-primary);
+    font-size: 1.125rem;
+  }
+
+  .secid-cookie-type p {
+    margin: 0 0 var(--space-md) 0;
+    font-size: 0.875rem;
+  }
+
+  .secid-cookie-type__badge {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .secid-cookie-type__badge--session {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+  }
+
+  .secid-cookie-type__badge--persistent {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+  }
+
+  .secid-cookie-type__badge--first-party {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+  }
+
+  .secid-cookie-type__badge--third-party {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+  }
+
+  .secid-cookie-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+    margin: var(--space-lg) 0;
+  }
+
+  .secid-cookie-item {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+  }
+
+  .secid-cookie-item__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+  }
+
+  .secid-cookie-item__header h4 {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: 1.25rem;
+  }
+
+  .secid-cookie-item__required {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .secid-cookie-item__optional {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .secid-cookie-item__details {
+    margin-top: var(--space-lg);
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-lg);
+  }
+
+  .secid-cookie-detail {
+    display: grid;
+    grid-template-columns: 150px 1fr auto;
+    gap: var(--space-md);
+    align-items: center;
+    padding: var(--space-md) 0;
+    border-bottom: 1px solid var(--color-surface-alt);
+  }
+
+  .secid-cookie-detail:last-child {
+    border-bottom: none;
+  }
+
+  .secid-cookie-detail strong {
+    font-family: monospace;
+    background: var(--color-surface-alt);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+  }
+
+  .secid-cookie-detail__duration {
+    background: var(--secid-primary);
+    color: white;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .secid-third-party-cookies {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    margin: var(--space-lg) 0;
+  }
+
+  .secid-third-party-cookie {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+  }
+
+  .secid-third-party-cookie h4 {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--color-text-primary);
+  }
+
+  .secid-third-party-cookie__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border);
+    font-size: 0.875rem;
+  }
+
+  .secid-cookie-settings {
+    text-align: center;
+    margin: var(--space-xl) 0;
+  }
+
+  .secid-cookie-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin: var(--space-lg) 0;
+  }
+
+  .secid-cookie-category {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+  }
+
+  .secid-cookie-category__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+  }
+
+  .secid-cookie-category__header h4 {
+    margin: 0;
+    color: var(--color-text-primary);
+  }
+
+  .secid-cookie-category__status {
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .secid-cookie-category__status--required {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+  }
+
+  .secid-cookie-category__status--optional {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+  }
+
+  .secid-browser-instructions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin: var(--space-lg) 0;
+  }
+
+  .secid-browser-instruction {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+  }
+
+  .secid-browser-instruction h4 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: 0 0 var(--space-md) 0;
+    color: var(--color-text-primary);
+  }
+
+  .secid-browser-instruction ol {
+    margin: 0;
+    padding-left: var(--space-lg);
+  }
+
+  .secid-browser-instruction li {
+    font-size: 0.875rem;
+    margin-bottom: var(--space-xs);
+  }
+
+  .secid-warning {
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid #f59e0b;
+    border-radius: var(--radius-lg);
+    margin: var(--space-xl) 0;
+  }
+
+  .secid-warning i {
+    color: #f59e0b;
+    font-size: 1.25rem;
+    margin-top: var(--space-xs);
+  }
+
+  .secid-warning h4 {
+    margin: 0 0 var(--space-xs) 0;
+    color: #f59e0b;
+    font-size: 1rem;
+  }
+
+  .secid-warning p {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .secid-legal__contact {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-xl);
+    margin-top: var(--space-xl);
+  }
+
+  .secid-legal__contact-item {
+    background: var(--color-surface-alt);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+  }
+
+  .secid-legal__contact-item h4 {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--secid-primary);
+  }
+
+  .secid-legal__contact-item p {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    .secid-legal {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+
+    .secid-legal__toc {
+      position: static;
+      order: -1;
+    }
+
+    .secid-legal__toc ol {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .secid-legal__toc li {
+      margin-bottom: 0;
+    }
+
+    .secid-legal__toc a {
+      padding: var(--space-xs) var(--space-sm);
+      white-space: nowrap;
+      font-size: 0.75rem;
+    }
+
+    .secid-cookie-purposes {
+      grid-template-columns: 1fr;
+    }
+
+    .secid-cookie-types {
+      grid-template-columns: 1fr;
+    }
+
+    .secid-cookie-detail {
+      grid-template-columns: 1fr;
+      gap: var(--space-sm);
+    }
+
+    .secid-cookie-categories {
+      grid-template-columns: 1fr;
+    }
+
+    .secid-browser-instructions {
+      grid-template-columns: 1fr;
+    }
+
+    .secid-legal__contact {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Cookie settings panel (placeholder functionality)
+  document.addEventListener('DOMContentLoaded', function () {
+    const openCookieSettingsBtn = document.getElementById('openCookieSettings');
+
+    if (openCookieSettingsBtn) {
+      openCookieSettingsBtn.addEventListener('click', function () {
+        // This would open a cookie settings modal/panel
+        // For now, we'll just show an alert
+        alert(
+          'El panel de configuración de cookies se abriría aquí. Esta funcionalidad se implementaría en el sistema real'
+        );
+      });
+    }
+  });
+</script>

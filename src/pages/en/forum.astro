@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ForumHome from '../../components/forums/ForumHome';
+import { getLanguageFromUrl } from '../../i18n/translations';
+
+const language = getLanguageFromUrl(Astro.url);
+
+// Check if user is authenticated (this would be replaced with actual auth logic)
+const currentUser = undefined; // Replace with actual user from auth context
+---
+
+<BaseLayout
+  title="Forum - SECiD"
+  description="SECiD Discussion Forum - Connect with data science professionals"
+>
+  <ForumHome language={language} currentUser={currentUser} client:load />
+</BaseLayout>

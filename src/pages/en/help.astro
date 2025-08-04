@@ -1,0 +1,442 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('en');
+---
+
+<BaseLayout
+  title="Help Center - SECiD"
+  description="Find answers to your questions and get support from the SECiD community"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Help Center</h1>
+          <p class="secid-hero__subtitle">How can we help you?</p>
+
+          <!-- Search Box -->
+          <div class="secid-help__search">
+            <form class="secid-form secid-form--inline">
+              <div class="secid-form__group">
+                <input
+                  type="search"
+                  class="secid-form__input secid-form__input--search"
+                  placeholder="Search our knowledge base..."
+                  aria-label="Search help"
+                />
+                <button
+                  type="submit"
+                  class="secid-button secid-button--primary"
+                >
+                  <i class="fas fa-search"></i>
+                  Search
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Access Categories -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-section__header">
+          <h2 class="secid-section__title">Help Categories</h2>
+          <p class="secid-section__description">
+            Quickly find the information you need
+          </p>
+        </div>
+
+        <div class="secid-grid secid-grid--3">
+          <a href="#account" class="secid-help-card">
+            <div class="secid-help-card__icon">
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <h3 class="secid-help-card__title">Account & Profile</h3>
+            <p class="secid-help-card__description">
+              Account settings, user profile, and preferences
+            </p>
+          </a>
+
+          <a href="#jobs" class="secid-help-card">
+            <div class="secid-help-card__icon">
+              <i class="fas fa-briefcase"></i>
+            </div>
+            <h3 class="secid-help-card__title">Job Board</h3>
+            <p class="secid-help-card__description">
+              Post jobs, search opportunities, and applications
+            </p>
+          </a>
+
+          <a href="#community" class="secid-help-card">
+            <div class="secid-help-card__icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3 class="secid-help-card__title">Community</h3>
+            <p class="secid-help-card__description">
+              Networking, events, and community participation
+            </p>
+          </a>
+
+          <a href="#technical" class="secid-help-card">
+            <div class="secid-help-card__icon">
+              <i class="fas fa-cogs"></i>
+            </div>
+            <h3 class="secid-help-card__title">Technical Support</h3>
+            <p class="secid-help-card__description">
+              Technical issues, errors, and compatibility
+            </p>
+          </a>
+
+          <a href="#payments" class="secid-help-card">
+            <div class="secid-help-card__icon">
+              <i class="fas fa-credit-card"></i>
+            </div>
+            <h3 class="secid-help-card__title">Memberships & Payments</h3>
+            <p class="secid-help-card__description">
+              Membership types, billing, and payment methods
+            </p>
+          </a>
+
+          <a href="#privacy" class="secid-help-card">
+            <div class="secid-help-card__icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3 class="secid-help-card__title">Privacy & Security</h3>
+            <p class="secid-help-card__description">
+              Data protection and privacy settings
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Popular Articles -->
+    <section class="secid-section secid-bg-light">
+      <div class="secid-container">
+        <div class="secid-section__header">
+          <h2 class="secid-section__title">Popular Articles</h2>
+          <p class="secid-section__description">
+            Most consulted topics by our community
+          </p>
+        </div>
+
+        <div class="secid-help__articles">
+          <article class="secid-help-article">
+            <h3 class="secid-help-article__title">
+              <i class="fas fa-star"></i>
+              How to create my professional profile?
+            </h3>
+            <p class="secid-help-article__excerpt">
+              Learn how to complete your profile with relevant information to
+              stand out in the community and attract job opportunities.
+            </p>
+            <a href="#" class="secid-help-article__link">Read more →</a>
+          </article>
+
+          <article class="secid-help-article">
+            <h3 class="secid-help-article__title">
+              <i class="fas fa-star"></i>
+              How to post a job opening?
+            </h3>
+            <p class="secid-help-article__excerpt">
+              Step-by-step guide to post job offers and find the ideal talent
+              for your team.
+            </p>
+            <a href="#" class="secid-help-article__link">Read more →</a>
+          </article>
+
+          <article class="secid-help-article">
+            <h3 class="secid-help-article__title">
+              <i class="fas fa-star"></i>
+              Premium membership benefits
+            </h3>
+            <p class="secid-help-article__excerpt">
+              Discover all the exclusive advantages you get as a SECiD premium
+              member.
+            </p>
+            <a href="#" class="secid-help-article__link">Read more →</a>
+          </article>
+
+          <article class="secid-help-article">
+            <h3 class="secid-help-article__title">
+              <i class="fas fa-star"></i>
+              Community code of conduct
+            </h3>
+            <p class="secid-help-article__excerpt">
+              Guidelines to maintain a professional and respectful environment
+              on our platform.
+            </p>
+            <a href="#" class="secid-help-article__link">Read more →</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Support -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-help__contact">
+          <h2 class="secid-help__contact-title">
+            Can't find what you're looking for?
+          </h2>
+          <p class="secid-help__contact-description">
+            Our support team is ready to help you
+          </p>
+
+          <div class="secid-help__contact-options">
+            <div class="secid-help__contact-option">
+              <i class="fas fa-envelope"></i>
+              <h3>Email</h3>
+              <p>support@secid.mx</p>
+              <p class="secid-help__contact-meta">Response in 24-48 hours</p>
+            </div>
+
+            <div class="secid-help__contact-option">
+              <i class="fas fa-comments"></i>
+              <h3>Live Chat</h3>
+              <p>Available Mon-Fri</p>
+              <p class="secid-help__contact-meta">9:00 AM - 6:00 PM CST</p>
+            </div>
+
+            <div class="secid-help__contact-option">
+              <i class="fab fa-slack"></i>
+              <h3>Slack Community</h3>
+              <p>Join the #help channel</p>
+              <p class="secid-help__contact-meta">Community responses</p>
+            </div>
+          </div>
+
+          <div class="secid-help__contact-cta">
+            <a
+              href="/en/contact"
+              class="secid-button secid-button--primary secid-button--lg"
+            >
+              <i class="fas fa-headset"></i>
+              Contact Support
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</BaseLayout>
+
+<style>
+  /* Help Search */
+  .secid-help__search {
+    margin-top: 2rem;
+    max-width: 600px;
+  }
+
+  .secid-form--inline .secid-form__group {
+    display: flex;
+    gap: var(--space-md);
+  }
+
+  .secid-form__input--search {
+    flex: 1;
+    border-radius: var(--radius-full);
+    padding-left: var(--space-xl);
+    padding-right: var(--space-xl);
+  }
+
+  /* Help Cards */
+  .secid-help-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    transition: all var(--transition-base);
+    border: 1px solid var(--color-border);
+    display: block;
+  }
+
+  .secid-help-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--secid-primary);
+  }
+
+  .secid-help-card__icon {
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto var(--space-lg);
+    background: linear-gradient(
+      135deg,
+      var(--secid-primary),
+      var(--secid-gold)
+    );
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+  }
+
+  .secid-help-card__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .secid-help-card__description {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  /* Help Articles */
+  .secid-help__articles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-xl);
+  }
+
+  .secid-help-article {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    border: 1px solid var(--color-border);
+    transition: all var(--transition-base);
+  }
+
+  .secid-help-article:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--secid-primary);
+  }
+
+  .secid-help-article__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-md) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .secid-help-article__title i {
+    color: var(--secid-gold);
+  }
+
+  .secid-help-article__excerpt {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-help-article__link {
+    color: var(--secid-primary);
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    transition: var(--transition-colors);
+  }
+
+  .secid-help-article__link:hover {
+    color: var(--secid-primary-dark);
+  }
+
+  /* Contact Support */
+  .secid-help__contact {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-3xl) 0;
+  }
+
+  .secid-help__contact-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-help__contact-description {
+    font-size: 1.25rem;
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--space-3xl) 0;
+  }
+
+  .secid-help__contact-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-xl);
+    margin-bottom: var(--space-3xl);
+  }
+
+  .secid-help__contact-option {
+    text-align: center;
+  }
+
+  .secid-help__contact-option i {
+    font-size: 2.5rem;
+    color: var(--secid-primary);
+    margin-bottom: var(--space-md);
+  }
+
+  .secid-help__contact-option h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .secid-help__contact-option p {
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .secid-help__contact-meta {
+    font-size: 0.875rem;
+    color: var(--color-text-tertiary) !important;
+    margin-top: var(--space-xs) !important;
+  }
+
+  .secid-help__contact-cta {
+    margin-top: var(--space-2xl);
+  }
+
+  /* Hero Secondary Style */
+  .secid-hero--secondary {
+    min-height: 400px;
+    background: linear-gradient(
+      135deg,
+      var(--secid-secondary) 0%,
+      var(--secid-secondary-dark) 100%
+    );
+    color: white;
+  }
+
+  .secid-hero--secondary .secid-hero__title,
+  .secid-hero--secondary .secid-hero__subtitle {
+    color: white;
+  }
+
+  /* Dark mode adjustments */
+  [data-theme='dark'] .secid-hero--secondary {
+    background: linear-gradient(
+      135deg,
+      var(--secid-secondary-dark) 0%,
+      var(--secid-dark-blue) 100%
+    );
+  }
+</style>

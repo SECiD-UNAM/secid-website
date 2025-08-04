@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ForumPost from '../../../components/forums/ForumPost';
+import { getLanguageFromUrl } from '../../../i18n/translations';
+
+const language = getLanguageFromUrl(Astro.url);
+const url = new URL(Astro.request.url);
+const categorySlug = url.searchParams.get('category');
+
+// Check if user is authenticated (this would be replaced with actual auth logic)
+const currentUser = undefined; // Replace with actual user from auth context
+
+// Redirect if not authenticated
+if (!currentUser) {
+  return Astro.redirect('/en/login?redirect=/en/forum/new-topic');
+}
+---
+
+<BaseLayout
+  title="New Topic - Forum - SECiD"
+  description="Create a new topic in the SECiD forum"
+>
+  <ForumPost
+    mode="create-topic"
+    language={language}
+    categorySlug={categorySlug}
+    currentUser={currentUser}
+    client:load
+  />
+</BaseLayout>

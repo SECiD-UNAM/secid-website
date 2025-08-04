@@ -1,0 +1,19 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { LoginForm } from '@/components/auth/LoginForm';
+import { getTranslations } from '@/i18n/translations';
+
+const t = getTranslations('es');
+---
+
+<BaseLayout
+  title={`${t.auth.signIn.title} - ${t.site.name}`}
+  description={t.auth.signIn.subtitle}
+  lang="es"
+>
+  <div
+    class="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 dark:bg-gray-900 sm:px-6 lg:px-8"
+  >
+    <LoginForm client:load lang="es" />
+  </div>
+</BaseLayout>

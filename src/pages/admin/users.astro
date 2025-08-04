@@ -1,0 +1,136 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import UserManagement from '@/components/admin/UserManagement.tsx';
+import AdminAuthGuard from '@/components/admin/AdminAuthGuard.tsx';
+
+export const prerender = false;
+
+const title = 'Gestión de Usuarios - Admin SECiD';
+const description = 'Administrar y moderar usuarios de la plataforma SECiD';
+---
+
+<AdminLayout title={title} description={description} currentPath="/admin/users">
+  <AdminAuthGuard requiredRole="moderator" client:load>
+    <UserManagement client:load />
+  </AdminAuthGuard>
+</AdminLayout>
+
+<script>
+  // User management specific functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    // Track user management access
+    if (typeof amplitude !== 'undefined') {
+      amplitude.getInstance().logEvent('admin_users_accessed', {
+        timestamp: new Date().toISOString(),
+        page: 'user_management',
+      });
+    }
+
+    // Auto-save filters to localStorage
+    const saveFilters = () => {
+      const filters = {
+        role: document.querySelector('[data-filter="role"]')?.value || 'all',
+        membership:
+          document.querySelector('[data-filter="membership"]')?.value || 'all',
+        verified:
+          document.querySelector('[data-filter="verified"]')?.value || 'all',
+        status:
+          document.querySelector('[data-filter="status"]')?.value || 'all',
+        search: document.querySelector('[data-filter="search"]')?.value || '',
+      };
+      localStorage.setItem('admin_user_filters', JSON.stringify(filters));
+    };
+
+    // Restore filters from localStorage
+    const restoreFilters = () => {
+      try {
+        const saved = localStorage.getItem('admin_user_filters');
+        if (saved) {
+          const filters = JSON.parse(saved);
+          Object.entries(filters).forEach(([key, value]) => {
+            const element = document.querySelector(`[data-filter="${key}"]`);
+            if (element) {
+              element.value = value;
+            }
+          });
+        }
+      } catch (error) {
+        console.warn('Failed to restore user filters:', error);
+      }
+    };
+
+    // Set up filter auto-save
+    document.addEventListener('change', (e) => {
+      if (e.target.hasAttribute('data-filter')) {
+        saveFilters();
+      }
+    });
+
+    // Set up search input debouncing
+    let searchTimeout;
+    document.addEventListener('input', (e) => {
+      if (e.target.hasAttribute('data-filter') && e.target.type === 'text') {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(saveFilters, 500);
+      }
+    });
+
+    // Keyboard shortcuts for user management
+    document.addEventListener('keydown', (e) => {
+      // Ctrl/Cmd + F = Focus search
+      if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        e.preventDefault();
+        const searchInput = document.querySelector('[data-filter="search"]');
+        if (searchInput) {
+          searchInput.focus();
+        }
+      }
+
+      // Ctrl/Cmd + E = Export users
+      if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+        e.preventDefault();
+        const exportButton = document.querySelector('[data-action="export"]');
+        if (exportButton) {
+          exportButton.click();
+        }
+      }
+    });
+
+    // Initialize
+    restoreFilters();
+  });
+</script>
+
+<style>
+  /* User management specific styles */
+  .user-table-container {
+    overflow-x: auto;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+  }
+
+  .user-avatar {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .user-avatar:hover {
+    transform: scale(1.05);
+  }
+
+  .bulk-actions-bar {
+    background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Responsive table adjustments */
+  @media (max-width: 768px) {
+    .user-table-container {
+      font-size: 0.875rem;
+    }
+
+    .user-table th,
+    .user-table td {
+      padding: 0.5rem;
+    }
+  }
+</style>

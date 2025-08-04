@@ -1,0 +1,236 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('en');
+---
+
+<BaseLayout
+  title="Job Board - SECiD"
+  description="Find data science job opportunities"
+  lang="en"
+>
+  <!-- Main -->
+  <div id="main">
+    <div class="inner">
+      <!-- Header -->
+      <header id="header">
+        <a href="/en/" class="logo"><strong>{t.site.name}</strong></a>
+        <ul class="icons">
+          <li>
+            <a href="/en/login" class="button small">{t.auth.signIn.button}</a>
+          </li>
+          <li><a href="/es/empleos" class="button small">Español</a></li>
+        </ul>
+      </header>
+
+      <!-- Content -->
+      <section>
+        <header class="main">
+          <h1>Job Board</h1>
+        </header>
+
+        <p>
+          Find the best data science job opportunities. We connect talent with
+          leading companies in Mexico.
+        </p>
+
+        <!-- Search Bar -->
+        <form method="get" action="#" class="search-form">
+          <div class="row gtr-uniform">
+            <div class="col-8 col-12-xsmall">
+              <input
+                type="text"
+                name="search"
+                id="search"
+                placeholder="Search by title, company, or location..."
+              />
+            </div>
+            <div class="col-4 col-12-xsmall">
+              <ul class="actions">
+                <li><input type="submit" value="Search" class="primary" /></li>
+              </ul>
+            </div>
+          </div>
+        </form>
+
+        <hr class="major" />
+
+        <!-- Job Listings -->
+        <h2>Featured Jobs</h2>
+
+        <!-- Job 1 -->
+        <article class="job-listing">
+          <header>
+            <h3>Senior Data Scientist</h3>
+            <p class="company">Tech Innovations SA • Mexico City • Remote</p>
+          </header>
+          <p>
+            We're looking for an experienced data scientist to lead machine
+            learning and predictive analytics projects. Experience in Python, R,
+            and cloud computing required.
+          </p>
+          <ul class="actions">
+            <li><a href="#" class="button">View Details</a></li>
+          </ul>
+        </article>
+
+        <hr />
+
+        <!-- Job 2 -->
+        <article class="job-listing">
+          <header>
+            <h3>Machine Learning Engineer</h3>
+            <p class="company">AI Startup • Guadalajara • On-site</p>
+          </header>
+          <p>
+            Join our ML team to develop cutting-edge AI models. Experience with
+            TensorFlow/PyTorch and model deployment in production.
+          </p>
+          <ul class="actions">
+            <li><a href="#" class="button">View Details</a></li>
+          </ul>
+        </article>
+
+        <hr />
+
+        <!-- Job 3 -->
+        <article class="job-listing">
+          <header>
+            <h3>Data Analyst</h3>
+            <p class="company">National Bank • Monterrey • Hybrid</p>
+          </header>
+          <p>
+            Data analyst position in the financial sector. Advanced SQL, data
+            visualization, and risk analysis experience required.
+          </p>
+          <ul class="actions">
+            <li><a href="#" class="button">View Details</a></li>
+          </ul>
+        </article>
+
+        <hr class="major" />
+
+        <!-- CTA for Members -->
+        <div class="box">
+          <h3>Are you a SECiD member?</h3>
+          <p>
+            Sign in to access more exclusive opportunities and post your own job
+            offers.
+          </p>
+          <ul class="actions">
+            <li><a href="/en/login" class="button primary">Sign In</a></li>
+            <li><a href="/registro" class="button">Register</a></li>
+          </ul>
+        </div>
+
+        <!-- CTA for Companies -->
+        <div class="box">
+          <h3>Looking for data science talent?</h3>
+          <p>
+            Post your job offers and connect with the best UNAM graduate
+            professionals.
+          </p>
+          <ul class="actions">
+            <li><a href="/en/contact" class="button">Post a Job</a></li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="inner">
+      <!-- Search -->
+      <section id="search" class="alt">
+        <form method="post" action="#">
+          <input type="text" name="query" id="query" placeholder="Search" />
+        </form>
+      </section>
+
+      <!-- Menu -->
+      <nav id="menu">
+        <header class="major">
+          <h2>Menu</h2>
+        </header>
+        <ul>
+          <li><a href="/en/">Home</a></li>
+          <li><a href="/en/about-us">About Us</a></li>
+          <li><a href="/en/jobs">Job Board</a></li>
+          <li><a href="/en/contact">Contact</a></li>
+          <li><a href="/en/login">Sign In</a></li>
+          <li><a href="/registro">Register</a></li>
+        </ul>
+      </nav>
+
+      <!-- Filters -->
+      <section>
+        <header class="major">
+          <h2>Filters</h2>
+        </header>
+        <form method="get" action="#">
+          <div class="row gtr-uniform">
+            <div class="col-12">
+              <select name="location" id="location">
+                <option value="">- Location -</option>
+                <option value="cdmx">Mexico City</option>
+                <option value="gdl">Guadalajara</option>
+                <option value="mty">Monterrey</option>
+                <option value="remote">Remote</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <select name="type" id="type">
+                <option value="">- Job Type -</option>
+                <option value="full-time">Full Time</option>
+                <option value="part-time">Part Time</option>
+                <option value="contract">Contract</option>
+                <option value="internship">Internship</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <select name="experience" id="experience">
+                <option value="">- Experience -</option>
+                <option value="entry">Entry Level</option>
+                <option value="mid">Mid Level</option>
+                <option value="senior">Senior</option>
+                <option value="lead">Lead</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <ul class="actions">
+                <li>
+                  <input type="submit" value="Apply Filters" class="primary" />
+                </li>
+              </ul>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <p class="copyright">
+          &copy; SECiD. All rights reserved. Design: <a
+            href="https://html5up.net">HTML5 UP</a
+          >.
+        </p>
+      </footer>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .job-listing {
+    margin-bottom: 2em;
+  }
+  .job-listing header h3 {
+    margin-bottom: 0.5em;
+  }
+  .job-listing .company {
+    color: #7f888f;
+    font-size: 0.9em;
+    margin-bottom: 1em;
+  }
+</style>

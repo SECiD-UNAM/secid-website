@@ -1,0 +1,615 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="API Documentation - SECiD"
+  description="Comprehensive API documentation for the SECiD platform"
+>
+  <div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="border-b bg-white">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="py-8">
+          <h1 class="text-3xl font-bold text-gray-900">
+            SECiD API Documentation
+          </h1>
+          <p class="mt-2 text-lg text-gray-600">
+            Complete reference for integrating with the SECiD platform
+          </p>
+          <div class="mt-4 flex space-x-4">
+            <span
+              class="inline-flex items-center rounded-full bg-green-100 px-3 py-0.5 text-sm font-medium text-green-800"
+            >
+              API Version 1.0
+            </span>
+            <span
+              class="inline-flex items-center rounded-full bg-blue-100 px-3 py-0.5 text-sm font-medium text-blue-800"
+            >
+              REST API
+            </span>
+            <span
+              class="inline-flex items-center rounded-full bg-purple-100 px-3 py-0.5 text-sm font-medium text-purple-800"
+            >
+              GraphQL Support
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div class="lg:grid lg:grid-cols-4 lg:gap-8">
+        <!-- Sidebar Navigation -->
+        <div class="lg:col-span-1">
+          <nav class="sticky top-8 space-y-1" id="api-nav">
+            <div class="border-b border-gray-200 pb-4">
+              <h3
+                class="text-sm font-medium uppercase tracking-wide text-gray-900"
+              >
+                Getting Started
+              </h3>
+              <ul class="mt-2 space-y-1">
+                <li><a href="#overview" class="nav-link">Overview</a></li>
+                <li>
+                  <a href="#authentication" class="nav-link">Authentication</a>
+                </li>
+                <li>
+                  <a href="#rate-limiting" class="nav-link">Rate Limiting</a>
+                </li>
+                <li><a href="#errors" class="nav-link">Error Handling</a></li>
+              </ul>
+            </div>
+
+            <div class="border-b border-gray-200 py-4">
+              <h3
+                class="text-sm font-medium uppercase tracking-wide text-gray-900"
+              >
+                Endpoints
+              </h3>
+              <ul class="mt-2 space-y-1">
+                <li>
+                  <a href="#auth-endpoints" class="nav-link">Authentication</a>
+                </li>
+                <li><a href="#user-endpoints" class="nav-link">Users</a></li>
+                <li><a href="#job-endpoints" class="nav-link">Jobs</a></li>
+                <li><a href="#event-endpoints" class="nav-link">Events</a></li>
+                <li><a href="#forum-endpoints" class="nav-link">Forums</a></li>
+                <li>
+                  <a href="#member-endpoints" class="nav-link">Members</a>
+                </li>
+                <li>
+                  <a href="#gamification-endpoints" class="nav-link"
+                    >Gamification</a
+                  >
+                </li>
+                <li><a href="#search-endpoints" class="nav-link">Search</a></li>
+              </ul>
+            </div>
+
+            <div class="py-4">
+              <h3
+                class="text-sm font-medium uppercase tracking-wide text-gray-900"
+              >
+                Resources
+              </h3>
+              <ul class="mt-2 space-y-1">
+                <li><a href="#webhooks" class="nav-link">Webhooks</a></li>
+                <li><a href="#sdks" class="nav-link">SDKs</a></li>
+                <li>
+                  <a href="#postman" class="nav-link">Postman Collection</a>
+                </li>
+                <li><a href="#changelog" class="nav-link">Changelog</a></li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="lg:col-span-3">
+          <div class="prose prose-lg max-w-none">
+            <!-- Overview Section -->
+            <section id="overview" class="mb-12">
+              <h2 class="mb-4 text-2xl font-bold text-gray-900">Overview</h2>
+              <p class="mb-6 text-gray-600">
+                The SECiD API provides programmatic access to the platform's
+                core features including user management, job postings, events,
+                forums, and gamification systems. Our RESTful API is designed to
+                be intuitive and follows industry standards.
+              </p>
+
+              <div
+                class="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-6"
+              >
+                <h3 class="mb-2 text-lg font-semibold text-blue-900">
+                  Base URL
+                </h3>
+                <code class="rounded bg-blue-100 px-3 py-1 text-blue-800"
+                  >https://api.secid.org/v1</code
+                >
+              </div>
+
+              <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div class="rounded-lg border border-gray-200 bg-white p-6">
+                  <h4 class="mb-2 font-semibold text-gray-900">
+                    🚀 Production
+                  </h4>
+                  <code class="text-sm text-gray-600"
+                    >https://api.secid.org/v1</code
+                  >
+                </div>
+                <div class="rounded-lg border border-gray-200 bg-white p-6">
+                  <h4 class="mb-2 font-semibold text-gray-900">🧪 Sandbox</h4>
+                  <code class="text-sm text-gray-600"
+                    >https://api-sandbox.secid.org/v1</code
+                  >
+                </div>
+              </div>
+            </section>
+
+            <!-- Authentication Section -->
+            <section id="authentication" class="mb-12">
+              <h2 class="mb-4 text-2xl font-bold text-gray-900">
+                Authentication
+              </h2>
+              <p class="mb-6 text-gray-600">
+                The SECiD API uses JWT (JSON Web Tokens) for authentication.
+                Include your token in the Authorization header of your requests.
+              </p>
+
+              <div class="mb-6 rounded-lg bg-gray-900 p-4">
+                <code class="text-green-400">
+                  curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;https://api.secid.org/v1/users/me
+                </code>
+              </div>
+
+              <h3 class="mb-3 text-xl font-semibold text-gray-900">
+                Getting a Token
+              </h3>
+              <div class="rounded-lg border border-gray-200 bg-white p-6">
+                <h4 class="mb-2 font-medium text-gray-900">POST /auth/login</h4>
+                <div class="mb-4 rounded bg-gray-50 p-4">
+                  <pre
+                    class="text-sm text-gray-800">{`{
+  "email": "user@example.com",
+  "password": "your-password"
+}`}</pre>
+                </div>
+                <p class="text-sm text-gray-600">
+                  Returns a JWT token valid for 24 hours.
+                </p>
+              </div>
+            </section>
+
+            <!-- Rate Limiting Section -->
+            <section id="rate-limiting" class="mb-12">
+              <h2 class="mb-4 text-2xl font-bold text-gray-900">
+                Rate Limiting
+              </h2>
+              <p class="mb-6 text-gray-600">
+                API requests are rate limited to ensure fair usage and platform
+                stability.
+              </p>
+
+              <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >Plan</th
+                      >
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >Requests/Hour</th
+                      >
+                      <th
+                        class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >Burst Limit</th
+                      >
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-200 bg-white">
+                    <tr>
+                      <td
+                        class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900"
+                        >Free</td
+                      >
+                      <td
+                        class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"
+                        >1,000</td
+                      >
+                      <td
+                        class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"
+                        >100/minute</td
+                      >
+                    </tr>
+                    <tr>
+                      <td
+                        class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900"
+                        >Premium</td
+                      >
+                      <td
+                        class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"
+                        >10,000</td
+                      >
+                      <td
+                        class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"
+                        >500/minute</td
+                      >
+                    </tr>
+                    <tr>
+                      <td
+                        class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900"
+                        >Enterprise</td
+                      >
+                      <td
+                        class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"
+                        >100,000</td
+                      >
+                      <td
+                        class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"
+                        >2,000/minute</td
+                      >
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- Error Handling Section -->
+            <section id="errors" class="mb-12">
+              <h2 class="mb-4 text-2xl font-bold text-gray-900">
+                Error Handling
+              </h2>
+              <p class="mb-6 text-gray-600">
+                The API uses conventional HTTP response codes to indicate
+                success or failure of requests.
+              </p>
+
+              <div class="space-y-4">
+                <div class="rounded-lg border border-gray-200 bg-white p-4">
+                  <div class="mb-2 flex items-center space-x-2">
+                    <span
+                      class="rounded bg-green-100 px-2 py-1 text-xs font-medium text-green-800"
+                      >200</span
+                    >
+                    <span class="font-medium">OK</span>
+                  </div>
+                  <p class="text-sm text-gray-600">Request succeeded</p>
+                </div>
+
+                <div class="rounded-lg border border-gray-200 bg-white p-4">
+                  <div class="mb-2 flex items-center space-x-2">
+                    <span
+                      class="rounded bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800"
+                      >400</span
+                    >
+                    <span class="font-medium">Bad Request</span>
+                  </div>
+                  <p class="text-sm text-gray-600">
+                    Invalid request parameters
+                  </p>
+                </div>
+
+                <div class="rounded-lg border border-gray-200 bg-white p-4">
+                  <div class="mb-2 flex items-center space-x-2">
+                    <span
+                      class="rounded bg-red-100 px-2 py-1 text-xs font-medium text-red-800"
+                      >401</span
+                    >
+                    <span class="font-medium">Unauthorized</span>
+                  </div>
+                  <p class="text-sm text-gray-600">Authentication required</p>
+                </div>
+
+                <div class="rounded-lg border border-gray-200 bg-white p-4">
+                  <div class="mb-2 flex items-center space-x-2">
+                    <span
+                      class="rounded bg-red-100 px-2 py-1 text-xs font-medium text-red-800"
+                      >429</span
+                    >
+                    <span class="font-medium">Too Many Requests</span>
+                  </div>
+                  <p class="text-sm text-gray-600">Rate limit exceeded</p>
+                </div>
+              </div>
+            </section>
+
+            <!-- Interactive API Explorer -->
+            <section id="api-explorer" class="mb-12">
+              <h2 class="mb-4 text-2xl font-bold text-gray-900">
+                Interactive API Explorer
+              </h2>
+              <div
+                id="swagger-ui"
+                class="min-h-96 rounded-lg border border-gray-200"
+              >
+                <!-- Swagger UI will be rendered here -->
+                <div
+                  class="flex h-96 items-center justify-center text-gray-500"
+                >
+                  <div class="text-center">
+                    <div class="mb-4 text-4xl">📚</div>
+                    <p>Loading interactive API documentation...</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Code Examples -->
+            <section id="examples" class="mb-12">
+              <h2 class="mb-4 text-2xl font-bold text-gray-900">
+                Code Examples
+              </h2>
+
+              <div class="space-y-8">
+                <!-- JavaScript Example -->
+                <div>
+                  <h3 class="mb-3 text-lg font-semibold text-gray-900">
+                    JavaScript
+                  </h3>
+                  <div class="rounded-lg bg-gray-900 p-4">
+                    <pre
+                      class="text-sm text-green-400"><code>{`const response = await fetch('https://api.secid.org/v1/jobs', {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_JWT_TOKEN',
+    'Content-Type': 'application/json'
+  }
+});
+
+const jobs = await response.json();
+console.log(jobs);`}</code></pre>
+                  </div>
+                </div>
+
+                <!-- Python Example -->
+                <div>
+                  <h3 class="mb-3 text-lg font-semibold text-gray-900">
+                    Python
+                  </h3>
+                  <div class="rounded-lg bg-gray-900 p-4">
+                    <pre
+                      class="text-sm text-green-400"><code>{`import requests
+
+headers = {
+    'Authorization': 'Bearer YOUR_JWT_TOKEN',
+    'Content-Type': 'application/json'
+}
+
+response = requests.get('https://api.secid.org/v1/jobs', headers=headers)
+jobs = response.json()
+print(jobs)`}</code></pre>
+                  </div>
+                </div>
+
+                <!-- cURL Example -->
+                <div>
+                  <h3 class="mb-3 text-lg font-semibold text-gray-900">cURL</h3>
+                  <div class="rounded-lg bg-gray-900 p-4">
+                    <pre
+                      class="text-sm text-green-400"><code>{`curl -X GET \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  https://api.secid.org/v1/jobs`}</code></pre>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- SDKs Section -->
+            <section id="sdks" class="mb-12">
+              <h2 class="mb-4 text-2xl font-bold text-gray-900">
+                Official SDKs
+              </h2>
+              <p class="mb-6 text-gray-600">
+                We provide official SDKs to make integration easier.
+              </p>
+
+              <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div class="rounded-lg border border-gray-200 bg-white p-6">
+                  <div class="mb-4 flex items-center space-x-3">
+                    <div
+                      class="flex h-8 w-8 items-center justify-center rounded-lg bg-yellow-100"
+                    >
+                      <span class="font-bold text-yellow-600">JS</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900">
+                      JavaScript/TypeScript
+                    </h3>
+                  </div>
+                  <code
+                    class="rounded bg-gray-50 px-2 py-1 text-sm text-gray-600"
+                    >npm install @secid/api-client</code
+                  >
+                  <a
+                    href="#"
+                    class="mt-3 block text-sm font-medium text-blue-600 hover:text-blue-800"
+                  >
+                    View Documentation →
+                  </a>
+                </div>
+
+                <div class="rounded-lg border border-gray-200 bg-white p-6">
+                  <div class="mb-4 flex items-center space-x-3">
+                    <div
+                      class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100"
+                    >
+                      <span class="font-bold text-blue-600">PY</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900">Python</h3>
+                  </div>
+                  <code
+                    class="rounded bg-gray-50 px-2 py-1 text-sm text-gray-600"
+                    >pip install secid-api</code
+                  >
+                  <a
+                    href="#"
+                    class="mt-3 block text-sm font-medium text-blue-600 hover:text-blue-800"
+                  >
+                    View Documentation →
+                  </a>
+                </div>
+
+                <div class="rounded-lg border border-gray-200 bg-white p-6">
+                  <div class="mb-4 flex items-center space-x-3">
+                    <div
+                      class="flex h-8 w-8 items-center justify-center rounded-lg bg-green-100"
+                    >
+                      <span class="font-bold text-green-600">GO</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900">Go</h3>
+                  </div>
+                  <code
+                    class="rounded bg-gray-50 px-2 py-1 text-sm text-gray-600"
+                    >go get github.com/secid/go-sdk</code
+                  >
+                  <a
+                    href="#"
+                    class="mt-3 block text-sm font-medium text-blue-600 hover:text-blue-800"
+                  >
+                    View Documentation →
+                  </a>
+                </div>
+              </div>
+            </section>
+
+            <!-- Webhooks Section -->
+            <section id="webhooks" class="mb-12">
+              <h2 class="mb-4 text-2xl font-bold text-gray-900">Webhooks</h2>
+              <p class="mb-6 text-gray-600">
+                Webhooks allow you to receive real-time notifications when
+                events occur in your account.
+              </p>
+
+              <div
+                class="mb-6 rounded-lg border border-yellow-200 bg-yellow-50 p-6"
+              >
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    <svg
+                      class="h-5 w-5 text-yellow-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
+                  <div class="ml-3">
+                    <h3 class="text-sm font-medium text-yellow-800">
+                      Coming Soon
+                    </h3>
+                    <p class="mt-1 text-sm text-yellow-700">
+                      Webhook functionality is currently in development and will
+                      be available in the next release.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .nav-link {
+    @apply block rounded-md px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900;
+  }
+
+  .nav-link.active {
+    @apply bg-blue-50 text-blue-600;
+  }
+
+  /* Custom scrollbar for code blocks */
+  pre::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  pre::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+  }
+
+  pre::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+  }
+
+  pre::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }
+</style>
+
+<script>
+  // Navigation highlighting
+  function updateActiveNav() {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    let currentSection = '';
+    sections.forEach((section) => {
+      const rect = section.getBoundingClientRect();
+      if (rect.top <= 100 && rect.bottom >= 100) {
+        currentSection = section.id;
+      }
+    });
+
+    navLinks.forEach((link) => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${currentSection}`) {
+        link.classList.add('active');
+      }
+    });
+  }
+
+  // Smooth scrolling for nav links
+  document.querySelectorAll('.nav-link').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = link.getAttribute('href').substring(1);
+      const targetElement = document.getElementById(targetId);
+
+      if (targetElement) {
+        targetElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }
+    });
+  });
+
+  // Update active nav on scroll
+  window.addEventListener('scroll', updateActiveNav);
+
+  // Initial call
+  updateActiveNav();
+
+  // Load Swagger UI (mock implementation)
+  document.addEventListener('DOMContentLoaded', () => {
+    const swaggerContainer = document.getElementById('swagger-ui');
+
+    // In a real implementation, you would load the actual Swagger UI here
+    setTimeout(() => {
+      swaggerContainer.innerHTML = `
+        <div class="p-8 text-center">
+          <div class="text-4xl mb-4">🔧</div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Interactive API Explorer</h3>
+          <p class="text-gray-600 mb-4">
+            The interactive API explorer will be available here once the OpenAPI specification is complete.
+          </p>
+          <a href="/api-spec.yaml" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+            Download OpenAPI Spec
+          </a>
+        </div>
+      `;
+    }, 1000);
+  });
+</script>

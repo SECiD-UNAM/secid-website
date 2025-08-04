@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import CompanyDashboard from '@/components/jobs/CompanyDashboard';
+---
+
+<DashboardLayout
+  title="Company Dashboard - SECiD"
+  description="Manage your job postings and applications"
+  lang="en"
+>
+  <CompanyDashboard client:load lang="en" />
+</DashboardLayout>

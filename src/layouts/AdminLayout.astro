@@ -1,0 +1,384 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+  currentPath?: string;
+}
+
+const {
+  title = 'Admin Dashboard - SECiD',
+  description = 'SECiD Platform Administration',
+  currentPath = '/admin',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es" class="h-full bg-gray-50">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+
+    <!-- Prevent indexing of admin pages -->
+    <meta name="robots" content="noindex, nofollow" />
+
+    <!-- Admin-specific meta tags -->
+    <meta name="admin-panel" content="true" />
+
+    <!-- Load admin styles -->
+    <link rel="stylesheet" href="/assets/css/main.css" />
+
+    <!-- Security headers for admin panel -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta
+      http-equiv="Referrer-Policy"
+      content="strict-origin-when-cross-origin"
+    />
+
+    <!-- Content Security Policy for admin -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.amplitude.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.amplitude.com https://*.firebaseio.com https://*.googleapis.com wss://*.firebaseio.com; frame-src 'none';"
+    />
+  </head>
+  <body class="h-full overflow-hidden">
+    <!-- Admin Authorization Guard -->
+    <div id="admin-auth-guard">
+      <!-- This will be replaced by React component -->
+    </div>
+
+    <!-- Admin Layout Container -->
+    <div class="flex h-full">
+      <!-- Navigation Sidebar -->
+      <div id="admin-navigation" data-current-path={currentPath}>
+        <!-- This will be replaced by React component -->
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="flex flex-1 flex-col overflow-hidden lg:ml-64">
+        <!-- Top Bar (Desktop only) -->
+        <div id="admin-topbar">
+          <!-- This will be replaced by React component -->
+        </div>
+
+        <!-- Page Content -->
+        <main class="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50 p-6">
+          <div class="mx-auto max-w-7xl">
+            <!-- Admin Breadcrumbs -->
+            <div id="admin-breadcrumbs" class="mb-6">
+              <!-- This could be enhanced with dynamic breadcrumbs -->
+            </div>
+
+            <!-- Page Content Slot -->
+            <div id="admin-content">
+              <slot />
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Admin Notifications -->
+    <div id="admin-notifications" class="fixed right-4 top-4 z-50">
+      <!-- This will be replaced by React component for toast notifications -->
+    </div>
+
+    <!-- Loading Overlay -->
+    <div
+      id="admin-loading"
+      class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-50"
+    >
+      <div class="flex items-center space-x-3 rounded-lg bg-white p-6">
+        <div
+          class="h-6 w-6 animate-spin rounded-full border-b-2 border-blue-600"
+        >
+        </div>
+        <span class="text-gray-700">Cargando...</span>
+      </div>
+    </div>
+
+    <!-- Initialize Admin Components -->
+    <script>
+      // Admin-specific initialization
+      document.addEventListener('DOMContentLoaded', function () {
+        // Set admin mode flag
+        window.isAdminPanel = true;
+
+        // Disable right-click context menu in production
+        if (import.meta.env.PROD) {
+          document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+          });
+        }
+
+        // Session timeout warning for admin users
+        let sessionWarningShown = false;
+        const SESSION_TIMEOUT = 60 * 60 * 1000; // 1 hour
+        const WARNING_TIME = 55 * 60 * 1000; // 55 minutes
+
+        setTimeout(() => {
+          if (!sessionWarningShown) {
+            sessionWarningShown = true;
+            if (confirm('Su sesión expirará pronto. ¿Desea continuar?')) {
+              // Refresh session
+              fetch('/api/admin/refresh-session', { method: 'POST' }).catch(
+                console.error
+              );
+              sessionWarningShown = false;
+            }
+          }
+        }, WARNING_TIME);
+
+        // Auto-logout after session timeout
+        setTimeout(() => {
+          alert('Su sesión ha expirado. Será redirigido al login');
+          window.location.href =
+            '/login?returnUrl=' + encodeURIComponent(window.location.pathname);
+        }, SESSION_TIMEOUT);
+
+        // Activity tracking
+        let lastActivity = Date.now();
+        const updateActivity = () => {
+          lastActivity = Date.now();
+        };
+
+        [
+          'mousedown',
+          'mousemove',
+          'keypress',
+          'scroll',
+          'touchstart',
+          'click',
+        ].forEach((event) => {
+          document.addEventListener(event, updateActivity, { passive: true });
+        });
+
+        // Check for inactivity every 5 minutes
+        setInterval(
+          () => {
+            const timeSinceActivity = Date.now() - lastActivity;
+            if (timeSinceActivity > 30 * 60 * 1000) {
+              // 30 minutes of inactivity
+              if (
+                confirm('Detectamos inactividad. ¿Desea continuar su sesión?')
+              ) {
+                updateActivity();
+              } else {
+                window.location.href = '/login';
+              }
+            }
+          },
+          5 * 60 * 1000
+        );
+      });
+    </script>
+
+    <!-- Load React components for admin -->
+    <script type="module">
+      import { AdminNavigation } from '/src/components/admin/AdminNavigation.tsx';
+      import { AdminAuthGuard } from '/src/components/admin/AdminAuthGuard.tsx';
+      import { AdminNotifications } from '/src/components/admin/AdminNotifications.tsx';
+
+      // Initialize admin components
+      const currentPath =
+        document.getElementById('admin-navigation')?.dataset.currentPath ||
+        '/admin';
+
+      // Render navigation
+      const navContainer = document.getElementById('admin-navigation');
+      if (navContainer && window.React && window.ReactDOM) {
+        const navElement = React.createElement(AdminNavigation, {
+          currentPath,
+        });
+        ReactDOM.render(navElement, navContainer);
+      }
+
+      // Render auth guard
+      const authContainer = document.getElementById('admin-auth-guard');
+      if (authContainer && window.React && window.ReactDOM) {
+        const authElement = React.createElement(AdminAuthGuard);
+        ReactDOM.render(authElement, authContainer);
+      }
+
+      // Render notifications
+      const notifContainer = document.getElementById('admin-notifications');
+      if (notifContainer && window.React && window.ReactDOM) {
+        const notifElement = React.createElement(AdminNotifications);
+        ReactDOM.render(notifElement, notifContainer);
+      }
+    </script>
+
+    <!-- Admin Analytics (separate from main site) -->
+    <script>
+      // Admin-specific analytics tracking
+      if (typeof amplitude !== 'undefined') {
+        amplitude
+          .getInstance()
+          .init(import.meta.env.PUBLIC_AMPLITUDE_API_KEY, null, {
+            includeReferrer: false,
+            includeUtm: false,
+            trackingOptions: {
+              city: false,
+              ip_address: false,
+            },
+            deviceIdFromUrlParam: false,
+            sessionId: Date.now(),
+          });
+
+        // Track admin panel access
+        amplitude.getInstance().logEvent('admin_panel_accessed', {
+          page: window.location.pathname,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    </script>
+
+    <!-- Emergency admin access -->
+    <script>
+      // Emergency admin access key combination (Ctrl+Shift+Alt+A)
+      document.addEventListener('keydown', function (e) {
+        if (e.ctrlKey && e.shiftKey && e.altKey && e.key === 'A') {
+          const password = prompt('Contraseña de emergencia:');
+          if (password === 'SECID_EMERGENCY_2024') {
+            console.log('Emergency admin access granted');
+            localStorage.setItem('emergency_admin', 'true');
+            window.location.reload();
+          }
+        }
+      });
+    </script>
+
+    <!-- Error Boundary for Admin -->
+    <script>
+      window.addEventListener('error', function (e) {
+        console.error('Admin Panel Error:', e.error);
+
+        // Send error to monitoring service
+        if (typeof amplitude !== 'undefined') {
+          amplitude.getInstance().logEvent('admin_error', {
+            error_message: e.message,
+            error_stack: e.error?.stack,
+            url: window.location.href,
+            timestamp: new Date().toISOString(),
+          });
+        }
+
+        // Show user-friendly error message
+        const errorDiv = document.createElement('div');
+        errorDiv.className =
+          'fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-50';
+        errorDiv.innerHTML = `
+          <strong>Error del Sistema:</strong> ${e.message}
+          <button onclick="this.parentElement.remove()" class="ml-4 text-red-500 hover:text-red-700">&times;</button>
+        `;
+        document.body.appendChild(errorDiv);
+
+        // Auto-remove after 10 seconds
+        setTimeout(() => {
+          if (errorDiv.parentElement) {
+            errorDiv.remove();
+          }
+        }, 10000);
+      });
+
+      // Unhandled promise rejection
+      window.addEventListener('unhandledrejection', function (e) {
+        console.error('Admin Panel Promise Rejection:', e.reason);
+
+        if (typeof amplitude !== 'undefined') {
+          amplitude.getInstance().logEvent('admin_promise_rejection', {
+            reason: e.reason?.toString(),
+            url: window.location.href,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      });
+    </script>
+
+    <!-- Load main admin script -->
+    <script src="/assets/js/admin.js" type="module"></script>
+  </body>
+</html>
+
+<style>
+  /* Admin-specific styles */
+  body.admin-panel {
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+      Arial, sans-serif;
+  }
+
+  /* Hide scrollbars but keep functionality */
+  .admin-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .admin-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .admin-scrollbar::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+  }
+
+  .admin-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+  }
+
+  /* Loading states */
+  .admin-loading-skeleton {
+    animation: admin-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes admin-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  /* High contrast mode for accessibility */
+  @media (prefers-contrast: high) {
+    .admin-nav-item {
+      border: 1px solid #000;
+    }
+  }
+
+  /* Reduced motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Print styles for admin reports */
+  @media print {
+    .admin-sidebar,
+    .admin-topbar,
+    .admin-notifications {
+      display: none !important;
+    }
+
+    .admin-content {
+      margin: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+
+  /* Focus indicators for keyboard navigation */
+  .admin-focus-visible:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+</style>

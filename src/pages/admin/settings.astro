@@ -1,0 +1,545 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import Settings from '@/components/admin/Settings.tsx';
+import AdminAuthGuard from '@/components/admin/AdminAuthGuard.tsx';
+
+export const prerender = false;
+
+const title = 'Configuración del Sistema - Admin SECiD';
+const description =
+  'Administrar la configuración global de la plataforma SECiD';
+---
+
+<AdminLayout
+  title={title}
+  description={description}
+  currentPath="/admin/settings"
+>
+  <AdminAuthGuard requiredRole="admin" client:load>
+    <Settings client:load />
+  </AdminAuthGuard>
+</AdminLayout>
+
+<script>
+  // Settings page specific functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    // Track settings access
+    if (typeof amplitude !== 'undefined') {
+      amplitude.getInstance().logEvent('admin_settings_accessed', {
+        timestamp: new Date().toISOString(),
+        page: 'system_settings',
+      });
+    }
+
+    // Auto-save draft changes every 30 seconds
+    let autoSaveInterval;
+    const enableAutoSave = () => {
+      autoSaveInterval = setInterval(() => {
+        const event = new CustomEvent('autoSaveSettings');
+        document.dispatchEvent(event);
+      }, 30 * 1000);
+    };
+
+    // Disable auto-save when leaving the page
+    const disableAutoSave = () => {
+      if (autoSaveInterval) {
+        clearInterval(autoSaveInterval);
+      }
+    };
+
+    // Warn user about unsaved changes
+    let hasUnsavedChanges = false;
+    const trackChanges = () => {
+      document.addEventListener('input', (e) => {
+        if (e.target.closest('settings-form')) {
+          hasUnsavedChanges = true;
+          document.body.classList.add('has-unsaved-changes');
+        }
+      });
+
+      document.addEventListener('change', (e) => {
+        if (e.target.closest('settings-form')) {
+          hasUnsavedChanges = true;
+          document.body.classList.add('has-unsaved-changes');
+        }
+      });
+
+      // Reset on successful save
+      document.addEventListener('settingsSaved', () => {
+        hasUnsavedChanges = false;
+        document.body.classList.remove('has-unsaved-changes');
+      });
+    };
+
+    // Prevent navigation with unsaved changes
+    const preventUnsavedNavigation = () => {
+      window.addEventListener('beforeunload', (e) => {
+        if (hasUnsavedChanges) {
+          e.preventDefault();
+          e.returnValue =
+            '¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.';
+          return e.returnValue;
+        }
+      });
+
+      // Handle programmatic navigation
+      const originalPushState = history.pushState;
+      history.pushState = function (...args) {
+        if (hasUnsavedChanges) {
+          const confirmed = confirm(
+            '¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.'
+          );
+          if (!confirmed) {
+            return;
+          }
+        }
+        originalPushState.apply(history, args);
+      };
+    };
+
+    // Keyboard shortcuts for settings
+    document.addEventListener('keydown', (e) => {
+      // Only in settings context
+      if (!window.location.pathname.includes('/admin/settings')) return;
+
+      // Ctrl/Cmd + S = Save settings
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        const saveButton = document.querySelector(
+          '[data-action="save-settings"]'
+        );
+        if (saveButton && !saveButton.disabled) {
+          saveButton.click();
+        }
+      }
+
+      // Ctrl/Cmd + Z = Undo changes (restore from last save)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        e.preventDefault();
+        const confirmed = confirm(
+          '¿Restaurar la configuración desde el último guardado?'
+        );
+        if (confirmed) {
+          const event = new CustomEvent('restoreSettings');
+          document.dispatchEvent(event);
+        }
+      }
+
+      // Tab navigation shortcuts (Ctrl + Number)
+      if (e.ctrlKey && e.key >= '1' && e.key <= '9') {
+        e.preventDefault();
+        const tabIndex = parseInt(e.key) - 1;
+        const tabs = document.querySelectorAll('[data-tab]');
+        if (tabs[tabIndex]) {
+          tabs[tabIndex].click();
+        }
+      }
+    });
+
+    // Settings validation helpers
+    const setupValidation = () => {
+      // Real-time validation for email settings
+      document.addEventListener('input', (e) => {
+        if (e.target.name === 'smtpHost') {
+          const isValid = /^[a-zA-Z0-9][a-zA-Z0-9\-\.]*\.[a-zA-Z]{2,}$/.test(
+            e.target.value
+          );
+          toggleFieldValidation(
+            e.target,
+            isValid,
+            'Formato de host SMTP inválido'
+          );
+        }
+
+        if (e.target.name === 'smtpPort') {
+          const port = parseInt(e.target.value);
+          const isValid = port > 0 && port <= 65535;
+          toggleFieldValidation(
+            e.target,
+            isValid,
+            'Puerto debe estar entre 1 y 65535'
+          );
+        }
+
+        if (e.target.type === 'email') {
+          const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.target.value);
+          toggleFieldValidation(e.target, isValid, 'Formato de email inválido');
+        }
+
+        if (e.target.type === 'url') {
+          const isValid =
+            !e.target.value || /^https?:\/\/.+/.test(e.target.value);
+          toggleFieldValidation(
+            e.target,
+            isValid,
+            'URL debe comenzar con http:// o https://'
+          );
+        }
+      });
+    };
+
+    const toggleFieldValidation = (field, isValid, message) => {
+      const errorElement = field.parentNode.querySelector('.field-error');
+
+      if (isValid) {
+        field.classList.remove('border-red-500');
+        field.classList.add('border-green-500');
+        if (errorElement) {
+          errorElement.remove();
+        }
+      } else {
+        field.classList.remove('border-green-500');
+        field.classList.add('border-red-500');
+
+        if (!errorElement) {
+          const error = document.createElement('p');
+          error.className = 'field-error text-red-500 text-xs mt-1';
+          error.textContent = message;
+          field.parentNode.appendChild(error);
+        } else {
+          errorElement.textContent = message;
+        }
+      }
+    };
+
+    // Settings backup and restore
+    const setupBackupRestore = () => {
+      // Export current settings
+      window.exportSettings = () => {
+        const settings = gatherCurrentSettings();
+        const blob = new Blob([JSON.stringify(settings, null, 2)], {
+          type: 'application/json',
+        });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `secid-settings-backup-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      };
+
+      // Import settings from file
+      window.importSettings = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+
+        input.onchange = (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              try {
+                const settings = JSON.parse(e.target.result);
+                const confirmed = confirm(
+                  '¿Importar esta configuración? Esto sobrescribirá la configuración actual.'
+                );
+                if (confirmed) {
+                  const event = new CustomEvent('importSettings', {
+                    detail: settings,
+                  });
+                  document.dispatchEvent(event);
+                }
+              } catch (error) {
+                alert(
+                  'Error al leer el archivo de configuración: ' + error.message
+                );
+              }
+            };
+            reader.readAsText(file);
+          }
+        };
+
+        input.click();
+      };
+    };
+
+    const gatherCurrentSettings = () => {
+      const formData = new FormData(document.querySelector('.settings-form'));
+      const settings = {};
+
+      for (const [key, value] of formData.entries()) {
+        // Handle nested settings structure
+        const parts = key.split('');
+        let current = settings;
+
+        for (let i = 0; i < parts.length - 1; i++) {
+          if (!current[parts[i]]) {
+            current[parts[i]] = {};
+          }
+          current = current[parts[i]];
+        }
+
+        current[parts[parts.length - 1]] = value;
+      }
+
+      return settings;
+    };
+
+    // Configuration testing helpers
+    const setupConfigTesting = () => {
+      // Test email configuration
+      window.testEmailConfig = async () => {
+        const emailSettings = gatherEmailSettings();
+
+        try {
+          const response = await fetch('/api/admin/test-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(emailSettings),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            showNotification('Email de prueba enviado exitosamente', 'success');
+          } else {
+            showNotification('Error al enviar email: ' + result.error, 'error');
+          }
+        } catch (error) {
+          showNotification('Error de conexión: ' + error.message, 'error');
+        }
+      };
+
+      // Test database connection
+      window.testDatabaseConnection = async () => {
+        try {
+          const response = await fetch('/api/admin/test-database');
+          const result = await response.json();
+
+          if (result.success) {
+            showNotification('Conexión a base de datos exitosa', 'success');
+          } else {
+            showNotification('Error de conexión: ' + result.error, 'error');
+          }
+        } catch (error) {
+          showNotification('Error de conexión: ' + error.message, 'error');
+        }
+      };
+    };
+
+    const gatherEmailSettings = () => {
+      return {
+        smtpHost: document.querySelector('[name="email.smtpHost"]')?.value,
+        smtpPort: document.querySelector('[name="email.smtpPort"]')?.value,
+        smtpUser: document.querySelector('[name="email.smtpUser"]')?.value,
+        smtpPassword: document.querySelector('[name="email.smtpPassword"]')
+          ?.value,
+        fromEmail: document.querySelector('[name="email.fromEmail"]')?.value,
+        fromName: document.querySelector('[name="email.fromName"]')?.value,
+      };
+    };
+
+    const showNotification = (message, type = 'info') => {
+      const notification = document.createElement('div');
+      notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+        type === 'success'
+          ? 'bg-green-500 text-white'
+          : type === 'error'
+            ? 'bg-red-500 text-white'
+            : 'bg-blue-500 text-white'
+      }`;
+      notification.textContent = message;
+
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.remove();
+      }, 5000);
+    };
+
+    // Initialize all functionality
+    enableAutoSave();
+    trackChanges();
+    preventUnsavedNavigation();
+    setupValidation();
+    setupBackupRestore();
+    setupConfigTesting();
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', disableAutoSave);
+  });
+</script>
+
+<style>
+  /* Settings specific styles */
+  .settings-page {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    min-height: 100vh;
+  }
+
+  .settings-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  .settings-tab {
+    transition: all 0.3s ease;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .settings-tab.active {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+  }
+
+  .settings-tab:not(.active):hover {
+    background: #f1f5f9;
+    color: #3b82f6;
+  }
+
+  .settings-section {
+    border-left: 4px solid #e2e8f0;
+    padding-left: 1rem;
+    transition: border-color 0.3s ease;
+  }
+
+  .settings-section:hover {
+    border-left-color: #3b82f6;
+  }
+
+  .setting-field {
+    transition: all 0.3s ease;
+  }
+
+  .setting-field:focus-within {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 24px;
+  }
+
+  .toggle-slider:before {
+    position: absolute;
+    content: '';
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+  }
+
+  input:checked + .toggle-slider {
+    background-color: #3b82f6;
+  }
+
+  input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+  }
+
+  /* Unsaved changes indicator */
+  body.has-unsaved-changes::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      #ef4444,
+      #f97316,
+      #eab308,
+      #22c55e,
+      #3b82f6,
+      #8b5cf6
+    );
+    z-index: 9999;
+    animation: pulse-warning 2s infinite;
+  }
+
+  @keyframes pulse-warning {
+    0%,
+    100% {
+      opacity: 0.7;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  /* Field validation styles */
+  .field-error {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-4px);
+    }
+    75% {
+      transform: translateX(4px);
+    }
+  }
+
+  /* Loading states */
+  .saving-overlay {
+    background: rgba(59, 130, 246, 0.1);
+    backdrop-filter: blur(4px);
+  }
+
+  .save-button.saving {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .save-button.saving::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+</style>

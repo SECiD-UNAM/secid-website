@@ -1,0 +1,19 @@
+---
+import DashboardLayout from '../../../../layouts/DashboardLayout.astro';
+---
+
+<DashboardLayout title="Deep Learning Commission Dashboard">
+  <div id="dl-dashboard"></div>
+</DashboardLayout>
+
+<script>
+  import { createRoot } from 'react-dom/client';
+  import React from 'react';
+  import DLDashboard from '../../../../components/commissions/DLDashboard';
+
+  const container = document.getElementById('dl-dashboard');
+  if (container) {
+    const root = createRoot(container);
+    root.render(React.createElement(DLDashboard));
+  }
+</script>

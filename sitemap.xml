@@ -1,33 +1,364 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Homepage - Default (Spanish) -->
   <url>
-    <loc>http://localhost:3000/</loc>
-    <lastmod>2025-01-01</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://secid.mx/</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://secid.mx/" />
+    <image:image>
+      <image:loc>https://secid.mx/images/logo.png</image:loc>
+      <image:title>SECiD - Sociedad de Egresados en Ciencia de Datos UNAM</image:title>
+      <image:caption>Logo oficial de SECiD, la Sociedad de Egresados en Ciencia de Datos de la UNAM</image:caption>
+    </image:image>
   </url>
+
+  <!-- Spanish Homepage -->
   <url>
-    <loc>http://localhost:3000/index.html</loc>
-    <lastmod>2025-01-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>http://localhost:3000/aboutus.html</loc>
-    <lastmod>2025-01-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>http://localhost:3000/job-submission.html</loc>
-    <lastmod>2025-01-01</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://secid.mx/es/</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://secid.mx/" />
   </url>
+
+  <!-- English Homepage -->
   <url>
-    <loc>http://localhost:3000/registro.html</loc>
-    <lastmod>2025-01-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://secid.mx/en/</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://secid.mx/" />
   </url>
+
+  <!-- Jobs Pages -->
+  <url>
+    <loc>https://secid.mx/es/empleos</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/empleos" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/jobs" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/jobs</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/empleos" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/jobs" />
+  </url>
+
+  <!-- Members Directory -->
+  <url>
+    <loc>https://secid.mx/es/miembros</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/miembros" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/members" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/members</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/miembros" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/members" />
+  </url>
+
+  <!-- Events Pages -->
+  <url>
+    <loc>https://secid.mx/es/eventos</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/eventos" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/events" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/events</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/eventos" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/events" />
+  </url>
+
+  <!-- Resources Pages -->
+  <url>
+    <loc>https://secid.mx/es/recursos</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/recursos" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/resources" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/resources</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/recursos" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/resources" />
+  </url>
+
+  <!-- About Us Pages -->
+  <url>
+    <loc>https://secid.mx/es/sobre-nosotros</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/sobre-nosotros" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/about-us" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/about-us</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/sobre-nosotros" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/about-us" />
+  </url>
+
+  <!-- Contact Pages -->
+  <url>
+    <loc>https://secid.mx/es/contacto</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/contacto" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/contact" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/contact</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/contacto" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/contact" />
+  </url>
+
+  <!-- Blog Pages -->
+  <url>
+    <loc>https://secid.mx/es/blog</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/blog" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/blog" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/blog</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/blog" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/blog" />
+  </url>
+
+  <!-- Forum Pages -->
+  <url>
+    <loc>https://secid.mx/es/foro</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/foro" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/forum" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/forum</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/foro" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/forum" />
+  </url>
+
+  <!-- Help/FAQ Pages -->
+  <url>
+    <loc>https://secid.mx/es/ayuda</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/ayuda" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/help" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/help</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/ayuda" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/help" />
+  </url>
+
+  <!-- FAQ Pages -->
+  <url>
+    <loc>https://secid.mx/es/faq</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/faq" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/faq" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/faq</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/faq" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/faq" />
+  </url>
+
+  <!-- Authentication Pages -->
+  <url>
+    <loc>https://secid.mx/es/login</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/login" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/login" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/login</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/login" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/login" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/es/signup</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/signup" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/signup" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/signup</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/signup" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/signup" />
+  </url>
+
+  <!-- Newsletter Pages -->
+  <url>
+    <loc>https://secid.mx/es/newsletter</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/newsletter" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/newsletter" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/newsletter</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/newsletter" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/newsletter" />
+  </url>
+
+  <!-- Job Posting Pages -->
+  <url>
+    <loc>https://secid.mx/es/publicar-empleo</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/publicar-empleo" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/post-job" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/post-job</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/publicar-empleo" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/post-job" />
+  </url>
+
+  <!-- Legal Pages -->
+  <url>
+    <loc>https://secid.mx/es/privacidad</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/privacidad" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/privacy" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/privacy</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/privacidad" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/privacy" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/es/terminos</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/terminos" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/terms" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/terms</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/terminos" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/terms" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/es/cookies</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/cookies" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/cookies" />
+  </url>
+
+  <url>
+    <loc>https://secid.mx/en/cookies</loc>
+    <lastmod>2025-08-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://secid.mx/es/cookies" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://secid.mx/en/cookies" />
+  </url>
+
 </urlset>

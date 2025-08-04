@@ -1,0 +1,164 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('en');
+---
+
+<BaseLayout title={t.site.title} description={t.site.description} lang="en">
+  <!-- Header -->
+  <div id="header">
+    <h1><a href="/en/">{t.site.name}</a></h1>
+    <nav id="nav">
+      <ul>
+        <li class="current"><a href="/en/">{t.nav.home}</a></li>
+        <li><a href="/en/about-us">{t.nav.about}</a></li>
+        <li><a href="/en/jobs">{t.nav.jobs}</a></li>
+        <li><a href="/en/contact">{t.nav.contact}</a></li>
+        <li><a href="/es/" class="language-switch">Español</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Banner -->
+  <section id="banner">
+    <div class="content">
+      <header>
+        <h1>{t.hero.title}</h1>
+        <p>{t.hero.subtitle}</p>
+      </header>
+      <p>{t.hero.description}</p>
+      <ul class="actions">
+        <li><a href="/registro" class="button big">{t.hero.joinButton}</a></li>
+        <li><a href="/en/jobs" class="button big">{t.hero.jobsButton}</a></li>
+      </ul>
+    </div>
+    <span class="image object">
+      <img src="/images/logo.png" alt="SECiD Logo" />
+    </span>
+  </section>
+
+  <!-- Section -->
+  <section>
+    <header class="major">
+      <h2>{t.features.title}</h2>
+    </header>
+    <div class="features">
+      <article>
+        <span class="icon fa-gem"></span>
+        <div class="content">
+          <h3>{t.features.networking.title}</h3>
+          <p>{t.features.networking.description}</p>
+        </div>
+      </article>
+      <article>
+        <span class="icon solid fa-paper-plane"></span>
+        <div class="content">
+          <h3>{t.features.jobs.title}</h3>
+          <p>{t.features.jobs.description}</p>
+        </div>
+      </article>
+      <article>
+        <span class="icon solid fa-rocket"></span>
+        <div class="content">
+          <h3>{t.features.growth.title}</h3>
+          <p>{t.features.growth.description}</p>
+        </div>
+      </article>
+      <article>
+        <span class="icon solid fa-signal"></span>
+        <div class="content">
+          <h3>{t.features.community.title}</h3>
+          <p>{t.features.community.description}</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- Section -->
+  <section>
+    <header class="major">
+      <h2>{t.cta.title}</h2>
+    </header>
+    <div class="mini-posts">
+      <article>
+        <h3>{t.cta.jobs.title}</h3>
+        <p>{t.cta.jobs.description}</p>
+        <ul class="actions">
+          <li><a href="/en/jobs" class="button">{t.cta.jobs.button}</a></li>
+        </ul>
+      </article>
+      <article>
+        <h3>{t.cta.register.title}</h3>
+        <p>{t.cta.register.description}</p>
+        <ul class="actions">
+          <li>
+            <a href="/registro" class="button">{t.cta.register.button}</a>
+          </li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="inner">
+      <!-- Search -->
+      <section id="search" class="alt">
+        <form method="post" action="#">
+          <input
+            type="text"
+            name="query"
+            id="query"
+            placeholder={t.search.placeholder}
+          />
+        </form>
+      </section>
+
+      <!-- Menu -->
+      <nav id="menu">
+        <header class="major">
+          <h2>{t.sidebar.menu}</h2>
+        </header>
+        <ul>
+          <li><a href="/en/">{t.nav.home}</a></li>
+          <li><a href="/en/about-us">{t.nav.about}</a></li>
+          <li><a href="/en/jobs">{t.nav.jobs}</a></li>
+          <li><a href="/en/contact">{t.nav.contact}</a></li>
+        </ul>
+      </nav>
+
+      <!-- Section -->
+      <section>
+        <header class="major">
+          <h2>{t.sidebar.getInTouch}</h2>
+        </header>
+        <p>{t.sidebar.description}</p>
+        <ul class="contact">
+          <li class="icon solid fa-envelope">
+            <a href="mailto:contacto@secid.mx">contacto@secid.mx</a>
+          </li>
+          <li class="icon brands fa-linkedin">
+            <a
+              href="https://linkedin.com/company/secid-unam"
+              target="_blank"
+              rel="noopener">LinkedIn</a
+            >
+          </li>
+        </ul>
+      </section>
+
+      <!-- Footer -->
+      <footer id="footer">
+        <p class="copyright">
+          &copy; {new Date().getFullYear()} SECiD UNAM. {t.footer.rights}<br />
+          {t.footer.design}: <a
+            href="https://html5up.net"
+            target="_blank"
+            rel="noopener">HTML5 UP</a
+          >
+        </p>
+      </footer>
+    </div>
+  </div>
+</BaseLayout>

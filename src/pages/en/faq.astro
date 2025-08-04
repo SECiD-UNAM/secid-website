@@ -1,0 +1,410 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('en');
+
+// FAQ Categories with questions and answers
+const faqCategories = [
+  {
+    id: 'general',
+    title: 'General',
+    icon: 'fas fa-info-circle',
+    questions: [
+      {
+        question: 'What is SECiD?',
+        answer:
+          "SECiD (Data Science Alumni Society) is Mexico's largest professional network for UNAM Data Science graduates. We connect talent, opportunities, and knowledge to boost our members' professional development.",
+      },
+      {
+        question: 'Who can join SECiD?',
+        answer:
+          "SECiD is open to all graduates from UNAM's Data Science programs, including bachelor's, master's, and doctoral degrees. We also accept final-year students and professionals related to the field.",
+      },
+      {
+        question: 'What is the membership cost?',
+        answer:
+          'We offer different membership types: Basic (free) with limited access, and Premium ($99 MXN/month) with full access to all features, exclusive events, and premium job opportunities.',
+      },
+    ],
+  },
+  {
+    id: 'account',
+    title: 'Account & Profile',
+    icon: 'fas fa-user',
+    questions: [
+      {
+        question: 'How do I create my professional profile?',
+        answer:
+          'After registering, access your dashboard and complete your profile with professional information, skills, experience, and portfolio. A complete profile increases your visibility to recruiters.',
+      },
+      {
+        question: 'Can I change my email address?',
+        answer:
+          "Yes, you can update your email address from your account settings. For security, we'll send a verification email to the new address.",
+      },
+      {
+        question: 'How do I recover my password?',
+        answer:
+          'On the login page, click "Forgot your password?" and enter your registered email. We\'ll send you instructions to reset it.',
+      },
+    ],
+  },
+  {
+    id: 'jobs',
+    title: 'Job Board',
+    icon: 'fas fa-briefcase',
+    questions: [
+      {
+        question: 'How do I post a job opening?',
+        answer:
+          'Companies can post job openings from the employer dashboard. Complete the form with job details, requirements, and benefits. Job postings are reviewed before publication.',
+      },
+      {
+        question: 'How long do job postings remain active?',
+        answer:
+          'Standard job postings remain active for 30 days. Premium employers can extend this period or republish jobs at no additional cost.',
+      },
+      {
+        question: 'How do I apply for a job?',
+        answer:
+          'Click "Apply" on the job posting you\'re interested in. Your profile and CV will be sent to the recruiter. You can track your applications from your dashboard.',
+      },
+    ],
+  },
+  {
+    id: 'events',
+    title: 'Events & Networking',
+    icon: 'fas fa-calendar',
+    questions: [
+      {
+        question: 'What types of events do you organize?',
+        answer:
+          'We organize technical webinars, practical workshops, conferences, hackathons, and networking events. Events can be in-person, virtual, or hybrid.',
+      },
+      {
+        question: 'Do events have a cost?',
+        answer:
+          'Many events are free for members. Premium or limited-capacity events may have an additional cost, with discounts for premium members.',
+      },
+      {
+        question: 'How do I register for an event?',
+        answer:
+          'Visit the events section, select the event you\'re interested in, and click "Register". You\'ll receive confirmation by email with access details.',
+      },
+    ],
+  },
+  {
+    id: 'technical',
+    title: 'Technical Support',
+    icon: 'fas fa-cogs',
+    questions: [
+      {
+        question: 'Which browsers are supported?',
+        answer:
+          'SECiD works best on the latest versions of Chrome, Firefox, Safari, and Edge. We recommend keeping your browser updated for the best experience.',
+      },
+      {
+        question: 'Is there a mobile app?',
+        answer:
+          "We don't currently have a mobile app, but our website is fully responsive and works perfectly on mobile devices.",
+      },
+      {
+        question: 'How do I report a technical issue?',
+        answer:
+          'You can report technical issues through the contact form or by sending an email to support@secid.mx with a detailed description of the problem.',
+      },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Frequently Asked Questions - SECiD"
+  description="Find answers to the most common questions about SECiD"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Frequently Asked Questions</h1>
+          <p class="secid-hero__subtitle">
+            Find quick answers to the most common questions
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Categories -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-faq__categories">
+          {
+            faqCategories.map((category) => (
+              <a href={`#${category.id}`} class="secid-faq__category-link">
+                <i class={category.icon} />
+                <span>{category.title}</span>
+                <span class="secid-faq__category-count">
+                  {category.questions.length}
+                </span>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Content -->
+    <section class="secid-section secid-bg-light">
+      <div class="secid-container">
+        <div class="secid-faq__content">
+          {
+            faqCategories.map((category) => (
+              <div id={category.id} class="secid-faq__category">
+                <h2 class="secid-faq__category-title">
+                  <i class={category.icon} />
+                  {category.title}
+                </h2>
+
+                <div class="secid-faq__questions">
+                  {category.questions.map((item, index) => (
+                    <details class="secid-faq__item">
+                      <summary class="secid-faq__question">
+                        {item.question}
+                        <i class="fas fa-chevron-down secid-faq__arrow" />
+                      </summary>
+                      <div class="secid-faq__answer">
+                        <p>{item.answer}</p>
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Still Need Help -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-faq__help">
+          <i class="fas fa-question-circle secid-faq__help-icon"></i>
+          <h2 class="secid-faq__help-title">
+            Didn't find what you were looking for?
+          </h2>
+          <p class="secid-faq__help-description">
+            Our support team is ready to help you with any additional questions
+          </p>
+          <div class="secid-faq__help-actions">
+            <a href="/en/help" class="secid-button secid-button--outline">
+              <i class="fas fa-book"></i>
+              Help Center
+            </a>
+            <a href="/en/contact" class="secid-button secid-button--primary">
+              <i class="fas fa-envelope"></i>
+              Contact Support
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</BaseLayout>
+
+<style>
+  /* FAQ Categories */
+  .secid-faq__categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-3xl);
+  }
+
+  .secid-faq__category-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: var(--color-text-primary);
+    transition: all var(--transition-base);
+  }
+
+  .secid-faq__category-link:hover {
+    border-color: var(--secid-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .secid-faq__category-link i {
+    font-size: 1.5rem;
+    color: var(--secid-primary);
+  }
+
+  .secid-faq__category-count {
+    margin-left: auto;
+    background: var(--color-surface-alt);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+  }
+
+  /* FAQ Content */
+  .secid-faq__content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .secid-faq__category {
+    margin-bottom: var(--space-4xl);
+    scroll-margin-top: 5rem;
+  }
+
+  .secid-faq__category-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-xl) 0;
+  }
+
+  .secid-faq__category-title i {
+    color: var(--secid-primary);
+  }
+
+  /* FAQ Items */
+  .secid-faq__questions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .secid-faq__item {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all var(--transition-base);
+  }
+
+  .secid-faq__item[open] {
+    border-color: var(--secid-primary);
+    box-shadow: var(--shadow-md);
+  }
+
+  .secid-faq__question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: var(--space-lg) var(--space-xl);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    list-style: none;
+    transition: all var(--transition-base);
+  }
+
+  .secid-faq__question::-webkit-details-marker {
+    display: none;
+  }
+
+  .secid-faq__question:hover {
+    color: var(--secid-primary);
+  }
+
+  .secid-faq__arrow {
+    flex-shrink: 0;
+    transition: transform var(--transition-base);
+  }
+
+  .secid-faq__item[open] .secid-faq__arrow {
+    transform: rotate(180deg);
+  }
+
+  .secid-faq__answer {
+    padding: 0 var(--space-xl) var(--space-xl);
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+  }
+
+  .secid-faq__answer p {
+    margin: 0;
+  }
+
+  /* Still Need Help */
+  .secid-faq__help {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--space-3xl) 0;
+  }
+
+  .secid-faq__help-icon {
+    font-size: 3rem;
+    color: var(--secid-primary);
+    margin-bottom: var(--space-lg);
+  }
+
+  .secid-faq__help-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-faq__help-description {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--space-xl) 0;
+  }
+
+  .secid-faq__help-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Mobile Styles */
+  @media (max-width: 768px) {
+    .secid-faq__categories {
+      grid-template-columns: 1fr;
+    }
+
+    .secid-faq__question {
+      padding: var(--space-md) var(--space-lg);
+      font-size: 1rem;
+    }
+
+    .secid-faq__answer {
+      padding: 0 var(--space-lg) var(--space-lg);
+    }
+
+    .secid-faq__help-actions {
+      flex-direction: column;
+    }
+
+    .secid-faq__help-actions .secid-button {
+      width: 100%;
+    }
+  }
+</style>
