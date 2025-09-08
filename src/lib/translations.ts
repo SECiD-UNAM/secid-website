@@ -1,5 +1,4 @@
 import { translations } from '../i18n/translations';
-import { getTranslation } from '@/lib/translations';
 
 /**
  * Type-safe translation system for strict TypeScript
@@ -41,7 +40,7 @@ export function isValidTranslationKey(
  */
 export function getTranslationValue(language: Language, path: string): string {
   const t = getTranslation(language);
-  const keys = path.split('');
+  const keys = path.split('.');
 
   let current: any = t;
   for (const key of keys) {

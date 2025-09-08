@@ -4,11 +4,10 @@ import { zodResolver} from '@hookform/resolvers/zod';
 import { z} from 'zod';
 import Button from '@/components/ui/Button';
 import { useTranslations} from '@/hooks/useTranslations';
-import { 
-import { getCurrentUser} from '@/lib/auth';
+import { getCurrentUser } from '@/lib/auth';
 import toast from 'react-hot-toast';
-import { Shield, Copy, Download, Key} from 'lucide-react';
-
+import { Shield, Copy, Download, Key } from 'lucide-react';
+import {
   setupTwoFactor, 
   enableTwoFactor, 
   regenerateBackupCodes,

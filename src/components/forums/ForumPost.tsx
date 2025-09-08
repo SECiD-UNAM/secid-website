@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-import { useTranslations} from '../../hooks/useTranslations';
-import { forumTopics, forumPosts, forumCategories, forumFiles} from '../../lib/forum';
-
+import {
   Bold, 
   Italic, 
   Link, 
@@ -20,6 +17,8 @@ import { forumTopics, forumPosts, forumCategories, forumFiles} from '../../lib/f
   Hash,
   Paperclip
 } from 'lucide-react';
+import { useTranslations} from '../../hooks/useTranslations';
+import { forumTopics, forumPosts, forumCategories, forumFiles} from '../../lib/forum';
 import type { ForumCategory, ForumTopic, Language } from '../../types';
 
 interface ForumPostProps {

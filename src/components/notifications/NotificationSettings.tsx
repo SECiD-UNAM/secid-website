@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-import { useTranslations} from '../../hooks/useTranslations';
-import { useAuth} from '../../contexts/AuthContext';
-import { getNotificationSettings, updateNotificationSettings, requestPushPermission} from '../../lib/notifications';
-
+import {
   Bell, 
   Mail, 
   Smartphone, 
@@ -26,6 +22,9 @@ import { getNotificationSettings, updateNotificationSettings, requestPushPermiss
   Trophy,
   CreditCard
 } from 'lucide-react';
+import { useTranslations} from '../../hooks/useTranslations';
+import { useAuth} from '../../contexts/AuthContext';
+import { getNotificationSettings, updateNotificationSettings, requestPushPermission} from '../../lib/notifications';
 import type { NotificationSettings, NotificationType, NotificationCategory, NotificationDeliveryMethod } from '../../types';
 
 interface NotificationSettingsProps {

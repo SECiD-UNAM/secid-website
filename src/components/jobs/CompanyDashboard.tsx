@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth} from '@/contexts/AuthContext';
-import { 
-import { db} from '@/lib/firebase-config';
 import {
-
   collection, 
   query, 
   where, 
@@ -14,6 +11,8 @@ import {
   deleteDoc,
   getDoc 
 } from 'firebase/firestore';
+import { db} from '@/lib/firebase-config';
+import {
   BriefcaseIcon,
   PlusIcon,
   EyeIcon,

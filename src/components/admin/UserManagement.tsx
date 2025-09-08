@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth} from '@/contexts/AuthContext';
-import { 
-import { db} from '@/lib/firebase-config';
-import { 
-import { useTranslations} from '@/hooks/useTranslations';
+import { db } from '@/lib/firebase-config';
+import { useTranslations } from '@/hooks/useTranslations';
+import {
 
   collection, 
   query, 
@@ -19,6 +18,7 @@ import { useTranslations} from '@/hooks/useTranslations';
   DocumentSnapshot,
   Timestamp
 } from 'firebase/firestore';
+import {
   Users, 
   Search, 
   Filter, 

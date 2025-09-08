@@ -33,7 +33,8 @@
       "Bash(cp:*)",
       "Bash(rm:*)",
       "Bash(npx prettier:*)",
-      "Bash(npm install)"
+      "Bash(npm install)",
+      "Bash(npx astro check:*)"
     ],
     "deny": []
   }

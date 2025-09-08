@@ -1,15 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { 
-import { clsx} from 'clsx';
-import SearchBar from './SearchBar';
-import { searchEngine} from '@/lib/search/search-engine';
-import { useTranslations} from '@/hooks/useTranslations';
-
-/**
- * SearchResults Component - Full search results page with advanced filtering
- * Features: Pagination, sorting, filtering, export, search within results
- */
-
+import {
   AdjustmentsHorizontalIcon,
   FunnelIcon,
   ArrowsUpDownIcon,
@@ -21,6 +11,15 @@ import { useTranslations} from '@/hooks/useTranslations';
   ChevronRightIcon,
   EllipsisHorizontalIcon
 } from '@heroicons/react/24/outline';
+import { clsx} from 'clsx';
+import SearchBar from './SearchBar';
+import { searchEngine} from '@/lib/search/search-engine';
+import { useTranslations} from '@/hooks/useTranslations';
+
+/**
+ * SearchResults Component - Full search results page with advanced filtering
+ * Features: Pagination, sorting, filtering, export, search within results
+ */
 import type { 
   SearchResultsProps, 
   SearchResultItem, 

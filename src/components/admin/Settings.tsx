@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth} from '@/contexts/AuthContext';
-import { 
-import { db} from '@/lib/firebase-config';
-import { 
-import { useTranslations} from '@/hooks/useTranslations';
+import { db } from '@/lib/firebase-config';
+import { useTranslations } from '@/hooks/useTranslations';
+import {
 
   doc, 
   getDoc, 
@@ -16,6 +15,7 @@ import { useTranslations} from '@/hooks/useTranslations';
   onSnapshot,
   Timestamp
 } from 'firebase/firestore';
+import {
   Settings as SettingsIcon,
   Save,
   RefreshCw,

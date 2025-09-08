@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth} from '@/contexts/AuthContext';
-import type { import type { 
+import type { 
   MemberProfile, 
   ConnectionRequest, 
   DirectMessage, 
   Conversation, 
   MemberRecommendation 
- } from '@/types/membermember;
+ } from '@/types/member';
+import {
   UserPlusIcon,
   ChatBubbleLeftEllipsisIcon,
   BellIcon,

@@ -1,22 +1,25 @@
-import { 
-import { doc, setDoc, getDoc, updateDoc} from 'firebase/firestore';
-import { auth, db, isUsingMockAPI} from './firebase';
-import { 
+import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { auth, db, isUsingMockAPI } from './firebase';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  User,
+  UserCredential,
+  sendPasswordResetEmail,
+  updateProfile,
+  GoogleAuthProvider,
+  signInWithPopup
+} from 'firebase/auth'; 
 
 /**
  * Authentication Service
  * High-level auth functions that work with both Firebase and Mock API
  */
 
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut as firebaseSignOut,
-  onAuthStateChanged as firebaseOnAuthStateChanged,
-  updateProfile,
-  sendPasswordResetEmail,
-  type User
-} from 'firebase/auth';
 import type { UserProfile } from '@/types/user';
+import {
   signInWithOAuth, 
   linkOAuthProvider, 
   unlinkOAuthProvider,

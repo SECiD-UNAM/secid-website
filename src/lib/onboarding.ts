@@ -1,13 +1,13 @@
-import { 
-import { ref, uploadBytes, getDownloadURL, deleteObject} from 'firebase/storage';
-import { db, storage, analytics} from './firebase-config';
-import { logEvent} from 'firebase/analytics';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { db, storage, analytics } from './firebase-config';
+import { logEvent } from 'firebase/analytics';
 
 /**
  * Onboarding Utilities and Firebase Integration
  * Comprehensive utilities for managing SECiD member onboarding process
  */
 
+import {
   doc, 
   setDoc, 
   getDoc, 

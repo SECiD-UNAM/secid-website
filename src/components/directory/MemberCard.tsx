@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import {
-import { HeartIcon as HeartSolidIcon} from '@heroicons/react/24/solid';
+import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 
 import type { MemberProfile, ViewMode } from '@/types/member';
 import type { UserBasicInfo } from '@/types/user';
+import {
   MapPinIcon,
   BuildingOfficeIcon,
   ClockIcon,

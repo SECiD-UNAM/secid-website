@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-import { useTranslations} from '../../hooks/useTranslations';
-import { forumCategories, forumTopics} from '../../lib/forum';
-
+import {
   MessageCircle, 
   Eye, 
   ThumbsUp, 
@@ -18,6 +15,8 @@ import { forumCategories, forumTopics} from '../../lib/forum';
   SortAsc,
   SortDesc
 } from 'lucide-react';
+import { useTranslations} from '../../hooks/useTranslations';
+import { forumCategories, forumTopics} from '../../lib/forum';
 import type { ForumCategory, ForumTopic, Language } from '../../types';
 
 interface ForumCategoryProps {

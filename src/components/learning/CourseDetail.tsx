@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations} from '../../hooks/useTranslations';
-import type { import CourseProgress from './CourseProgress';
+import CourseProgress from './CourseProgress';
 
 import type { 
   Course, 
@@ -8,7 +8,8 @@ import type {
   CourseEnrollment, 
   User,
   QuizAttempt 
- } from '@/types/114114;
+ } from '@/types/learning';
+import {
   getCourse, 
   getUserEnrollment, 
   enrollInCourse,

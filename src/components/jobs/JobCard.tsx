@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth} from '@/contexts/AuthContext';
 import {
-import { BookmarkIcon as BookmarkSolidIcon} from '@heroicons/react/24/solid';
-
   MapPinIcon,
   BriefcaseIcon,
   CurrencyDollarIcon,
@@ -12,6 +10,7 @@ import { BookmarkIcon as BookmarkSolidIcon} from '@heroicons/react/24/solid';
   EyeIcon,
   SparklesIcon
 } from '@heroicons/react/24/outline';
+import { BookmarkIcon as BookmarkSolidIcon} from '@heroicons/react/24/solid';
 
 interface Job {
   id: string;

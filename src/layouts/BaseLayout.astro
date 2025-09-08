@@ -66,6 +66,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       crossorigin
     />
 
+    <!-- Main Stylesheets -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="/assets/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/assets/css/secid-components.css">
+
     <!-- View Transitions -->
     <ViewTransitions />
 
@@ -84,6 +89,18 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
           if (!e.amplitude.runQueuedFunctions) {
             console.log('[Amplitude] Error: could not load SDK');
           }
+        };
+        r.onerror = function () {
+          console.log('[Amplitude] CDN blocked, using fallback analytics');
+          // Fallback analytics implementation
+          e.amplitude = {
+            init: function() { console.log('[Analytics] Fallback init'); },
+            logEvent: function(event, props) { 
+              console.log('[Analytics] Event:', event, props);
+              // You could send to your own analytics endpoint here
+            },
+            getInstance: function() { return this; }
+          };
         };
         var i = t.getElementsByTagName('script')[0];
         i.parentNode.insertBefore(r, i);
@@ -188,13 +205,15 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     </div>
 
     <!-- Scripts -->
-    <script src="/assets/js/jquery.min.js"></script>
-    <script src="/assets/js/browser.min.js"></script>
-    <script src="/assets/js/breakpoints.min.js"></script>
-    <script src="/assets/js/util.js"></script>
-    <script src="/assets/js/main.js"></script>
-  </body><style is:global>
-    /* Import global styles */
-    @import url('../styles/global.css');
-  </style>
+    <script is:inline src="/assets/js/jquery.min.js"></script>
+    <script is:inline src="/assets/js/browser.min.js"></script>
+    <script is:inline src="/assets/js/breakpoints.min.js"></script>
+    <script is:inline src="/assets/js/util.js"></script>
+    <script is:inline src="/assets/js/main.js"></script>
+  </body>
 </html>
+
+<style is:global>
+  /* Import Tailwind and custom global styles */
+  @import url('../styles/global.css');
+</style>

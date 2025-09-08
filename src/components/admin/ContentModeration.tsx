@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth} from '@/contexts/AuthContext';
-import { 
-import { db} from '@/lib/firebase-config';
-import { 
-import { useTranslations} from '@/hooks/useTranslations';
-
-  collection, 
-  query, 
+import { useAuth } from '@/contexts/AuthContext';
+import { db } from '@/lib/firebase-config';
+import { useTranslations } from '@/hooks/useTranslations';
+import {
+  collection,
+  query,
   orderBy, 
   where,
   onSnapshot, 
@@ -17,6 +15,7 @@ import { useTranslations} from '@/hooks/useTranslations';
   Timestamp,
   limit
 } from 'firebase/firestore';
+import {
   AlertTriangle, 
   CheckCircle, 
   XCircle, 

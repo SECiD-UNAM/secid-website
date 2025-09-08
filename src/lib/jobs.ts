@@ -1,11 +1,4 @@
 import { 
-import { db, isUsingMockAPI} from './firebase';
-
-/**
- * Jobs Service
- * High-level job board functions that work with both Firebase and Mock API
- */
-
   collection,
   doc,
   addDoc,
@@ -19,6 +12,12 @@ import { db, isUsingMockAPI} from './firebase';
   limit,
   type QueryConstraint
 } from 'firebase/firestore';
+import { db, isUsingMockAPI} from './firebase';
+
+/**
+ * Jobs Service
+ * High-level job board functions that work with both Firebase and Mock API
+ */
 import type { Job, JobFormData } from '@/types/job';
 
 /**

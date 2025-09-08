@@ -1,7 +1,4 @@
 import {
-import { ref, uploadBytes, getDownloadURL, deleteObject} from 'firebase/storage';
-import { db, storage} from './firebase-config';
-
   collection,
   doc,
   addDoc,
@@ -26,6 +23,8 @@ import { db, storage} from './firebase-config';
   or,
   and,
 } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL, deleteObject} from 'firebase/storage';
+import { db, storage} from './firebase-config';
 import type {
   ForumCategory,
   ForumTopic,

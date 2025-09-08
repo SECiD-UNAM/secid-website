@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthContext} from '../../contexts/AuthContext';
 import { useTranslations} from '../../hooks/useTranslations';
-import type { import type { 
+import type { 
   MentorProfile, 
   MenteeProfile, 
   MentorshipRequest,
   FormState,
   ValidationError
- } from '@/types/174174;
+} from '../../types';
+import {
   getMentorProfile,
   getMenteeProfile,
   createMentorshipRequest,

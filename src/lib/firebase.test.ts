@@ -108,7 +108,7 @@ describe('Firebase', () => {
       expect(connectFirestoreEmulator).toHaveBeenCalledWith(
         expect.any(Object),
         'localhost',
-        8080
+        8088
       );
       expect(connectStorageEmulator).toHaveBeenCalledWith(
         expect.any(Object),

@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-import { useTranslations} from '../../hooks/useTranslations';
-import { forumSearch, forumCategories} from '../../lib/forum';
-
+import {
   Search, 
   Filter, 
   X, 
@@ -18,6 +15,8 @@ import { forumSearch, forumCategories} from '../../lib/forum';
   CheckCircle,
   Lock
 } from 'lucide-react';
+import { useTranslations} from '../../hooks/useTranslations';
+import { forumSearch, forumCategories} from '../../lib/forum';
 import type { ForumSearchFilters, ForumSearchResult, ForumCategory, Language } from '../../types';
 
 interface ForumSearchProps {

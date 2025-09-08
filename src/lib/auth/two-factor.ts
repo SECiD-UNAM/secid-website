@@ -1,12 +1,4 @@
 import { 
-import { getCurrentUser} from '@/lib/auth';
-import { db, isUsingMockAPI} from '@/lib/firebase';
-
-/**
- * Two-Factor Authentication (2FA) Service
- * Implements TOTP (Time-based One-Time Password) authentication
- */
-
   updateDoc, 
   doc, 
   getDoc, 
@@ -18,6 +10,13 @@ import { db, isUsingMockAPI} from '@/lib/firebase';
   limit, 
   getDocs 
 } from 'firebase/firestore';
+import { getCurrentUser} from '@/lib/auth';
+import { db, isUsingMockAPI} from '@/lib/firebase';
+
+/**
+ * Two-Factor Authentication (2FA) Service
+ * Implements TOTP (Time-based One-Time Password) authentication
+ */
 
 export interface TwoFactorSetup {
   secret: string;

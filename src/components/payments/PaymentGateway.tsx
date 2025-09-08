@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslations} from '../../hooks/useTranslations';
-import type { import type { 
-  SubscriptionTier, 
-  PaymentMethod, 
+import { useTranslations } from '../../hooks/useTranslations';
+import type {
+  SubscriptionTier,
+  PaymentMethod,
   User,
-  UserSubscription 
- } from '@/types/114114;
+  UserSubscription
+} from '@/types';
+import {
   getSubscriptionTiers,
   createStripeCheckoutSession,
   createPaymentMethod,

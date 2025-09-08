@@ -31,8 +31,8 @@ class MobileExperienceFlow {
     // Test menu items
     const menuItems = [
       { label: 'Inicio', href: '/es/' },
-      { label: 'Trabajos', href: '/es/jobs' },
-      { label: 'Miembros', href: '/es/members' },
+      { label: 'Trabajos', href: '/es/empleos' },
+      { label: 'Miembros', href: '/es/miembros' },
       { label: 'Eventos', href: '/es/events' },
       { label: 'Dashboard', href: '/es/dashboard' },
     ];
@@ -138,7 +138,7 @@ class MobileExperienceFlow {
   }
 
   async testMobileSearch() {
-    await this.page.goto('/es/jobs');
+    await this.page.goto('/es/empleos');
     
     // Test mobile search interface
     const searchInput = this.page.locator('input[data-testid="job-search-input"]');
@@ -160,7 +160,7 @@ class MobileExperienceFlow {
   }
 
   async testMobileCards() {
-    await this.page.goto('/es/jobs');
+    await this.page.goto('/es/empleos');
     
     // Test mobile job cards
     const jobCards = this.page.locator('[data-testid="job-card"]');
@@ -407,7 +407,7 @@ test.describe('Mobile Experience Tests', () => {
     await mobileFlow.testMobileCards();
     
     // Test card actions (save, share, etc.)
-    await page.goto('/es/jobs');
+    await page.goto('/es/empleos');
     
     const firstCard = page.locator('[data-testid="job-card"]').first();
     
@@ -481,7 +481,7 @@ test.describe('Mobile Experience Tests', () => {
     await mobileFlow.testMobilePerformance();
     
     // Test image lazy loading
-    await page.goto('/es/members');
+    await page.goto('/es/miembros');
     
     const images = page.locator('img[data-testid="member-avatar"]');
     const count = await images.count();
@@ -594,7 +594,7 @@ test.describe('Mobile Network Performance', () => {
     
     // Try to navigate
     await page.click('[data-testid="mobile-menu-toggle"]');
-    await page.click('a[href="/es/jobs"]');
+    await page.click('a[href="/es/empleos"]');
     
     // Should show offline message
     await expect(page.locator('[data-testid="offline-message"]')).toBeVisible();

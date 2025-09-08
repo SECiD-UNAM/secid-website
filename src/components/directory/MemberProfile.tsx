@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-import { HeartIcon as HeartSolidIcon} from '@heroicons/react/24/solid';
-
-import type { MemberProfile as MemberProfileType, ProjectShowcase, Achievement, Certification } from '@/types/member';
-import type { UserBasicInfo } from '@/types/user';
   MapPinIcon,
   BuildingOfficeIcon,
   CalendarIcon,
@@ -26,6 +22,10 @@ import type { UserBasicInfo } from '@/types/user';
   CameraIcon,
   PencilIcon
 } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartSolidIcon} from '@heroicons/react/24/solid';
+
+import type { MemberProfile as MemberProfileType, ProjectShowcase, Achievement, Certification } from '@/types/member';
+import type { UserBasicInfo } from '@/types/user';
 
 interface MemberProfileProps {
   member: MemberProfileType;

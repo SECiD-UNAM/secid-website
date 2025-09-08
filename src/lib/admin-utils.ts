@@ -1,12 +1,4 @@
-import { 
-import { db} from '@/lib/firebase-config';
-import { UserProfile} from '@/contexts/AuthContext';
-
-/**
- * Admin Utilities
- * Shared utilities for admin dashboard components
- */
-
+import {
   collection, 
   doc, 
   query, 
@@ -20,6 +12,13 @@ import { UserProfile} from '@/contexts/AuthContext';
   Timestamp,
   QueryConstraint
 } from 'firebase/firestore';
+import { db} from '@/lib/firebase-config';
+import { UserProfile} from '@/contexts/AuthContext';
+
+/**
+ * Admin Utilities
+ * Shared utilities for admin dashboard components
+ */
 
 // Types
 export interface AdminAction {

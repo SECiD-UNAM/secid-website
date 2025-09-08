@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BaseCommissionDashboard} from './BaseCommissionDashboard';
 import { COMMISSION_TYPES} from '../../lib/stripe/stripe-client';
 import { useTranslations} from '../../hooks/useTranslations';
-import { 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line} from 'recharts';
-
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import {
   ChatBubbleLeftRightIcon,
   LanguageIcon,
   DocumentTextIcon,

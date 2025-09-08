@@ -1,15 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { 
-import { getCurrentUser} from '@/lib/auth';
-import { useTranslations} from '@/hooks/useTranslations';
-import ResourceCard from './ResourceCard';
-
-/**
- * ResourceDetail Component
- * Detailed resource view with download capability, reviews, and related resources
- */
-
-import type { Resource, ResourceReview } from '@/types/resource';
   getResource, 
   trackDownload, 
   trackView, 
@@ -18,6 +8,15 @@ import type { Resource, ResourceReview } from '@/types/resource';
   removeBookmark,
   searchResources
 } from '@/lib/resources';
+import { getCurrentUser} from '@/lib/auth';
+import { useTranslations} from '@/hooks/useTranslations';
+import ResourceCard from './ResourceCard';
+import type { Resource, ResourceReview } from '@/types/resource';
+
+/**
+ * ResourceDetail Component
+ * Detailed resource view with download capability, reviews, and related resources
+ */
 
 interface ResourceDetailProps {
   resourceId: string;

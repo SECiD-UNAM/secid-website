@@ -25,7 +25,9 @@ function levenshteinDistance(a: string, b: string): number {
     .map(() => Array(a.length + 1).fill(null));
 
   for (let i = 0; i <= a.length; i++) {
-    matrix?.[0][i] = i;
+    if (matrix[0]) {
+      matrix[0][i] = i;
+    }
   }
 
   for (let j = 0; j <= b.length; j++) {

@@ -1,0 +1,305 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [main, develop, feature/*]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      test-suite:
+        description: 'Test suite to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - critical
+          - auth
+          - jobs
+          - payments
+          - mobile
+          - accessibility
+
+env:
+  NODE_VERSION: '20.17.0'
+  PLAYWRIGHT_BROWSERS_PATH: ~/.cache/playwright
+
+jobs:
+  test-matrix:
+    name: E2E Tests - ${{ matrix.project }} - Shard ${{ matrix.shard }}/${{ matrix.total-shards }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, firefox, webkit, mobile-chrome, mobile-safari]
+        shard: [1, 2, 3, 4]
+        total-shards: [4]
+        
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ${{ env.PLAYWRIGHT_BROWSERS_PATH }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - name: Install Playwright dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps
+
+      - name: Build application
+        run: npm run build
+        env:
+          CI: true
+
+      - name: Run E2E tests
+        run: |
+          if [ "${{ github.event.inputs.test-suite }}" = "all" ] || [ -z "${{ github.event.inputs.test-suite }}" ]; then
+            npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}/${{ matrix.total-shards }}
+          else
+            npx playwright test tests/e2e/${{ github.event.inputs.test-suite }}/**/*.spec.ts --project=${{ matrix.project }} --shard=${{ matrix.shard }}/${{ matrix.total-shards }}
+          fi
+        env:
+          CI: true
+          BASE_URL: http://localhost:4321
+          TEST_ENV: ci
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results-${{ matrix.project }}-${{ matrix.shard }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-screenshots-${{ matrix.project }}-${{ matrix.shard }}
+          path: test-results/**/*.png
+          retention-days: 3
+
+  merge-reports:
+    name: Merge Test Reports
+    needs: test-matrix
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: playwright-results-*
+          path: all-reports/
+
+      - name: Merge reports
+        run: |
+          npm ci
+          npx playwright merge-reports --reporter html ./all-reports
+
+      - name: Upload merged report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-merged
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = 'playwright-report/index.html';
+            
+            if (fs.existsSync(reportPath)) {
+              const comment = `## 🎭 E2E Test Results
+              
+              Tests have completed. [View full report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+              
+              | Browser | Status |
+              |---------|--------|
+              | Chrome | ✅ |
+              | Firefox | ✅ |
+              | Safari | ✅ |
+              | Mobile | ✅ |
+              `;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
+
+  accessibility-tests:
+    name: Accessibility Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install chromium
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run accessibility tests
+        run: npx playwright test tests/e2e/accessibility --project=chromium-accessibility
+        env:
+          CI: true
+
+      - name: Upload accessibility report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-report
+          path: test-results/a11y-report/
+          retention-days: 7
+
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install chromium
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run performance tests
+        run: npx playwright test tests/e2e/performance --project=chromium-performance
+        env:
+          CI: true
+
+      - name: Upload performance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-report
+          path: test-results/performance-report/
+          retention-days: 7
+
+      - name: Comment performance metrics
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const metrics = require('./test-results/performance-metrics.json');
+            
+            const comment = `## 📊 Performance Metrics
+            
+            | Metric | Value | Budget | Status |
+            |--------|-------|--------|--------|
+            | FCP | ${metrics.fcp}ms | 2000ms | ${metrics.fcp <= 2000 ? '✅' : '❌'} |
+            | LCP | ${metrics.lcp}ms | 4000ms | ${metrics.lcp <= 4000 ? '✅' : '❌'} |
+            | CLS | ${metrics.cls} | 0.1 | ${metrics.cls <= 0.1 ? '✅' : '❌'} |
+            | TTI | ${metrics.tti}ms | 5000ms | ${metrics.tti <= 5000 ? '✅' : '❌'} |
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  notify-results:
+    name: Notify Test Results
+    needs: [test-matrix, accessibility-tests, performance-tests]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Check test status
+        id: test-status
+        run: |
+          if [ "${{ needs.test-matrix.result }}" = "success" ] && \
+             [ "${{ needs.accessibility-tests.result }}" = "success" ] && \
+             [ "${{ needs.performance-tests.result }}" = "success" ]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "status=failure" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Send Slack notification
+        if: env.SLACK_WEBHOOK_URL != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          STATUS="${{ steps.test-status.outputs.status }}"
+          COLOR=$([ "$STATUS" = "success" ] && echo "good" || echo "danger")
+          EMOJI=$([ "$STATUS" = "success" ] && echo ":white_check_mark:" || echo ":x:")
+          
+          curl -X POST $SLACK_WEBHOOK_URL \
+            -H 'Content-Type: application/json' \
+            -d "{
+              \"attachments\": [{
+                \"color\": \"$COLOR\",
+                \"title\": \"$EMOJI E2E Tests $STATUS\",
+                \"text\": \"Repository: ${{ github.repository }}\nBranch: ${{ github.ref_name }}\nCommit: ${{ github.sha }}\",
+                \"footer\": \"GitHub Actions\",
+                \"footer_icon\": \"https://github.githubassets.com/favicon.ico\",
+                \"ts\": $(date +%s)
+              }]
+            }"

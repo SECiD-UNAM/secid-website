@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import type { import type { MemberSearchFilters  } from '@/types/membermember;
+import type { MemberSearchFilters  } from '@/types/member';
+import {
   MagnifyingGlassIcon,
   FunnelIcon,
   XMarkIcon,

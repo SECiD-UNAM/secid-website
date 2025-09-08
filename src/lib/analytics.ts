@@ -1,7 +1,5 @@
-import { 
-import { 
-import { db} from './firebase';
-
+import { db } from './firebase';
+import {
   collection, 
   query, 
   where, 
@@ -17,6 +15,7 @@ import { db} from './firebase';
   QueryDocumentSnapshot,
   DocumentData
 } from 'firebase/firestore';
+import {
   getAnalytics, 
   logEvent as firebaseLogEvent,
   setUserId as firebaseSetUserId,

@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BaseCommissionDashboard} from './BaseCommissionDashboard';
 import { COMMISSION_TYPES} from '../../lib/stripe/stripe-client';
 import { useTranslations} from '../../hooks/useTranslations';
-import { 
-import { 
-
+import {
   ChartBarIcon, 
   PresentationChartLineIcon,
   TableCellsIcon,
@@ -12,6 +10,7 @@ import {
   EyeIcon,
   DocumentChartBarIcon,
 } from '@heroicons/react/24/outline';
+import {
   LineChart, 
   Line, 
   XAxis, 

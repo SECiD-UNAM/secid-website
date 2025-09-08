@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
 import { getCurrentUser} from '@/lib/auth';
 import { useTranslations} from '@/hooks/useTranslations';
 import ResourceCard from './ResourceCard';
@@ -12,6 +11,11 @@ import ResourceUpload from './ResourceUpload';
  * Main library interface with categories, search, and resource management
  */
 
+import {
+  searchResources, 
+  getResourceStats, 
+  getUserBookmarks 
+} from '@/lib/resources';
 import type { 
   Resource, 
   ResourceSearchFilters, 
@@ -20,10 +24,6 @@ import type {
   ResourceCategory,
   ResourceStats
 } from '@/types/resource';
-  searchResources, 
-  getResourceStats, 
-  getUserBookmarks 
-} from '@/lib/resources';
 
 interface ResourceLibraryProps {
   initialCategory?: ResourceCategory;

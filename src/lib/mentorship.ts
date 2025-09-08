@@ -1,12 +1,11 @@
-import { 
-import { 
-import { db, storage} from './firebase';
+import { db, storage } from './firebase';
 
 /**
  * Mentorship Platform Firebase Operations
  * This module provides all Firebase operations for the mentorship system
  */
 
+import {
   collection, 
   doc, 
   getDocs, 
@@ -23,6 +22,7 @@ import { db, storage} from './firebase';
   onSnapshot,
   serverTimestamp
 } from 'firebase/firestore';
+import {
   ref as storageRef, 
   uploadBytes, 
   getDownloadURL 

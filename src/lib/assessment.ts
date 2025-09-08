@@ -1,10 +1,4 @@
 import {
-import { db, isUsingMockAPI} from './firebase';
-
-/**
- * Assessment System Firebase Functions
- */
-
   collection,
   doc,
   getDoc,
@@ -25,6 +19,12 @@ import { db, isUsingMockAPI} from './firebase';
   serverTimestamp,
   type QueryConstraint,
 } from 'firebase/firestore';
+import { db, isUsingMockAPI} from './firebase';
+
+/**
+ * Assessment System Firebase Functions
+ */
+
 import type {
   Assessment,
   AssessmentAttempt,

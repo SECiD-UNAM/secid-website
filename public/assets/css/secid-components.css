@@ -1,6 +1,38 @@
 /* SECiD Website Custom Components */
 /* Futuristic Minimalist Design System */
 
+/* ========== CRITICAL OVERRIDES ========== */
+/* Override HTML5 UP Editorial template styles */
+#wrapper {
+  display: block !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+#main {
+  display: block !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--color-background, #ffffff) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh !important;
+  font-family: var(--font-family-base) !important;
+  color: var(--color-text-primary) !important;
+  line-height: 1.6 !important;
+}
+
 /* ========== CSS VARIABLES ========== */
 :root {
   /* SECiD Brand Colors */
@@ -104,7 +136,9 @@
   /* Typography */
   --font-family-base:
     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-family-heading: 'Space Grotesk', 'Inter', sans-serif;
+  --font-family-heading:
+    'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    sans-serif;
   --font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   /* Transitions */
@@ -134,12 +168,12 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
-  padding: 0.875rem 1.5rem; /* Increased from 0.75rem to meet 44px min height */
+  padding: 0.875rem 1.5rem;
   border-radius: var(--radius-lg);
   font-family: var(--font-family-base);
   font-weight: 600;
   font-size: 0.875rem;
-  line-height: 1.2; /* Increased from 1 for better readability */
+  line-height: 1.2;
   text-decoration: none;
   border: 2px solid transparent;
   cursor: pointer;
@@ -149,7 +183,9 @@
   white-space: nowrap;
   user-select: none;
   transform: translateY(0);
-  min-height: 2.75rem; /* Ensures 44px minimum touch target */
+  min-height: 2.75rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .secid-button:focus {
@@ -244,7 +280,8 @@
   min-height: 2.75rem; /* Ensures 44px minimum touch target */
 }
 
-.secid-button--lg {
+.secid-button--lg,
+.secid-button--large {
   padding: 1rem 2rem;
   font-size: 1rem;
 }
@@ -370,15 +407,18 @@
 /* ========== 2. NAVIGATION BAR ========== */
 
 .secid-navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: var(--z-fixed);
-  background: var(--navbar-bg);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--color-border-subtle);
-  transition: all var(--transition-base);
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: var(--z-fixed) !important;
+  background: var(--navbar-bg) !important;
+  backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid var(--color-border-subtle) !important;
+  transition: all var(--transition-base) !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .secid-navbar--scrolled {
@@ -903,11 +943,13 @@
 
 .secid-hero {
   min-height: 100vh;
+  width: 100%;
   display: flex;
   align-items: center;
   background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
   position: relative;
   overflow: hidden;
+  padding: 6rem 0 4rem 0;
 }
 
 .secid-hero::before {
@@ -936,10 +978,25 @@
   pointer-events: none;
 }
 
+/* Hero content wrapper - two column layout */
+.secid-hero > * {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4xl);
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
 .secid-hero__container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 var(--space-lg);
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-4xl);
@@ -952,6 +1009,25 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+}
+
+.secid-hero__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.secid-hero__image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.secid-hero__image img {
+  max-width: 300px;
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .secid-hero__title {
@@ -1050,10 +1126,38 @@
 }
 
 @media (max-width: 768px) {
+  .secid-hero {
+    padding: 4rem var(--space-md);
+  }
+
+  .secid-hero > * {
+    grid-template-columns: 1fr;
+    gap: var(--space-2xl);
+    text-align: center;
+  }
+
   .secid-hero__container {
     grid-template-columns: 1fr;
     gap: var(--space-2xl);
     text-align: center;
+  }
+
+  .secid-hero__image {
+    order: -1;
+  }
+
+  .secid-hero__image img {
+    max-width: 200px;
+  }
+
+  .secid-hero__actions {
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .secid-hero__actions .secid-button {
+    width: 100%;
   }
 }
 
@@ -1105,6 +1209,100 @@
     var(--secid-secondary-dark) 0%,
     var(--secid-dark-blue) 100%
   );
+}
+
+/* ========== SECTION CONTAINERS ========== */
+
+.secid-features {
+  padding: var(--space-4xl) 0;
+  background: var(--section-bg-primary);
+}
+
+.secid-features__header {
+  text-align: center;
+  margin-bottom: var(--space-3xl);
+}
+
+.secid-features__title {
+  font-family: var(--font-family-heading);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--secid-dark-blue);
+  margin: 0;
+}
+
+.secid-features__grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-xl);
+}
+
+.secid-cta {
+  padding: var(--space-4xl) 0;
+  background: linear-gradient(
+    135deg,
+    var(--secid-cream) 0%,
+    rgba(253, 177, 87, 0.1) 100%
+  );
+}
+
+.secid-cta__header {
+  text-align: center;
+  margin-bottom: var(--space-3xl);
+}
+
+.secid-cta__title {
+  font-family: var(--font-family-heading);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--secid-dark-blue);
+  margin: 0;
+}
+
+.secid-cta__grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: var(--space-xl);
+}
+
+.secid-cta-card {
+  background: var(--card-bg);
+  padding: var(--space-2xl);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  transition:
+    transform var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+.secid-cta-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+.secid-cta-card__title {
+  font-family: var(--font-family-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--secid-dark-blue);
+  margin: 0 0 var(--space-md) 0;
+}
+
+.secid-cta-card__description {
+  color: var(--secid-gray-600);
+  line-height: 1.6;
+  margin: 0 0 var(--space-lg) 0;
+}
+
+.secid-section {
+  padding: var(--space-4xl) 0;
 }
 
 /* ========== 4. JOB CARDS ========== */

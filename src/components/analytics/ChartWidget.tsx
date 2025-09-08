@@ -1,7 +1,6 @@
 import React from 'react';
+import { clsx } from 'clsx';
 import {
-import { clsx} from 'clsx';
-
   LineChart,
   Line,
   AreaChart,

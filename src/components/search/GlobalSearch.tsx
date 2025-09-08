@@ -1,16 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Dialog, Transition} from '@headlessui/react';
-import { 
-import { clsx} from 'clsx';
-import SearchBar from './SearchBar';
-import { searchEngine} from '@/lib/search/search-engine';
-import { useTranslations} from '@/hooks/useTranslations';
-
-/**
- * GlobalSearch Component - Main search interface with instant results
- * Features: Modal overlay, live search, filters, quick actions
- */
-
+import {
   XMarkIcon, 
   AdjustmentsHorizontalIcon, 
   ClockIcon,
@@ -23,6 +13,15 @@ import { useTranslations} from '@/hooks/useTranslations';
   AcademicCapIcon,
   NewspaperIcon
 } from '@heroicons/react/24/outline';
+import { clsx} from 'clsx';
+import SearchBar from './SearchBar';
+import { searchEngine} from '@/lib/search/search-engine';
+import { useTranslations} from '@/hooks/useTranslations';
+
+/**
+ * GlobalSearch Component - Main search interface with instant results
+ * Features: Modal overlay, live search, filters, quick actions
+ */
 import type { 
   GlobalSearchProps, 
   SearchResultItem, 

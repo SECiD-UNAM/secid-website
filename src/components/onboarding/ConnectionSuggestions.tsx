@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-import { CheckIcon} from '@heroicons/react/24/solid';
-import { motion, AnimatePresence} from 'framer-motion';
-import { useTranslations} from '../../hooks/useTranslations';
-
+import {
   UserPlusIcon,
   UserIcon,
   BuildingOfficeIcon,
@@ -17,6 +13,9 @@ import { useTranslations} from '../../hooks/useTranslations';
   MagnifyingGlassIcon,
   UsersIcon
 } from '@heroicons/react/24/outline';
+import { CheckIcon} from '@heroicons/react/24/solid';
+import { motion, AnimatePresence} from 'framer-motion';
+import { useTranslations} from '../../hooks/useTranslations';
 
 import type { OnboardingStepProps } from '../../types/onboarding';
 import type { MemberProfile } from '../../types/member';

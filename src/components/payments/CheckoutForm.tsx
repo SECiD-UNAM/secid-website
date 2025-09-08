@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import {
-import { stripePromise, SUBSCRIPTION_PLANS, validateRFC, calculateMexicanTaxes} from '../../lib/stripe/stripe-client';
-import { useTranslations} from '../../hooks/useTranslations';
-import { Button} from '../ui/Button';
-import { toast} from 'react-hot-toast';
-import { CreditCardIcon, LockClosedIcon} from '@heroicons/react/24/outline';
-
   Elements,
   CardElement,
   useStripe,
   useElements,
   PaymentElement,
 } from '@stripe/react-stripe-js';
+import { stripePromise, SUBSCRIPTION_PLANS, validateRFC, calculateMexicanTaxes} from '../../lib/stripe/stripe-client';
+import { useTranslations} from '../../hooks/useTranslations';
+import { Button} from '../ui/Button';
+import { toast} from 'react-hot-toast';
+import { CreditCardIcon, LockClosedIcon} from '@heroicons/react/24/outline';
 
 interface CheckoutFormProps {
   planId: keyof typeof SUBSCRIPTION_PLANS;

@@ -1,11 +1,11 @@
-import { 
-import { db, auth} from '@/lib/firebase';
+import { db, auth } from '@/lib/firebase';
 
 /**
  * Search Analytics and History Tracking System
  * Features: Firebase integration, user behavior tracking, search insights
  */
 
+import {
   collection, 
   doc, 
   addDoc, 

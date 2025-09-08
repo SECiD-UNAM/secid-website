@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-import { useTranslations} from '../../hooks/useTranslations';
-import { forumCategories, forumTopics} from '../../lib/forum';
-
+import {
   MessageCircle, 
   Users, 
   TrendingUp, 
@@ -15,6 +12,8 @@ import { forumCategories, forumTopics} from '../../lib/forum';
   Award,
   Flame
 } from 'lucide-react';
+import { useTranslations} from '../../hooks/useTranslations';
+import { forumCategories, forumTopics} from '../../lib/forum';
 import type { ForumCategory, ForumTopic, Language } from '../../types';
 
 interface ForumHomeProps {

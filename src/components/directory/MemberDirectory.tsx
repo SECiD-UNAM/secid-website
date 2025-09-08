@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useAuth} from '@/contexts/AuthContext';
-import { MemberCard} from './MemberCard';
-import { MemberSearch} from './MemberSearch';
-import { getMemberProfiles, searchMembers, getMemberStats} from '@/lib/members';
-import type { import type {
-  MemberProfile, 
-  MemberSearchFilters, 
-  MemberSearchResult, 
-  ViewMode, 
-  MemberStats 
- } from '@/types/membermember;
+import { useAuth } from '@/contexts/AuthContext';
+import { MemberCard } from './MemberCard';
+import { MemberSearch } from './MemberSearch';
+import { getMemberProfiles, searchMembers, getMemberStats } from '@/lib/members';
+import type {
+  MemberProfile,
+  MemberSearchFilters,
+  MemberSearchResult,
+  ViewMode,
+  MemberStats
+} from '@/types/member';
+import {
   Squares2X2Icon,
   ListBulletIcon,
   AdjustmentsHorizontalIcon,

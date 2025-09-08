@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth} from '@/contexts/AuthContext';
-import { 
-import { 
-import { 
-import { useTranslations} from '@/hooks/useTranslations';
-
-  collection, 
-  query, 
-  orderBy, 
+import { useAuth } from '@/contexts/AuthContext';
+import { useTranslations } from '@/hooks/useTranslations';
+import {
+  collection,
+  query,
+  orderBy,
   where,
   getDocs,
   Timestamp,
   limit
 } from 'firebase/firestore';
+import {
   BarChart, 
   Bar, 
   XAxis, 
@@ -28,6 +26,7 @@ import { useTranslations} from '@/hooks/useTranslations';
   AreaChart,
   Area
 } from 'recharts';
+import {
   TrendingUp, 
   Users, 
   Briefcase, 

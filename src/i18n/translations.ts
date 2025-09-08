@@ -94,6 +94,10 @@ export interface Translations {
       createAccount: string;
       termsAndConditions: string;
       privacyPolicy: string;
+      button: string;
+      google: string;
+      haveAccount: string;
+      signIn: string;
     };
     signIn: {
       title: string;
@@ -108,10 +112,19 @@ export interface Translations {
       orContinueWith: string;
       googleSignIn: string;
     };
+    or: string;
+    acceptTerms: {
+      prefix: string;
+      link: string;
+    };
+    errors: {
+      [key: string]: string;
+      default: string;
+    };
   };
 }
 
-const translations: Record<Language, Translations> = {
+export const translations: Record<Language, Translations> = {
   es: {
     site: {
       name: 'SECiD',
@@ -215,6 +228,10 @@ const translations: Record<Language, Translations> = {
         createAccount: 'Crear Cuenta',
         termsAndConditions: 'Términos y Condiciones',
         privacyPolicy: 'Política de Privacidad',
+        button: 'Crear Cuenta',
+        google: 'Registrarse con Google',
+        haveAccount: '¿Ya tienes una cuenta?',
+        signIn: 'Inicia sesión aquí',
       },
       signIn: {
         title: 'Iniciar Sesión',
@@ -228,6 +245,20 @@ const translations: Record<Language, Translations> = {
         signUpHere: 'Regístrate aquí',
         orContinueWith: 'O continúa con',
         googleSignIn: 'Iniciar sesión con Google',
+      },
+      or: 'o',
+      acceptTerms: {
+        prefix: 'Acepto los',
+        link: 'términos y condiciones',
+      },
+      errors: {
+        'auth/user-not-found': 'No existe una cuenta con este correo',
+        'auth/wrong-password': 'Contraseña incorrecta',
+        'auth/email-already-in-use': 'Este correo ya está registrado',
+        'auth/weak-password': 'La contraseña es muy débil',
+        'auth/invalid-email': 'Correo electrónico inválido',
+        'auth/operation-not-allowed': 'Operación no permitida',
+        default: 'Ha ocurrido un error',
       },
     },
   },
@@ -334,6 +365,10 @@ const translations: Record<Language, Translations> = {
         createAccount: 'Create Account',
         termsAndConditions: 'Terms and Conditions',
         privacyPolicy: 'Privacy Policy',
+        button: 'Create Account',
+        google: 'Sign up with Google',
+        haveAccount: 'Already have an account?',
+        signIn: 'Sign in here',
       },
       signIn: {
         title: 'Sign In',
@@ -347,6 +382,20 @@ const translations: Record<Language, Translations> = {
         signUpHere: 'Sign up here',
         orContinueWith: 'Or continue with',
         googleSignIn: 'Sign in with Google',
+      },
+      or: 'or',
+      acceptTerms: {
+        prefix: 'I accept the',
+        link: 'terms and conditions',
+      },
+      errors: {
+        'auth/user-not-found': 'No account exists with this email',
+        'auth/wrong-password': 'Incorrect password',
+        'auth/email-already-in-use': 'This email is already registered',
+        'auth/weak-password': 'Password is too weak',
+        'auth/invalid-email': 'Invalid email address',
+        'auth/operation-not-allowed': 'Operation not allowed',
+        default: 'An error occurred',
       },
     },
   },

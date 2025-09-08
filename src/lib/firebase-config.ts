@@ -1,28 +1,27 @@
-import { initializeApp, getApps, FirebaseApp} from 'firebase/app';
-import { 
-import { 
-import { 
-import { 
-import { getAnalytics, Analytics, isSupported} from 'firebase/analytics';
-
-  getAuth, 
-  Auth, 
+import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
+import { getAnalytics, type Analytics, isSupported } from 'firebase/analytics';
+import {
+  getAuth,
+  type Auth,
   connectAuthEmulator,
   browserLocalPersistence,
   setPersistence
 } from 'firebase/auth';
-  getFirestore, 
-  Firestore, 
+import {
+  getFirestore,
+  type Firestore,
   connectFirestoreEmulator,
   enableIndexedDbPersistence
 } from 'firebase/firestore';
-  getStorage, 
-  FirebaseStorage, 
-  connectStorageEmulator 
+import {
+  getStorage,
+  type FirebaseStorage,
+  connectStorageEmulator
 } from 'firebase/storage';
-  getFunctions, 
-  Functions, 
-  connectFunctionsEmulator 
+import {
+  getFunctions,
+  type Functions,
+  connectFunctionsEmulator
 } from 'firebase/functions';
 
 // Firebase configuration
@@ -91,7 +90,7 @@ if (typeof window !== 'undefined') {
 
     // Connect Firestore emulator
     try {
-      connectFirestoreEmulator(db, EMULATOR_HOST, 8080);
+      connectFirestoreEmulator(db, EMULATOR_HOST, 8088);
       console.log('✅ Connected to Firestore Emulator');
     } catch (error) {
       console.warn('Firestore Emulator already connected or error:', error);
@@ -130,7 +129,7 @@ export const isEmulatorMode = (): boolean => USE_EMULATOR;
 
 export const getEmulatorStatus = () => ({
   auth: USE_EMULATOR ? `http://${EMULATOR_HOST}:9099` : null,
-  firestore: USE_EMULATOR ? `http://${EMULATOR_HOST}:8080` : null,
+  firestore: USE_EMULATOR ? `http://${EMULATOR_HOST}:8088` : null,
   storage: USE_EMULATOR ? `http://${EMULATOR_HOST}:9199` : null,
   functions: USE_EMULATOR ? `http://${EMULATOR_HOST}:5001` : null,
   ui: USE_EMULATOR ? `http://${EMULATOR_HOST}:4000` : null,

@@ -1,8 +1,7 @@
-import { 
-import { getFunctions, httpsCallable} from 'firebase/functions';
-import { getMessaging, getToken, onMessage} from 'firebase/messaging';
-import { db} from './firebase';
-
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { db } from './firebase';
+import {
   collection, 
   doc, 
   addDoc, 

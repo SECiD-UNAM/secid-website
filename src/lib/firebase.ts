@@ -108,7 +108,7 @@ if (typeof window !== 'undefined') {
       });
 
       // Firestore emulator
-      connectFirestoreEmulator(db, 'localhost', 8080);
+      connectFirestoreEmulator(db, 'localhost', 8088);
 
       // Storage emulator
       connectStorageEmulator(storage, 'localhost', 9199);
@@ -145,6 +145,9 @@ export type {
   Analytics,
 };
 
+// Export UserCredential type from firebase/auth
+export type { UserCredential } from 'firebase/auth';
+
 // Utility function to check if Firebase is initialized
 export function isFirebaseInitialized(): boolean {
   return typeof window !== 'undefined' && !!app;
@@ -177,4 +180,12 @@ export function handleFirebaseError(error: any): string {
   };
 
   return errorMessages[errorCode] || `Error: ${error?.message || errorCode}`;
+}
+
+/**
+ * Check if using mock API instead of real Firebase
+ */
+export function isUsingMockAPI(): boolean {
+  return import.meta.env.PUBLIC_USE_MOCK_API === 'true' || 
+         (!import.meta.env.PUBLIC_FIREBASE_API_KEY && import.meta.env.DEV);
 }

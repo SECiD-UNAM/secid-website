@@ -1,13 +1,12 @@
-import {
-import { 
-import { db, storage, isUsingMockAPI} from './firebase';
-import { getCurrentUser} from './auth';
+import { db, storage, isUsingMockAPI } from './firebase';
+import { getCurrentUser } from './auth';
 
 /**
  * Resource Library Service
  * Firebase functions for resource management, search, and analytics
  */
 
+import {
   collection,
   doc,
   getDoc,
@@ -27,6 +26,7 @@ import { getCurrentUser} from './auth';
   writeBatch,
   runTransaction
 } from 'firebase/firestore';
+import {
   ref, 
   uploadBytes, 
   getDownloadURL, 

@@ -260,3 +260,47 @@
 			});
 
 })(jQuery);
+
+// Performance optimization: Add passive event listeners for better scroll performance
+(function() {
+	'use strict';
+	
+	// Override jQuery touch events with passive listeners for better performance
+	if (typeof window !== 'undefined' && window.jQuery) {
+		$(document).ready(function() {
+			// Find elements that have touch event listeners and add passive versions
+			const $sidebar = $('#sidebar');
+			if ($sidebar.length) {
+				// Get the sidebar element
+				const sidebarElement = $sidebar[0];
+				
+				// Add passive touch event listeners
+				const passiveTouchHandler = function(event) {
+					// Only prevent propagation if needed, don't prevent default for passive events
+					if (!breakpoints.active('>large')) {
+						event.stopPropagation();
+					}
+				};
+				
+				// Add passive listeners
+				if (sidebarElement.addEventListener) {
+					sidebarElement.addEventListener('touchstart', passiveTouchHandler, { passive: true });
+					sidebarElement.addEventListener('touchmove', passiveTouchHandler, { passive: true });
+				}
+			}
+		});
+	}
+	
+	// General passive touch optimization for all touch interactions
+	document.addEventListener('DOMContentLoaded', function() {
+		// Add passive listeners to common touch elements
+		const touchElements = document.querySelectorAll('a, button, [role="button"], .button');
+		touchElements.forEach(function(element) {
+			if (element.addEventListener) {
+				element.addEventListener('touchstart', function() {
+					// Empty passive handler to enable passive touch
+				}, { passive: true });
+			}
+		});
+	});
+})();

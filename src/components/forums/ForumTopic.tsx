@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-import { useTranslations} from '../../hooks/useTranslations';
-import { forumTopics, forumPosts, forumVoting, forumCategories} from '../../lib/forum';
-
+import {
   ThumbsUp, 
   ThumbsDown, 
   MessageCircle, 
@@ -29,6 +26,8 @@ import { forumTopics, forumPosts, forumVoting, forumCategories} from '../../lib/
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
+import { useTranslations} from '../../hooks/useTranslations';
+import { forumTopics, forumPosts, forumVoting, forumCategories} from '../../lib/forum';
 import type { ForumTopic, ForumPost, ForumCategory, Language } from '../../types';
 
 interface ForumTopicProps {

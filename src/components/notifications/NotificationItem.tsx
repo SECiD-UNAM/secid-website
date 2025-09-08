@@ -1,9 +1,5 @@
 import React from 'react';
-import { 
-import { useTranslations} from '../../hooks/useTranslations';
-import { formatDistanceToNow} from 'date-fns';
-import { es, enUS} from 'date-fns/locale';
-
+import {
   Briefcase, 
   Calendar, 
   MessageSquare, 
@@ -23,6 +19,9 @@ import { es, enUS} from 'date-fns/locale';
   Trash2,
   Star
 } from 'lucide-react';
+import { useTranslations} from '../../hooks/useTranslations';
+import { formatDistanceToNow} from 'date-fns';
+import { es, enUS} from 'date-fns/locale';
 import type { Notification, NotificationType, NotificationPriority } from '../../types';
 
 interface NotificationItemProps {

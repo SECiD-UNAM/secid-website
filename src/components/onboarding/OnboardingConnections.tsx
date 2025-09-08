@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-import { motion, AnimatePresence} from 'framer-motion';
-import { useTranslations} from '../../hooks/useTranslations';
-
+import {
   UserGroupIcon,
   MagnifyingGlassIcon,
   UserPlusIcon,
@@ -19,6 +16,8 @@ import { useTranslations} from '../../hooks/useTranslations';
   GlobeAltIcon,
   SparklesIcon
 } from '@heroicons/react/24/outline';
+import { motion, AnimatePresence} from 'framer-motion';
+import { useTranslations} from '../../hooks/useTranslations';
 
 import type { OnboardingStepProps } from '../../types/onboarding';
 

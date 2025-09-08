@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BaseCommissionDashboard} from './BaseCommissionDashboard';
 import { COMMISSION_TYPES} from '../../lib/stripe/stripe-client';
 import { useTranslations} from '../../hooks/useTranslations';
-import { 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Bar, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis} from 'recharts';
-
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Bar, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
+import {
   CpuChipIcon,
   BeakerIcon,
   ChartBarIcon,

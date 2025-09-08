@@ -5,25 +5,23 @@ import { z} from 'zod';
 import Button from '@/components/ui/Button';
 import TwoFactorSetup from '@/components/auth/TwoFactorSetup';
 import { useTranslations} from '@/hooks/useTranslations';
-import { 
-import { 
 import { updatePassword, reauthenticateWithCredential, EmailAuthProvider} from 'firebase/auth';
 import toast from 'react-hot-toast';
-import { 
-
+import {
   getCurrentUser, 
   getLinkedOAuthProviders, 
   linkProvider, 
   unlinkProvider,
   updateLastLogin 
 } from '@/lib/auth';
+import {
   getTwoFactorStatus, 
   disableTwoFactor, 
   regenerateBackupCodes,
   createTwoFactorSession,
   verifyTwoFactorSession
 } from '@/lib/auth/two-factor';
-import type { LinkedAccount, SupportedProvider } from '@/lib/auth/oauth-providers';
+import {
   Shield, 
   Key, 
   Smartphone, 
@@ -41,6 +39,7 @@ import type { LinkedAccount, SupportedProvider } from '@/lib/auth/oauth-provider
   History,
   MapPin
 } from 'lucide-react';
+import type { LinkedAccount, SupportedProvider } from '@/lib/auth/oauth-providers';
 
 const passwordChangeSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),

@@ -3,8 +3,6 @@ import { useAuth} from '@/contexts/AuthContext';
 import { doc, getDoc, updateDoc, increment, collection, query, where, getDocs} from 'firebase/firestore';
 import { db} from '@/lib/firebase-config';
 import {
-import { BookmarkIcon as BookmarkSolidIcon} from '@heroicons/react/24/solid';
-
   ArrowLeftIcon,
   MapPinIcon,
   BriefcaseIcon,
@@ -20,6 +18,7 @@ import { BookmarkIcon as BookmarkSolidIcon} from '@heroicons/react/24/solid';
   SparklesIcon,
   ChevronRightIcon
 } from '@heroicons/react/24/outline';
+import { BookmarkIcon as BookmarkSolidIcon} from '@heroicons/react/24/solid';
 
 interface JobDetails {
   id: string;

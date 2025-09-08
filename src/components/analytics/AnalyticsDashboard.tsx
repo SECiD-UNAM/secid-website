@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-import { Tab} from '@headlessui/react';
-import { clsx} from 'clsx';
+import { Tab } from '@headlessui/react';
+import { clsx } from 'clsx';
 import MetricCard, { MetricCardTemplates } from './MetricCard';
 import ChartWidget, { ChartTemplates } from './ChartWidget';
 import { analyticsService} from '../../lib/analytics';
-import { useTranslation} from 'react-i18next';
-
+import { useTranslation } from 'react-i18next';
+import {
   CalendarDaysIcon, 
   ChartBarIcon,
   UserGroupIcon,

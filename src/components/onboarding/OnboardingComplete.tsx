@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { 
 import { motion, AnimatePresence} from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { useTranslations} from '../../hooks/useTranslations';
 import { getOnboardingAchievements, calculateProfileCompleteness} from '../../lib/onboarding';
-
+import {
   CheckCircleIcon,
   SparklesIcon,
   TrophyIcon,

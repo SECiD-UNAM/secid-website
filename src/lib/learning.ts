@@ -1,7 +1,5 @@
-import { 
-import { 
-import { db, storage} from './firebase';
-
+import { db, storage } from './firebase';
+import {
   collection, 
   doc, 
   addDoc, 
@@ -18,6 +16,7 @@ import { db, storage} from './firebase';
   arrayUnion,
   Timestamp
 } from 'firebase/firestore';
+import {
   ref, 
   uploadBytes, 
   getDownloadURL 
@@ -416,7 +415,7 @@ export const updateLessonProgress = async (
       'progress.totalProgress': totalProgress,
       'progress.timeSpent': currentProgress.timeSpent + 5,
       'progress.lastActivity': serverTimestamp(),
-      'progress['updatedAt']': serverTimestamp(),
+      'progress.updatedAt': serverTimestamp(),
       lastAccessedAt: serverTimestamp()
     };
 
@@ -470,7 +469,7 @@ export const submitQuizAttempt = async (
           }
         ],
         'progress.lastActivity': serverTimestamp(),
-        'progress['updatedAt']': serverTimestamp()
+        'progress.updatedAt': serverTimestamp()
       });
     }
 

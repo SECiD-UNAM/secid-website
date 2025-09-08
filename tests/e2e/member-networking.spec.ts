@@ -21,8 +21,8 @@ class MemberNetworkingFlow {
 
   async navigateToMemberDirectory() {
     await this.page.goto('/');
-    await this.page.click('a[href="/es/members"]');
-    await expect(this.page).toHaveURL('/es/members');
+    await this.page.click('a[href="/es/miembros"]');
+    await expect(this.page).toHaveURL('/es/miembros');
   }
 
   async searchMembers(query: string) {
@@ -558,7 +558,7 @@ test.describe('Member Networking and Community Flow', () => {
     await expect(page.locator('text=Configuración guardada')).toBeVisible();
     
     // Verify changes are reflected in profile
-    await page.goto('/es/members/test-user-id');
+    await page.goto('/es/miembros/test-user-id');
     await expect(page.locator('[data-testid="email-contact"]')).not.toBeVisible();
   });
 });

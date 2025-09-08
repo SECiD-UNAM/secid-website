@@ -29,8 +29,8 @@ class JobApplicationFlow {
 
   async navigateToJobBoard() {
     await this.page.goto('/');
-    await this.page.click('a[href="/es/jobs"]');
-    await expect(this.page).toHaveURL('/es/jobs');
+    await this.page.click('a[href="/es/empleos"]');
+    await expect(this.page).toHaveURL('/es/empleos');
   }
 
   async searchJobs(searchTerm: string) {

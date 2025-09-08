@@ -4,8 +4,8 @@
 @tailwind utilities;
 
 /* Import existing main CSS from HTML5 UP template */
-@import url('../../assets/css/main.css');
-@import url('../../assets/css/fontawesome-all.min.css');
+@import url('/assets/css/main.css');
+@import url('/assets/css/fontawesome-all.min.css');
 
 /* Global CSS Variables for consistency */
 :root {

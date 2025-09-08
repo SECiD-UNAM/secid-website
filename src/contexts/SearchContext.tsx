@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { searchEngine} from '@/lib/search/search-engine';
 import { searchIndexer} from '@/lib/search/search-indexer';
-import type { /**
+/**
  * Search Context Provider - Global search state management
  * Integrates search engine, analytics, history, and preferences
  */
@@ -17,7 +17,8 @@ import type {
   SearchFacets,
   SearchExportConfig,
   SearchAnalyticsEvent
- } from '@/types/searchsearch;
+ } from '@/types/search';
+import {
   searchAnalytics, 
   searchHistory, 
   popularSearches, 

@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useTranslations} from '../../hooks/useTranslations';
-import type { import ConversationComponent from './Conversation';
+import { useTranslations } from '../../hooks/useTranslations';
+import ConversationComponent from './Conversation';
 import MessageComposer from './MessageComposer';
-
-import type { 
-  Message, 
-  Conversation, 
-  User, 
-  MessageSearchFilters 
- } from '@/types/122122;
-  getConversations, 
-  searchMessages, 
+import type {
+  Message,
+  Conversation,
+  User,
+  MessageSearchFilters
+} from '@/types';
+import {
+  getConversations,
+  searchMessages,
   markConversationAsRead,
   createConversation,
   deleteConversation,

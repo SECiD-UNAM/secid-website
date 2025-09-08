@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useTranslations} from '../../hooks/useTranslations';
-import type { import MessageComposer from './MessageComposer';
-
-import type { 
-  Message, 
-  Conversation, 
-  User, 
+import { useTranslations } from '../../hooks/useTranslations';
+import MessageComposer from './MessageComposer';
+import type {
+  Message,
+  Conversation,
+  User,
   MessageReaction,
-  TypingIndicator 
- } from '@/types/135135;
-  getMessages, 
-  sendMessage, 
-  editMessage, 
-  deleteMessage, 
-  addReaction, 
+  TypingIndicator
+} from '@/types';
+import {
+  getMessages,
+  sendMessage,
+  editMessage,
+  deleteMessage,
+  addReaction,
   removeReaction,
   markMessageAsRead,
   sendTypingIndicator,

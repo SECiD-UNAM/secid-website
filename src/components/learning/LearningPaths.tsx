@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations} from '../../hooks/useTranslations';
-import type { import type { 
+import type { 
   LearningPath, 
   Course, 
   CourseCategory, 
   CourseEnrollment,
   User 
- } from '@/types/114114;
+ } from '@/types/learning';
+import {
   getLearningPaths, 
   getCourses, 
   getUserEnrollments,

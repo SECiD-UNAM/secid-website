@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth} from '@/contexts/AuthContext';
-import { 
-import { db} from '@/lib/firebase-config';
-import { 
-import { useTranslations} from '@/hooks/useTranslations';
-
-  collection, 
-  query, 
-  orderBy, 
-  limit, 
-  onSnapshot, 
+import { useAuth } from '@/contexts/AuthContext';
+import { db } from '@/lib/firebase-config';
+import { useTranslations } from '@/hooks/useTranslations';
+import {
+  collection,
+  query,
+  orderBy,
+  limit,
+  onSnapshot,
   where,
   getDocs,
   Timestamp
 } from 'firebase/firestore';
-  Users, 
-  Briefcase, 
-  Calendar, 
+import {
+  Users,
+  Briefcase,
+  Calendar,
   MessageSquare, 
   TrendingUp, 
   AlertTriangle,

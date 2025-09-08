@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-import { motion} from 'framer-motion';
-import { useTranslations} from '../../hooks/useTranslations';
-
+import {
   HeartIcon,
   BriefcaseIcon,
   AcademicCapIcon,

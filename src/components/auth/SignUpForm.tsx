@@ -183,7 +183,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 htmlFor="firstName"
                 className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                {t.auth.fields['firstName']}
+                {t.auth.signUp.firstName}
               </label>
               <input
                 id="firstName"
@@ -204,7 +204,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 htmlFor="lastName"
                 className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                {t.auth.fields['lastName']}
+                {t.auth.signUp.lastName}
               </label>
               <input
                 id="lastName"
@@ -226,7 +226,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
               htmlFor="email"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300"
             >
-              {t.auth.fields['email']}
+              {t.auth.signUp.email}
             </label>
             <input
               id="email"
@@ -247,7 +247,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
               htmlFor="password"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300"
             >
-              {t.auth.fields['password']}
+              {t.auth.signUp.password}
             </label>
             <input
               id="password"
@@ -268,7 +268,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
               htmlFor="confirmPassword"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300"
             >
-              {t.auth.fields['confirmPassword']}
+              {t.auth.signUp.confirmPassword}
             </label>
             <input
               id="confirmPassword"

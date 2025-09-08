@@ -1,12 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { 
-import { 
-import { auth, db, isEmulatorMode} from '@/lib/firebase-config';
-
+import {
   User,
   onAuthStateChanged,
   signOut as firebaseSignOut
 } from 'firebase/auth';
+import { auth, db, isEmulatorMode} from '@/lib/firebase-config';
+import {
   doc, 
   onSnapshot,
   getDoc,
@@ -216,6 +215,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuthContext = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuthContext must be used within AuthProvider');
+  }
+  return context;
 };
 
 export default AuthContext;

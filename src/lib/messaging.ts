@@ -1,7 +1,5 @@
-import { 
-import { 
-import { db, storage} from './firebase';
-
+import { db, storage } from './firebase';
+import {
   collection, 
   doc, 
   addDoc, 
@@ -23,6 +21,7 @@ import { db, storage} from './firebase';
   DocumentSnapshot,
   QuerySnapshot
 } from 'firebase/firestore';
+import {
   ref, 
   uploadBytes, 
   getDownloadURL, 

@@ -190,7 +190,7 @@ class DashboardNavigationFlow {
     
     // Test view all jobs
     await this.page.click('[data-testid="view-all-jobs"]');
-    await expect(this.page).toHaveURL('/es/jobs');
+    await expect(this.page).toHaveURL('/es/empleos');
   }
 
   async testBreadcrumbNavigation() {

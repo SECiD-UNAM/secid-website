@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslations} from '../../hooks/useTranslations';
-import type { import type { Transaction, Invoice, User, PaymentSettings  } from '@/types/114114;
-  getUserTransactions, 
-  getUserInvoices, 
+import { useTranslations } from '../../hooks/useTranslations';
+import type { Transaction, Invoice, User, PaymentSettings } from '@/types';
+import {
+  getUserTransactions,
+  getUserInvoices,
   getPaymentSettings,
   updatePaymentSettings,
   downloadInvoice,
-  requestRefund 
+  requestRefund
 } from '../../lib/payments';
 
 interface BillingHistoryProps {

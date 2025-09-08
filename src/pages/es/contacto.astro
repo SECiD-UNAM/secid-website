@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModernLayout from '../../layouts/ModernLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
 import { getTranslations } from '../../i18n/translations';
@@ -7,7 +7,7 @@ import { getTranslations } from '../../i18n/translations';
 const t = getTranslations('es');
 ---
 
-<BaseLayout
+<ModernLayout
   title="Contacto - SECiD"
   description="Contáctanos para conocer más sobre la Sociedad de Egresados en Ciencia de Datos de la UNAM"
   lang="es"
@@ -213,7 +213,7 @@ const t = getTranslations('es');
   </section>
 
   <Footer lang="es" />
-</BaseLayout>
+</ModernLayout>
 
 <style>
   .secid-hero--contact {

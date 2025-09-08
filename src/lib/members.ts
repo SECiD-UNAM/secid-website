@@ -1,12 +1,11 @@
-import {
-import { 
-import { db, storage, isUsingMockAPI} from './firebase';
+import { db, storage, isUsingMockAPI } from './firebase';
 
 /**
  * Firebase utilities for member data operations
  * Handles CRUD operations for member profiles, connections, and networking features
  */
 
+import {
   collection,
   doc,
   getDocs,
@@ -28,6 +27,7 @@ import { db, storage, isUsingMockAPI} from './firebase';
   onSnapshot,
   Unsubscribe
 } from 'firebase/firestore';
+import {
   ref, 
   uploadBytes, 
   getDownloadURL, 

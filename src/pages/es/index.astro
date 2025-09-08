@@ -1,166 +1,104 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
 import { getTranslations } from '../../i18n/translations';
 
 const t = getTranslations('es');
 ---
 
-<BaseLayout title={t.site.title} description={t.site.description} lang="es">
-  <!-- Header -->
-  <div id="header">
-    <h1><a href="/es/">{t.site.name}</a></h1>
-    <nav id="nav">
-      <ul>
-        <li class="current"><a href="/es/">{t.nav.home}</a></li>
-        <li><a href="/es/sobre-nosotros">{t.nav.about}</a></li>
-        <li><a href="/es/empleos">{t.nav.jobs}</a></li>
-        <li><a href="/es/contacto">{t.nav.contact}</a></li>
-        <li><a href="/en/" class="language-switch">English</a></li>
-      </ul>
-    </nav>
-  </div>
+<ModernLayout title={t.site.title} description={t.site.description} lang="es">
+  <Navigation lang="es" />
 
-  <!-- Banner -->
-  <section id="banner">
-    <div class="content">
-      <header>
-        <h1>{t.hero.title}</h1>
-        <p>{t.hero.subtitle}</p>
+  <!-- Hero Section -->
+  <section class="secid-hero">
+    <div class="secid-hero__content">
+      <header class="secid-hero__header">
+        <h1 class="secid-hero__title">{t.hero.title}</h1>
+        <p class="secid-hero__subtitle">{t.hero.subtitle}</p>
       </header>
-      <p>{t.hero.description}</p>
-      <ul class="actions">
-        <li><a href="/registro" class="button big">{t.hero.joinButton}</a></li>
-        <li>
-          <a href="/es/empleos" class="button big">{t.hero.jobsButton}</a>
-        </li>
-      </ul>
+      <p class="secid-hero__description">{t.hero.description}</p>
+      <div class="secid-hero__actions">
+        <a href="/registro" class="secid-button secid-button--primary secid-button--large">
+          {t.hero.joinButton}
+        </a>
+        <a href="/es/empleos" class="secid-button secid-button--secondary secid-button--large">
+          {t.hero.jobsButton}
+        </a>
+      </div>
     </div>
-    <span class="image object">
+    <div class="secid-hero__image">
       <img src="/images/logo.png" alt="SECiD Logo" />
-    </span>
+    </div>
   </section>
 
-  <!-- Section -->
-  <section>
-    <header class="major">
-      <h2>{t.features.title}</h2>
+  <!-- Features Section -->
+  <section class="secid-features">
+    <header class="secid-features__header">
+      <h2 class="secid-features__title">{t.features.title}</h2>
     </header>
-    <div class="features">
-      <article>
-        <span class="icon fa-gem"></span>
-        <div class="content">
-          <h3>{t.features.networking.title}</h3>
-          <p>{t.features.networking.description}</p>
+    <div class="secid-features__grid">
+      <article class="secid-feature-card">
+        <span class="secid-feature-card__icon">
+          <i class="fas fa-gem"></i>
+        </span>
+        <div class="secid-feature-card__content">
+          <h3 class="secid-feature-card__title">{t.features.networking.title}</h3>
+          <p class="secid-feature-card__description">{t.features.networking.description}</p>
         </div>
       </article>
-      <article>
-        <span class="icon solid fa-paper-plane"></span>
-        <div class="content">
-          <h3>{t.features.jobs.title}</h3>
-          <p>{t.features.jobs.description}</p>
+      <article class="secid-feature-card">
+        <span class="secid-feature-card__icon">
+          <i class="fas fa-paper-plane"></i>
+        </span>
+        <div class="secid-feature-card__content">
+          <h3 class="secid-feature-card__title">{t.features.jobs.title}</h3>
+          <p class="secid-feature-card__description">{t.features.jobs.description}</p>
         </div>
       </article>
-      <article>
-        <span class="icon solid fa-rocket"></span>
-        <div class="content">
-          <h3>{t.features.growth.title}</h3>
-          <p>{t.features.growth.description}</p>
+      <article class="secid-feature-card">
+        <span class="secid-feature-card__icon">
+          <i class="fas fa-rocket"></i>
+        </span>
+        <div class="secid-feature-card__content">
+          <h3 class="secid-feature-card__title">{t.features.growth.title}</h3>
+          <p class="secid-feature-card__description">{t.features.growth.description}</p>
         </div>
       </article>
-      <article>
-        <span class="icon solid fa-signal"></span>
-        <div class="content">
-          <h3>{t.features.community.title}</h3>
-          <p>{t.features.community.description}</p>
+      <article class="secid-feature-card">
+        <span class="secid-feature-card__icon">
+          <i class="fas fa-signal"></i>
+        </span>
+        <div class="secid-feature-card__content">
+          <h3 class="secid-feature-card__title">{t.features.community.title}</h3>
+          <p class="secid-feature-card__description">{t.features.community.description}</p>
         </div>
       </article>
     </div>
   </section>
 
-  <!-- Section -->
-  <section>
-    <header class="major">
-      <h2>{t.cta.title}</h2>
+  <!-- CTA Section -->
+  <section class="secid-cta">
+    <header class="secid-cta__header">
+      <h2 class="secid-cta__title">{t.cta.title}</h2>
     </header>
-    <div class="mini-posts">
-      <article>
-        <h3>{t.cta.jobs.title}</h3>
-        <p>{t.cta.jobs.description}</p>
-        <ul class="actions">
-          <li><a href="/es/empleos" class="button">{t.cta.jobs.button}</a></li>
-        </ul>
+    <div class="secid-cta__grid">
+      <article class="secid-cta-card">
+        <h3 class="secid-cta-card__title">{t.cta.jobs.title}</h3>
+        <p class="secid-cta-card__description">{t.cta.jobs.description}</p>
+        <a href="/es/empleos" class="secid-button secid-button--primary">
+          {t.cta.jobs.button}
+        </a>
       </article>
-      <article>
-        <h3>{t.cta.register.title}</h3>
-        <p>{t.cta.register.description}</p>
-        <ul class="actions">
-          <li>
-            <a href="/registro" class="button">{t.cta.register.button}</a>
-          </li>
-        </ul>
+      <article class="secid-cta-card">
+        <h3 class="secid-cta-card__title">{t.cta.register.title}</h3>
+        <p class="secid-cta-card__description">{t.cta.register.description}</p>
+        <a href="/registro" class="secid-button secid-button--secondary">
+          {t.cta.register.button}
+        </a>
       </article>
     </div>
   </section>
 
-  <!-- Sidebar -->
-  <div id="sidebar">
-    <div class="inner">
-      <!-- Search -->
-      <section id="search" class="alt">
-        <form method="post" action="#">
-          <input
-            type="text"
-            name="query"
-            id="query"
-            placeholder={t.search.placeholder}
-          />
-        </form>
-      </section>
-
-      <!-- Menu -->
-      <nav id="menu">
-        <header class="major">
-          <h2>{t.sidebar.menu}</h2>
-        </header>
-        <ul>
-          <li><a href="/es/">{t.nav.home}</a></li>
-          <li><a href="/es/sobre-nosotros">{t.nav.about}</a></li>
-          <li><a href="/es/empleos">{t.nav.jobs}</a></li>
-          <li><a href="/es/contacto">{t.nav.contact}</a></li>
-        </ul>
-      </nav>
-
-      <!-- Section -->
-      <section>
-        <header class="major">
-          <h2>{t.sidebar.getInTouch}</h2>
-        </header>
-        <p>{t.sidebar.description}</p>
-        <ul class="contact">
-          <li class="icon solid fa-envelope">
-            <a href="mailto:contacto@secid.mx">contacto@secid.mx</a>
-          </li>
-          <li class="icon brands fa-linkedin">
-            <a
-              href="https://linkedin.com/company/secid-unam"
-              target="_blank"
-              rel="noopener">LinkedIn</a
-            >
-          </li>
-        </ul>
-      </section>
-
-      <!-- Footer -->
-      <footer id="footer">
-        <p class="copyright">
-          &copy; {new Date().getFullYear()} SECiD UNAM. {t.footer.rights}<br />
-          {t.footer.design}: <a
-            href="https://html5up.net"
-            target="_blank"
-            rel="noopener">HTML5 UP</a
-          >
-        </p>
-      </footer>
-    </div>
-  </div>
-</BaseLayout>
+  <Footer lang="es" />
+</ModernLayout>

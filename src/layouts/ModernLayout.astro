@@ -1,0 +1,179 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+  lang?: 'es' | 'en';
+  image?: string;
+  noIndex?: boolean;
+}
+
+const {
+  title,
+  description = 'Sociedad de Egresados en Ciencia de Datos UNAM - Conectando profesionales en ciencia de datos',
+  lang = 'es',
+  image = '/images/og-image.jpg',
+  noIndex = false,
+} = Astro.props;
+
+const siteUrl = import.meta.env.SITE || 'https://secid.mx';
+const canonicalURL = new URL(Astro.url.pathname, siteUrl);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- Primary Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#f65425" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, siteUrl)} />
+    <meta property="og:locale" content={lang === 'es' ? 'es_MX' : 'en_US'} />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(image, siteUrl)} />
+    
+    <!-- Modern Styles Only -->
+    <link rel="stylesheet" href="/assets/css/fontawesome-all.min.css" />
+    <link rel="stylesheet" href="/assets/css/secid-components.css" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+      {JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'SECiD - Sociedad de Egresados en Ciencia de Datos',
+        url: siteUrl,
+        logo: new URL('/images/logo.png', siteUrl).toString(),
+        description: 'Sociedad de Egresados en Ciencia de Datos de la UNAM',
+        sameAs: [
+          'https://www.linkedin.com/company/sociedad-de-egresados-en-ciencia-de-datos-secid'
+        ],
+        address: {
+          '@type': 'PostalAddress',
+          addressCountry: 'MX',
+          addressLocality: 'Ciudad de México'
+        }
+      })}
+    </script>
+    
+    <!-- Amplitude Analytics -->
+    <script>
+      !function(){"use strict";!function(e,t){var r=e.amplitude||{_q:[],_iq:[]};if(r.invoked)e.console&&console.error&&console.error("Amplitude snippet has been loaded.");else{r.invoked=!0;var n=function(e,t){e.prototype[t]=function(){return this._q.push({name:t,args:Array.prototype.slice.call(arguments,0)}),this}},s=function(e,t,r){return function(n){e._q.push({name:t,args:Array.prototype.slice.call(r,0),resolve:n})}},o=function(e,t,r){e[t]=function(){if(r)return{promise:new Promise(s(e,t,Array.prototype.slice.call(arguments)))}}},i=function(e){for(var t=0;t<y.length;t++)o(e,y[t],!1);for(var r=0;r<g.length;r++)o(e,g[r],!0)};r.invoked=!0;var a=t.createElement("script");a.type="text/javascript",a.crossOrigin="anonymous",a.async=!0,a.src="https://cdn.amplitude.com/libs/analytics-browser-2.3.8-min.js.gz",a.onload=function(){e.amplitude.runQueuedFunctions||console.log("[Amplitude] Error: could not load SDK"),e.amplitude.trackSessionEvents&&e.amplitude.run()};var u=t.getElementsByTagName("script")[0];u.parentNode.insertBefore(a,u);for(var l=function(){return this._q=[],this},c=["add","append","clearAll","prepend","set","setOnce","unset","preInsert","postInsert","remove","getUserProperties"],p=0;p<c.length;p++)n(l,c[p]);r.Identify=l;for(var d=function(){return this._q=[],this},f=["getEventProperties","setProductId","setQuantity","setPrice","setRevenue","setRevenueType","setEventProperties"],v=0;v<f.length;v++)n(d,f[v]);r.Revenue=d;var y=["getDeviceId","setDeviceId","getSessionId","setSessionId","getUserId","setUserId","setOptOut","setTransport","reset"],g=["init","track","logEvent","identify","groupIdentify","setGroup","revenue"];i(r),r.run=function(e,t){t||((t=document.createElement("script")).type="text/javascript",t.crossOrigin="anonymous",t.async=!0,t.src="https://cdn.amplitude.com/libs/analytics-browser-2.3.8-min.js.gz",t.onload=function(){e.amplitude.runQueuedFunctions||console.log("[Amplitude] Error: could not load SDK")});var r=document.getElementsByTagName("script")[0];for(r.parentNode.insertBefore(t,r);0<e.amplitude._q.length;){var n=e.amplitude._q.shift(),s=e.amplitude[n.name].apply(e.amplitude,n.args);n.resolve&&n.resolve(s)}},r.runQueuedFunctions=function(){i(r);for(var e=0;e<r._q.length;e++){var t=r[r._q[e].name];if("function"==typeof t){var n=r._q[e].args;t.apply(r,n)}}r._q=[]},e.amplitude=r}}(window,document)}();
+
+      // Initialize Amplitude with fallback
+      try {
+        window.amplitude.init('c4f088d94c87d7e19e13b0cf4bc87334', {
+          defaultTracking: true,
+          trackingOptions: {
+            sessions: true,
+            pageViews: true,
+            formInteractions: true,
+            fileDownloads: true
+          }
+        });
+      } catch (error) {
+        console.warn('Amplitude initialization failed:', error);
+      }
+    </script>
+  </head>
+  <body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main" class="secid-skip-link">Saltar al contenido principal</a>
+    
+    <!-- Main Content -->
+    <main id="main">
+      <slot />
+    </main>
+    
+    <!-- Modern JavaScript Only -->
+    <script>
+      // Theme toggle functionality
+      const theme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      
+      // Navbar scroll behavior
+      let lastScroll = 0;
+      const navbar = document.querySelector('.secid-navbar');
+      
+      if (navbar) {
+        window.addEventListener('scroll', () => {
+          const currentScroll = window.pageYOffset;
+          
+          if (currentScroll > 100) {
+            navbar.classList.add('secid-navbar--scrolled');
+          } else {
+            navbar.classList.remove('secid-navbar--scrolled');
+          }
+          
+          if (currentScroll > lastScroll && currentScroll > 100) {
+            navbar.classList.add('secid-navbar--hidden');
+          } else {
+            navbar.classList.remove('secid-navbar--hidden');
+          }
+          
+          lastScroll = currentScroll;
+        });
+      }
+      
+      // Mobile navigation toggle
+      const mobileMenuBtn = document.querySelector('.secid-navbar__mobile-toggle');
+      const mobileMenu = document.querySelector('.secid-navbar__menu');
+      
+      if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', () => {
+          mobileMenu.classList.toggle('secid-navbar__menu--open');
+          mobileMenuBtn.classList.toggle('secid-navbar__mobile-toggle--active');
+        });
+      }
+      
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

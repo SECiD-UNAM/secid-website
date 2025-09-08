@@ -1,13 +1,4 @@
 import {
-import { auth} from '@/lib/firebase-config';
-import { doc, setDoc, getDoc, updateDoc} from 'firebase/firestore';
-import { db} from '@/lib/firebase';
-
-/**
- * OAuth Providers Configuration and Management
- * Supports Google, GitHub, and LinkedIn OAuth providers
- */
-
   GoogleAuthProvider,
   GithubAuthProvider,
   OAuthProvider,
@@ -18,6 +9,14 @@ import { db} from '@/lib/firebase';
   type UserCredential,
   type AuthProvider
 } from 'firebase/auth';
+import { auth} from '@/lib/firebase-config';
+import { doc, setDoc, getDoc, updateDoc} from 'firebase/firestore';
+import { db} from '@/lib/firebase';
+
+/**
+ * OAuth Providers Configuration and Management
+ * Supports Google, GitHub, and LinkedIn OAuth providers
+ */
 import type { UserProfile } from '@/types/user';
 
 export type SupportedProvider = 'google' | 'github' | 'linkedin';

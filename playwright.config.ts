@@ -1,37 +1,50 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'path';
 
-/**
- * @see https://playwright.dev/docs/test-configuration
- */
+// Performance budgets for Core Web Vitals
+export const PERFORMANCE_BUDGETS = {
+  FCP: 2000,  // First Contentful Paint
+  LCP: 4000,  // Largest Contentful Paint
+  CLS: 0.1,   // Cumulative Layout Shift
+  FID: 100,   // First Input Delay
+};
+
 export default defineConfig({
-  testDir: './tests',
-  /* Run tests in files in parallel */
+  testDir: './tests/e2e',
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [
+  workers: process.env.CI ? 4 : undefined,
+  reporter: process.env.CI ? [
     ['html', { outputFolder: 'playwright-report' }],
-    ['json', { outputFile: 'test-results/results.json' }],
-    ['junit', { outputFile: 'test-results/junit.xml' }]
-  ],
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+    ['junit', { outputFile: 'test-results/junit.xml' }],
+    ['json', { outputFile: 'test-results/report.json' }],
+  ] : 'html',
+  
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env.TEST_URL || 'http://localhost:4321',
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    baseURL: process.env.BASE_URL || 'http://localhost:4321',
     trace: 'on-first-retry',
-    /* Take screenshot on failure */
     screenshot: 'only-on-failure',
-    /* Record video on failure */
     video: 'retain-on-failure',
+    
+    // Test timeout
+    actionTimeout: 10000,
+    navigationTimeout: 30000,
+    
+    // Viewport for desktop tests
+    viewport: { width: 1280, height: 720 },
+    
+    // Browser context options
+    contextOptions: {
+      ignoreHTTPSErrors: true,
+      locale: 'es-MX',
+      timezoneId: 'America/Mexico_City',
+    },
+    
+    // Custom test attributes
+    testIdAttribute: 'data-testid',
   },
 
-  /* Configure projects for major browsers and mobile devices */
   projects: [
     // Desktop browsers
     {
@@ -46,78 +59,80 @@ export default defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
-
+    
     // Mobile devices
     {
-      name: 'Mobile Chrome',
+      name: 'mobile-chrome',
       use: { ...devices['Pixel 5'] },
     },
     {
-      name: 'Mobile Safari',
+      name: 'mobile-safari',
       use: { ...devices['iPhone 12'] },
     },
+    
+    // Tablet devices
     {
-      name: 'Mobile Chrome Android',
-      use: { ...devices['Galaxy S9+'] },
+      name: 'tablet-landscape',
+      use: { ...devices['iPad Pro'], viewport: { width: 1024, height: 768 } },
     },
+    
+    // Accessibility testing
     {
-      name: 'iPad',
-      use: { ...devices['iPad Pro'] },
-    },
-
-    // Additional mobile viewports for thorough testing
-    {
-      name: 'iPhone SE',
-      use: { ...devices['iPhone SE'] },
-    },
-    {
-      name: 'iPhone 13 Pro',
-      use: { ...devices['iPhone 13 Pro'] },
-    },
-    {
-      name: 'iPad Mini',
-      use: { ...devices['iPad Mini'] },
-    },
-    {
-      name: 'Samsung Galaxy Tab',
-      use: {
-        viewport: { width: 800, height: 1280 },
-        userAgent: 'Mozilla/5.0 (Linux; Android 11; SM-T870) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Safari/537.36',
-        deviceScaleFactor: 2,
-        isMobile: true,
-        hasTouch: true,
+      name: 'chromium-accessibility',
+      use: { 
+        ...devices['Desktop Chrome'],
+        // Force high contrast mode
+        colorScheme: 'dark',
       },
     },
-
-    // Network conditions testing
+    
+    // Performance testing
     {
-      name: 'Mobile Slow 3G',
-      use: {
-        ...devices['Pixel 5'],
-        connectionType: 'slow-3g',
-      },
-    },
-    {
-      name: 'Mobile Fast 3G',
-      use: {
-        ...devices['iPhone 12'],
-        connectionType: 'fast-3g',
+      name: 'chromium-performance',
+      use: { 
+        ...devices['Desktop Chrome'],
+        // CPU throttling
+        launchOptions: {
+          args: ['--enable-precise-memory-info'],
+        },
       },
     },
   ],
 
-  /* Run your local dev server before starting the tests */
+  // Test output directory
+  outputDir: 'test-results',
+
+  // Global setup/teardown
+  globalSetup: path.join(__dirname, 'tests/global-setup.ts'),
+  globalTeardown: path.join(__dirname, 'tests/global-teardown.ts'),
+
+  // Web server configuration
   webServer: {
-    command: 'npm run preview',
-    url: 'http://localhost:4321',
+    command: process.env.CI ? 'npm run preview' : 'npm run dev',
+    url: process.env.BASE_URL || 'http://localhost:4321',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    stdout: 'pipe',
+    stderr: 'pipe',
   },
 
-  /* Global test timeout */
-  timeout: 30 * 1000,
+  // Test matching patterns
+  testMatch: [
+    '**/critical-flows/**/*.spec.ts',
+    '**/auth/**/*.spec.ts',
+    '**/jobs/**/*.spec.ts',
+    '**/payments/**/*.spec.ts',
+    '**/admin/**/*.spec.ts',
+    '**/features/**/*.spec.ts',
+    '**/mobile/**/*.spec.ts',
+    '**/accessibility/**/*.spec.ts',
+    '**/performance/**/*.spec.ts',
+    '**/i18n/**/*.spec.ts',
+  ],
+
+  // Timeout configurations
+  timeout: 60 * 1000, // 60 seconds per test
   expect: {
-    /* Maximum time expect() should wait for the condition to be met. */
-    timeout: 5000,
+    timeout: 10 * 1000, // 10 seconds for assertions
   },
 });

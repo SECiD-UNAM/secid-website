@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthContext} from '../../contexts/AuthContext';
 import { useTranslations} from '../../hooks/useTranslations';
-import type { import type { 
+import type { 
   MentorProfile, 
   MenteeProfile, 
   MentorshipMatch,
   MentorshipRequest
- } from '@/types/174174;
+} from '../../types';
+import {
   getMentorProfiles, 
   getMenteeProfile, 
   calculateMatchScore,

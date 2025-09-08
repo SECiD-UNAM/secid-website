@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { CommissionMetrics, CommissionService} from '../../lib/commissions';
 import { useTranslations} from '../../hooks/useTranslations';
-import { 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Bar} from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Bar } from 'recharts';
 
 import type { CommissionConfig } from '../../lib/commissions';
+import {
   ChartBarIcon, 
   UserGroupIcon, 
   ClipboardDocumentListIcon,

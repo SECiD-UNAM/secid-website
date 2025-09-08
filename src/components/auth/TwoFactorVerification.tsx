@@ -4,10 +4,9 @@ import { zodResolver} from '@hookform/resolvers/zod';
 import { z} from 'zod';
 import Button from '@/components/ui/Button';
 import { useTranslations} from '@/hooks/useTranslations';
-import { 
 import toast from 'react-hot-toast';
-import { Shield, Key, Clock, AlertTriangle} from 'lucide-react';
-
+import { Shield, Key, Clock, AlertTriangle } from 'lucide-react';
+import {
   verifyTwoFactorLogin, 
   useBackupCode,
   createTwoFactorSession,

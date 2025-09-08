@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import { 
-import { motion} from 'framer-motion';
-import { useTranslations} from '../../hooks/useTranslations';
-
+import {
   TrophyIcon,
   AcademicCapIcon,
   UsersIcon,
@@ -14,6 +11,8 @@ import { useTranslations} from '../../hooks/useTranslations';
   PlusIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
+import { motion} from 'framer-motion';
+import { useTranslations} from '../../hooks/useTranslations';
 
 import type { OnboardingStepProps } from '../../types/onboarding';
 
