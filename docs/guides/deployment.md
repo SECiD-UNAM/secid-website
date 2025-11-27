@@ -7,25 +7,28 @@ This document describes the enhanced CI/CD pipeline for the SECiD website, which
 ## Architecture
 
 ### Build System
+
 - **Environment-specific configuration**: Development, Staging, Production
 - **Template processing**: Dynamic URL generation for different environments
 - **Quality assurance**: HTML validation, accessibility testing, performance auditing
 
 ### Environments
 
-| Environment | URL | Purpose |
-|-------------|-----|---------|
-| Development | `http://localhost:3000` | Local development |
-| Staging | `https://staging-secid.github.io` | Pre-production testing |
-| Production | `https://secid.mx` | Live website |
+| Environment | URL                               | Purpose                |
+| ----------- | --------------------------------- | ---------------------- |
+| Development | `http://localhost:3000`           | Local development      |
+| Staging     | `https://staging-secid.github.io` | Pre-production testing |
+| Production  | `https://secid.mx`                | Live website           |
 
 ## Local Development
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - npm
 
 ### Setup
+
 ```bash
 # Install dependencies
 npm install
@@ -45,7 +48,7 @@ npm run dev
 ```bash
 # Build commands
 npm run build          # Production build
-npm run build:dev      # Development build  
+npm run build:dev      # Development build
 npm run build:staging  # Staging build
 
 # Testing commands
@@ -61,6 +64,7 @@ npm run dev           # Build for dev + serve
 ## CI/CD Pipeline
 
 ### Workflow Triggers
+
 - **Push to main**: Builds and deploys to production
 - **Pull Request**: Builds and tests (no deployment)
 - **Manual dispatch**: Choose environment for deployment
@@ -87,27 +91,32 @@ npm run dev           # Build for dev + serve
 The build system automatically configures URLs based on the target environment:
 
 **Template Files:**
+
 - `robots.txt.template` → `robots.txt`
 - `sitemap.xml.template` → `sitemap.xml`
 
 **HTML Processing:**
+
 - Canonical URLs updated automatically
-- Open Graph URLs updated automatically  
+- Open Graph URLs updated automatically
 - Schema.org URLs updated automatically
 
 ## Quality Assurance Tools
 
 ### HTML Validation
+
 - **Tool**: html-validate
 - **Standards**: W3C HTML5 compliance
 - **Config**: `.htmlvalidate.json`
 
 ### Accessibility Testing
+
 - **Tool**: Pa11y
 - **Standards**: WCAG 2.1 AA
 - **Config**: `.pa11yci.json`
 
 ### Performance Auditing
+
 - **Tool**: Lighthouse CI
 - **Metrics**: Core Web Vitals, SEO, Best Practices
 - **Config**: `lighthouserc.js`
@@ -131,33 +140,40 @@ The build system automatically configures URLs based on the target environment:
 ## Deployment
 
 ### Automatic Deployment
+
 - Push to `main` branch triggers production deployment
 - Pull requests trigger testing only (no deployment)
 
-### Manual Deployment  
+### Manual Deployment
+
 1. Go to GitHub Actions tab
 2. Select "Build, Test & Deploy" workflow
 3. Click "Run workflow"
 4. Choose environment (development/staging/production)
 
 ### Environment URLs
+
 After deployment, the website will be available at:
+
 - **Production**: https://secid.mx (custom domain)
 - **GitHub Pages**: https://[username].github.io/secid-website
 
 ## Troubleshooting
 
 ### Build Failures
+
 1. Check Node.js version (requires 18+)
 2. Verify all template files exist
 3. Check environment variable configuration
 
 ### Test Failures
+
 1. **HTML Validation**: Check markup errors in output
 2. **Accessibility**: Review Pa11y report for WCAG violations
 3. **Performance**: Check Lighthouse report for optimization opportunities
 
 ### Deployment Issues
+
 1. Verify GitHub Pages is enabled
 2. Check repository permissions
 3. Review workflow logs in GitHub Actions
@@ -172,6 +188,7 @@ After deployment, the website will be available at:
 ## Monitoring
 
 The CI/CD pipeline provides:
+
 - Build status badges
 - Performance metrics via Lighthouse
 - Accessibility compliance reporting

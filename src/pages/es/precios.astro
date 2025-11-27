@@ -1,10 +1,14 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
 ---
 
-<BaseLayout title="Planes de Precios - SECiD">
+<ModernLayout title="Planes de Precios - SECiD" lang="es">
+  <Navigation lang="es" />
   <div id="pricing-page"></div>
-</BaseLayout>
+  <Footer lang="es" />
+</ModernLayout>
 
 <script>
   import { createRoot } from 'react-dom/client';

@@ -1,234 +1,364 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
 import { getTranslations } from '../../i18n/translations';
 
 const t = getTranslations('en');
 ---
 
-<BaseLayout
+<ModernLayout
   title="Contact - SECiD"
   description="Get in touch with the Data Science Alumni Society"
   lang="en"
 >
-  <!-- Main -->
-  <div id="main">
-    <div class="inner">
-      <!-- Header -->
-      <header id="header">
-        <a href="/en/" class="logo"><strong>{t.site.name}</strong></a>
-        <ul class="icons">
-          <li>
-            <a href="/en/login" class="button small">{t.auth.signIn.button}</a>
-          </li>
-          <li><a href="/es/contacto" class="button small">Español</a></li>
-        </ul>
-      </header>
+  <Navigation lang="en" />
 
-      <!-- Content -->
-      <section>
-        <header class="main">
-          <h1>Contact</h1>
-        </header>
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Contact</h1>
+          <p class="secid-hero__subtitle">
+            Have questions, suggestions, or want to collaborate with us? We're here to listen.
+          </p>
+        </div>
+      </div>
+    </section>
 
-        <p>
-          Have questions, suggestions, or want to collaborate with us? We're
-          here to listen.
-        </p>
-
-        <div class="row">
-          <div class="col-6 col-12-medium">
-            <!-- Contact Form -->
-            <h2>Send us a message</h2>
-            <form method="post" action="#">
-              <div class="row gtr-uniform">
-                <div class="col-6 col-12-xsmall">
+    <!-- Contact Content -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-contact__grid">
+          <!-- Contact Form -->
+          <div class="secid-contact__form-wrapper">
+            <h2 class="secid-section__title">Send us a message</h2>
+            <form class="secid-form" method="post" action="#">
+              <div class="secid-form__row">
+                <div class="secid-form__group">
+                  <label class="secid-form__label" for="name">Name</label>
                   <input
                     type="text"
-                    name="name"
                     id="name"
-                    placeholder="Name"
+                    name="name"
+                    class="secid-form__input"
+                    placeholder="Your name"
                     required
                   />
                 </div>
-                <div class="col-6 col-12-xsmall">
+                <div class="secid-form__group">
+                  <label class="secid-form__label" for="email">Email</label>
                   <input
                     type="email"
-                    name="email"
                     id="email"
-                    placeholder="Email"
+                    name="email"
+                    class="secid-form__input"
+                    placeholder="your@email.com"
                     required
                   />
                 </div>
-                <div class="col-12">
-                  <select name="subject" id="subject" required>
-                    <option value="">- Select a topic -</option>
-                    <option value="general">General Inquiry</option>
-                    <option value="membership">Membership</option>
-                    <option value="jobs">Job Board</option>
-                    <option value="partnership">Partnership/Sponsorship</option>
-                    <option value="events">Events</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                <div class="col-12">
-                  <textarea
-                    name="message"
-                    id="message"
-                    placeholder="Your message"
-                    rows="6"
-                    required></textarea>
-                </div>
-                <div class="col-12">
-                  <ul class="actions">
-                    <li>
-                      <input
-                        type="submit"
-                        value="Send Message"
-                        class="primary"
-                      />
-                    </li>
-                    <li><input type="reset" value="Clear" /></li>
-                  </ul>
-                </div>
+              </div>
+
+              <div class="secid-form__group">
+                <label class="secid-form__label" for="subject">Subject</label>
+                <select id="subject" name="subject" class="secid-form__select" required>
+                  <option value="">- Select a topic -</option>
+                  <option value="general">General Inquiry</option>
+                  <option value="membership">Membership</option>
+                  <option value="jobs">Job Board</option>
+                  <option value="partnership">Partnership/Sponsorship</option>
+                  <option value="events">Events</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div class="secid-form__group">
+                <label class="secid-form__label" for="message">Message</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  class="secid-form__textarea"
+                  placeholder="Your message"
+                  rows="6"
+                  required></textarea>
+              </div>
+
+              <div class="secid-form__actions">
+                <button type="submit" class="secid-button secid-button--primary">
+                  <i class="fas fa-paper-plane"></i>
+                  Send Message
+                </button>
+                <button type="reset" class="secid-button secid-button--outline">
+                  Clear
+                </button>
               </div>
             </form>
           </div>
 
-          <div class="col-6 col-12-medium">
-            <!-- Contact Information -->
-            <h2>Contact Information</h2>
+          <!-- Contact Information -->
+          <div class="secid-contact__info">
+            <h2 class="secid-section__title">Contact Information</h2>
 
-            <div class="box">
-              <h3>Email</h3>
+            <div class="secid-contact__card">
+              <div class="secid-contact__card-icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <h3 class="secid-contact__card-title">Email</h3>
               <p>
                 <strong>General:</strong>
-                <a href="mailto:contacto@secid.mx">contacto@secid.mx</a><br />
+                <a href="mailto:contacto@secid.mx">contacto@secid.mx</a>
+              </p>
+              <p>
                 <strong>Membership:</strong>
-                <a href="mailto:membresias@secid.mx">membresias@secid.mx</a><br
-                />
+                <a href="mailto:membresias@secid.mx">membresias@secid.mx</a>
+              </p>
+              <p>
                 <strong>Job Board:</strong>
                 <a href="mailto:empleos@secid.mx">empleos@secid.mx</a>
               </p>
             </div>
 
-            <div class="box">
-              <h3>Social Media</h3>
-              <ul class="icons">
-                <li>
-                  <a href="#" class="icon brands fa-linkedin"
-                    ><span class="label">LinkedIn</span></a>
-                </li>
-                <li>
-                  <a href="#" class="icon brands fa-twitter"
-                    ><span class="label">Twitter</span></a>
-                </li>
-                <li>
-                  <a href="#" class="icon brands fa-facebook-f"
-                    ><span class="label">Facebook</span></a>
-                </li>
-                <li>
-                  <a href="#" class="icon brands fa-instagram"
-                    ><span class="label">Instagram</span></a>
-                </li>
-              </ul>
+            <div class="secid-contact__card">
+              <div class="secid-contact__card-icon">
+                <i class="fas fa-share-alt"></i>
+              </div>
+              <h3 class="secid-contact__card-title">Social Media</h3>
+              <div class="secid-contact__social">
+                <a href="#" class="secid-contact__social-link" aria-label="LinkedIn">
+                  <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="#" class="secid-contact__social-link" aria-label="Twitter">
+                  <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" class="secid-contact__social-link" aria-label="Facebook">
+                  <i class="fab fa-facebook"></i>
+                </a>
+                <a href="#" class="secid-contact__social-link" aria-label="Instagram">
+                  <i class="fab fa-instagram"></i>
+                </a>
+              </div>
             </div>
 
-            <div class="box">
-              <h3>Office Hours</h3>
-              <p>
-                Monday to Friday: 9:00 AM - 6:00 PM<br />
-                Saturday: 10:00 AM - 2:00 PM<br />
-                Sunday: Closed
-              </p>
+            <div class="secid-contact__card">
+              <div class="secid-contact__card-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <h3 class="secid-contact__card-title">Office Hours</h3>
+              <p>Monday to Friday: 9:00 AM - 6:00 PM</p>
+              <p>Saturday: 10:00 AM - 2:00 PM</p>
+              <p>Sunday: Closed</p>
             </div>
           </div>
         </div>
+      </div>
+    </section>
 
-        <hr class="major" />
+    <!-- FAQ Section -->
+    <section class="secid-section secid-bg-light">
+      <div class="secid-container">
+        <div class="secid-section__header">
+          <h2 class="secid-section__title">
+            <i class="fas fa-question-circle"></i>
+            Frequently Asked Questions
+          </h2>
+        </div>
 
-        <!-- FAQ Section -->
-        <h2>Frequently Asked Questions</h2>
+        <div class="secid-faq__grid">
+          <div class="secid-faq__item">
+            <h3 class="secid-faq__question">How can I become a SECiD member?</h3>
+            <p class="secid-faq__answer">
+              To become a SECiD member, you must be a graduate of UNAM's Data
+              Science program. You can register through our online form.
+            </p>
+          </div>
 
-        <h3>How can I become a SECiD member?</h3>
-        <p>
-          To become a SECiD member, you must be a graduate of UNAM's Data
-          Science program. You can register through our online form.
-        </p>
+          <div class="secid-faq__item">
+            <h3 class="secid-faq__question">What are the benefits of membership?</h3>
+            <p class="secid-faq__answer">
+              Members have access to exclusive job opportunities, networking events,
+              professional development workshops, and discounts on specialized courses.
+            </p>
+          </div>
 
-        <h3>What are the benefits of membership?</h3>
-        <p>
-          Members have access to exclusive job opportunities, networking events,
-          professional development workshops, and discounts on specialized
-          courses.
-        </p>
+          <div class="secid-faq__item">
+            <h3 class="secid-faq__question">How can I post a job offer?</h3>
+            <p class="secid-faq__answer">
+              Companies can post job offers by contacting us through the form or
+              sending an email to empleos@secid.mx.
+            </p>
+          </div>
 
-        <h3>How can I post a job offer?</h3>
-        <p>
-          Companies can post job offers by contacting us through the form or
-          sending an email to empleos@secid.mx.
-        </p>
+          <div class="secid-faq__item">
+            <h3 class="secid-faq__question">Do you organize in-person events?</h3>
+            <p class="secid-faq__answer">
+              Yes, we organize networking events, conferences, and workshops both
+              in-person and virtually. Check our events calendar for more information.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
-        <h3>Do you organize in-person events?</h3>
-        <p>
-          Yes, we organize networking events, conferences, and workshops both
-          in-person and virtually. Check our events calendar for more
-          information.
-        </p>
-      </section>
-    </div>
-  </div>
+  <Footer lang="en" />
+</ModernLayout>
 
-  <!-- Sidebar -->
-  <div id="sidebar">
-    <div class="inner">
-      <!-- Search -->
-      <section id="search" class="alt">
-        <form method="post" action="#">
-          <input type="text" name="query" id="query" placeholder="Search" />
-        </form>
-      </section>
+<style>
+  .secid-contact__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3xl);
+  }
 
-      <!-- Menu -->
-      <nav id="menu">
-        <header class="major">
-          <h2>Menu</h2>
-        </header>
-        <ul>
-          <li><a href="/en/">Home</a></li>
-          <li><a href="/en/about-us">About Us</a></li>
-          <li><a href="/en/jobs">Job Board</a></li>
-          <li><a href="/en/contact">Contact</a></li>
-          <li><a href="/en/login">Sign In</a></li>
-          <li><a href="/registro">Register</a></li>
-        </ul>
-      </nav>
+  .secid-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+  }
 
-      <!-- Section -->
-      <section>
-        <header class="major">
-          <h2>Need quick help?</h2>
-        </header>
-        <p>Our team is available to answer your questions.</p>
-        <ul class="contact">
-          <li class="icon solid fa-envelope">
-            <a href="#">contacto@secid.mx</a>
-          </li>
-          <li class="icon solid fa-phone">(55) 1234-5678</li>
-          <li class="icon solid fa-home">
-            Ciudad Universitaria<br />
-            CDMX, Mexico
-          </li>
-        </ul>
-      </section>
+  .secid-form__group {
+    margin-bottom: var(--space-lg);
+  }
 
-      <!-- Footer -->
-      <footer id="footer">
-        <p class="copyright">
-          &copy; SECiD. All rights reserved. Design: <a
-            href="https://html5up.net">HTML5 UP</a
-          >.
-        </p>
-      </footer>
-    </div>
-  </div>
-</BaseLayout>
+  .secid-form__label {
+    display: block;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-sm);
+  }
+
+  .secid-form__input,
+  .secid-form__select,
+  .secid-form__textarea {
+    width: 100%;
+    padding: var(--space-md);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    background: var(--card-bg);
+    color: var(--color-text-primary);
+    transition: border-color var(--transition-base);
+  }
+
+  .secid-form__input:focus,
+  .secid-form__select:focus,
+  .secid-form__textarea:focus {
+    outline: none;
+    border-color: var(--secid-primary);
+  }
+
+  .secid-form__actions {
+    display: flex;
+    gap: var(--space-md);
+  }
+
+  .secid-contact__card {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-lg);
+  }
+
+  .secid-contact__card-icon {
+    width: 3rem;
+    height: 3rem;
+    background: linear-gradient(135deg, var(--secid-primary), var(--secid-gold));
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    margin-bottom: var(--space-md);
+  }
+
+  .secid-contact__card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-contact__card p {
+    color: var(--color-text-secondary);
+    margin: var(--space-xs) 0;
+  }
+
+  .secid-contact__card a {
+    color: var(--secid-primary);
+    text-decoration: none;
+  }
+
+  .secid-contact__card a:hover {
+    text-decoration: underline;
+  }
+
+  .secid-contact__social {
+    display: flex;
+    gap: var(--space-md);
+  }
+
+  .secid-contact__social-link {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-surface-alt);
+    border-radius: var(--radius-full);
+    color: var(--color-text-secondary);
+    font-size: 1.125rem;
+    transition: all var(--transition-base);
+  }
+
+  .secid-contact__social-link:hover {
+    background: var(--secid-primary);
+    color: white;
+  }
+
+  .secid-faq__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xl);
+  }
+
+  .secid-faq__item {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+  }
+
+  .secid-faq__question {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-faq__answer {
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .secid-contact__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .secid-form__row {
+      grid-template-columns: 1fr;
+    }
+
+    .secid-form__actions {
+      flex-direction: column;
+    }
+
+    .secid-faq__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

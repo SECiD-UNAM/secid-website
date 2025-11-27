@@ -3,14 +3,14 @@ import { auth, db, isUsingMockAPI } from './firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  User,
-  UserCredential,
+  signOut as firebaseSignOut,
+  onAuthStateChanged as firebaseOnAuthStateChanged,
   sendPasswordResetEmail,
   updateProfile,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  type User,
+  type UserCredential,
 } from 'firebase/auth'; 
 
 /**

@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModernLayout from '../../layouts/ModernLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
 import { getTranslations } from '../../i18n/translations';
@@ -87,7 +87,7 @@ const members = [
 ];
 ---
 
-<BaseLayout
+<ModernLayout
   title="Directorio de Miembros - SECiD"
   description="Conoce a los profesionales de la comunidad SECiD - Sociedad de Egresados en Ciencia de Datos UNAM"
   lang="es"
@@ -293,7 +293,7 @@ const members = [
   </section>
 
   <Footer lang="es" />
-</BaseLayout>
+</ModernLayout>
 
 <style>
   .secid-hero--members {

@@ -1,5 +1,7 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ModernLayout from '../../../layouts/ModernLayout.astro';
+import Navigation from '../../../components/Navigation.astro';
+import Footer from '../../../components/Footer.astro';
 import ForumSearch from '../../../components/forums/ForumSearch';
 import { getLanguageFromUrl } from '../../../i18n/translations';
 
@@ -8,9 +10,12 @@ const url = new URL(Astro.request.url);
 const query = url.searchParams.get('q') || '';
 ---
 
-<BaseLayout
+<ModernLayout
   title="Buscar en Foro - SECiD"
   description="Busca en el foro SECiD temas y discusiones"
+  lang="es"
 >
+  <Navigation lang="es" />
   <ForumSearch language={language} initialQuery={query} client:load />
-</BaseLayout>
+  <Footer lang="es" />
+</ModernLayout>

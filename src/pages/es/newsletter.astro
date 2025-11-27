@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModernLayout from '../../layouts/ModernLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
 import { getTranslations } from '../../i18n/translations';
@@ -7,7 +7,7 @@ import { getTranslations } from '../../i18n/translations';
 const t = getTranslations('es');
 ---
 
-<BaseLayout
+<ModernLayout
   title="Newsletter - SECiD"
   description="Mantente actualizado con las últimas noticias, eventos y oportunidades de la comunidad SECiD"
   lang="es"
@@ -312,7 +312,7 @@ const t = getTranslations('es');
   </main>
 
   <Footer lang="es" />
-</BaseLayout>
+</ModernLayout>
 
 <style>
   /* Newsletter Main */

@@ -1,5 +1,7 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
 import ForumHome from '../../components/forums/ForumHome';
 import { getLanguageFromUrl } from '../../i18n/translations';
 
@@ -9,9 +11,12 @@ const language = getLanguageFromUrl(Astro.url);
 const currentUser = undefined; // Replace with actual user from auth context
 ---
 
-<BaseLayout
+<ModernLayout
   title="Forum - SECiD"
   description="SECiD Discussion Forum - Connect with data science professionals"
+  lang="en"
 >
+  <Navigation lang="en" />
   <ForumHome language={language} currentUser={currentUser} client:load />
-</BaseLayout>
+  <Footer lang="en" />
+</ModernLayout>

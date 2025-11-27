@@ -1,5 +1,7 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ModernLayout from '../../../layouts/ModernLayout.astro';
+import Navigation from '../../../components/Navigation.astro';
+import Footer from '../../../components/Footer.astro';
 import ForumPost from '../../../components/forums/ForumPost';
 import { getLanguageFromUrl } from '../../../i18n/translations';
 
@@ -16,10 +18,12 @@ if (!currentUser) {
 }
 ---
 
-<BaseLayout
+<ModernLayout
   title="New Topic - Forum - SECiD"
   description="Create a new topic in the SECiD forum"
+  lang="en"
 >
+  <Navigation lang="en" />
   <ForumPost
     mode="create-topic"
     language={language}
@@ -27,4 +31,5 @@ if (!currentUser) {
     currentUser={currentUser}
     client:load
   />
-</BaseLayout>
+  <Footer lang="en" />
+</ModernLayout>

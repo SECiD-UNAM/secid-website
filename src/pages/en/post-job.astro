@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModernLayout from '../../layouts/ModernLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
 import { getTranslations } from '../../i18n/translations';
@@ -7,7 +7,7 @@ import { getTranslations } from '../../i18n/translations';
 const t = getTranslations('en');
 ---
 
-<BaseLayout
+<ModernLayout
   title="Post a Job - SECiD"
   description="Post your data science job opportunities and connect with top talent from UNAM"
   lang="en"
@@ -90,7 +90,7 @@ const t = getTranslations('en');
   </section>
 
   <Footer lang="en" />
-</BaseLayout>
+</ModernLayout>
 
 <style>
   .secid-hero--job-post {

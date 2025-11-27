@@ -1,5 +1,7 @@
 ---
-import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import ModernLayout from '../../../../layouts/ModernLayout.astro';
+import Navigation from '../../../../components/Navigation.astro';
+import Footer from '../../../../components/Footer.astro';
 import ForumCategory from '../../../../components/forums/ForumCategory';
 import { getLanguageFromUrl } from '../../../../i18n/translations';
 
@@ -14,14 +16,17 @@ if (!slug) {
 }
 ---
 
-<BaseLayout
+<ModernLayout
   title={`${slug} - Foro - SECiD`}
   description={`Categoría ${slug} en el foro SECiD`}
+  lang="es"
 >
+  <Navigation lang="es" />
   <ForumCategory
     categorySlug={slug}
     language={language}
     currentUser={currentUser}
     client:load
   />
-</BaseLayout>
+  <Footer lang="es" />
+</ModernLayout>

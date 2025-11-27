@@ -1,145 +1,240 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
 import { getTranslations } from '../../i18n/translations';
 
 const t = getTranslations('en');
 ---
 
-<BaseLayout
+<ModernLayout
   title="About Us - SECiD"
   description="Learn about UNAM's Data Science Alumni Society"
   lang="en"
 >
-  <!-- Main -->
-  <div id="main">
-    <div class="inner">
-      <!-- Header -->
-      <header id="header">
-        <a href="/en/" class="logo"><strong>{t.site.name}</strong></a>
-        <ul class="icons">
-          <li>
-            <a href="/en/login" class="button small">{t.auth.signIn.button}</a>
-          </li>
-          <li><a href="/es/sobre-nosotros" class="button small">Español</a></li>
-        </ul>
-      </header>
+  <Navigation lang="en" />
 
-      <!-- Content -->
-      <section>
-        <header class="main">
-          <h1>About Us</h1>
-        </header>
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">About Us</h1>
+          <p class="secid-hero__subtitle">
+            Learn about UNAM's Data Science Alumni Society
+          </p>
+        </div>
+      </div>
+    </section>
 
-        <span class="image main"
-          ><img src="/images/logo.png" alt="SECiD Logo" /></span
-        >
+    <!-- Who We Are -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-about__intro">
+          <img src="/images/logo.png" alt="SECiD Logo" class="secid-about__logo" />
 
-        <h2>Who We Are</h2>
-        <p>
-          The Data Science Alumni Society (SECiD) is a vibrant community of
-          professionals who graduated from UNAM, united by our passion for data
-          and commitment to excellence in data analysis.
-        </p>
+          <h2 class="secid-section__title">Who We Are</h2>
+          <p class="secid-about__text">
+            The Data Science Alumni Society (SECiD) is a vibrant community of
+            professionals who graduated from UNAM, united by our passion for data
+            and commitment to excellence in data analysis.
+          </p>
+        </div>
+      </div>
+    </section>
 
-        <h2>Our Mission</h2>
-        <p>
+    <!-- Mission -->
+    <section class="secid-section secid-bg-light">
+      <div class="secid-container">
+        <h2 class="secid-section__title">
+          <i class="fas fa-bullseye"></i>
+          Our Mission
+        </h2>
+        <p class="secid-about__text">
           To foster continuous professional growth for our members, facilitate
           meaningful connections between alumni and companies, and promote the
           advancement of data science in Mexico.
         </p>
+      </div>
+    </section>
 
-        <h2>Our Values</h2>
-        <div class="row">
-          <div class="col-6 col-12-small">
-            <h3>Excellence</h3>
-            <p>
+    <!-- Values -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <h2 class="secid-section__title">
+          <i class="fas fa-heart"></i>
+          Our Values
+        </h2>
+
+        <div class="secid-grid secid-grid--2">
+          <div class="secid-value-card">
+            <div class="secid-value-card__icon">
+              <i class="fas fa-star"></i>
+            </div>
+            <h3 class="secid-value-card__title">Excellence</h3>
+            <p class="secid-value-card__description">
               We strive to maintain the highest standards in everything we do.
             </p>
           </div>
-          <div class="col-6 col-12-small">
-            <h3>Collaboration</h3>
-            <p>We believe in the power of community and teamwork.</p>
+
+          <div class="secid-value-card">
+            <div class="secid-value-card__icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3 class="secid-value-card__title">Collaboration</h3>
+            <p class="secid-value-card__description">
+              We believe in the power of community and teamwork.
+            </p>
+          </div>
+
+          <div class="secid-value-card">
+            <div class="secid-value-card__icon">
+              <i class="fas fa-lightbulb"></i>
+            </div>
+            <h3 class="secid-value-card__title">Innovation</h3>
+            <p class="secid-value-card__description">
+              We drive technological advancement and new ideas.
+            </p>
+          </div>
+
+          <div class="secid-value-card">
+            <div class="secid-value-card__icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3 class="secid-value-card__title">Integrity</h3>
+            <p class="secid-value-card__description">
+              We act with honesty and transparency in all our activities.
+            </p>
           </div>
         </div>
-        <div class="row">
-          <div class="col-6 col-12-small">
-            <h3>Innovation</h3>
-            <p>We drive technological advancement and new ideas.</p>
-          </div>
-          <div class="col-6 col-12-small">
-            <h3>Integrity</h3>
-            <p>We act with honesty and transparency in all our activities.</p>
+      </div>
+    </section>
+
+    <!-- Join CTA -->
+    <section class="secid-section secid-bg-light">
+      <div class="secid-container">
+        <div class="secid-about__cta">
+          <h2 class="secid-about__cta-title">Join Us</h2>
+          <p class="secid-about__cta-description">
+            If you are a graduate of UNAM's Data Science program, we invite you to
+            be part of our community. Together we can create a positive impact in
+            the world of data.
+          </p>
+          <div class="secid-about__cta-actions">
+            <a href="/registro" class="secid-button secid-button--primary secid-button--lg">
+              <i class="fas fa-rocket"></i>
+              Register Now
+            </a>
+            <a href="/en/contact" class="secid-button secid-button--outline secid-button--lg">
+              <i class="fas fa-envelope"></i>
+              Contact Us
+            </a>
           </div>
         </div>
+      </div>
+    </section>
+  </main>
 
-        <hr class="major" />
+  <Footer lang="en" />
+</ModernLayout>
 
-        <h2>Join Us</h2>
-        <p>
-          If you are a graduate of UNAM's Data Science program, we invite you to
-          be part of our community. Together we can create a positive impact in
-          the world of data.
-        </p>
+<style>
+  .secid-about__intro {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
 
-        <ul class="actions">
-          <li>
-            <a href="/registro" class="button primary big">Register Now</a>
-          </li>
-          <li><a href="/en/contact" class="button big">Contact Us</a></li>
-        </ul>
-      </section>
-    </div>
-  </div>
+  .secid-about__logo {
+    max-width: 200px;
+    margin-bottom: var(--space-xl);
+  }
 
-  <!-- Sidebar -->
-  <div id="sidebar">
-    <div class="inner">
-      <!-- Search -->
-      <section id="search" class="alt">
-        <form method="post" action="#">
-          <input type="text" name="query" id="query" placeholder="Search" />
-        </form>
-      </section>
+  .secid-about__text {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--color-text-secondary);
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
 
-      <!-- Menu -->
-      <nav id="menu">
-        <header class="major">
-          <h2>Menu</h2>
-        </header>
-        <ul>
-          <li><a href="/en/">Home</a></li>
-          <li><a href="/en/about-us">About Us</a></li>
-          <li><a href="/en/jobs">Job Board</a></li>
-          <li><a href="/en/contact">Contact</a></li>
-          <li><a href="/en/login">Sign In</a></li>
-          <li><a href="/registro">Register</a></li>
-        </ul>
-      </nav>
+  .secid-value-card {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    text-align: center;
+    transition: all var(--transition-base);
+  }
 
-      <!-- Section -->
-      <section>
-        <header class="major">
-          <h2>Get in Touch</h2>
-        </header>
-        <p>Questions? We're here to help.</p>
-        <ul class="contact">
-          <li class="icon solid fa-envelope">
-            <a href="#">contacto@secid.mx</a>
-          </li>
-          <li class="icon brands fa-linkedin">
-            <a href="#">linkedin.com/company/secid</a>
-          </li>
-        </ul>
-      </section>
+  .secid-value-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--secid-primary);
+  }
 
-      <!-- Footer -->
-      <footer id="footer">
-        <p class="copyright">
-          &copy; SECiD. All rights reserved. Design: <a
-            href="https://html5up.net">HTML5 UP</a
-          >.
-        </p>
-      </footer>
-    </div>
-  </div>
-</BaseLayout>
+  .secid-value-card__icon {
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto var(--space-lg);
+    background: linear-gradient(135deg, var(--secid-primary), var(--secid-gold));
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+  }
+
+  .secid-value-card__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .secid-value-card__description {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .secid-about__cta {
+    text-align: center;
+    padding: var(--space-3xl) 0;
+  }
+
+  .secid-about__cta-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-about__cta-description {
+    font-size: 1.25rem;
+    color: var(--color-text-secondary);
+    max-width: 600px;
+    margin: 0 auto var(--space-xl);
+  }
+
+  .secid-about__cta-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .secid-about__cta-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .secid-about__cta-actions .secid-button {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+</style>

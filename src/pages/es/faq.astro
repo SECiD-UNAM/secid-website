@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModernLayout from '../../layouts/ModernLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
 import { getTranslations } from '../../i18n/translations';
@@ -121,7 +121,7 @@ const faqCategories = [
 ];
 ---
 
-<BaseLayout
+<ModernLayout
   title="Preguntas Frecuentes - SECiD"
   description="Encuentra respuestas a las preguntas más comunes sobre SECiD"
   lang="es"
@@ -220,7 +220,7 @@ const faqCategories = [
   </main>
 
   <Footer lang="es" />
-</BaseLayout>
+</ModernLayout>
 
 <style>
   /* FAQ Categories */

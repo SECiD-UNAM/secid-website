@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModernLayout from '../../layouts/ModernLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
 import { getTranslations } from '../../i18n/translations';
@@ -7,7 +7,7 @@ import { getTranslations } from '../../i18n/translations';
 const t = getTranslations('en');
 ---
 
-<BaseLayout
+<ModernLayout
   title="Help Center - SECiD"
   description="Find answers to your questions and get support from the SECiD community"
   lang="en"
@@ -231,7 +231,7 @@ const t = getTranslations('en');
   </main>
 
   <Footer lang="en" />
-</BaseLayout>
+</ModernLayout>
 
 <style>
   /* Help Search */
