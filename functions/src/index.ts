@@ -1,11 +1,19 @@
-import * as functions from "firebase-functions";
+import {onDocumentUpdated} from "firebase-functions/v2/firestore";
+import {onCall, HttpsError} from "firebase-functions/v2/https";
+import {beforeUserCreated, AuthBlockingEvent} from "firebase-functions/v2/identity";
+import * as functionsV1 from "firebase-functions/v1";
 import * as admin from "firebase-admin";
 
 // Initialize Firebase Admin
 admin.initializeApp();
 
 // User creation trigger - set up initial user profile
-export const onUserCreate = functions.auth.user().onCreate(async (user) => {
+export const onUserCreate = beforeUserCreated(async (event: AuthBlockingEvent) => {
+  const user = event.data;
+  if (!user) {
+    console.log("No user data in event");
+    return;
+  }
   const {uid, email, displayName, photoURL} = user;
 
   // Create user profile document
@@ -39,27 +47,32 @@ export const onUserCreate = functions.auth.user().onCreate(async (user) => {
   });
 
   console.log(`User profile created for ${uid}`);
-  return null;
 });
 
+interface VerifyUnamEmailData {
+  unamEmail: string;
+  studentId?: string;
+  graduationYear?: number;
+}
+
 // UNAM email verification
-export const verifyUnamEmail = functions.https.onCall(async (data, context) => {
-  if (!context.auth) {
-    throw new functions.https.HttpsError(
-        "unauthenticated",
-        "User must be authenticated"
+export const verifyUnamEmail = onCall<VerifyUnamEmailData>(async (request) => {
+  if (!request.auth) {
+    throw new HttpsError(
+      "unauthenticated",
+      "User must be authenticated"
     );
   }
 
-  const {unamEmail, studentId, graduationYear} = data;
-  const userId = context.auth.uid;
+  const {unamEmail, studentId, graduationYear} = request.data;
+  const userId = request.auth.uid;
 
   // Validate UNAM email format
   if (!unamEmail.includes("@alumno.unam.mx") &&
       !unamEmail.includes("@unam.mx")) {
-    throw new functions.https.HttpsError(
-        "invalid-argument",
-        "Email must be from UNAM domain"
+    throw new HttpsError(
+      "invalid-argument",
+      "Email must be from UNAM domain"
     );
   }
 
@@ -78,82 +91,92 @@ export const verifyUnamEmail = functions.https.onCall(async (data, context) => {
 
     return {success: true, message: "UNAM verification completed"};
   } else {
-    throw new functions.https.HttpsError(
-        "invalid-argument",
-        "UNAM verification failed"
+    throw new HttpsError(
+      "invalid-argument",
+      "UNAM verification failed"
     );
   }
 });
 
 // Job matching algorithm
-export const matchJobsForUser = functions.firestore
-    .document("users/{userId}")
-    .onUpdate(async (change, context) => {
-      const {userId} = context.params;
-      const afterData = change.after.data();
+export const matchJobsForUser = onDocumentUpdated(
+  "users/{userId}",
+  async (event) => {
+    const userId = event.params.userId;
+    const afterData = event.data?.after.data();
 
-      // Only run if user is job searching
-      if (!afterData.privacySettings?.jobSearching) {
-        return null;
+    if (!afterData) {
+      return null;
+    }
+
+    // Only run if user is job searching
+    if (!afterData.privacySettings?.jobSearching) {
+      return null;
+    }
+
+    const userSkills = afterData.skills || [];
+    if (userSkills.length === 0) {
+      return null;
+    }
+
+    // Find matching jobs
+    const jobsSnapshot = await admin.firestore()
+      .collection("jobs")
+      .where("status", "==", "active")
+      .get();
+
+    const matches: {
+      jobId: string;
+      matchScore: number;
+      title: string;
+      company: string;
+    }[] = [];
+
+    jobsSnapshot.forEach((doc) => {
+      const job = doc.data();
+      const jobRequirements = job.requirements || [];
+
+      // Simple matching algorithm
+      const matchingSkills = userSkills.filter((skill: string) =>
+        jobRequirements.some((req: string) =>
+          req.toLowerCase().includes(skill.toLowerCase())
+        )
+      );
+
+      const matchScore = (matchingSkills.length / Math.max(jobRequirements.length, 1)) * 100;
+
+      if (matchScore >= 30) {
+        matches.push({
+          jobId: doc.id,
+          matchScore: Math.round(matchScore),
+          title: job.title,
+          company: job.company,
+        });
       }
-
-      const userSkills = afterData.skills || [];
-      if (userSkills.length === 0) {
-        return null;
-      }
-
-      // Find matching jobs
-      const jobsSnapshot = await admin.firestore()
-          .collection("jobs")
-          .where("status", "==", "active")
-          .get();
-
-      const matches: any[] = [];
-
-      jobsSnapshot.forEach((doc) => {
-        const job = doc.data();
-        const jobRequirements = job.requirements || [];
-
-        // Simple matching algorithm
-        const matchingSkills = userSkills.filter((skill: string) =>
-          jobRequirements.some((req: string) =>
-            req.toLowerCase().includes(skill.toLowerCase())
-          )
-        );
-
-        const matchScore = (matchingSkills.length / Math.max(jobRequirements.length, 1)) * 100;
-
-        if (matchScore >= 30) {
-          matches.push({
-            jobId: doc.id,
-            matchScore: Math.round(matchScore),
-            title: job.title,
-            company: job.company,
-          });
-        }
-      });
-
-      // Sort by match score
-      matches.sort((a, b) => b.matchScore - a.matchScore);
-
-      // Store top matches
-      if (matches.length > 0) {
-        await admin.firestore()
-            .collection("users")
-            .doc(userId)
-            .collection("jobMatches")
-            .doc("latest")
-            .set({
-              matches: matches.slice(0, 10),
-              generatedAt: admin.firestore.FieldValue.serverTimestamp(),
-            });
-      }
-
-      return {matchesFound: matches.length};
     });
 
-// Clean up user data on deletion
-export const onUserDelete = functions.auth.user().onDelete(async (user) => {
+    // Sort by match score
+    matches.sort((a, b) => b.matchScore - a.matchScore);
+
+    // Store top matches
+    if (matches.length > 0) {
+      await admin.firestore()
+        .collection("users")
+        .doc(userId)
+        .collection("jobMatches")
+        .doc("latest")
+        .set({
+          matches: matches.slice(0, 10),
+          generatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+    }
+
+    return {matchesFound: matches.length};
+  }
+);
+
+// Clean up user data on deletion (using v1 API as v2 doesn't have onDelete trigger)
+export const onUserDelete = functionsV1.auth.user().onDelete(async (user) => {
   const {uid} = user;
 
   // Delete user profile
@@ -161,9 +184,9 @@ export const onUserDelete = functions.auth.user().onDelete(async (user) => {
 
   // Clean up user's job applications
   const applicationsSnapshot = await admin.firestore()
-      .collectionGroup("applications")
-      .where("applicantId", "==", uid)
-      .get();
+    .collectionGroup("applications")
+    .where("applicantId", "==", uid)
+    .get();
 
   const batch = admin.firestore().batch();
   applicationsSnapshot.forEach((doc) => {

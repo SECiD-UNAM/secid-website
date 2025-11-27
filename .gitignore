@@ -126,3 +126,5 @@ pnpm-lock.yaml
 # CI/CD artifacts
 .lighthouse/
 .pa11y/
+# Snyk Security Extension - AI Rules (auto-generated)
+.github/instructions/snyk_rules.instructions.md

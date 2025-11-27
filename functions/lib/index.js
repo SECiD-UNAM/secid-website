@@ -1,12 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.onUserDelete = exports.matchJobsForUser = exports.verifyUnamEmail = exports.onUserCreate = void 0;
-const functions = require("firebase-functions");
+const firestore_1 = require("firebase-functions/v2/firestore");
+const https_1 = require("firebase-functions/v2/https");
+const identity_1 = require("firebase-functions/v2/identity");
+const functionsV1 = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 // Initialize Firebase Admin
 admin.initializeApp();
 // User creation trigger - set up initial user profile
-exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
+exports.onUserCreate = (0, identity_1.beforeUserCreated)(async (event) => {
+    const user = event.data;
+    if (!user) {
+        console.log("No user data in event");
+        return;
+    }
     const { uid, email, displayName, photoURL } = user;
     // Create user profile document
     await admin.firestore().collection("users").doc(uid).set({
@@ -38,19 +46,18 @@ exports.onUserCreate = functions.auth.user().onCreate(async (user) => {
         profileCompleteness: 20,
     });
     console.log(`User profile created for ${uid}`);
-    return null;
 });
 // UNAM email verification
-exports.verifyUnamEmail = functions.https.onCall(async (data, context) => {
-    if (!context.auth) {
-        throw new functions.https.HttpsError("unauthenticated", "User must be authenticated");
+exports.verifyUnamEmail = (0, https_1.onCall)(async (request) => {
+    if (!request.auth) {
+        throw new https_1.HttpsError("unauthenticated", "User must be authenticated");
     }
-    const { unamEmail, studentId, graduationYear } = data;
-    const userId = context.auth.uid;
+    const { unamEmail, studentId, graduationYear } = request.data;
+    const userId = request.auth.uid;
     // Validate UNAM email format
     if (!unamEmail.includes("@alumno.unam.mx") &&
         !unamEmail.includes("@unam.mx")) {
-        throw new functions.https.HttpsError("invalid-argument", "Email must be from UNAM domain");
+        throw new https_1.HttpsError("invalid-argument", "Email must be from UNAM domain");
     }
     // In production, this would call UNAM's verification API
     // For now, we'll simulate verification
@@ -66,18 +73,19 @@ exports.verifyUnamEmail = functions.https.onCall(async (data, context) => {
         return { success: true, message: "UNAM verification completed" };
     }
     else {
-        throw new functions.https.HttpsError("invalid-argument", "UNAM verification failed");
+        throw new https_1.HttpsError("invalid-argument", "UNAM verification failed");
     }
 });
 // Job matching algorithm
-exports.matchJobsForUser = functions.firestore
-    .document("users/{userId}")
-    .onUpdate(async (change, context) => {
-    var _a;
-    const { userId } = context.params;
-    const afterData = change.after.data();
+exports.matchJobsForUser = (0, firestore_1.onDocumentUpdated)("users/{userId}", async (event) => {
+    var _a, _b;
+    const userId = event.params.userId;
+    const afterData = (_a = event.data) === null || _a === void 0 ? void 0 : _a.after.data();
+    if (!afterData) {
+        return null;
+    }
     // Only run if user is job searching
-    if (!((_a = afterData.privacySettings) === null || _a === void 0 ? void 0 : _a.jobSearching)) {
+    if (!((_b = afterData.privacySettings) === null || _b === void 0 ? void 0 : _b.jobSearching)) {
         return null;
     }
     const userSkills = afterData.skills || [];
@@ -121,8 +129,8 @@ exports.matchJobsForUser = functions.firestore
     }
     return { matchesFound: matches.length };
 });
-// Clean up user data on deletion
-exports.onUserDelete = functions.auth.user().onDelete(async (user) => {
+// Clean up user data on deletion (using v1 API as v2 doesn't have onDelete trigger)
+exports.onUserDelete = functionsV1.auth.user().onDelete(async (user) => {
     const { uid } = user;
     // Delete user profile
     await admin.firestore().collection("users").doc(uid).delete();
