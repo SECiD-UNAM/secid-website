@@ -550,7 +550,8 @@ body {
   transition: all var(--transition-base);
 }
 
-.secid-navbar__lang-selector:hover .secid-navbar__lang-dropdown {
+.secid-navbar__lang-selector:hover .secid-navbar__lang-dropdown,
+.secid-navbar__lang-dropdown--open {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);

@@ -125,44 +125,81 @@ const canonicalURL = new URL(Astro.url.pathname, siteUrl);
     <!-- Modern JavaScript Only -->
     <script>
       // Theme toggle functionality
-      const theme = localStorage.getItem('theme') || 'light';
+      const THEME_KEY = 'secid-theme';
+      const theme = localStorage.getItem(THEME_KEY) || 'dark';
       document.documentElement.setAttribute('data-theme', theme);
-      
+      document.documentElement.classList.add(theme);
+
+      // Theme toggle click handler
+      document.querySelectorAll('.secid-navbar__theme-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const current = document.documentElement.getAttribute('data-theme') || 'light';
+          const next = current === 'light' ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', next);
+          document.documentElement.classList.remove('light', 'dark');
+          document.documentElement.classList.add(next);
+          document.body.classList.remove('light', 'dark');
+          document.body.classList.add(next);
+          localStorage.setItem(THEME_KEY, next);
+        });
+      });
+
       // Navbar scroll behavior
       let lastScroll = 0;
       const navbar = document.querySelector('.secid-navbar');
-      
+
       if (navbar) {
         window.addEventListener('scroll', () => {
           const currentScroll = window.pageYOffset;
-          
+
           if (currentScroll > 100) {
             navbar.classList.add('secid-navbar--scrolled');
           } else {
             navbar.classList.remove('secid-navbar--scrolled');
           }
-          
+
           if (currentScroll > lastScroll && currentScroll > 100) {
             navbar.classList.add('secid-navbar--hidden');
           } else {
             navbar.classList.remove('secid-navbar--hidden');
           }
-          
+
           lastScroll = currentScroll;
         });
       }
-      
+
       // Mobile navigation toggle
       const mobileMenuBtn = document.querySelector('.secid-navbar__mobile-toggle');
-      const mobileMenu = document.querySelector('.secid-navbar__menu');
-      
+      const mobileMenu = document.querySelector('.secid-navbar__mobile-menu');
+
       if (mobileMenuBtn && mobileMenu) {
         mobileMenuBtn.addEventListener('click', () => {
-          mobileMenu.classList.toggle('secid-navbar__menu--open');
+          const isOpen = mobileMenu.classList.toggle('secid-navbar__mobile-menu--open');
           mobileMenuBtn.classList.toggle('secid-navbar__mobile-toggle--active');
+          mobileMenuBtn.setAttribute('aria-expanded', String(isOpen));
+          mobileMenu.setAttribute('aria-hidden', String(!isOpen));
         });
       }
-      
+
+      // Language selector dropdown
+      const langBtn = document.getElementById('language-selector');
+      const langDropdown = document.querySelector('.secid-navbar__lang-dropdown');
+
+      if (langBtn && langDropdown) {
+        langBtn.addEventListener('click', () => {
+          const isOpen = langDropdown.classList.toggle('secid-navbar__lang-dropdown--open');
+          langBtn.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!langBtn.contains(e.target) && !langDropdown.contains(e.target)) {
+            langDropdown.classList.remove('secid-navbar__lang-dropdown--open');
+            langBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
       // Smooth scroll for anchor links
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
