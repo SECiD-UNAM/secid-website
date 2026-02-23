@@ -4,12 +4,11 @@ import { db } from '@/lib/firebase-config';
 import { useTranslations } from '@/hooks/useTranslations';
 import {
 
-  collection, 
-  query, 
-  orderBy, 
-  limit, 
+  collection,
+  query,
+  orderBy,
+  limit,
   startAfter,
-  onSnapshot, 
   where,
   doc,
   updateDoc,
@@ -19,19 +18,13 @@ import {
   Timestamp
 } from 'firebase/firestore';
 import {
-  Users, 
-  Search, 
-  Filter, 
-  Edit, 
-  Trash2, 
-  Ban, 
+  Users,
+  Search,
+  Filter,
+  Trash2,
+  Ban,
   UnlockKeyhole,
-  Mail,
-  Calendar,
-  MapPin,
   Briefcase,
-  GraduationCap,
-  ExternalLink,
   Download,
   Plus,
   Eye,
@@ -81,7 +74,7 @@ interface UserFilters {
 
 export const UserManagement: React.FC = () => {
   const { userProfile, isAdmin } = useAuth();
-  const { t, language } = useTranslations();
+  const { language } = useTranslations();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,8 +83,8 @@ export const UserManagement: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   const [totalUsers, setTotalUsers] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [showUserModal, setShowUserModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [, setShowUserModal] = useState(false);
+  const [, setSelectedUser] = useState<User | null>(null);
   const [bulkAction, setBulkAction] = useState('');
   
   const [filters, setFilters] = useState<UserFilters>({
@@ -248,18 +241,15 @@ export const UserManagement: React.FC = () => {
           throw new Error('Unknown action');
       }
 
-      // Log admin action
-      const _logData = {
-        adminId: userProfile?.uid,
-        adminEmail: userProfile?.email,
-        action,
-        targetUserId: userId,
-        timestamp: Timestamp.now(),
-        description: `${action} user ${userId}`
-      };
-
       // TODO: Add to activity log (implement collection)
-      // await addDoc(collection(db, 'admin_activity_log'), _logData);
+      // await addDoc(collection(db, 'admin_activity_log'), {
+      //   adminId: userProfile?.uid,
+      //   adminEmail: userProfile?.email,
+      //   action,
+      //   targetUserId: userId,
+      //   timestamp: Timestamp.now(),
+      //   description: `${action} user ${userId}`
+      // });
 
       // Reload users
       loadUsers();
@@ -306,7 +296,7 @@ export const UserManagement: React.FC = () => {
     if (csvData.length === 0) return;
 
     const csvContent = "data:text/csv;charset=utf-8," +
-      Object.keys(csvData[0]).join(",") + "\n" +
+      Object.keys(csvData[0] as Record<string, unknown>).join(",") + "\n" +
       csvData.map(row => Object.values(row).join(",")).join("\n");
 
     const encodedUri = encodeURI(csvContent);

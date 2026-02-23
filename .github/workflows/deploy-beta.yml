@@ -34,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: Build site
-        run: npm run build
+        run: npx astro build
         env:
           NODE_ENV: production
           SITE_URL: https://beta.secid.mx

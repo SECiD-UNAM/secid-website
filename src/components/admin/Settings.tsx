@@ -227,7 +227,7 @@ export const Settings: React.FC = () => {
         setSettings({ ...defaultSettings, ...data });
       } else {
         // Create default settings document
-        await updateDoc(settingsRef, defaultSettings as Record<string, unknown>);
+        await updateDoc(settingsRef, defaultSettings as unknown as Record<string, unknown>);
         setSettings(defaultSettings);
       }
     } catch (err) {
@@ -300,15 +300,14 @@ export const Settings: React.FC = () => {
       setTestEmailSending(true);
       
       // This would call a cloud function to test email
-      const _testEmailData = {
-        to: userProfile?.email,
-        subject: 'Test Email Configuration',
-        body: 'This is a test email to verify your SMTP configuration is working correctly.',
-        settings: settings['email']
-      };
-
       // TODO: Uncomment when cloud function is ready
-      // await functions().httpsCallable('testEmailConfiguration')(_testEmailData);
+      // const testEmailData = {
+      //   to: userProfile?.email,
+      //   subject: 'Test Email Configuration',
+      //   body: 'This is a test email to verify your SMTP configuration is working correctly.',
+      //   settings: settings['email']
+      // };
+      // await functions().httpsCallable('testEmailConfiguration')(testEmailData);
       
       setSuccess(language === 'es' ? 'Email de prueba enviado' : 'Test email sent');
       setTimeout(() => setSuccess(null), 3000);
@@ -344,13 +343,6 @@ export const Settings: React.FC = () => {
         [field]: value
       }
     }));
-  };
-
-  const _formatFileSize = (bytes: number) => {
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    if (bytes === 0) return '0 Bytes';
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
   };
 
   const formatDate = (date: Date) => {

@@ -523,7 +523,7 @@ const UsersPanel: React.FC<{ data: any }> = ({ data }) => {
 };
 
 // Content Panel Component
-const ContentPanel: React.FC<{ data: any }> = ({ data }) => {
+const ContentPanel: React.FC<{ data: any }> = (_props) => {
   return (
     <div className="space-y-6">
       {/* Content metrics and charts */}
@@ -532,13 +532,13 @@ const ContentPanel: React.FC<{ data: any }> = ({ data }) => {
 };
 
 // Additional panel components would be implemented similarly...
-const EngagementPanel: React.FC<{ data: any }> = ({ data }) => <div>Engagement Panel</div>;
-const RevenuePanel: React.FC<{ data: any }> = ({ data }) => <div>Revenue Panel</div>;
-const GeographicPanel: React.FC<{ data: any }> = ({ data }) => <div>Geographic Panel</div>;
-const PerformancePanel: React.FC<{ data: any }> = ({ data }) => <div>Performance Panel</div>;
-const ErrorsPanel: React.FC<{ data: any }> = ({ data }) => <div>Errors Panel</div>;
-const FunnelsPanel: React.FC<{ data: any }> = ({ data }) => <div>Funnels Panel</div>;
-const SearchPanel: React.FC<{ data: any }> = ({ data }) => <div>Search Panel</div>;
-const TechnologyPanel: React.FC<{ data: any }> = ({ data }) => <div>Technology Panel</div>;
+const EngagementPanel: React.FC<{ data: any }> = (_props) => <div>Engagement Panel</div>;
+const RevenuePanel: React.FC<{ data: any }> = (_props) => <div>Revenue Panel</div>;
+const GeographicPanel: React.FC<{ data: any }> = (_props) => <div>Geographic Panel</div>;
+const PerformancePanel: React.FC<{ data: any }> = (_props) => <div>Performance Panel</div>;
+const ErrorsPanel: React.FC<{ data: any }> = (_props) => <div>Errors Panel</div>;
+const FunnelsPanel: React.FC<{ data: any }> = (_props) => <div>Funnels Panel</div>;
+const SearchPanel: React.FC<{ data: any }> = (_props) => <div>Search Panel</div>;
+const TechnologyPanel: React.FC<{ data: any }> = (_props) => <div>Technology Panel</div>;
 
 export default AnalyticsDashboard;

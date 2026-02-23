@@ -1,0 +1,250 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+const sessions = [
+  { date: '11 de marzo, 2026', topic: 'NLP Foundations', presenter: 'Fer' },
+  { date: '8 de abril, 2026', topic: 'Attention Is All You Need', presenter: 'Fer' },
+  { date: '6 de mayo, 2026', topic: 'BERT', presenter: 'Artemio' },
+  { date: '10 de junio, 2026', topic: 'GPTs', presenter: 'Bondi' },
+  { date: '12 de agosto, 2026', topic: 'LLaMA', presenter: 'Lalo' },
+  { date: '9 de septiembre, 2026', topic: 'DeepSeek', presenter: 'Iván' },
+];
+---
+
+<ModernLayout
+  title="Journal Club - SECiD"
+  description="SECiD Journal Club - Un grupo de lectura que explora temas de NLP y modelos de lenguaje. Miércoles a las 6pm, desde marzo 2026."
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <!-- Hero Section -->
+  <section class="secid-hero secid-hero--journal-club">
+    <div class="secid-hero__container">
+      <div class="secid-hero__content">
+        <h1 class="secid-hero__title">Journal Club</h1>
+        <p class="secid-hero__subtitle">
+          Explora los fundamentos y la frontera del Procesamiento de Lenguaje Natural y los Modelos de Lenguaje
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Intro -->
+  <section class="secid-section">
+    <div class="secid-container">
+      <div class="secid-content">
+        <div class="secid-logo-container">
+          <img
+            src="/images/logo.png"
+            alt="SECiD - Sociedad de Egresados en Ciencia de Datos logo"
+            class="secid-logo-image"
+            width="200"
+            height="200"
+          />
+        </div>
+
+        <p class="secid-lead">
+          El SECiD Journal Club es un grupo de lectura donde exploramos temas
+          fundamentales y de vanguardia en Procesamiento de Lenguaje Natural (NLP) y
+          Modelos de Lenguaje (LLMs). Cada sesión es presentada por un miembro de la
+          comunidad, seguida de una discusión abierta.
+        </p>
+        <p class="secid-jc-schedule-highlight">
+          <i class="fas fa-calendar-alt"></i>
+          <strong>Miércoles a las 6pm</strong> &mdash; A partir de marzo 2026
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Schedule -->
+  <section class="secid-section secid-bg-cream">
+    <div class="secid-container">
+      <h2 class="secid-section__title">Calendario de Sesiones</h2>
+
+      <div class="secid-jc-sessions">
+        {sessions.map((session, i) => (
+          <div class="secid-jc-session">
+            <div class="secid-jc-session__number">{i + 1}</div>
+            <div class="secid-jc-session__info">
+              <h3 class="secid-jc-session__topic">{session.topic}</h3>
+              <div class="secid-jc-session__meta">
+                <span class="secid-jc-session__date">
+                  <i class="fas fa-calendar"></i> {session.date}
+                </span>
+                <span class="secid-jc-session__presenter">
+                  <i class="fas fa-user"></i> {session.presenter}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Join CTA -->
+  <section class="secid-section">
+    <div class="secid-container">
+      <div class="secid-content">
+        <h2 class="secid-section__title">Participa</h2>
+        <p class="secid-section__description">
+          ¿Estudiaste Ciencia de Datos en la UNAM? Regístrate como miembro para
+          participar en el Journal Club y otras iniciativas de SECiD.
+        </p>
+        <div class="secid-section__actions">
+          <a
+            href="/registro"
+            class="secid-button secid-button--primary secid-button--lg"
+          >
+            <i class="fas fa-users secid-button__icon"></i>
+            Regístrate Ahora
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer lang="es" />
+</ModernLayout>
+
+<style>
+  .secid-hero--journal-club {
+    background: linear-gradient(
+      135deg,
+      var(--secid-dark-blue) 0%,
+      var(--secid-secondary) 100%
+    );
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .secid-hero--journal-club .secid-hero__title {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .secid-hero--journal-club .secid-hero__subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .secid-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .secid-content p {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    color: var(--secid-gray-700);
+  }
+
+  .secid-lead {
+    font-size: 1.25rem !important;
+    font-weight: 500;
+    color: var(--secid-dark-blue) !important;
+    text-align: center;
+  }
+
+  .secid-logo-container {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .secid-logo-image {
+    max-width: 200px;
+    height: auto;
+  }
+
+  .secid-jc-schedule-highlight {
+    text-align: center;
+    font-size: 1.25rem !important;
+    color: var(--secid-primary) !important;
+  }
+
+  .secid-jc-schedule-highlight i {
+    margin-right: 0.5rem;
+  }
+
+  .secid-jc-sessions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .secid-jc-session {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+  }
+
+  .secid-jc-session:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .secid-jc-session__number {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    background: linear-gradient(
+      135deg,
+      var(--secid-primary) 0%,
+      var(--secid-secondary) 100%
+    );
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  .secid-jc-session__info {
+    flex: 1;
+  }
+
+  .secid-jc-session__topic {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--secid-dark-blue);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .secid-jc-session__meta {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+    color: var(--secid-gray-600);
+  }
+
+  .secid-jc-session__meta i {
+    margin-right: 0.35rem;
+    color: var(--secid-primary);
+  }
+
+  @media (max-width: 768px) {
+    .secid-jc-session {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .secid-jc-session__meta {
+      justify-content: center;
+    }
+  }
+</style>
