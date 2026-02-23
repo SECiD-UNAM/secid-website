@@ -7,7 +7,7 @@ import node from '@astrojs/node';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://secid.mx',
+  site: process.env.SITE_URL || 'https://secid.mx',
   base: process.env.NODE_ENV === 'production' ? '' : '/',
 
   // Hybrid mode: static by default, server-rendered for dynamic routes

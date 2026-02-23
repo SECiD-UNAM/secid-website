@@ -34,7 +34,16 @@
       "Bash(rm:*)",
       "Bash(npx prettier:*)",
       "Bash(npm install)",
-      "Bash(npx astro check:*)"
+      "Bash(npx astro check:*)",
+      "Bash(git -C /Users/artemiopadilla/Documents/repos/GitHub/secid/secid-website status --short)",
+      "Bash(while read f)",
+      "Bash(do grep -l ^export $f)",
+      "Bash(done)",
+      "Bash(git mv:*)",
+      "Bash(timeout 60 npm run build:*)",
+      "Bash(npx astro build:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm install:*)"
     ],
     "deny": []
   }
