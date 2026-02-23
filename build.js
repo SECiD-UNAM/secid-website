@@ -94,7 +94,7 @@ try {
   processTemplate('sitemap.xml.template', 'sitemap.xml', config);
 
   // Process HTML files with environment-specific URLs
-  const htmlFiles = ['index.html', 'aboutus.html', 'job-submission.html'];
+  const htmlFiles = ['index.html', 'aboutus.html', 'job-submission.html', 'journal-club.html'];
   htmlFiles.forEach(file => {
     processHTMLTemplate(file, config);
   });
