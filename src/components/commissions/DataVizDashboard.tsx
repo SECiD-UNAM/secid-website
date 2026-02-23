@@ -5,7 +5,7 @@ import { useTranslations } from '../../hooks/useTranslations';
 import {
   PresentationChartLineIcon,
   PhotoIcon,
-  PaletteIcon,
+  SwatchIcon,
   CodeBracketIcon,
 } from '@heroicons/react/24/outline';
 import {
@@ -108,7 +108,7 @@ export const DataVizDashboard: React.FC = () => {
             },
             {
               name: 'Color Palette',
-              icon: PaletteIcon,
+              icon: SwatchIcon,
               color: 'bg-pink-100 text-pink-600',
             },
             {

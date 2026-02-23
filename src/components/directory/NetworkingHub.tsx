@@ -21,7 +21,8 @@ import {
   HeartIcon,
   StarIcon,
   SparklesIcon,
-  ArrowPathIcon
+  ArrowPathIcon,
+  BuildingOfficeIcon
 } from '@heroicons/react/24/outline';
 
 interface NetworkingHubProps {

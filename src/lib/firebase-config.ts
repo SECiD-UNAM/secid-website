@@ -23,6 +23,7 @@ import {
   type Functions,
   connectFunctionsEmulator
 } from 'firebase/functions';
+import { firebaseLogger as logger } from './logger';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -45,8 +46,22 @@ let storage: FirebaseStorage;
 let functions: Functions;
 let analytics: Analytics | null = null;
 
-// Initialize Firebase only on client-side
-if (typeof window !== 'undefined') {
+// Initialize Firebase
+// On server-side (SSR/Build), we still initialize Firebase but without emulators/persistence
+// This allows components to reference db/auth without errors, though they won't work until hydrated
+if (typeof window === 'undefined') {
+  // Server-side initialization - minimal setup for SSR compatibility
+  if (!getApps().length) {
+    app = initializeApp(firebaseConfig);
+  } else {
+    app = getApps()[0];
+  }
+  auth = getAuth(app);
+  db = getFirestore(app);
+  storage = getStorage(app);
+  functions = getFunctions(app);
+} else {
+  // Client-side initialization with full features
   // Check if Firebase is already initialized
   if (!getApps().length) {
     app = initializeApp(firebaseConfig);
@@ -62,54 +77,54 @@ if (typeof window !== 'undefined') {
 
   // Set persistence for auth
   setPersistence(auth, browserLocalPersistence).catch((error) => {
-    console.error('Error setting persistence:', error);
+    logger.error('Error setting persistence', error);
   });
 
   // Enable offline persistence for Firestore
   enableIndexedDbPersistence(db).catch((error) => {
     if (error.code === 'failed-precondition') {
-      console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+      logger.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
     } else if (error['code'] === 'unimplemented') {
-      console.warn('The current browser does not support offline persistence');
+      logger.warn('The current browser does not support offline persistence');
     }
   });
 
   // Connect to emulators in development
   if (USE_EMULATOR) {
-    console.log('🔧 Connecting to Firebase Emulators...');
-    
+    logger.info('Connecting to Firebase Emulators...');
+
     // Connect Auth emulator
     try {
-      connectAuthEmulator(auth, `http://${EMULATOR_HOST}:9099`, { 
-        disableWarnings: true 
+      connectAuthEmulator(auth, `http://${EMULATOR_HOST}:9099`, {
+        disableWarnings: true
       });
-      console.log('✅ Connected to Auth Emulator');
+      logger.info('Connected to Auth Emulator');
     } catch (error) {
-      console.warn('Auth Emulator already connected or error:', error);
+      logger.warn('Auth Emulator already connected or error', { error: String(error) });
     }
 
     // Connect Firestore emulator
     try {
       connectFirestoreEmulator(db, EMULATOR_HOST, 8088);
-      console.log('✅ Connected to Firestore Emulator');
+      logger.info('Connected to Firestore Emulator');
     } catch (error) {
-      console.warn('Firestore Emulator already connected or error:', error);
+      logger.warn('Firestore Emulator already connected or error', { error: String(error) });
     }
 
     // Connect Storage emulator
     try {
       connectStorageEmulator(storage, EMULATOR_HOST, 9199);
-      console.log('✅ Connected to Storage Emulator');
+      logger.info('Connected to Storage Emulator');
     } catch (error) {
-      console.warn('Storage Emulator already connected or error:', error);
+      logger.warn('Storage Emulator already connected or error', { error: String(error) });
     }
 
     // Connect Functions emulator
     try {
       connectFunctionsEmulator(functions, EMULATOR_HOST, 5001);
-      console.log('✅ Connected to Functions Emulator');
+      logger.info('Connected to Functions Emulator');
     } catch (error) {
-      console.warn('Functions Emulator already connected or error:', error);
+      logger.warn('Functions Emulator already connected or error', { error: String(error) });
     }
   }
 
@@ -118,7 +133,7 @@ if (typeof window !== 'undefined') {
     isSupported().then((supported) => {
       if(supported) {
         analytics = getAnalytics(app);
-        console.log('📊 Analytics initialized');
+        logger.info('Analytics initialized');
       }
     });
   }

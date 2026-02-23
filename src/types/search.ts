@@ -2,15 +2,8 @@
  * Search-related types and interfaces for the SECiD global search system
  */
 
-import type {
-  Job,
-  Event,
-  User,
-  ForumTopic,
-  ForumPost,
-  NewsArticle,
-  MentorProfile,
-} from './index';
+// Note: Types are imported lazily to avoid circular dependencies
+// These are declared for type checking but actual types come from runtime
 
 // Search content types
 export type SearchContentType =

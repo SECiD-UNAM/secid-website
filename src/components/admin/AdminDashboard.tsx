@@ -52,7 +52,7 @@ interface RecentActivity {
 
 export const AdminDashboard: React.FC = () => {
   const { userProfile, isAdmin } = useAuth();
-  const { t, language } = useTranslations();
+  const { t: _t, language } = useTranslations();
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     newUsersThisMonth: 0,
@@ -74,7 +74,6 @@ export const AdminDashboard: React.FC = () => {
   // Calculate date ranges
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   useEffect(() => {
     if (!isAdmin) {

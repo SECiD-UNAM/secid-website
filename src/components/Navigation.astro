@@ -1,5 +1,9 @@
 ---
-const { lang = 'es' } = Astro.props;
+interface Props {
+  lang?: 'es' | 'en';
+}
+
+const { lang = 'es' } = Astro.props as Props;
 
 // Translation object
 const t = {
@@ -29,18 +33,12 @@ const t = {
   },
 }[lang];
 
-// Navigation links
+// Navigation links - using consistent English slugs for both languages
 const navLinks = [
   { href: `/${lang}/`, label: t.nav.home },
-  { href: `/${lang}/${lang === 'es' ? 'empleos' : 'jobs'}`, label: t.nav.jobs },
-  {
-    href: `/${lang}/${lang === 'es' ? 'miembros' : 'members'}`,
-    label: t.nav.members,
-  },
-  {
-    href: `/${lang}/${lang === 'es' ? 'sobre-nosotros' : 'about-us'}`,
-    label: t.nav.about,
-  },
+  { href: `/${lang}/jobs`, label: t.nav.jobs },
+  { href: `/${lang}/members`, label: t.nav.members },
+  { href: `/${lang}/about-us`, label: t.nav.about },
 ];
 
 // Get current path to highlight active link
@@ -227,19 +225,17 @@ const langPathRegex = /^\/(es|en)/;
     </a>
     
     <a
-      href={`/${lang}/${lang === 'es' ? 'empleos' : 'jobs'}`}
-      class={`secid-bottom-nav__item ${currentPath === `/${lang}/${lang === 'es' ? 'empleos' : 'jobs'}` ? 'secid-bottom-nav__item--active' : ''}`}
+      href={`/${lang}/jobs`}
+      class={`secid-bottom-nav__item ${currentPath === `/${lang}/jobs` ? 'secid-bottom-nav__item--active' : ''}`}
       aria-label={t.nav.jobs}
     >
       <i class="secid-bottom-nav__icon fas fa-briefcase"></i>
       <span class="secid-bottom-nav__label">{t.nav.jobs}</span>
-      <!-- Example notification badge -->
-      <!-- <span class="secid-bottom-nav__badge">3</span> -->
     </a>
-    
+
     <a
-      href={`/${lang}/${lang === 'es' ? 'miembros' : 'members'}`}
-      class={`secid-bottom-nav__item ${currentPath === `/${lang}/${lang === 'es' ? 'miembros' : 'members'}` ? 'secid-bottom-nav__item--active' : ''}`}
+      href={`/${lang}/members`}
+      class={`secid-bottom-nav__item ${currentPath === `/${lang}/members` ? 'secid-bottom-nav__item--active' : ''}`}
       aria-label={t.nav.members}
     >
       <i class="secid-bottom-nav__icon fas fa-users"></i>

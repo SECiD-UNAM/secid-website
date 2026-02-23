@@ -13,11 +13,11 @@ const query = url.searchParams.get('q') || '';
 ---
 
 <ModernLayout
-  title="Search Forum - SECiD"
-  description="Search the SECiD forum for topics and discussions"
-  lang="en"
+  title="Buscar en Foro - SECiD"
+  description="Busca en el foro SECiD temas y discusiones"
+  lang="es"
 >
-  <Navigation lang="en" />
+  <Navigation lang="es" />
   <ForumSearch language={language} initialQuery={query} client:load />
-  <Footer lang="en" />
+  <Footer lang="es" />
 </ModernLayout>

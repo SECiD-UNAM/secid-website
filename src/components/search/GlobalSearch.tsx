@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Dialog, Transition} from '@headlessui/react';
 import {
-  XMarkIcon, 
-  AdjustmentsHorizontalIcon, 
+  XMarkIcon,
+  AdjustmentsHorizontalIcon,
   ClockIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
   DocumentTextIcon,
   UserGroupIcon,
   BriefcaseIcon,
@@ -545,7 +545,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
                       {/* Popular Searches */}
                       <div>
                         <h3 className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-3">
-                          <TrendingUpIcon className="h-4 w-4" />
+                          <ArrowTrendingUpIcon className="h-4 w-4" />
                           <span>{t('search.popular.title', 'Popular Searches')}</span>
                         </h3>
                         <div className="space-y-2">

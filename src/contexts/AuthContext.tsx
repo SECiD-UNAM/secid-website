@@ -12,7 +12,7 @@ import {
   Unsubscribe
 } from 'firebase/firestore';
 
-interface UserProfile {
+export interface UserProfile {
   uid: string;
   email: string;
   firstName: string;

@@ -1,0 +1,360 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('es');
+
+// Mock job data - in production, this would come from Firebase
+const jobs = [
+  {
+    id: 1,
+    company: 'Tech Innovations SA',
+    initials: 'TI',
+    position: 'Científico de Datos Senior',
+    description:
+      'Buscamos un científico de datos experimentado para liderar proyectos de machine learning y análisis predictivo. Experiencia en Python, R y cloud computing.',
+    location: 'remote',
+    locationText: 'Remoto',
+    type: 'Tiempo Completo',
+    salary: '$70k - $100k MXN',
+    postedAgo: 'Hace 3 días',
+    tags: ['Python', 'R', 'AWS', 'Machine Learning'],
+  },
+  {
+    id: 2,
+    company: 'AI Startup',
+    initials: 'AS',
+    position: 'Ingeniero de Machine Learning',
+    description:
+      'Únete a nuestro equipo de ML para desarrollar modelos de IA de vanguardia. Experiencia en TensorFlow/PyTorch y despliegue de modelos en producción.',
+    location: 'onsite',
+    locationText: 'Presencial - Guadalajara',
+    type: 'Tiempo Completo',
+    salary: '$60k - $90k MXN',
+    postedAgo: 'Hace 1 semana',
+    tags: ['TensorFlow', 'PyTorch', 'Docker', 'Kubernetes'],
+  },
+  {
+    id: 3,
+    company: 'Banco Nacional',
+    initials: 'BN',
+    position: 'Analista de Datos',
+    description:
+      'Posición para analista de datos en el sector financiero. SQL avanzado, visualización de datos y experiencia en análisis de riesgo.',
+    location: 'hybrid',
+    locationText: 'Híbrido - Monterrey',
+    type: 'Tiempo Completo',
+    salary: '$45k - $65k MXN',
+    postedAgo: 'Hace 2 semanas',
+    tags: ['SQL', 'Tableau', 'Python', 'Risk Analysis'],
+  },
+];
+---
+
+<ModernLayout
+  title="Bolsa de Trabajo - SECiD"
+  description="Encuentra las mejores oportunidades laborales en ciencia de datos para egresados de la UNAM"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <!-- Hero Section -->
+  <section class="secid-hero secid-hero--jobs">
+    <div class="secid-hero__container">
+      <div class="secid-hero__content">
+        <h1 class="secid-hero__title">Bolsa de Trabajo</h1>
+        <p class="secid-hero__subtitle">
+          Conectamos talento con oportunidades en ciencia de datos
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <section class="secid-section">
+    <div class="secid-container">
+      <!-- CTA for Companies -->
+      <div class="secid-cta-box">
+        <div class="secid-cta-box__content">
+          <h3>¿Buscas talento en ciencia de datos?</h3>
+          <p>
+            Publica tus ofertas de trabajo y conecta con los mejores
+            profesionales egresados de la UNAM.
+          </p>
+        </div>
+        <a
+          href="/es/post-job"
+          class="secid-button secid-button--primary secid-button--lg"
+        >
+          <i class="fas fa-plus-circle secid-button__icon"></i>
+          Publicar Empleo
+        </a>
+      </div>
+
+      <!-- Search and Filters -->
+      <div class="secid-jobs-filters">
+        <div class="secid-search-box">
+          <input
+            type="text"
+            placeholder="Buscar por título, empresa o ubicación..."
+            class="secid-search-input"
+          />
+          <button class="secid-button secid-button--primary">
+            <i class="fas fa-search"></i>
+            Buscar
+          </button>
+        </div>
+
+        <div class="secid-filter-row">
+          <select class="secid-filter-select">
+            <option value="">Ubicación</option>
+            <option value="cdmx">Ciudad de México</option>
+            <option value="gdl">Guadalajara</option>
+            <option value="mty">Monterrey</option>
+            <option value="remote">Remoto</option>
+          </select>
+
+          <select class="secid-filter-select">
+            <option value="">Tipo de Empleo</option>
+            <option value="full-time">Tiempo Completo</option>
+            <option value="part-time">Medio Tiempo</option>
+            <option value="contract">Por Proyecto</option>
+            <option value="internship">Prácticas</option>
+          </select>
+
+          <select class="secid-filter-select">
+            <option value="">Experiencia</option>
+            <option value="entry">Principiante</option>
+            <option value="mid">Intermedio</option>
+            <option value="senior">Senior</option>
+            <option value="lead">Líder</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Job Listings -->
+      <div class="secid-jobs-grid">
+        {
+          jobs.map((job) => (
+            <div class="secid-job-card secid-job-card--full">
+              <div class="secid-job-card__header">
+                <div class="secid-job-card__company">
+                  <div class="secid-job-card__logo">{job.initials}</div>
+                  <div class="secid-job-card__company-info">
+                    <h3>{job.position}</h3>
+                    <p class="secid-job-card__company-name">{job.company}</p>
+                  </div>
+                </div>
+                <span
+                  class={`secid-job-card__status secid-job-card__status--${job.location}`}
+                >
+                  {job.locationText}
+                </span>
+              </div>
+
+              <p class="secid-job-card__description">{job.description}</p>
+
+              <div class="secid-job-card__tags">
+                {job.tags.map((tag) => (
+                  <span class="secid-job-card__tag">{tag}</span>
+                ))}
+              </div>
+
+              <div class="secid-job-card__footer">
+                <div class="secid-job-card__meta">
+                  <span class="secid-job-card__salary">{job.salary}</span>
+                  <span>•</span>
+                  <span>{job.type}</span>
+                  <span>•</span>
+                  <span>{job.postedAgo}</span>
+                </div>
+                <button class="secid-button secid-button--primary secid-button--sm">
+                  Ver Detalles
+                </button>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- CTA for Members -->
+      <div class="secid-member-cta">
+        <h3>¿Eres miembro de SECiD?</h3>
+        <p>
+          Inicia sesión para acceder a más oportunidades exclusivas y recibir
+          alertas personalizadas.
+        </p>
+        <div class="secid-member-cta__actions">
+          <a href="/es/login" class="secid-button secid-button--primary">
+            <i class="fas fa-sign-in-alt secid-button__icon"></i>
+            Iniciar Sesión
+          </a>
+          <a href="/registro" class="secid-button secid-button--outline">
+            <i class="fas fa-user-plus secid-button__icon"></i>
+            Registrarse
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer lang="es" />
+</ModernLayout>
+
+<style>
+  .secid-hero--jobs {
+    background: linear-gradient(
+      135deg,
+      var(--secid-primary) 0%,
+      var(--secid-gold) 100%
+    );
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .secid-hero--jobs .secid-hero__title {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .secid-hero--jobs .secid-hero__subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .secid-cta-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(
+      135deg,
+      var(--secid-cream) 0%,
+      rgba(253, 177, 87, 0.1) 100%
+    );
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--secid-gold);
+    margin-bottom: 3rem;
+  }
+
+  .secid-cta-box__content h3 {
+    font-size: 1.5rem;
+    color: var(--secid-dark-blue);
+    margin-bottom: 0.5rem;
+  }
+
+  .secid-cta-box__content p {
+    color: var(--secid-gray-700);
+    margin: 0;
+  }
+
+  .secid-jobs-filters {
+    margin-bottom: 3rem;
+  }
+
+  .secid-search-box {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .secid-search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 2px solid var(--secid-gray-300);
+    border-radius: var(--radius-md);
+    transition: border-color 0.3s ease;
+  }
+
+  .secid-search-input:focus {
+    outline: none;
+    border-color: var(--secid-primary);
+  }
+
+  .secid-filter-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .secid-filter-select {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 2px solid var(--secid-gray-300);
+    border-radius: var(--radius-md);
+    background: white;
+    transition: border-color 0.3s ease;
+  }
+
+  .secid-filter-select:focus {
+    outline: none;
+    border-color: var(--secid-secondary);
+  }
+
+  .secid-jobs-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .secid-job-card--full {
+    width: 100%;
+    max-width: none;
+  }
+
+  .secid-member-cta {
+    text-align: center;
+    padding: 3rem;
+    background: var(--secid-gray-50);
+    border-radius: var(--radius-lg);
+  }
+
+  .secid-member-cta h3 {
+    font-size: 1.75rem;
+    color: var(--secid-dark-blue);
+    margin-bottom: 1rem;
+  }
+
+  .secid-member-cta p {
+    font-size: 1.125rem;
+    color: var(--secid-gray-700);
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .secid-member-cta__actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .secid-cta-box {
+      flex-direction: column;
+      text-align: center;
+      gap: 1.5rem;
+    }
+
+    .secid-search-box {
+      flex-direction: column;
+    }
+
+    .secid-filter-row {
+      flex-direction: column;
+    }
+
+    .secid-filter-select {
+      width: 100%;
+    }
+  }
+</style>

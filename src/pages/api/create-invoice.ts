@@ -255,7 +255,7 @@ export const GET: APIRoute = async ({ url }) => {
     }
 
     // Import stripe here to avoid module loading issues
-    const { stripe } = await import('/./lib/stripe/stripe-client');
+    const { stripe } = await import('@/lib/stripe/stripe-client');
 
     const invoice = await stripe.invoices.retrieve(invoiceId);
 

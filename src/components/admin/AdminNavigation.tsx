@@ -38,7 +38,7 @@ export const AdminNavigation: React.FC<AdminNavigationProps> = ({
   onNavClick,
 }) => {
   const { userProfile, isAdmin, isModerator, signOut } = useAuth();
-  const { t, language } = useTranslations();
+  const { t: _t, language } = useTranslations();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());

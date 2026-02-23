@@ -239,3 +239,17 @@ export interface Environment {
   FIREBASE_MEASUREMENT_ID?: string;
   AMPLITUDE_API_KEY?: string;
 }
+
+// Re-export types from other modules
+// Note: Some modules have their own re-exports to avoid circular dependencies
+export * from './forum';
+export * from './member';
+export * from './user';
+export * from './job';
+export * from './assessment';
+export * from './resource';
+export * from './mentorship';
+export * from './notification';
+export * from './messaging';
+export * from './subscription';
+export * from './learning';

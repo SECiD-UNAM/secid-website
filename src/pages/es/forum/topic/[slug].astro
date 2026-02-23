@@ -4,7 +4,7 @@ export const prerender = false;
 import ModernLayout from '../../../../layouts/ModernLayout.astro';
 import Navigation from '../../../../components/Navigation.astro';
 import Footer from '../../../../components/Footer.astro';
-import ForumCategory from '../../../../components/forums/ForumCategory';
+import ForumTopic from '../../../../components/forums/ForumTopic';
 import { getLanguageFromUrl } from '../../../../i18n/translations';
 
 const { slug } = Astro.params;
@@ -14,21 +14,21 @@ const language = getLanguageFromUrl(Astro.url);
 const currentUser = undefined; // Replace with actual user from auth context
 
 if (!slug) {
-  return Astro.redirect('/en/forum');
+  return Astro.redirect('/es/forum');
 }
 ---
 
 <ModernLayout
-  title={`${slug} - Forum - SECiD`}
-  description={`${slug} category in SECiD forum`}
-  lang="en"
+  title={`${slug} - Foro - SECiD`}
+  description={`Tema de discusión: ${slug}`}
+  lang="es"
 >
-  <Navigation lang="en" />
-  <ForumCategory
-    categorySlug={slug}
+  <Navigation lang="es" />
+  <ForumTopic
+    topicSlug={slug}
     language={language}
     currentUser={currentUser}
     client:load
   />
-  <Footer lang="en" />
+  <Footer lang="es" />
 </ModernLayout>

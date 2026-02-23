@@ -24,21 +24,15 @@ import {
   Bell,
   Mail,
   Shield,
-  Globe,
   Database,
-  Server,
   Monitor,
-  Users,
   DollarSign,
   Eye,
   EyeOff,
   Download,
-  Upload,
   Trash2,
   Plus,
-  Edit,
-  Lock,
-  Unlock
+  Lock
 } from 'lucide-react';
 
 interface PlatformSettings {
@@ -190,7 +184,7 @@ const defaultSettings: PlatformSettings = {
 
 export const Settings: React.FC = () => {
   const { userProfile, isAdmin } = useAuth();
-  const { t, language } = useTranslations();
+  const { language } = useTranslations();
   const [settings, setSettings] = useState<PlatformSettings>(defaultSettings);
   const [backups, setBackups] = useState<BackupInfo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -233,7 +227,7 @@ export const Settings: React.FC = () => {
         setSettings({ ...defaultSettings, ...data });
       } else {
         // Create default settings document
-        await updateDoc(settingsRef, defaultSettings);
+        await updateDoc(settingsRef, defaultSettings as Record<string, unknown>);
         setSettings(defaultSettings);
       }
     } catch (err) {
@@ -306,14 +300,15 @@ export const Settings: React.FC = () => {
       setTestEmailSending(true);
       
       // This would call a cloud function to test email
-      const testEmailData = {
+      const _testEmailData = {
         to: userProfile?.email,
         subject: 'Test Email Configuration',
         body: 'This is a test email to verify your SMTP configuration is working correctly.',
         settings: settings['email']
       };
 
-      // await functions().httpsCallable('testEmailConfiguration')(testEmailData);
+      // TODO: Uncomment when cloud function is ready
+      // await functions().httpsCallable('testEmailConfiguration')(_testEmailData);
       
       setSuccess(language === 'es' ? 'Email de prueba enviado' : 'Test email sent');
       setTimeout(() => setSuccess(null), 3000);
@@ -351,7 +346,7 @@ export const Settings: React.FC = () => {
     }));
   };
 
-  const formatFileSize = (bytes: number) => {
+  const _formatFileSize = (bytes: number) => {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     if (bytes === 0) return '0 Bytes';
     const i = Math.floor(Math.log(bytes) / Math.log(1024));

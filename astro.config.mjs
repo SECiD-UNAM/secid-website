@@ -3,14 +3,18 @@ import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import compress from 'astro-compress';
+import node from '@astrojs/node';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://secid.mx',
   base: process.env.NODE_ENV === 'production' ? '' : '/',
-  
-  // Output configuration for static export
-  output: 'static',
+
+  // Hybrid mode: static by default, server-rendered for dynamic routes
+  output: 'hybrid',
+  adapter: node({
+    mode: 'standalone',
+  }),
   
   // Build configuration
   build: {

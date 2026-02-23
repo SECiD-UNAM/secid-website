@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth, type UserProfile } from '@/contexts/AuthContext';
 import { useTranslations } from '@/hooks/useTranslations';
 import { Shield, AlertTriangle } from 'lucide-react';
 
@@ -16,7 +16,7 @@ export const AdminAuthGuard: React.FC<AdminAuthGuardProps> = ({
 }) => {
   const { user, userProfile, loading, isAuthenticated, isAdmin, isModerator } =
     useAuth();
-  const { t, language } = useTranslations();
+  const { language } = useTranslations();
   const [isCheckingPermissions, setIsCheckingPermissions] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
 
@@ -196,9 +196,17 @@ export const AdminAuthGuard: React.FC<AdminAuthGuardProps> = ({
 };
 
 // Hook for checking admin permissions in components
+interface UseAdminAuthReturn {
+  hasPermission: boolean;
+  isAdmin: boolean;
+  isModerator: boolean;
+  checkPermission: (permission?: string) => boolean;
+  userProfile: UserProfile | null;
+}
+
 export const useAdminAuth = (
   requiredRole: 'admin' | 'moderator' = 'moderator'
-) => {
+): UseAdminAuthReturn => {
   const { isAuthenticated, isAdmin, isModerator, userProfile } = useAuth();
 
   const hasPermission = () => {
@@ -213,7 +221,7 @@ export const useAdminAuth = (
     return false;
   };
 
-  const checkPermission = (permission?: string) => {
+  const checkPermission = (_permission?: string) => {
     if (!hasPermission()) return false;
 
     // Add more granular permission checking here if needed

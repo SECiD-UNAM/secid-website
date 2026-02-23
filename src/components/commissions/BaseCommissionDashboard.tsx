@@ -5,12 +5,12 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 import type { CommissionConfig } from '../../lib/commissions';
 import {
-  ChartBarIcon, 
-  UserGroupIcon, 
+  ChartBarIcon,
+  UserGroupIcon,
   ClipboardDocumentListIcon,
   CalendarDaysIcon,
   BookOpenIcon,
-  TrendingUpIcon,
+  ArrowTrendingUpIcon,
 } from '@heroicons/react/24/outline';
 
 interface BaseCommissionDashboardProps {
@@ -145,7 +145,7 @@ export const BaseCommissionDashboard: React.FC<BaseCommissionDashboardProps> = (
             title={t('commission.engagementScore')}
             value={`${metrics.engagementScore.toFixed(1)}%`}
             change={`+${(Math.random() * 5).toFixed(1)}%`}
-            icon={<TrendingUpIcon className="w-6 h-6 text-white" />}
+            icon={<ArrowTrendingUpIcon className="w-6 h-6 text-white" />}
             color="bg-orange-500"
           />
         </div>

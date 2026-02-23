@@ -9,23 +9,23 @@ import { getLanguageFromUrl } from '../../../i18n/translations';
 
 const language = getLanguageFromUrl(Astro.url);
 const url = new URL(Astro.request.url);
-const categorySlug = url.searchParams.get('category');
+const categorySlug = url.searchParams.get('categoria');
 
 // Check if user is authenticated (this would be replaced with actual auth logic)
 const currentUser = undefined; // Replace with actual user from auth context
 
 // Redirect if not authenticated
 if (!currentUser) {
-  return Astro.redirect('/en/login?redirect=/en/forum/new-topic');
+  return Astro.redirect('/es/login?redirect=/es/forum/new-topic');
 }
 ---
 
 <ModernLayout
-  title="New Topic - Forum - SECiD"
-  description="Create a new topic in the SECiD forum"
-  lang="en"
+  title="Nuevo Tema - Foro - SECiD"
+  description="Crear un nuevo tema en el foro SECiD"
+  lang="es"
 >
-  <Navigation lang="en" />
+  <Navigation lang="es" />
   <ForumPost
     mode="create-topic"
     language={language}
@@ -33,5 +33,5 @@ if (!currentUser) {
     currentUser={currentUser}
     client:load
   />
-  <Footer lang="en" />
+  <Footer lang="es" />
 </ModernLayout>

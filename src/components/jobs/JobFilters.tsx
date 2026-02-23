@@ -35,15 +35,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
   onFiltersChange,
 }) => {
   const [filters, setFilters] = useState<FilterState>(() => {
-    // Load from localStorage if available
-    const saved = localStorage.getItem('jobFilters');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.warn('Failed to parse saved filters:', e);
-      }
-    }
+    // Default state - localStorage is loaded in useEffect for SSR compatibility
     return {
       location: '',
       locationType: [],
@@ -58,6 +50,20 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
       benefits: [],
     };
   });
+
+  // Load saved filters from localStorage on client side only
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('jobFilters');
+      if (saved) {
+        try {
+          setFilters(JSON.parse(saved));
+        } catch (e) {
+          console.warn('Failed to parse saved filters:', e);
+        }
+      }
+    }
+  }, []);
 
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 

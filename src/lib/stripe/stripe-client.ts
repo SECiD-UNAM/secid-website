@@ -5,14 +5,29 @@ import { loadStripe } from '@stripe/stripe-js';
 const stripeSecretKey = import.meta.env.STRIPE_SECRET_KEY;
 const stripePublishableKey = import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
-// Server-side Stripe instance
-export const stripe = new Stripe(stripeSecretKey || '', {
-  apiVersion: '2024-12-18.acacia',
-  typescript: true,
-});
+// Server-side Stripe instance - lazy initialization to avoid build-time errors
+let _stripe: Stripe | null = null;
+
+export const getStripe = (): Stripe => {
+  if (!_stripe) {
+    if (!stripeSecretKey) {
+      throw new Error('Stripe secret key is not configured');
+    }
+    _stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2024-12-18.acacia',
+      typescript: true,
+    });
+  }
+  return _stripe;
+};
+
+// Legacy export for backwards compatibility
+export const stripe = stripeSecretKey
+  ? new Stripe(stripeSecretKey, { apiVersion: '2024-12-18.acacia', typescript: true })
+  : ({} as Stripe);
 
 // Client-side Stripe instance
-export const stripePromise = loadStripe(stripePublishableKey || '');
+export const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
 
 // Subscription plans for SECiD platform
 export const SUBSCRIPTION_PLANS = {

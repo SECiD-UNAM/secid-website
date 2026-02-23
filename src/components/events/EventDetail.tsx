@@ -22,7 +22,9 @@ import {
   ArrowLeftIcon,
   LinkIcon,
   CalendarDaysIcon,
-  UserIcon
+  UserIcon,
+  EnvelopeIcon,
+  PhoneIcon
 } from '@heroicons/react/24/outline';
 
 interface EventDetails {

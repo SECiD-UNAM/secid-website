@@ -5,34 +5,27 @@ import { useTranslations } from '@/hooks/useTranslations';
 import {
   collection,
   query,
-  orderBy, 
+  orderBy,
   where,
-  onSnapshot, 
+  onSnapshot,
   doc,
   updateDoc,
-  deleteDoc,
   addDoc,
   Timestamp,
   limit
 } from 'firebase/firestore';
 import {
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
-  Eye, 
-  Flag, 
-  MessageSquare, 
-  Briefcase, 
-  Calendar, 
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Flag,
+  MessageSquare,
+  Briefcase,
+  Calendar,
   User,
   Clock,
-  Filter,
   Search,
-  MoreHorizontal,
-  Ban,
-  Trash2,
-  MessageCircle,
-  ExternalLink
+  Ban
 } from 'lucide-react';
 
 interface ModerationItem {
@@ -82,7 +75,7 @@ interface ContentStats {
 
 export const ContentModeration: React.FC = () => {
   const { userProfile, isAdmin, isModerator } = useAuth();
-  const { t, language } = useTranslations();
+  const { language } = useTranslations();
   const [moderationItems, setModerationItems] = useState<ModerationItem[]>([]);
   const [reports, setReports] = useState<Report[]>([]);
   const [stats, setStats] = useState<ContentStats>({
@@ -137,7 +130,7 @@ export const ContentModeration: React.FC = () => {
           authorName: data['authorName'],
           createdAt: data['createdAt']?.toDate() || new Date(),
           submittedAt: data['submittedAt']?.toDate() || new Date(),
-          moderatedAt: data?.moderatedAt?.toDate(),
+          moderatedAt: data?.['moderatedAt']?.toDate(),
           moderatedBy: data['moderatedBy'],
           moderatorId: data['moderatorId'],
           reason: data['reason'],
@@ -173,7 +166,7 @@ export const ContentModeration: React.FC = () => {
           status: data['status'],
           createdAt: data['createdAt']?.toDate() || new Date(),
           reviewedAt: data['reviewedAt']?.toDate(),
-          reviewedBy: data.reviewedBy,
+          reviewedBy: data['reviewedBy'],
           action: data['action']
         });
       });
@@ -366,7 +359,7 @@ export const ContentModeration: React.FC = () => {
       }
 
       // Create escalation for admin review if needed
-      if (item.priority === 'urgent' || item.reportCount > 5) {
+      if (item.priority === 'urgent' || (item.reportCount ?? 0) > 5) {
         await addDoc(collection(db, 'admin_escalations'), {
           itemId: item['id'],
           itemType: item['type'],
@@ -735,7 +728,7 @@ export const ContentModeration: React.FC = () => {
                           {item.priority}
                         </span>
                         
-                        {item.reportCount > 0 && (
+                        {(item.reportCount ?? 0) > 0 && (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                             {item.reportCount} {language === 'es' ? 'reportes' : 'reports'}
                           </span>

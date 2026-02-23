@@ -9,7 +9,6 @@ import {
   DocumentTextIcon,
   MagnifyingGlassIcon,
   SparklesIcon,
-  TranslateIcon,
   SpeakerWaveIcon,
   ClipboardDocumentCheckIcon,
 } from '@heroicons/react/24/outline';
@@ -422,7 +421,7 @@ export const NLPDashboard: React.FC = () => {
               sentiment: ChatBubbleLeftRightIcon,
               classification: ClipboardDocumentCheckIcon,
               ner: MagnifyingGlassIcon,
-              translation: TranslateIcon,
+              translation: LanguageIcon,
               summarization: DocumentTextIcon,
             };
             

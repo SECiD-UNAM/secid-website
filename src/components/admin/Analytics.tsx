@@ -2,15 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from '@/hooks/useTranslations';
 import {
-  collection,
-  query,
-  orderBy,
-  where,
-  getDocs,
-  Timestamp,
-  limit
-} from 'firebase/firestore';
-import {
   BarChart, 
   Bar, 
   XAxis, 
@@ -27,19 +18,12 @@ import {
   Area
 } from 'recharts';
 import {
-  TrendingUp, 
-  Users, 
-  Briefcase, 
-  Calendar, 
+  TrendingUp,
   DollarSign,
   Download,
   RefreshCw,
-  Filter,
-  Calendar as CalendarIcon,
   ChevronDown,
   Eye,
-  MessageSquare,
-  UserCheck,
   Activity
 } from 'lucide-react';
 
@@ -77,8 +61,8 @@ interface TimeRange {
 }
 
 export const Analytics: React.FC = () => {
-  const { userProfile, isAdmin } = useAuth();
-  const { t, language } = useTranslations();
+  const { userProfile: _userProfile, isAdmin } = useAuth();
+  const { t: _t, language } = useTranslations();
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -126,30 +110,30 @@ export const Analytics: React.FC = () => {
           activeUsers: Math.floor(Math.random() * 30) + index
         })),
         
-        jobMetrics: generateDateSeries(startDate, endDate, (date, index) => ({
+        jobMetrics: generateDateSeries(startDate, endDate, (date, _index) => ({
           date: date.toISOString().split('T')[0],
           posted: Math.floor(Math.random() * 20) + 5,
           applied: Math.floor(Math.random() * 100) + 50,
           filled: Math.floor(Math.random() * 10) + 2
         })),
-        
-        eventMetrics: generateDateSeries(startDate, endDate, (date, index) => ({
+
+        eventMetrics: generateDateSeries(startDate, endDate, (date, _index) => ({
           date: date.toISOString().split('T')[0],
           created: Math.floor(Math.random() * 5) + 1,
           attendees: Math.floor(Math.random() * 200) + 50
         })),
-        
-        forumActivity: generateDateSeries(startDate, endDate, (date, index) => ({
+
+        forumActivity: generateDateSeries(startDate, endDate, (date, _index) => ({
           date: date.toISOString().split('T')[0],
           posts: Math.floor(Math.random() * 30) + 10,
           replies: Math.floor(Math.random() * 80) + 20,
           views: Math.floor(Math.random() * 500) + 200
         })),
-        
+
         membershipDistribution: [
-          { name: language === 'es' ? 'Gratuita' : 'Free', value: 65, color: COLORS?.[0] },
-          { name: language === 'es' ? 'Premium' : 'Premium', value: 30, color: COLORS?.[1] },
-          { name: language === 'es' ? 'Corporativa' : 'Corporate', value: 5, color: COLORS?.[2] }
+          { name: language === 'es' ? 'Gratuita' : 'Free', value: 65, color: COLORS[0] ?? '#6366f1' },
+          { name: language === 'es' ? 'Premium' : 'Premium', value: 30, color: COLORS[1] ?? '#22c55e' },
+          { name: language === 'es' ? 'Corporativa' : 'Corporate', value: 5, color: COLORS[2] ?? '#f59e0b' }
         ],
         
         topSkills: [

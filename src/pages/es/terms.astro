@@ -1,0 +1,675 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('es');
+
+const lastUpdated = '15 de enero de 2024';
+---
+
+<ModernLayout
+  title="Términos y Condiciones - SECiD"
+  description="Términos y Condiciones de uso de la Sociedad de Egresados en Ciencia de Datos UNAM"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Términos y Condiciones</h1>
+          <p class="secid-hero__subtitle">
+            Última actualización: {lastUpdated}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Legal Content -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-legal">
+          <!-- Table of Contents -->
+          <aside class="secid-legal__toc">
+            <h3>Índice</h3>
+            <nav>
+              <ol>
+                <li><a href="#aceptacion">Aceptación de Términos</a></li>
+                <li><a href="#definiciones">Definiciones</a></li>
+                <li><a href="#servicios">Descripción de Servicios</a></li>
+                <li><a href="#registro">Registro y Cuenta</a></li>
+                <li><a href="#uso-aceptable">Uso Aceptable</a></li>
+                <li><a href="#contenido">Contenido del Usuario</a></li>
+                <li>
+                  <a href="#propiedad-intelectual">Propiedad Intelectual</a>
+                </li>
+                <li><a href="#privacidad">Privacidad</a></li>
+                <li><a href="#terminacion">Terminación</a></li>
+                <li>
+                  <a href="#limitacion-responsabilidad"
+                    >Limitación de Responsabilidad</a>
+                </li>
+                <li><a href="#ley-aplicable">Ley Aplicable</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+              </ol>
+            </nav>
+          </aside>
+
+          <!-- Main Content -->
+          <div class="secid-legal__content">
+            <section id="aceptacion">
+              <h2>1. Aceptación de Términos</h2>
+              <p>
+                Bienvenido a la Sociedad de Egresados en Ciencia de Datos de la
+                UNAM (SECiD). Estos Términos y Condiciones ("Términos") rigen su
+                uso de nuestro sitio web, aplicaciones y servicios
+                (colectivamente, los "Servicios").
+              </p>
+              <p>
+                Al acceder o utilizar nuestros Servicios, usted acepta estar
+                sujeto a estos Términos. Si no está de acuerdo con alguna parte
+                de estos términos, no podrá acceder a los Servicios.
+              </p>
+              <p>
+                Estos Términos constituyen un acuerdo legal vinculante entre
+                usted y SECiD. Le recomendamos leer cuidadosamente todos los
+                términos antes de usar nuestros servicios.
+              </p>
+            </section>
+
+            <section id="definiciones">
+              <h2>2. Definiciones</h2>
+
+              <ul>
+                <li>
+                  <strong>"SECiD", "nosotros", "nuestro":</strong> Se refiere a la
+                  Sociedad de Egresados en Ciencia de Datos de la UNAM
+                </li>
+                <li>
+                  <strong>"Usuario", "usted", "su":</strong> Se refiere a cualquier
+                  persona que accede o utiliza nuestros Servicios
+                </li>
+                <li>
+                  <strong>"Servicios":</strong> Incluye nuestro sitio web, aplicaciones
+                  móviles, eventos y cualquier otro servicio ofrecido
+                </li>
+                <li>
+                  <strong>"Contenido":</strong> Incluye texto, imágenes, videos,
+                  datos y cualquier otro material disponible en los Servicios
+                </li>
+                <li>
+                  <strong>"Contenido del Usuario":</strong> Cualquier contenido que
+                  usted publique, suba o comparta en nuestros Servicios
+                </li>
+                <li>
+                  <strong>"Cuenta":</strong> Su cuenta registrada en nuestros Servicios
+                </li>
+              </ul>
+            </section>
+
+            <section id="servicios">
+              <h2>3. Descripción de Servicios</h2>
+
+              <h3>3.1 Servicios Ofrecidos</h3>
+              <p>SECiD proporciona una plataforma para:</p>
+              <ul>
+                <li>
+                  Networking profesional entre egresados de ciencia de datos
+                </li>
+                <li>Publicación y búsqueda de oportunidades laborales</li>
+                <li>Organización y participación en eventos educativos</li>
+                <li>Intercambio de conocimientos y recursos</li>
+                <li>Desarrollo profesional continuo</li>
+              </ul>
+
+              <h3>3.2 Modificaciones del Servicio</h3>
+              <p>
+                Nos reservamos el derecho de modificar, suspender o discontinuar
+                cualquier parte de nuestros Servicios en cualquier momento, con
+                o sin previo aviso. No seremos responsables ante usted o
+                terceros por cualquier modificación, suspensión o
+                discontinuación de los Servicios.
+              </p>
+
+              <h3>3.3 Disponibilidad</h3>
+              <p>
+                Aunque nos esforzamos por mantener nuestros Servicios
+                disponibles, no garantizamos que estarán disponibles en todo
+                momento. Los Servicios pueden estar temporalmente indisponibles
+                debido a mantenimiento, actualizaciones o circunstancias fuera
+                de nuestro control.
+              </p>
+            </section>
+
+            <section id="registro">
+              <h2>4. Registro y Cuenta</h2>
+
+              <h3>4.1 Elegibilidad</h3>
+              <p>Para usar nuestros Servicios, debe:</p>
+              <ul>
+                <li>
+                  Ser mayor de 18 años o tener el consentimiento de sus
+                  padres/tutores
+                </li>
+                <li>
+                  Ser egresado, estudiante actual o estar relacionado con el
+                  campo de ciencia de datos
+                </li>
+                <li>Proporcionar información precisa y actualizada</li>
+                <li>
+                  Mantener la confidencialidad de sus credenciales de acceso
+                </li>
+              </ul>
+
+              <h3>4.2 Registro</h3>
+              <p>
+                Para acceder a ciertas funciones, debe crear una cuenta
+                proporcionando:
+              </p>
+              <ul>
+                <li>Información personal básica (nombre, email, etc.)</li>
+                <li>Información académica y profesional</li>
+                <li>Una contraseña segura</li>
+              </ul>
+
+              <h3>4.3 Responsabilidad de la Cuenta</h3>
+              <p>Usted es responsable de:</p>
+              <ul>
+                <li>Mantener la seguridad de su cuenta y contraseña</li>
+                <li>Todas las actividades que ocurran bajo su cuenta</li>
+                <li>
+                  Notificarnos inmediatamente sobre cualquier uso no autorizado
+                </li>
+                <li>Mantener actualizada su información de contacto</li>
+              </ul>
+            </section>
+
+            <section id="uso-aceptable">
+              <h2>5. Uso Aceptable</h2>
+
+              <h3>5.1 Conducta Permitida</h3>
+              <p>Puede usar nuestros Servicios para:</p>
+              <ul>
+                <li>Networking profesional legítimo</li>
+                <li>Buscar o publicar oportunidades laborales reales</li>
+                <li>Participar en eventos y actividades de la comunidad</li>
+                <li>Compartir conocimientos y experiencias profesionales</li>
+              </ul>
+
+              <h3>5.2 Conducta Prohibida</h3>
+              <p>NO puede usar nuestros Servicios para:</p>
+              <ul>
+                <li>Publicar contenido falso, engañoso o fraudulento</li>
+                <li>Acosar, intimidar o discriminar a otros usuarios</li>
+                <li>Enviar spam o comunicaciones no solicitadas</li>
+                <li>Violar la privacidad de otros usuarios</li>
+                <li>Intentar acceder a cuentas que no le pertenecen</li>
+                <li>Interferir con el funcionamiento de los Servicios</li>
+                <li>Usar los Servicios para actividades ilegales</li>
+                <li>Recopilar información de usuarios sin consentimiento</li>
+              </ul>
+
+              <h3>5.3 Consecuencias</h3>
+              <p>El incumplimiento de estas reglas puede resultar en:</p>
+              <ul>
+                <li>Advertencias</li>
+                <li>Suspensión temporal de la cuenta</li>
+                <li>Terminación permanente de la cuenta</li>
+                <li>Acciones legales cuando sea apropiado</li>
+              </ul>
+            </section>
+
+            <section id="contenido">
+              <h2>6. Contenido del Usuario</h2>
+
+              <h3>6.1 Su Contenido</h3>
+              <p>
+                Usted retiene la propiedad de cualquier contenido que publique
+                en nuestros Servicios. Sin embargo, al publicar contenido, nos
+                otorga una licencia mundial, no exclusiva, libre de regalías
+                para usar, mostrar, reproducir y distribuir su contenido en
+                relación con nuestros Servicios.
+              </p>
+
+              <h3>6.2 Responsabilidad del Contenido</h3>
+              <p>Usted es completamente responsable de:</p>
+              <ul>
+                <li>Todo el contenido que publique</li>
+                <li>Asegurar que tiene derecho a publicar el contenido</li>
+                <li>Que el contenido no viole derechos de terceros</li>
+                <li>Que el contenido cumple con estos Términos</li>
+              </ul>
+
+              <h3>6.3 Moderación</h3>
+              <p>
+                Nos reservamos el derecho de revisar, moderar o eliminar
+                cualquier contenido que consideremos inapropiado, aunque no
+                tenemos la obligación de hacerlo.
+              </p>
+
+              <h3>6.4 Reportes</h3>
+              <p>
+                Si encuentra contenido que viola estos Términos, puede
+                reportarlo a través de nuestros canales de soporte.
+              </p>
+            </section>
+
+            <section id="propiedad-intelectual">
+              <h2>7. Propiedad Intelectual</h2>
+
+              <h3>7.1 Nuestro Contenido</h3>
+              <p>
+                Los Servicios y todo su contenido original, características y
+                funcionalidad son propiedad de SECiD y están protegidos por
+                derechos de autor, marcas registradas y otras leyes de propiedad
+                intelectual.
+              </p>
+
+              <h3>7.2 Licencia de Uso</h3>
+              <p>
+                Le otorgamos una licencia limitada, no exclusiva, no
+                transferible para usar nuestros Servicios para su uso personal y
+                no comercial, sujeto a estos Términos.
+              </p>
+
+              <h3>7.3 Restricciones</h3>
+              <p>No puede:</p>
+              <ul>
+                <li>
+                  Copiar, modificar o distribuir nuestro contenido sin permiso
+                </li>
+                <li>Usar nuestras marcas registradas sin autorización</li>
+                <li>Realizar ingeniería inversa de nuestros Servicios</li>
+                <li>Crear trabajos derivados basados en nuestros Servicios</li>
+              </ul>
+
+              <h3>7.4 DMCA</h3>
+              <p>
+                Respetamos los derechos de propiedad intelectual. Si cree que su
+                trabajo ha sido copiado de manera que constituye infracción de
+                derechos de autor, contáctenos con los detalles de la presunta
+                infracción.
+              </p>
+            </section>
+
+            <section id="privacidad">
+              <h2>8. Privacidad</h2>
+
+              <p>
+                Su privacidad es importante para nosotros. Nuestro manejo de su
+                información personal se rige por nuestra <a
+                  href="/es/privacy">Política de Privacidad</a
+                >, que se incorpora por referencia a estos Términos.
+              </p>
+
+              <p>
+                Al usar nuestros Servicios, acepta la recopilación y uso de
+                información de acuerdo con nuestra Política de Privacidad.
+              </p>
+            </section>
+
+            <section id="terminacion">
+              <h2>9. Terminación</h2>
+
+              <h3>9.1 Terminación por el Usuario</h3>
+              <p>
+                Puede terminar su cuenta en cualquier momento desactivándola a
+                través de la configuración de su cuenta o contactándonos
+                directamente.
+              </p>
+
+              <h3>9.2 Terminación por SECiD</h3>
+              <p>Podemos suspender o terminar su cuenta inmediatamente si:</p>
+              <ul>
+                <li>Viola estos Términos</li>
+                <li>
+                  Su uso de los Servicios causa daño a otros usuarios o a SECiD
+                </li>
+                <li>Lo requerimos para cumplir con la ley</li>
+                <li>Decidimos discontinuar los Servicios</li>
+              </ul>
+
+              <h3>9.3 Efectos de la Terminación</h3>
+              <p>Tras la terminación:</p>
+              <ul>
+                <li>Su derecho a usar los Servicios termina inmediatamente</li>
+                <li>
+                  Podemos eliminar o conservar su información según nuestra
+                  Política de Privacidad
+                </li>
+                <li>
+                  Las disposiciones que por su naturaleza deben sobrevivir
+                  continuarán en vigor
+                </li>
+              </ul>
+            </section>
+
+            <section id="limitacion-responsabilidad">
+              <h2>10. Limitación de Responsabilidad</h2>
+
+              <h3>10.1 Descargo de Garantías</h3>
+              <p>
+                Los Servicios se proporcionan "tal como están" y "según
+                disponibilidad". No ofrecemos garantías expresas o implícitas
+                sobre los Servicios.
+              </p>
+
+              <h3>10.2 Limitación de Daños</h3>
+              <p>
+                En ningún caso SECiD será responsable por daños indirectos,
+                incidentales, especiales, consecuenciales o punitivos,
+                incluyendo pérdida de beneficios, datos o uso, incurridos por
+                usted o terceros.
+              </p>
+
+              <h3>10.3 Límite de Responsabilidad Total</h3>
+              <p>
+                Nuestra responsabilidad total hacia usted por cualquier
+                reclamación relacionada con estos Términos o los Servicios no
+                excederá la cantidad pagada por usted a SECiD en los 12 meses
+                anteriores al evento que dio lugar a la reclamación.
+              </p>
+
+              <h3>10.4 Indemnización</h3>
+              <p>
+                Acepta indemnizar y eximir de responsabilidad a SECiD de
+                cualquier reclamación, daño, pérdida o gasto (incluyendo
+                honorarios de abogados) que surja de su uso de los Servicios o
+                violación de estos Términos.
+              </p>
+            </section>
+
+            <section id="ley-aplicable">
+              <h2>11. Ley Aplicable y Disputas</h2>
+
+              <h3>11.1 Ley Aplicable</h3>
+              <p>
+                Estos Términos se rigen por las leyes de México, sin
+                consideración a sus disposiciones sobre conflictos de leyes.
+              </p>
+
+              <h3>11.2 Jurisdicción</h3>
+              <p>
+                Cualquier disputa relacionada con estos Términos o los Servicios
+                será sometida a la jurisdicción exclusiva de los tribunales
+                competentes de la Ciudad de México.
+              </p>
+
+              <h3>11.3 Resolución de Disputas</h3>
+              <p>
+                Alentamos la resolución amistosa de disputas. Si tiene una
+                queja, contáctenos primero para intentar resolver el asunto de
+                manera informal.
+              </p>
+
+              <h3>11.4 Limitación de Tiempo</h3>
+              <p>
+                Cualquier reclamación relacionada con estos Términos debe
+                presentarse dentro de un año después de que surja la causa de
+                acción.
+              </p>
+            </section>
+
+            <section id="contacto">
+              <h2>12. Contacto e Información Legal</h2>
+
+              <h3>12.1 Información de Contacto</h3>
+              <div class="secid-legal__contact">
+                <div class="secid-legal__contact-item">
+                  <h4>Asuntos Legales</h4>
+                  <p>
+                    <strong>Email:</strong>
+                    <a href="mailto:legal@secid.mx">legal@secid.mx</a><br />
+                    <strong>Respuesta:</strong> Dentro de 15 días hábiles
+                  </p>
+                </div>
+
+                <div class="secid-legal__contact-item">
+                  <h4>Dirección Postal</h4>
+                  <p>
+                    Sociedad de Egresados en Ciencia de Datos<br />
+                    Facultad de Ciencias, UNAM<br />
+                    Ciudad Universitaria<br />
+                    Coyoacán, Ciudad de México<br />
+                    C.P. 04510, México
+                  </p>
+                </div>
+
+                <div class="secid-legal__contact-item">
+                  <h4>Soporte General</h4>
+                  <p>
+                    <strong>Email:</strong>
+                    <a href="mailto:soporte@secid.mx">soporte@secid.mx</a><br />
+                    <strong>Teléfono:</strong> +52 (55) 5622-4985<br />
+                    <strong>Horario:</strong> Lunes a Viernes, 9:00 - 17:00 CST
+                  </p>
+                </div>
+              </div>
+
+              <h3>12.2 Cambios a los Términos</h3>
+              <p>
+                Nos reservamos el derecho de modificar estos Términos en
+                cualquier momento. Los cambios significativos serán notificados
+                por:
+              </p>
+              <ul>
+                <li>Aviso prominente en nuestro sitio web</li>
+                <li>Notificación por correo electrónico</li>
+                <li>Notificación dentro de la aplicación (si aplica)</li>
+              </ul>
+
+              <p>
+                Su uso continuado de los Servicios después de la publicación de
+                cambios constituye su aceptación de los nuevos Términos.
+              </p>
+
+              <h3>12.3 Disposiciones Generales</h3>
+              <ul>
+                <li>
+                  <strong>Integralidad:</strong> Estos Términos constituyen el acuerdo
+                  completo entre usted y SECiD
+                </li>
+                <li>
+                  <strong>Severabilidad:</strong> Si alguna disposición es inválida,
+                  las demás permanecen en vigor
+                </li>
+                <li>
+                  <strong>Renuncia:</strong> La falta de aplicación de algún derecho
+                  no constituye renuncia al mismo
+                </li>
+                <li>
+                  <strong>Asignación:</strong> Usted no puede transferir sus derechos
+                  sin nuestro consentimiento
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="es" />
+</ModernLayout>
+
+<style>
+  .secid-legal {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: var(--space-3xl);
+    align-items: start;
+  }
+
+  .secid-legal__toc {
+    position: sticky;
+    top: var(--space-xl);
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+  }
+
+  .secid-legal__toc h3 {
+    margin: 0 0 var(--space-lg) 0;
+    color: var(--color-text-primary);
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .secid-legal__toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: toc-counter;
+  }
+
+  .secid-legal__toc li {
+    counter-increment: toc-counter;
+    margin-bottom: var(--space-sm);
+  }
+
+  .secid-legal__toc a {
+    display: block;
+    padding: var(--space-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+    font-size: 0.875rem;
+  }
+
+  .secid-legal__toc a:before {
+    content: counter(toc-counter) '. ';
+    font-weight: 600;
+    color: var(--secid-primary);
+  }
+
+  .secid-legal__toc a:hover {
+    background: var(--color-surface-alt);
+    color: var(--color-text-primary);
+  }
+
+  .secid-legal__content {
+    max-width: none;
+  }
+
+  .secid-legal__content section {
+    margin-bottom: var(--space-3xl);
+    scroll-margin-top: var(--space-xl);
+  }
+
+  .secid-legal__content h2 {
+    color: var(--color-text-primary);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 var(--space-lg) 0;
+    padding-bottom: var(--space-sm);
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  .secid-legal__content h3 {
+    color: var(--color-text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: var(--space-xl) 0 var(--space-md) 0;
+  }
+
+  .secid-legal__content h4 {
+    color: var(--color-text-primary);
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: var(--space-lg) 0 var(--space-sm) 0;
+  }
+
+  .secid-legal__content p {
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-legal__content ul {
+    margin: 0 0 var(--space-lg) 0;
+    padding-left: var(--space-lg);
+  }
+
+  .secid-legal__content li {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-sm);
+  }
+
+  .secid-legal__content strong {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  .secid-legal__content a {
+    color: var(--secid-primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .secid-legal__content a:hover {
+    text-decoration: underline;
+  }
+
+  .secid-legal__contact {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-xl);
+    margin-top: var(--space-xl);
+  }
+
+  .secid-legal__contact-item {
+    background: var(--color-surface-alt);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+  }
+
+  .secid-legal__contact-item h4 {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--secid-primary);
+  }
+
+  .secid-legal__contact-item p {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    .secid-legal {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+
+    .secid-legal__toc {
+      position: static;
+      order: -1;
+    }
+
+    .secid-legal__toc ol {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .secid-legal__toc li {
+      margin-bottom: 0;
+    }
+
+    .secid-legal__toc a {
+      padding: var(--space-xs) var(--space-sm);
+      white-space: nowrap;
+      font-size: 0.75rem;
+    }
+
+    .secid-legal__contact {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

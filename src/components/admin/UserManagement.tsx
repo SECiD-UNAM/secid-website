@@ -176,7 +176,7 @@ export const UserManagement: React.FC = () => {
           photoURL: data['photoURL'],
           createdAt: data['createdAt']?.toDate() || new Date(),
           updatedAt: data['updatedAt']?.toDate() || new Date(),
-          lastLoginAt: data?.lastLoginAt?.toDate()
+          lastLoginAt: data?.['lastLoginAt']?.toDate()
         });
       });
 
@@ -249,7 +249,7 @@ export const UserManagement: React.FC = () => {
       }
 
       // Log admin action
-      const logData = {
+      const _logData = {
         adminId: userProfile?.uid,
         adminEmail: userProfile?.email,
         action,
@@ -257,9 +257,9 @@ export const UserManagement: React.FC = () => {
         timestamp: Timestamp.now(),
         description: `${action} user ${userId}`
       };
-      
-      // Add to activity log (you can implement this collection)
-      // await addDoc(collection(db, 'admin_activity_log'), logData);
+
+      // TODO: Add to activity log (implement collection)
+      // await addDoc(collection(db, 'admin_activity_log'), _logData);
 
       // Reload users
       loadUsers();
@@ -303,8 +303,10 @@ export const UserManagement: React.FC = () => {
       'Profile Completeness': user.profileCompleteness || 0
     }));
 
-    const csvContent = "data:text/csv;charset=utf-8," + 
-      Object.keys(csvData?.[0]).join(",") + "\n" +
+    if (csvData.length === 0) return;
+
+    const csvContent = "data:text/csv;charset=utf-8," +
+      Object.keys(csvData[0]).join(",") + "\n" +
       csvData.map(row => Object.values(row).join(",")).join("\n");
 
     const encodedUri = encodeURI(csvContent);

@@ -1,5 +1,9 @@
 ---
-const { lang = 'es' } = Astro.props;
+interface Props {
+  lang?: 'es' | 'en';
+}
+
+const { lang = 'es' } = Astro.props as Props;
 
 const t = {
   es: {
@@ -105,24 +109,16 @@ const t = {
         <h4>{t.footer.platform}</h4>
         <ul class="secid-footer__links">
           <li>
-            <a
-              href={`/${lang}/${lang === 'es' ? 'empleos' : 'jobs'}`}
-              class="secid-footer__link">{t.footer.jobs}</a>
+            <a href={`/${lang}/jobs`} class="secid-footer__link">{t.footer.jobs}</a>
           </li>
           <li>
-            <a
-              href={`/${lang}/${lang === 'es' ? 'miembros' : 'members'}`}
-              class="secid-footer__link">{t.footer.members}</a>
+            <a href={`/${lang}/members`} class="secid-footer__link">{t.footer.members}</a>
           </li>
           <li>
-            <a
-              href={`/${lang}/${lang === 'es' ? 'eventos' : 'events'}`}
-              class="secid-footer__link">{t.footer.events}</a>
+            <a href={`/${lang}/events`} class="secid-footer__link">{t.footer.events}</a>
           </li>
           <li>
-            <a
-              href={`/${lang}/${lang === 'es' ? 'recursos' : 'resources'}`}
-              class="secid-footer__link">{t.footer.resources}</a>
+            <a href={`/${lang}/resources`} class="secid-footer__link">{t.footer.resources}</a>
           </li>
         </ul>
       </div>
@@ -159,18 +155,13 @@ const t = {
         <h4>{t.footer.support}</h4>
         <ul class="secid-footer__links">
           <li>
-            <a
-              href={`/${lang}/${lang === 'es' ? 'ayuda' : 'help'}`}
-              class="secid-footer__link">{t.footer.help}</a>
+            <a href={`/${lang}/help`} class="secid-footer__link">{t.footer.help}</a>
           </li>
           <li>
-            <a
-              href={`/${lang}/${lang === 'es' ? 'contacto' : 'contact'}`}
-              class="secid-footer__link">{t.footer.contact}</a>
+            <a href={`/${lang}/contact`} class="secid-footer__link">{t.footer.contact}</a>
           </li>
           <li>
-            <a href={`/${lang}/faq`} class="secid-footer__link"
-              >{t.footer.faq}</a>
+            <a href={`/${lang}/faq`} class="secid-footer__link">{t.footer.faq}</a>
           </li>
           <li>
             <a
@@ -188,15 +179,9 @@ const t = {
         {t.footer.copyright}
       </p>
       <div class="secid-footer__legal">
-        <a href={`/${lang}/${lang === 'es' ? 'privacidad' : 'privacy'}`}
-          >{t.footer.privacy}</a
-        >
-        <a href={`/${lang}/${lang === 'es' ? 'terminos' : 'terms'}`}
-          >{t.footer.terms}</a
-        >
-        <a href={`/${lang}/${lang === 'es' ? 'cookies' : 'cookies'}`}
-          >{t.footer.cookies}</a
-        >
+        <a href={`/${lang}/privacy`}>{t.footer.privacy}</a>
+        <a href={`/${lang}/terms`}>{t.footer.terms}</a>
+        <a href={`/${lang}/cookies`}>{t.footer.cookies}</a>
       </div>
     </div>
   </div>
