@@ -266,10 +266,10 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="mb-12 text-center">
-        <h2 className="mb-4 text-3xl font-bold text-gray-900">
+        <h1 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white">
           {t('pricing.title')}
-        </h2>
-        <p className="mx-auto max-w-2xl text-lg text-gray-600">
+        </h1>
+        <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
           {t('pricing.subtitle')}
         </p>
       </div>

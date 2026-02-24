@@ -434,6 +434,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                 type="button"
                 className="absolute inset-y-0 right-0 flex items-center pr-3"
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? (lang === 'es' ? 'Ocultar contraseña' : 'Hide password') : (lang === 'es' ? 'Mostrar contraseña' : 'Show password')}
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4 text-gray-400" />

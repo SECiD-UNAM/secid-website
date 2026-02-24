@@ -103,13 +103,15 @@ const members = [
           Conecta con los mejores profesionales en ciencia de datos de México
         </p>
         <div class="secid-hero__search">
+          <label for="member-search" class="sr-only">Buscar miembros</label>
           <input
+            id="member-search"
             type="text"
             placeholder="Buscar por nombre, empresa o habilidad..."
             class="secid-search-input"
           />
           <button class="secid-button secid-button--primary">
-            <i class="fas fa-search"></i>
+            <i class="fas fa-search" aria-hidden="true"></i>
             Buscar
           </button>
         </div>
@@ -173,11 +175,12 @@ const members = [
           <button
             class="secid-view-toggle__btn secid-view-toggle__btn--active"
             data-view="grid"
+            aria-label="Vista de cuadrícula"
           >
-            <i class="fas fa-th"></i>
+            <i class="fas fa-th" aria-hidden="true"></i>
           </button>
-          <button class="secid-view-toggle__btn" data-view="list">
-            <i class="fas fa-list"></i>
+          <button class="secid-view-toggle__btn" data-view="list" aria-label="Vista de lista">
+            <i class="fas fa-list" aria-hidden="true"></i>
           </button>
         </div>
       </div>
@@ -226,8 +229,9 @@ const members = [
                     target="_blank"
                     rel="noopener noreferrer"
                     class="secid-member-card__social-link"
+                    aria-label={`LinkedIn de ${member.name}`}
                   >
-                    <i class="fab fa-linkedin" />
+                    <i class="fab fa-linkedin" aria-hidden="true" />
                   </a>
                 )}
                 {member.twitter && (
@@ -236,15 +240,17 @@ const members = [
                     target="_blank"
                     rel="noopener noreferrer"
                     class="secid-member-card__social-link"
+                    aria-label={`Twitter de ${member.name}`}
                   >
-                    <i class="fab fa-twitter" />
+                    <i class="fab fa-twitter" aria-hidden="true" />
                   </a>
                 )}
                 <a
                   href={`mailto:${member.email}`}
                   class="secid-member-card__social-link"
+                  aria-label={`Email de ${member.name}`}
                 >
-                  <i class="fas fa-envelope" />
+                  <i class="fas fa-envelope" aria-hidden="true" />
                 </a>
               </div>
             </div>
@@ -253,9 +259,9 @@ const members = [
       </div>
 
       <!-- Pagination -->
-      <div class="secid-pagination">
-        <button class="secid-pagination__btn" disabled>
-          <i class="fas fa-chevron-left"></i>
+      <div class="secid-pagination" role="navigation" aria-label="Paginación">
+        <button class="secid-pagination__btn" disabled aria-label="Página anterior">
+          <i class="fas fa-chevron-left" aria-hidden="true"></i>
         </button>
         <button
           class="secid-pagination__number secid-pagination__number--active"
@@ -265,8 +271,8 @@ const members = [
         <button class="secid-pagination__number">3</button>
         <span class="secid-pagination__dots">...</span>
         <button class="secid-pagination__number">10</button>
-        <button class="secid-pagination__btn">
-          <i class="fas fa-chevron-right"></i>
+        <button class="secid-pagination__btn" aria-label="Página siguiente">
+          <i class="fas fa-chevron-right" aria-hidden="true"></i>
         </button>
       </div>
     </div>

@@ -94,22 +94,23 @@ const canonicalURL = new URL(Astro.url.pathname, siteUrl);
     </script>
     
     <!-- Amplitude Analytics -->
-    <script>
-      !function(){"use strict";!function(e,t){var r=e.amplitude||{_q:[],_iq:[]};if(r.invoked)e.console&&console.error&&console.error("Amplitude snippet has been loaded.");else{r.invoked=!0;var n=function(e,t){e.prototype[t]=function(){return this._q.push({name:t,args:Array.prototype.slice.call(arguments,0)}),this}},s=function(e,t,r){return function(n){e._q.push({name:t,args:Array.prototype.slice.call(r,0),resolve:n})}},o=function(e,t,r){e[t]=function(){if(r)return{promise:new Promise(s(e,t,Array.prototype.slice.call(arguments)))}}},i=function(e){for(var t=0;t<y.length;t++)o(e,y[t],!1);for(var r=0;r<g.length;r++)o(e,g[r],!0)};r.invoked=!0;var a=t.createElement("script");a.type="text/javascript",a.crossOrigin="anonymous",a.async=!0,a.src="https://cdn.amplitude.com/libs/analytics-browser-2.3.8-min.js.gz",a.onload=function(){e.amplitude.runQueuedFunctions||console.log("[Amplitude] Error: could not load SDK"),e.amplitude.trackSessionEvents&&e.amplitude.run()};var u=t.getElementsByTagName("script")[0];u.parentNode.insertBefore(a,u);for(var l=function(){return this._q=[],this},c=["add","append","clearAll","prepend","set","setOnce","unset","preInsert","postInsert","remove","getUserProperties"],p=0;p<c.length;p++)n(l,c[p]);r.Identify=l;for(var d=function(){return this._q=[],this},f=["getEventProperties","setProductId","setQuantity","setPrice","setRevenue","setRevenueType","setEventProperties"],v=0;v<f.length;v++)n(d,f[v]);r.Revenue=d;var y=["getDeviceId","setDeviceId","getSessionId","setSessionId","getUserId","setUserId","setOptOut","setTransport","reset"],g=["init","track","logEvent","identify","groupIdentify","setGroup","revenue"];i(r),r.run=function(e,t){t||((t=document.createElement("script")).type="text/javascript",t.crossOrigin="anonymous",t.async=!0,t.src="https://cdn.amplitude.com/libs/analytics-browser-2.3.8-min.js.gz",t.onload=function(){e.amplitude.runQueuedFunctions||console.log("[Amplitude] Error: could not load SDK")});var r=document.getElementsByTagName("script")[0];for(r.parentNode.insertBefore(t,r);0<e.amplitude._q.length;){var n=e.amplitude._q.shift(),s=e.amplitude[n.name].apply(e.amplitude,n.args);n.resolve&&n.resolve(s)}},r.runQueuedFunctions=function(){i(r);for(var e=0;e<r._q.length;e++){var t=r[r._q[e].name];if("function"==typeof t){var n=r._q[e].args;t.apply(r,n)}}r._q=[]},e.amplitude=r}}(window,document)}();
+    <script define:vars={{ amplitudeApiKey: import.meta.env.PUBLIC_AMPLITUDE_API_KEY || '' }}>
+      if (amplitudeApiKey) {
+        !function(){"use strict";!function(e,t){var r=e.amplitude||{_q:[],_iq:[]};if(r.invoked)e.console&&console.error&&console.error("Amplitude snippet has been loaded.");else{r.invoked=!0;var n=function(e,t){e.prototype[t]=function(){return this._q.push({name:t,args:Array.prototype.slice.call(arguments,0)}),this}},s=function(e,t,r){return function(n){e._q.push({name:t,args:Array.prototype.slice.call(r,0),resolve:n})}},o=function(e,t,r){e[t]=function(){if(r)return{promise:new Promise(s(e,t,Array.prototype.slice.call(arguments)))}}},i=function(e){for(var t=0;t<y.length;t++)o(e,y[t],!1);for(var r=0;r<g.length;r++)o(e,g[r],!0)};r.invoked=!0;var a=t.createElement("script");a.type="text/javascript",a.crossOrigin="anonymous",a.async=!0,a.src="https://cdn.amplitude.com/libs/analytics-browser-2.3.8-min.js.gz",a.onload=function(){e.amplitude.runQueuedFunctions||console.log("[Amplitude] Error: could not load SDK"),e.amplitude.trackSessionEvents&&e.amplitude.run()};var u=t.getElementsByTagName("script")[0];u.parentNode.insertBefore(a,u);for(var l=function(){return this._q=[],this},c=["add","append","clearAll","prepend","set","setOnce","unset","preInsert","postInsert","remove","getUserProperties"],p=0;p<c.length;p++)n(l,c[p]);r.Identify=l;for(var d=function(){return this._q=[],this},f=["getEventProperties","setProductId","setQuantity","setPrice","setRevenue","setRevenueType","setEventProperties"],v=0;v<f.length;v++)n(d,f[v]);r.Revenue=d;var y=["getDeviceId","setDeviceId","getSessionId","setSessionId","getUserId","setUserId","setOptOut","setTransport","reset"],g=["init","track","logEvent","identify","groupIdentify","setGroup","revenue"];i(r),r.run=function(e,t){t||((t=document.createElement("script")).type="text/javascript",t.crossOrigin="anonymous",t.async=!0,t.src="https://cdn.amplitude.com/libs/analytics-browser-2.3.8-min.js.gz",t.onload=function(){e.amplitude.runQueuedFunctions||console.log("[Amplitude] Error: could not load SDK")});var r=document.getElementsByTagName("script")[0];for(r.parentNode.insertBefore(t,r);0<e.amplitude._q.length;){var n=e.amplitude._q.shift(),s=e.amplitude[n.name].apply(e.amplitude,n.args);n.resolve&&n.resolve(s)}},r.runQueuedFunctions=function(){i(r);for(var e=0;e<r._q.length;e++){var t=r[r._q[e].name];if("function"==typeof t){var n=r._q[e].args;t.apply(r,n)}}r._q=[]},e.amplitude=r}}(window,document)}();
 
-      // Initialize Amplitude with fallback
-      try {
-        window.amplitude.init('c4f088d94c87d7e19e13b0cf4bc87334', {
-          defaultTracking: true,
-          trackingOptions: {
-            sessions: true,
-            pageViews: true,
-            formInteractions: true,
-            fileDownloads: true
-          }
-        });
-      } catch (error) {
-        console.warn('Amplitude initialization failed:', error);
+        try {
+          window.amplitude.init(amplitudeApiKey, {
+            defaultTracking: true,
+            trackingOptions: {
+              sessions: true,
+              pageViews: true,
+              formInteractions: true,
+              fileDownloads: true
+            }
+          });
+        } catch (error) {
+          console.warn('Amplitude initialization failed:', error);
+        }
       }
     </script>
   </head>
