@@ -1,0 +1,100 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<ModernLayout
+  title="Programa de Mentoría - SECiD"
+  description="Conecta con mentores experimentados en ciencia de datos o conviértete en mentor para la comunidad SECiD"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <main>
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Programa de Mentoría</h1>
+          <p class="secid-hero__subtitle">
+            Conecta con mentores experimentados o guía a la próxima generación de científicos de datos
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-section__header" style="text-align: center; margin-bottom: 3rem;">
+          <h2 class="secid-section__title">¿Cómo funciona?</h2>
+          <p class="secid-section__description">Nuestro programa de mentoría conecta profesionales experimentados con miembros que buscan orientación</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+          <div style="text-align: center; padding: 2rem; background: var(--card-bg); border: 1px solid var(--color-border); border-radius: var(--radius-xl);">
+            <div style="width: 4rem; height: 4rem; background: linear-gradient(135deg, var(--secid-primary), var(--secid-gold)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white; font-size: 1.5rem;">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">1. Regístrate</h3>
+            <p style="color: var(--color-text-secondary);">Crea tu perfil como mentor o mentee y define tus áreas de interés</p>
+          </div>
+
+          <div style="text-align: center; padding: 2rem; background: var(--card-bg); border: 1px solid var(--color-border); border-radius: var(--radius-xl);">
+            <div style="width: 4rem; height: 4rem; background: linear-gradient(135deg, var(--secid-secondary), var(--secid-secondary-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white; font-size: 1.5rem;">
+              <i class="fas fa-handshake"></i>
+            </div>
+            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">2. Matching</h3>
+            <p style="color: var(--color-text-secondary);">Nuestro algoritmo encuentra las mejores coincidencias basado en habilidades, disponibilidad y objetivos</p>
+          </div>
+
+          <div style="text-align: center; padding: 2rem; background: var(--card-bg); border: 1px solid var(--color-border); border-radius: var(--radius-xl);">
+            <div style="width: 4rem; height: 4rem; background: linear-gradient(135deg, var(--secid-gold), var(--secid-gold-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: white; font-size: 1.5rem;">
+              <i class="fas fa-rocket"></i>
+            </div>
+            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">3. Crece</h3>
+            <p style="color: var(--color-text-secondary);">Participa en sesiones regulares, establece metas y avanza en tu carrera profesional</p>
+          </div>
+        </div>
+
+        <!-- CTAs -->
+        <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+          <a href="/es/mentorship/browse" class="secid-button secid-button--primary secid-button--lg">
+            <i class="fas fa-search"></i>
+            Buscar Mentores
+          </a>
+          <a href="/es/dashboard" class="secid-button secid-button--outline secid-button--lg">
+            <i class="fas fa-chalkboard-teacher"></i>
+            Ser Mentor
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="secid-section" style="background: var(--color-surface-alt);">
+      <div class="secid-container">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: center;">
+          <div>
+            <div style="font-size: 2.5rem; font-weight: 700; color: var(--secid-primary);">50+</div>
+            <div style="color: var(--color-text-secondary);">Mentores Activos</div>
+          </div>
+          <div>
+            <div style="font-size: 2.5rem; font-weight: 700; color: var(--secid-secondary);">120+</div>
+            <div style="color: var(--color-text-secondary);">Sesiones Completadas</div>
+          </div>
+          <div>
+            <div style="font-size: 2.5rem; font-weight: 700; color: var(--secid-gold);">4.8/5</div>
+            <div style="color: var(--color-text-secondary);">Calificación Promedio</div>
+          </div>
+          <div>
+            <div style="font-size: 2.5rem; font-weight: 700; color: var(--secid-primary);">85%</div>
+            <div style="color: var(--color-text-secondary);">Tasa de Satisfacción</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="es" />
+</ModernLayout>

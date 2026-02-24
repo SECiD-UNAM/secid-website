@@ -196,8 +196,30 @@ const t = getTranslations('es');
       </div>
     </section>
 
-    <!-- Testimonials -->
+    <!-- Newsletter Archive CTA -->
     <section class="secid-section secid-bg-light">
+      <div class="secid-container">
+        <div class="secid-newsletter__archive-cta">
+          <div class="secid-newsletter__archive-cta-content">
+            <i class="fas fa-archive secid-newsletter__archive-cta-icon"></i>
+            <h2 class="secid-newsletter__archive-cta-title">
+              Ediciones Anteriores
+            </h2>
+            <p class="secid-newsletter__archive-cta-description">
+              Explora nuestras ediciones pasadas del newsletter con oportunidades,
+              recursos y noticias de la comunidad
+            </p>
+            <a href="/es/newsletter/archive" class="secid-button secid-button--outline secid-button--lg">
+              <i class="fas fa-archive"></i>
+              Ver archivo de newsletters
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="secid-section">
       <div class="secid-container">
         <div class="secid-section__header">
           <h2 class="secid-section__title">
@@ -584,6 +606,36 @@ const t = getTranslations('es');
     background: rgba(239, 68, 68, 0.1);
     color: #ef4444;
     border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  /* Newsletter Archive CTA */
+  .secid-newsletter__archive-cta {
+    text-align: center;
+    padding: var(--space-3xl);
+    background: linear-gradient(
+      135deg,
+      var(--secid-secondary),
+      var(--secid-secondary-dark)
+    );
+    border-radius: var(--radius-xl);
+    color: white;
+  }
+
+  .secid-newsletter__archive-cta-icon {
+    font-size: 3rem;
+    margin-bottom: var(--space-lg);
+  }
+
+  .secid-newsletter__archive-cta-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-newsletter__archive-cta-description {
+    font-size: 1.125rem;
+    margin: 0 0 var(--space-xl) 0;
+    opacity: 0.95;
   }
 
   /* Mobile Styles */

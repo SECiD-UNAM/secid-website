@@ -1,0 +1,120 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import SpotlightListPage from '../../components/wrappers/SpotlightListPage';
+---
+
+<ModernLayout
+  title="Historias de Egresados - SECiD"
+  description="Conoce las historias de éxito de egresados en ciencia de datos de la UNAM"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Historias de Egresados</h1>
+          <p class="secid-hero__subtitle">
+            Descubre cómo nuestros egresados están transformando el mundo con la ciencia de datos
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Spotlight List -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <SpotlightListPage client:load lang="es" />
+      </div>
+    </section>
+
+    <!-- Share Your Story CTA -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-spotlights__cta">
+          <div class="secid-spotlights__cta-content">
+            <i class="fas fa-star secid-spotlights__cta-icon"></i>
+            <h2 class="secid-spotlights__cta-title">
+              ¿Quieres compartir tu historia?
+            </h2>
+            <p class="secid-spotlights__cta-description">
+              Si eres egresado de ciencia de datos de la UNAM y quieres inspirar a la comunidad, nos encantaría conocer tu trayectoria
+            </p>
+            <div class="secid-spotlights__cta-actions">
+              <a
+                href="/es/dashboard/spotlights/new"
+                class="secid-button secid-button--primary secid-button--lg"
+              >
+                <i class="fas fa-pen"></i>
+                Compartir Mi Historia
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="es" />
+</ModernLayout>
+
+<style>
+  /* Spotlights CTA */
+  .secid-spotlights__cta {
+    text-align: center;
+    padding: var(--space-3xl);
+    background: linear-gradient(
+      135deg,
+      var(--secid-cream),
+      rgba(244, 239, 224, 0.5)
+    );
+    border-radius: var(--radius-xl);
+  }
+
+  [data-theme='dark'] .secid-spotlights__cta {
+    background: linear-gradient(
+      135deg,
+      var(--secid-gray-800),
+      var(--secid-gray-700)
+    );
+  }
+
+  .secid-spotlights__cta-icon {
+    font-size: 3rem;
+    color: var(--secid-gold);
+    margin-bottom: var(--space-lg);
+  }
+
+  .secid-spotlights__cta-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-spotlights__cta-description {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--space-xl) 0;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .secid-spotlights__cta-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .secid-spotlights__cta-actions {
+      flex-direction: column;
+    }
+  }
+</style>

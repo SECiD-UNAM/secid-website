@@ -254,6 +254,7 @@ export * from './notification';
 export * from './messaging';
 export * from './subscription';
 export * from './learning';
+export * from './spotlight';
 
 // Resolve ambiguous re-exports by explicitly choosing the canonical source
 export { type Resource } from './resource';

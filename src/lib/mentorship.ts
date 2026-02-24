@@ -79,9 +79,9 @@ export async function getMentorProfile(userId: string): Promise<MentorProfile | 
         id: docSnap['id'],
         joinedAt: firestoreToDate(data['joinedAt']),
         updatedAt: firestoreToDate(data['updatedAt'])
-      } as MentorProfile;
+      } as unknown as MentorProfile;
     }
-    
+
     return null;
   } catch (error) {
     console.error('Error getting mentor profile:', error);
@@ -121,9 +121,9 @@ export async function getMentorProfiles(filters?: {
         id: doc['id'],
         joinedAt: firestoreToDate(data['joinedAt']),
         updatedAt: firestoreToDate(data['updatedAt'])
-      } as MentorProfile);
+      } as unknown as MentorProfile);
     });
-    
+
     return mentors;
   } catch (error) {
     console.error('Error getting mentor profiles:', error);
@@ -157,23 +157,23 @@ export async function updateMentorProfile(
 ): Promise<MentorProfile> {
   try {
     const docRef = doc(db, COLLECTIONS.MENTORS, userId);
-    const updateData = {
+    const updateData: Record<string, any> = {
       ...updates,
       updatedAt: serverTimestamp()
     };
-    
+
     if (updates.joinedAt) {
       updateData.joinedAt = dateToFirestore(updates.joinedAt);
     }
-    
+
     await updateDoc(docRef, updateData);
-    
+
     // Return updated profile
     const updatedProfile = await getMentorProfile(userId);
     if (!updatedProfile) {
       throw new Error('Profile not found after update');
     }
-    
+
     return updatedProfile;
   } catch (error) {
     console.error('Error updating mentor profile:', error);
@@ -194,7 +194,7 @@ export async function getMenteeProfile(userId: string): Promise<MenteeProfile | 
         id: docSnap['id'],
         joinedAt: firestoreToDate(data['joinedAt']),
         updatedAt: firestoreToDate(data['updatedAt'])
-      } as MenteeProfile;
+      } as unknown as MenteeProfile;
     }
     
     return null;
@@ -230,23 +230,23 @@ export async function updateMenteeProfile(
 ): Promise<MenteeProfile> {
   try {
     const docRef = doc(db, COLLECTIONS.MENTEES, userId);
-    const updateData = {
+    const updateData: Record<string, any> = {
       ...updates,
       updatedAt: serverTimestamp()
     };
-    
+
     if (updates.joinedAt) {
       updateData.joinedAt = dateToFirestore(updates.joinedAt);
     }
-    
+
     await updateDoc(docRef, updateData);
-    
+
     // Return updated profile
     const updatedProfile = await getMenteeProfile(userId);
     if (!updatedProfile) {
       throw new Error('Profile not found after update');
     }
-    
+
     return updatedProfile;
   } catch (error) {
     console.error('Error updating mentee profile:', error);
@@ -406,7 +406,7 @@ export async function getUserMatches(userId: string): Promise<MentorshipMatch[]>
         startDate: data['startDate'] ? firestoreToDate(data['startDate']) : undefined,
         endDate: data['endDate'] ? firestoreToDate(data['endDate']) : undefined,
         lastActivity: data['lastActivity'] ? firestoreToDate(data['lastActivity']) : undefined
-      } as MentorshipMatch);
+      } as unknown as MentorshipMatch);
     });
     
     return matches.sort((a, b) => b['updatedAt'].getTime() - a['updatedAt'].getTime());
@@ -460,7 +460,7 @@ export async function getMentorshipRequests(filters: {
           id: docSnap['id'],
           createdAt: firestoreToDate(data['createdAt']),
           respondedAt: data['respondedAt'] ? firestoreToDate(data['respondedAt']) : undefined
-        } as MentorshipRequest];
+        } as unknown as MentorshipRequest];
       }
       
       return [];
@@ -490,7 +490,7 @@ export async function getMentorshipRequests(filters: {
         id: doc['id'],
         createdAt: firestoreToDate(data['createdAt']),
         respondedAt: data['respondedAt'] ? firestoreToDate(data['respondedAt']) : undefined
-      } as MentorshipRequest);
+      } as unknown as MentorshipRequest);
     });
     
     return requests;
@@ -528,14 +528,14 @@ export async function updateMentorshipRequest(
 ): Promise<MentorshipRequest> {
   try {
     const docRef = doc(db, COLLECTIONS.REQUESTS, requestId);
-    const updateData = { ...updates };
-    
+    const updateData: Record<string, any> = { ...updates };
+
     if (updates.respondedAt) {
       updateData.respondedAt = dateToFirestore(updates.respondedAt);
     }
-    
+
     await updateDoc(docRef, updateData);
-    
+
     // If request is accepted, create a match
     if (updates['status'] === 'accepted') {
       const requestDoc = await getDoc(docRef);
@@ -550,8 +550,9 @@ export async function updateMentorshipRequest(
           matchReason: ['Accepted mentorship request'],
           requestMessage: requestData['message'],
           goals: requestData.goals,
-          meetingFrequency: requestData.meetingFrequency,
-          communicationPreference: requestData.communicationPreference,
+          meetingFrequency: requestData.meetingFrequency || '',
+          communicationPreference: requestData.communicationPreference || '',
+          sessionsCompleted: 0,
           createdAt: new Date(),
           updatedAt: new Date(),
           startDate: new Date()
@@ -561,7 +562,10 @@ export async function updateMentorshipRequest(
     
     // Return updated request
     const requests = await getMentorshipRequests({ requestId });
-    return requests?.[0];
+    if (!requests[0]) {
+      throw new Error('Request not found after update');
+    }
+    return requests[0];
   } catch (error) {
     console.error('Error updating mentorship request:', error);
     throw new Error('Failed to update request');
@@ -594,7 +598,7 @@ export async function getMentorshipSessions(filters: {
             ...hw,
             dueDate: hw.dueDate ? firestoreToDate(hw.dueDate) : undefined
           }))
-        } as MentorshipSession];
+        } as unknown as MentorshipSession];
       }
       
       return [];
@@ -630,7 +634,7 @@ export async function getMentorshipSessions(filters: {
           ...hw,
           dueDate: hw.dueDate ? firestoreToDate(hw.dueDate) : undefined
         }))
-      } as MentorshipSession);
+      } as unknown as MentorshipSession);
     });
     
     return sessions;
@@ -683,7 +687,7 @@ export async function getUpcomingSessions(userId: string): Promise<MentorshipSes
           ...hw,
           dueDate: hw.dueDate ? firestoreToDate(hw.dueDate) : undefined
         }))
-      } as MentorshipSession);
+      } as unknown as MentorshipSession);
     });
     
     // Remove duplicates and sort by date
@@ -717,7 +721,7 @@ export async function createMentorshipSession(
       scheduledAt: dateToFirestore(session.scheduledAt),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-      homework: session?.homework?.map(hw => ({
+      homework: session?.homework?.map((hw: { dueDate?: Date; [key: string]: any }) => ({
         ...hw,
         dueDate: hw.dueDate ? dateToFirestore(hw.dueDate) : null
       }))
@@ -745,26 +749,29 @@ export async function updateMentorshipSession(
 ): Promise<MentorshipSession> {
   try {
     const docRef = doc(db, COLLECTIONS.SESSIONS, sessionId);
-    const updateData = { ...updates };
-    
+    const updateData: Record<string, any> = { ...updates };
+
     if (updates.scheduledAt) {
       updateData.scheduledAt = dateToFirestore(updates.scheduledAt);
     }
-    
+
     if (updates.homework) {
-      updateData.homework = updates.homework.map(hw => ({
+      updateData.homework = updates.homework.map((hw: { dueDate?: Date; [key: string]: any }) => ({
         ...hw,
         dueDate: hw.dueDate ? dateToFirestore(hw.dueDate) : null
       }));
     }
-    
+
     updateData['updatedAt'] = serverTimestamp();
-    
+
     await updateDoc(docRef, updateData);
-    
+
     // Return updated session
     const sessions = await getMentorshipSessions({ sessionId });
-    return sessions?.[0];
+    if (!sessions[0]) {
+      throw new Error('Session not found after update');
+    }
+    return sessions[0];
   } catch (error) {
     console.error('Error updating mentorship session:', error);
     throw new Error('Failed to update session');
@@ -811,7 +818,7 @@ async function updateMentorRating(mentorId: string): Promise<void> {
     const feedbacks: MentorshipFeedback[] = [];
     
     querySnapshot.forEach((doc) => {
-      feedbacks.push({ ...doc.data(), id: doc['id'] } as MentorshipFeedback);
+      feedbacks.push({ ...doc.data(), id: doc['id'] } as unknown as MentorshipFeedback);
     });
     
     if (feedbacks.length === 0) return;
@@ -850,18 +857,18 @@ export async function getMentorshipStats(): Promise<MentorshipStats> {
         id: doc['id'],
         joinedAt: firestoreToDate(data['joinedAt']),
         updatedAt: firestoreToDate(data['updatedAt'])
-      } as MentorProfile);
+      } as unknown as MentorProfile);
     });
-    
+
     const feedbacks: MentorshipFeedback[] = [];
     feedbackSnap.forEach((doc) => {
-      feedbacks.push({ ...doc.data(), id: doc['id'] } as MentorshipFeedback);
+      feedbacks.push({ ...doc.data(), id: doc['id'] } as unknown as MentorshipFeedback);
     });
     
     // Calculate popular skills
     const skillCounts: Record<string, number> = {};
     mentors.forEach(mentor => {
-      mentor.expertiseAreas.forEach(skill => {
+      mentor.expertiseAreas.forEach((skill: string) => {
         skillCounts[skill] = (skillCounts[skill] || 0) + 1;
       });
     });
@@ -887,7 +894,7 @@ export async function getMentorshipStats(): Promise<MentorshipStats> {
     // Calculate average match score
     const matches: MentorshipMatch[] = [];
     matchesSnap.forEach((doc) => {
-      matches.push({ ...doc.data(), id: doc['id'] } as MentorshipMatch);
+      matches.push({ ...doc.data(), id: doc['id'] } as unknown as MentorshipMatch);
     });
     
     const averageMatchScore = matches.length > 0
@@ -901,6 +908,7 @@ export async function getMentorshipStats(): Promise<MentorshipStats> {
       completedSessions: feedbacks.filter(f => f['type'] === 'session').length,
       averageRating,
       averageMatchScore,
+      topExpertise: popularSkills,
       popularSkills,
       successRate
     };
@@ -945,7 +953,7 @@ export function subscribeMentorshipRequests(
         id: doc['id'],
         createdAt: firestoreToDate(data['createdAt']),
         respondedAt: data['respondedAt'] ? firestoreToDate(data['respondedAt']) : undefined
-      } as MentorshipRequest);
+      } as unknown as MentorshipRequest);
     });
     
     callback(requests);
@@ -979,7 +987,7 @@ export function subscribeUpcomingSessions(
         scheduledAt: firestoreToDate(data['scheduledAt']),
         createdAt: firestoreToDate(data['createdAt']),
         updatedAt: firestoreToDate(data['updatedAt'])
-      } as MentorshipSession);
+      } as unknown as MentorshipSession);
     });
     
     callback(sessions);
@@ -1050,7 +1058,7 @@ export async function getMentorshipResources(filters?: {
         id: doc['id'],
         createdAt: firestoreToDate(data['createdAt']),
         updatedAt: firestoreToDate(data['updatedAt'])
-      } as MentorshipResource);
+      } as unknown as MentorshipResource);
     });
     
     return resources;
@@ -1070,7 +1078,7 @@ export async function createMentorshipGoal(
       targetDate: goal.targetDate ? dateToFirestore(goal.targetDate) : null,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-      milestones: goal.milestones.map(milestone => ({
+      milestones: goal.milestones.map((milestone: { completedAt?: Date; [key: string]: any }) => ({
         ...milestone,
         completedAt: milestone.completedAt ? dateToFirestore(milestone.completedAt) : null
       }))
@@ -1096,19 +1104,19 @@ export async function updateMentorshipGoal(
 ): Promise<MentorshipGoal> {
   try {
     const docRef = doc(db, COLLECTIONS.GOALS, goalId);
-    const updateData = { ...updates };
-    
+    const updateData: Record<string, any> = { ...updates };
+
     if (updates.targetDate) {
       updateData.targetDate = dateToFirestore(updates.targetDate);
     }
-    
+
     if (updates.milestones) {
-      updateData.milestones = updates.milestones.map(milestone => ({
+      updateData.milestones = updates.milestones.map((milestone: { completedAt?: Date; [key: string]: any }) => ({
         ...milestone,
         completedAt: milestone.completedAt ? dateToFirestore(milestone.completedAt) : null
       }));
     }
-    
+
     updateData['updatedAt'] = serverTimestamp();
     
     await updateDoc(docRef, updateData);
@@ -1127,7 +1135,7 @@ export async function updateMentorshipGoal(
           ...milestone,
           completedAt: milestone.completedAt ? firestoreToDate(milestone.completedAt) : undefined
         }))
-      } as MentorshipGoal;
+      } as unknown as MentorshipGoal;
     }
     
     throw new Error('Goal not found after update');
@@ -1160,7 +1168,7 @@ export async function getMentorshipGoals(matchId: string): Promise<MentorshipGoa
           ...milestone,
           completedAt: milestone.completedAt ? firestoreToDate(milestone.completedAt) : undefined
         }))
-      } as MentorshipGoal);
+      } as unknown as MentorshipGoal);
     });
     
     return goals;

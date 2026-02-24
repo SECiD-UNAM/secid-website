@@ -1,0 +1,13 @@
+---
+export const prerender = false;
+import DashboardLayout from '../../../../layouts/DashboardLayout.astro';
+import BlogEditorPage from '../../../../components/wrappers/BlogEditorPage';
+---
+
+<DashboardLayout
+  title="Nuevo Artículo - SECiD"
+  description="Crear un nuevo artículo del blog"
+  lang="es"
+>
+  <BlogEditorPage client:load lang="es" />
+</DashboardLayout>

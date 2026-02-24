@@ -1,8 +1,9 @@
-import {onDocumentUpdated} from "firebase-functions/v2/firestore";
+import {onDocumentUpdated, onDocumentCreated} from "firebase-functions/v2/firestore";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import {beforeUserCreated, AuthBlockingEvent} from "firebase-functions/v2/identity";
 import * as functionsV1 from "firebase-functions/v1";
 import * as admin from "firebase-admin";
+import {sendEmail, generateJobMatchEmail} from "./email-service";
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -196,4 +197,62 @@ export const onUserDelete = functionsV1.auth.user().onDelete(async (user) => {
 
   console.log(`User data cleaned up for ${uid}`);
   return null;
+});
+
+// Trigger when a new job is posted
+export const onNewJobPosted = onDocumentCreated("jobs/{jobId}", async (event) => {
+  const snapshot = event.data;
+  if (!snapshot) return;
+
+  const jobData = snapshot.data();
+  const jobId = event.params.jobId;
+
+  // Only notify for published/active jobs
+  if (jobData.status !== "active" && jobData.status !== "published") return;
+
+  try {
+    // Find users with job match notifications enabled
+    const usersSnapshot = await admin.firestore()
+      .collection("users")
+      .where("notificationSettings.jobMatches", "==", true)
+      .where("privacySettings.jobSearching", "==", true)
+      .limit(100)
+      .get();
+
+    const siteUrl = process.env.SITE_URL || "https://secid.mx";
+
+    for (const userDoc of usersSnapshot.docs) {
+      const userData = userDoc.data();
+      if (!userData.email) continue;
+
+      // Simple skill matching score
+      const userSkills = (userData.skills || []).map((s: string) => s.toLowerCase());
+      const jobTags = (jobData.tags || []).map((t: string) => t.toLowerCase());
+      const matchCount = userSkills.filter((s: string) => jobTags.includes(s)).length;
+      const matchScore = jobTags.length > 0
+        ? Math.round((matchCount / jobTags.length) * 100)
+        : 50;
+
+      // Only send if match score is above threshold
+      if (matchScore < 30) continue;
+
+      const html = generateJobMatchEmail({
+        recipientName: userData.displayName || userData.firstName || "Miembro",
+        jobTitle: jobData.title,
+        company: jobData.company,
+        matchScore,
+        jobUrl: `${siteUrl}/es/jobs`,
+      });
+
+      await sendEmail({
+        to: userData.email,
+        subject: `Nueva oportunidad: ${jobData.title} en ${jobData.company}`,
+        html,
+      });
+    }
+
+    console.log(`Job notifications sent for job ${jobId}`);
+  } catch (error) {
+    console.error("Error sending job notifications:", error);
+  }
 });

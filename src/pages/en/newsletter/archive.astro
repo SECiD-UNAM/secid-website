@@ -1,0 +1,35 @@
+---
+import ModernLayout from '../../../layouts/ModernLayout.astro';
+import Navigation from '../../../components/Navigation.astro';
+import Footer from '../../../components/Footer.astro';
+import NewsletterArchivePage from '../../../components/wrappers/NewsletterArchivePage';
+---
+
+<ModernLayout
+  title="Newsletter Archive - SECiD"
+  description="Browse past editions of the SECiD newsletter"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <main>
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Newsletter Archive</h1>
+          <p class="secid-hero__subtitle">
+            Browse our past editions
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="secid-section">
+      <div class="secid-container">
+        <NewsletterArchivePage client:load lang="en" />
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</ModernLayout>

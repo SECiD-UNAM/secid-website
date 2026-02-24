@@ -1,0 +1,25 @@
+---
+export const prerender = false;
+import ModernLayout from '../../../layouts/ModernLayout.astro';
+import Navigation from '../../../components/Navigation.astro';
+import Footer from '../../../components/Footer.astro';
+import MemberProfilePage from '../../../components/wrappers/MemberProfilePage';
+
+const { id } = Astro.params;
+---
+
+<ModernLayout
+  title="Member Profile - SECiD"
+  description="Member profile of the SECiD community - UNAM Data Science Alumni Society"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <section class="secid-section">
+    <div class="secid-container">
+      <MemberProfilePage client:load memberId={id} lang="en" />
+    </div>
+  </section>
+
+  <Footer lang="en" />
+</ModernLayout>

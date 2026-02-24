@@ -229,7 +229,7 @@ export async function uploadResource(request: ResourceUploadRequest): Promise<st
           uid: user.uid,
           name: user.displayName || 'Unknown',
           email: user['email'] || '',
-          avatar: user.photoURL,
+          avatar: user.photoURL ?? undefined,
           verified: false,
           contributionCount: 0
         },
@@ -470,7 +470,7 @@ export async function addReview(resourceId: string, rating: number, comment: str
       const review: Omit<ResourceReview, 'id'> = {
         userId: user.uid,
         userName: user.displayName || 'Anonymous',
-        userAvatar: user.photoURL,
+        userAvatar: user.photoURL ?? undefined,
         rating,
         comment,
         createdAt: new Date(),

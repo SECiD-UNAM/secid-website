@@ -11,41 +11,78 @@ const t = {
     nav: {
       home: 'Inicio',
       jobs: 'Empleos',
-      members: 'Miembros',
-      journalClub: 'Journal Club',
+      community: 'Comunidad',
       about: 'Nosotros',
       login: 'Iniciar Sesión',
       register: 'Registrarse',
       theme: 'Tema',
       language: 'Idioma',
+      // Community dropdown items
+      members: 'Miembros',
+      events: 'Eventos',
+      mentorship: 'Mentoría',
+      resources: 'Recursos',
+      blog: 'Blog',
+      commissions: 'Comisiones',
+      spotlights: 'Historias de Éxito',
+      journalClub: 'Journal Club',
+      newsletter: 'Newsletter',
     },
   },
   en: {
     nav: {
       home: 'Home',
       jobs: 'Jobs',
-      members: 'Members',
-      journalClub: 'Journal Club',
+      community: 'Community',
       about: 'About Us',
       login: 'Login',
       register: 'Register',
       theme: 'Theme',
       language: 'Language',
+      // Community dropdown items
+      members: 'Members',
+      events: 'Events',
+      mentorship: 'Mentorship',
+      resources: 'Resources',
+      blog: 'Blog',
+      commissions: 'Commissions',
+      spotlights: 'Success Stories',
+      journalClub: 'Journal Club',
+      newsletter: 'Newsletter',
     },
   },
 }[lang];
 
-// Navigation links - using consistent English slugs for both languages
+// Top-level navigation links
 const navLinks = [
   { href: `/${lang}/`, label: t.nav.home },
   { href: `/${lang}/jobs`, label: t.nav.jobs },
-  { href: `/${lang}/members`, label: t.nav.members },
-  { href: `/${lang}/journal-club`, label: t.nav.journalClub },
   { href: `/${lang}/about-us`, label: t.nav.about },
+];
+
+// Community dropdown links
+const communityLinks = [
+  { href: `/${lang}/members`, label: t.nav.members, icon: 'fas fa-users' },
+  { href: `/${lang}/events`, label: t.nav.events, icon: 'fas fa-calendar-alt' },
+  { href: `/${lang}/mentorship`, label: t.nav.mentorship, icon: 'fas fa-chalkboard-teacher' },
+  { href: `/${lang}/resources`, label: t.nav.resources, icon: 'fas fa-book-open' },
+  { href: `/${lang}/blog`, label: t.nav.blog, icon: 'fas fa-newspaper' },
+  { href: `/${lang}/commissions`, label: t.nav.commissions, icon: 'fas fa-project-diagram' },
+  { href: `/${lang}/spotlights`, label: t.nav.spotlights, icon: 'fas fa-star' },
+  { href: `/${lang}/journal-club`, label: t.nav.journalClub, icon: 'fas fa-flask' },
+];
+
+// All links for mobile menu
+const allMobileLinks = [
+  ...navLinks,
+  ...communityLinks,
 ];
 
 // Get current path to highlight active link
 const currentPath = Astro.url.pathname;
+
+// Check if current path is within community section
+const isCommunityActive = communityLinks.some((link) => currentPath.startsWith(link.href));
 
 // Regex pattern for language paths
 const langPathRegex = /^\/(es|en)/;
@@ -74,7 +111,44 @@ const langPathRegex = /^\/(es|en)/;
 
     <div class="secid-navbar__nav">
       {
-        navLinks.map((link) => (
+        navLinks.slice(0, 2).map((link) => (
+          <a
+            href={link.href}
+            class={`secid-navbar__link ${currentPath === link.href ? 'secid-navbar__link--active' : ''}`}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+
+      <!-- Community Dropdown -->
+      <div class="secid-navbar__dropdown" data-dropdown>
+        <button
+          class={`secid-navbar__link secid-navbar__dropdown-toggle ${isCommunityActive ? 'secid-navbar__link--active' : ''}`}
+          aria-expanded="false"
+          aria-haspopup="true"
+        >
+          {t.nav.community}
+          <i class="fas fa-chevron-down secid-navbar__dropdown-icon" aria-hidden="true"></i>
+        </button>
+        <div class="secid-navbar__dropdown-menu" role="menu">
+          {
+            communityLinks.map((link) => (
+              <a
+                href={link.href}
+                class={`secid-navbar__dropdown-item ${currentPath.startsWith(link.href) ? 'secid-navbar__dropdown-item--active' : ''}`}
+                role="menuitem"
+              >
+                <i class={`${link.icon} secid-navbar__dropdown-item-icon`} aria-hidden="true"></i>
+                {link.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      {
+        navLinks.slice(2).map((link) => (
           <a
             href={link.href}
             class={`secid-navbar__link ${currentPath === link.href ? 'secid-navbar__link--active' : ''}`}
@@ -88,8 +162,8 @@ const langPathRegex = /^\/(es|en)/;
     <div class="secid-navbar__actions">
       <!-- Language Selector -->
       <div class="secid-navbar__lang-selector">
-        <button 
-          class="secid-navbar__lang-btn" 
+        <button
+          class="secid-navbar__lang-btn"
           aria-label={`${t.nav.language}. ${lang === 'es' ? 'Idioma actual: Español' : 'Current language: English'}`}
           aria-expanded="false"
           aria-haspopup="listbox"
@@ -98,7 +172,7 @@ const langPathRegex = /^\/(es|en)/;
           <i class="fas fa-globe" aria-hidden="true"></i>
           <span>{lang.toUpperCase()}</span>
         </button>
-        <div 
+        <div
           class="secid-navbar__lang-dropdown"
           role="listbox"
           aria-labelledby="language-selector"
@@ -127,8 +201,8 @@ const langPathRegex = /^\/(es|en)/;
       </div>
 
       <!-- Theme Toggle -->
-      <button 
-        class="secid-navbar__theme-toggle" 
+      <button
+        class="secid-navbar__theme-toggle"
         aria-label={`${t.nav.theme}. ${lang === 'es' ? 'Cambiar a tema oscuro' : 'Switch to dark theme'}`}
         title={`${t.nav.theme}`}
       >
@@ -147,7 +221,7 @@ const langPathRegex = /^\/(es|en)/;
     </div>
 
     <!-- Mobile Menu Toggle -->
-    <button 
+    <button
       class="secid-navbar__mobile-toggle"
       aria-label={`${lang === 'es' ? 'Abrir menú de navegación' : 'Open navigation menu'}`}
       aria-expanded="false"
@@ -160,15 +234,47 @@ const langPathRegex = /^\/(es|en)/;
   </div>
 
   <!-- Mobile Menu (for tablets) -->
-  <div 
+  <div
     class="secid-navbar__mobile-menu"
     id="mobile-menu"
     role="menu"
     aria-hidden="true"
   >
     <nav class="secid-navbar__mobile-nav">
+      <!-- Top-level links -->
       {
-        navLinks.map((link) => (
+        navLinks.slice(0, 2).map((link) => (
+          <a
+            href={link.href}
+            class={`secid-navbar__link ${currentPath === link.href ? 'secid-navbar__link--active' : ''}`}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+
+      <!-- Community section header -->
+      <div class="secid-navbar__mobile-section-header">
+        <i class="fas fa-users" aria-hidden="true"></i>
+        {t.nav.community}
+      </div>
+
+      <!-- Community links -->
+      {
+        communityLinks.map((link) => (
+          <a
+            href={link.href}
+            class={`secid-navbar__link secid-navbar__link--sub ${currentPath.startsWith(link.href) ? 'secid-navbar__link--active' : ''}`}
+          >
+            <i class={link.icon} aria-hidden="true" style="width: 1.25rem; text-align: center;"></i>
+            {link.label}
+          </a>
+        ))
+      }
+
+      <!-- About -->
+      {
+        navLinks.slice(2).map((link) => (
           <a
             href={link.href}
             class={`secid-navbar__link ${currentPath === link.href ? 'secid-navbar__link--active' : ''}`}
@@ -217,8 +323,8 @@ const langPathRegex = /^\/(es|en)/;
 </nav>
 
 <!-- Bottom Navigation (for mobile) -->
-<nav 
-  class="secid-bottom-nav" 
+<nav
+  class="secid-bottom-nav"
   aria-label={lang === 'es' ? 'Navegación móvil' : 'Mobile navigation'}
   role="navigation"
 >
@@ -231,7 +337,7 @@ const langPathRegex = /^\/(es|en)/;
       <i class="secid-bottom-nav__icon fas fa-home"></i>
       <span class="secid-bottom-nav__label">{t.nav.home}</span>
     </a>
-    
+
     <a
       href={`/${lang}/jobs`}
       class={`secid-bottom-nav__item ${currentPath === `/${lang}/jobs` ? 'secid-bottom-nav__item--active' : ''}`}
@@ -241,15 +347,15 @@ const langPathRegex = /^\/(es|en)/;
       <span class="secid-bottom-nav__label">{t.nav.jobs}</span>
     </a>
 
-    <a
-      href={`/${lang}/members`}
-      class={`secid-bottom-nav__item ${currentPath === `/${lang}/members` ? 'secid-bottom-nav__item--active' : ''}`}
-      aria-label={t.nav.members}
+    <button
+      class={`secid-bottom-nav__item ${isCommunityActive ? 'secid-bottom-nav__item--active' : ''}`}
+      aria-label={t.nav.community}
+      data-bottom-nav-community
     >
       <i class="secid-bottom-nav__icon fas fa-users"></i>
-      <span class="secid-bottom-nav__label">{t.nav.members}</span>
-    </a>
-    
+      <span class="secid-bottom-nav__label">{t.nav.community}</span>
+    </button>
+
     <!-- More button for additional options -->
     <button
       class="secid-bottom-nav__item"
@@ -260,4 +366,254 @@ const langPathRegex = /^\/(es|en)/;
       <span class="secid-bottom-nav__label">{lang === 'es' ? 'Más' : 'More'}</span>
     </button>
   </div>
+
+  <!-- Community drawer for mobile -->
+  <div class="secid-bottom-nav__drawer" data-community-drawer aria-hidden="true">
+    <div class="secid-bottom-nav__drawer-header">
+      <span>{t.nav.community}</span>
+      <button data-close-drawer aria-label={lang === 'es' ? 'Cerrar' : 'Close'}>
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="secid-bottom-nav__drawer-links">
+      {
+        communityLinks.map((link) => (
+          <a href={link.href} class="secid-bottom-nav__drawer-link">
+            <i class={link.icon} aria-hidden="true"></i>
+            <span>{link.label}</span>
+          </a>
+        ))
+      }
+    </div>
+  </div>
 </nav>
+
+<style>
+  /* Community dropdown styles */
+  .secid-navbar__dropdown {
+    position: relative;
+  }
+
+  .secid-navbar__dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    padding: inherit;
+  }
+
+  .secid-navbar__dropdown-icon {
+    font-size: 0.625rem;
+    transition: transform 0.2s ease;
+  }
+
+  .secid-navbar__dropdown[data-open] .secid-navbar__dropdown-icon {
+    transform: rotate(180deg);
+  }
+
+  .secid-navbar__dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 0.75rem;
+    min-width: 220px;
+    background: var(--card-bg, white);
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: var(--radius-xl, 12px);
+    box-shadow: var(--shadow-lg, 0 10px 25px rgba(0,0,0,0.1));
+    padding: 0.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 100;
+  }
+
+  .secid-navbar__dropdown[data-open] .secid-navbar__dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .secid-navbar__dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+    color: var(--color-text-primary, #1f2937);
+    text-decoration: none;
+    border-radius: var(--radius-lg, 8px);
+    font-size: 0.9rem;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .secid-navbar__dropdown-item:hover {
+    background: var(--color-surface-alt, #f3f4f6);
+  }
+
+  .secid-navbar__dropdown-item--active {
+    color: var(--secid-primary, #003B5C);
+    font-weight: 600;
+    background: rgba(0, 59, 92, 0.05);
+  }
+
+  .secid-navbar__dropdown-item-icon {
+    width: 1.25rem;
+    text-align: center;
+    color: var(--color-text-tertiary, #9ca3af);
+    font-size: 0.875rem;
+  }
+
+  .secid-navbar__dropdown-item:hover .secid-navbar__dropdown-item-icon,
+  .secid-navbar__dropdown-item--active .secid-navbar__dropdown-item-icon {
+    color: var(--secid-primary, #003B5C);
+  }
+
+  /* Mobile section header */
+  .secid-navbar__mobile-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-tertiary, #9ca3af);
+    border-top: 1px solid var(--color-border, #e5e7eb);
+    margin-top: 0.5rem;
+  }
+
+  .secid-navbar__link--sub {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-left: 1.5rem !important;
+    font-size: 0.9rem;
+  }
+
+  /* Community drawer for bottom nav */
+  .secid-bottom-nav__drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card-bg, white);
+    border-top: 1px solid var(--color-border, #e5e7eb);
+    border-radius: var(--radius-xl, 12px) var(--radius-xl, 12px) 0 0;
+    box-shadow: 0 -10px 25px rgba(0,0,0,0.1);
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    z-index: 999;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .secid-bottom-nav__drawer[data-open] {
+    transform: translateY(0);
+  }
+
+  .secid-bottom-nav__drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    font-size: 1.125rem;
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+  }
+
+  .secid-bottom-nav__drawer-header button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-tertiary, #9ca3af);
+    font-size: 1.25rem;
+    padding: 0.25rem;
+  }
+
+  .secid-bottom-nav__drawer-links {
+    padding: 0.5rem;
+  }
+
+  .secid-bottom-nav__drawer-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1rem;
+    color: var(--color-text-primary, #1f2937);
+    text-decoration: none;
+    border-radius: var(--radius-lg, 8px);
+    font-size: 1rem;
+    transition: background 0.15s ease;
+  }
+
+  .secid-bottom-nav__drawer-link:hover {
+    background: var(--color-surface-alt, #f3f4f6);
+  }
+
+  .secid-bottom-nav__drawer-link i {
+    width: 1.5rem;
+    text-align: center;
+    color: var(--secid-primary, #003B5C);
+  }
+</style>
+
+<script>
+  // Community dropdown toggle (desktop)
+  document.querySelectorAll('[data-dropdown]').forEach((dropdown) => {
+    const toggle = dropdown.querySelector('.secid-navbar__dropdown-toggle');
+    if (!toggle) return;
+
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = dropdown.hasAttribute('data-open');
+      // Close all dropdowns
+      document.querySelectorAll('[data-dropdown]').forEach(d => d.removeAttribute('data-open'));
+      if (!isOpen) {
+        dropdown.setAttribute('data-open', '');
+        toggle.setAttribute('aria-expanded', 'true');
+      } else {
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
+
+  // Close dropdown on outside click
+  document.addEventListener('click', () => {
+    document.querySelectorAll('[data-dropdown]').forEach(d => {
+      d.removeAttribute('data-open');
+      const toggle = d.querySelector('.secid-navbar__dropdown-toggle');
+      if (toggle) toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // Community drawer toggle (mobile)
+  const communityBtn = document.querySelector('[data-bottom-nav-community]');
+  const drawer = document.querySelector('[data-community-drawer]');
+  const closeBtn = document.querySelector('[data-close-drawer]');
+
+  if (communityBtn && drawer) {
+    communityBtn.addEventListener('click', () => {
+      const isOpen = drawer.hasAttribute('data-open');
+      if (isOpen) {
+        drawer.removeAttribute('data-open');
+        drawer.setAttribute('aria-hidden', 'true');
+      } else {
+        drawer.setAttribute('data-open', '');
+        drawer.setAttribute('aria-hidden', 'false');
+      }
+    });
+  }
+
+  if (closeBtn && drawer) {
+    closeBtn.addEventListener('click', () => {
+      drawer.removeAttribute('data-open');
+      drawer.setAttribute('aria-hidden', 'true');
+    });
+  }
+</script>

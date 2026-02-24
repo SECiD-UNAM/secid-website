@@ -173,20 +173,22 @@ END:VCARD`;
           {/* Name and title */}
           <div>
             <h4 className="font-semibold text-sm text-gray-900 dark:text-white truncate">
-              {member.displayName}
+              <a href={`/${lang}/members/${member.uid}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                {member.displayName}
+              </a>
             </h4>
             <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
               {member.profile.position}
             </p>
           </div>
-          
+
           {/* Quick action */}
-          <button
-            onClick={handleViewProfile}
-            className="w-full px-2 py-1 text-xs bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 rounded hover:bg-primary-200 dark:hover:bg-primary-900/40 transition-colors"
+          <a
+            href={`/${lang}/members/${member.uid}`}
+            className="w-full px-2 py-1 text-xs text-center bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 rounded hover:bg-primary-200 dark:hover:bg-primary-900/40 transition-colors"
           >
             {lang === 'es' ? 'Ver perfil' : 'View profile'}
-          </button>
+          </a>
         </div>
       </div>
     );
@@ -216,7 +218,9 @@ END:VCARD`;
                 <div>
                   <div className="flex items-center space-x-2">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {member.displayName}
+                      <a href={`/${lang}/members/${member.uid}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                        {member.displayName}
+                      </a>
                     </h3>
                     {member.isPremium && (
                       <StarIcon className="h-4 w-4 text-yellow-500 fill-current" />
@@ -312,12 +316,12 @@ END:VCARD`;
               </>
             )}
             
-            <button
-              onClick={handleViewProfile}
+            <a
+              href={`/${lang}/members/${member.uid}`}
               className="px-3 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
             >
               {lang === 'es' ? 'Ver perfil' : 'View profile'}
-            </button>
+            </a>
           </div>
         </div>
       </div>
@@ -370,7 +374,9 @@ END:VCARD`;
         </div>
         
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-          {member.displayName}
+          <a href={`/${lang}/members/${member.uid}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+            {member.displayName}
+          </a>
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
           {member.profile.position}
@@ -498,13 +504,13 @@ END:VCARD`;
         )}
         
         <div className="flex space-x-2">
-          <button
-            onClick={handleViewProfile}
-            className="flex-1 px-3 py-2 text-sm font-medium bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          <a
+            href={`/${lang}/members/${member.uid}`}
+            className="flex-1 px-3 py-2 text-sm font-medium text-center bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             <EyeIcon className="h-4 w-4 mr-1 inline" />
             {lang === 'es' ? 'Ver perfil' : 'View profile'}
-          </button>
+          </a>
           
           <button
             onClick={downloadVCard}

@@ -365,5 +365,245 @@ service cloud.firestore {
                        request.resource.data.sentAt == request.time;
       allow update, delete: if isAuthenticated() && canAdminister();
     }
+
+    // ============================================
+    // Phase A: Newsletter Archive
+    // ============================================
+
+    // Newsletter archive (public read for published, admin write)
+    match /newsletter_archive/{issueId} {
+      allow read: if true;
+      allow create, update, delete: if isAuthenticated() && canAdminister();
+    }
+
+    // ============================================
+    // Phase B: Resources, Blog, Mentorship
+    // ============================================
+
+    // Resources collection
+    match /resources/{resourceId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       isActive() &&
+                       request.resource.data.uploadedBy == request.auth.uid &&
+                       request.resource.data.createdAt == request.time;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.uploadedBy) || canModerate()) &&
+                       request.resource.data.updatedAt == request.time;
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.uploadedBy) || canAdminister());
+    }
+
+    // Resource reviews
+    match /resource_reviews/{reviewId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.reviewerId == request.auth.uid &&
+                       request.resource.data.createdAt == request.time;
+      allow update: if isAuthenticated() &&
+                       isOwner(resource.data.reviewerId) &&
+                       request.resource.data.updatedAt == request.time;
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.reviewerId) || canModerate());
+    }
+
+    // Resource bookmarks (user-specific)
+    match /resource_bookmarks/{bookmarkId} {
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() &&
+                       request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+
+    // Resource collections
+    match /resource_collections/{collectionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.createdBy == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       isOwner(resource.data.createdBy);
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.createdBy) || canAdminister());
+    }
+
+    // Resource downloads (tracking)
+    match /resource_downloads/{downloadId} {
+      allow read: if isAuthenticated() && canModerate();
+      allow create: if isAuthenticated();
+    }
+
+    // Resource activities (tracking)
+    match /resource_activities/{activityId} {
+      allow read: if isAuthenticated() && canModerate();
+      allow create: if isAuthenticated();
+    }
+
+    // Blog collection (public read for published, admin write)
+    match /blog/{postId} {
+      allow read: if true;
+      allow create: if isAuthenticated() &&
+                       canModerate() &&
+                       request.resource.data.authorId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.authorId) || canModerate());
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Mentorship: Mentors collection
+    match /mentors/{mentorId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       isOwner(mentorId);
+      allow update: if isAuthenticated() &&
+                       (isOwner(mentorId) || canModerate());
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Mentorship: Mentees collection
+    match /mentees/{menteeId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(menteeId) || canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       isOwner(menteeId);
+      allow update: if isAuthenticated() &&
+                       (isOwner(menteeId) || canModerate());
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Mentorship matches
+    match /mentorship_matches/{matchId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.mentorId) ||
+                      isOwner(resource.data.menteeId) ||
+                      canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       (request.resource.data.mentorId == request.auth.uid ||
+                        request.resource.data.menteeId == request.auth.uid);
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.mentorId) ||
+                        isOwner(resource.data.menteeId) ||
+                        canModerate());
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Mentorship sessions
+    match /mentorship_sessions/{sessionId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.mentorId) ||
+                      isOwner(resource.data.menteeId) ||
+                      canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       (request.resource.data.mentorId == request.auth.uid ||
+                        request.resource.data.menteeId == request.auth.uid);
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.mentorId) ||
+                        isOwner(resource.data.menteeId) ||
+                        canModerate());
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Mentorship requests
+    match /mentorship_requests/{requestId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.fromUserId) ||
+                      isOwner(resource.data.toUserId) ||
+                      canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.fromUserId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.fromUserId) ||
+                        isOwner(resource.data.toUserId) ||
+                        canModerate());
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.fromUserId) || canAdminister());
+    }
+
+    // Mentorship feedback
+    match /mentorship_feedback/{feedbackId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.fromUserId) ||
+                      isOwner(resource.data.toUserId) ||
+                      canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.fromUserId == request.auth.uid;
+      allow update: if false; // Feedback is immutable
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Mentorship goals
+    match /mentorship_goals/{goalId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.menteeId) ||
+                      isOwner(resource.data.mentorId) ||
+                      canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.menteeId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.menteeId) ||
+                        isOwner(resource.data.mentorId));
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.menteeId) || canAdminister());
+    }
+
+    // Mentorship resources (shared between mentor/mentee)
+    match /mentorship_resources/{resourceId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.sharedBy) || canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.sharedBy == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       isOwner(resource.data.sharedBy);
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.sharedBy) || canAdminister());
+    }
+
+    // ============================================
+    // Phase C: Spotlights, Commissions, Mail
+    // ============================================
+
+    // Alumni spotlights (public read for published, admin write)
+    match /spotlights/{spotlightId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && canModerate();
+      allow update: if isAuthenticated() && canModerate();
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Commissions (public read, admin write)
+    match /commissions/{commissionId} {
+      allow read: if true;
+      allow create, update: if isAuthenticated() && canModerate();
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Commission members
+    match /commission_members/{memberId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.userId) || canModerate());
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.userId) || canAdminister());
+    }
+
+    // Mail collection (for Firebase Trigger Email extension)
+    match /mail/{mailId} {
+      allow read: if isAuthenticated() && canAdminister();
+      allow create: if false; // Only server (Cloud Functions) can write
+      allow update, delete: if false;
+    }
   }
 }

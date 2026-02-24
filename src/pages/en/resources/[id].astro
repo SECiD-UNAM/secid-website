@@ -1,0 +1,28 @@
+---
+export const prerender = false;
+
+import ModernLayout from '../../../layouts/ModernLayout.astro';
+import Navigation from '../../../components/Navigation.astro';
+import Footer from '../../../components/Footer.astro';
+import ResourceDetailPage from '../../../components/wrappers/ResourceDetailPage';
+
+const { id } = Astro.params;
+---
+
+<ModernLayout
+  title="Resource - SECiD"
+  description="Educational resource details"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <main>
+    <section class="secid-section">
+      <div class="secid-container">
+        <ResourceDetailPage client:load resourceId={id} lang="en" />
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</ModernLayout>

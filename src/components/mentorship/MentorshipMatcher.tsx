@@ -190,13 +190,13 @@ export default function MentorshipMatcher() {
     
     // Filter by experience level
     if (filters.experienceLevel !== 'any') {
-      const experienceMap = {
+      const experienceMap: Record<string, [number, number]> = {
         junior: [1, 3],
         mid: [3, 7],
         senior: [7, 50]
       };
-      
-      const [minYears, maxYears] = experienceMap[filters.experienceLevel];
+
+      const [minYears, maxYears] = experienceMap[filters.experienceLevel] || [0, 100];
       filtered = filtered.filter(result => 
         result?.mentor?.experience.yearsInField >= minYears && 
         result?.mentor?.experience.yearsInField <= maxYears
@@ -363,7 +363,7 @@ export default function MentorshipMatcher() {
                 value={filters.experienceLevel}
                 onChange={(e) => setFilters(prev => ({ 
                   ...prev, 
-                  experienceLevel: e.target.value as FilterOptions.experienceLevel
+                  experienceLevel: e.target.value as FilterOptions["experienceLevel"]
                 }))}
               >
                 <option value="any">{t.mentorship.matcher.anyExperience}</option>
@@ -557,7 +557,7 @@ export default function MentorshipMatcher() {
                 <div className="expertise-preview">
                   <h4>{t.mentorship.matcher.expertise}</h4>
                   <div className="tags-list">
-                    {result?.mentor?.expertiseAreas.slice(0, 4).map((area, idx) => (
+                    {result?.mentor?.expertiseAreas.slice(0, 4).map((area: string, idx: number) => (
                       <span key={idx} className="tag">{area}</span>
                     ))}
                     {result?.mentor?.expertiseAreas.length > 4 && (

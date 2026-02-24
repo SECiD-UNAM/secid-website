@@ -1,0 +1,37 @@
+---
+export const prerender = false;
+
+import ModernLayout from '../../../layouts/ModernLayout.astro';
+import Navigation from '../../../components/Navigation.astro';
+import Footer from '../../../components/Footer.astro';
+import MentorBrowsePage from '../../../components/wrappers/MentorBrowsePage';
+---
+
+<ModernLayout
+  title="Buscar Mentores - SECiD"
+  description="Encuentra el mentor ideal para tu desarrollo profesional en ciencia de datos"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <main>
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Buscar Mentores</h1>
+          <p class="secid-hero__subtitle">
+            Encuentra al mentor ideal basado en tus intereses y objetivos
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="secid-section">
+      <div class="secid-container">
+        <MentorBrowsePage client:load lang="es" />
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="es" />
+</ModernLayout>

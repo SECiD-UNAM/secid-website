@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth} from '@/contexts/AuthContext';
+import VerifiedBadge from './VerifiedBadge';
 import {
   MapPinIcon,
   BriefcaseIcon,
@@ -142,8 +143,9 @@ export const JobCard: React.FC<JobCardProps> = ({ job, lang = 'es' }) => {
                 {job.title}
               </a>
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
               {job.company}
+              {(job as any).companyVerified && <VerifiedBadge size="sm" lang={lang} />}
             </p>
           </div>
         </div>

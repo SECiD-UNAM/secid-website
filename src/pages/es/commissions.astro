@@ -1,0 +1,33 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import CommissionsPage from '../../components/wrappers/CommissionsPage';
+---
+
+<ModernLayout
+  title="Comisiones Técnicas - SECiD"
+  description="Conoce las comisiones técnicas de SECiD y únete a la que más se alinee con tus intereses"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <main>
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Comisiones Técnicas</h1>
+          <p class="secid-hero__subtitle">Colabora con expertos en tu área de especialización</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="secid-section">
+      <div class="secid-container">
+        <CommissionsPage client:load lang="es" />
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="es" />
+</ModernLayout>

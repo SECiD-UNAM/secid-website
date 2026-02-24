@@ -1,0 +1,33 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import CommissionsPage from '../../components/wrappers/CommissionsPage';
+---
+
+<ModernLayout
+  title="Technical Commissions - SECiD"
+  description="Discover SECiD's technical commissions and join the one that best aligns with your interests"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <main>
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Technical Commissions</h1>
+          <p class="secid-hero__subtitle">Collaborate with experts in your area of specialization</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="secid-section">
+      <div class="secid-container">
+        <CommissionsPage client:load lang="en" />
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</ModernLayout>

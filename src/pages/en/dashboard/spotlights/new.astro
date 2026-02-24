@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import SpotlightEditorPage from '@/components/wrappers/SpotlightEditorPage';
+---
+
+<DashboardLayout
+  title="Publish Story - SECiD"
+  description="Publish an alumni success story for the data science community"
+  lang="en"
+>
+  <SpotlightEditorPage client:load lang="en" />
+</DashboardLayout>

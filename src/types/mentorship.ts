@@ -4,11 +4,14 @@ export interface MentorProfile {
   id: string;
   userId: string;
   name: string;
+  displayName: string;
   avatar?: string;
+  profileImage?: string;
   title: string;
   company: string;
   bio: string;
   expertise: string[];
+  expertiseAreas: string[];
   industries: string[];
   yearsOfExperience: number;
   linkedinUrl?: string;
@@ -20,6 +23,14 @@ export interface MentorProfile {
   totalSessions: number;
   isActive: boolean;
   isVerified: boolean;
+  mentorshipStyle: string[];
+  languages: string[];
+  experience: {
+    currentPosition: string;
+    currentCompany: string;
+    yearsInField: number;
+  };
+  joinedAt: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -28,7 +39,9 @@ export interface MenteeProfile {
   id: string;
   userId: string;
   name: string;
+  displayName: string;
   avatar?: string;
+  profileImage?: string;
   title?: string;
   company?: string;
   bio: string;
@@ -37,8 +50,18 @@ export interface MenteeProfile {
   currentLevel: 'student' | 'entry' | 'mid' | 'senior';
   linkedinUrl?: string;
   preferredMeetingType: 'video' | 'chat' | 'both';
+  preferredMentorshipStyle: string[];
+  languages: string[];
   timezone: string;
   isActive: boolean;
+  availability: {
+    hoursPerWeek: number;
+    preferredDays: string[];
+  };
+  background: {
+    yearsOfExperience: number;
+  };
+  joinedAt: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -51,6 +74,8 @@ export interface MentorAvailability {
   friday: TimeSlot[];
   saturday: TimeSlot[];
   sunday: TimeSlot[];
+  hoursPerWeek: number;
+  preferredDays: string[];
 }
 
 export interface TimeSlot {
@@ -63,8 +88,14 @@ export interface MentorshipMatch {
   mentorId: string;
   menteeId: string;
   status: 'pending' | 'active' | 'completed' | 'cancelled';
+  matchScore: number;
+  matchReason?: string[];
+  requestMessage?: string;
+  meetingFrequency: string;
+  communicationPreference: string;
   startDate: Date;
   endDate?: Date;
+  lastActivity?: Date;
   goals: string[];
   notes?: string;
   rating?: number;
@@ -82,6 +113,8 @@ export interface MentorshipRequest {
   goals: string[];
   status: 'pending' | 'accepted' | 'rejected' | 'expired';
   responseMessage?: string;
+  meetingFrequency?: string;
+  communicationPreference?: string;
   createdAt: Date;
   respondedAt?: Date;
 }
@@ -95,12 +128,19 @@ export interface MentorshipSession {
   description?: string;
   scheduledAt: Date;
   duration: number; // minutes
-  type: 'video' | 'chat' | 'in-person';
+  type: 'video' | 'chat' | 'in-person' | 'voice';
   meetingLink?: string;
   status: 'scheduled' | 'completed' | 'cancelled' | 'no-show';
   notes?: string;
   rating?: number;
   feedback?: string;
+  agenda?: string[];
+  homework?: Array<{
+    title: string;
+    description?: string;
+    dueDate?: Date;
+    completed?: boolean;
+  }>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -111,5 +151,51 @@ export interface MentorshipStats {
   activeMatches: number;
   completedSessions: number;
   averageRating: number;
+  successRate: number;
+  averageMatchScore: number;
   topExpertise: Array<{ skill: string; count: number }>;
+  popularSkills: Array<{ skill: string; count: number }>;
+}
+
+export interface MentorshipFeedback {
+  id: string;
+  sessionId?: string;
+  matchId?: string;
+  fromUserId: string;
+  toUserId: string;
+  type: 'session' | 'overall';
+  rating: number;
+  comment?: string;
+  strengths?: string[];
+  improvements?: string[];
+  createdAt: Date;
+}
+
+export interface MentorshipGoal {
+  id: string;
+  matchId: string;
+  title: string;
+  description?: string;
+  status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+  targetDate?: Date;
+  milestones: Array<{
+    title: string;
+    completed: boolean;
+    completedAt?: Date;
+  }>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface MentorshipResource {
+  id: string;
+  title: string;
+  description?: string;
+  url?: string;
+  category: string;
+  difficulty?: string;
+  tags: string[];
+  sharedBy: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
