@@ -89,20 +89,27 @@ if (noindex && nofollow) {
 const defaultOrganization = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'SECiD - Sociedad de Egresados en Ciencia de Datos UNAM',
+  name: 'SECiD - Sociedad de Egresados en Ciencia de Datos',
+  alternateName: 'SECiD',
   description:
-    'Sociedad de egresados en ciencia de datos de la Universidad Nacional Autónoma de México',
+    "UNAM's Data Science Alumni Society connecting graduates through networking, job opportunities, and professional development",
   url: 'https://secid.mx',
   logo: 'https://secid.mx/images/logo.png',
+  email: 'contacto@secid.mx',
+  parentOrganization: {
+    '@type': 'EducationalOrganization',
+    name: 'Universidad Nacional Autónoma de México',
+    alternateName: 'UNAM',
+  },
   sameAs: [
-    'https://www.linkedin.com/company/secid-unam',
+    'https://www.linkedin.com/company/sociedad-de-egresados-en-ciencia-de-datos-secid',
     'https://twitter.com/secid_unam',
     'https://www.facebook.com/secid.unam',
   ],
   contactPoint: {
     '@type': 'ContactPoint',
-    telephone: '+52-55-5622-5000',
-    contactType: 'customer service',
+    email: 'contacto@secid.mx',
+    contactType: 'customer support',
     availableLanguage: ['Spanish', 'English'],
   },
   address: {

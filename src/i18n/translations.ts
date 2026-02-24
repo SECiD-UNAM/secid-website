@@ -38,6 +38,39 @@ export interface Translations {
       description: string;
     };
   };
+  initiatives: {
+    title: string;
+    talentMatcher: {
+      title: string;
+      description: string;
+      cta: string;
+    };
+    consulting: {
+      title: string;
+      description: string;
+      cta: string;
+    };
+    hackathons: {
+      title: string;
+      description: string;
+      cta: string;
+    };
+    workshops: {
+      title: string;
+      description: string;
+      cta: string;
+    };
+    seminars: {
+      title: string;
+      description: string;
+      cta: string;
+    };
+    mentoring: {
+      title: string;
+      description: string;
+      cta: string;
+    };
+  };
   cta: {
     title: string;
     jobs: {
@@ -142,10 +175,10 @@ export const translations: Record<Language, Translations> = {
       contact: 'Contacto',
     },
     hero: {
-      title: 'Conectando el futuro de los datos',
-      subtitle: 'Sociedad de Egresados en Ciencia de Datos UNAM',
+      title: 'Bienvenidos a SECiD',
+      subtitle: 'El sitio para conectar con la Sociedad de Egresados en Ciencia de Datos de la UNAM.',
       description:
-        'Una comunidad vibrante de profesionales en ciencia de datos, unidos por nuestra formación en la UNAM y nuestro compromiso con la excelencia en el análisis de datos.',
+        'SECiD (Sociedad de Egresados en Ciencia de Datos, A. C.) es una red profesional vibrante que empodera a los egresados de ciencia de datos de la UNAM. Nuestro objetivo es fomentar conexiones significativas, impulsar el crecimiento profesional y crear oportunidades para nuestra comunidad a través de eventos de networking, publicaciones de empleo exclusivas, iniciativas de aprendizaje continuo y colaboraciones que apoyan el éxito continuo de los profesionales de ciencia de datos de la Universidad Nacional Autónoma de México (UNAM).',
       joinButton: 'Únete a SECiD',
       jobsButton: 'Ver Empleos',
     },
@@ -170,6 +203,39 @@ export const translations: Record<Language, Translations> = {
         title: 'Comunidad Sólida',
         description:
           'Forma parte de una comunidad comprometida con el intercambio de conocimientos y experiencias.',
+      },
+    },
+    initiatives: {
+      title: 'Iniciativas',
+      talentMatcher: {
+        title: 'Bolsa de Trabajo',
+        description: 'Un lugar para publicar y suscribirte a oportunidades laborales.',
+        cta: 'Publica tu vacante y encuentra al mejor talento.',
+      },
+      consulting: {
+        title: 'Consultoría',
+        description: 'Obtén servicios de consultoría de los mejores profesionales en ciencia de datos y machine learning en México.',
+        cta: 'Contáctanos.',
+      },
+      hackathons: {
+        title: 'Hackathons',
+        description: '¿Tienes un problema interesante en tu organización y te gustaría co-organizar un hackathon?',
+        cta: 'Contáctanos.',
+      },
+      workshops: {
+        title: 'Talleres y Cursos',
+        description: 'Adquiere conocimientos de nuestra comunidad con cursos bajo demanda de expertos en ciencia de datos y machine learning.',
+        cta: 'En Roadmap.',
+      },
+      seminars: {
+        title: 'Seminarios',
+        description: 'Reúnete con expertos del campo para presentar y discutir temas académicos y de ingeniería de actualidad.',
+        cta: 'En Roadmap.',
+      },
+      mentoring: {
+        title: 'Mentoría',
+        description: '¿Eres egresado de ciencia de datos y buscas mentoría o retroalimentación de tus pares? Recibe mentoría o conviértete en Mentor.',
+        cta: 'En Roadmap.',
       },
     },
     cta: {
@@ -309,10 +375,10 @@ export const translations: Record<Language, Translations> = {
       contact: 'Contact',
     },
     hero: {
-      title: 'Connecting the future of data',
-      subtitle: 'UNAM Data Science Alumni Society',
+      title: 'Welcome to SECiD',
+      subtitle: 'The site to connect with UNAM\'s Data Science Alumni Society.',
       description:
-        'A vibrant community of data science professionals, united by our UNAM education and commitment to excellence in data analysis.',
+        'SECiD (Sociedad de Egresados en Ciencia de Datos, A. C.) is a vibrant professional network empowering UNAM data science graduates. Our goal is to foster meaningful connections, drive professional growth, and create opportunities for our community through networking events, exclusive job postings, continuous learning initiatives, and collaborations that support and boost the ongoing success of data science professionals from the National Autonomous University of Mexico (UNAM).',
       joinButton: 'Join SECiD',
       jobsButton: 'View Jobs',
     },
@@ -337,6 +403,39 @@ export const translations: Record<Language, Translations> = {
         title: 'Strong Community',
         description:
           'Be part of a community committed to knowledge and experience sharing.',
+      },
+    },
+    initiatives: {
+      title: 'Initiatives',
+      talentMatcher: {
+        title: 'Talent / Demand Matcher',
+        description: 'A place to post and subscribe to job opportunities.',
+        cta: 'Submit your job and find top talent.',
+      },
+      consulting: {
+        title: 'Consulting',
+        description: 'Get consulting services from the best prepared professionals on data science and machine learning in Mexico.',
+        cta: 'Contact Us.',
+      },
+      hackathons: {
+        title: 'Hackathons',
+        description: 'Do you have an interesting problem within your organization and would like to co-host a hackathon?',
+        cta: 'Contact Us.',
+      },
+      workshops: {
+        title: 'Workshops and Courses',
+        description: 'Get the knowledge from our community with on-demand courses from experts on data science and machine learning.',
+        cta: 'In Roadmap.',
+      },
+      seminars: {
+        title: 'Seminars',
+        description: 'Gather around with experts in the field to present and discuss academic and engineering hot topics.',
+        cta: 'In Roadmap.',
+      },
+      mentoring: {
+        title: 'Mentoring',
+        description: 'Are you a data science graduate who wants some mentoring or feedback from your peers? Get mentoring or become a Mentor.',
+        cta: 'In Roadmap.',
       },
     },
     cta: {

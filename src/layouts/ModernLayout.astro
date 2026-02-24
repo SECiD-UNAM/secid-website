@@ -79,12 +79,28 @@ const canonicalURL = new URL(Astro.url.pathname, siteUrl);
         '@context': 'https://schema.org',
         '@type': 'Organization',
         name: 'SECiD - Sociedad de Egresados en Ciencia de Datos',
+        alternateName: 'SECiD',
         url: siteUrl,
         logo: new URL('/images/logo.png', siteUrl).toString(),
-        description: 'Sociedad de Egresados en Ciencia de Datos de la UNAM',
+        description: "UNAM's Data Science Alumni Society connecting graduates through networking, job opportunities, and professional development",
+        email: 'contacto@secid.mx',
+        foundingLocation: {
+          '@type': 'Place',
+          name: 'Mexico City, Mexico'
+        },
+        parentOrganization: {
+          '@type': 'EducationalOrganization',
+          name: 'Universidad Nacional Autónoma de México',
+          alternateName: 'UNAM'
+        },
         sameAs: [
           'https://www.linkedin.com/company/sociedad-de-egresados-en-ciencia-de-datos-secid'
         ],
+        contactPoint: {
+          '@type': 'ContactPoint',
+          email: 'contacto@secid.mx',
+          contactType: 'customer support'
+        },
         address: {
           '@type': 'PostalAddress',
           addressCountry: 'MX',

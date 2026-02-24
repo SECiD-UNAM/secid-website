@@ -1241,6 +1241,79 @@ body {
   gap: var(--space-xl);
 }
 
+/* Initiatives Section */
+.secid-initiatives {
+  padding: var(--space-4xl) 0;
+  background: var(--section-bg-secondary, var(--secid-cream));
+}
+
+.secid-initiatives__header {
+  text-align: center;
+  margin-bottom: var(--space-3xl);
+}
+
+.secid-initiatives__title {
+  font-family: var(--font-family-heading);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--secid-dark-blue);
+  margin: 0;
+}
+
+.secid-initiatives__grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-xl);
+}
+
+.secid-initiative-card {
+  background: var(--card-bg, white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  transition: all var(--transition-base);
+}
+
+.secid-initiative-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--secid-primary);
+}
+
+.secid-initiative-card__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--secid-dark-blue);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.secid-initiative-card__description {
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  margin: 0 0 var(--space-md) 0;
+}
+
+.secid-initiative-card__cta {
+  font-weight: 600;
+  margin: 0;
+}
+
+.secid-initiative-card__cta a {
+  color: var(--secid-primary);
+  text-decoration: none;
+}
+
+.secid-initiative-card__cta a:hover {
+  text-decoration: underline;
+}
+
+.secid-initiative-card__cta em {
+  color: var(--color-text-secondary);
+}
+
 .secid-cta {
   padding: var(--space-4xl) 0;
   background: linear-gradient(

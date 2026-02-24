@@ -131,17 +131,14 @@ const t = getTranslations('en');
               </div>
               <h3 class="secid-contact__card-title">Social Media</h3>
               <div class="secid-contact__social">
-                <a href="#" class="secid-contact__social-link" aria-label="LinkedIn">
+                <a href="https://www.linkedin.com/company/sociedad-de-egresados-en-ciencia-de-datos-secid" class="secid-contact__social-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                   <i class="fab fa-linkedin"></i>
                 </a>
-                <a href="#" class="secid-contact__social-link" aria-label="Twitter">
+                <a href="https://twitter.com/secid_unam" class="secid-contact__social-link" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
                   <i class="fab fa-twitter"></i>
                 </a>
-                <a href="#" class="secid-contact__social-link" aria-label="Facebook">
+                <a href="https://www.facebook.com/secid.unam" class="secid-contact__social-link" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                   <i class="fab fa-facebook"></i>
-                </a>
-                <a href="#" class="secid-contact__social-link" aria-label="Instagram">
-                  <i class="fab fa-instagram"></i>
                 </a>
               </div>
             </div>
@@ -154,6 +151,36 @@ const t = getTranslations('en');
               <p>Monday to Friday: 9:00 AM - 6:00 PM</p>
               <p>Saturday: 10:00 AM - 2:00 PM</p>
               <p>Sunday: Closed</p>
+            </div>
+
+            <div class="secid-contact__card">
+              <div class="secid-contact__card-icon">
+                <i class="fas fa-external-link-alt"></i>
+              </div>
+              <h3 class="secid-contact__card-title">Sites of Interest</h3>
+              <ul class="secid-contact__links">
+                <li>
+                  <a
+                    href="https://www.iimas.unam.mx/ciencia-de-datos/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >UNAM Data Science Undergraduate Program</a>
+                </li>
+                <li>
+                  <a
+                    href="https://docencia.tic.unam.mx/diplomado-en-ciencia-de-datos"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >UNAM Data Science Diploma</a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.iimas.unam.mx/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >Instituto de Investigaciones en Matemáticas Aplicadas y en Sistemas (IIMAS)</a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -298,6 +325,25 @@ const t = getTranslations('en');
   }
 
   .secid-contact__card a:hover {
+    text-decoration: underline;
+  }
+
+  .secid-contact__links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .secid-contact__links li {
+    margin-bottom: var(--space-sm);
+  }
+
+  .secid-contact__links a {
+    color: var(--secid-primary);
+    text-decoration: none;
+  }
+
+  .secid-contact__links a:hover {
     text-decoration: underline;
   }
 
