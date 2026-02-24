@@ -61,14 +61,14 @@ const t = getTranslations('es');
               </div>
             </div>
 
-            <form class="secid-newsletter__form">
+            <form class="secid-newsletter__form" id="newsletter-form">
               <div class="secid-form__group">
-                <label for="email" class="secid-form__label"
+                <label for="newsletter-email" class="secid-form__label"
                   >Correo Electrónico</label
                 >
                 <input
                   type="email"
-                  id="email"
+                  id="newsletter-email"
                   class="secid-form__input"
                   placeholder="tu@email.com"
                   required
@@ -76,12 +76,12 @@ const t = getTranslations('es');
               </div>
 
               <div class="secid-form__group">
-                <label for="name" class="secid-form__label"
+                <label for="newsletter-name" class="secid-form__label"
                   >Nombre Completo</label
                 >
                 <input
                   type="text"
-                  id="name"
+                  id="newsletter-name"
                   class="secid-form__input"
                   placeholder="Juan Pérez"
                   required
@@ -112,7 +112,7 @@ const t = getTranslations('es');
 
               <div class="secid-form__group">
                 <label class="secid-form__checkbox">
-                  <input type="checkbox" required />
+                  <input type="checkbox" id="newsletter-consent" required />
                   <span
                     >Acepto recibir comunicaciones de SECiD y entiendo que puedo
                     cancelar mi suscripción en cualquier momento.</span
@@ -122,11 +122,21 @@ const t = getTranslations('es');
 
               <button
                 type="submit"
+                id="newsletter-submit"
                 class="secid-button secid-button--primary secid-button--lg secid-button--full"
               >
                 <i class="fas fa-paper-plane"></i>
                 Suscribirme al Newsletter
               </button>
+
+              <div id="newsletter-success" class="secid-form__message secid-form__message--success" style="display:none;">
+                <i class="fas fa-check-circle"></i>
+                ¡Gracias por suscribirte! Revisa tu correo para confirmar.
+              </div>
+              <div id="newsletter-error" class="secid-form__message secid-form__message--error" style="display:none;">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="newsletter-error-text">Hubo un error. Inténtalo de nuevo.</span>
+              </div>
             </form>
 
             <p class="secid-newsletter__privacy">
@@ -553,6 +563,29 @@ const t = getTranslations('es');
     margin: 0 auto;
   }
 
+  /* Form messages */
+  .secid-form__message {
+    margin-top: var(--space-lg);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 0.95rem;
+  }
+
+  .secid-form__message--success {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--secid-success, #22c55e);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+
+  .secid-form__message--error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
   /* Mobile Styles */
   @media (max-width: 768px) {
     .secid-newsletter__main {
@@ -569,3 +602,46 @@ const t = getTranslations('es');
     }
   }
 </style>
+
+<script>
+  import { db } from '@/lib/firebase-config';
+  import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
+  const form = document.getElementById('newsletter-form') as HTMLFormElement;
+  const submitBtn = document.getElementById('newsletter-submit') as HTMLButtonElement;
+  const successMsg = document.getElementById('newsletter-success')!;
+  const errorMsg = document.getElementById('newsletter-error')!;
+  const errorText = document.getElementById('newsletter-error-text')!;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+
+    const email = (document.getElementById('newsletter-email') as HTMLInputElement).value.trim();
+    const name = (document.getElementById('newsletter-name') as HTMLInputElement).value.trim();
+    const interestCheckboxes = form.querySelectorAll<HTMLInputElement>('input[name="interests"]:checked');
+    const interests = Array.from(interestCheckboxes).map(cb => cb.value);
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
+    try {
+      await addDoc(collection(db, 'newsletter'), {
+        email,
+        name,
+        interests,
+        subscribedAt: serverTimestamp(),
+        source: 'website',
+        lang: 'es',
+      });
+      form.style.display = 'none';
+      successMsg.style.display = 'flex';
+    } catch (err: any) {
+      errorText.textContent = err?.message || 'Hubo un error. Inténtalo de nuevo.';
+      errorMsg.style.display = 'flex';
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Suscribirme al Newsletter';
+    }
+  });
+</script>

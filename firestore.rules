@@ -340,5 +340,30 @@ service cloud.firestore {
       allow read: if isAuthenticated() && canModerate();
       allow write: if false; // Only server can write analytics
     }
+
+    // Newsletter subscriptions (public write, admin read)
+    match /newsletter/{subscriptionId} {
+      allow read: if isAuthenticated() && canModerate();
+      allow create: if request.resource.data.keys().hasAll(['email', 'name', 'subscribedAt']) &&
+                       request.resource.data.email is string &&
+                       request.resource.data.email.size() > 0 &&
+                       request.resource.data.name is string &&
+                       request.resource.data.subscribedAt == request.time;
+      allow update, delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Contact messages (public write, admin read)
+    match /contactMessages/{messageId} {
+      allow read: if isAuthenticated() && canModerate();
+      allow create: if request.resource.data.keys().hasAll(['name', 'email', 'subject', 'message', 'sentAt']) &&
+                       request.resource.data.email is string &&
+                       request.resource.data.email.size() > 0 &&
+                       request.resource.data.name is string &&
+                       request.resource.data.name.size() > 0 &&
+                       request.resource.data.message is string &&
+                       request.resource.data.message.size() >= 10 &&
+                       request.resource.data.sentAt == request.time;
+      allow update, delete: if isAuthenticated() && canAdminister();
+    }
   }
 }

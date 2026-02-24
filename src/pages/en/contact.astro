@@ -34,25 +34,23 @@ const t = getTranslations('en');
           <!-- Contact Form -->
           <div class="secid-contact__form-wrapper">
             <h2 class="secid-section__title">Send us a message</h2>
-            <form class="secid-form" method="post" action="#">
+            <form class="secid-form" id="contact-form">
               <div class="secid-form__row">
                 <div class="secid-form__group">
-                  <label class="secid-form__label" for="name">Name</label>
+                  <label class="secid-form__label" for="contact-name">Name</label>
                   <input
                     type="text"
-                    id="name"
-                    name="name"
+                    id="contact-name"
                     class="secid-form__input"
                     placeholder="Your name"
                     required
                   />
                 </div>
                 <div class="secid-form__group">
-                  <label class="secid-form__label" for="email">Email</label>
+                  <label class="secid-form__label" for="contact-email">Email</label>
                   <input
                     type="email"
-                    id="email"
-                    name="email"
+                    id="contact-email"
                     class="secid-form__input"
                     placeholder="your@email.com"
                     required
@@ -61,8 +59,8 @@ const t = getTranslations('en');
               </div>
 
               <div class="secid-form__group">
-                <label class="secid-form__label" for="subject">Subject</label>
-                <select id="subject" name="subject" class="secid-form__select" required>
+                <label class="secid-form__label" for="contact-subject">Subject</label>
+                <select id="contact-subject" class="secid-form__select" required>
                   <option value="">- Select a topic -</option>
                   <option value="general">General Inquiry</option>
                   <option value="membership">Membership</option>
@@ -74,10 +72,9 @@ const t = getTranslations('en');
               </div>
 
               <div class="secid-form__group">
-                <label class="secid-form__label" for="message">Message</label>
+                <label class="secid-form__label" for="contact-message">Message</label>
                 <textarea
-                  id="message"
-                  name="message"
+                  id="contact-message"
                   class="secid-form__textarea"
                   placeholder="Your message"
                   rows="6"
@@ -85,13 +82,22 @@ const t = getTranslations('en');
               </div>
 
               <div class="secid-form__actions">
-                <button type="submit" class="secid-button secid-button--primary">
+                <button type="submit" id="contact-submit" class="secid-button secid-button--primary">
                   <i class="fas fa-paper-plane"></i>
                   Send Message
                 </button>
                 <button type="reset" class="secid-button secid-button--outline">
                   Clear
                 </button>
+              </div>
+
+              <div id="contact-success" class="secid-form__message secid-form__message--success" style="display:none;">
+                <i class="fas fa-check-circle"></i>
+                Message sent! We'll get back to you soon.
+              </div>
+              <div id="contact-error" class="secid-form__message secid-form__message--error" style="display:none;">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="contact-error-text">Something went wrong. Please try again.</span>
               </div>
             </form>
           </div>
@@ -344,6 +350,29 @@ const t = getTranslations('en');
     margin: 0;
   }
 
+  /* Form messages */
+  .secid-form__message {
+    margin-top: var(--space-lg);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 0.95rem;
+  }
+
+  .secid-form__message--success {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--secid-success, #22c55e);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+
+  .secid-form__message--error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
   @media (max-width: 768px) {
     .secid-contact__grid {
       grid-template-columns: 1fr;
@@ -362,3 +391,49 @@ const t = getTranslations('en');
     }
   }
 </style>
+
+<script>
+  import { db } from '@/lib/firebase-config';
+  import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const submitBtn = document.getElementById('contact-submit') as HTMLButtonElement;
+  const successMsg = document.getElementById('contact-success')!;
+  const errorMsg = document.getElementById('contact-error')!;
+  const errorText = document.getElementById('contact-error-text')!;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+
+    const name = (document.getElementById('contact-name') as HTMLInputElement).value.trim();
+    const email = (document.getElementById('contact-email') as HTMLInputElement).value.trim();
+    const subject = (document.getElementById('contact-subject') as HTMLSelectElement).value;
+    const message = (document.getElementById('contact-message') as HTMLTextAreaElement).value.trim();
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+    try {
+      await addDoc(collection(db, 'contactMessages'), {
+        name,
+        email,
+        subject,
+        message,
+        sentAt: serverTimestamp(),
+        source: 'website',
+        lang: 'en',
+        status: 'new',
+      });
+      form.reset();
+      successMsg.style.display = 'flex';
+    } catch (err: any) {
+      errorText.textContent = err?.message || 'Something went wrong. Please try again.';
+      errorMsg.style.display = 'flex';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
+    }
+  });
+</script>

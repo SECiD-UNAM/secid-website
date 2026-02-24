@@ -2,6 +2,7 @@
 import ModernLayout from '../../layouts/ModernLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
+import JobPostingFormPage from '../../components/wrappers/JobPostingFormPage';
 import { getTranslations } from '../../i18n/translations';
 
 const t = getTranslations('en');
@@ -48,19 +49,7 @@ const t = getTranslations('en');
             Use the form below to submit your job opportunity. All fields marked
             with * are required.
           </p>
-
-          <!-- Google Forms Embed -->
-          <iframe
-            src="https://docs.google.com/forms/d/e/1FAIpQLSfZ8Y7X9Z0Z1Z2Z3Z4Z5Z6Z7Z8Z9Z0Z1Z2Z3Z4Z5Z6Z7Z8Z9Z0/viewform?embedded=true"
-            width="100%"
-            height="1200"
-            frameborder="0"
-            marginheight="0"
-            marginwidth="0"
-            class="secid-google-form"
-          >
-            Loading...
-          </iframe>
+          <JobPostingFormPage client:load lang="en" />
         </div>
 
         <div class="secid-benefits-box">

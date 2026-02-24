@@ -164,7 +164,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       }
 
       toast.success(lang === 'es' ? '¡Bienvenido!' : 'Welcome!');
-      onSuccess?.();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        window.location.href = `/${lang}/dashboard`;
+      }
     } catch (err: any) {
       const errorMessage = getErrorMessage(err.code || err['message']);
       setError(errorMessage);
@@ -238,7 +242,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   };
 
   const handleSocialLoginSuccess = () => {
-    onSuccess?.();
+    if (onSuccess) {
+      onSuccess();
+    } else {
+      window.location.href = `/${lang}/dashboard`;
+    }
   };
 
   const handleTwoFactorSuccess = () => {
@@ -248,7 +256,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     toast.success(
       lang === 'es' ? '¡Autenticación exitosa!' : 'Authentication successful!'
     );
-    onSuccess?.();
+    if (onSuccess) {
+      onSuccess();
+    } else {
+      window.location.href = `/${lang}/dashboard`;
+    }
   };
 
   // Load remembered user

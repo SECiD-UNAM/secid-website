@@ -117,7 +117,11 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       // Create user profile in Firestore
       await createUserProfile(userCredential.user.uid, data);
 
-      onSuccess?.();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        window.location.href = `/${lang}/dashboard`;
+      }
     } catch (err: any) {
       setError(
         t.auth.errors[err.code] ||
@@ -146,7 +150,11 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       };
 
       await createUserProfile(result?.user?.uid, userData);
-      onSuccess?.();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        window.location.href = `/${lang}/dashboard`;
+      }
     } catch (err: any) {
       setError(
         t.auth.errors[err.code] ||

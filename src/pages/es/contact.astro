@@ -33,13 +33,13 @@ const t = getTranslations('es');
         <!-- Contact Form -->
         <div class="secid-contact-form">
           <h2>Envíanos un mensaje</h2>
-          <form class="secid-form">
+          <form class="secid-form" id="contact-form">
             <div class="secid-form__group">
-              <label class="secid-form__label" for="name">Nombre completo</label
+              <label class="secid-form__label" for="contact-name">Nombre completo</label
               >
               <input
                 type="text"
-                id="name"
+                id="contact-name"
                 class="secid-form__input"
                 placeholder="Tu nombre completo"
                 required
@@ -47,12 +47,12 @@ const t = getTranslations('es');
             </div>
 
             <div class="secid-form__group">
-              <label class="secid-form__label" for="email"
+              <label class="secid-form__label" for="contact-email"
                 >Correo electrónico</label
               >
               <input
                 type="email"
-                id="email"
+                id="contact-email"
                 class="secid-form__input"
                 placeholder="tu.email@ejemplo.com"
                 required
@@ -60,10 +60,10 @@ const t = getTranslations('es');
             </div>
 
             <div class="secid-form__group">
-              <label class="secid-form__label" for="subject">Asunto</label>
+              <label class="secid-form__label" for="contact-subject">Asunto</label>
               <input
                 type="text"
-                id="subject"
+                id="contact-subject"
                 class="secid-form__input"
                 placeholder="¿En qué podemos ayudarte?"
                 required
@@ -71,9 +71,9 @@ const t = getTranslations('es');
             </div>
 
             <div class="secid-form__group">
-              <label class="secid-form__label" for="message">Mensaje</label>
+              <label class="secid-form__label" for="contact-message">Mensaje</label>
               <textarea
-                id="message"
+                id="contact-message"
                 class="secid-form__textarea"
                 rows="6"
                 placeholder="Escribe tu mensaje aquí..."
@@ -82,11 +82,21 @@ const t = getTranslations('es');
 
             <button
               type="submit"
+              id="contact-submit"
               class="secid-button secid-button--primary secid-button--lg"
             >
               <i class="fas fa-paper-plane secid-button__icon"></i>
               Enviar Mensaje
             </button>
+
+            <div id="contact-success" class="secid-form__message secid-form__message--success" style="display:none;">
+              <i class="fas fa-check-circle"></i>
+              ¡Mensaje enviado! Te responderemos pronto.
+            </div>
+            <div id="contact-error" class="secid-form__message secid-form__message--error" style="display:none;">
+              <i class="fas fa-exclamation-circle"></i>
+              <span id="contact-error-text">Hubo un error. Inténtalo de nuevo.</span>
+            </div>
           </form>
         </div>
 
@@ -363,6 +373,29 @@ const t = getTranslations('es');
     margin: 0;
   }
 
+  /* Form messages */
+  .secid-form__message {
+    margin-top: var(--space-lg, 1.5rem);
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-md, 0.5rem);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .secid-form__message--success {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--secid-success, #22c55e);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+
+  .secid-form__message--error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
   @media (max-width: 768px) {
     .secid-grid--2 {
       grid-template-columns: 1fr;
@@ -374,3 +407,49 @@ const t = getTranslations('es');
     }
   }
 </style>
+
+<script>
+  import { db } from '@/lib/firebase-config';
+  import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const submitBtn = document.getElementById('contact-submit') as HTMLButtonElement;
+  const successMsg = document.getElementById('contact-success')!;
+  const errorMsg = document.getElementById('contact-error')!;
+  const errorText = document.getElementById('contact-error-text')!;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+
+    const name = (document.getElementById('contact-name') as HTMLInputElement).value.trim();
+    const email = (document.getElementById('contact-email') as HTMLInputElement).value.trim();
+    const subject = (document.getElementById('contact-subject') as HTMLInputElement).value.trim();
+    const message = (document.getElementById('contact-message') as HTMLTextAreaElement).value.trim();
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
+    try {
+      await addDoc(collection(db, 'contactMessages'), {
+        name,
+        email,
+        subject,
+        message,
+        sentAt: serverTimestamp(),
+        source: 'website',
+        lang: 'es',
+        status: 'new',
+      });
+      form.reset();
+      successMsg.style.display = 'flex';
+    } catch (err: any) {
+      errorText.textContent = err?.message || 'Hubo un error. Inténtalo de nuevo.';
+      errorMsg.style.display = 'flex';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane secid-button__icon"></i> Enviar Mensaje';
+    }
+  });
+</script>
