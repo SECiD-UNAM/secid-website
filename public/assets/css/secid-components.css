@@ -1839,6 +1839,7 @@ body {
   transform: translateY(-2px);
 }
 
+.secid-footer__column h3,
 .secid-footer__column h4 {
   font-family: var(--font-family-heading);
   font-size: 1.125rem;
@@ -1877,7 +1878,7 @@ body {
 }
 
 .secid-footer__copyright {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.8);
   font-size: 0.875rem;
 }
 
@@ -1887,7 +1888,7 @@ body {
 }
 
 .secid-footer__legal a {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   font-size: 0.875rem;
   transition: var(--transition-colors);
@@ -2419,6 +2420,102 @@ body {
 
 [data-theme='dark'] .secid-initiative-card__description {
   color: var(--color-text-secondary);
+}
+
+/* Features & CTA Section Dark Mode Contrast Fixes */
+[data-theme='dark'] .secid-features__title {
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .secid-features__subtitle {
+  color: var(--color-text-secondary);
+}
+
+[data-theme='dark'] .secid-cta-card__title {
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .secid-cta-card__description {
+  color: var(--color-text-secondary);
+}
+
+/* Footer Copyright Contrast Fix */
+.secid-footer__copyright {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.secid-footer__legal a {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Global Form Element Dark Mode Contrast Fixes */
+[data-theme='dark'] .secid-filter-label {
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme='dark'] .secid-filter-select {
+  background: var(--secid-gray-800) !important;
+  border-color: var(--secid-gray-700) !important;
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme='dark'] .secid-search-input {
+  background: var(--secid-gray-800) !important;
+  border-color: var(--secid-gray-700) !important;
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme='dark'] .secid-search-input::placeholder {
+  color: var(--color-text-tertiary) !important;
+}
+
+/* CTA Box Dark Mode */
+[data-theme='dark'] .secid-cta-box {
+  background: linear-gradient(
+    135deg,
+    rgba(56, 80, 97, 0.3) 0%,
+    rgba(253, 177, 87, 0.1) 100%
+  );
+  border-color: var(--secid-gold-dark);
+}
+
+[data-theme='dark'] .secid-cta-box h2,
+[data-theme='dark'] .secid-cta-box h3 {
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .secid-cta-box p {
+  color: var(--color-text-secondary);
+}
+
+/* Member CTA Dark Mode - !important to override Astro scoped styles */
+[data-theme='dark'] .secid-member-cta {
+  background: var(--color-surface-alt) !important;
+}
+
+[data-theme='dark'] .secid-member-cta h2,
+[data-theme='dark'] .secid-member-cta h3 {
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme='dark'] .secid-member-cta p {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Members Count Dark Mode */
+[data-theme='dark'] .secid-members-count {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Member Card Bio Dark Mode */
+[data-theme='dark'] .secid-member-card__bio {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Outline Button Dark Mode */
+[data-theme='dark'] .secid-button--outline {
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
 }
 
 /* ========== RESPONSIVE DESIGN ========== */

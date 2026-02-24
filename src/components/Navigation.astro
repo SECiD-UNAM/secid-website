@@ -52,10 +52,9 @@ const langPathRegex = /^\/(es|en)/;
 ---
 
 <!-- Skip to main content link for accessibility -->
-<a 
-  href="#main-content" 
+<a
+  href="#main"
   class="secid-skip-link"
-  tabindex="1"
 >
   {lang === 'es' ? 'Saltar al contenido principal' : 'Skip to main content'}
 </a>
@@ -67,6 +66,8 @@ const langPathRegex = /^\/(es|en)/;
         src="/images/logo.png"
         alt="SECiD Logo"
         class="secid-navbar__logo-img"
+        width="40"
+        height="40"
       />
       <span class="secid-navbar__logo-text">SECiD</span>
     </a>
@@ -183,12 +184,16 @@ const langPathRegex = /^\/(es|en)/;
         <a
           href={`/es${Astro.url.pathname.replace(langPathRegex, '')}`}
           class={`secid-navbar__mobile-lang ${lang === 'es' ? 'active' : ''}`}
+          aria-label={lang === 'es' ? 'Español (idioma actual)' : 'Cambiar a español'}
+          hreflang="es"
           >ES</a
         >
-        <span class="secid-navbar__mobile-divider">|</span>
+        <span class="secid-navbar__mobile-divider" aria-hidden="true">|</span>
         <a
           href={`/en${Astro.url.pathname.replace(langPathRegex, '')}`}
           class={`secid-navbar__mobile-lang ${lang === 'en' ? 'active' : ''}`}
+          aria-label={lang === 'en' ? 'English (current language)' : 'Switch to English'}
+          hreflang="en"
           >EN</a
         >
         <button

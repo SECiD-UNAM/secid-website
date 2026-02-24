@@ -349,6 +349,53 @@ const jobs = [
     flex-wrap: wrap;
   }
 
+  /* Dark mode overrides */
+  [data-theme='dark'] .secid-cta-box {
+    background: linear-gradient(135deg, rgba(56, 80, 97, 0.3) 0%, rgba(253, 177, 87, 0.1) 100%);
+    border-color: var(--secid-gold-dark);
+  }
+
+  [data-theme='dark'] .secid-cta-box__content h2 {
+    color: var(--color-text-primary, #e5e5e5);
+  }
+
+  [data-theme='dark'] .secid-cta-box__content p {
+    color: var(--color-text-secondary, #d4d4d4);
+  }
+
+  [data-theme='dark'] .secid-search-input {
+    background: var(--color-surface, #1a1a1a);
+    border-color: var(--color-border, #404040);
+    color: var(--color-text-primary, #e5e5e5);
+  }
+
+  [data-theme='dark'] .secid-search-input::placeholder {
+    color: var(--color-text-tertiary, #a3a3a3);
+  }
+
+  [data-theme='dark'] .secid-filter-select {
+    background: var(--color-surface, #1a1a1a);
+    border-color: var(--color-border, #404040);
+    color: var(--color-text-primary, #e5e5e5);
+  }
+
+  [data-theme='dark'] .secid-member-cta {
+    background: var(--color-surface-alt, #262626);
+  }
+
+  [data-theme='dark'] .secid-member-cta h2 {
+    color: var(--color-text-primary, #e5e5e5);
+  }
+
+  [data-theme='dark'] .secid-member-cta p {
+    color: var(--color-text-secondary, #d4d4d4);
+  }
+
+  [data-theme='dark'] .secid-button--outline {
+    color: var(--color-text-primary, #e5e5e5);
+    border-color: var(--color-border, #404040);
+  }
+
   @media (max-width: 768px) {
     .secid-cta-box {
       flex-direction: column;

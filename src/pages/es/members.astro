@@ -124,8 +124,8 @@ const members = [
     <div class="secid-container">
       <div class="secid-filters">
         <div class="secid-filter-group">
-          <label class="secid-filter-label">Empresa</label>
-          <select class="secid-filter-select">
+          <label class="secid-filter-label" for="filter-company">Empresa</label>
+          <select id="filter-company" class="secid-filter-select">
             <option value="">Todas las empresas</option>
             <option value="google">Google</option>
             <option value="microsoft">Microsoft</option>
@@ -135,8 +135,8 @@ const members = [
         </div>
 
         <div class="secid-filter-group">
-          <label class="secid-filter-label">Habilidades</label>
-          <select class="secid-filter-select">
+          <label class="secid-filter-label" for="filter-skills">Habilidades</label>
+          <select id="filter-skills" class="secid-filter-select">
             <option value="">Todas las habilidades</option>
             <option value="python">Python</option>
             <option value="ml">Machine Learning</option>
@@ -146,8 +146,8 @@ const members = [
         </div>
 
         <div class="secid-filter-group">
-          <label class="secid-filter-label">Experiencia</label>
-          <select class="secid-filter-select">
+          <label class="secid-filter-label" for="filter-experience">Experiencia</label>
+          <select id="filter-experience" class="secid-filter-select">
             <option value="">Todos los niveles</option>
             <option value="junior">Junior (0-2 años)</option>
             <option value="mid">Mid (3-5 años)</option>
@@ -167,6 +167,7 @@ const members = [
   <!-- Members Grid -->
   <section class="secid-section">
     <div class="secid-container">
+      <h2 class="sr-only">Resultados del directorio</h2>
       <div class="secid-members-header">
         <p class="secid-members-count">
           Mostrando {members.length} de 1,000+ miembros
@@ -547,8 +548,16 @@ const members = [
     color: var(--secid-gray-400);
   }
 
+  [data-theme='dark'] .secid-filter-label {
+    color: var(--color-text-primary, #e5e5e5);
+  }
+
   [data-theme='dark'] .secid-member-card__bio {
-    color: var(--secid-gray-400);
+    color: var(--color-text-secondary, #d4d4d4);
+  }
+
+  [data-theme='dark'] .secid-members-count {
+    color: var(--color-text-secondary, #d4d4d4);
   }
 
   [data-theme='dark'] .secid-member-card__social {

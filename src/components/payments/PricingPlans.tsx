@@ -282,7 +282,7 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
             className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
               billingCycle === 'monthly'
                 ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-900'
+                : 'text-gray-700 hover:text-gray-900'
             }`}
           >
             {t('pricing.monthly')}
@@ -292,7 +292,7 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
             className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
               billingCycle === 'yearly'
                 ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-900'
+                : 'text-gray-700 hover:text-gray-900'
             }`}
           >
             {t('pricing.yearly')}
@@ -342,9 +342,9 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
                   >
                     {getPlanIcon(planId)}
                   </div>
-                  <h3 className="mb-2 text-xl font-semibold text-gray-900">
+                  <h2 className="mb-2 text-xl font-semibold text-gray-900">
                     {plan['name']}
-                  </h3>
+                  </h2>
                   {getPlanBadge(planId)}
                 </div>
 
@@ -358,7 +358,7 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
                     <div>
                       <div className="text-3xl font-bold text-gray-900">
                         ${price.toFixed(0)}
-                        <span className="text-lg font-normal text-gray-500">
+                        <span className="text-lg font-normal text-gray-600">
                           /
                           {billingCycle === 'yearly'
                             ? t('pricing.year')
@@ -366,11 +366,11 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
                         </span>
                       </div>
                       {billingCycle === 'yearly' && (
-                        <div className="mt-1 text-sm text-gray-500">
+                        <div className="mt-1 text-sm text-gray-600">
                           ${(price / 12).toFixed(0)} {t('pricing.perMonth')}
                         </div>
                       )}
-                      <div className="mt-2 text-xs text-gray-400">
+                      <div className="mt-2 text-xs text-gray-600">
                         + ${taxCalc['iva'].toFixed(0)} IVA
                       </div>
                     </div>
@@ -415,10 +415,10 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
       {showCommissionOptions && (
         <div className="mb-16">
           <div className="mb-8 text-center">
-            <h3 className="mb-4 text-2xl font-bold text-gray-900">
+            <h2 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
               {t('pricing.chooseCommission')}
-            </h3>
-            <p className="text-gray-600">
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300">
               {t('pricing.commissionDescription')}
             </p>
           </div>
@@ -439,9 +439,9 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
                 >
                   <div className={commission.color}>{commission.icon}</div>
                 </div>
-                <h4 className="mb-2 text-lg font-semibold text-gray-900">
+                <h3 className="mb-2 text-lg font-semibold text-gray-900">
                   {commission['name']}
-                </h4>
+                </h3>
                 <p className="mb-4 text-sm text-gray-600">
                   {commission['description']}
                 </p>
@@ -449,7 +449,7 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
                   {commission.features.map((feature, index) => (
                     <li
                       key={index}
-                      className="flex items-center text-xs text-gray-500"
+                      className="flex items-center text-xs text-gray-600"
                     >
                       <div className="mr-2 h-1 w-1 rounded-full bg-gray-400"></div>
                       {feature}
@@ -468,37 +468,37 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
       )}
 
       {/* FAQ Section */}
-      <div className="border-t border-gray-200 pt-16">
+      <div className="border-t border-gray-200 pt-16 dark:border-gray-700">
         <div className="mb-12 text-center">
-          <h3 className="mb-4 text-2xl font-bold text-gray-900">
+          <h2 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
             {t('pricing.faq')}
-          </h3>
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           <div>
-            <h4 className="mb-2 text-lg font-semibold text-gray-900">
+            <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
               {t('pricing.faq1Question')}
-            </h4>
-            <p className="text-gray-600">{t('pricing.faq1Answer')}</p>
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300">{t('pricing.faq1Answer')}</p>
           </div>
           <div>
-            <h4 className="mb-2 text-lg font-semibold text-gray-900">
+            <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
               {t('pricing.faq2Question')}
-            </h4>
-            <p className="text-gray-600">{t('pricing.faq2Answer')}</p>
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300">{t('pricing.faq2Answer')}</p>
           </div>
           <div>
-            <h4 className="mb-2 text-lg font-semibold text-gray-900">
+            <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
               {t('pricing.faq3Question')}
-            </h4>
-            <p className="text-gray-600">{t('pricing.faq3Answer')}</p>
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300">{t('pricing.faq3Answer')}</p>
           </div>
           <div>
-            <h4 className="mb-2 text-lg font-semibold text-gray-900">
+            <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
               {t('pricing.faq4Question')}
-            </h4>
-            <p className="text-gray-600">{t('pricing.faq4Answer')}</p>
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300">{t('pricing.faq4Answer')}</p>
           </div>
         </div>
       </div>
