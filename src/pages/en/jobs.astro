@@ -2,55 +2,10 @@
 import ModernLayout from '../../layouts/ModernLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
+import JobBoardPage from '../../components/wrappers/JobBoardPage';
 import { getTranslations } from '../../i18n/translations';
 
 const t = getTranslations('en');
-
-// Mock job data - in production, this would come from Firebase
-const jobs = [
-  {
-    id: 1,
-    company: 'Tech Innovations SA',
-    initials: 'TI',
-    position: 'Senior Data Scientist',
-    description:
-      'Looking for an experienced data scientist to lead machine learning and predictive analytics projects. Experience in Python, R, and cloud computing required.',
-    location: 'remote',
-    locationText: 'Remote',
-    type: 'Full Time',
-    salary: '$70k - $100k MXN',
-    postedAgo: '3 days ago',
-    tags: ['Python', 'R', 'AWS', 'Machine Learning'],
-  },
-  {
-    id: 2,
-    company: 'AI Startup',
-    initials: 'AS',
-    position: 'Machine Learning Engineer',
-    description:
-      'Join our ML team to develop cutting-edge AI models. Experience with TensorFlow/PyTorch and model deployment in production.',
-    location: 'onsite',
-    locationText: 'On-site - Guadalajara',
-    type: 'Full Time',
-    salary: '$60k - $90k MXN',
-    postedAgo: '1 week ago',
-    tags: ['TensorFlow', 'PyTorch', 'Docker', 'Kubernetes'],
-  },
-  {
-    id: 3,
-    company: 'National Bank',
-    initials: 'NB',
-    position: 'Data Analyst',
-    description:
-      'Data analyst position in the financial sector. Advanced SQL, data visualization, and experience in risk analysis required.',
-    location: 'hybrid',
-    locationText: 'Hybrid - Monterrey',
-    type: 'Full Time',
-    salary: '$45k - $65k MXN',
-    postedAgo: '2 weeks ago',
-    tags: ['SQL', 'Tableau', 'Python', 'Risk Analysis'],
-  },
-];
 ---
 
 <ModernLayout
@@ -78,7 +33,7 @@ const jobs = [
       <!-- CTA for Companies -->
       <div class="secid-cta-box">
         <div class="secid-cta-box__content">
-          <h3>Looking for data science talent?</h3>
+          <h2>Looking for data science talent?</h2>
           <p>
             Post your job offers and connect with the best professionals graduated from UNAM.
           </p>
@@ -92,95 +47,12 @@ const jobs = [
         </a>
       </div>
 
-      <!-- Search and Filters -->
-      <div class="secid-jobs-filters">
-        <div class="secid-search-box">
-          <input
-            type="text"
-            placeholder="Search by title, company or location..."
-            class="secid-search-input"
-          />
-          <button class="secid-button secid-button--primary">
-            <i class="fas fa-search"></i>
-            Search
-          </button>
-        </div>
-
-        <div class="secid-filter-row">
-          <select class="secid-filter-select">
-            <option value="">Location</option>
-            <option value="cdmx">Mexico City</option>
-            <option value="gdl">Guadalajara</option>
-            <option value="mty">Monterrey</option>
-            <option value="remote">Remote</option>
-          </select>
-
-          <select class="secid-filter-select">
-            <option value="">Job Type</option>
-            <option value="full-time">Full Time</option>
-            <option value="part-time">Part Time</option>
-            <option value="contract">Contract</option>
-            <option value="internship">Internship</option>
-          </select>
-
-          <select class="secid-filter-select">
-            <option value="">Experience</option>
-            <option value="entry">Entry Level</option>
-            <option value="mid">Mid Level</option>
-            <option value="senior">Senior</option>
-            <option value="lead">Lead</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Job Listings -->
-      <div class="secid-jobs-grid">
-        {
-          jobs.map((job) => (
-            <div class="secid-job-card secid-job-card--full">
-              <div class="secid-job-card__header">
-                <div class="secid-job-card__company">
-                  <div class="secid-job-card__logo">{job.initials}</div>
-                  <div class="secid-job-card__company-info">
-                    <h3>{job.position}</h3>
-                    <p class="secid-job-card__company-name">{job.company}</p>
-                  </div>
-                </div>
-                <span
-                  class={`secid-job-card__status secid-job-card__status--${job.location}`}
-                >
-                  {job.locationText}
-                </span>
-              </div>
-
-              <p class="secid-job-card__description">{job.description}</p>
-
-              <div class="secid-job-card__tags">
-                {job.tags.map((tag) => (
-                  <span class="secid-job-card__tag">{tag}</span>
-                ))}
-              </div>
-
-              <div class="secid-job-card__footer">
-                <div class="secid-job-card__meta">
-                  <span class="secid-job-card__salary">{job.salary}</span>
-                  <span>•</span>
-                  <span>{job.type}</span>
-                  <span>•</span>
-                  <span>{job.postedAgo}</span>
-                </div>
-                <button class="secid-button secid-button--primary secid-button--sm">
-                  View Details
-                </button>
-              </div>
-            </div>
-          ))
-        }
-      </div>
+      <!-- Interactive Job Board -->
+      <JobBoardPage client:load lang="en" />
 
       <!-- CTA for Members -->
       <div class="secid-member-cta">
-        <h3>Are you a SECiD member?</h3>
+        <h2>Are you a SECiD member?</h2>
         <p>
           Sign in to access exclusive opportunities and receive personalized alerts.
         </p>
@@ -223,12 +95,6 @@ const jobs = [
     margin: 0 auto;
   }
 
-  .secid-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 var(--space-lg);
-  }
-
   .secid-cta-box {
     display: flex;
     align-items: center;
@@ -244,7 +110,7 @@ const jobs = [
     margin-bottom: 3rem;
   }
 
-  .secid-cta-box__content h3 {
+  .secid-cta-box__content h2 {
     font-size: 1.5rem;
     color: var(--secid-dark-blue);
     margin-bottom: 0.5rem;
@@ -255,72 +121,15 @@ const jobs = [
     margin: 0;
   }
 
-  .secid-jobs-filters {
-    margin-bottom: 3rem;
-  }
-
-  .secid-search-box {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .secid-search-input {
-    flex: 1;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    border: 2px solid var(--secid-gray-300);
-    border-radius: var(--radius-md);
-    transition: border-color 0.3s ease;
-  }
-
-  .secid-search-input:focus {
-    outline: none;
-    border-color: var(--secid-primary);
-  }
-
-  .secid-filter-row {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .secid-filter-select {
-    flex: 1;
-    min-width: 200px;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    border: 2px solid var(--secid-gray-300);
-    border-radius: var(--radius-md);
-    background: white;
-    transition: border-color 0.3s ease;
-  }
-
-  .secid-filter-select:focus {
-    outline: none;
-    border-color: var(--secid-secondary);
-  }
-
-  .secid-jobs-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    margin-bottom: 3rem;
-  }
-
-  .secid-job-card--full {
-    width: 100%;
-    max-width: none;
-  }
-
   .secid-member-cta {
     text-align: center;
     padding: 3rem;
     background: var(--secid-gray-50);
     border-radius: var(--radius-lg);
+    margin-top: 3rem;
   }
 
-  .secid-member-cta h3 {
+  .secid-member-cta h2 {
     font-size: 1.75rem;
     color: var(--secid-dark-blue);
     margin-bottom: 1rem;
@@ -342,23 +151,42 @@ const jobs = [
     flex-wrap: wrap;
   }
 
+  /* Dark mode overrides */
+  [data-theme='dark'] .secid-cta-box {
+    background: linear-gradient(135deg, rgba(56, 80, 97, 0.3) 0%, rgba(253, 177, 87, 0.1) 100%);
+    border-color: var(--secid-gold-dark);
+  }
+
+  [data-theme='dark'] .secid-cta-box__content h2 {
+    color: var(--color-text-primary, #e5e5e5);
+  }
+
+  [data-theme='dark'] .secid-cta-box__content p {
+    color: var(--color-text-secondary, #d4d4d4);
+  }
+
+  [data-theme='dark'] .secid-member-cta {
+    background: var(--color-surface-alt, #262626);
+  }
+
+  [data-theme='dark'] .secid-member-cta h2 {
+    color: var(--color-text-primary, #e5e5e5);
+  }
+
+  [data-theme='dark'] .secid-member-cta p {
+    color: var(--color-text-secondary, #d4d4d4);
+  }
+
+  [data-theme='dark'] .secid-button--outline {
+    color: var(--color-text-primary, #e5e5e5);
+    border-color: var(--color-border, #404040);
+  }
+
   @media (max-width: 768px) {
     .secid-cta-box {
       flex-direction: column;
       text-align: center;
       gap: 1.5rem;
-    }
-
-    .secid-search-box {
-      flex-direction: column;
-    }
-
-    .secid-filter-row {
-      flex-direction: column;
-    }
-
-    .secid-filter-select {
-      width: 100%;
     }
   }
 </style>

@@ -46,14 +46,107 @@ import type {
   vCardData
 } from '@/types/member';
 
-// Collection names
+// Collection names — Cloud Functions write user profiles to 'users', so we read from there
 const COLLECTIONS = {
-  MEMBERS: 'members',
+  MEMBERS: 'users',
   CONNECTION_REQUESTS: 'connectionRequests',
   CONVERSATIONS: 'conversations',
   MESSAGES: 'messages',
   MEMBER_ANALYTICS: 'memberAnalytics'
 };
+
+/**
+ * Map a flat Firestore user document (as written by Cloud Functions)
+ * to the MemberProfile shape expected by the UI components.
+ */
+function mapUserDocToMemberProfile(uid: string, data: Record<string, any>): MemberProfile {
+  const firstName = data.firstName || data.profile?.firstName || '';
+  const lastName = data.lastName || data.profile?.lastName || '';
+  const displayName = data.displayName || `${firstName} ${lastName}`.trim() || 'Miembro';
+  const initials = displayName
+    .split(' ')
+    .map((n: string) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+
+  return {
+    uid,
+    email: data.email || '',
+    role: data.role || 'member',
+    createdAt: data.createdAt?.toDate?.() || data.createdAt || new Date(),
+    displayName,
+    initials,
+    isOnline: data.isOnline || false,
+    lastSeen: data.updatedAt?.toDate?.() || data.updatedAt || new Date(),
+    joinedAt: data.createdAt?.toDate?.() || data.createdAt || new Date(),
+    profile: data.profile || {
+      firstName,
+      lastName,
+      bio: data.bio || '',
+      company: data.currentCompany || '',
+      position: data.currentPosition || '',
+      location: data.location || '',
+      linkedin: data.linkedinUrl || '',
+      skills: data.skills || [],
+      photoURL: data.photoURL || undefined,
+      graduationYear: data.graduationYear,
+      degree: data.degree || 'Ciencia de Datos',
+      specialization: data.specialization || '',
+    },
+    experience: data.experience || {
+      years: 0,
+      level: 'mid' as const,
+      currentRole: data.currentPosition || '',
+      previousRoles: [],
+      industries: '',
+    },
+    social: data.social || {
+      linkedin: data.linkedinUrl,
+      github: data.githubUrl,
+      portfolio: data.portfolioUrl,
+    },
+    networking: data.networking || {
+      connections: [],
+      pendingConnections: [],
+      blockedUsers: [],
+      followers: [],
+      following: [],
+      mentorshipStatus: 'none',
+      availableForMentoring: data.privacySettings?.mentorshipAvailable || false,
+      openToOpportunities: data.privacySettings?.jobSearching || false,
+    },
+    privacy: data.privacy || {
+      profileVisibility: data.privacySettings?.profileVisible !== false ? 'public' : 'private',
+      showEmail: data.privacySettings?.contactVisible || false,
+      showPhone: false,
+      showLocation: true,
+      showCurrentCompany: true,
+      showSalaryExpectations: false,
+      allowMessages: 'all',
+      allowConnectionRequests: true,
+      showOnlineStatus: true,
+      showLastSeen: true,
+    },
+    activity: data.activity || {
+      profileViews: 0,
+      totalConnections: 0,
+      postsCount: 0,
+      commentsCount: 0,
+      helpfulVotes: 0,
+      reputation: 0,
+      lastActive: data.updatedAt?.toDate?.() || new Date(),
+    },
+    searchableKeywords: data.searchableKeywords || (data.skills || []).map((s: string) => s.toLowerCase()),
+    featuredSkills: data.featuredSkills || (data.skills || []).slice(0, 5),
+    isPremium: data.isPremium || data.membershipTier === 'premium' || data.membershipTier === 'corporate',
+    settings: data.settings || {
+      emailNotifications: data.notificationSettings?.email !== false,
+      profileVisibility: data.privacySettings?.profileVisible !== false ? 'public' : 'private',
+      language: 'es',
+    },
+  };
+}
 
 // Mock data for development
 const createMockMemberProfile = (index: number): MemberProfile => ({
@@ -202,10 +295,7 @@ export async function getMemberProfiles(options: {
     q = query(q, limit(queryLimit));
 
     const snapshot = await getDocs(q);
-    return snapshot['docs'].map(doc => ({
-      uid: doc['id'],
-      ...doc.data()
-    } as MemberProfile));
+    return snapshot['docs'].map(doc => mapUserDocToMemberProfile(doc['id'], doc.data()));
   } catch (error) {
     console.error('Error fetching member profiles:', error);
     throw error;
@@ -239,10 +329,7 @@ export async function searchMembers(filters: MemberSearchFilters): Promise<Membe
 
     // Apply other filters similar to getMemberProfiles
     const snapshot = await getDocs(baseQuery);
-    const members = snapshot['docs'].map(doc => ({
-      uid: doc['id'],
-      ...doc.data()
-    } as MemberProfile));
+    const members = snapshot['docs'].map(doc => mapUserDocToMemberProfile(doc['id'], doc.data()));
 
     // Calculate match scores (simplified implementation)
     return members.map(member => ({
@@ -270,10 +357,7 @@ export async function getMemberProfile(uid: string): Promise<MemberProfile | nul
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
-      return {
-        uid: docSnap['id'],
-        ...docSnap.data()
-      } as MemberProfile;
+      return mapUserDocToMemberProfile(docSnap['id'], docSnap.data());
     }
     
     return null;
@@ -546,7 +630,7 @@ export function subscribeToMemberUpdates(
   const memberRef = doc(db, COLLECTIONS.MEMBERS, uid);
   return onSnapshot(memberRef, (doc) => {
     if (doc.exists()) {
-      callback({ uid: doc['id'], ...doc.data() } as MemberProfile);
+      callback(mapUserDocToMemberProfile(doc['id'], doc.data()));
     } else {
       callback(null);
     }
