@@ -9,7 +9,7 @@ import {
   type UserCredential,
   type AuthProvider
 } from 'firebase/auth';
-import { auth} from '@/lib/firebase-config';
+import { auth} from '@/lib/firebase';
 import { doc, setDoc, getDoc, updateDoc} from 'firebase/firestore';
 import { db} from '@/lib/firebase';
 

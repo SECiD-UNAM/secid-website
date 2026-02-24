@@ -138,7 +138,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
       list: { es: 'Lista', en: 'List' },
       compact: { es: 'Compacto', en: 'Compact' }
     };
-    return labels[mode][lang];
+    return labels[mode][lang] ?? mode;
   };
 
   const handlePageChange = (page: number) => {
@@ -366,7 +366,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
               member={member}
               viewMode={viewMode}
               lang={lang}
-              currentUser={user}
+              currentUser={user ? { uid: user.uid, email: user.email ?? '', displayName: user.displayName ?? '', photoURL: user.photoURL ?? undefined, role: 'member' } : null}
               showMatchScore={searchResults.length > 0}
               matchScore={searchResults.find(r => r.member.uid === member.uid)?.matchScore}
             />

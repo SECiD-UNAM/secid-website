@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth} from '@/contexts/AuthContext';
 import { doc, getDoc, setDoc, deleteDoc, updateDoc, increment, serverTimestamp} from 'firebase/firestore';
-import { db} from '@/lib/firebase-config';
+import { db} from '@/lib/firebase';
 import { BookmarkIcon as BookmarkSolidIcon} from '@heroicons/react/24/solid';
 import EventRegistrationForm from './EventRegistrationForm';
 import {

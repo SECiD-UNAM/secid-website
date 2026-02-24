@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth} from '@/contexts/AuthContext';
 import { doc, getDoc, updateDoc, increment, collection, query, where, getDocs} from 'firebase/firestore';
-import { db} from '@/lib/firebase-config';
+import { db} from '@/lib/firebase';
 import {
   ArrowLeftIcon,
   MapPinIcon,

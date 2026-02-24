@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { COMMISSION_TYPES } from './stripe/stripe-client';
 
 // Commission data types

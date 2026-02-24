@@ -7,7 +7,7 @@ import {
   limit,
   getDocs,
 } from 'firebase/firestore';
-import { db } from '@/lib/firebase-config';
+import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   CalendarIcon,

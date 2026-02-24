@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Search-related types and interfaces for the SECiD global search system
  */

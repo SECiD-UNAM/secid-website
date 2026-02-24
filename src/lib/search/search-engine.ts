@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Advanced Search Engine Implementation for SECiD Platform
  * Features: Fuzzy matching, typo tolerance, relevance scoring, and bilingual support

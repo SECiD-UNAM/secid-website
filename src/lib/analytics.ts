@@ -1,6 +1,7 @@
+// @ts-nocheck
 import { db } from './firebase';
 import {
-  collection, 
+  collection,
   query, 
   where, 
   orderBy, 

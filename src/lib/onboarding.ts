@@ -1,5 +1,5 @@
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { db, storage, analytics } from './firebase-config';
+import { db, storage, analytics } from './firebase';
 import { logEvent } from 'firebase/analytics';
 
 /**

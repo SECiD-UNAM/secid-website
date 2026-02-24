@@ -8,9 +8,10 @@ import {
   limit,
   startAfter,
   getDocs,
-  DocumentSnapshot,
+  type DocumentSnapshot,
+  type QueryDocumentSnapshot,
 } from 'firebase/firestore';
-import { db } from '@/lib/firebase-config';
+import { db } from '@/lib/firebase';
 import JobCard from './JobCard';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
@@ -308,7 +309,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ lang = 'es', filters }) => {
       }
 
       // Set pagination state
-      setLastDoc(snapshot.docs[snapshot['docs'].length - 1]);
+      setLastDoc(snapshot.docs[snapshot['docs'].length - 1] as DocumentSnapshot ?? null);
       setHasMore(snapshot.docs.length === JOBS_PER_PAGE);
 
       if (loadMore) {

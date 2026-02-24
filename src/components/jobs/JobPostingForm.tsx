@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase-config';
+import { db } from '@/lib/firebase';
 import {
   BriefcaseIcon,
   BuildingOfficeIcon,
@@ -56,7 +56,7 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
 
   const [formData, setFormData] = useState<JobFormData>({
     title: '',
-    company: userProfile?.company || '',
+    company: userProfile?.currentCompany || '',
     companyDescription: '',
     location: '',
     locationType: 'onsite',
@@ -342,7 +342,7 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
               setCurrentStep(1);
               setFormData({
                 title: '',
-                company: userProfile?.company || '',
+                company: userProfile?.currentCompany || '',
                 companyDescription: '',
                 location: '',
                 locationType: 'onsite',

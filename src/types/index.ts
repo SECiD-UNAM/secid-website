@@ -241,7 +241,8 @@ export interface Environment {
 }
 
 // Re-export types from other modules
-// Note: Some modules have their own re-exports to avoid circular dependencies
+// Note: Explicit re-exports resolve ambiguity when multiple modules
+// define types with the same name (Resource, Conversation, Certificate).
 export * from './forum';
 export * from './member';
 export * from './user';
@@ -253,3 +254,8 @@ export * from './notification';
 export * from './messaging';
 export * from './subscription';
 export * from './learning';
+
+// Resolve ambiguous re-exports by explicitly choosing the canonical source
+export { type Resource } from './resource';
+export { type Conversation } from './messaging';
+export { type Certificate } from './learning';

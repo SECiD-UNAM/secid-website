@@ -24,7 +24,7 @@ import {
   and,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject} from 'firebase/storage';
-import { db, storage} from './firebase-config';
+import { db, storage} from './firebase';
 import type {
   ForumCategory,
   ForumTopic,

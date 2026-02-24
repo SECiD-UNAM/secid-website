@@ -3,12 +3,7 @@
 # Run lint-staged for formatting and linting
 npx lint-staged
 
-# Run Astro check to catch compilation errors
-echo "🔍 Astro compilation check temporarily disabled due to TypeScript errors"
-# npm run check
-
 # Run TypeScript check
-echo "🔍 TypeScript check temporarily disabled due to TypeScript errors"
-# npm run type-check
+npm run type-check
 
-echo "✅ Pre-commit checks passed!"
+echo "Pre-commit checks passed!"

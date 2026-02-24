@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { db } from '@/lib/firebase-config';
+import { db } from '@/lib/firebase';
 import { useTranslations } from '@/hooks/useTranslations';
 import {
   collection,

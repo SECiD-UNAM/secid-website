@@ -1,15 +1,15 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
-  User,
+  type User,
   onAuthStateChanged,
   signOut as firebaseSignOut
 } from 'firebase/auth';
-import { auth, db, isEmulatorMode} from '@/lib/firebase-config';
+import { auth, db, isEmulatorMode} from '@/lib/firebase';
 import {
-  doc, 
+  doc,
   onSnapshot,
   getDoc,
-  Unsubscribe
+  type Unsubscribe
 } from 'firebase/firestore';
 
 export interface UserProfile {

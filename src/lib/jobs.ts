@@ -34,7 +34,7 @@ export async function createJob(jobData: JobFormData, userId: string): Promise<s
   };
 
   if (isUsingMockAPI()) {
-    return db.addDoc('jobs', newJob);
+    return (db as any).addDoc('jobs', newJob);
   }
 
   const docRef = await addDoc(collection(db, 'jobs'), newJob);
@@ -46,7 +46,7 @@ export async function createJob(jobData: JobFormData, userId: string): Promise<s
  */
 export async function getJob(jobId: string): Promise<Job | null> {
   if (isUsingMockAPI()) {
-    const result = await db.getDoc('jobs', jobId);
+    const result = await (db as any).getDoc('jobs', jobId);
     return result.exists ? { id: jobId, ...result.data() } as Job : null;
   }
 
@@ -65,7 +65,7 @@ export async function getJob(jobId: string): Promise<Job | null> {
  */
 export async function getActiveJobs(limitCount: number = 20): Promise<Job[]> {
   if (isUsingMockAPI()) {
-    const results = await db.getDocs('jobs', {
+    const results = await (db as any).getDocs('jobs', {
       where: ['status', '==', 'active'],
       orderBy: ['postedAt', 'desc'],
       limit: limitCount,
@@ -100,7 +100,7 @@ export async function getActiveJobs(limitCount: number = 20): Promise<Job[]> {
  */
 export async function getUserJobs(userId: string): Promise<Job[]> {
   if (isUsingMockAPI()) {
-    const results = await db.getDocs('jobs', {
+    const results = await (db as any).getDocs('jobs', {
       where: ['postedBy', '==', userId],
       orderBy: ['postedAt', 'desc'],
     });
@@ -135,7 +135,7 @@ export async function updateJob(jobId: string, updates: Partial<Job>): Promise<v
   };
 
   if (isUsingMockAPI()) {
-    return db.updateDoc('jobs', jobId, updateData);
+    return (db as any).updateDoc('jobs', jobId, updateData);
   }
 
   const docRef = doc(db, 'jobs', jobId);
@@ -147,7 +147,7 @@ export async function updateJob(jobId: string, updates: Partial<Job>): Promise<v
  */
 export async function deleteJob(jobId: string): Promise<void> {
   if (isUsingMockAPI()) {
-    return db.deleteDoc('jobs', jobId);
+    return (db as any).deleteDoc('jobs', jobId);
   }
 
   const docRef = doc(db, 'jobs', jobId);
@@ -193,7 +193,7 @@ export async function filterJobs(filters: {
     return allJobs.filter(job => {
       if (filters['type'] && job['type'] !== filters['type']) return false;
       if (filters.location && !job.location.includes(filters.location)) return false;
-      if (filters.remote !== undefined && job.remote !== filters.remote) return false;
+      if (filters.remote !== undefined && (job.locationType === 'remote') !== filters.remote) return false;
       if (filters.salaryMin && job.salary && job.salary.min < filters.salaryMin) return false;
       return true;
     });
@@ -206,7 +206,7 @@ export async function filterJobs(filters: {
   return allJobs.filter(job => {
     if (filters['type'] && job['type'] !== filters['type']) return false;
     if (filters.location && !job.location.includes(filters.location)) return false;
-    if (filters.remote !== undefined && job.remote !== filters.remote) return false;
+    if (filters.remote !== undefined && (job.locationType === 'remote') !== filters.remote) return false;
     if (filters.salaryMin && job.salary && job.salary.min < filters.salaryMin) return false;
     return true;
   });
@@ -219,7 +219,7 @@ export async function incrementJobViews(jobId: string): Promise<void> {
   if (isUsingMockAPI()) {
     const job = await getJob(jobId);
     if(job) {
-      return db.updateDoc('jobs', jobId, { views: (job.views || 0) + 1 });
+      return (db as any).updateDoc('jobs', jobId, { views: (job.views || 0) + 1 });
     }
     return;
   }

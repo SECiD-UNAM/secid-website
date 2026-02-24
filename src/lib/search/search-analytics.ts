@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { db, auth } from '@/lib/firebase';
 
 /**

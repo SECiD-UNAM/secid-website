@@ -9,7 +9,7 @@ import {
   updateDoc,
   increment,
 } from 'firebase/firestore';
-import { db } from '@/lib/firebase-config';
+import { db } from '@/lib/firebase';
 import {
   XMarkIcon,
   CheckCircleIcon,

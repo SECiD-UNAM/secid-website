@@ -25,7 +25,7 @@ import {
   increment,
   serverTimestamp,
   onSnapshot,
-  Unsubscribe
+  type Unsubscribe
 } from 'firebase/firestore';
 import {
   ref, 
@@ -163,9 +163,9 @@ const createMockMemberProfile = (index: number): MemberProfile => ({
     firstName: `Member`,
     lastName: `${index}`,
     bio: `Experienced data scientist with ${3 + Math.floor(Math.random() * 10)} years in the field. Passionate about machine learning and data visualization.`,
-    company: ['Google', 'Microsoft', 'Amazon', 'Facebook', 'Netflix'][Math.floor(Math.random() * 5)],
-    position: ['Data Scientist', 'ML Engineer', 'Data Analyst', 'Senior Data Scientist', 'Data Engineering Lead'][Math.floor(Math.random() * 5)],
-    location: ['Mexico City', 'Guadalajara', 'Monterrey', 'Remote', 'San Francisco'][Math.floor(Math.random() * 5)],
+    company: ['Google', 'Microsoft', 'Amazon', 'Facebook', 'Netflix'][Math.floor(Math.random() * 5)] ?? 'Google',
+    position: ['Data Scientist', 'ML Engineer', 'Data Analyst', 'Senior Data Scientist', 'Data Engineering Lead'][Math.floor(Math.random() * 5)] ?? 'Data Scientist',
+    location: ['Mexico City', 'Guadalajara', 'Monterrey', 'Remote', 'San Francisco'][Math.floor(Math.random() * 5)] ?? 'Mexico City',
     linkedin: `https://linkedin.com/in/member${index}`,
     skills: ['Python', 'SQL', 'Machine Learning', 'TensorFlow', 'Pandas'].slice(0, Math.floor(Math.random() * 5) + 3),
     photoURL: undefined,
@@ -178,7 +178,7 @@ const createMockMemberProfile = (index: number): MemberProfile => ({
     level: ['junior', 'mid', 'senior', 'lead'][Math.floor(Math.random() * 4)] as any,
     currentRole: 'Data Scientist',
     previousRoles: [],
-    industries: ['Technology', 'Finance', 'Healthcare'][Math.floor(Math.random() * 3)]
+    industries: [['Technology', 'Finance', 'Healthcare'][Math.floor(Math.random() * 3)] ?? 'Technology']
   },
   social: {
     linkedin: `https://linkedin.com/in/member${index}`,
@@ -596,7 +596,7 @@ async function getOrCreateConversation(uid1: string, uid2: string): Promise<stri
   const q = query(conversationsRef, where('participants', '==', participants));
   const snapshot = await getDocs(q);
   
-  if (!snapshot['empty']) {
+  if (!snapshot['empty'] && snapshot['docs'][0]) {
     return snapshot['docs'][0].id;
   }
   
@@ -800,7 +800,7 @@ export async function getMemberRecommendations(uid: string): Promise<MemberRecom
           userProfile.profile.skills.includes(skill)
         );
         
-        let reason: MemberRecommendation.reason = 'similar_interests';
+        let reason: MemberRecommendation['reason'] = 'similar_interests';
         let score = 50;
         
         if (commonSkills.length > 0) {

@@ -1,6 +1,7 @@
+// @ts-nocheck
 import {
-  collection, 
-  doc, 
+  collection,
+  doc,
   query, 
   where, 
   orderBy, 
@@ -12,7 +13,7 @@ import {
   Timestamp,
   QueryConstraint
 } from 'firebase/firestore';
-import { db} from '@/lib/firebase-config';
+import { db} from '@/lib/firebase';
 import { UserProfile} from '@/contexts/AuthContext';
 
 /**

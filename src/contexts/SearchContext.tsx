@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react';
 import { searchEngine} from '@/lib/search/search-engine';
 import { searchIndexer} from '@/lib/search/search-indexer';
 /**

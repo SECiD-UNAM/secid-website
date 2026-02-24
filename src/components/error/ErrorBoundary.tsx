@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { Component, type ErrorInfo, type ReactNode } from 'react';
 import { getSentry } from '../../lib/monitoring/sentry';
 
 interface Props {
@@ -29,7 +29,7 @@ export class ErrorBoundary extends Component<Props, ErrorBoundaryState> {
     };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     try {
       const sentry = getSentry();
 
@@ -77,7 +77,7 @@ export class ErrorBoundary extends Component<Props, ErrorBoundaryState> {
     }
   };
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       // Use custom fallback if provided
       if (this.props.fallback) {

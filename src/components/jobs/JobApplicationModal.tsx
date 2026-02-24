@@ -8,7 +8,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '@/lib/firebase-config';
+import { db, storage } from '@/lib/firebase';
 import {
   XMarkIcon,
   DocumentIcon,

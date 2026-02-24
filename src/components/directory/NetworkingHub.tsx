@@ -189,7 +189,7 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({ lang = 'es' }) => 
       id: 'messages',
       label: lang === 'es' ? 'Mensajes' : 'Messages',
       icon: ChatBubbleLeftEllipsisIcon,
-      count: conversations.reduce((total, conv) => total + (conv.unreadCount[user?.uid || ''] || 0), 0)
+      count: conversations.reduce((total, conv) => total + (conv.unreadCount?.[user?.uid || ''] || 0), 0)
     },
     {
       id: 'recommendations',
@@ -458,9 +458,9 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({ lang = 'es' }) => 
                             </p>
                           )}
                         </div>
-                        {conversation.unreadCount[user?.uid || ''] > 0 && (
+                        {(conversation.unreadCount?.[user?.uid || ''] ?? 0) > 0 && (
                           <div className="h-5 w-5 bg-primary-600 text-white text-xs rounded-full flex items-center justify-center">
-                            {conversation.unreadCount[user?.uid || '']}
+                            {conversation.unreadCount?.[user?.uid || '']}
                           </div>
                         )}
                       </div>

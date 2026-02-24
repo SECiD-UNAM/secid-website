@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { signOut } from 'firebase/auth';

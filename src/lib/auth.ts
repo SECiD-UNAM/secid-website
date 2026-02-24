@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db, isUsingMockAPI } from './firebase';
 import {

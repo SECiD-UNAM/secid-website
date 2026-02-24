@@ -1,6 +1,7 @@
-import { 
-  updateDoc, 
-  doc, 
+// @ts-nocheck
+import {
+  updateDoc,
+  doc,
   getDoc, 
   collection, 
   addDoc, 

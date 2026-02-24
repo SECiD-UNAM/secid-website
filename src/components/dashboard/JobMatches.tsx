@@ -8,7 +8,7 @@ import {
   limit,
   getDocs,
 } from 'firebase/firestore';
-import { db } from '@/lib/firebase-config';
+import { db } from '@/lib/firebase';
 import {
   MapPinIcon,
   CurrencyDollarIcon,

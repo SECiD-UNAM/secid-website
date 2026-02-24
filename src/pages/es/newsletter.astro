@@ -604,7 +604,7 @@ const t = getTranslations('es');
 </style>
 
 <script>
-  import { db } from '@/lib/firebase-config';
+  import { db } from '@/lib/firebase';
   import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
   const form = document.getElementById('newsletter-form') as HTMLFormElement;

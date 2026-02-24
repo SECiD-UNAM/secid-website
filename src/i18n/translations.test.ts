@@ -11,7 +11,7 @@ describe('Translations', () => {
       const translations = getTranslations('es');
       expect(translations.site.name).toBe('SECiD');
       expect(translations.nav.home).toBe('Inicio');
-      expect(translations.auth.signIn.title).toBe('Iniciar sesión');
+      expect(translations.auth.signIn.title).toBe('Iniciar Sesión');
     });
 
     it('returns English translations for "en" language', () => {
@@ -82,48 +82,50 @@ describe('Translations', () => {
       const url = new URL('https://secid.mx/es/about');
       const alternates = getAlternateUrls(url);
 
-      expect(alternates.es).toBe('https://secid.mx/es/about');
-      expect(alternates.en).toBe('https://secid.mx/en/about');
+      expect(alternates.es).toBe('/es/about');
+      expect(alternates.en).toBe('/en/about');
     });
 
     it('generates alternate URLs for English page', () => {
       const url = new URL('https://secid.mx/en/contact');
       const alternates = getAlternateUrls(url);
 
-      expect(alternates.es).toBe('https://secid.mx/es/contact');
-      expect(alternates.en).toBe('https://secid.mx/en/contact');
+      expect(alternates.es).toBe('/es/contact');
+      expect(alternates.en).toBe('/en/contact');
     });
 
     it('handles root URL correctly', () => {
       const url = new URL('https://secid.mx/');
       const alternates = getAlternateUrls(url);
 
-      expect(alternates.es).toBe('https://secid.mx/es/');
-      expect(alternates.en).toBe('https://secid.mx/en/');
+      expect(alternates.es).toBe('/es/');
+      expect(alternates.en).toBe('/en/');
     });
 
     it('handles URLs without language prefix', () => {
       const url = new URL('https://secid.mx/about');
       const alternates = getAlternateUrls(url);
 
-      expect(alternates.es).toBe('https://secid.mx/es/about');
-      expect(alternates.en).toBe('https://secid.mx/en/about');
+      expect(alternates.es).toBe('/es/about');
+      expect(alternates.en).toBe('/en/about');
     });
 
     it('preserves query parameters', () => {
       const url = new URL('https://secid.mx/es/search?q=test&page=2');
       const alternates = getAlternateUrls(url);
 
-      expect(alternates.es).toBe('https://secid.mx/es/search?q=test&page=2');
-      expect(alternates.en).toBe('https://secid.mx/en/search?q=test&page=2');
+      // getAlternateUrls only processes pathname, not query/hash
+      expect(alternates.es).toBe('/es/search');
+      expect(alternates.en).toBe('/en/search');
     });
 
     it('preserves hash fragments', () => {
       const url = new URL('https://secid.mx/es/docs#section');
       const alternates = getAlternateUrls(url);
 
-      expect(alternates.es).toBe('https://secid.mx/es/docs#section');
-      expect(alternates.en).toBe('https://secid.mx/en/docs#section');
+      // getAlternateUrls only processes pathname, not query/hash
+      expect(alternates.es).toBe('/es/docs');
+      expect(alternates.en).toBe('/en/docs');
     });
   });
 

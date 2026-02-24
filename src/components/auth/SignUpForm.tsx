@@ -9,7 +9,7 @@ import {
   GoogleAuthProvider,
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase-config';
+import { auth, db } from '@/lib/firebase';
 import Button from '@/components/ui/Button';
 import { useTranslations } from '@/hooks/useTranslations';
 
