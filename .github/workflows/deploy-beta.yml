@@ -53,4 +53,4 @@ jobs:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
       - name: Deploy to Firebase Hosting + Firestore Rules
-        run: npx firebase-tools deploy --only hosting,firestore --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }}
+        run: npx firebase-tools deploy --only hosting,firestore --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} --force
