@@ -85,9 +85,21 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
 
       onSuccess?.();
     } catch (error: any) {
-      const errorMessage =
-        error.message ||
-        (lang === 'es' ? 'Error al iniciar sesión' : 'Sign in error');
+      const errorCode = error.code || '';
+      let errorMessage: string;
+
+      if (errorCode === 'auth/configuration-not-found') {
+        errorMessage = lang === 'es'
+          ? 'El servicio de autenticación no está configurado. Contacta al administrador.'
+          : 'Authentication service is not configured. Contact the administrator.';
+      } else if (errorCode === 'auth/popup-closed-by-user') {
+        errorMessage = lang === 'es'
+          ? 'Inicio de sesión cancelado'
+          : 'Sign in cancelled';
+      } else {
+        errorMessage = error.message ||
+          (lang === 'es' ? 'Error al iniciar sesión' : 'Sign in error');
+      }
 
       toast['error'](errorMessage);
       onError?.(errorMessage);

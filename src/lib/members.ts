@@ -19,6 +19,7 @@ import {
   limit,
   startAfter,
   DocumentSnapshot,
+  Timestamp,
   writeBatch,
   arrayUnion,
   arrayRemove,
@@ -33,11 +34,13 @@ import {
   getDownloadURL, 
   deleteObject 
 } from 'firebase/storage';
-import type { 
-  MemberProfile, 
-  MemberSearchFilters, 
-  MemberSearchResult, 
+import type {
+  MemberProfile,
+  MemberSearchFilters,
+  MemberSearchResult,
   MemberStats,
+  MemberStatus,
+  MemberLifecycle,
   ConnectionRequest,
   DirectMessage,
   Conversation,
@@ -45,6 +48,7 @@ import type {
   NetworkingAnalytics,
   vCardData
 } from '@/types/member';
+import type { DirectoryStats } from '@/types/admin';
 
 // Collection names — Cloud Functions write user profiles to 'users', so we read from there
 const COLLECTIONS = {
@@ -753,6 +757,169 @@ export async function trackProfileView(viewerUid: string, profileUid: string): P
   } catch (error) {
     console.error('Error tracking profile view:', error);
   }
+}
+
+/**
+ * Update a member's lifecycle status (admin action)
+ * The Cloud Function onMemberStatusChange will handle Google Groups sync
+ */
+export async function updateMemberStatus(
+  uid: string,
+  newStatus: MemberStatus,
+  changedBy: string,
+  reason: string = ''
+): Promise<void> {
+  if (isUsingMockAPI()) {
+    console.log('Mock: Updating member status', { uid, newStatus, changedBy, reason });
+    return;
+  }
+
+  const docRef = doc(db, COLLECTIONS.MEMBERS, uid);
+  const docSnap = await getDoc(docRef);
+
+  if (!docSnap.exists()) {
+    throw new Error('Member not found');
+  }
+
+  const data = docSnap.data();
+  const currentStatus = data.lifecycle?.status || data.role || 'collaborator';
+
+  const statusChange = {
+    from: currentStatus,
+    to: newStatus,
+    changedBy,
+    changedAt: new Date(),
+    reason,
+  };
+
+  await updateDoc(docRef, {
+    'lifecycle.status': newStatus,
+    'lifecycle.statusChangedAt': serverTimestamp(),
+    'lifecycle.statusChangedBy': changedBy,
+    'lifecycle.statusReason': reason,
+    'lifecycle.statusHistory': arrayUnion(statusChange),
+    // Also update the top-level role for backwards compat
+    ...(newStatus === 'active' ? { role: 'member' } : {}),
+    ...(newStatus === 'collaborator' ? { role: 'collaborator' } : {}),
+    ...(newStatus === 'pending' ? { verificationStatus: 'pending' } : {}),
+    ...(newStatus === 'active' ? { verificationStatus: 'approved', isVerified: true } : {}),
+    updatedAt: serverTimestamp(),
+  });
+}
+
+/**
+ * Bulk update member statuses
+ */
+export async function bulkUpdateMemberStatus(
+  uids: string[],
+  newStatus: MemberStatus,
+  changedBy: string,
+  reason: string = ''
+): Promise<void> {
+  if (isUsingMockAPI()) {
+    console.log('Mock: Bulk updating member status', { uids, newStatus });
+    return;
+  }
+
+  // Firestore batches are limited to 500 operations
+  const batch = writeBatch(db);
+  for (const uid of uids.slice(0, 250)) {
+    const docRef = doc(db, COLLECTIONS.MEMBERS, uid);
+    batch.update(docRef, {
+      'lifecycle.status': newStatus,
+      'lifecycle.statusChangedAt': Timestamp.now(),
+      'lifecycle.statusChangedBy': changedBy,
+      'lifecycle.statusReason': reason,
+      updatedAt: Timestamp.now(),
+    });
+  }
+  await batch.commit();
+}
+
+/**
+ * Get directory statistics
+ */
+export async function getDirectoryStatsData(): Promise<DirectoryStats> {
+  if (isUsingMockAPI()) {
+    return {
+      totalMembers: 35,
+      byStatus: {
+        collaborator: 4,
+        pending: 2,
+        active: 25,
+        inactive: 1,
+        suspended: 0,
+        alumni: 3,
+        deactivated: 0,
+      },
+      newThisMonth: 3,
+      pendingApproval: 2,
+      recentlyActive: 20,
+      dormant: 5,
+      profileCompleteness: { complete: 15, partial: 12, minimal: 8 },
+    };
+  }
+
+  const membersRef = collection(db, COLLECTIONS.MEMBERS);
+  const snapshot = await getDocs(membersRef);
+
+  const byStatus: Record<string, number> = {
+    collaborator: 0,
+    pending: 0,
+    active: 0,
+    inactive: 0,
+    suspended: 0,
+    alumni: 0,
+    deactivated: 0,
+  };
+
+  let newThisMonth = 0;
+  let pendingApproval = 0;
+  let recentlyActive = 0;
+  let dormant = 0;
+  const completeness = { complete: 0, partial: 0, minimal: 0 };
+
+  const startOfMonth = new Date();
+  startOfMonth.setDate(1);
+  startOfMonth.setHours(0, 0, 0, 0);
+
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  snapshot.forEach((d) => {
+    const data = d.data();
+    const status = data.lifecycle?.status || (data.role === 'member' ? 'active' : 'collaborator');
+    if (status && status in byStatus) {
+      (byStatus as Record<string, number>)[status] = ((byStatus as Record<string, number>)[status] || 0) + 1;
+    }
+
+    const createdAt = data.createdAt?.toDate?.() || new Date(0);
+    if (createdAt >= startOfMonth) newThisMonth++;
+
+    if (data.verificationStatus === 'pending' || status === 'pending') pendingApproval++;
+
+    const lastActive = data.lifecycle?.lastActiveDate?.toDate?.() || data.updatedAt?.toDate?.() || new Date(0);
+    if (lastActive >= thirtyDaysAgo) {
+      recentlyActive++;
+    } else if (status === 'active') {
+      dormant++;
+    }
+
+    const pc = data.profileCompleteness || 0;
+    if (pc >= 80) completeness.complete++;
+    else if (pc >= 40) completeness.partial++;
+    else completeness.minimal++;
+  });
+
+  return {
+    totalMembers: snapshot.size,
+    byStatus: byStatus as Record<MemberStatus, number>,
+    newThisMonth,
+    pendingApproval,
+    recentlyActive,
+    dormant,
+    profileCompleteness: completeness,
+  };
 }
 
 /**

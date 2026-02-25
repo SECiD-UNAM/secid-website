@@ -205,6 +205,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         es: 'Error de conexión. Verifica tu internet',
         en: 'Connection error. Check your internet',
       },
+      'auth/configuration-not-found': {
+        es: 'El servicio de autenticación no está configurado. Contacta al administrador.',
+        en: 'Authentication service is not configured. Contact the administrator.',
+      },
     };
 
     const errorInfo = errorMessages[errorCode];
