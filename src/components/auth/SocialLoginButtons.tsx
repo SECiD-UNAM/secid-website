@@ -92,6 +92,10 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
         errorMessage = lang === 'es'
           ? 'El servicio de autenticación no está configurado. Contacta al administrador.'
           : 'Authentication service is not configured. Contact the administrator.';
+      } else if (errorCode === 'auth/unauthorized-domain') {
+        errorMessage = lang === 'es'
+          ? 'Este dominio no está autorizado para iniciar sesión. Contacta al administrador.'
+          : 'This domain is not authorized for sign-in. Contact the administrator.';
       } else if (errorCode === 'auth/popup-closed-by-user') {
         errorMessage = lang === 'es'
           ? 'Inicio de sesión cancelado'

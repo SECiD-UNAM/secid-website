@@ -209,6 +209,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         es: 'El servicio de autenticación no está configurado. Contacta al administrador.',
         en: 'Authentication service is not configured. Contact the administrator.',
       },
+      'auth/unauthorized-domain': {
+        es: 'Este dominio no está autorizado para iniciar sesión. Contacta al administrador.',
+        en: 'This domain is not authorized for sign-in. Contact the administrator.',
+      },
     };
 
     const errorInfo = errorMessages[errorCode];

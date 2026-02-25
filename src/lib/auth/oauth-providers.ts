@@ -291,6 +291,8 @@ function getOAuthErrorMessage(errorCode: string, providerId: SupportedProvider):
       return 'Network error. Please check your connection and try again.';
     case 'auth/configuration-not-found':
       return 'Authentication service is not configured. Contact the administrator.';
+    case 'auth/unauthorized-domain':
+      return 'This domain is not authorized for sign-in. Contact the administrator.';
     default:
       return `An error occurred with ${providerName} sign-in. Please try again.`;
   }

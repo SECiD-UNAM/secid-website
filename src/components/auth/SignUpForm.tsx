@@ -188,6 +188,12 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         : 'Authentication service is not configured. Contact the administrator.';
     }
 
+    if (code === 'auth/unauthorized-domain') {
+      return lang === 'es'
+        ? 'Este dominio no está autorizado para iniciar sesión. Contacta al administrador.'
+        : 'This domain is not authorized for sign-in. Contact the administrator.';
+    }
+
     return t.auth?.errors?.['default'] || 'An error occurred';
   };
 
