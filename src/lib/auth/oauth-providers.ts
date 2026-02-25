@@ -129,7 +129,9 @@ export async function signInWithOAuth(providerId: SupportedProvider): Promise<{
     return { user, credential, isNewUser };
   } catch (error: any) {
     console.error(`OAuth sign-in error with ${providerId}:`, error);
-    throw new Error(getOAuthErrorMessage(error.code, providerId));
+    const wrapped = new Error(getOAuthErrorMessage(error.code, providerId));
+    (wrapped as any).code = error.code;
+    throw wrapped;
   }
 }
 
@@ -287,6 +289,8 @@ function getOAuthErrorMessage(errorCode: string, providerId: SupportedProvider):
       return `This operation requires recent authentication. Please sign in again.`;
     case 'auth/network-request-failed':
       return 'Network error. Please check your connection and try again.';
+    case 'auth/configuration-not-found':
+      return 'Authentication service is not configured. Contact the administrator.';
     default:
       return `An error occurred with ${providerName} sign-in. Please try again.`;
   }
