@@ -60,5 +60,14 @@ jobs:
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
-      - name: Deploy Firestore Rules
-        run: npx firebase-tools deploy --only firestore:rules --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} --non-interactive --debug 2>&1 | tail -50 || echo "Firestore rules deployment skipped (API permission issue)"
+      - name: Install Cloud Functions dependencies
+        run: cd functions && npm ci
+
+      - name: Deploy Cloud Functions
+        run: npx firebase-tools deploy --only functions --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} --non-interactive --force 2>&1 | tail -50 || echo "::warning::Cloud Functions deployment failed"
+
+      - name: Deploy Firestore Rules & Indexes
+        run: npx firebase-tools deploy --only firestore:rules,firestore:indexes --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} --non-interactive 2>&1 | tail -50 || echo "::warning::Firestore rules deployment failed"
+
+      - name: Deploy Storage Rules
+        run: npx firebase-tools deploy --only storage --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} --non-interactive 2>&1 | tail -50 || echo "::warning::Storage rules deployment failed"
