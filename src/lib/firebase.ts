@@ -267,3 +267,12 @@ export function isUsingMockAPI(): boolean {
     (!import.meta.env.PUBLIC_FIREBASE_API_KEY && import.meta.env.DEV)
   );
 }
+
+/**
+ * Check if Firebase is running with demo/fallback credentials.
+ * Returns true when the API key is the default placeholder, meaning
+ * authentication will silently fail.
+ */
+export function isDemoMode(): boolean {
+  return firebaseConfig.apiKey === 'demo-api-key';
+}

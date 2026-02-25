@@ -153,35 +153,30 @@ const t = getTranslations('es');
     flex-wrap: wrap;
   }
 
-  /* Dark mode overrides */
-  [data-theme='dark'] .secid-cta-box {
-    background: linear-gradient(135deg, rgba(56, 80, 97, 0.3) 0%, rgba(253, 177, 87, 0.1) 100%);
-    border-color: var(--secid-gold-dark);
+  /* Dark mode overrides — :global() prevents Astro from scoping [data-theme] to child elements */
+  :global([data-theme='dark']) .secid-cta-box {
+    background: var(--color-surface-alt);
+    border-color: var(--secid-gold);
   }
 
-  [data-theme='dark'] .secid-cta-box__content h2 {
-    color: var(--color-text-primary, #e5e5e5);
+  :global([data-theme='dark']) .secid-cta-box__content h2 {
+    color: var(--color-text-primary);
   }
 
-  [data-theme='dark'] .secid-cta-box__content p {
-    color: var(--color-text-secondary, #d4d4d4);
+  :global([data-theme='dark']) .secid-cta-box__content p {
+    color: var(--color-text-secondary);
   }
 
-  [data-theme='dark'] .secid-member-cta {
-    background: var(--color-surface-alt, #262626);
+  :global([data-theme='dark']) .secid-member-cta {
+    background: var(--color-surface-alt);
   }
 
-  [data-theme='dark'] .secid-member-cta h2 {
-    color: var(--color-text-primary, #e5e5e5);
+  :global([data-theme='dark']) .secid-member-cta h2 {
+    color: var(--color-text-primary);
   }
 
-  [data-theme='dark'] .secid-member-cta p {
-    color: var(--color-text-secondary, #d4d4d4);
-  }
-
-  [data-theme='dark'] .secid-button--outline {
-    color: var(--color-text-primary, #e5e5e5);
-    border-color: var(--color-border, #404040);
+  :global([data-theme='dark']) .secid-member-cta p {
+    color: var(--color-text-secondary);
   }
 
   @media (max-width: 768px) {

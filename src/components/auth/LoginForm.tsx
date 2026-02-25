@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { signIn, resetPassword, updateLastLogin } from '@/lib/auth';
 import { getTwoFactorStatus } from '@/lib/auth/two-factor';
+import { isDemoMode } from '@/lib/firebase';
 import Button from '@/components/ui/Button';
 import SocialLoginButtons from './SocialLoginButtons';
 import TwoFactorVerification from './TwoFactorVerification';
@@ -311,6 +312,20 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             : 'Access your SECiD account'}
         </p>
       </div>
+
+      {/* Demo mode warning */}
+      {isDemoMode() && (
+        <div className="rounded-md border border-yellow-300 bg-yellow-50 p-4 dark:border-yellow-700 dark:bg-yellow-900/20">
+          <div className="flex">
+            <AlertCircle className="mr-3 mt-0.5 h-5 w-5 text-yellow-500" />
+            <p className="text-sm text-yellow-800 dark:text-yellow-300">
+              {lang === 'es'
+                ? 'La autenticación no está configurada. Contacta al administrador.'
+                : 'Authentication is not configured. Contact the administrator.'}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Social Login Buttons */}
       <SocialLoginButtons

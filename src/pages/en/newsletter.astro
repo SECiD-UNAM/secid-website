@@ -344,8 +344,6 @@ const t = getTranslations('en');
     grid-template-columns: 1fr 1fr;
     gap: var(--space-4xl);
     align-items: start;
-    max-width: 1200px;
-    margin: 0 auto;
   }
 
   .secid-newsletter__content {
@@ -629,11 +627,21 @@ const t = getTranslations('en');
     opacity: 0.95;
   }
 
+  /* Tablet Styles */
+  @media (max-width: 1024px) {
+    .secid-newsletter__main {
+      gap: var(--space-2xl);
+    }
+
+    .secid-newsletter__content {
+      max-width: none;
+    }
+  }
+
   /* Mobile Styles */
   @media (max-width: 768px) {
     .secid-newsletter__main {
       grid-template-columns: 1fr;
-      gap: var(--space-2xl);
     }
 
     .secid-newsletter__preview {
@@ -642,6 +650,18 @@ const t = getTranslations('en');
 
     .secid-newsletter__benefits {
       margin-bottom: var(--space-xl);
+    }
+
+    .secid-newsletter__title {
+      font-size: 1.5rem;
+    }
+
+    .secid-newsletter__archive-cta {
+      padding: var(--space-2xl);
+    }
+
+    .secid-newsletter__archive-cta-title {
+      font-size: 1.5rem;
     }
   }
 </style>
