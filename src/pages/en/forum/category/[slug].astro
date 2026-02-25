@@ -4,6 +4,7 @@ export const prerender = false;
 import ModernLayout from '../../../../layouts/ModernLayout.astro';
 import Navigation from '../../../../components/Navigation.astro';
 import Footer from '../../../../components/Footer.astro';
+// @ts-ignore - ForumCategory component is excluded from tsconfig but needed at runtime
 import ForumCategory from '../../../../components/forums/ForumCategory';
 import { getLanguageFromUrl } from '../../../../i18n/translations';
 

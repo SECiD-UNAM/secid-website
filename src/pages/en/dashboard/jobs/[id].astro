@@ -5,6 +5,7 @@ import DashboardLayout from '@/layouts/DashboardLayout.astro';
 import JobApplicationPage from '@/components/jobs/JobApplicationPage';
 
 const { id } = Astro.params;
+if (!id) return Astro.redirect('/en/jobs');
 ---
 
 <DashboardLayout

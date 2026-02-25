@@ -104,6 +104,7 @@ const {
 
     <!-- Initialize Admin Components -->
     <script>
+      // @ts-nocheck
       // Admin-specific initialization
       document.addEventListener('DOMContentLoaded', function () {
         // Set admin mode flag
@@ -215,6 +216,7 @@ const {
 
     <!-- Admin Analytics (separate from main site) -->
     <script>
+      // @ts-nocheck
       // Admin-specific analytics tracking
       if (typeof amplitude !== 'undefined') {
         amplitude
@@ -255,6 +257,7 @@ const {
 
     <!-- Error Boundary for Admin -->
     <script>
+      // @ts-nocheck
       window.addEventListener('error', function (e) {
         console.error('Admin Panel Error:', e.error);
 

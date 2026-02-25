@@ -5,6 +5,7 @@ import DashboardLayout from '@/layouts/DashboardLayout.astro';
 import EventDetail from '@/components/events/EventDetail';
 
 const { id } = Astro.params;
+if (!id) return Astro.redirect('/en/dashboard/events');
 ---
 
 <DashboardLayout

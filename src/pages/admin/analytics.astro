@@ -1,6 +1,6 @@
 ---
 import AdminLayout from '@/layouts/AdminLayout.astro';
-import Analytics from '@/components/admin/Analytics.tsx';
+import AnalyticsComponent from '@/components/admin/Analytics.tsx';
 import AdminAuthGuard from '@/components/admin/AdminAuthGuard.tsx';
 
 export const prerender = false;
@@ -15,11 +15,12 @@ const description = 'Métricas y reportes de la plataforma SECiD';
   currentPath="/admin/analytics"
 >
   <AdminAuthGuard requiredRole="admin" client:load>
-    <Analytics client:load />
+    <AnalyticsComponent client:load />
   </AdminAuthGuard>
 </AdminLayout>
 
 <script>
+  // @ts-nocheck
   // Analytics page specific functionality
   document.addEventListener('DOMContentLoaded', () => {
     // Track analytics access

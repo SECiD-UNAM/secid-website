@@ -579,7 +579,8 @@ print(jobs)`}</code></pre>
   document.querySelectorAll('.nav-link').forEach((link) => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
-      const targetId = link.getAttribute('href').substring(1);
+      const targetId = link.getAttribute('href')?.substring(1);
+      if (!targetId) return;
       const targetElement = document.getElementById(targetId);
 
       if (targetElement) {
@@ -603,6 +604,7 @@ print(jobs)`}</code></pre>
 
     // In a real implementation, you would load the actual Swagger UI here
     setTimeout(() => {
+      if (!swaggerContainer) return;
       swaggerContainer.innerHTML = `
         <div class="p-8 text-center">
           <div class="text-4xl mb-4">🔧</div>

@@ -29,7 +29,7 @@ if (!currentUser) {
   <ForumPost
     mode="create-topic"
     language={language}
-    categorySlug={categorySlug}
+    categorySlug={categorySlug ?? undefined}
     currentUser={currentUser}
     client:load
   />
