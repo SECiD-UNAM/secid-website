@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onUserDelete = exports.matchJobsForUser = exports.verifyUnamEmail = exports.onUserCreate = void 0;
+exports.onNewJobPosted = exports.onUserDelete = exports.matchJobsForUser = exports.verifyUnamEmail = exports.onUserCreate = void 0;
 const firestore_1 = require("firebase-functions/v2/firestore");
 const https_1 = require("firebase-functions/v2/https");
 const identity_1 = require("firebase-functions/v2/identity");
 const functionsV1 = require("firebase-functions/v1");
 const admin = require("firebase-admin");
+const email_service_1 = require("./email-service");
 // Initialize Firebase Admin
 admin.initializeApp();
 // User creation trigger - set up initial user profile
@@ -146,5 +147,57 @@ exports.onUserDelete = functionsV1.auth.user().onDelete(async (user) => {
     await batch.commit();
     console.log(`User data cleaned up for ${uid}`);
     return null;
+});
+// Trigger when a new job is posted
+exports.onNewJobPosted = (0, firestore_1.onDocumentCreated)("jobs/{jobId}", async (event) => {
+    const snapshot = event.data;
+    if (!snapshot)
+        return;
+    const jobData = snapshot.data();
+    const jobId = event.params.jobId;
+    // Only notify for published/active jobs
+    if (jobData.status !== "active" && jobData.status !== "published")
+        return;
+    try {
+        // Find users with job match notifications enabled
+        const usersSnapshot = await admin.firestore()
+            .collection("users")
+            .where("notificationSettings.jobMatches", "==", true)
+            .where("privacySettings.jobSearching", "==", true)
+            .limit(100)
+            .get();
+        const siteUrl = process.env.SITE_URL || "https://secid.mx";
+        for (const userDoc of usersSnapshot.docs) {
+            const userData = userDoc.data();
+            if (!userData.email)
+                continue;
+            // Simple skill matching score
+            const userSkills = (userData.skills || []).map((s) => s.toLowerCase());
+            const jobTags = (jobData.tags || []).map((t) => t.toLowerCase());
+            const matchCount = userSkills.filter((s) => jobTags.includes(s)).length;
+            const matchScore = jobTags.length > 0
+                ? Math.round((matchCount / jobTags.length) * 100)
+                : 50;
+            // Only send if match score is above threshold
+            if (matchScore < 30)
+                continue;
+            const html = (0, email_service_1.generateJobMatchEmail)({
+                recipientName: userData.displayName || userData.firstName || "Miembro",
+                jobTitle: jobData.title,
+                company: jobData.company,
+                matchScore,
+                jobUrl: `${siteUrl}/es/jobs`,
+            });
+            await (0, email_service_1.sendEmail)({
+                to: userData.email,
+                subject: `Nueva oportunidad: ${jobData.title} en ${jobData.company}`,
+                html,
+            });
+        }
+        console.log(`Job notifications sent for job ${jobId}`);
+    }
+    catch (error) {
+        console.error("Error sending job notifications:", error);
+    }
 });
 //# sourceMappingURL=index.js.map
