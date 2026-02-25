@@ -8,11 +8,9 @@ import {
   onAuthStateChanged as firebaseOnAuthStateChanged,
   sendPasswordResetEmail,
   updateProfile,
-  GoogleAuthProvider,
-  signInWithPopup,
   type User,
   type UserCredential,
-} from 'firebase/auth'; 
+} from 'firebase/auth';
 
 /**
  * Authentication Service
@@ -53,34 +51,17 @@ export async function signUp(
     return auth.signUp(email, password, profile);
   }
   
-  // Create auth user
+  // Create auth user — profile is created by the beforeUserCreated Cloud Function
   const credential = await createUserWithEmailAndPassword(auth, email, password);
   const user = credential.user;
-  
+
   // Update display name
   if (profile.firstName || profile.lastName) {
     await updateProfile(user, {
       displayName: `${profile.firstName || ''} ${profile.lastName || ''}`.trim()
     });
   }
-  
-  // Create user profile in Firestore
-  await setDoc(doc(db, 'users', user.uid), {
-    email,
-    role: 'member',
-    createdAt: new Date(),
-    profile: {
-      firstName: profile.firstName || '',
-      lastName: profile.lastName || '',
-      bio: profile.bio || '',
-      company: profile.company || '',
-      position: profile.position || '',
-      location: profile.location || '',
-      linkedin: profile.linkedin || '',
-      skills: profile.skills || [],
-    }
-  });
-  
+
   return user;
 }
 

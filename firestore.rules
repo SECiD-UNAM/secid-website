@@ -19,7 +19,7 @@ service cloud.firestore {
     }
     
     function isActive() {
-      return getCurrentUser().data.status == 'active';
+      return getCurrentUser().data.isActive == true;
     }
     
     function hasRole(role) {
@@ -84,28 +84,22 @@ service cloud.firestore {
                       isVerified() || 
                       canModerate());
       
-      allow create: if isAuthenticated() && 
-                       isOwner(userId) && 
-                       validateUserData() &&
-                       request.resource.data.createdAt == request.time &&
-                       request.resource.data.role == 'member' && // New users start as members
-                       request.resource.data.status == 'pending';
+      allow create: if isAuthenticated() &&
+                       isOwner(userId) &&
+                       request.resource.data.role == 'member';
       
-      allow update: if isAuthenticated() && 
-                       isOwner(userId) && 
-                       validateUserData() &&
-                       // Prevent users from changing critical fields
+      allow update: if isAuthenticated() &&
+                       isOwner(userId) &&
                        request.resource.data.diff(resource.data).affectedKeys()
-                         .hasOnly(['firstName', 'lastName', 'bio', 'skills', 'interests', 
-                                  'currentTitle', 'company', 'phone', 'profileImage',
-                                  'socialMedia', 'preferences', 'updatedAt']) &&
-                       request.resource.data.updatedAt == request.time;
+                         .hasOnly(['firstName', 'lastName', 'displayName', 'bio', 'skills',
+                                  'interests', 'currentTitle', 'company', 'phone',
+                                  'profileImage', 'photoURL', 'socialMedia', 'preferences',
+                                  'updatedAt', 'lastLogin', 'lastLoginProvider', 'profile',
+                                  'settings', 'email']);
       
       // Admin-only operations
-      allow update: if isAuthenticated() && 
-                       canAdminister() &&
-                       validateUserData() &&
-                       request.resource.data.updatedAt == request.time;
+      allow update: if isAuthenticated() &&
+                       canAdminister();
       
       allow delete: if isAuthenticated() && canAdminister();
       
@@ -128,7 +122,7 @@ service cloud.firestore {
     
     // Jobs collection with enhanced validation
     match /jobs/{jobId} {
-      allow read: if isAuthenticated() && isActive();
+      allow read: if isAuthenticated();
       
       allow create: if isAuthenticated() && 
                        isVerified() && 

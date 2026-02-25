@@ -8,8 +8,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
 import Button from '@/components/ui/Button';
 import { useTranslations } from '@/hooks/useTranslations';
 
@@ -56,47 +55,6 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
     resolver: zodResolver(signUpSchema),
   });
 
-  const createUserProfile = async (
-    uid: string,
-    data: Partial<SignUpFormData>
-  ) => {
-    const userProfile = {
-      uid,
-      firstName: data['firstName'],
-      lastName: data['lastName'],
-      email: data['email'],
-      displayName: `${data['firstName']} ${data['lastName']}`,
-      role: 'member',
-      status: 'active',
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-      profile: {
-        bio: '',
-        company: '',
-        position: '',
-        location: '',
-        linkedin: '',
-        github: '',
-        website: '',
-        skills: [],
-        interests: [],
-      },
-      settings: {
-        language: lang,
-        theme: 'system',
-        notifications: {
-          email: true,
-          push: false,
-          jobAlerts: true,
-          eventReminders: true,
-          newsletter: true,
-        },
-      },
-    };
-
-    await setDoc(doc(db, 'users', uid), userProfile);
-  };
-
   const onSubmit = async (data: SignUpFormData) => {
     setIsLoading(true);
     setError(null);
@@ -114,8 +72,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         displayName: `${data.firstName} ${data['lastName']}`,
       });
 
-      // Create user profile in Firestore
-      await createUserProfile(userCredential.user.uid, data);
+      // User profile is created by the beforeUserCreated Cloud Function
 
       if (onSuccess) {
         onSuccess();
@@ -142,14 +99,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       const result = await signInWithPopup(auth, provider);
 
       // Create user profile if it doesn't exist
-      const userData = {
-        firstName: result?.user?.displayName?.split(' ')[0] || '',
-        lastName:
-          result?.user?.displayName?.split(' ').slice(1).join(' ') || '',
-        email: result?.user?.email || '',
-      };
-
-      await createUserProfile(result?.user?.uid, userData);
+      // User profile is created by the beforeUserCreated Cloud Function
       if (onSuccess) {
         onSuccess();
       } else {

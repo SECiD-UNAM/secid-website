@@ -113,37 +113,10 @@ export async function signInWithOAuth(providerId: SupportedProvider): Promise<{
     const credential = await signInWithPopup(auth, provider);
     const user = credential.user;
     
-    // Check if this is a new user
+    // Check if this is a new user — profile is created by beforeUserCreated Cloud Function
     const userDoc = await getDoc(doc(db, 'users', user.uid));
     const isNewUser = !userDoc.exists();
-    
-    if(isNewUser) {
-      // Create user profile for new OAuth users
-      const profile: Partial<UserProfile> = {
-        email: user['email'] || '',
-        role: 'member',
-        createdAt: new Date(),
-        profile: {
-          firstName: user?.displayName?.split(' ')[0] || '',
-          lastName: user?.displayName?.split(' ').slice(1).join(' ') || '',
-          bio: '',
-          company: '',
-          position: '',
-          location: '',
-          linkedin: '',
-          skills: [],
-          photoURL: user.photoURL || undefined,
-        },
-        settings: {
-          emailNotifications: true,
-          profileVisibility: 'members',
-          language: 'es',
-        }
-      };
-      
-      await setDoc(doc(db, 'users', user.uid), profile);
-    }
-    
+
     // Update last login and provider info
     await updateUserOAuthInfo(user.uid, {
       uid: user.uid,
@@ -229,13 +202,17 @@ export async function getLinkedProviders(uid: string): Promise<LinkedAccount[]> 
  * Update user's OAuth information
  */
 async function updateUserOAuthInfo(uid: string, oauthInfo: OAuthUserInfo): Promise<void> {
-  const userRef = doc(db, 'users', uid);
-  
-  await updateDoc(userRef, {
-    lastLogin: new Date(),
-    lastLoginProvider: oauthInfo.providerId,
-    'profile.photoURL': oauthInfo.photoURL || null,
-  });
+  try {
+    const userRef = doc(db, 'users', uid);
+    await setDoc(userRef, {
+      lastLogin: new Date(),
+      lastLoginProvider: oauthInfo.providerId,
+      photoURL: oauthInfo.photoURL || null,
+      updatedAt: new Date(),
+    }, { merge: true });
+  } catch (error) {
+    console.warn('Failed to update OAuth info:', error);
+  }
 }
 
 /**
