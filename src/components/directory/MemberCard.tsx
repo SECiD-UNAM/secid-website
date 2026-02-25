@@ -197,42 +197,43 @@ END:VCARD`;
   // List view
   if (viewMode === 'list') {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all">
-        <div className="flex items-start justify-between">
-          <div className="flex items-start space-x-4 flex-1">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 hover:shadow-md transition-all">
+        <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
+          {/* Avatar + info row */}
+          <div className="flex items-start space-x-3 sm:space-x-4 flex-1 min-w-0">
             {/* Avatar with status */}
             <div className="relative flex-shrink-0">
-              <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-semibold text-lg">
+              <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-semibold text-base sm:text-lg">
                 {member.initials}
               </div>
               {member.privacy.showOnlineStatus && (
-                <div className={`absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-2 border-white dark:border-gray-800 ${
+                <div className={`absolute -bottom-1 -right-1 h-4 w-4 sm:h-5 sm:w-5 rounded-full border-2 border-white dark:border-gray-800 ${
                   member.isOnline ? 'bg-green-500' : 'bg-gray-400'
                 }`}></div>
               )}
             </div>
-            
+
             {/* Member info */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between">
-                <div>
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1">
+                <div className="min-w-0">
                   <div className="flex items-center space-x-2">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
                       <a href={`/${lang}/members/${member.uid}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                         {member.displayName}
                       </a>
                     </h3>
                     {member.isPremium && (
-                      <StarIcon className="h-4 w-4 text-yellow-500 fill-current" />
+                      <StarIcon className="h-4 w-4 flex-shrink-0 text-yellow-500 fill-current" />
                     )}
                     {member?.portfolio?.certifications.some(c => c.verified) && (
-                      <CheckBadgeIcon className="h-4 w-4 text-blue-500" />
+                      <CheckBadgeIcon className="h-4 w-4 flex-shrink-0 text-blue-500" />
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
                     {member.profile.position} {lang === 'es' ? 'en' : 'at'} {member.profile.company}
                   </p>
-                  <div className="flex items-center space-x-4 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-gray-500 dark:text-gray-400">
                     <div className="flex items-center">
                       <MapPinIcon className="h-3 w-3 mr-1" />
                       {member.profile.location}
@@ -246,43 +247,43 @@ END:VCARD`;
                     )}
                   </div>
                 </div>
-                
+
                 {/* Match score */}
                 {showMatchScore && matchScore && (
-                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getMatchScoreColor(matchScore)}`}>
+                  <span className={`self-start px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap ${getMatchScoreColor(matchScore)}`}>
                     {matchScore}% {lang === 'es' ? 'compatible' : 'match'}
                   </span>
                 )}
               </div>
-              
-              {/* Bio */}
+
+              {/* Bio — hidden on very small screens */}
               {member.profile.bio && (
-                <p className="mt-2 text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
+                <p className="hidden sm:block mt-2 text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
                   {member.profile.bio}
                 </p>
               )}
-              
+
               {/* Skills */}
               <div className="flex flex-wrap gap-1 mt-2">
-                {member.featuredSkills.slice(0, 4).map(skill => (
+                {member.featuredSkills.slice(0, 3).map(skill => (
                   <span
                     key={skill}
-                    className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
+                    className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
                   >
                     {skill}
                   </span>
                 ))}
-                {member.featuredSkills.length > 4 && (
-                  <span className="px-2 py-1 text-xs text-gray-500 dark:text-gray-400">
-                    +{member.featuredSkills.length - 4}
+                {member.featuredSkills.length > 3 && (
+                  <span className="px-2 py-0.5 text-xs text-gray-500 dark:text-gray-400">
+                    +{member.featuredSkills.length - 3}
                   </span>
                 )}
               </div>
             </div>
           </div>
-          
-          {/* Actions */}
-          <div className="flex items-center space-x-2 ml-4">
+
+          {/* Actions — full-width row on mobile, side column on larger screens */}
+          <div className="flex items-center space-x-2 sm:ml-auto sm:flex-shrink-0">
             {!isOwnProfile && (
               <>
                 <button
@@ -305,7 +306,7 @@ END:VCARD`;
                 >
                   <UserPlusIcon className="h-4 w-4" />
                 </button>
-                
+
                 <button
                   onClick={handleMessage}
                   className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
@@ -315,10 +316,10 @@ END:VCARD`;
                 </button>
               </>
             )}
-            
+
             <a
               href={`/${lang}/members/${member.uid}`}
-              className="px-3 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              className="flex-1 sm:flex-initial px-3 py-2 text-sm text-center bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors whitespace-nowrap"
             >
               {lang === 'es' ? 'Ver perfil' : 'View profile'}
             </a>
@@ -330,7 +331,7 @@ END:VCARD`;
 
   // Grid view (default)
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-lg transition-all">
       {/* Header with match score and premium badge */}
       <div className="flex justify-between items-start mb-4">
         {showMatchScore && matchScore && (
@@ -363,17 +364,17 @@ END:VCARD`;
       {/* Avatar and basic info */}
       <div className="flex flex-col items-center text-center mb-4">
         <div className="relative mb-3">
-          <div className="h-20 w-20 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-semibold text-xl">
+          <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-semibold text-lg sm:text-xl">
             {member.initials}
           </div>
           {member.privacy.showOnlineStatus && (
-            <div className={`absolute -bottom-1 -right-1 h-6 w-6 rounded-full border-3 border-white dark:border-gray-800 ${
+            <div className={`absolute -bottom-1 -right-1 h-5 w-5 sm:h-6 sm:w-6 rounded-full border-2 sm:border-3 border-white dark:border-gray-800 ${
               member.isOnline ? 'bg-green-500' : 'bg-gray-400'
             }`}></div>
           )}
         </div>
-        
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-1">
           <a href={`/${lang}/members/${member.uid}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
             {member.displayName}
           </a>
@@ -442,28 +443,28 @@ END:VCARD`;
       </div>
 
       {/* Stats */}
-      <div className="flex justify-around text-center py-3 border-t border-gray-200 dark:border-gray-700 mb-4">
+      <div className="flex justify-around text-center py-2 sm:py-3 border-t border-gray-200 dark:border-gray-700 mb-3 sm:mb-4">
         <div>
-          <div className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
             {member.activity.totalConnections}
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
+          <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
             {lang === 'es' ? 'Conexiones' : 'Connections'}
           </div>
         </div>
         <div>
-          <div className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
             {member.activity.profileViews}
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
+          <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
             {lang === 'es' ? 'Vistas' : 'Views'}
           </div>
         </div>
         <div>
-          <div className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
             {member.activity.reputation}
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
+          <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
             {lang === 'es' ? 'Reputación' : 'Reputation'}
           </div>
         </div>

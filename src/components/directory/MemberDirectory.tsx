@@ -49,6 +49,22 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
     sortOrder: 'desc'
   });
 
+  // Loading timeout — don't hang forever if Firestore is unreachable
+  useEffect(() => {
+    if (!loading) return;
+    const timeout = setTimeout(() => {
+      if (loading && members.length === 0) {
+        setLoading(false);
+        setError(
+          lang === 'es'
+            ? 'No se pudo conectar al servidor. Verifica tu conexión e intenta de nuevo.'
+            : 'Could not connect to the server. Check your connection and try again.'
+        );
+      }
+    }, 15000);
+    return () => clearTimeout(timeout);
+  }, [loading, members.length, lang]);
+
   // Load members and stats on component mount
   useEffect(() => {
     loadMembers();
@@ -162,13 +178,13 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
   const getGridClasses = (): string => {
     switch(viewMode) {
       case 'grid':
-        return 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6';
+        return 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6';
       case 'list':
-        return 'space-y-4';
+        return 'space-y-3 sm:space-y-4';
       case 'compact':
-        return 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3';
+        return 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3';
       default:
-        return 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6';
+        return 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6';
     }
   };
 
@@ -201,7 +217,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
     <div className="space-y-6">
       {/* Stats Section */}
       {showStats && stats && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center">
               <UserGroupIcon className="h-8 w-8 text-primary-600 dark:text-primary-400" />
@@ -263,8 +279,8 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
       )}
 
       {/* Search and Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
+        <div className="flex flex-col gap-3 sm:gap-4">
           <div className="flex-1">
             <MemberSearch
               onSearch={handleFiltersChange}
@@ -273,8 +289,8 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
               showAdvanced={showFilters}
             />
           </div>
-          
-          <div className="flex items-center space-x-2">
+
+          <div className="flex items-center justify-between sm:justify-end space-x-2">
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`p-2 rounded-lg border transition-colors ${
@@ -286,7 +302,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
             >
               <AdjustmentsHorizontalIcon className="h-5 w-5" />
             </button>
-            
+
             {hasActiveFilters(searchFilters) && (
               <button
                 onClick={clearFilters}
@@ -376,22 +392,23 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center space-x-2 mt-8">
+        <div className="flex items-center justify-center space-x-1 sm:space-x-2 mt-6 sm:mt-8">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="px-2 sm:px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
           >
-            {lang === 'es' ? 'Anterior' : 'Previous'}
+            <span className="hidden sm:inline">{lang === 'es' ? 'Anterior' : 'Previous'}</span>
+            <span className="sm:hidden">&lsaquo;</span>
           </button>
-          
+
           {[...Array(Math.min(5, totalPages))].map((_, index) => {
-            const pageNumber = currentPage <= 3 
-              ? index + 1 
+            const pageNumber = currentPage <= 3
+              ? index + 1
               : currentPage + index - 2;
-            
+
             if (pageNumber > totalPages) return null;
-            
+
             return (
               <button
                 key={pageNumber}
@@ -406,13 +423,14 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
               </button>
             );
           })}
-          
+
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="px-2 sm:px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
           >
-            {lang === 'es' ? 'Siguiente' : 'Next'}
+            <span className="hidden sm:inline">{lang === 'es' ? 'Siguiente' : 'Next'}</span>
+            <span className="sm:hidden">&rsaquo;</span>
           </button>
         </div>
       )}

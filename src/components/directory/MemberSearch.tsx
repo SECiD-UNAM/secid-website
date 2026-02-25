@@ -161,42 +161,22 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
     <div className="space-y-4">
       {/* Main search bar */}
       <div className="relative">
-        <div className="relative">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-          <input
-            type="text"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            placeholder={lang === 'es' ? 'Buscar por nombre, empresa, habilidad...' : 'Search by name, company, skill...'}
-            className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-          />
-          {searchInput && (
-            <button
-              onClick={() => setSearchInput('')}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-            >
-              <XMarkIcon className="h-5 w-5" />
-            </button>
-          )}
-        </div>
-        
-        {/* Advanced filters toggle */}
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className={`absolute right-2 top-2 p-2 rounded-lg transition-colors ${
-            isExpanded
-              ? 'bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400'
-              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
-          }`}
-          title={lang === 'es' ? 'Filtros avanzados' : 'Advanced filters'}
-        >
-          <FunnelIcon className="h-5 w-5" />
-          {hasActiveFilters() && (
-            <span className="absolute -top-1 -right-1 h-5 w-5 bg-primary-600 text-white text-xs rounded-full flex items-center justify-center">
-              {getActiveFilterCount()}
-            </span>
-          )}
-        </button>
+        <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+        <input
+          type="text"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          placeholder={lang === 'es' ? 'Buscar por nombre, empresa, habilidad...' : 'Search by name, company, skill...'}
+          className="w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm sm:text-base"
+        />
+        {searchInput && (
+          <button
+            onClick={() => setSearchInput('')}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </button>
+        )}
       </div>
 
       {/* Advanced filters panel */}
