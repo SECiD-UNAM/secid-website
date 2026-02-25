@@ -9,8 +9,12 @@ _UNAM's Data Science Alumni Society Platform_
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/secid/secid-website/deploy.yml?branch=main&logo=github&label=Build%20%26%20Deploy)](https://github.com/secid/secid-website/actions)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fsecid.mx&logo=astro&logoColor=white)](https://secid.mx)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-20.17%2B-green?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Astro](https://img.shields.io/badge/Astro-5.x-BC52EE?logo=astro&logoColor=white)](https://astro.build)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.x-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Firebase](https://img.shields.io/badge/Firebase-Auth%20%7C%20Firestore-DD2C00?logo=firebase&logoColor=white)](https://firebase.google.com)
+[![Node.js](https://img.shields.io/badge/Node.js-20.17%2B-5FA04E?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 [🌐 Visit Platform](https://secid.mx) • [📖 Quick Start](QUICKSTART.md) • [💻 Developer Guide](DEVELOPMENT.md) • [🤝 Contributing](#contributing)
