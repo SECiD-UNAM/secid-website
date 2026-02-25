@@ -86,8 +86,8 @@ service cloud.firestore {
       
       allow create: if isAuthenticated() &&
                        isOwner(userId) &&
-                       request.resource.data.role == 'member';
-      
+                       request.resource.data.role in ['member', 'collaborator'];
+
       allow update: if isAuthenticated() &&
                        isOwner(userId) &&
                        request.resource.data.diff(resource.data).affectedKeys()
@@ -95,7 +95,10 @@ service cloud.firestore {
                                   'interests', 'currentTitle', 'company', 'phone',
                                   'profileImage', 'photoURL', 'socialMedia', 'preferences',
                                   'updatedAt', 'lastLogin', 'lastLoginProvider', 'profile',
-                                  'settings', 'email']);
+                                  'settings', 'email',
+                                  'registrationType', 'verificationStatus', 'verificationDocumentUrl',
+                                  'numeroCuenta', 'academicLevel', 'campus', 'generation',
+                                  'graduationYear', 'lifecycle']);
       
       // Admin-only operations
       allow update: if isAuthenticated() &&
@@ -598,6 +601,12 @@ service cloud.firestore {
       allow read: if isAuthenticated() && canAdminister();
       allow create: if false; // Only server (Cloud Functions) can write
       allow update, delete: if false;
+    }
+
+    // Member status change log (written by Cloud Functions, read by admins)
+    match /member_status_log/{logId} {
+      allow read: if isAuthenticated() && canModerate();
+      allow write: if false; // Only Cloud Functions can write
     }
   }
 }

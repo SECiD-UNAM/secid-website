@@ -16,6 +16,7 @@ import {
   Search,
   Home,
   AlertTriangle,
+  BookUser,
 } from 'lucide-react';
 
 interface AdminNavigationProps {
@@ -72,6 +73,12 @@ export const AdminNavigation: React.FC<AdminNavigationProps> = ({
           path: '/admin/users/roles',
         },
       ],
+    },
+    {
+      key: 'directory',
+      label: language === 'es' ? 'Directorio' : 'Directory',
+      icon: BookUser,
+      path: '/admin/directory',
     },
     {
       key: 'moderation',

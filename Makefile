@@ -34,12 +34,22 @@ help: ## Show this help message
 	@echo "============================================"
 	@echo ""
 	@echo "$(GREEN)Quick Start:$(NC)"
-	@echo "  make start        - 🚀 One command to rule them all (setup + dev)"
+	@echo "  make start        - One command to rule them all (setup + dev)"
 	@echo "  make setup        - One-click setup for new developers"
 	@echo "  make dev          - Start development server"
 	@echo "  make test         - Run all tests"
 	@echo ""
-	@echo "$(GREEN)Available Commands:$(NC)"
+	@echo "$(GREEN)Deployment:$(NC)"
+	@echo "  make deploy       - Deploy everything (hosting + functions + rules)"
+	@echo "  make deploy-functions - Deploy Cloud Functions only"
+	@echo "  make deploy-hosting   - Deploy Astro site only"
+	@echo "  make deploy-rules     - Deploy Firestore/Storage rules"
+	@echo ""
+	@echo "$(GREEN)Admin:$(NC)"
+	@echo "  make set-admin email=you@example.com - Set user as admin"
+	@echo "  make migrate-lifecycle                - Run migration (dry run)"
+	@echo ""
+	@echo "$(GREEN)All Commands:$(NC)"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(YELLOW)%-18s$(NC) %s\n", $$1, $$2}'
 
 # ============================================
@@ -292,15 +302,83 @@ firebase-init: ## Initialize Firebase project
 	@echo "$(BLUE)Initializing Firebase...$(NC)"
 	@npx firebase init
 
-.PHONY: firebase-deploy
-firebase-deploy: build ## Deploy to Firebase Hosting
-	@echo "$(BLUE)Deploying to Firebase...$(NC)"
-	@npx firebase deploy --only hosting
+.PHONY: firebase-use
+firebase-use: ## Select Firebase project (secid-org)
+	@echo "$(BLUE)Selecting Firebase project...$(NC)"
+	@npx firebase use secid-org
+	@echo "$(GREEN)✓ Using project: secid-org$(NC)"
 
-.PHONY: firebase-preview
-firebase-preview: build ## Preview Firebase deployment
+.PHONY: firebase-emulators
+firebase-emulators: ## Start Firebase emulators
+	@echo "$(BLUE)Starting Firebase emulators...$(NC)"
+	@npx firebase emulators:start
+
+# ============================================
+# DEPLOYMENT
+# ============================================
+
+.PHONY: deploy
+deploy: ## Deploy everything (hosting + functions + rules)
+	@echo "$(BLUE)Deploying everything to Firebase...$(NC)"
+	@make build
+	@make deploy-functions
+	@make deploy-hosting
+	@make deploy-rules
+	@echo "$(GREEN)✓ Full deployment complete$(NC)"
+
+.PHONY: deploy-hosting
+deploy-hosting: build ## Deploy Astro site to Firebase Hosting
+	@echo "$(BLUE)Deploying hosting...$(NC)"
+	@npx firebase deploy --only hosting
+	@echo "$(GREEN)✓ Hosting deployed$(NC)"
+
+.PHONY: deploy-functions
+deploy-functions: ## Deploy Cloud Functions
+	@echo "$(BLUE)Building and deploying Cloud Functions...$(NC)"
+	@cd functions && npm install && npm run build
+	@npx firebase deploy --only functions --force
+	@echo "$(GREEN)✓ Cloud Functions deployed$(NC)"
+
+.PHONY: deploy-rules
+deploy-rules: ## Deploy Firestore + Storage rules and indexes
+	@echo "$(BLUE)Deploying security rules and indexes...$(NC)"
+	@npx firebase deploy --only firestore:rules,firestore:indexes,storage
+	@echo "$(GREEN)✓ Rules and indexes deployed$(NC)"
+
+.PHONY: deploy-beta
+deploy-beta: ## Deploy to beta channel (beta.secid.mx)
+	@echo "$(BLUE)Deploying to beta channel...$(NC)"
+	@make build
+	@npx firebase hosting:channel:deploy beta
+	@echo "$(GREEN)✓ Beta deployment complete$(NC)"
+
+.PHONY: deploy-preview
+deploy-preview: build ## Create a preview deployment
 	@echo "$(BLUE)Creating Firebase preview...$(NC)"
 	@npx firebase hosting:channel:deploy preview
+
+# ============================================
+# ADMIN & DIRECTORY
+# ============================================
+
+.PHONY: set-admin
+set-admin: ## Set a user as admin (usage: make set-admin email=user@example.com)
+	@echo "$(BLUE)Setting admin role...$(NC)"
+	@if [ -z "$(email)" ]; then \
+		echo "$(RED)Usage: make set-admin email=user@example.com$(NC)"; \
+		exit 1; \
+	fi
+	@node scripts/set-admin.js $(email)
+
+.PHONY: migrate-lifecycle
+migrate-lifecycle: ## Run member lifecycle migration (dry run)
+	@echo "$(BLUE)Running lifecycle migration (dry run)...$(NC)"
+	@node scripts/migrate-member-lifecycle.js --dry-run
+
+.PHONY: migrate-lifecycle-apply
+migrate-lifecycle-apply: ## Run member lifecycle migration (apply changes)
+	@echo "$(YELLOW)Running lifecycle migration (LIVE)...$(NC)"
+	@node scripts/migrate-member-lifecycle.js
 
 # ============================================
 # GITHUB PAGES

@@ -32,5 +32,14 @@ service firebase.storage {
       allow read: if request.auth != null;
       allow write: if request.auth != null;
     }
+
+    // Member verification documents (student ID, transcripts, degrees)
+    match /verification-docs/{userId}/{allPaths=**} {
+      allow read: if request.auth != null && (
+        request.auth.uid == userId ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'moderator']
+      );
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
   }
 }

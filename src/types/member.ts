@@ -5,6 +5,26 @@
 
 import type { UserProfile } from './user';
 
+// Member lifecycle status
+export type MemberStatus = 'collaborator' | 'pending' | 'active' | 'inactive' | 'suspended' | 'alumni' | 'deactivated';
+
+export interface MemberLifecycle {
+  status: MemberStatus;
+  statusChangedAt: Date;
+  statusChangedBy?: string;
+  statusReason?: string;
+  statusHistory: StatusChange[];
+  lastActiveDate: Date;
+}
+
+export interface StatusChange {
+  from: MemberStatus;
+  to: MemberStatus;
+  changedBy: string;
+  changedAt: Date;
+  reason: string;
+}
+
 export interface MemberProfile extends UserProfile {
   uid: string;
   displayName: string;
@@ -76,6 +96,9 @@ export interface MemberProfile extends UserProfile {
     reputation: number;
     lastActive: Date;
   };
+
+  // Lifecycle management
+  lifecycle?: MemberLifecycle;
 
   // Search and filtering metadata
   searchableKeywords: string[];

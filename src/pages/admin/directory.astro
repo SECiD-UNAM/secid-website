@@ -1,0 +1,28 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import DirectoryManagement from '@/components/admin/DirectoryManagement.tsx';
+import AdminAuthGuard from '@/components/admin/AdminAuthGuard.tsx';
+
+export const prerender = false;
+
+const title = 'Directorio - Admin SECiD';
+const description = 'Directorio de miembros y colaboradores de SECiD con gestión de Google Groups';
+---
+
+<AdminLayout title={title} description={description} currentPath="/admin/directory">
+  <AdminAuthGuard requiredRole="moderator" client:load>
+    <DirectoryManagement client:load />
+  </AdminAuthGuard>
+</AdminLayout>
+
+<script>
+  // @ts-nocheck
+  document.addEventListener('DOMContentLoaded', () => {
+    if (typeof amplitude !== 'undefined') {
+      amplitude.getInstance().logEvent('admin_directory_accessed', {
+        timestamp: new Date().toISOString(),
+        page: 'directory_management',
+      });
+    }
+  });
+</script>

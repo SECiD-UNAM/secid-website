@@ -563,5 +563,41 @@ export interface AdminNotification {
   };
 }
 
+// Directory management types
+import type { MemberStatus } from './member';
+
+export interface DirectoryManagementFilters extends UserManagementFilters {
+  status: MemberStatus | 'all';
+  lastActiveAfter?: Date;
+  lastActiveBefore?: Date;
+  graduationYearRange?: { min: number; max: number };
+  hasCompletedProfile: boolean | null;
+  exportFormat?: 'csv' | 'json' | 'google-sheets';
+}
+
+export interface DirectoryStats {
+  totalMembers: number;
+  byStatus: Record<MemberStatus, number>;
+  newThisMonth: number;
+  pendingApproval: number;
+  recentlyActive: number;
+  dormant: number;
+  profileCompleteness: {
+    complete: number;
+    partial: number;
+    minimal: number;
+  };
+}
+
+export type AdminDirectoryAction =
+  | 'approve_member'
+  | 'suspend_member'
+  | 'activate_member'
+  | 'deactivate_member'
+  | 'mark_alumni'
+  | 'bulk_status_change'
+  | 'export_directory'
+  | 'send_reactivation_email';
+
 // All types are exported individually above
 // Use named imports: import type { AdminDashboardStats, UserManagementFilters } from './admin';

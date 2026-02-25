@@ -2,10 +2,22 @@
  * User Type Definitions
  */
 
+export type RegistrationType = 'member' | 'collaborator';
+export type VerificationStatus = 'none' | 'pending' | 'approved' | 'rejected';
+export type AcademicLevel = 'licenciatura' | 'posgrado' | 'curso';
+
 export interface UserProfile {
   email: string;
-  role: 'member' | 'admin' | 'moderator';
+  role: 'member' | 'admin' | 'moderator' | 'collaborator';
   createdAt: Date;
+  registrationType?: RegistrationType;
+  verificationStatus?: VerificationStatus;
+  verificationDocumentUrl?: string;
+  // UNAM-specific fields
+  numeroCuenta?: string; // UNAM student account number
+  academicLevel?: AcademicLevel;
+  campus?: string; // Sede de estudios
+  generation?: string; // Generación / cohort
   profile: {
     firstName: string;
     lastName: string;
@@ -43,7 +55,7 @@ export interface UserBasicInfo {
 
 // ===== OAuth & Social Login Types =====
 
-export type SupportedProvider = 'google' | 'github' | 'linkedin';
+export type SupportedProvider = 'google';
 
 export interface LinkedAccount {
   providerId: SupportedProvider;
