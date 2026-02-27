@@ -16,7 +16,7 @@ jobs:
   deploy-beta:
     name: Build & Deploy to beta.secid.mx
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     environment:
       name: beta
       url: https://beta.secid.mx
@@ -29,6 +29,11 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
       - name: Install dependencies
         run: npm ci
@@ -55,19 +60,26 @@ jobs:
           channelId: live
           projectId: ${{ secrets.STAGING_FIREBASE_PROJECT_ID }}
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-
       - name: Install Cloud Functions dependencies
         run: cd functions && npm ci
 
       - name: Deploy Cloud Functions
-        run: npx firebase-tools deploy --only functions --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} --non-interactive --force 2>&1 | tail -50 || echo "::warning::Cloud Functions deployment failed"
+        run: |
+          npx firebase-tools deploy --only functions \
+            --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
+            --non-interactive --force 2>&1 | tail -80 \
+            || echo "::warning::Cloud Functions deployment failed - check that Cloud Build, Cloud Functions, and Artifact Registry APIs are enabled"
 
       - name: Deploy Firestore Rules & Indexes
-        run: npx firebase-tools deploy --only firestore:rules,firestore:indexes --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} --non-interactive 2>&1 | tail -50 || echo "::warning::Firestore rules deployment failed"
+        run: |
+          npx firebase-tools deploy --only firestore:rules,firestore:indexes \
+            --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
+            --non-interactive 2>&1 | tail -50 \
+            || echo "::warning::Firestore rules/indexes deployment failed - check service account has Firebase Rules Admin role"
 
       - name: Deploy Storage Rules
-        run: npx firebase-tools deploy --only storage --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} --non-interactive 2>&1 | tail -50 || echo "::warning::Storage rules deployment failed"
+        run: |
+          npx firebase-tools deploy --only storage \
+            --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
+            --non-interactive 2>&1 | tail -50 \
+            || echo "::warning::Storage rules deployment failed - check firebasestorage.googleapis.com API is enabled"

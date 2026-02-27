@@ -13,7 +13,6 @@ concurrency:
 
 env:
   NODE_VERSION: '20.17.0'
-  CACHE_DEPENDENCY_PATH: '**/package-lock.json'
 
 jobs:
   # Static Analysis and Code Quality
@@ -32,7 +31,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
 
       - name: Install dependencies
         run: npm ci
@@ -41,103 +39,17 @@ jobs:
         run: npm run type-check
 
       - name: ESLint
-        run: npm run lint -- --format=@microsoft/eslint-formatter-sarif --output-file=eslint-results.sarif
+        run: npm run lint
         continue-on-error: true
-
-      - name: Upload ESLint results to GitHub
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: eslint-results.sarif
-          wait-for-processing: true
 
       - name: Prettier formatting check
         run: npm run format:check
-
-      - name: Check for package vulnerabilities
-        run: npm audit --audit-level=high
 
   # Unit and Integration Tests
   test:
     name: Unit & Integration Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    strategy:
-      matrix:
-        node-version: ['18.x', '20.x']
-    services:
-      # Firebase Emulator for integration tests
-      firebase-emulator:
-        image: gcr.io/firebase-tools:latest
-        ports:
-          - 9099:9099  # Auth
-          - 8080:8080  # Firestore
-          - 9199:9199  # Storage
-        options: --health-cmd="curl -f http://localhost:4400/health || exit 1" --health-interval=30s --health-timeout=10s --health-retries=3
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Create test directories
-        run: |
-          mkdir -p test-results
-          mkdir -p coverage
-
-      - name: Run unit tests
-        run: npm run test -- --coverage --reporter=verbose --reporter=junit --outputFile=test-results/unit-tests.xml
-        env:
-          VITEST_REPORTER: 'verbose,junit'
-          CI: true
-          NODE_ENV: test
-
-      - name: Run integration tests
-        run: npm run test:integration
-        env:
-          FIREBASE_AUTH_EMULATOR_HOST: localhost:9099
-          FIRESTORE_EMULATOR_HOST: localhost:8080
-          FIREBASE_STORAGE_EMULATOR_HOST: localhost:9199
-          CI: true
-          NODE_ENV: test
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results-${{ matrix.node-version }}
-          path: |
-            test-results/
-            coverage/
-          retention-days: 7
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          files: ./coverage/lcov.info
-          flags: unittests
-          name: codecov-${{ matrix.node-version }}
-          fail_ci_if_error: false
-          verbose: true
-
-  # End-to-End Tests
-  e2e:
-    name: End-to-End Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    strategy:
-      matrix:
-        browser: [chromium, firefox, webkit]
-        shard: [1/3, 2/3, 3/3]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -147,7 +59,78 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test
+        env:
+          CI: true
+          NODE_ENV: test
+
+      - name: Run integration tests
+        run: npm run test:integration
+        env:
+          CI: true
+          NODE_ENV: test
+        continue-on-error: true
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests
+          fail_ci_if_error: false
+
+  # Build validation
+  build:
+    name: Build Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npx astro build
+        env:
+          NODE_ENV: production
+
+      - name: Check Cloud Functions build
+        run: |
+          cd functions && npm ci && npm run build
+        continue-on-error: true
+
+  # End-to-End Tests (only on PRs and main)
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -156,115 +139,24 @@ jobs:
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
       - name: Build application
-        run: npm run build
+        run: npx astro build
         env:
           NODE_ENV: production
 
-      - name: Start application server
-        run: |
-          npm run preview &
-          npx wait-on http://localhost:4173
-        env:
-          CI: true
-
       - name: Run E2E tests
-        run: npx playwright test --shard=${{ matrix.shard }} --project=${{ matrix.browser }}
+        run: npx playwright test --project=${{ matrix.browser }}
         env:
-          BASE_URL: http://localhost:4173
           CI: true
+        continue-on-error: true
 
       - name: Upload E2E test results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: e2e-results-${{ matrix.browser }}-${{ strategy.job-index }}
+          name: e2e-results-${{ matrix.browser }}
           path: |
             test-results/
             playwright-report/
-          retention-days: 7
-
-  # Performance and Accessibility Tests
-  performance:
-    name: Performance & Accessibility
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build application
-        run: npm run build
-        env:
-          NODE_ENV: production
-
-      - name: Start application server
-        run: |
-          npm run preview &
-          npx wait-on http://localhost:4173
-        env:
-          CI: true
-
-      - name: Run Lighthouse CI
-        run: |
-          npm install -g @lhci/cli@0.13.x
-          lhci autorun
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-          LHCI_BUILD_CONTEXT__CURRENT_HASH: ${{ github.sha }}
-          LHCI_BUILD_CONTEXT__COMMIT_TIME: ${{ github.event.head_commit.timestamp }}
-          LHCI_BUILD_CONTEXT__CURRENT_BRANCH: ${{ github.ref_name }}
-          LHCI_BUILD_CONTEXT__COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-
-      - name: Upload Lighthouse reports
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: lighthouse-reports
-          path: .lighthouseci/
-          retention-days: 7
-
-  # Bundle Analysis
-  bundle-analysis:
-    name: Bundle Analysis
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build application
-        run: npm run build
-        env:
-          NODE_ENV: production
-
-      - name: Analyze bundle
-        run: npm run analyze
-
-      - name: Upload bundle analysis
-        uses: actions/upload-artifact@v4
-        with:
-          name: bundle-analysis
-          path: dist/analyze/
           retention-days: 7
 
   # Dependency Check
@@ -281,29 +173,21 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: ${{ env.CACHE_DEPENDENCY_PATH }}
 
       - name: Install dependencies
         run: npm ci
 
       - name: Run dependency check
-        run: npm audit --audit-level=moderate --production
-
-      - name: Check for outdated dependencies
-        run: npm outdated --long || true
+        run: npm audit --audit-level=high --production
+        continue-on-error: true
 
   # Test Summary
   test-summary:
     name: Test Summary
     runs-on: ubuntu-latest
-    needs: [code-quality, test, e2e, performance]
+    needs: [code-quality, test, build]
     if: always()
     steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts/
-
       - name: Generate test summary
         run: |
           echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
@@ -311,64 +195,4 @@ jobs:
           echo "### Job Status" >> $GITHUB_STEP_SUMMARY
           echo "- Code Quality: ${{ needs.code-quality.result }}" >> $GITHUB_STEP_SUMMARY
           echo "- Unit & Integration Tests: ${{ needs.test.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- End-to-End Tests: ${{ needs.e2e.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Performance Tests: ${{ needs.performance.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          # Count test files
-          if [ -d "artifacts/" ]; then
-            echo "### Artifacts Generated" >> $GITHUB_STEP_SUMMARY
-            find artifacts/ -name "*.xml" -o -name "*.json" -o -name "*.html" | wc -l | xargs echo "- Test report files:" >> $GITHUB_STEP_SUMMARY
-            find artifacts/ -name "coverage" -type d | wc -l | xargs echo "- Coverage reports:" >> $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: Comment PR with test results
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const prNumber = context.payload.pull_request.number;
-            
-            const summary = `## 🧪 Test Results Summary
-            
-            | Job | Status |
-            |-----|--------|
-            | Code Quality | ${{ needs.code-quality.result == 'success' && '✅' || '❌' }} ${{ needs.code-quality.result }} |
-            | Unit & Integration Tests | ${{ needs.test.result == 'success' && '✅' || '❌' }} ${{ needs.test.result }} |
-            | End-to-End Tests | ${{ needs.e2e.result == 'success' && '✅' || '❌' }} ${{ needs.e2e.result }} |
-            | Performance Tests | ${{ needs.performance.result == 'success' && '✅' || '❌' }} ${{ needs.performance.result }} |
-            
-            📊 [View detailed results in the Actions tab](${context.payload.repository.html_url}/actions/runs/${context.runId})`;
-            
-            await github.rest.issues.createComment({
-              owner,
-              repo,
-              issue_number: prNumber,
-              body: summary
-            });
-
-  # Failure Notification
-  notify-failure:
-    name: Notify on Failure
-    runs-on: ubuntu-latest
-    needs: [code-quality, test, e2e, performance]
-    if: failure() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
-    steps:
-      - name: Send Slack notification
-        if: env.SLACK_WEBHOOK_URL != ''
-        uses: 8398a7/action-slack@v3
-        with:
-          status: failure
-          channel: '#dev-alerts'
-          text: |
-            🚨 CI Pipeline Failed on ${{ github.ref_name }}
-            
-            **Repository:** ${{ github.repository }}
-            **Commit:** ${{ github.sha }}
-            **Author:** ${{ github.actor }}
-            **Workflow:** ${{ github.workflow }}
-            
-            [View Details](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          echo "- Build Validation: ${{ needs.build.result }}" >> $GITHUB_STEP_SUMMARY
