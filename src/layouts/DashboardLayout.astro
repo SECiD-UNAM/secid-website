@@ -2,8 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import DashboardNavigation from '@/components/dashboard/DashboardNavigation';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
-import { AuthProvider } from '@/contexts/AuthContext';
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import DashboardAuthWrapper from '@/components/auth/DashboardAuthWrapper';
 
 export interface Props {
   title: string;
@@ -23,31 +22,29 @@ const {
 ---
 
 <BaseLayout title={title} description={description} lang={lang}>
-  <AuthProvider client:load>
-    <ProtectedRoute
-      client:load
-      lang={lang}
-      requireVerified={requireVerified}
-      requireRole={requireRole}
-    >
-      <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <!-- Dashboard Navigation -->
-        <DashboardNavigation client:load lang={lang} />
+  <DashboardAuthWrapper
+    client:load
+    lang={lang}
+    requireVerified={requireVerified}
+    requireRole={requireRole}
+  >
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <!-- Dashboard Navigation -->
+      <DashboardNavigation client:load lang={lang} />
 
-        <div class="flex">
-          <!-- Sidebar -->
-          <DashboardSidebar client:load lang={lang} />
+      <div class="flex">
+        <!-- Sidebar -->
+        <DashboardSidebar client:load lang={lang} />
 
-          <!-- Main Content -->
-          <main class="flex-1 lg:ml-64">
-            <div class="px-4 py-8 sm:px-6 lg:px-8">
-              <slot />
-            </div>
-          </main>
-        </div>
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64">
+          <div class="px-4 py-8 sm:px-6 lg:px-8">
+            <slot />
+          </div>
+        </main>
       </div>
-    </ProtectedRoute>
-  </AuthProvider>
+    </div>
+  </DashboardAuthWrapper>
 </BaseLayout>
 
 <style>
