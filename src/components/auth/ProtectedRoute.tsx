@@ -5,7 +5,7 @@ import { useTranslations } from '@/hooks/useTranslations';
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireVerified?: boolean;
-  requireRole?: ('member' | 'admin' | 'moderator' | 'company')[];
+  requireRole?: ('member' | 'admin' | 'moderator' | 'company' | 'collaborator')[];
   redirectTo?: string;
   lang?: 'es' | 'en';
 }

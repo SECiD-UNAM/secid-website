@@ -18,7 +18,7 @@ export interface UserProfile {
   firstName: string;
   lastName: string;
   displayName: string;
-  role: 'member' | 'admin' | 'moderator' | 'company';
+  role: 'member' | 'admin' | 'moderator' | 'company' | 'collaborator';
   isVerified: boolean;
   isActive: boolean;
   membershipTier: 'free' | 'premium' | 'corporate';

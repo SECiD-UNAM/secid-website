@@ -6,7 +6,7 @@ interface DashboardAuthWrapperProps {
   children: React.ReactNode;
   lang?: 'es' | 'en';
   requireVerified?: boolean;
-  requireRole?: ('member' | 'admin' | 'moderator' | 'company')[];
+  requireRole?: ('member' | 'admin' | 'moderator' | 'company' | 'collaborator')[];
 }
 
 export const DashboardAuthWrapper: React.FC<DashboardAuthWrapperProps> = ({

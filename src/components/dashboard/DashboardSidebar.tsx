@@ -25,7 +25,7 @@ interface MenuItem {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   badge?: string | number;
-  requireRole?: ('member' | 'admin' | 'moderator' | 'company')[];
+  requireRole?: ('member' | 'admin' | 'moderator' | 'company' | 'collaborator')[];
   requireVerified?: boolean;
 }
 
