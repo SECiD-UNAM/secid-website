@@ -4,20 +4,20 @@
  * Set a user as admin by email address.
  *
  * Usage:
- *   firebase use secid-org
  *   node scripts/set-admin.js <email>
  *
  * Example:
  *   node scripts/set-admin.js artemio@secid.mx
+ *
+ * Requires: firebase login (uses Application Default Credentials)
  */
 
-const admin = require('firebase-admin');
+import { createRequire } from 'module';
+import { execSync } from 'child_process';
 
-if (!admin.apps.length) {
-  admin.initializeApp();
-}
+const require = createRequire(import.meta.url);
+const admin = require('../functions/node_modules/firebase-admin');
 
-const db = admin.firestore();
 const email = process.argv[2];
 
 if (!email) {
@@ -25,8 +25,52 @@ if (!email) {
   process.exit(1);
 }
 
+// Get project ID from .firebaserc or firebase CLI
+function getProjectId() {
+  // Try GCLOUD_PROJECT env var first
+  if (process.env.GCLOUD_PROJECT) return process.env.GCLOUD_PROJECT;
+
+  // Try reading .firebaserc
+  try {
+    const { readFileSync } = await import('fs');
+  } catch {}
+
+  try {
+    const result = execSync('npx firebase-tools use', { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
+    const match = result.match(/Active Project:\s+(\S+)/);
+    if (match) return match[1];
+  } catch {}
+
+  // Fallback: read .firebaserc
+  try {
+    const fs = require('fs');
+    const rc = JSON.parse(fs.readFileSync(new URL('../.firebaserc', import.meta.url), 'utf8'));
+    return rc.projects?.default;
+  } catch {}
+
+  return null;
+}
+
+const projectId = getProjectId();
+
+if (!projectId) {
+  console.error('Could not determine Firebase project ID.');
+  console.error('Run: firebase use secid-org');
+  process.exit(1);
+}
+
+console.log(`Using project: ${projectId}`);
+
+// Initialize with Application Default Credentials
+// These are set by: gcloud auth application-default login
+// Or by setting GOOGLE_APPLICATION_CREDENTIALS to a service account key
+if (!admin.apps.length) {
+  admin.initializeApp({ projectId });
+}
+
+const db = admin.firestore();
+
 async function setAdmin() {
-  // Find user by email
   const snapshot = await db.collection('users').where('email', '==', email).limit(1).get();
 
   if (snapshot.empty) {

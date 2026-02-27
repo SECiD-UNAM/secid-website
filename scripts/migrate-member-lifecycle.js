@@ -17,17 +17,18 @@
  *   - Or run with: firebase use <project-id> && node scripts/migrate-member-lifecycle.js
  */
 
-const admin = require('firebase-admin');
+import { initializeApp, getApps } from 'firebase-admin/app';
+import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 
 // Parse args
 const isDryRun = process.argv.includes('--dry-run');
 
 // Initialize Firebase Admin
-if (!admin.apps.length) {
-  admin.initializeApp();
+if (!getApps().length) {
+  initializeApp();
 }
 
-const db = admin.firestore();
+const db = getFirestore();
 
 async function migrate() {
   console.log(`\n🔄 Member Lifecycle Migration${isDryRun ? ' (DRY RUN)' : ''}\n`);
@@ -81,9 +82,9 @@ async function migrate() {
     const updates = {
       lifecycle: {
         status,
-        statusChangedAt: data.createdAt || admin.firestore.FieldValue.serverTimestamp(),
+        statusChangedAt: data.createdAt || FieldValue.serverTimestamp(),
         statusHistory: [],
-        lastActiveDate: data.updatedAt || data.createdAt || admin.firestore.FieldValue.serverTimestamp(),
+        lastActiveDate: data.updatedAt || data.createdAt || FieldValue.serverTimestamp(),
       },
       registrationType: data.registrationType || registrationType,
       verificationStatus: data.verificationStatus || verificationStatus,

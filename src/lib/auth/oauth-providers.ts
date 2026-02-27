@@ -206,12 +206,12 @@ export async function getLinkedProviders(uid: string): Promise<LinkedAccount[]> 
 async function updateUserOAuthInfo(uid: string, oauthInfo: OAuthUserInfo): Promise<void> {
   try {
     const userRef = doc(db, 'users', uid);
-    await setDoc(userRef, {
+    await updateDoc(userRef, {
       lastLogin: new Date(),
       lastLoginProvider: oauthInfo.providerId,
       photoURL: oauthInfo.photoURL || null,
       updatedAt: new Date(),
-    }, { merge: true });
+    });
   } catch (error) {
     console.warn('Failed to update OAuth info:', error);
   }
