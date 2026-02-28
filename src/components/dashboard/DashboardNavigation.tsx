@@ -29,7 +29,7 @@ export const DashboardNavigation: React.FC<DashboardNavigationProps> = ({
   };
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-gray-200 bg-white shadow-lg dark:border-gray-800 dark:bg-gray-900">
+    <nav className="sticky top-0 z-40 border-b border-gray-200 bg-white shadow-lg dark:border-gray-800 dark:bg-gray-800">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
           {/* Left side - Logo and menu button */}
@@ -37,7 +37,7 @@ export const DashboardNavigation: React.FC<DashboardNavigationProps> = ({
             {/* Mobile menu button */}
             <button
               onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="inline-flex items-center justify-center rounded-md p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white lg:hidden"
+              className="inline-flex items-center justify-center rounded-md p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white lg:hidden"
             >
               {showMobileMenu ? (
                 <XMarkIcon className="h-6 w-6" />
@@ -54,7 +54,7 @@ export const DashboardNavigation: React.FC<DashboardNavigationProps> = ({
                   src="/images/logo.png"
                   alt="SECiD"
                 />
-                <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">
+                <span className="ml-2 font-heading text-xl font-bold text-gray-900 dark:text-white">
                   SECiD
                 </span>
               </a>
@@ -62,7 +62,7 @@ export const DashboardNavigation: React.FC<DashboardNavigationProps> = ({
 
             {/* Dashboard title */}
             <div className="ml-6 hidden lg:block">
-              <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h1 className="font-heading text-lg font-semibold text-gray-900 dark:text-white">
                 Member Dashboard
               </h1>
             </div>
@@ -74,16 +74,16 @@ export const DashboardNavigation: React.FC<DashboardNavigationProps> = ({
             <div className="relative">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative rounded-full p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+                className="relative rounded-full p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               >
                 <BellIcon className="h-6 w-6" />
                 {/* Notification badge */}
-                <span className="absolute right-0 top-0 block h-2 w-2 rounded-full bg-red-500"></span>
+                <span className="absolute right-0 top-0 block h-2 w-2 rounded-full bg-primary-500"></span>
               </button>
 
               {/* Notifications dropdown */}
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-800 dark:bg-gray-900">
+                <div className="absolute right-0 mt-2 w-80 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-800 dark:bg-gray-800">
                   <div className="border-b border-gray-200 p-4 dark:border-gray-700">
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                       Notifications
@@ -102,7 +102,7 @@ export const DashboardNavigation: React.FC<DashboardNavigationProps> = ({
             <div className="relative">
               <button
                 onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center space-x-3 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="flex items-center space-x-3 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 {userProfile?.photoURL ? (
                   <img
@@ -125,17 +125,17 @@ export const DashboardNavigation: React.FC<DashboardNavigationProps> = ({
 
               {/* User dropdown menu */}
               {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-800 dark:bg-gray-900">
+                <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-800 dark:bg-gray-800">
                   <a
                     href={`/${lang}/dashboard/profile`}
-                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                   >
                     <UserCircleIcon className="mr-2 h-5 w-5" />
                     Profile
                   </a>
                   <a
                     href={`/${lang}/dashboard/settings`}
-                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                   >
                     <Cog6ToothIcon className="mr-2 h-5 w-5" />
                     Settings
@@ -143,7 +143,7 @@ export const DashboardNavigation: React.FC<DashboardNavigationProps> = ({
                   <hr className="my-1 border-gray-200 dark:border-gray-700" />
                   <button
                     onClick={handleSignOut}
-                    className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                    className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                   >
                     <ArrowRightOnRectangleIcon className="mr-2 h-5 w-5" />
                     Sign Out

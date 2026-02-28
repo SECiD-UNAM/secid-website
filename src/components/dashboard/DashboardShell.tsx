@@ -31,7 +31,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
           requireVerified={requireVerified}
           requireRole={requireRole}
         >
-          <div className="min-h-screen bg-gray-950">
+          <div className="min-h-screen bg-gray-900">
             <DashboardNavigation lang={lang} />
             <div className="flex">
               <DashboardSidebar lang={lang} />

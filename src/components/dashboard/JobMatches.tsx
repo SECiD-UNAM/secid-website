@@ -179,7 +179,7 @@ export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
 
   if (loading) {
     return (
-      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-900">
+      <div className="rounded-xl bg-white p-6 shadow dark:bg-gray-800 dark:border dark:border-gray-700/30">
         <div className="animate-pulse space-y-4">
           {[1, 2, 3].map((i) => (
             <div
@@ -198,7 +198,7 @@ export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
 
   if (jobs.length === 0) {
     return (
-      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-900">
+      <div className="rounded-xl bg-white p-6 shadow dark:bg-gray-800 dark:border dark:border-gray-700/30">
         <p className="text-center text-gray-500 dark:text-gray-400">
           {lang === 'es'
             ? 'No hay trabajos recomendados'
@@ -215,7 +215,7 @@ export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
   }
 
   return (
-    <div className="rounded-lg bg-white shadow dark:bg-gray-900">
+    <div className="rounded-xl bg-white shadow dark:bg-gray-800 dark:border dark:border-gray-700/30">
       <div className="p-6">
         <div className="space-y-4">
           {jobs.map((job) => (
@@ -225,7 +225,7 @@ export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
             >
               <div className="mb-2 flex items-start justify-between">
                 <div className="flex-1">
-                  <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                  <h3 className="font-heading text-base font-semibold text-gray-900 dark:text-white">
                     {job.title}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -281,7 +281,7 @@ export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
         </div>
       </div>
 
-      <div className="bg-gray-50 px-6 py-3 dark:bg-gray-900/50">
+      <div className="bg-gray-50 px-6 py-3 dark:bg-gray-800/50">
         <a
           href={`/${lang}/dashboard/jobs`}
           className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"

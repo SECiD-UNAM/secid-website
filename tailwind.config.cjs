@@ -101,6 +101,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        heading: ['Poppins', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
         mono: ['JetBrains Mono', 'SF Mono', 'Monaco', 'Inconsolata', 'monospace'],
       },
       fontSize: {
@@ -165,8 +166,10 @@ module.exports = {
       },
       boxShadow: {
         'inner-lg': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
+        'glow-sm': '0 0 12px rgba(246, 84, 37, 0.25)',
         'glow': '0 0 20px rgba(246, 84, 37, 0.3)',
         'glow-lg': '0 0 40px rgba(246, 84, 37, 0.4)',
+        'glow-secondary': '0 0 12px rgba(91, 127, 153, 0.25)',
       },
       transitionProperty: {
         'height': 'height',

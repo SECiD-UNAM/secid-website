@@ -83,16 +83,16 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ lang = 'es' }) => {
 
   const getColorClasses = (color: string) => {
     const colors: Record<string, string> = {
-      blue: 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/30',
+      blue: 'bg-secondary-100 dark:bg-secondary-900/20 text-secondary-600 dark:text-secondary-400 hover:bg-secondary-200 dark:hover:bg-secondary-900/30',
       green:
-        'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/30',
+        'bg-primary-100 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-900/30',
       purple:
-        'bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/30',
+        'bg-accent-100 dark:bg-accent-900/20 text-accent-600 dark:text-accent-400 hover:bg-accent-200 dark:hover:bg-accent-900/30',
       orange:
-        'bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 hover:bg-orange-200 dark:hover:bg-orange-900/30',
-      pink: 'bg-pink-100 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 hover:bg-pink-200 dark:hover:bg-pink-900/30',
+        'bg-primary-100 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-900/30',
+      pink: 'bg-secondary-100 dark:bg-secondary-900/20 text-secondary-600 dark:text-secondary-400 hover:bg-secondary-200 dark:hover:bg-secondary-900/30',
       indigo:
-        'bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-900/30',
+        'bg-accent-100 dark:bg-accent-900/20 text-accent-600 dark:text-accent-400 hover:bg-accent-200 dark:hover:bg-accent-900/30',
     };
     return colors[color] || colors.blue;
   };
@@ -108,11 +108,13 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ lang = 'es' }) => {
             key={action.title}
             href={isDisabled ? '#' : action.href}
             className={`
-              block rounded-lg bg-white p-6 shadow transition-all hover:shadow-lg dark:bg-gray-900
-              ${isDisabled ? 'cursor-not-allowed opacity-50' : 'hover:scale-105'}
+              group relative block overflow-hidden rounded-xl bg-white p-6 shadow transition-all hover:shadow-lg dark:bg-gray-800 dark:border dark:border-gray-700/30
+              ${isDisabled ? 'cursor-not-allowed opacity-50' : 'hover:scale-105 hover:-translate-y-1'}
             `}
             onClick={isDisabled ? (e) => e.preventDefault() : undefined}
           >
+            {/* Top gradient stripe on hover */}
+            <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-primary-500 to-accent-400 opacity-0 transition-opacity group-hover:opacity-100" />
             <div className="flex items-start space-x-4">
               <div
                 className={`rounded-lg p-3 ${getColorClasses(action.color)}`}
@@ -120,7 +122,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ lang = 'es' }) => {
                 <Icon className="h-6 w-6" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 className="font-heading text-lg font-semibold text-gray-900 dark:text-white">
                   {action.title}
                 </h3>
                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">

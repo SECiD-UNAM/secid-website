@@ -130,7 +130,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="animate-pulse rounded-lg bg-white p-6 shadow dark:bg-gray-900"
+            className="animate-pulse rounded-xl bg-white p-6 shadow dark:bg-gray-800 dark:border dark:border-gray-700/30"
           >
             <div className="mb-4 h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
             <div className="h-8 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
@@ -147,14 +147,14 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
         return (
           <div
             key={stat['name']}
-            className="rounded-lg bg-white p-6 shadow transition-shadow hover:shadow-lg dark:bg-gray-900"
+            className="rounded-xl bg-white p-6 shadow transition-all hover:shadow-lg hover:-translate-y-1 dark:bg-gray-800 dark:border dark:border-gray-700/30"
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                   {stat['name']}
                 </p>
-                <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
+                <p className="mt-2 font-heading text-3xl font-bold text-gray-900 dark:text-white">
                   {stat.value}
                 </p>
                 {stat.change && (
@@ -173,19 +173,19 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
                 <div
                   className={`rounded-full p-3 ${
                     stat.changeType === 'increase'
-                      ? 'bg-green-100 dark:bg-green-900/20'
+                      ? 'bg-primary-100 dark:bg-primary-900/20'
                       : stat.changeType === 'decrease'
-                        ? 'bg-yellow-100 dark:bg-yellow-900/20'
-                        : 'bg-gray-100 dark:bg-gray-700'
+                        ? 'bg-accent-100 dark:bg-accent-900/20'
+                        : 'bg-secondary-100 dark:bg-secondary-900/20'
                   }`}
                 >
                   <Icon
                     className={`h-6 w-6 ${
                       stat.changeType === 'increase'
-                        ? 'text-green-600 dark:text-green-400'
+                        ? 'text-primary-600 dark:text-primary-400'
                         : stat.changeType === 'decrease'
-                          ? 'text-yellow-600 dark:text-yellow-400'
-                          : 'text-gray-600 dark:text-gray-400'
+                          ? 'text-accent-600 dark:text-accent-400'
+                          : 'text-secondary-600 dark:text-secondary-400'
                     }`}
                   />
                 </div>

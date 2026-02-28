@@ -207,9 +207,9 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="animate-pulse rounded-lg bg-white shadow dark:bg-gray-900"
+            className="animate-pulse rounded-xl bg-white shadow dark:bg-gray-800 dark:border dark:border-gray-700/30"
           >
-            <div className="h-48 rounded-t-lg bg-gray-200 dark:bg-gray-700"></div>
+            <div className="h-48 rounded-t-xl bg-gray-200 dark:bg-gray-700"></div>
             <div className="p-6">
               <div className="mb-2 h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
               <div className="h-3 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
@@ -222,7 +222,7 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
 
   if (events.length === 0) {
     return (
-      <div className="rounded-lg bg-white p-6 text-center shadow dark:bg-gray-900">
+      <div className="rounded-xl bg-white p-6 text-center shadow dark:bg-gray-800 dark:border dark:border-gray-700/30">
         <CalendarIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
         <p className="text-gray-500 dark:text-gray-400">
           {lang === 'es' ? 'No hay eventos próximos' : 'No upcoming events'}
@@ -242,7 +242,7 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
       {events.map((event) => (
         <div
           key={event['id']}
-          className="rounded-lg bg-white shadow transition-shadow hover:shadow-lg dark:bg-gray-900"
+          className="rounded-xl bg-white shadow transition-all hover:shadow-lg hover:-translate-y-1 dark:bg-gray-800 dark:border dark:border-gray-700/30"
         >
           {/* Event Image or Placeholder */}
           <div className="relative h-48 rounded-t-lg bg-gradient-to-br from-primary-500 to-primary-700">
@@ -267,7 +267,7 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
 
           {/* Event Details */}
           <div className="p-6">
-            <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
+            <h3 className="mb-2 font-heading text-lg font-semibold text-gray-900 dark:text-white">
               {event.title}
             </h3>
             <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
@@ -314,7 +314,7 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
               ) : (
                 <a
                   href={`/${lang}/dashboard/events/${event['id']}`}
-                  className="block w-full rounded-lg bg-primary-600 px-4 py-2 text-center text-white transition-colors hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600"
+                  className="block w-full rounded-lg bg-gradient-to-r from-primary-500 to-primary-600 px-4 py-2 text-center text-white transition-all hover:from-primary-600 hover:to-primary-700 hover:shadow-glow-sm"
                 >
                   {lang === 'es' ? 'Registrarse' : 'Register'}
                 </a>
