@@ -152,38 +152,49 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     let unsubscribeProfile: Unsubscribe | null = null;
+    let unsubscribeAuth: Unsubscribe | null = null;
 
-    const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
-      setLoading(true);
-      
-      if(firebaseUser) {
-        setUser(firebaseUser);
-        
-        // Subscribe to profile changes
-        unsubscribeProfile = subscribeToProfile(firebaseUser.uid);
-        
-        // Show emulator status in development
-        if (isEmulatorMode()) {
-          console.log('🔧 Auth Context: Using Firebase Emulator');
-          console.log('👤 Authenticated user:', firebaseUser['email']);
+    // Wait for Firebase to restore any persisted session before subscribing.
+    // Without this, onAuthStateChanged can fire with null before the
+    // persisted session is read from IndexedDB, causing ProtectedRoute
+    // to redirect to login prematurely.
+    auth.authStateReady().then(() => {
+      unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+        if (firebaseUser) {
+          setUser(firebaseUser);
+
+          // Subscribe to profile changes
+          if (unsubscribeProfile) {
+            unsubscribeProfile();
+          }
+          unsubscribeProfile = subscribeToProfile(firebaseUser.uid);
+
+          // Show emulator status in development
+          if (isEmulatorMode()) {
+            console.log('🔧 Auth Context: Using Firebase Emulator');
+            console.log('👤 Authenticated user:', firebaseUser['email']);
+          }
+        } else {
+          setUser(null);
+          setUserProfile(null);
+
+          // Clean up profile subscription
+          if (unsubscribeProfile) {
+            unsubscribeProfile();
+            unsubscribeProfile = null;
+          }
         }
-      } else {
-        setUser(null);
-        setUserProfile(null);
-        
-        // Clean up profile subscription
-        if(unsubscribeProfile) {
-          unsubscribeProfile();
-        }
-      }
-      
-      setLoading(false);
+
+        setLoading(false);
+      });
     });
 
     // Cleanup on unmount
     return () => {
-      unsubscribeAuth();
-      if(unsubscribeProfile) {
+      if (unsubscribeAuth) {
+        unsubscribeAuth();
+      }
+      if (unsubscribeProfile) {
         unsubscribeProfile();
       }
     };

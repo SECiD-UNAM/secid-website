@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from '@/hooks/useTranslations';
 
@@ -20,12 +20,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const { user, userProfile, loading, isAuthenticated, isVerified } = useAuth();
   const t = useTranslations(lang);
 
-  useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      // Redirect to login if not authenticated
-      window.location.href = `/${lang}${redirectTo}`;
-    }
-  }, [loading, isAuthenticated, redirectTo, lang]);
+  // No automatic redirect via useEffect — the render path below shows
+  // a "Sign In" link when the user is not authenticated. The previous
+  // useEffect redirect caused a race condition where it fired before
+  // Firebase finished restoring the persisted session, sending
+  // authenticated users to the login page unnecessarily.
 
   // Show loading state
   if (loading) {
