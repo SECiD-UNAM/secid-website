@@ -19,6 +19,40 @@ const {
 
 const siteUrl = import.meta.env.SITE || 'https://secid.mx';
 const canonicalURL = new URL(Astro.url.pathname, siteUrl);
+
+const schemaOrgJson = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'SECiD - Sociedad de Egresados en Ciencia de Datos',
+  alternateName: 'SECiD',
+  url: siteUrl,
+  logo: new URL('/images/logo.png', siteUrl).toString(),
+  description:
+    "UNAM's Data Science Alumni Society connecting graduates through networking, job opportunities, and professional development",
+  email: 'contacto@secid.mx',
+  foundingLocation: {
+    '@type': 'Place',
+    name: 'Mexico City, Mexico',
+  },
+  parentOrganization: {
+    '@type': 'EducationalOrganization',
+    name: 'Universidad Nacional Autónoma de México',
+    alternateName: 'UNAM',
+  },
+  sameAs: [
+    'https://www.linkedin.com/company/sociedad-de-egresados-en-ciencia-de-datos-secid',
+  ],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: 'contacto@secid.mx',
+    contactType: 'customer support',
+  },
+  address: {
+    '@type': 'PostalAddress',
+    addressCountry: 'MX',
+    addressLocality: 'Ciudad de México',
+  },
+});
 ---
 
 <!doctype html>
@@ -27,15 +61,15 @@ const canonicalURL = new URL(Astro.url.pathname, siteUrl);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
-    
+
     <!-- Primary Meta Tags -->
     <title>{title}</title>
     <meta name="title" content={title} />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
-    
+
     {noIndex && <meta name="robots" content="noindex, nofollow" />}
-    
+
     <!-- Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -43,7 +77,7 @@ const canonicalURL = new URL(Astro.url.pathname, siteUrl);
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#f65425" />
-    
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
@@ -51,68 +85,197 @@ const canonicalURL = new URL(Astro.url.pathname, siteUrl);
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL(image, siteUrl)} />
     <meta property="og:locale" content={lang === 'es' ? 'es_MX' : 'en_US'} />
-    
+
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={canonicalURL} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={new URL(image, siteUrl)} />
-    
+
     <!-- Modern Styles Only -->
     <link rel="stylesheet" href="/assets/css/fontawesome-all.min.css" />
     <link rel="stylesheet" href="/assets/css/secid-components.css" />
-    
+
     <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
+
     <!-- Google Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
       rel="stylesheet"
     />
-    
+
     <!-- Schema.org Structured Data -->
-    <script type="application/ld+json">
-      {JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'Organization',
-        name: 'SECiD - Sociedad de Egresados en Ciencia de Datos',
-        alternateName: 'SECiD',
-        url: siteUrl,
-        logo: new URL('/images/logo.png', siteUrl).toString(),
-        description: "UNAM's Data Science Alumni Society connecting graduates through networking, job opportunities, and professional development",
-        email: 'contacto@secid.mx',
-        foundingLocation: {
-          '@type': 'Place',
-          name: 'Mexico City, Mexico'
-        },
-        parentOrganization: {
-          '@type': 'EducationalOrganization',
-          name: 'Universidad Nacional Autónoma de México',
-          alternateName: 'UNAM'
-        },
-        sameAs: [
-          'https://www.linkedin.com/company/sociedad-de-egresados-en-ciencia-de-datos-secid'
-        ],
-        contactPoint: {
-          '@type': 'ContactPoint',
-          email: 'contacto@secid.mx',
-          contactType: 'customer support'
-        },
-        address: {
-          '@type': 'PostalAddress',
-          addressCountry: 'MX',
-          addressLocality: 'Ciudad de México'
-        }
-      })}
-    </script>
-    
+    <script type="application/ld+json" set:html={schemaOrgJson} />
+
     <!-- Amplitude Analytics -->
-    <script define:vars={{ amplitudeApiKey: import.meta.env.PUBLIC_AMPLITUDE_API_KEY || '' }}>
+    <script
+      define:vars={{
+        amplitudeApiKey: import.meta.env.PUBLIC_AMPLITUDE_API_KEY || '',
+      }}
+    >
       if (amplitudeApiKey) {
-        !function(){"use strict";!function(e,t){var r=e.amplitude||{_q:[],_iq:[]};if(r.invoked)e.console&&console.error&&console.error("Amplitude snippet has been loaded.");else{r.invoked=!0;var n=function(e,t){e.prototype[t]=function(){return this._q.push({name:t,args:Array.prototype.slice.call(arguments,0)}),this}},s=function(e,t,r){return function(n){e._q.push({name:t,args:Array.prototype.slice.call(r,0),resolve:n})}},o=function(e,t,r){e[t]=function(){if(r)return{promise:new Promise(s(e,t,Array.prototype.slice.call(arguments)))}}},i=function(e){for(var t=0;t<y.length;t++)o(e,y[t],!1);for(var r=0;r<g.length;r++)o(e,g[r],!0)};r.invoked=!0;var a=t.createElement("script");a.type="text/javascript",a.crossOrigin="anonymous",a.async=!0,a.src="https://cdn.amplitude.com/libs/analytics-browser-2.3.8-min.js.gz",a.onload=function(){e.amplitude.runQueuedFunctions||console.log("[Amplitude] Error: could not load SDK"),e.amplitude.trackSessionEvents&&e.amplitude.run()};var u=t.getElementsByTagName("script")[0];u.parentNode.insertBefore(a,u);for(var l=function(){return this._q=[],this},c=["add","append","clearAll","prepend","set","setOnce","unset","preInsert","postInsert","remove","getUserProperties"],p=0;p<c.length;p++)n(l,c[p]);r.Identify=l;for(var d=function(){return this._q=[],this},f=["getEventProperties","setProductId","setQuantity","setPrice","setRevenue","setRevenueType","setEventProperties"],v=0;v<f.length;v++)n(d,f[v]);r.Revenue=d;var y=["getDeviceId","setDeviceId","getSessionId","setSessionId","getUserId","setUserId","setOptOut","setTransport","reset"],g=["init","track","logEvent","identify","groupIdentify","setGroup","revenue"];i(r),r.run=function(e,t){t||((t=document.createElement("script")).type="text/javascript",t.crossOrigin="anonymous",t.async=!0,t.src="https://cdn.amplitude.com/libs/analytics-browser-2.3.8-min.js.gz",t.onload=function(){e.amplitude.runQueuedFunctions||console.log("[Amplitude] Error: could not load SDK")});var r=document.getElementsByTagName("script")[0];for(r.parentNode.insertBefore(t,r);0<e.amplitude._q.length;){var n=e.amplitude._q.shift(),s=e.amplitude[n.name].apply(e.amplitude,n.args);n.resolve&&n.resolve(s)}},r.runQueuedFunctions=function(){i(r);for(var e=0;e<r._q.length;e++){var t=r[r._q[e].name];if("function"==typeof t){var n=r._q[e].args;t.apply(r,n)}}r._q=[]},e.amplitude=r}}(window,document)}();
+        !(function () {
+          'use strict';
+          !(function (e, t) {
+            var r = e.amplitude || { _q: [], _iq: [] };
+            if (r.invoked)
+              e.console &&
+                console.error &&
+                console.error('Amplitude snippet has been loaded.');
+            else {
+              r.invoked = !0;
+              var n = function (e, t) {
+                  e.prototype[t] = function () {
+                    return (
+                      this._q.push({
+                        name: t,
+                        args: Array.prototype.slice.call(arguments, 0),
+                      }),
+                      this
+                    );
+                  };
+                },
+                s = function (e, t, r) {
+                  return function (n) {
+                    e._q.push({
+                      name: t,
+                      args: Array.prototype.slice.call(r, 0),
+                      resolve: n,
+                    });
+                  };
+                },
+                o = function (e, t, r) {
+                  e[t] = function () {
+                    if (r)
+                      return {
+                        promise: new Promise(
+                          s(e, t, Array.prototype.slice.call(arguments))
+                        ),
+                      };
+                  };
+                },
+                i = function (e) {
+                  for (var t = 0; t < y.length; t++) o(e, y[t], !1);
+                  for (var r = 0; r < g.length; r++) o(e, g[r], !0);
+                };
+              r.invoked = !0;
+              var a = t.createElement('script');
+              ((a.type = 'text/javascript'),
+                (a.crossOrigin = 'anonymous'),
+                (a.async = !0),
+                (a.src =
+                  'https://cdn.amplitude.com/libs/analytics-browser-2.3.8-min.js.gz'),
+                (a.onload = function () {
+                  (e.amplitude.runQueuedFunctions ||
+                    console.log('[Amplitude] Error: could not load SDK'),
+                    e.amplitude.trackSessionEvents && e.amplitude.run());
+                }));
+              var u = t.getElementsByTagName('script')[0];
+              u.parentNode.insertBefore(a, u);
+              for (
+                var l = function () {
+                    return ((this._q = []), this);
+                  },
+                  c = [
+                    'add',
+                    'append',
+                    'clearAll',
+                    'prepend',
+                    'set',
+                    'setOnce',
+                    'unset',
+                    'preInsert',
+                    'postInsert',
+                    'remove',
+                    'getUserProperties',
+                  ],
+                  p = 0;
+                p < c.length;
+                p++
+              )
+                n(l, c[p]);
+              r.Identify = l;
+              for (
+                var d = function () {
+                    return ((this._q = []), this);
+                  },
+                  f = [
+                    'getEventProperties',
+                    'setProductId',
+                    'setQuantity',
+                    'setPrice',
+                    'setRevenue',
+                    'setRevenueType',
+                    'setEventProperties',
+                  ],
+                  v = 0;
+                v < f.length;
+                v++
+              )
+                n(d, f[v]);
+              r.Revenue = d;
+              var y = [
+                  'getDeviceId',
+                  'setDeviceId',
+                  'getSessionId',
+                  'setSessionId',
+                  'getUserId',
+                  'setUserId',
+                  'setOptOut',
+                  'setTransport',
+                  'reset',
+                ],
+                g = [
+                  'init',
+                  'track',
+                  'logEvent',
+                  'identify',
+                  'groupIdentify',
+                  'setGroup',
+                  'revenue',
+                ];
+              (i(r),
+                (r.run = function (e, t) {
+                  t ||
+                    (((t = document.createElement('script')).type =
+                      'text/javascript'),
+                    (t.crossOrigin = 'anonymous'),
+                    (t.async = !0),
+                    (t.src =
+                      'https://cdn.amplitude.com/libs/analytics-browser-2.3.8-min.js.gz'),
+                    (t.onload = function () {
+                      e.amplitude.runQueuedFunctions ||
+                        console.log('[Amplitude] Error: could not load SDK');
+                    }));
+                  var r = document.getElementsByTagName('script')[0];
+                  for (
+                    r.parentNode.insertBefore(t, r);
+                    0 < e.amplitude._q.length;
+
+                  ) {
+                    var n = e.amplitude._q.shift(),
+                      s = e.amplitude[n.name].apply(e.amplitude, n.args);
+                    n.resolve && n.resolve(s);
+                  }
+                }),
+                (r.runQueuedFunctions = function () {
+                  i(r);
+                  for (var e = 0; e < r._q.length; e++) {
+                    var t = r[r._q[e].name];
+                    if ('function' == typeof t) {
+                      var n = r._q[e].args;
+                      t.apply(r, n);
+                    }
+                  }
+                  r._q = [];
+                }),
+                (e.amplitude = r));
+            }
+          })(window, document);
+        })();
 
         try {
           window.amplitude.init(amplitudeApiKey, {
@@ -121,8 +284,8 @@ const canonicalURL = new URL(Astro.url.pathname, siteUrl);
               sessions: true,
               pageViews: true,
               formInteractions: true,
-              fileDownloads: true
-            }
+              fileDownloads: true,
+            },
           });
         } catch (error) {
           console.warn('Amplitude initialization failed:', error);
@@ -135,7 +298,7 @@ const canonicalURL = new URL(Astro.url.pathname, siteUrl);
     <main id="main">
       <slot />
     </main>
-    
+
     <!-- Modern JavaScript Only -->
     <script>
       // Theme toggle functionality
@@ -145,18 +308,21 @@ const canonicalURL = new URL(Astro.url.pathname, siteUrl);
       document.documentElement.classList.add(theme);
 
       // Theme toggle click handler
-      document.querySelectorAll('.secid-navbar__theme-toggle').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const current = document.documentElement.getAttribute('data-theme') || 'light';
-          const next = current === 'light' ? 'dark' : 'light';
-          document.documentElement.setAttribute('data-theme', next);
-          document.documentElement.classList.remove('light', 'dark');
-          document.documentElement.classList.add(next);
-          document.body.classList.remove('light', 'dark');
-          document.body.classList.add(next);
-          localStorage.setItem(THEME_KEY, next);
+      document
+        .querySelectorAll('.secid-navbar__theme-toggle')
+        .forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const current =
+              document.documentElement.getAttribute('data-theme') || 'light';
+            const next = current === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', next);
+            document.documentElement.classList.remove('light', 'dark');
+            document.documentElement.classList.add(next);
+            document.body.classList.remove('light', 'dark');
+            document.body.classList.add(next);
+            localStorage.setItem(THEME_KEY, next);
+          });
         });
-      });
 
       // Navbar scroll behavior
       let lastScroll = 0;
@@ -183,12 +349,16 @@ const canonicalURL = new URL(Astro.url.pathname, siteUrl);
       }
 
       // Mobile navigation toggle
-      const mobileMenuBtn = document.querySelector('.secid-navbar__mobile-toggle');
+      const mobileMenuBtn = document.querySelector(
+        '.secid-navbar__mobile-toggle'
+      );
       const mobileMenu = document.querySelector('.secid-navbar__mobile-menu');
 
       if (mobileMenuBtn && mobileMenu) {
         mobileMenuBtn.addEventListener('click', () => {
-          const isOpen = mobileMenu.classList.toggle('secid-navbar__mobile-menu--open');
+          const isOpen = mobileMenu.classList.toggle(
+            'secid-navbar__mobile-menu--open'
+          );
           mobileMenuBtn.classList.toggle('secid-navbar__mobile-toggle--active');
           mobileMenuBtn.setAttribute('aria-expanded', String(isOpen));
           mobileMenu.setAttribute('aria-hidden', String(!isOpen));
@@ -197,17 +367,24 @@ const canonicalURL = new URL(Astro.url.pathname, siteUrl);
 
       // Language selector dropdown
       const langBtn = document.getElementById('language-selector');
-      const langDropdown = document.querySelector('.secid-navbar__lang-dropdown');
+      const langDropdown = document.querySelector(
+        '.secid-navbar__lang-dropdown'
+      );
 
       if (langBtn && langDropdown) {
         langBtn.addEventListener('click', () => {
-          const isOpen = langDropdown.classList.toggle('secid-navbar__lang-dropdown--open');
+          const isOpen = langDropdown.classList.toggle(
+            'secid-navbar__lang-dropdown--open'
+          );
           langBtn.setAttribute('aria-expanded', String(isOpen));
         });
 
         // Close dropdown when clicking outside
         document.addEventListener('click', (e) => {
-          if (!langBtn.contains(e.target as Node) && !langDropdown.contains(e.target as Node)) {
+          if (
+            !langBtn.contains(e.target as Node) &&
+            !langDropdown.contains(e.target as Node)
+          ) {
             langDropdown.classList.remove('secid-navbar__lang-dropdown--open');
             langBtn.setAttribute('aria-expanded', 'false');
           }
@@ -215,16 +392,18 @@ const canonicalURL = new URL(Astro.url.pathname, siteUrl);
       }
 
       // Smooth scroll for anchor links
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
         anchor.addEventListener('click', (e) => {
           e.preventDefault();
-          const href = (e.currentTarget as HTMLAnchorElement).getAttribute('href');
+          const href = (e.currentTarget as HTMLAnchorElement).getAttribute(
+            'href'
+          );
           if (href) {
             const target = document.querySelector(href);
             if (target) {
               target.scrollIntoView({
                 behavior: 'smooth',
-                block: 'start'
+                block: 'start',
               });
             }
           }

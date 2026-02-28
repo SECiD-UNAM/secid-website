@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CommissionMetrics, CommissionService} from '../../lib/commissions';
+import { type CommissionMetrics, CommissionService } from '../../lib/commissions';
 import { useTranslations} from '../../hooks/useTranslations';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Bar } from 'recharts';
 

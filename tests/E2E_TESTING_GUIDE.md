@@ -451,11 +451,10 @@ Every test automatically measures and validates:
 test('homepage should meet performance budgets', async ({ page }) => {
   await page.goto('/');
   const metrics = await page.evaluate(() => {
-    const navigation = performance.getEntriesByType('navigation')[0];
     const paint = performance.getEntriesByType('paint');
     return {
-      fcp: paint.find(entry => entry.name === 'first-contentful-paint')?.startTime,
-      lcp: // ... LCP calculation
+      fcp: paint.find((entry) => entry.name === 'first-contentful-paint')
+        ?.startTime,
     };
   });
 

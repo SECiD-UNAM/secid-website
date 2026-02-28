@@ -30,13 +30,11 @@ function getProjectId() {
   // Try GCLOUD_PROJECT env var first
   if (process.env.GCLOUD_PROJECT) return process.env.GCLOUD_PROJECT;
 
-  // Try reading .firebaserc
   try {
-    const { readFileSync } = await import('fs');
-  } catch {}
-
-  try {
-    const result = execSync('npx firebase-tools use', { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
+    const result = execSync('npx firebase-tools use', {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
     const match = result.match(/Active Project:\s+(\S+)/);
     if (match) return match[1];
   } catch {}
@@ -44,7 +42,9 @@ function getProjectId() {
   // Fallback: read .firebaserc
   try {
     const fs = require('fs');
-    const rc = JSON.parse(fs.readFileSync(new URL('../.firebaserc', import.meta.url), 'utf8'));
+    const rc = JSON.parse(
+      fs.readFileSync(new URL('../.firebaserc', import.meta.url), 'utf8')
+    );
     return rc.projects?.default;
   } catch {}
 
@@ -71,7 +71,11 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 async function setAdmin() {
-  const snapshot = await db.collection('users').where('email', '==', email).limit(1).get();
+  const snapshot = await db
+    .collection('users')
+    .where('email', '==', email)
+    .limit(1)
+    .get();
 
   if (snapshot.empty) {
     console.log(`No user found with email: ${email}`);
@@ -83,7 +87,9 @@ async function setAdmin() {
   const uid = userDoc.id;
   const data = userDoc.data();
 
-  console.log(`Found user: ${data.displayName || data.firstName || 'N/A'} (${uid})`);
+  console.log(
+    `Found user: ${data.displayName || data.firstName || 'N/A'} (${uid})`
+  );
   console.log(`Current role: ${data.role}`);
 
   await userDoc.ref.update({
