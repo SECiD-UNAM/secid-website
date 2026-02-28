@@ -14,10 +14,12 @@ import {
   setPersistence,
 } from 'firebase/auth';
 import {
+  initializeFirestore,
   getFirestore,
   type Firestore,
   connectFirestoreEmulator,
-  enableIndexedDbPersistence,
+  persistentLocalCache,
+  persistentMultipleTabManager,
 } from 'firebase/firestore';
 import {
   getStorage,
@@ -97,26 +99,17 @@ if (typeof window === 'undefined') {
 
     // Core services
     auth = getAuth(app);
-    db = getFirestore(app);
+    db = initializeFirestore(app, {
+      localCache: persistentLocalCache({
+        tabManager: persistentMultipleTabManager(),
+      }),
+    });
     storage = getStorage(app);
     functions = getFunctions(app);
 
     // Auth persistence
     setPersistence(auth, browserLocalPersistence).catch((error) => {
       logger.error('Error setting auth persistence', error);
-    });
-
-    // Firestore offline persistence
-    enableIndexedDbPersistence(db).catch((error) => {
-      if (error.code === 'failed-precondition') {
-        logger.warn(
-          'Multiple tabs open, persistence can only be enabled in one tab at a time.'
-        );
-      } else if (error.code === 'unimplemented') {
-        logger.warn(
-          'The current browser does not support offline persistence'
-        );
-      }
     });
 
     // Emulator connections (each wrapped in try/catch so a reconnect doesn't crash)

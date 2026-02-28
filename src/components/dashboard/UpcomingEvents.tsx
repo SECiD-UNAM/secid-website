@@ -207,7 +207,7 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="animate-pulse rounded-lg bg-white shadow dark:bg-gray-800"
+            className="animate-pulse rounded-lg bg-white shadow dark:bg-gray-900"
           >
             <div className="h-48 rounded-t-lg bg-gray-200 dark:bg-gray-700"></div>
             <div className="p-6">
@@ -222,7 +222,7 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
 
   if (events.length === 0) {
     return (
-      <div className="rounded-lg bg-white p-6 text-center shadow dark:bg-gray-800">
+      <div className="rounded-lg bg-white p-6 text-center shadow dark:bg-gray-900">
         <CalendarIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
         <p className="text-gray-500 dark:text-gray-400">
           {lang === 'es' ? 'No hay eventos próximos' : 'No upcoming events'}
@@ -242,7 +242,7 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
       {events.map((event) => (
         <div
           key={event['id']}
-          className="rounded-lg bg-white shadow transition-shadow hover:shadow-lg dark:bg-gray-800"
+          className="rounded-lg bg-white shadow transition-shadow hover:shadow-lg dark:bg-gray-900"
         >
           {/* Event Image or Placeholder */}
           <div className="relative h-48 rounded-t-lg bg-gradient-to-br from-primary-500 to-primary-700">

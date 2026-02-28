@@ -108,7 +108,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ lang = 'es' }) => {
             key={action.title}
             href={isDisabled ? '#' : action.href}
             className={`
-              block rounded-lg bg-white p-6 shadow transition-all hover:shadow-lg dark:bg-gray-800
+              block rounded-lg bg-white p-6 shadow transition-all hover:shadow-lg dark:bg-gray-900
               ${isDisabled ? 'cursor-not-allowed opacity-50' : 'hover:scale-105'}
             `}
             onClick={isDisabled ? (e) => e.preventDefault() : undefined}

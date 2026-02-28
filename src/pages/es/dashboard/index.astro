@@ -1,60 +1,8 @@
 ---
-import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import DashboardStats from '@/components/dashboard/DashboardStats';
-import RecentActivity from '@/components/dashboard/RecentActivity';
-import QuickActions from '@/components/dashboard/QuickActions';
-import UpcomingEvents from '@/components/dashboard/UpcomingEvents';
-import JobMatches from '@/components/dashboard/JobMatches';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import DashboardHomePage from '@/components/dashboard/DashboardHomePage';
 ---
 
-<DashboardLayout
-  title="Dashboard - SECiD"
-  description="Panel de miembros de SECiD"
-  lang="es"
->
-  <!-- Welcome Section -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-      Bienvenido al Panel de Miembros
-    </h1>
-    <p class="mt-2 text-gray-600 dark:text-gray-400">
-      Gestiona tu perfil, explora oportunidades laborales y conecta con la
-      comunidad.
-    </p>
-  </div>
-
-  <!-- Stats Overview -->
-  <DashboardStats client:load lang="es" />
-
-  <!-- Quick Actions -->
-  <div class="mt-8">
-    <QuickActions client:load lang="es" />
-  </div>
-
-  <!-- Main Grid -->
-  <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
-    <!-- Recent Activity -->
-    <div>
-      <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
-        Actividad Reciente
-      </h2>
-      <RecentActivity client:load lang="es" />
-    </div>
-
-    <!-- Job Matches -->
-    <div>
-      <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
-        Trabajos Recomendados
-      </h2>
-      <JobMatches client:load lang="es" />
-    </div>
-  </div>
-
-  <!-- Upcoming Events -->
-  <div class="mt-8">
-    <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
-      Próximos Eventos
-    </h2>
-    <UpcomingEvents client:load lang="es" />
-  </div>
-</DashboardLayout>
+<BaseLayout title="Dashboard - SECiD" description="Panel de miembros de SECiD" lang="es">
+  <DashboardHomePage client:load lang="es" />
+</BaseLayout>

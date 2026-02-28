@@ -5,45 +5,45 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Data Science inspired color palette
+        // SECiD Brand Color Palette
         primary: {
-          50: '#e6f2ff',
-          100: '#cce5ff',
-          200: '#99cbff',
-          300: '#66b0ff',
-          400: '#3396ff',
-          500: '#1f77b4', // Matplotlib blue
-          600: '#1a5f8f',
-          700: '#14476b',
-          800: '#0f3047',
-          900: '#0a1823',
-          950: '#050c12',
+          50: '#fff4f1',
+          100: '#ffe4dd',
+          200: '#ffcabc',
+          300: '#ffa48e',
+          400: '#ff7b52',
+          500: '#f65425', // SECiD Mandarina/Orange
+          600: '#e63d14',
+          700: '#c22f0e',
+          800: '#9a2a12',
+          900: '#7d2814',
+          950: '#441006',
         },
         secondary: {
-          50: '#e6fcfd',
-          100: '#ccf9fb',
-          200: '#99f3f7',
-          300: '#66edf3',
-          400: '#33e7ef',
-          500: '#17becf', // Analytical teal
-          600: '#1298a6',
-          700: '#0e727c',
-          800: '#094c53',
-          900: '#052629',
-          950: '#021315',
+          50: '#f0f5f8',
+          100: '#dce7ef',
+          200: '#bdd1e0',
+          300: '#92b3ca',
+          400: '#7a9bb8',
+          500: '#5b7f99', // SECiD Azul/Blue
+          600: '#465d73',
+          700: '#3d5064',
+          800: '#385061', // SECiD Dark Blue
+          900: '#2e4050',
+          950: '#1e2b35',
         },
         accent: {
-          50: '#fff5e6',
-          100: '#ffebcc',
-          200: '#ffd799',
-          300: '#ffc366',
-          400: '#ffaf33',
-          500: '#ff7f0e', // Highlight orange
-          600: '#cc660b',
-          700: '#994c08',
-          800: '#663306',
-          900: '#331903',
-          950: '#1a0d01',
+          50: '#fff9f0',
+          100: '#fff0d6',
+          200: '#ffe0ad',
+          300: '#ffca7a',
+          400: '#fdb157', // SECiD Dorado/Gold
+          500: '#f59e2e',
+          600: '#e08416',
+          700: '#b86610',
+          800: '#955114',
+          900: '#7a4314',
+          950: '#422007',
         },
         success: {
           50: '#e8f8e8',
@@ -84,19 +84,19 @@ module.exports = {
           900: '#2b0808',
           950: '#150404',
         },
-        // Neutral colors
+        // SECiD Neutral Colors
         gray: {
-          50: '#fafbfc',
-          100: '#f8f9fa',
-          200: '#e9ecef',
-          300: '#dee2e6',
-          400: '#ced4da',
-          500: '#adb5bd',
-          600: '#6c757d',
-          700: '#495057',
-          800: '#343a40',
-          900: '#212529',
-          950: '#0d1117',
+          50: '#fafafa',
+          100: '#f5f5f5',
+          200: '#e5e5e5',
+          300: '#d4d4d4',
+          400: '#a3a3a3',
+          500: '#737373',
+          600: '#525252',
+          700: '#404040',
+          800: '#262626',
+          900: '#171717',
+          950: '#0f0f0f',
         },
       },
       fontFamily: {
@@ -165,8 +165,8 @@ module.exports = {
       },
       boxShadow: {
         'inner-lg': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
-        'glow': '0 0 20px rgba(31, 119, 180, 0.35)',
-        'glow-lg': '0 0 40px rgba(31, 119, 180, 0.45)',
+        'glow': '0 0 20px rgba(246, 84, 37, 0.3)',
+        'glow-lg': '0 0 40px rgba(246, 84, 37, 0.4)',
       },
       transitionProperty: {
         'height': 'height',

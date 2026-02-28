@@ -1,8 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import DashboardNavigation from '@/components/dashboard/DashboardNavigation';
-import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
-import DashboardAuthWrapper from '@/components/auth/DashboardAuthWrapper';
+import DashboardShell from '@/components/dashboard/DashboardShell';
 
 export interface Props {
   title: string;
@@ -22,36 +20,12 @@ const {
 ---
 
 <BaseLayout title={title} description={description} lang={lang}>
-  <DashboardAuthWrapper
+  <DashboardShell
     client:load
     lang={lang}
     requireVerified={requireVerified}
     requireRole={requireRole}
   >
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <!-- Dashboard Navigation -->
-      <DashboardNavigation client:load lang={lang} />
-
-      <div class="flex">
-        <!-- Sidebar -->
-        <DashboardSidebar client:load lang={lang} />
-
-        <!-- Main Content -->
-        <main class="flex-1 lg:ml-64">
-          <div class="px-4 py-8 sm:px-6 lg:px-8">
-            <slot />
-          </div>
-        </main>
-      </div>
-    </div>
-  </DashboardAuthWrapper>
+    <slot />
+  </DashboardShell>
 </BaseLayout>
-
-<style>
-  /* Ensure proper spacing with fixed sidebar */
-  @media (min-width: 1024px) {
-    main {
-      margin-left: 16rem; /* 64 * 0.25rem = 16rem */
-    }
-  }
-</style>

@@ -150,7 +150,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
 
   if (loading) {
     return (
-      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-900">
         <div className="animate-pulse space-y-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="flex space-x-3">
@@ -168,7 +168,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
 
   if (activities.length === 0) {
     return (
-      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-900">
         <p className="text-center text-gray-500 dark:text-gray-400">
           {lang === 'es' ? 'No hay actividad reciente' : 'No recent activity'}
         </p>
@@ -177,7 +177,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
   }
 
   return (
-    <div className="rounded-lg bg-white shadow dark:bg-gray-800">
+    <div className="rounded-lg bg-white shadow dark:bg-gray-900">
       <div className="p-6">
         <div className="flow-root">
           <ul className="-mb-8">

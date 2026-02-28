@@ -143,7 +143,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             active
               ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400'
               : accessible
-                ? 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                ? 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
                 : 'cursor-not-allowed text-gray-400 opacity-50 dark:text-gray-600'
           }
         `}
@@ -177,7 +177,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   };
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 overflow-y-auto border-r border-gray-200 bg-white pb-4 pt-16 dark:border-gray-700 dark:bg-gray-800 lg:block">
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 overflow-y-auto border-r border-gray-200 bg-white pb-4 pt-16 dark:border-gray-800 dark:bg-gray-900 lg:block">
       <div className="space-y-1 px-4">
         {/* Main menu items */}
         <div className="space-y-1">{menuItems.map(renderMenuItem)}</div>
@@ -201,7 +201,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         )}
 
         {/* Bottom section */}
-        <div className="absolute bottom-0 left-0 right-0 border-t border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+        <div className="absolute bottom-0 left-0 right-0 border-t border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
           {bottomItems.map(renderMenuItem)}
         </div>
       </div>

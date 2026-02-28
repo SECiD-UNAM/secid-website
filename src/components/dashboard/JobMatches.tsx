@@ -179,7 +179,7 @@ export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
 
   if (loading) {
     return (
-      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-900">
         <div className="animate-pulse space-y-4">
           {[1, 2, 3].map((i) => (
             <div
@@ -198,7 +198,7 @@ export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
 
   if (jobs.length === 0) {
     return (
-      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-900">
         <p className="text-center text-gray-500 dark:text-gray-400">
           {lang === 'es'
             ? 'No hay trabajos recomendados'
@@ -215,7 +215,7 @@ export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
   }
 
   return (
-    <div className="rounded-lg bg-white shadow dark:bg-gray-800">
+    <div className="rounded-lg bg-white shadow dark:bg-gray-900">
       <div className="p-6">
         <div className="space-y-4">
           {jobs.map((job) => (
