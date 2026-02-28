@@ -300,6 +300,34 @@ service cloud.firestore {
                         canAdminister());
     }
     
+    // Top-level applications collection (queried by dashboard stats)
+    match /applications/{applicationId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.applicantId) || canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       isActive() &&
+                       request.resource.data.applicantId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.applicantId) || canModerate());
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.applicantId) || canAdminister());
+    }
+
+    // Top-level eventRegistrations collection (queried by dashboard stats)
+    match /eventRegistrations/{registrationId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.userId) || canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       isActive() &&
+                       request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.userId) || canModerate());
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.userId) || canAdminister());
+    }
+
     // Admin-only collections
     match /admin/{document=**} {
       allow read, write: if isAuthenticated() && canAdminister();
