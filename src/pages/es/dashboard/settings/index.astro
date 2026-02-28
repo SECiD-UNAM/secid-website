@@ -1,0 +1,21 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import SecuritySettings from '@/components/settings/SecuritySettings';
+---
+
+<DashboardLayout
+  title="Configuracion - SECiD"
+  description="Configura tu cuenta y preferencias de seguridad"
+  lang="es"
+>
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+      Configuracion
+    </h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">
+      Gestiona la seguridad y preferencias de tu cuenta
+    </p>
+  </div>
+
+  <SecuritySettings client:load lang="es" />
+</DashboardLayout>

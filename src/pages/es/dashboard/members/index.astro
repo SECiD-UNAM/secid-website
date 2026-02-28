@@ -1,0 +1,22 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import MemberDirectoryPage from '@/components/wrappers/MemberDirectoryPage';
+---
+
+<DashboardLayout
+  title="Miembros - SECiD"
+  description="Directorio de miembros de la comunidad SECiD"
+  lang="es"
+  requireVerified={true}
+>
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+      Directorio de Miembros
+    </h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">
+      Conecta con profesionales de la comunidad
+    </p>
+  </div>
+
+  <MemberDirectoryPage client:load lang="es" />
+</DashboardLayout>

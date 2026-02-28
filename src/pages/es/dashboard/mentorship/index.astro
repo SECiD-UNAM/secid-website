@@ -1,0 +1,20 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import MentorshipDashboard from '@/components/mentorship/MentorshipDashboard';
+---
+
+<DashboardLayout
+  title="Mentorias - SECiD"
+  description="Conecta con mentores y mentees en ciencia de datos"
+  lang="es"
+  requireVerified={true}
+>
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Mentorias</h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">
+      Conecta con mentores y mentees de la comunidad
+    </p>
+  </div>
+
+  <MentorshipDashboard client:load userRole="both" />
+</DashboardLayout>

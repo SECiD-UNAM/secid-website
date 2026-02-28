@@ -1,0 +1,19 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import ProfileEdit from '@/components/profile/ProfileEdit';
+---
+
+<DashboardLayout
+  title="Mi Perfil - SECiD"
+  description="Gestiona tu perfil profesional"
+  lang="es"
+>
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Mi Perfil</h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">
+      Actualiza tu informacion personal y profesional
+    </p>
+  </div>
+
+  <ProfileEdit client:load lang="es" />
+</DashboardLayout>

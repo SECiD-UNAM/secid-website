@@ -1,0 +1,19 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import ResourceLibrary from '@/components/resources/ResourceLibrary';
+---
+
+<DashboardLayout
+  title="Recursos - SECiD"
+  description="Accede a recursos educativos y profesionales"
+  lang="es"
+>
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Recursos</h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">
+      Accede a recursos educativos y profesionales de la comunidad
+    </p>
+  </div>
+
+  <ResourceLibrary client:load />
+</DashboardLayout>

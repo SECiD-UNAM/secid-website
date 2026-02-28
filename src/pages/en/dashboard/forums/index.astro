@@ -1,0 +1,19 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import ForumHome from '@/components/forums/ForumHome';
+---
+
+<DashboardLayout
+  title="Forums - SECiD"
+  description="Join discussions with the data science community"
+  lang="en"
+>
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Forums</h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">
+      Join discussions with the community
+    </p>
+  </div>
+
+  <ForumHome client:load language="en" />
+</DashboardLayout>
