@@ -7,7 +7,13 @@ import { DashboardSidebar } from './DashboardSidebar';
 interface DashboardShellProps {
   lang?: 'es' | 'en';
   requireVerified?: boolean;
-  requireRole?: ('member' | 'admin' | 'moderator' | 'company' | 'collaborator')[];
+  requireRole?: (
+    | 'member'
+    | 'admin'
+    | 'moderator'
+    | 'company'
+    | 'collaborator'
+  )[];
   children: React.ReactNode;
 }
 
@@ -30,9 +36,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
             <div className="flex">
               <DashboardSidebar lang={lang} />
               <main className="flex-1 lg:ml-64">
-                <div className="px-4 py-8 sm:px-6 lg:px-8">
-                  {children}
-                </div>
+                <div className="px-4 py-8 sm:px-6 lg:px-8">{children}</div>
               </main>
             </div>
           </div>

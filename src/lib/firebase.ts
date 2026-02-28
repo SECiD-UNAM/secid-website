@@ -41,16 +41,14 @@ const firebaseConfig = {
   authDomain:
     import.meta.env.PUBLIC_FIREBASE_AUTH_DOMAIN ||
     'demo-secid-alumni.firebaseapp.com',
-  projectId:
-    import.meta.env.PUBLIC_FIREBASE_PROJECT_ID || 'demo-secid-alumni',
+  projectId: import.meta.env.PUBLIC_FIREBASE_PROJECT_ID || 'demo-secid-alumni',
   storageBucket:
     import.meta.env.PUBLIC_FIREBASE_STORAGE_BUCKET ||
     'demo-secid-alumni.appspot.com',
   messagingSenderId:
     import.meta.env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '123456789',
   appId:
-    import.meta.env.PUBLIC_FIREBASE_APP_ID ||
-    '1:123456789:web:abcdef123456',
+    import.meta.env.PUBLIC_FIREBASE_APP_ID || '1:123456789:web:abcdef123456',
   measurementId: import.meta.env.PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
