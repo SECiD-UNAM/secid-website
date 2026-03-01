@@ -126,9 +126,9 @@ export const AdminDashboard: React.FC = () => {
         );
         const pendingReportsSnapshot = await getDocs(pendingReportsQuery);
 
-        // Load revenue stats (mock data for now)
-        const monthlyRevenue = 15000; // This would come from payment provider
-        const membershipRevenue = 8500;
+        // Revenue stats - will be populated when payment provider is integrated
+        const monthlyRevenue = 0;
+        const membershipRevenue = 0;
 
         // Determine system health
         const pendingCount = pendingJobsSnapshot.size + pendingReportsSnapshot.size;
@@ -212,10 +212,10 @@ export const AdminDashboard: React.FC = () => {
 
   const getSystemHealthColor = (health: string) => {
     switch(health) {
-      case 'good': return 'text-green-600 bg-green-50';
-      case 'warning': return 'text-yellow-600 bg-yellow-50';
-      case 'critical': return 'text-red-600 bg-red-50';
-      default: return 'text-gray-600 bg-gray-50';
+      case 'good': return 'text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400';
+      case 'warning': return 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-400';
+      case 'critical': return 'text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400';
+      default: return 'text-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-gray-400';
     }
   };
 
@@ -232,14 +232,14 @@ export const AdminDashboard: React.FC = () => {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             {language === 'es' ? 'Acceso Denegado' : 'Access Denied'}
           </h1>
-          <p className="text-gray-600">
-            {language === 'es' 
+          <p className="text-gray-600 dark:text-gray-400">
+            {language === 'es'
               ? 'Se requieren privilegios de administrador para acceder a esta página.'
               : 'Administrator privileges are required to access this page.'
             }
@@ -251,10 +251,10 @@ export const AdminDashboard: React.FC = () => {
 
   if(loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">
+          <p className="mt-4 text-gray-600 dark:text-gray-400">
             {language === 'es' ? 'Cargando panel de administración...' : 'Loading admin dashboard...'}
           </p>
         </div>
@@ -264,13 +264,19 @@ export const AdminDashboard: React.FC = () => {
 
   if(error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             {language === 'es' ? 'Error' : 'Error'}
           </h1>
-          <p className="text-gray-600">{error}</p>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            {language === 'es' ? 'Reintentar' : 'Retry'}
+          </button>
         </div>
       </div>
     );
@@ -281,10 +287,10 @@ export const AdminDashboard: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             {language === 'es' ? 'Panel de Administración' : 'Admin Dashboard'}
           </h1>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
             {language === 'es' 
               ? 'Bienvenido de vuelta, ' + userProfile?.firstName
               : 'Welcome back, ' + userProfile?.firstName
@@ -306,151 +312,151 @@ export const AdminDashboard: React.FC = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Users */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {language === 'es' ? 'Usuarios Totales' : 'Total Users'}
               </p>
-              <p className="text-3xl font-bold text-gray-900">{stats.totalUsers.toLocaleString()}</p>
-              <p className="text-sm text-green-600">
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalUsers.toLocaleString()}</p>
+              <p className="text-sm text-green-600 dark:text-green-400">
                 +{stats.newUsersThisMonth} {language === 'es' ? 'este mes' : 'this month'}
               </p>
             </div>
-            <div className="p-3 bg-blue-50 rounded-lg">
-              <Users className="w-6 h-6 text-blue-600" />
+            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
         </div>
 
         {/* Jobs */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {language === 'es' ? 'Empleos Activos' : 'Active Jobs'}
               </p>
-              <p className="text-3xl font-bold text-gray-900">{stats.activeJobs}</p>
-              <p className="text-sm text-yellow-600">
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.activeJobs}</p>
+              <p className="text-sm text-yellow-600 dark:text-yellow-400">
                 {stats.pendingJobs} {language === 'es' ? 'pendientes' : 'pending'}
               </p>
             </div>
-            <div className="p-3 bg-green-50 rounded-lg">
-              <Briefcase className="w-6 h-6 text-green-600" />
+            <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <Briefcase className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
           </div>
         </div>
 
         {/* Events */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {language === 'es' ? 'Próximos Eventos' : 'Upcoming Events'}
               </p>
-              <p className="text-3xl font-bold text-gray-900">{stats.upcomingEvents}</p>
-              <p className="text-sm text-gray-500">
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.upcomingEvents}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {stats.totalEvents} {language === 'es' ? 'total' : 'total'}
               </p>
             </div>
-            <div className="p-3 bg-purple-50 rounded-lg">
-              <Calendar className="w-6 h-6 text-purple-600" />
+            <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+              <Calendar className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
           </div>
         </div>
 
-        {/* Revenue */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        {/* Pending Reports */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">
-                {language === 'es' ? 'Ingresos Mensuales' : 'Monthly Revenue'}
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                {language === 'es' ? 'Reportes Pendientes' : 'Pending Reports'}
               </p>
-              <p className="text-3xl font-bold text-gray-900">{formatCurrency(stats.monthlyRevenue)}</p>
-              <p className="text-sm text-green-600">
-                {formatCurrency(stats.membershipRevenue)} {language === 'es' ? 'membresías' : 'memberships'}
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.pendingReports}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {stats.totalForumPosts} {language === 'es' ? 'posts del foro' : 'forum posts'}
               </p>
             </div>
-            <div className="p-3 bg-yellow-50 rounded-lg">
-              <DollarSign className="w-6 h-6 text-yellow-600" />
+            <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+              <AlertTriangle className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           {language === 'es' ? 'Acciones Rápidas' : 'Quick Actions'}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button className="flex items-center p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-            <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
+          <button className="flex items-center p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mr-3" />
             <div>
-              <p className="font-medium text-gray-900">
+              <p className="font-medium text-gray-900 dark:text-white">
                 {language === 'es' ? 'Aprobar Empleos' : 'Approve Jobs'}
               </p>
-              <p className="text-sm text-gray-500">{stats.pendingJobs} {language === 'es' ? 'pendientes' : 'pending'}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{stats.pendingJobs} {language === 'es' ? 'pendientes' : 'pending'}</p>
             </div>
           </button>
-          
-          <button className="flex items-center p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-            <AlertTriangle className="w-5 h-5 text-red-600 mr-3" />
+
+          <button className="flex items-center p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 mr-3" />
             <div>
-              <p className="font-medium text-gray-900">
+              <p className="font-medium text-gray-900 dark:text-white">
                 {language === 'es' ? 'Revisar Reportes' : 'Review Reports'}
               </p>
-              <p className="text-sm text-gray-500">{stats.pendingReports} {language === 'es' ? 'pendientes' : 'pending'}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{stats.pendingReports} {language === 'es' ? 'pendientes' : 'pending'}</p>
             </div>
           </button>
-          
-          <button className="flex items-center p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-            <TrendingUp className="w-5 h-5 text-blue-600 mr-3" />
+
+          <button className="flex items-center p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3" />
             <div>
-              <p className="font-medium text-gray-900">
+              <p className="font-medium text-gray-900 dark:text-white">
                 {language === 'es' ? 'Ver Analytics' : 'View Analytics'}
               </p>
-              <p className="text-sm text-gray-500">{language === 'es' ? 'Reportes detallados' : 'Detailed reports'}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{language === 'es' ? 'Reportes detallados' : 'Detailed reports'}</p>
             </div>
           </button>
-          
-          <button className="flex items-center p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-            <Clock className="w-5 h-5 text-purple-600 mr-3" />
+
+          <button className="flex items-center p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <Clock className="w-5 h-5 text-purple-600 dark:text-purple-400 mr-3" />
             <div>
-              <p className="font-medium text-gray-900">
+              <p className="font-medium text-gray-900 dark:text-white">
                 {language === 'es' ? 'Logs del Sistema' : 'System Logs'}
               </p>
-              <p className="text-sm text-gray-500">{language === 'es' ? 'Actividad reciente' : 'Recent activity'}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{language === 'es' ? 'Actividad reciente' : 'Recent activity'}</p>
             </div>
           </button>
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             {language === 'es' ? 'Actividad Reciente' : 'Recent Activity'}
           </h2>
         </div>
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-gray-200 dark:divide-gray-700">
           {recentActivity.length > 0 ? (
             recentActivity.map((activity) => (
               <div key={activity['id']} className="p-6 flex items-start space-x-3">
-                <div className="p-1 bg-gray-100 rounded-full">
+                <div className="p-1 bg-gray-100 dark:bg-gray-700 rounded-full">
                   {getActivityIcon(activity['type'])}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-900">{activity['description']}</p>
-                  <p className="text-xs text-gray-500">{formatDate(activity['timestamp'])}</p>
+                  <p className="text-sm text-gray-900 dark:text-white">{activity['description']}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(activity['timestamp'])}</p>
                   {activity['userEmail'] && (
-                    <p className="text-xs text-blue-600">{activity['userEmail']}</p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400">{activity['userEmail']}</p>
                   )}
                 </div>
               </div>
             ))
           ) : (
-            <div className="p-6 text-center text-gray-500">
+            <div className="p-6 text-center text-gray-500 dark:text-gray-400">
               {language === 'es' ? 'No hay actividad reciente' : 'No recent activity'}
             </div>
           )}

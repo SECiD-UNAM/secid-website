@@ -408,17 +408,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
 
   return (
     <div>
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">
-          {lang === 'es' ? 'Editar Perfil' : 'Edit Profile'}
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          {lang === 'es'
-            ? 'Actualiza tu información personal y profesional'
-            : 'Update your personal and professional information'}
-        </p>
-      </div>
+      {/* Header removed - rendered by Astro page wrapper */}
 
       {/* Profile Completeness */}
       <div className="mb-6 rounded-lg bg-white p-6 shadow dark:bg-gray-800">

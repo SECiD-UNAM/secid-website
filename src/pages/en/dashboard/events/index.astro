@@ -39,22 +39,6 @@ import EventListPage from '@/components/wrappers/EventListPage';
     </div>
   </div>
 
-  <!-- Stats Bar -->
-  <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-    <div class="rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-      <p class="text-sm text-gray-600 dark:text-gray-400">Upcoming Events</p>
-      <p class="text-2xl font-bold text-gray-900 dark:text-white">12</p>
-    </div>
-    <div class="rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-      <p class="text-sm text-gray-600 dark:text-gray-400">Events This Week</p>
-      <p class="text-2xl font-bold text-gray-900 dark:text-white">3</p>
-    </div>
-    <div class="rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-      <p class="text-sm text-gray-600 dark:text-gray-400">Registered Events</p>
-      <p class="text-2xl font-bold text-gray-900 dark:text-white">5</p>
-    </div>
-  </div>
-
   <!-- Event List Component -->
   <EventListPage client:only="react" lang="en" />
 </DashboardLayout>

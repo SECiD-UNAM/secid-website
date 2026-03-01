@@ -106,95 +106,11 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
       setEvents(eventsList);
     } catch (error) {
       console.error('Error fetching events:', error);
-      // Use mock data for development
-      setEvents(getMockEvents());
+      setEvents([]);
     } finally {
       setLoading(false);
     }
   };
-
-  const getMockEvents = (): Event[] => [
-    {
-      id: '1',
-      title: 'Data Science Career Fair 2024',
-      description: 'Connect with top companies looking for data science talent',
-      type: 'career-fair',
-      startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      endDate: new Date(
-        Date.now() + 7 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000
-      ),
-      timezone: 'America/Mexico_City',
-      duration: 240,
-      location: {
-        type: 'hybrid',
-        venue: 'UNAM Campus Ciudad Universitaria',
-        address: 'Avenida Universidad 3000, CDMX',
-        virtualLink: 'https://meet.google.com/xyz',
-        virtualPlatform: 'meet',
-      },
-      registrationRequired: true,
-      registrationDeadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-      maxAttendees: 200,
-      currentAttendees: 156,
-      registrationFee: 0,
-      imageUrl: '/images/career-fair.jpg',
-      tags: ['career', 'networking', 'professional-development'],
-      organizers: ['SECiD', 'UNAM'],
-      status: 'published',
-      featured: true,
-    },
-    {
-      id: '2',
-      title: 'Machine Learning Workshop: From Theory to Production',
-      description: 'Learn how to deploy ML models in production environments',
-      type: 'workshop',
-      startDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-      endDate: new Date(
-        Date.now() + 14 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000
-      ),
-      timezone: 'America/Mexico_City',
-      duration: 180,
-      location: {
-        type: 'virtual',
-        virtualLink: 'https://zoom.us/j/123456',
-        virtualPlatform: 'zoom',
-      },
-      registrationRequired: true,
-      registrationDeadline: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000),
-      maxAttendees: 100,
-      currentAttendees: 45,
-      registrationFee: 0,
-      tags: ['machine-learning', 'workshop', 'technical'],
-      organizers: ['SECiD Tech Committee'],
-      status: 'published',
-      featured: false,
-    },
-    {
-      id: '3',
-      title: 'Alumni Networking Happy Hour',
-      description: 'Casual networking event for data science alumni',
-      type: 'social',
-      startDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-      endDate: new Date(
-        Date.now() + 3 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000
-      ),
-      timezone: 'America/Mexico_City',
-      duration: 120,
-      location: {
-        type: 'physical',
-        venue: 'La Casa del Libro',
-        address: 'Polanco, CDMX',
-      },
-      registrationRequired: false,
-      maxAttendees: 50,
-      currentAttendees: 23,
-      registrationFee: 0,
-      tags: ['networking', 'social', 'alumni'],
-      organizers: ['SECiD Social Committee'],
-      status: 'published',
-      featured: false,
-    },
-  ];
 
   const filterEvents = () => {
     let filtered = [...events];
@@ -320,17 +236,7 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
 
   return (
     <div>
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">
-          {lang === 'es' ? 'Eventos' : 'Events'}
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          {lang === 'es'
-            ? 'Participa en eventos, talleres y actividades de networking'
-            : 'Join events, workshops and networking activities'}
-        </p>
-      </div>
+      {/* Header removed - rendered by Astro page wrapper */}
 
       {/* Filters and Search */}
       <div className="mb-6 rounded-lg bg-white p-4 shadow dark:bg-gray-800">

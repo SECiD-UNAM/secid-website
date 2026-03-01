@@ -319,79 +319,14 @@ export const JobBoard: React.FC<JobBoardProps> = ({ lang = 'es', filters }) => {
       }
     } catch (error) {
       console.error('Error fetching jobs:', error);
-      // Use mock data on error
       if (!loadMore) {
-        setJobs(getMockJobs());
+        setJobs([]);
       }
     } finally {
       setLoading(false);
       setLoadingMore(false);
     }
   };
-
-  const getMockJobs = (): Job[] => [
-    {
-      id: '1',
-      title: 'Senior Data Scientist',
-      company: 'TechCorp México',
-      location: 'Ciudad de México, CDMX',
-      locationType: 'hybrid',
-      employmentType: 'full-time',
-      salaryRange: {
-        min: 60000,
-        max: 90000,
-        currency: 'MXN',
-        period: 'monthly',
-      },
-      description:
-        'We are looking for an experienced Data Scientist to join our team...',
-      requirements: [
-        '3+ years experience',
-        'Python',
-        'Machine Learning',
-        'SQL',
-      ],
-      benefits: ['Seguro de gastos médicos', 'Home office', 'Capacitación'],
-      tags: ['python', 'machine-learning', 'sql', 'senior'],
-      experienceLevel: 'senior',
-      industry: 'technology',
-      companySize: 'large',
-      postedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-      postedBy: 'company123',
-      applicationCount: 23,
-      viewCount: 156,
-      featured: true,
-      matchScore: 85,
-    },
-    {
-      id: '2',
-      title: 'Data Analyst Junior',
-      company: 'Startup Fintech',
-      location: 'Guadalajara, Jalisco',
-      locationType: 'onsite',
-      employmentType: 'full-time',
-      salaryRange: {
-        min: 20000,
-        max: 30000,
-        currency: 'MXN',
-        period: 'monthly',
-      },
-      description:
-        'Join our growing fintech startup as a Junior Data Analyst...',
-      requirements: ['SQL', 'Excel', 'Basic Python', 'Statistics'],
-      benefits: ['Seguro médico', 'Vacaciones flexibles'],
-      tags: ['sql', 'junior', 'analyst'],
-      experienceLevel: 'junior',
-      industry: 'finance',
-      companySize: 'startup',
-      postedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-      postedBy: 'company456',
-      applicationCount: 45,
-      viewCount: 245,
-      featured: false,
-      matchScore: 65,
-    },
-  ];
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

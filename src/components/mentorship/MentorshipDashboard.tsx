@@ -116,229 +116,152 @@ export default function MentorshipDashboard({ userRole }: MentorshipDashboardPro
 
   if(loading) {
     return (
-      <div className="mentorship-dashboard loading">
-        <div className="loading-spinner">
-          <i className="fas fa-spinner fa-spin"></i>
-          <p>{t.common.loading}</p>
-        </div>
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+        <span className="ml-3 text-gray-600 dark:text-gray-400">
+          {t?.common?.loading || 'Loading...'}
+        </span>
       </div>
     );
   }
 
   return (
-    <div className="mentorship-dashboard">
-      {/* Header */}
-      <header className="dashboard-header">
-        <div className="header-content">
-          <h1>{t.mentorship.dashboard.title}</h1>
-          <p>{t.mentorship.dashboard.welcome}</p>
-        </div>
-        
-        {/* Quick Actions */}
-        <div className="quick-actions">
-          {userRole === 'mentee' || userRole === 'both' ? (
-            <button 
-              className="btn btn-primary"
-              onClick={() => setActiveTab('matches')}
-            >
-              <i className="fas fa-search"></i>
-              {t.mentorship.dashboard.findMentor}
-            </button>
-          ) : null}
-          
-          {userRole === 'mentor' || userRole === 'both' ? (
-            <button 
-              className="btn btn-secondary"
-              onClick={() => setActiveTab('profile')}
-            >
-              <i className="fas fa-user-edit"></i>
-              {t.mentorship.dashboard.editProfile}
-            </button>
-          ) : null}
-          
-          <button 
-            className="btn btn-outline"
-            onClick={() => setActiveTab('sessions')}
+    <div className="space-y-6">
+      {/* Quick Actions */}
+      <div className="flex flex-wrap gap-3">
+        {(userRole === 'mentee' || userRole === 'both') && (
+          <button
+            className="inline-flex items-center rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 transition-colors"
+            onClick={() => setActiveTab('matches')}
           >
-            <i className="fas fa-calendar-plus"></i>
-            {t.mentorship.dashboard.scheduleSession}
+            {t?.mentorship?.dashboard?.findMentor || 'Find a Mentor'}
           </button>
-        </div>
-      </header>
+        )}
 
-      {/* Navigation Tabs */}
-      <nav className="dashboard-nav">
-        <button 
-          className={`nav-tab ${activeTab === 'overview' ? 'active' : ''}`}
-          onClick={() => setActiveTab('overview')}
-        >
-          <i className="fas fa-chart-line"></i>
-          {t.mentorship.dashboard.overview}
-        </button>
-        
-        <button 
-          className={`nav-tab ${activeTab === 'matches' ? 'active' : ''}`}
-          onClick={() => setActiveTab('matches')}
-        >
-          <i className="fas fa-users"></i>
-          {t.mentorship.dashboard.matches}
-          {matches.filter(m => m['status'] === 'pending').length > 0 && (
-            <span className="badge">{matches.filter(m => m['status'] === 'pending').length}</span>
-          )}
-        </button>
-        
-        <button 
-          className={`nav-tab ${activeTab === 'sessions' ? 'active' : ''}`}
+        {(userRole === 'mentor' || userRole === 'both') && (
+          <button
+            className="inline-flex items-center rounded-lg bg-gray-100 dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            onClick={() => setActiveTab('profile')}
+          >
+            {t?.mentorship?.dashboard?.editProfile || 'Edit Profile'}
+          </button>
+        )}
+
+        <button
+          className="inline-flex items-center rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           onClick={() => setActiveTab('sessions')}
         >
-          <i className="fas fa-calendar"></i>
-          {t.mentorship.dashboard.sessions}
-          {upcomingSessions.length > 0 && (
-            <span className="badge">{upcomingSessions.length}</span>
-          )}
+          {t?.mentorship?.dashboard?.scheduleSession || 'Schedule Session'}
         </button>
-        
-        <button 
-          className={`nav-tab ${activeTab === 'profile' ? 'active' : ''}`}
-          onClick={() => setActiveTab('profile')}
-        >
-          <i className="fas fa-user"></i>
-          {t.mentorship.dashboard.profile}
-        </button>
-      </nav>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className="border-b border-gray-200 dark:border-gray-700">
+        <nav className="-mb-px flex space-x-8">
+          {[
+            { key: 'overview', label: t?.mentorship?.dashboard?.overview || 'Overview' },
+            { key: 'matches', label: t?.mentorship?.dashboard?.matches || 'Matches', badge: matches.filter(m => m['status'] === 'pending').length },
+            { key: 'sessions', label: t?.mentorship?.dashboard?.sessions || 'Sessions', badge: upcomingSessions.length },
+            { key: 'profile', label: t?.mentorship?.dashboard?.profile || 'Profile' },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key as typeof activeTab)}
+              className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === tab.key
+                  ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300'
+              }`}
+            >
+              {tab.label}
+              {tab.badge && tab.badge > 0 && (
+                <span className="ml-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 py-0.5 px-2 rounded-full text-xs">
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          ))}
+        </nav>
+      </div>
 
       {/* Main Content */}
-      <main className="dashboard-content">
+      <div>
         {activeTab === 'overview' && (
-          <div className="overview-section">
+          <div className="space-y-6">
             {/* Stats Cards */}
-            <div className="stats-grid">
-              <div className="stat-card">
-                <div className="stat-icon">
-                  <i className="fas fa-handshake"></i>
-                </div>
-                <div className="stat-content">
-                  <h3>{stats.activeMatches}</h3>
-                  <p>{t.mentorship.dashboard.activeMatches}</p>
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t?.mentorship?.dashboard?.activeMatches || 'Active Matches'}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.activeMatches}</p>
               </div>
-              
-              <div className="stat-card">
-                <div className="stat-icon">
-                  <i className="fas fa-video"></i>
-                </div>
-                <div className="stat-content">
-                  <h3>{stats.completedSessions}</h3>
-                  <p>{t.mentorship.dashboard.completedSessions}</p>
-                </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t?.mentorship?.dashboard?.completedSessions || 'Completed Sessions'}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.completedSessions}</p>
               </div>
-              
-              <div className="stat-card">
-                <div className="stat-icon">
-                  <i className="fas fa-calendar-check"></i>
-                </div>
-                <div className="stat-content">
-                  <h3>{stats.upcomingSessions}</h3>
-                  <p>{t.mentorship.dashboard.upcomingSessions}</p>
-                </div>
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t?.mentorship?.dashboard?.upcomingSessions || 'Upcoming Sessions'}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.upcomingSessions}</p>
               </div>
-              
               {userRole === 'mentor' && (
-                <div className="stat-card">
-                  <div className="stat-icon">
-                    <i className="fas fa-star"></i>
-                  </div>
-                  <div className="stat-content">
-                    <h3>{stats.averageRating.toFixed(1)}</h3>
-                    <p>{t.mentorship.dashboard.averageRating}</p>
-                  </div>
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t?.mentorship?.dashboard?.averageRating || 'Rating'}</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.averageRating.toFixed(1)}</p>
                 </div>
               )}
             </div>
 
             {/* Recent Activity */}
-            <div className="recent-activity">
-              <h2>{t.mentorship.dashboard.recentActivity}</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t?.mentorship?.dashboard?.recentActivity || 'Recent Activity'}</h2>
               
-              {/* Pending Matches */}
-              {matches.filter(m => m['status'] === 'pending').length > 0 && (
-                <div className="activity-section">
-                  <h3>{t.mentorship.dashboard.pendingRequests}</h3>
-                  <div className="activity-list">
-                    {matches
-                      .filter(m => m['status'] === 'pending')
-                      .slice(0, 3)
-                      .map(match => (
-                        <div key={match.id} className="activity-item">
-                          <div className="activity-icon">
-                            <i className="fas fa-clock"></i>
-                          </div>
-                          <div className="activity-content">
-                            <p>
-                              {userRole === 'mentor' 
-                                ? t.mentorship.dashboard.newMenteeRequest
-                                : t.mentorship.dashboard.mentorRequestPending
-                              }
-                            </p>
-                            <span className="activity-time">
-                              {new Date(match['createdAt']).toLocaleDateString()}
-                            </span>
-                          </div>
-                          <button className="btn btn-sm btn-primary">
-                            {t.mentorship.dashboard.view}
-                          </button>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Upcoming Sessions */}
-              {upcomingSessions.length > 0 && (
-                <div className="activity-section">
-                  <h3>{t.mentorship.dashboard.upcomingSessions}</h3>
-                  <div className="activity-list">
-                    {upcomingSessions.slice(0, 3).map(session => (
-                      <div key={session.id} className="activity-item">
-                        <div className="activity-icon">
-                          <i className="fas fa-video"></i>
-                        </div>
-                        <div className="activity-content">
-                          <p>{session.title}</p>
-                          <span className="activity-time">
-                            {new Date(session.scheduledAt).toLocaleString()}
-                          </span>
-                        </div>
-                        <button className="btn btn-sm btn-outline">
-                          {t.mentorship.dashboard.join}
-                        </button>
+              {matches.filter(m => m['status'] === 'pending').length > 0 ? (
+                <div className="space-y-3">
+                  {matches.filter(m => m['status'] === 'pending').slice(0, 3).map(match => (
+                    <div key={match.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                      <div>
+                        <p className="text-sm text-gray-900 dark:text-white">
+                          {userRole === 'mentor'
+                            ? (t?.mentorship?.dashboard?.newMenteeRequest || 'New mentee request')
+                            : (t?.mentorship?.dashboard?.mentorRequestPending || 'Mentor request pending')
+                          }
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {new Date(match['createdAt']).toLocaleDateString()}
+                        </p>
                       </div>
-                    ))}
-                  </div>
+                      <button className="px-3 py-1 text-sm bg-primary-600 text-white rounded-md hover:bg-primary-700">
+                        {t?.mentorship?.dashboard?.view || 'View'}
+                      </button>
+                    </div>
+                  ))}
                 </div>
+              ) : (
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {t?.mentorship?.dashboard?.recentActivity || 'No recent activity'}
+                </p>
               )}
             </div>
 
             {/* Global Statistics */}
             {globalStats && (
-              <div className="global-stats">
-                <h2>{t.mentorship.dashboard.programStats}</h2>
-                <div className="stats-grid">
-                  <div className="stat-card secondary">
-                    <h3>{globalStats.totalMentors}</h3>
-                    <p>{t.mentorship.dashboard.totalMentors}</p>
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t?.mentorship?.dashboard?.programStats || 'Program Statistics'}</h2>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{globalStats.totalMentors}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t?.mentorship?.dashboard?.totalMentors || 'Mentors'}</p>
                   </div>
-                  <div className="stat-card secondary">
-                    <h3>{globalStats.totalMentees}</h3>
-                    <p>{t.mentorship.dashboard.totalMentees}</p>
+                  <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">{globalStats.totalMentees}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t?.mentorship?.dashboard?.totalMentees || 'Mentees'}</p>
                   </div>
-                  <div className="stat-card secondary">
-                    <h3>{globalStats.activeMatches}</h3>
-                    <p>{t.mentorship.dashboard.globalActiveMatches}</p>
+                  <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                    <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{globalStats.activeMatches}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t?.mentorship?.dashboard?.globalActiveMatches || 'Active Matches'}</p>
                   </div>
-                  <div className="stat-card secondary">
-                    <h3>{(globalStats.successRate * 100).toFixed(1)}%</h3>
-                    <p>{t.mentorship.dashboard.successRate}</p>
+                  <div className="text-center p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                    <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{(globalStats.successRate * 100).toFixed(1)}%</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{t?.mentorship?.dashboard?.successRate || 'Success Rate'}</p>
                   </div>
                 </div>
               </div>
@@ -347,91 +270,59 @@ export default function MentorshipDashboard({ userRole }: MentorshipDashboardPro
         )}
 
         {activeTab === 'matches' && (
-          <div className="matches-section">
-            <h2>{t.mentorship.dashboard.yourMatches}</h2>
-            
+          <div className="space-y-6">
             {matches.length === 0 ? (
-              <div className="empty-state">
-                <i className="fas fa-users fa-3x"></i>
-                <h3>{t.mentorship.dashboard.noMatches}</h3>
-                <p>{t.mentorship.dashboard.noMatchesDescription}</p>
-                <button className="btn btn-primary">
-                  {userRole === 'mentee' 
-                    ? t.mentorship.dashboard.findMentor
-                    : t.mentorship.dashboard.becomeMentor
+              <div className="text-center py-12">
+                <div className="mx-auto h-12 w-12 text-gray-400 mb-4">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{t?.mentorship?.dashboard?.noMatches || 'No matches yet'}</h3>
+                <p className="text-gray-500 dark:text-gray-400 mb-4">{t?.mentorship?.dashboard?.noMatchesDescription || 'Start by finding a mentor or becoming one.'}</p>
+                <button className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                  {userRole === 'mentee'
+                    ? (t?.mentorship?.dashboard?.findMentor || 'Find a Mentor')
+                    : (t?.mentorship?.dashboard?.becomeMentor || 'Become a Mentor')
                   }
                 </button>
               </div>
             ) : (
-              <div className="matches-list">
+              <div className="space-y-4">
                 {matches.map(match => (
-                  <div key={match.id} className={`match-card ${match.status}`}>
-                    <div className="match-header">
-                      <div className="match-info">
-                        <h3>
-                          {userRole === 'mentor' 
-                            ? t.mentorship.dashboard.menteeMatch
-                            : t.mentorship.dashboard.mentorMatch
+                  <div key={match.id} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h3 className="font-semibold text-gray-900 dark:text-white">
+                          {userRole === 'mentor'
+                            ? (t?.mentorship?.dashboard?.menteeMatch || 'Mentee Match')
+                            : (t?.mentorship?.dashboard?.mentorMatch || 'Mentor Match')
                           }
                         </h3>
-                        <span className={`status-badge ${match.status}`}>
-                          {t.mentorship.status[match['status']]}
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          match['status'] === 'active' ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400' :
+                          match['status'] === 'pending' ? 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-400' :
+                          'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-400'
+                        }`}>
+                          {t?.mentorship?.status?.[match['status']] || match['status']}
                         </span>
                       </div>
-                      <div className="match-score">
-                        <span className="score">{Math.round(match.matchScore * 100)}%</span>
-                        <span className="label">{t.mentorship.dashboard.compatibility}</span>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold text-primary-600 dark:text-primary-400">{Math.round(match.matchScore * 100)}%</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{t?.mentorship?.dashboard?.compatibility || 'Compatibility'}</p>
                       </div>
                     </div>
-                    
-                    <div className="match-content">
-                      <div className="match-goals">
-                        <h4>{t.mentorship.dashboard.goals}</h4>
-                        <ul>
-                          {match.goals.slice(0, 3).map((goal, index) => (
-                            <li key={index}>{goal}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      <div className="match-frequency">
-                        <span>
-                          <i className="fas fa-clock"></i>
-                          {t.mentorship.frequency[match.meetingFrequency]}
-                        </span>
-                        <span>
-                          <i className="fas fa-comments"></i>
-                          {t.mentorship.communication[match.communicationPreference]}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="match-actions">
+                    <div className="flex gap-3 mt-4">
                       {match['status'] === 'pending' && (
-                        <>
-                          <button className="btn btn-primary">
-                            {userRole === 'mentor' 
-                              ? t.mentorship.dashboard.acceptRequest
-                              : t.mentorship.dashboard.viewRequest
-                            }
-                          </button>
-                          {userRole === 'mentor' && (
-                            <button className="btn btn-outline">
-                              {t.mentorship.dashboard.declineRequest}
-                            </button>
-                          )}
-                        </>
+                        <button className="px-4 py-2 text-sm bg-primary-600 text-white rounded-md hover:bg-primary-700">
+                          {userRole === 'mentor'
+                            ? (t?.mentorship?.dashboard?.acceptRequest || 'Accept')
+                            : (t?.mentorship?.dashboard?.viewRequest || 'View')
+                          }
+                        </button>
                       )}
-                      
                       {match['status'] === 'active' && (
-                        <>
-                          <button className="btn btn-primary">
-                            {t.mentorship.dashboard.scheduleSession}
-                          </button>
-                          <button className="btn btn-outline">
-                            {t.mentorship.dashboard.sendMessage}
-                          </button>
-                        </>
+                        <button className="px-4 py-2 text-sm bg-primary-600 text-white rounded-md hover:bg-primary-700">
+                          {t?.mentorship?.dashboard?.scheduleSession || 'Schedule Session'}
+                        </button>
                       )}
                     </div>
                   </div>
@@ -442,67 +333,38 @@ export default function MentorshipDashboard({ userRole }: MentorshipDashboardPro
         )}
 
         {activeTab === 'sessions' && (
-          <div className="sessions-section">
-            <h2>{t.mentorship.dashboard.upcomingSessions}</h2>
-            
+          <div className="space-y-6">
             {upcomingSessions.length === 0 ? (
-              <div className="empty-state">
-                <i className="fas fa-calendar fa-3x"></i>
-                <h3>{t.mentorship.dashboard.noSessions}</h3>
-                <p>{t.mentorship.dashboard.noSessionsDescription}</p>
-                <button className="btn btn-primary">
-                  {t.mentorship.dashboard.scheduleSession}
+              <div className="text-center py-12">
+                <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{t?.mentorship?.dashboard?.noSessions || 'No sessions scheduled'}</h3>
+                <p className="text-gray-500 dark:text-gray-400 mb-4">{t?.mentorship?.dashboard?.noSessionsDescription || 'Schedule a session with your mentor or mentee.'}</p>
+                <button className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                  {t?.mentorship?.dashboard?.scheduleSession || 'Schedule Session'}
                 </button>
               </div>
             ) : (
-              <div className="sessions-list">
+              <div className="space-y-4">
                 {upcomingSessions.map(session => (
-                  <div key={session.id} className="session-card">
-                    <div className="session-header">
-                      <h3>{session.title}</h3>
-                      <span className={`session-type ${session['type']}`}>
-                        <i className={`fas fa-${session['type'] === 'video' ? 'video' : 
-                          session['type'] === 'voice' ? 'phone' : 
-                          session['type'] === 'chat' ? 'comments' : 'map-marker'}`}></i>
-                        {t.mentorship.sessionType[session['type']]}
+                  <div key={session.id} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{session.title}</h3>
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-400">
+                        {t?.mentorship?.sessionType?.[session['type']] || session['type']}
                       </span>
                     </div>
-                    
-                    <div className="session-details">
-                      <div className="session-time">
-                        <i className="fas fa-clock"></i>
-                        <span>{new Date(session.scheduledAt).toLocaleString()}</span>
-                        <span className="duration">({session.duration} {t.mentorship.dashboard.minutes})</span>
-                      </div>
-                      
-                      {session.description && (
-                        <p className="session-description">{session['description']}</p>
-                      )}
-                      
-                      {session.agenda && session.agenda.length > 0 && (
-                        <div className="session-agenda">
-                          <h4>{t.mentorship.dashboard.agenda}</h4>
-                          <ul>
-                            {session.agenda.map((item, index) => (
-                              <li key={index}>{item}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="session-actions">
-                      <button className="btn btn-primary">
-                        <i className="fas fa-play"></i>
-                        {t.mentorship.dashboard.joinSession}
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                      {new Date(session.scheduledAt).toLocaleString()} ({session.duration} min)
+                    </p>
+                    {session.description && (
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{session['description']}</p>
+                    )}
+                    <div className="flex gap-3">
+                      <button className="px-4 py-2 text-sm bg-primary-600 text-white rounded-md hover:bg-primary-700">
+                        {t?.mentorship?.dashboard?.joinSession || 'Join'}
                       </button>
-                      <button className="btn btn-outline">
-                        <i className="fas fa-edit"></i>
-                        {t.mentorship.dashboard.editSession}
-                      </button>
-                      <button className="btn btn-ghost">
-                        <i className="fas fa-times"></i>
-                        {t.mentorship.dashboard.cancelSession}
+                      <button className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700">
+                        {t?.mentorship?.dashboard?.editSession || 'Edit'}
                       </button>
                     </div>
                   </div>
@@ -513,57 +375,59 @@ export default function MentorshipDashboard({ userRole }: MentorshipDashboardPro
         )}
 
         {activeTab === 'profile' && (
-          <div className="profile-section">
-            <h2>{t.mentorship.dashboard.yourProfile}</h2>
-            
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{t.mentorship.dashboard.yourProfile}</h2>
+
             {(userRole === 'mentor' || userRole === 'both') && mentorProfile && (
-              <div className="profile-card mentor">
-                <div className="profile-header">
-                  <h3>{t.mentorship.dashboard.mentorProfile}</h3>
-                  <button className="btn btn-outline">
-                    <i className="fas fa-edit"></i>
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t.mentorship.dashboard.mentorProfile}</h3>
+                  <button className="inline-flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                     {t.mentorship.dashboard.editProfile}
                   </button>
                 </div>
-                
-                <div className="profile-content">
-                  <div className="profile-avatar">
+
+                <div className="p-6 flex flex-col sm:flex-row gap-6">
+                  <div className="flex-shrink-0">
                     {mentorProfile.profileImage ? (
-                      <img src={mentorProfile.profileImage} alt={mentorProfile.displayName} />
+                      <img src={mentorProfile.profileImage} alt={mentorProfile.displayName} className="w-20 h-20 rounded-full object-cover" />
                     ) : (
-                      <div className="avatar-placeholder">
-                        <i className="fas fa-user"></i>
+                      <div className="w-20 h-20 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                        <svg className="w-10 h-10 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                       </div>
                     )}
                   </div>
-                  
-                  <div className="profile-details">
-                    <h4>{mentorProfile.displayName}</h4>
-                    <p className="profile-title">
-                      {mentorProfile.experience.currentPosition} at {mentorProfile.experience.currentCompany}
-                    </p>
-                    <p className="profile-bio">{mentorProfile.bio}</p>
-                    
-                    <div className="profile-stats">
-                      <div className="stat">
-                        <span className="value">{mentorProfile.rating.toFixed(1)}</span>
-                        <span className="label">{t.mentorship.dashboard.rating}</span>
+
+                  <div className="flex-1 space-y-4">
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white">{mentorProfile.displayName}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {mentorProfile.experience.currentPosition} at {mentorProfile.experience.currentCompany}
+                      </p>
+                    </div>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">{mentorProfile.bio}</p>
+
+                    <div className="flex gap-6">
+                      <div className="text-center">
+                        <span className="block text-xl font-bold text-blue-600 dark:text-blue-400">{mentorProfile.rating.toFixed(1)}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{t.mentorship.dashboard.rating}</span>
                       </div>
-                      <div className="stat">
-                        <span className="value">{mentorProfile.totalSessions}</span>
-                        <span className="label">{t.mentorship.dashboard.sessions}</span>
+                      <div className="text-center">
+                        <span className="block text-xl font-bold text-green-600 dark:text-green-400">{mentorProfile.totalSessions}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{t.mentorship.dashboard.sessions}</span>
                       </div>
-                      <div className="stat">
-                        <span className="value">{mentorProfile.currentMentees}/{mentorProfile.maxMentees}</span>
-                        <span className="label">{t.mentorship.dashboard.mentees}</span>
+                      <div className="text-center">
+                        <span className="block text-xl font-bold text-purple-600 dark:text-purple-400">{mentorProfile.currentMentees}/{mentorProfile.maxMentees}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{t.mentorship.dashboard.mentees}</span>
                       </div>
                     </div>
-                    
-                    <div className="profile-skills">
-                      <h5>{t.mentorship.dashboard.expertise}</h5>
-                      <div className="skills-list">
+
+                    <div>
+                      <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t.mentorship.dashboard.expertise}</h5>
+                      <div className="flex flex-wrap gap-2">
                         {mentorProfile.expertiseAreas.slice(0, 5).map((skill, index) => (
-                          <span key={index} className="skill-tag">{skill}</span>
+                          <span key={index} className="px-2.5 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full">{skill}</span>
                         ))}
                       </div>
                     </div>
@@ -571,49 +435,54 @@ export default function MentorshipDashboard({ userRole }: MentorshipDashboardPro
                 </div>
               </div>
             )}
-            
+
             {(userRole === 'mentee' || userRole === 'both') && menteeProfile && (
-              <div className="profile-card mentee">
-                <div className="profile-header">
-                  <h3>{t.mentorship.dashboard.menteeProfile}</h3>
-                  <button className="btn btn-outline">
-                    <i className="fas fa-edit"></i>
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-green-50 dark:bg-green-900/20">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t.mentorship.dashboard.menteeProfile}</h3>
+                  <button className="inline-flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                     {t.mentorship.dashboard.editProfile}
                   </button>
                 </div>
-                
-                <div className="profile-content">
-                  <div className="profile-avatar">
+
+                <div className="p-6 flex flex-col sm:flex-row gap-6">
+                  <div className="flex-shrink-0">
                     {menteeProfile.profileImage ? (
-                      <img src={menteeProfile.profileImage} alt={menteeProfile.displayName} />
+                      <img src={menteeProfile.profileImage} alt={menteeProfile.displayName} className="w-20 h-20 rounded-full object-cover" />
                     ) : (
-                      <div className="avatar-placeholder">
-                        <i className="fas fa-user"></i>
+                      <div className="w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                        <svg className="w-10 h-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                       </div>
                     )}
                   </div>
-                  
-                  <div className="profile-details">
-                    <h4>{menteeProfile.displayName}</h4>
-                    <p className="profile-level">
-                      {t.mentorship.level[menteeProfile.currentLevel]} - {menteeProfile.background.yearsOfExperience} {t.mentorship.dashboard.yearsExperience}
-                    </p>
-                    <p className="profile-bio">{menteeProfile.bio}</p>
-                    
-                    <div className="profile-goals">
-                      <h5>{t.mentorship.dashboard.goals}</h5>
-                      <ul>
+
+                  <div className="flex-1 space-y-4">
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 dark:text-white">{menteeProfile.displayName}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {t.mentorship.level[menteeProfile.currentLevel]} - {menteeProfile.background.yearsOfExperience} {t.mentorship.dashboard.yearsExperience}
+                      </p>
+                    </div>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">{menteeProfile.bio}</p>
+
+                    <div>
+                      <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t.mentorship.dashboard.goals}</h5>
+                      <ul className="space-y-1">
                         {menteeProfile.goals.slice(0, 3).map((goal, index) => (
-                          <li key={index}>{goal}</li>
+                          <li key={index} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
+                            <svg className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" /></svg>
+                            {goal}
+                          </li>
                         ))}
                       </ul>
                     </div>
-                    
-                    <div className="profile-interests">
-                      <h5>{t.mentorship.dashboard.interests}</h5>
-                      <div className="interests-list">
+
+                    <div>
+                      <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t.mentorship.dashboard.interests}</h5>
+                      <div className="flex flex-wrap gap-2">
                         {menteeProfile.interests.slice(0, 5).map((interest, index) => (
-                          <span key={index} className="interest-tag">{interest}</span>
+                          <span key={index} className="px-2.5 py-1 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full">{interest}</span>
                         ))}
                       </div>
                     </div>
@@ -621,17 +490,17 @@ export default function MentorshipDashboard({ userRole }: MentorshipDashboardPro
                 </div>
               </div>
             )}
-            
+
             {!mentorProfile && !menteeProfile && (
-              <div className="empty-state">
-                <i className="fas fa-user-plus fa-3x"></i>
-                <h3>{t.mentorship.dashboard.noProfile}</h3>
-                <p>{t.mentorship.dashboard.noProfileDescription}</p>
-                <div className="profile-actions">
-                  <button className="btn btn-primary">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
+                <svg className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t.mentorship.dashboard.noProfile}</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">{t.mentorship.dashboard.noProfileDescription}</p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
                     {t.mentorship.dashboard.createMentorProfile}
                   </button>
-                  <button className="btn btn-secondary">
+                  <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
                     {t.mentorship.dashboard.createMenteeProfile}
                   </button>
                 </div>
@@ -639,7 +508,7 @@ export default function MentorshipDashboard({ userRole }: MentorshipDashboardPro
             )}
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

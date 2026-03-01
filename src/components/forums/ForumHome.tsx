@@ -165,12 +165,12 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
       }
       setRecentTopics(recent.sort((a, b) => b.createdAt.getTime() - a['createdAt'].getTime()).slice(0, 5));
       
-      // Mock stats for now
+      // Compute stats from loaded data
       setStats({
         totalTopics: recent.length,
         totalPosts: recent.reduce((sum, topic) => sum + topic.postCount, 0),
-        totalUsers: 150,
-        onlineUsers: 23
+        totalUsers: 0,
+        onlineUsers: 0
       });
       
     } catch (err) {
@@ -219,16 +219,14 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
 
   if(loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto px-4 py-8">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-300 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
-            <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/2 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-32 bg-gray-300 dark:bg-gray-700 rounded-lg"></div>
-              ))}
-            </div>
+      <div className="py-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-300 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
+          <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/2 mb-8"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-32 bg-gray-300 dark:bg-gray-700 rounded-lg"></div>
+            ))}
           </div>
         </div>
       </div>
@@ -237,63 +235,49 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
 
   if(error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="text-red-500 text-xl mb-4">{error}</div>
-            <button 
-              onClick={loadForumData}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              {t.common.retry}
-            </button>
-          </div>
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <div className="text-red-500 text-xl mb-4">{error}</div>
+          <button
+            onClick={loadForumData}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            {t.common.retry}
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-            <div className="mb-4 lg:mb-0">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t.forum.title}</h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">{t.forum.description}</p>
-            </div>
-            
-            {/* Search Bar */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <form onSubmit={handleSearch} className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder={t.forum.searchPlaceholder}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  />
-                </div>
-              </form>
-              
-              {currentUser && (
-                <a
-                  href={`/${language}/forum/new-topic`}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors whitespace-nowrap"
-                >
-                  <Plus className="w-5 h-5" />
-                  {t.forum.createTopic}
-                </a>
-              )}
-            </div>
+    <div>
+      {/* Search and Actions Bar */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <form onSubmit={handleSearch} className="flex-1">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t.forum.searchPlaceholder}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            />
           </div>
-        </div>
+        </form>
+
+        {currentUser && (
+          <a
+            href={`/${language}/forum/new-topic`}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors whitespace-nowrap"
+          >
+            <Plus className="w-5 h-5" />
+            {t.forum.createTopic}
+          </a>
+        )}
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-3">
@@ -447,20 +431,9 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
                 Top Contributors
               </h3>
               <div className="space-y-3">
-                {/* Mock data - replace with real contributor data */}
-                {[
-                  { name: 'Ana García', points: 1250, badge: '🏆' },
-                  { name: 'Carlos López', points: 980, badge: '🥈' },
-                  { name: 'María Rodríguez', points: 750, badge: '🥉' }
-                ].map((user, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <span className="text-lg">{user.badge}</span>
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-900 dark:text-white text-sm">{user['name']}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{user.points} {t.forum.user.points}</div>
-                    </div>
-                  </div>
-                ))}
+                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
+                  {language === 'es' ? 'Sin datos disponibles' : 'No data available'}
+                </p>
               </div>
             </div>
           </div>

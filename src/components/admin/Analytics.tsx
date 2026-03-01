@@ -136,55 +136,31 @@ export const Analytics: React.FC = () => {
           { name: language === 'es' ? 'Corporativa' : 'Corporate', value: 5, color: COLORS[2] ?? '#f59e0b' }
         ],
         
-        topSkills: [
-          { skill: 'Python', count: 450 },
-          { skill: 'Machine Learning', count: 380 },
-          { skill: 'SQL', count: 320 },
-          { skill: 'R', count: 280 },
-          { skill: 'Data Visualization', count: 250 },
-          { skill: 'Statistics', count: 220 },
-          { skill: 'Big Data', count: 200 },
-          { skill: 'Deep Learning', count: 180 }
-        ],
+        topSkills: [],
         
-        topCompanies: [
-          { company: 'Google', users: 45, jobs: 12 },
-          { company: 'Microsoft', users: 38, jobs: 8 },
-          { company: 'Amazon', users: 32, jobs: 15 },
-          { company: 'IBM', users: 28, jobs: 6 },
-          { company: 'Meta', users: 25, jobs: 9 }
-        ],
-        
-        geographicDistribution: [
-          { location: language === 'es' ? 'Ciudad de México' : 'Mexico City', users: 280 },
-          { location: language === 'es' ? 'Guadalajara' : 'Guadalajara', users: 150 },
-          { location: language === 'es' ? 'Monterrey' : 'Monterrey', users: 120 },
-          { location: language === 'es' ? 'Puebla' : 'Puebla', users: 85 },
-          { location: language === 'es' ? 'Tijuana' : 'Tijuana', users: 65 }
-        ],
-        
+        topCompanies: [],
+
+        geographicDistribution: [],
+
         engagementMetrics: {
-          dailyActiveUsers: 245,
-          weeklyActiveUsers: 680,
-          monthlyActiveUsers: 1250,
-          averageSessionTime: 12.5,
-          bounceRate: 35.2,
-          pageViews: 15680
+          dailyActiveUsers: 0,
+          weeklyActiveUsers: 0,
+          monthlyActiveUsers: 0,
+          averageSessionTime: 0,
+          bounceRate: 0,
+          pageViews: 0
         },
-        
+
         revenueMetrics: {
-          monthlyRevenue: 45000,
-          yearlyRevenue: 480000,
-          membershipRevenue: 32000,
-          eventRevenue: 13000,
-          averageRevenuePerUser: 36,
-          churnRate: 5.2
+          monthlyRevenue: 0,
+          yearlyRevenue: 0,
+          membershipRevenue: 0,
+          eventRevenue: 0,
+          averageRevenuePerUser: 0,
+          churnRate: 0
         }
       };
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
       setData(analyticsData);
       setLoading(false);
     } catch (err) {
@@ -259,14 +235,14 @@ export const Analytics: React.FC = () => {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <BarChart className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             {language === 'es' ? 'Acceso Denegado' : 'Access Denied'}
           </h1>
-          <p className="text-gray-600">
-            {language === 'es' 
+          <p className="text-gray-600 dark:text-gray-400">
+            {language === 'es'
               ? 'Se requieren privilegios de administrador para ver analytics.'
               : 'Administrator privileges are required to view analytics.'
             }
@@ -278,10 +254,10 @@ export const Analytics: React.FC = () => {
 
   if(loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">
+          <p className="mt-4 text-gray-600 dark:text-gray-400">
             {language === 'es' ? 'Cargando analytics...' : 'Loading analytics...'}
           </p>
         </div>
@@ -291,16 +267,16 @@ export const Analytics: React.FC = () => {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <BarChart className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
             {language === 'es' ? 'Error' : 'Error'}
           </h1>
-          <p className="text-gray-600">{error}</p>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
           <button
             onClick={loadAnalyticsData}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
           >
             {language === 'es' ? 'Reintentar' : 'Retry'}
           </button>
@@ -314,10 +290,10 @@ export const Analytics: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             {language === 'es' ? 'Analytics' : 'Analytics'}
           </h1>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
             {language === 'es' 
               ? 'Métricas y reportes de la plataforma'
               : 'Platform metrics and reports'
@@ -332,7 +308,7 @@ export const Analytics: React.FC = () => {
                 const range = timeRanges.find(r => r.value === e.target.value);
                 if (range) setSelectedTimeRange(range);
               }}
-              className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="appearance-none bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 pr-8 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               {timeRanges.map((range) => (
                 <option key={range.value} value={range.value}>
@@ -346,7 +322,7 @@ export const Analytics: React.FC = () => {
           <button
             onClick={refreshData}
             disabled={refreshing}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+            className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
           >
             <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
             {language === 'es' ? 'Actualizar' : 'Refresh'}
@@ -364,69 +340,69 @@ export const Analytics: React.FC = () => {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {language === 'es' ? 'Usuarios Activos Diarios' : 'Daily Active Users'}
               </p>
-              <p className="text-3xl font-bold text-gray-900">{formatNumber(data['engagementMetrics'].dailyActiveUsers)}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{formatNumber(data['engagementMetrics'].dailyActiveUsers)}</p>
               <p className="text-sm text-green-600">
                 +12% {language === 'es' ? 'vs mes anterior' : 'vs last month'}
               </p>
             </div>
-            <div className="p-3 bg-blue-50 rounded-lg">
+            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <Activity className="w-6 h-6 text-blue-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {language === 'es' ? 'Ingresos Mensuales' : 'Monthly Revenue'}
               </p>
-              <p className="text-3xl font-bold text-gray-900">{formatCurrency(data['revenueMetrics'].monthlyRevenue)}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{formatCurrency(data['revenueMetrics'].monthlyRevenue)}</p>
               <p className="text-sm text-green-600">
                 +8% {language === 'es' ? 'vs mes anterior' : 'vs last month'}
               </p>
             </div>
-            <div className="p-3 bg-green-50 rounded-lg">
+            <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
               <DollarSign className="w-6 h-6 text-green-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {language === 'es' ? 'Vistas de Página' : 'Page Views'}
               </p>
-              <p className="text-3xl font-bold text-gray-900">{formatNumber(data['engagementMetrics'].pageViews)}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{formatNumber(data['engagementMetrics'].pageViews)}</p>
               <p className="text-sm text-green-600">
                 +5% {language === 'es' ? 'vs mes anterior' : 'vs last month'}
               </p>
             </div>
-            <div className="p-3 bg-purple-50 rounded-lg">
+            <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
               <Eye className="w-6 h-6 text-purple-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {language === 'es' ? 'Tasa de Rebote' : 'Bounce Rate'}
               </p>
-              <p className="text-3xl font-bold text-gray-900">{formatPercentage(data['engagementMetrics'].bounceRate)}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{formatPercentage(data['engagementMetrics'].bounceRate)}</p>
               <p className="text-sm text-red-600">
                 +2% {language === 'es' ? 'vs mes anterior' : 'vs last month'}
               </p>
             </div>
-            <div className="p-3 bg-yellow-50 rounded-lg">
+            <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
               <TrendingUp className="w-6 h-6 text-yellow-600" />
             </div>
           </div>
@@ -436,8 +412,8 @@ export const Analytics: React.FC = () => {
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* User Growth Chart */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Crecimiento de Usuarios' : 'User Growth'}
           </h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -469,8 +445,8 @@ export const Analytics: React.FC = () => {
         </div>
 
         {/* Job Metrics Chart */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Métricas de Empleos' : 'Job Metrics'}
           </h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -487,8 +463,8 @@ export const Analytics: React.FC = () => {
         </div>
 
         {/* Forum Activity Chart */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Actividad del Foro' : 'Forum Activity'}
           </h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -523,8 +499,8 @@ export const Analytics: React.FC = () => {
         </div>
 
         {/* Membership Distribution */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Distribución de Membresías' : 'Membership Distribution'}
           </h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -551,65 +527,77 @@ export const Analytics: React.FC = () => {
       {/* Additional Metrics */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Top Skills */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Habilidades Más Populares' : 'Top Skills'}
           </h3>
           <div className="space-y-3">
-            {data['topSkills'].slice(0, 6).map((skill, index) => (
+            {data['topSkills'].length > 0 ? data['topSkills'].slice(0, 6).map((skill, index) => (
               <div key={skill.skill} className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="w-4 h-4 bg-blue-600 rounded-full text-xs text-white flex items-center justify-center">
                     {index + 1}
                   </div>
-                  <span className="text-sm text-gray-900">{skill.skill}</span>
+                  <span className="text-sm text-gray-900 dark:text-white">{skill.skill}</span>
                 </div>
-                <span className="text-sm font-medium text-gray-600">{skill.count}</span>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{skill.count}</span>
               </div>
-            ))}
+            )) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                {language === 'es' ? 'Sin datos disponibles' : 'No data available'}
+              </p>
+            )}
           </div>
         </div>
 
         {/* Top Companies */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Empresas Principales' : 'Top Companies'}
           </h3>
           <div className="space-y-3">
-            {data['topCompanies'].map((company, index) => (
+            {data['topCompanies'].length > 0 ? data['topCompanies'].map((company, index) => (
               <div key={company.company} className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="w-4 h-4 bg-green-600 rounded-full text-xs text-white flex items-center justify-center">
                     {index + 1}
                   </div>
-                  <span className="text-sm text-gray-900">{company.company}</span>
+                  <span className="text-sm text-gray-900 dark:text-white">{company.company}</span>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-medium text-gray-600">{company.users} users</div>
-                  <div className="text-xs text-gray-500">{company.jobs} jobs</div>
+                  <div className="text-sm font-medium text-gray-600 dark:text-gray-400">{company.users} users</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{company.jobs} jobs</div>
                 </div>
               </div>
-            ))}
+            )) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                {language === 'es' ? 'Sin datos disponibles' : 'No data available'}
+              </p>
+            )}
           </div>
         </div>
 
         {/* Geographic Distribution */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Distribución Geográfica' : 'Geographic Distribution'}
           </h3>
           <div className="space-y-3">
-            {data['geographicDistribution'].map((location, index) => (
+            {data['geographicDistribution'].length > 0 ? data['geographicDistribution'].map((location, index) => (
               <div key={location.location} className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="w-4 h-4 bg-purple-600 rounded-full text-xs text-white flex items-center justify-center">
                     {index + 1}
                   </div>
-                  <span className="text-sm text-gray-900">{location.location}</span>
+                  <span className="text-sm text-gray-900 dark:text-white">{location.location}</span>
                 </div>
-                <span className="text-sm font-medium text-gray-600">{location.users}</span>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{location.users}</span>
               </div>
-            ))}
+            )) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                {language === 'es' ? 'Sin datos disponibles' : 'No data available'}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -617,51 +605,51 @@ export const Analytics: React.FC = () => {
       {/* Detailed Metrics */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Engagement Metrics */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Métricas de Engagement' : 'Engagement Metrics'}
           </h3>
           <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <p className="text-2xl font-bold text-blue-600">{formatNumber(data['engagementMetrics'].weeklyActiveUsers)}</p>
-              <p className="text-sm text-gray-600">{language === 'es' ? 'Usuarios Activos Semanales' : 'Weekly Active Users'}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{language === 'es' ? 'Usuarios Activos Semanales' : 'Weekly Active Users'}</p>
             </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
+            <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
               <p className="text-2xl font-bold text-green-600">{formatNumber(data['engagementMetrics'].monthlyActiveUsers)}</p>
-              <p className="text-sm text-gray-600">{language === 'es' ? 'Usuarios Activos Mensuales' : 'Monthly Active Users'}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{language === 'es' ? 'Usuarios Activos Mensuales' : 'Monthly Active Users'}</p>
             </div>
-            <div className="text-center p-4 bg-yellow-50 rounded-lg">
+            <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
               <p className="text-2xl font-bold text-yellow-600">{data['engagementMetrics'].averageSessionTime}m</p>
-              <p className="text-sm text-gray-600">{language === 'es' ? 'Tiempo Promedio de Sesión' : 'Avg Session Time'}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{language === 'es' ? 'Tiempo Promedio de Sesión' : 'Avg Session Time'}</p>
             </div>
-            <div className="text-center p-4 bg-red-50 rounded-lg">
+            <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
               <p className="text-2xl font-bold text-red-600">{formatPercentage(data['engagementMetrics'].bounceRate)}</p>
-              <p className="text-sm text-gray-600">{language === 'es' ? 'Tasa de Rebote' : 'Bounce Rate'}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{language === 'es' ? 'Tasa de Rebote' : 'Bounce Rate'}</p>
             </div>
           </div>
         </div>
 
         {/* Revenue Metrics */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Métricas de Ingresos' : 'Revenue Metrics'}
           </h3>
           <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-green-50 rounded-lg">
+            <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
               <p className="text-2xl font-bold text-green-600">{formatCurrency(data['revenueMetrics'].yearlyRevenue)}</p>
-              <p className="text-sm text-gray-600">{language === 'es' ? 'Ingresos Anuales' : 'Yearly Revenue'}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{language === 'es' ? 'Ingresos Anuales' : 'Yearly Revenue'}</p>
             </div>
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <p className="text-2xl font-bold text-blue-600">{formatCurrency(data['revenueMetrics'].membershipRevenue)}</p>
-              <p className="text-sm text-gray-600">{language === 'es' ? 'Ingresos por Membresías' : 'Membership Revenue'}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{language === 'es' ? 'Ingresos por Membresías' : 'Membership Revenue'}</p>
             </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
+            <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
               <p className="text-2xl font-bold text-purple-600">{formatCurrency(data['revenueMetrics'].averageRevenuePerUser)}</p>
-              <p className="text-sm text-gray-600">{language === 'es' ? 'Ingreso Promedio por Usuario' : 'Avg Revenue per User'}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{language === 'es' ? 'Ingreso Promedio por Usuario' : 'Avg Revenue per User'}</p>
             </div>
-            <div className="text-center p-4 bg-red-50 rounded-lg">
+            <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
               <p className="text-2xl font-bold text-red-600">{formatPercentage(data['revenueMetrics'].churnRate)}</p>
-              <p className="text-sm text-gray-600">{language === 'es' ? 'Tasa de Abandono' : 'Churn Rate'}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{language === 'es' ? 'Tasa de Abandono' : 'Churn Rate'}</p>
             </div>
           </div>
         </div>

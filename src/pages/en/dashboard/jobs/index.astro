@@ -41,22 +41,6 @@ import JobSearchDemo from '@/components/jobs/JobSearchDemo';
     </div>
   </div>
 
-  <!-- Stats Bar -->
-  <div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-    <div class="rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-      <p class="text-sm text-gray-600 dark:text-gray-400">Active Jobs</p>
-      <p class="text-2xl font-bold text-gray-900 dark:text-white">128</p>
-    </div>
-    <div class="rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-      <p class="text-sm text-gray-600 dark:text-gray-400">New This Week</p>
-      <p class="text-2xl font-bold text-gray-900 dark:text-white">24</p>
-    </div>
-    <div class="rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-      <p class="text-sm text-gray-600 dark:text-gray-400">Applications Sent</p>
-      <p class="text-2xl font-bold text-gray-900 dark:text-white">7</p>
-    </div>
-  </div>
-
   <!-- Main Content -->
   <JobSearchDemo client:only="react" lang="en" />
 </DashboardLayout>
