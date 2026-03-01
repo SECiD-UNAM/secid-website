@@ -13,5 +13,5 @@ if (!id) return Astro.redirect('/es/jobs');
   description="Ver detalles y aplicar a esta oportunidad laboral"
   lang="es"
 >
-  <JobApplicationPage client:load jobId={id} lang="es" />
+  <JobApplicationPage client:only="react" jobId={id} lang="es" />
 </DashboardLayout>

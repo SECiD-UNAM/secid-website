@@ -1,19 +1,8 @@
 ---
-import DashboardLayout from '../../../../layouts/DashboardLayout.astro';
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import DataEngDashboard from '@/components/commissions/DataEngDashboard';
 ---
 
-<DashboardLayout title="Data Engineering Commission Dashboard">
-  <div id="data-eng-dashboard"></div>
+<DashboardLayout title="Data Engineering Commission Dashboard" lang="en">
+  <DataEngDashboard client:only="react" />
 </DashboardLayout>
-
-<script>
-  import { createRoot } from 'react-dom/client';
-  import React from 'react';
-  import DataEngDashboard from '../../../../components/commissions/DataEngDashboard';
-
-  const container = document.getElementById('data-eng-dashboard');
-  if (container) {
-    const root = createRoot(container);
-    root.render(React.createElement(DataEngDashboard));
-  }
-</script>

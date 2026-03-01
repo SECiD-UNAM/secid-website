@@ -1,6 +1,6 @@
 ---
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import EventList from '@/components/events/EventList';
+import EventListPage from '@/components/wrappers/EventListPage';
 ---
 
 <DashboardLayout
@@ -56,5 +56,5 @@ import EventList from '@/components/events/EventList';
   </div>
 
   <!-- Event List Component -->
-  <EventList client:load lang="en" />
+  <EventListPage client:only="react" lang="en" />
 </DashboardLayout>

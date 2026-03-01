@@ -1,6 +1,6 @@
 ---
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import ProfileEdit from '@/components/profile/ProfileEdit';
+import ProfileEditPage from '@/components/wrappers/ProfileEditPage';
 ---
 
 <DashboardLayout
@@ -8,5 +8,5 @@ import ProfileEdit from '@/components/profile/ProfileEdit';
   description="Actualiza tu información personal y profesional"
   lang="es"
 >
-  <ProfileEdit client:load lang="es" />
+  <ProfileEditPage client:only="react" lang="es" />
 </DashboardLayout>

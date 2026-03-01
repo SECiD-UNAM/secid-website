@@ -1,3 +1,13 @@
 ---
-return Astro.redirect('/admin');
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import AdminDashboardPage from '@/components/wrappers/AdminDashboardPage';
 ---
+
+<DashboardLayout
+  title="Panel de Administración - SECiD"
+  description="Panel de administración para la gestión de la plataforma SECiD"
+  lang="es"
+  requireRole={['admin', 'moderator']}
+>
+  <AdminDashboardPage client:only="react" />
+</DashboardLayout>

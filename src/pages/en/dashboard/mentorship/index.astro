@@ -1,6 +1,6 @@
 ---
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import MentorshipDashboard from '@/components/mentorship/MentorshipDashboard';
+import MentorshipPage from '@/components/wrappers/MentorshipPage';
 ---
 
 <DashboardLayout
@@ -18,5 +18,5 @@ import MentorshipDashboard from '@/components/mentorship/MentorshipDashboard';
     </p>
   </div>
 
-  <MentorshipDashboard client:only="react" userRole="both" />
+  <MentorshipPage client:only="react" lang="en" />
 </DashboardLayout>

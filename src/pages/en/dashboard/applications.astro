@@ -1,6 +1,6 @@
 ---
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import ApplicationTracker from '@/components/jobs/ApplicationTracker';
+import ApplicationTrackerPage from '@/components/wrappers/ApplicationTrackerPage';
 ---
 
 <DashboardLayout
@@ -8,5 +8,5 @@ import ApplicationTracker from '@/components/jobs/ApplicationTracker';
   description="Manage and track your job applications"
   lang="en"
 >
-  <ApplicationTracker client:load lang="en" />
+  <ApplicationTrackerPage client:only="react" lang="en" />
 </DashboardLayout>

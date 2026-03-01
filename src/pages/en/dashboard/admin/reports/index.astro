@@ -1,3 +1,13 @@
 ---
-return Astro.redirect('/admin/analytics');
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import AdminAnalyticsPage from '@/components/wrappers/AdminAnalyticsPage';
 ---
+
+<DashboardLayout
+  title="Reports & Analytics - SECiD"
+  description="Platform analytics and reporting dashboard"
+  lang="en"
+  requireRole={['admin', 'moderator']}
+>
+  <AdminAnalyticsPage client:only="react" />
+</DashboardLayout>

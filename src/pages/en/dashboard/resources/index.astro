@@ -1,6 +1,6 @@
 ---
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import ResourceLibrary from '@/components/resources/ResourceLibrary';
+import ResourceLibraryPage from '@/components/wrappers/ResourceLibraryPage';
 ---
 
 <DashboardLayout
@@ -15,5 +15,5 @@ import ResourceLibrary from '@/components/resources/ResourceLibrary';
     </p>
   </div>
 
-  <ResourceLibrary client:only="react" />
+  <ResourceLibraryPage client:only="react" lang="en" />
 </DashboardLayout>

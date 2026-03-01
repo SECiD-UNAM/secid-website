@@ -1,9 +1,6 @@
 ---
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import JobPostingForm from '@/components/jobs/JobPostingForm';
-
-// Check if user is authenticated and has permission to post jobs
-// This will be handled by the component itself with Firebase Auth
+import JobPostingFormPage from '@/components/wrappers/JobPostingFormPage';
 ---
 
 <DashboardLayout
@@ -11,5 +8,5 @@ import JobPostingForm from '@/components/jobs/JobPostingForm';
   description="Publica una oportunidad laboral para la comunidad de egresados"
   lang="es"
 >
-  <JobPostingForm client:load lang="es" />
+  <JobPostingFormPage client:only="react" lang="es" />
 </DashboardLayout>

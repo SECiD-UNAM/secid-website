@@ -1,6 +1,6 @@
 ---
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import CompanyDashboard from '@/components/jobs/CompanyDashboard';
+import CompanyDashboardPage from '@/components/wrappers/CompanyDashboardPage';
 ---
 
 <DashboardLayout
@@ -8,5 +8,5 @@ import CompanyDashboard from '@/components/jobs/CompanyDashboard';
   description="Gestiona tus publicaciones de empleo y aplicaciones"
   lang="es"
 >
-  <CompanyDashboard client:load lang="es" />
+  <CompanyDashboardPage client:only="react" lang="es" />
 </DashboardLayout>

@@ -1,19 +1,8 @@
 ---
-import DashboardLayout from '../../../../layouts/DashboardLayout.astro';
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import NLPDashboard from '@/components/commissions/NLPDashboard';
 ---
 
-<DashboardLayout title="Panel de Comisión de PLN">
-  <div id="nlp-dashboard"></div>
+<DashboardLayout title="Panel de Comisión de PLN" lang="es">
+  <NLPDashboard client:only="react" />
 </DashboardLayout>
-
-<script>
-  import { createRoot } from 'react-dom/client';
-  import React from 'react';
-  import NLPDashboard from '../../../../components/commissions/NLPDashboard';
-
-  const container = document.getElementById('nlp-dashboard');
-  if (container) {
-    const root = createRoot(container);
-    root.render(React.createElement(NLPDashboard));
-  }
-</script>
