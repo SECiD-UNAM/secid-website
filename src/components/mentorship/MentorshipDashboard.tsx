@@ -174,7 +174,7 @@ export default function MentorshipDashboard({ userRole }: MentorshipDashboardPro
               }`}
             >
               {tab.label}
-              {tab.badge && tab.badge > 0 && (
+              {tab.badge != null && tab.badge > 0 && (
                 <span className="ml-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 py-0.5 px-2 rounded-full text-xs">
                   {tab.badge}
                 </span>
@@ -236,8 +236,8 @@ export default function MentorshipDashboard({ userRole }: MentorshipDashboardPro
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {t?.mentorship?.dashboard?.recentActivity || 'No recent activity'}
+                <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                  No hay actividad reciente
                 </p>
               )}
             </div>
