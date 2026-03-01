@@ -1,8 +1,10 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
+import ModernLayout from '@/layouts/ModernLayout.astro';
+import Navigation from '@/components/Navigation.astro';
 import DashboardHomePage from '@/components/dashboard/DashboardHomePage';
 ---
 
-<BaseLayout title="Dashboard - SECiD" description="SECiD Member Dashboard" lang="en">
-  <DashboardHomePage client:load lang="en" />
-</BaseLayout>
+<ModernLayout title="Dashboard - SECiD" description="SECiD Member Dashboard" lang="en" noIndex>
+  <Navigation lang="en" />
+  <DashboardHomePage client:only="react" lang="en" />
+</ModernLayout>

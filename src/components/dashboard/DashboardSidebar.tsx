@@ -14,10 +14,14 @@ import {
   UserGroupIcon,
   DocumentTextIcon,
   BellIcon,
+  ArrowRightOnRectangleIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
 
 interface DashboardSidebarProps {
   lang?: 'es' | 'en';
+  mobileOpen?: boolean;
+  onClose?: () => void;
 }
 
 interface MenuItem {
@@ -31,8 +35,10 @@ interface MenuItem {
 
 export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   lang = 'es',
+  mobileOpen = false,
+  onClose,
 }) => {
-  const { userProfile, isVerified, isAdmin, isModerator } = useAuth();
+  const { userProfile, isVerified, isAdmin, isModerator, signOut } = useAuth();
   const t = useTranslations(lang);
 
   const currentPath =
@@ -128,6 +134,11 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     return currentPath === href || currentPath.startsWith(href + '/');
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    window.location.href = `/${lang}`;
+  };
+
   const renderMenuItem = (item: MenuItem) => {
     const accessible = isItemAccessible(item);
     const active = isItemActive(item.href);
@@ -176,8 +187,8 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     );
   };
 
-  return (
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 overflow-y-auto border-r border-gray-200 bg-white pb-4 pt-16 dark:border-gray-800 dark:bg-gray-800 lg:block">
+  const sidebarContent = (
+    <>
       <div className="space-y-1 px-4">
         {/* Main menu items */}
         <div className="space-y-1">{menuItems.map(renderMenuItem)}</div>
@@ -199,13 +210,51 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             </div>
           </>
         )}
-
-        {/* Bottom section */}
-        <div className="absolute bottom-0 left-0 right-0 border-t border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-800">
-          {bottomItems.map(renderMenuItem)}
-        </div>
       </div>
-    </aside>
+
+      {/* Bottom section */}
+      <div className="absolute bottom-0 left-0 right-0 border-t border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-800">
+        {bottomItems.map(renderMenuItem)}
+        <button
+          onClick={handleSignOut}
+          className="mt-1 flex w-full items-center rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
+          <ArrowRightOnRectangleIcon className="mr-3 h-5 w-5" />
+          <span>{lang === 'es' ? 'Cerrar Sesión' : 'Sign Out'}</span>
+        </button>
+      </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside className="fixed top-16 bottom-0 left-0 z-30 hidden w-64 overflow-y-auto border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:block">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile sidebar drawer */}
+      {mobileOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+            onClick={onClose}
+          />
+          <aside className="fixed top-16 bottom-0 left-0 z-50 w-64 overflow-y-auto border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:hidden">
+            <div className="flex items-center justify-end px-4 py-2">
+              <button
+                onClick={onClose}
+                className="rounded-lg p-1 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+                aria-label={lang === 'es' ? 'Cerrar menú' : 'Close menu'}
+              >
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            </div>
+            {sidebarContent}
+          </aside>
+        </>
+      )}
+    </>
   );
 };
 

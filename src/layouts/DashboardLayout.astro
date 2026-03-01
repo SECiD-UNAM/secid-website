@@ -1,5 +1,6 @@
 ---
-import BaseLayout from './BaseLayout.astro';
+import ModernLayout from './ModernLayout.astro';
+import Navigation from '../components/Navigation.astro';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 
 export interface Props {
@@ -19,13 +20,14 @@ const {
 } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description} lang={lang}>
+<ModernLayout title={title} description={description} lang={lang} noIndex>
+  <Navigation lang={lang} />
   <DashboardShell
-    client:load
+    client:only="react"
     lang={lang}
     requireVerified={requireVerified}
     requireRole={requireRole}
   >
     <slot />
   </DashboardShell>
-</BaseLayout>
+</ModernLayout>
