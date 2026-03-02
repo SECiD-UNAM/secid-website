@@ -497,10 +497,22 @@ export default function MentorshipDashboard({ userRole }: MentorshipDashboardPro
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t.mentorship.dashboard.noProfile}</h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">{t.mentorship.dashboard.noProfileDescription}</p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                  <button
+                    onClick={() => {
+                      const lang = window.location.pathname.startsWith('/en') ? 'en' : 'es';
+                      window.location.href = `/${lang}/dashboard/mentorship/browse`;
+                    }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                  >
                     {t.mentorship.dashboard.createMentorProfile}
                   </button>
-                  <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                  <button
+                    onClick={() => {
+                      const lang = window.location.pathname.startsWith('/en') ? 'en' : 'es';
+                      window.location.href = `/${lang}/dashboard/mentorship/browse`;
+                    }}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                  >
                     {t.mentorship.dashboard.createMenteeProfile}
                   </button>
                 </div>

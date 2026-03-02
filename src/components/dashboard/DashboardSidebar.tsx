@@ -59,13 +59,11 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       name: 'Jobs',
       href: `/${lang}/dashboard/jobs`,
       icon: BriefcaseIcon,
-      badge: 'New',
     },
     {
       name: 'Events',
       href: `/${lang}/dashboard/events`,
       icon: CalendarIcon,
-      badge: 3,
     },
     {
       name: 'Forums',

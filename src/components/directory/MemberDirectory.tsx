@@ -89,8 +89,13 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
       const memberProfiles = await getMemberProfiles({ limit: maxMembers });
       setMembers(memberProfiles);
     } catch (err) {
-      setError(lang === 'es' ? 'Error al cargar miembros' : 'Error loading members');
       console.error('Error loading members:', err);
+      const firebaseError = err as { code?: string };
+      if (firebaseError.code === 'permission-denied') {
+        setError(lang === 'es' ? 'No tienes permisos para ver el directorio de miembros' : 'You do not have permission to view the member directory');
+      } else {
+        setError(lang === 'es' ? 'Error al cargar miembros. Intenta de nuevo.' : 'Error loading members. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

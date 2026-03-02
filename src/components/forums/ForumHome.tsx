@@ -148,23 +148,38 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
   const loadForumData = async () => {
     try {
       setLoading(true);
-      
+
       // Load categories (use default if none exist)
-      const categoriesData = await forumCategories.getAll();
+      let categoriesData: ForumCategory[] = [];
+      try {
+        categoriesData = await forumCategories.getAll();
+      } catch (err) {
+        console.warn('Error loading forum categories, using defaults:', err);
+      }
       setCategories(categoriesData.length > 0 ? categoriesData : defaultCategories);
-      
+
       // Load trending topics
-      const trending = await forumTopics.getTrending(5);
-      setTrendingTopics(trending);
-      
+      try {
+        const trending = await forumTopics.getTrending(5);
+        setTrendingTopics(trending);
+      } catch (err) {
+        console.warn('Error loading trending topics:', err);
+        setTrendingTopics([]);
+      }
+
       // Load recent topics from all categories
       const recent: ForumTopic[] = [];
-      for (const category of (categoriesData.length > 0 ? categoriesData : defaultCategories)) {
-        const { topics } = await forumTopics.getByCategory(category.id, undefined, 2);
-        recent.push(...topics);
+      const activeCategories = categoriesData.length > 0 ? categoriesData : defaultCategories;
+      for (const category of activeCategories) {
+        try {
+          const { topics } = await forumTopics.getByCategory(category.id, undefined, 2);
+          recent.push(...topics);
+        } catch (err) {
+          console.warn(`Error loading topics for category ${category.id}:`, err);
+        }
       }
       setRecentTopics(recent.sort((a, b) => b.createdAt.getTime() - a['createdAt'].getTime()).slice(0, 5));
-      
+
       // Compute stats from loaded data
       setStats({
         totalTopics: recent.length,
@@ -172,10 +187,9 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
         totalUsers: 0,
         onlineUsers: 0
       });
-      
+
     } catch (err) {
       console.error('Error loading forum data:', err);
-      setError(t.forum.errors.loadingFailed);
       // Use default data on error
       setCategories(defaultCategories);
     } finally {

@@ -74,7 +74,7 @@ interface ContentStats {
 }
 
 export const ContentModeration: React.FC = () => {
-  const { userProfile, isAdmin, isModerator } = useAuth();
+  const { userProfile, isAdmin, isModerator, loading: authLoading } = useAuth();
   const { language } = useTranslations();
   const [moderationItems, setModerationItems] = useState<ModerationItem[]>([]);
   const [reports, setReports] = useState<Report[]>([]);
@@ -100,8 +100,10 @@ export const ContentModeration: React.FC = () => {
   const canModerate = isAdmin || isModerator;
 
   useEffect(() => {
+    if (authLoading) return;
+
     if (!canModerate) {
-      setError('Unauthorized access. Moderator privileges required.');
+      setError(language === 'es' ? 'Acceso no autorizado. Se requieren privilegios de moderador.' : 'Unauthorized access. Moderator privileges required.');
       setLoading(false);
       return;
     }
@@ -181,7 +183,7 @@ export const ContentModeration: React.FC = () => {
       unsubscribeModerationItems();
       unsubscribeReports();
     };
-  }, [canModerate, filters]);
+  }, [canModerate, authLoading, filters]);
 
   const loadStats = async () => {
     try {

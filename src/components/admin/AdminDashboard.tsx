@@ -83,80 +83,105 @@ export const AdminDashboard: React.FC = () => {
     }
 
     const loadDashboardData = async () => {
+      let totalUsers = 0;
+      let newUsersThisMonth = 0;
+      let totalJobs = 0;
+      let activeJobs = 0;
+      let pendingJobs = 0;
+      let totalEvents = 0;
+      let upcomingEvents = 0;
+      let totalForumPosts = 0;
+      let pendingReports = 0;
+
+      // Load users stats
       try {
-        // Load users stats
         const usersRef = collection(db, 'users');
         const totalUsersSnapshot = await getDocs(usersRef);
+        totalUsers = totalUsersSnapshot.size;
         const newUsersQuery = query(
           usersRef,
           where('createdAt', '>=', Timestamp.fromDate(startOfMonth))
         );
         const newUsersSnapshot = await getDocs(newUsersQuery);
+        newUsersThisMonth = newUsersSnapshot.size;
+      } catch (err) {
+        console.warn('Error loading users stats:', err);
+      }
 
-        // Load jobs stats
+      // Load jobs stats
+      try {
         const jobsRef = collection(db, 'jobs');
         const totalJobsSnapshot = await getDocs(jobsRef);
-        const activeJobsQuery = query(
-          jobsRef,
-          where('status', '==', 'active')
-        );
+        totalJobs = totalJobsSnapshot.size;
+        const activeJobsQuery = query(jobsRef, where('status', '==', 'active'));
         const activeJobsSnapshot = await getDocs(activeJobsQuery);
-        const pendingJobsQuery = query(
-          jobsRef,
-          where('status', '==', 'pending')
-        );
+        activeJobs = activeJobsSnapshot.size;
+        const pendingJobsQuery = query(jobsRef, where('status', '==', 'pending'));
         const pendingJobsSnapshot = await getDocs(pendingJobsQuery);
+        pendingJobs = pendingJobsSnapshot.size;
+      } catch (err) {
+        console.warn('Error loading jobs stats:', err);
+      }
 
-        // Load events stats
+      // Load events stats
+      try {
         const eventsRef = collection(db, 'events');
         const totalEventsSnapshot = await getDocs(eventsRef);
+        totalEvents = totalEventsSnapshot.size;
         const upcomingEventsQuery = query(
           eventsRef,
           where('date', '>=', Timestamp.fromDate(now)),
           where('status', '==', 'published')
         );
         const upcomingEventsSnapshot = await getDocs(upcomingEventsQuery);
+        upcomingEvents = upcomingEventsSnapshot.size;
+      } catch (err) {
+        console.warn('Error loading events stats:', err);
+      }
 
-        // Load forum stats
+      // Load forum stats
+      try {
         const forumPostsRef = collection(db, 'forum_posts');
         const totalForumPostsSnapshot = await getDocs(forumPostsRef);
+        totalForumPosts = totalForumPostsSnapshot.size;
+      } catch (err) {
+        console.warn('Error loading forum stats:', err);
+      }
+
+      // Load reports stats
+      try {
         const pendingReportsQuery = query(
           collection(db, 'reports'),
           where('status', '==', 'pending')
         );
         const pendingReportsSnapshot = await getDocs(pendingReportsQuery);
-
-        // Revenue stats - will be populated when payment provider is integrated
-        const monthlyRevenue = 0;
-        const membershipRevenue = 0;
-
-        // Determine system health
-        const pendingCount = pendingJobsSnapshot.size + pendingReportsSnapshot.size;
-        const systemHealth: 'good' | 'warning' | 'critical' = 
-          pendingCount > 50 ? 'critical' : 
-          pendingCount > 20 ? 'warning' : 'good';
-
-        setStats({
-          totalUsers: totalUsersSnapshot.size,
-          newUsersThisMonth: newUsersSnapshot.size,
-          totalJobs: totalJobsSnapshot.size,
-          activeJobs: activeJobsSnapshot.size,
-          pendingJobs: pendingJobsSnapshot.size,
-          totalEvents: totalEventsSnapshot.size,
-          upcomingEvents: upcomingEventsSnapshot.size,
-          totalForumPosts: totalForumPostsSnapshot.size,
-          pendingReports: pendingReportsSnapshot.size,
-          monthlyRevenue,
-          membershipRevenue,
-          systemHealth
-        });
-
-        setLoading(false);
+        pendingReports = pendingReportsSnapshot.size;
       } catch (err) {
-        console.error('Error loading dashboard data:', err);
-        setError('Failed to load dashboard data');
-        setLoading(false);
+        console.warn('Error loading reports stats:', err);
       }
+
+      // Determine system health
+      const pendingCount = pendingJobs + pendingReports;
+      const systemHealth: 'good' | 'warning' | 'critical' =
+        pendingCount > 50 ? 'critical' :
+        pendingCount > 20 ? 'warning' : 'good';
+
+      setStats({
+        totalUsers,
+        newUsersThisMonth,
+        totalJobs,
+        activeJobs,
+        pendingJobs,
+        totalEvents,
+        upcomingEvents,
+        totalForumPosts,
+        pendingReports,
+        monthlyRevenue: 0,
+        membershipRevenue: 0,
+        systemHealth
+      });
+
+      setLoading(false);
     };
 
     // Load recent activity

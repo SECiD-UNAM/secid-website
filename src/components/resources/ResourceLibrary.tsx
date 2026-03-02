@@ -280,7 +280,7 @@ export default function ResourceLibrary({
           >
             {tab.label}
             {tab.key === 'bookmarks' && bookmarkedIds.size > 0 && (
-              <span className="ml-1 bg-blue-100 text-blue-600 text-xs px-2 py-0.5 rounded-full">
+              <span className="ml-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs px-2 py-0.5 rounded-full">
                 {bookmarkedIds.size}
               </span>
             )}
@@ -290,7 +290,7 @@ export default function ResourceLibrary({
       
       <div className="flex items-center gap-2">
         {/* View Toggle */}
-        <div className="flex bg-gray-100 rounded-lg p-1">
+        <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
           <button
             onClick={() => setActiveView('grid')}
             className={`p-2 rounded-md ${
@@ -410,8 +410,8 @@ export default function ResourceLibrary({
             onClick={() => handlePageChange(page)}
             className={`px-3 py-2 border rounded-md text-sm font-medium ${
               page === currentPage
-                ? 'border-blue-500 bg-blue-50 text-blue-600'
-                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
             }`}
           >
             {page}

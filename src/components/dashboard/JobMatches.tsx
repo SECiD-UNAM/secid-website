@@ -92,41 +92,7 @@ export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
         setJobs(fetchedJobs);
       } catch (error) {
         console.error('Error fetching job matches:', error);
-        // Set mock data on error
-        setJobs([
-          {
-            id: '1',
-            title: 'Senior Data Scientist',
-            company: 'TechCorp México',
-            location: 'Ciudad de México, CDMX',
-            locationType: 'hybrid',
-            salaryRange: {
-              min: 60000,
-              max: 90000,
-              currency: 'MXN',
-              period: 'monthly',
-            },
-            matchScore: 92,
-            postedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-            tags: ['python', 'machine-learning', 'sql'],
-          },
-          {
-            id: '2',
-            title: 'Machine Learning Engineer',
-            company: 'AI Solutions México',
-            location: 'Remote',
-            locationType: 'remote',
-            salaryRange: {
-              min: 50000,
-              max: 70000,
-              currency: 'MXN',
-              period: 'monthly',
-            },
-            matchScore: 85,
-            postedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-            tags: ['mlops', 'python', 'docker'],
-          },
-        ]);
+        setJobs([]);
       } finally {
         setLoading(false);
       }

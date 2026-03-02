@@ -97,49 +97,15 @@ export const Analytics: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      const endDate = new Date();
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - selectedTimeRange.days);
-
-      // Generate sample data for demonstration
-      // In a real implementation, you would query Firebase for actual data
+      // TODO: Replace with real Firestore queries when analytics tracking is implemented
       const analyticsData: AnalyticsData = {
-        userGrowth: generateDateSeries(startDate, endDate, (date, index) => ({
-          date: date.toISOString().split('T')[0],
-          users: Math.floor(Math.random() * 50) + index * 2,
-          activeUsers: Math.floor(Math.random() * 30) + index
-        })),
-        
-        jobMetrics: generateDateSeries(startDate, endDate, (date, _index) => ({
-          date: date.toISOString().split('T')[0],
-          posted: Math.floor(Math.random() * 20) + 5,
-          applied: Math.floor(Math.random() * 100) + 50,
-          filled: Math.floor(Math.random() * 10) + 2
-        })),
-
-        eventMetrics: generateDateSeries(startDate, endDate, (date, _index) => ({
-          date: date.toISOString().split('T')[0],
-          created: Math.floor(Math.random() * 5) + 1,
-          attendees: Math.floor(Math.random() * 200) + 50
-        })),
-
-        forumActivity: generateDateSeries(startDate, endDate, (date, _index) => ({
-          date: date.toISOString().split('T')[0],
-          posts: Math.floor(Math.random() * 30) + 10,
-          replies: Math.floor(Math.random() * 80) + 20,
-          views: Math.floor(Math.random() * 500) + 200
-        })),
-
-        membershipDistribution: [
-          { name: language === 'es' ? 'Gratuita' : 'Free', value: 65, color: COLORS[0] ?? '#6366f1' },
-          { name: language === 'es' ? 'Premium' : 'Premium', value: 30, color: COLORS[1] ?? '#22c55e' },
-          { name: language === 'es' ? 'Corporativa' : 'Corporate', value: 5, color: COLORS[2] ?? '#f59e0b' }
-        ],
-        
+        userGrowth: [],
+        jobMetrics: [],
+        eventMetrics: [],
+        forumActivity: [],
+        membershipDistribution: [],
         topSkills: [],
-        
         topCompanies: [],
-
         geographicDistribution: [],
 
         engagementMetrics: {
@@ -168,20 +134,6 @@ export const Analytics: React.FC = () => {
       setError(language === 'es' ? 'Error al cargar datos de analytics' : 'Error loading analytics data');
       setLoading(false);
     }
-  };
-
-  const generateDateSeries = (startDate: Date, endDate: Date, generator: (date: Date, index: number) => any) => {
-    const series = [];
-    const currentDate = new Date(startDate);
-    let index = 0;
-    
-    while (currentDate <= endDate) {
-      series.push(generator(new Date(currentDate), index));
-      currentDate.setDate(currentDate.getDate() + 1);
-      index++;
-    }
-    
-    return series;
   };
 
   const refreshData = async () => {
@@ -347,9 +299,6 @@ export const Analytics: React.FC = () => {
                 {language === 'es' ? 'Usuarios Activos Diarios' : 'Daily Active Users'}
               </p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">{formatNumber(data['engagementMetrics'].dailyActiveUsers)}</p>
-              <p className="text-sm text-green-600">
-                +12% {language === 'es' ? 'vs mes anterior' : 'vs last month'}
-              </p>
             </div>
             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <Activity className="w-6 h-6 text-blue-600" />
@@ -364,9 +313,6 @@ export const Analytics: React.FC = () => {
                 {language === 'es' ? 'Ingresos Mensuales' : 'Monthly Revenue'}
               </p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">{formatCurrency(data['revenueMetrics'].monthlyRevenue)}</p>
-              <p className="text-sm text-green-600">
-                +8% {language === 'es' ? 'vs mes anterior' : 'vs last month'}
-              </p>
             </div>
             <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
               <DollarSign className="w-6 h-6 text-green-600" />
@@ -381,9 +327,6 @@ export const Analytics: React.FC = () => {
                 {language === 'es' ? 'Vistas de Página' : 'Page Views'}
               </p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">{formatNumber(data['engagementMetrics'].pageViews)}</p>
-              <p className="text-sm text-green-600">
-                +5% {language === 'es' ? 'vs mes anterior' : 'vs last month'}
-              </p>
             </div>
             <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
               <Eye className="w-6 h-6 text-purple-600" />
@@ -398,9 +341,6 @@ export const Analytics: React.FC = () => {
                 {language === 'es' ? 'Tasa de Rebote' : 'Bounce Rate'}
               </p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">{formatPercentage(data['engagementMetrics'].bounceRate)}</p>
-              <p className="text-sm text-red-600">
-                +2% {language === 'es' ? 'vs mes anterior' : 'vs last month'}
-              </p>
             </div>
             <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
               <TrendingUp className="w-6 h-6 text-yellow-600" />
@@ -416,32 +356,38 @@ export const Analytics: React.FC = () => {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Crecimiento de Usuarios' : 'User Growth'}
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={data['userGrowth']}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Area 
-                type="monotone" 
-                dataKey="users" 
-                stackId="1"
-                stroke="#3B82F6" 
-                fill="#3B82F6" 
-                fillOpacity={0.6}
-                name={language === 'es' ? 'Nuevos Usuarios' : 'New Users'}
-              />
-              <Area 
-                type="monotone" 
-                dataKey="activeUsers" 
-                stackId="2"
-                stroke="#10B981" 
-                fill="#10B981" 
-                fillOpacity={0.6}
-                name={language === 'es' ? 'Usuarios Activos' : 'Active Users'}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+          {data['userGrowth'].length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={data['userGrowth']}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Area
+                  type="monotone"
+                  dataKey="users"
+                  stackId="1"
+                  stroke="#3B82F6"
+                  fill="#3B82F6"
+                  fillOpacity={0.6}
+                  name={language === 'es' ? 'Nuevos Usuarios' : 'New Users'}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="activeUsers"
+                  stackId="2"
+                  stroke="#10B981"
+                  fill="#10B981"
+                  fillOpacity={0.6}
+                  name={language === 'es' ? 'Usuarios Activos' : 'Active Users'}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-[300px] text-gray-500 dark:text-gray-400">
+              {language === 'es' ? 'Sin datos disponibles' : 'No data available'}
+            </div>
+          )}
         </div>
 
         {/* Job Metrics Chart */}
@@ -449,17 +395,23 @@ export const Analytics: React.FC = () => {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Métricas de Empleos' : 'Job Metrics'}
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data['jobMetrics']}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="posted" fill="#3B82F6" name={language === 'es' ? 'Publicados' : 'Posted'} />
-              <Bar dataKey="applied" fill="#10B981" name={language === 'es' ? 'Aplicaciones' : 'Applied'} />
-              <Bar dataKey="filled" fill="#F59E0B" name={language === 'es' ? 'Llenados' : 'Filled'} />
-            </BarChart>
-          </ResponsiveContainer>
+          {data['jobMetrics'].length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={data['jobMetrics']}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="posted" fill="#3B82F6" name={language === 'es' ? 'Publicados' : 'Posted'} />
+                <Bar dataKey="applied" fill="#10B981" name={language === 'es' ? 'Aplicaciones' : 'Applied'} />
+                <Bar dataKey="filled" fill="#F59E0B" name={language === 'es' ? 'Llenados' : 'Filled'} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-[300px] text-gray-500 dark:text-gray-400">
+              {language === 'es' ? 'Sin datos disponibles' : 'No data available'}
+            </div>
+          )}
         </div>
 
         {/* Forum Activity Chart */}
@@ -467,35 +419,41 @@ export const Analytics: React.FC = () => {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Actividad del Foro' : 'Forum Activity'}
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data['forumActivity']}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Line 
-                type="monotone" 
-                dataKey="posts" 
-                stroke="#3B82F6" 
-                strokeWidth={2}
-                name={language === 'es' ? 'Posts' : 'Posts'}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="replies" 
-                stroke="#10B981" 
-                strokeWidth={2}
-                name={language === 'es' ? 'Respuestas' : 'Replies'}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="views" 
-                stroke="#F59E0B" 
-                strokeWidth={2}
-                name={language === 'es' ? 'Vistas' : 'Views'}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          {data['forumActivity'].length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={data['forumActivity']}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="posts"
+                  stroke="#3B82F6"
+                  strokeWidth={2}
+                  name={language === 'es' ? 'Posts' : 'Posts'}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="replies"
+                  stroke="#10B981"
+                  strokeWidth={2}
+                  name={language === 'es' ? 'Respuestas' : 'Replies'}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="views"
+                  stroke="#F59E0B"
+                  strokeWidth={2}
+                  name={language === 'es' ? 'Vistas' : 'Views'}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-[300px] text-gray-500 dark:text-gray-400">
+              {language === 'es' ? 'Sin datos disponibles' : 'No data available'}
+            </div>
+          )}
         </div>
 
         {/* Membership Distribution */}
@@ -503,24 +461,30 @@ export const Analytics: React.FC = () => {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {language === 'es' ? 'Distribución de Membresías' : 'Membership Distribution'}
           </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={data['membershipDistribution']}
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-                label={({ name, value }) => `${name}: ${value}%`}
-              >
-                {data['membershipDistribution'].map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+          {data['membershipDistribution'].length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={data['membershipDistribution']}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ name, value }) => `${name}: ${value}%`}
+                >
+                  {data['membershipDistribution'].map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-[300px] text-gray-500 dark:text-gray-400">
+              {language === 'es' ? 'Sin datos disponibles' : 'No data available'}
+            </div>
+          )}
         </div>
       </div>
 

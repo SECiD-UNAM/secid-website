@@ -37,80 +37,8 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate fetching recent activities
-    // In production, this would fetch from Firestore
-    const mockActivities: ActivityItem[] = [
-      {
-        id: '1',
-        type: 'job_application',
-        title: lang === 'es' ? 'Aplicaste a un trabajo' : 'Applied to a job',
-        description:
-          lang === 'es'
-            ? 'Senior Data Scientist en TechCorp México'
-            : 'Senior Data Scientist at TechCorp Mexico',
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-        icon: BriefcaseIcon,
-        iconColor: 'blue',
-      },
-      {
-        id: '2',
-        type: 'event_registration',
-        title:
-          lang === 'es'
-            ? 'Te registraste a un evento'
-            : 'Registered for an event',
-        description:
-          lang === 'es'
-            ? 'Taller de MLOps - 20 de Febrero'
-            : 'MLOps Workshop - February 20',
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-        icon: CalendarIcon,
-        iconColor: 'purple',
-      },
-      {
-        id: '3',
-        type: 'profile_update',
-        title:
-          lang === 'es' ? 'Actualizaste tu perfil' : 'Updated your profile',
-        description:
-          lang === 'es'
-            ? 'Agregaste nuevas habilidades y experiencia'
-            : 'Added new skills and experience',
-        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-        icon: DocumentTextIcon,
-        iconColor: 'green',
-      },
-      {
-        id: '4',
-        type: 'forum_post',
-        title: lang === 'es' ? 'Publicaste en el foro' : 'Posted in forum',
-        description:
-          lang === 'es'
-            ? 'Pregunta sobre transición a la industria'
-            : 'Question about industry transition',
-        timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-        icon: ChatBubbleLeftRightIcon,
-        iconColor: 'orange',
-      },
-    ];
-
-    // Add verification activity if user was recently verified
-    if (userProfile?.isVerified) {
-      mockActivities.unshift({
-        id: '0',
-        type: 'verification',
-        title: lang === 'es' ? 'Cuenta verificada' : 'Account verified',
-        description:
-          lang === 'es'
-            ? 'Tu cuenta UNAM ha sido verificada'
-            : 'Your UNAM account has been verified',
-        timestamp: new Date(Date.now() - 60 * 60 * 1000), // 1 hour ago
-        icon: CheckCircleIcon,
-        iconColor: 'green',
-      });
-    }
-
-    setActivities(mockActivities);
+    // TODO: Fetch real activities from Firestore when activity tracking is implemented
+    setActivities([]);
     setLoading(false);
   }, [userProfile, lang]);
 

@@ -59,22 +59,16 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
             name: lang === 'es' ? 'Aplicaciones Enviadas' : 'Applications Sent',
             value: applicationsCount,
             icon: BriefcaseIcon,
-            change: '+12%',
-            changeType: 'increase',
           },
           {
             name: lang === 'es' ? 'Eventos Registrados' : 'Events Registered',
             value: eventsCount,
             icon: CalendarIcon,
-            change: '+3',
-            changeType: 'increase',
           },
           {
             name: lang === 'es' ? 'Conexiones' : 'Connections',
-            value: '24',
+            value: 0,
             icon: UserGroupIcon,
-            change: '+5%',
-            changeType: 'increase',
           },
           {
             name: lang === 'es' ? 'Perfil Completo' : 'Profile Complete',

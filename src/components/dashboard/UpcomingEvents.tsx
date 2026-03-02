@@ -91,55 +91,7 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
         setEvents(eventsWithRegistration);
       } catch (error) {
         console.error('Error fetching events:', error);
-        // Set mock data on error
-        setEvents([
-          {
-            id: '1',
-            title:
-              lang === 'es'
-                ? 'Feria de Empleo Data Science 2024'
-                : 'Data Science Career Fair 2024',
-            description:
-              lang === 'es'
-                ? 'Conecta con las mejores empresas de tecnología'
-                : 'Connect with top tech companies',
-            type: 'career-fair',
-            startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-            endDate: new Date(
-              Date.now() + 7 * 24 * 60 * 60 * 1000 + 8 * 60 * 60 * 1000
-            ), // +8 hours
-            location: {
-              type: 'physical',
-              venue: 'UNAM Campus Ciudad Universitaria',
-              address: 'Avenida Universidad 3000, CDMX',
-            },
-            registrationRequired: true,
-            maxAttendees: 200,
-            currentAttendees: 145,
-            isRegistered: false,
-          },
-          {
-            id: '2',
-            title: lang === 'es' ? 'Taller de MLOps' : 'MLOps Workshop',
-            description:
-              lang === 'es'
-                ? 'Aprende a desplegar modelos en producción'
-                : 'Learn to deploy models in production',
-            type: 'workshop',
-            startDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days from now
-            endDate: new Date(
-              Date.now() + 14 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000
-            ), // +2 hours
-            location: {
-              type: 'virtual',
-              virtualPlatform: 'Zoom',
-            },
-            registrationRequired: true,
-            maxAttendees: 100,
-            currentAttendees: 67,
-            isRegistered: true,
-          },
-        ]);
+        setEvents([]);
       } finally {
         setLoading(false);
       }
