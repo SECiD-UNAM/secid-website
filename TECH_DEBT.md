@@ -118,27 +118,34 @@ Track all known technical debt. Updated by both Dev (Forja) and QA (Centinela) a
 - **Resolved**: 2026-03-01
 - **How**: Implemented `EventForm.tsx` with React Hook Form + Zod validation, Firestore CRUD (addDoc/updateDoc), bilingual i18n (en/es), dark mode, loading skeleton for edit mode. Schema extracted to `event-form-schema.ts`. Wired into all 4 Astro pages (en/es new/edit). See Resolved Debt section.
 
-### [TD-013] Test skip rate reduction — IN PROGRESS
+### [TD-013] Test skip rate reduction -- IN PROGRESS
 
 - **Type**: Test
 - **Severity**: High (reduced from Critical)
 - **Found**: 2026-02-28
 - **Partially resolved**: 2026-03-01
-- **Estimated effort**: XL (originally), M (remaining)
+- **Estimated effort**: XL (originally), S (remaining after process cleanup)
 - **Impact if not fixed**: Regressions go undetected; CI provides false green; coverage unmeasurable
-- **Starting state**: 85% skip rate (809/951 tests skipped in 37 files)
-- **After describe.skip removal (session 1)**: 158 passed, 809 skipped -> 370 passed, 584 failed, 13 skipped (967 tests)
-- **After session 2 fixes** (estimated, pending verification due to stale vitest processes):
-  - Removed `describe.skip` from 26 test files
-  - Re-skipped 8 files with documentation (aggregate auth/jobs, SocialLoginButtons, SignUpForm, TwoFactorSetup, TwoFactorVerification, integration api/auth, integration api/jobs) = ~190 tests intentionally skipped
-  - Fixed search-integration.test.ts (3 assertion fixes)
-  - Rewrote AuthGuard.test.tsx (16 tests) and ProtectedRoute.test.tsx (~24 tests) to match actual component APIs
-  - Added Proxy-based heroicons auto-mock to 10 test files (DashboardStats, QuickActions, RecentActivity, JobApplicationModal, JobBoard, JobCard, JobFilters, JobPostingForm, GlobalSearch, SearchBar)
+- **Starting state**: 85% skip rate (809/951 tests skipped in 37 files, 34 test files total)
+- **Current state** (34 files, ~950 tests across all files):
+  - **Verified passing (14 files, 270 tests)**: AuthGuard (16), ProtectedRoute (22), search-integration (27), verify-request (7), payment-auth (9), firebase lib (10), firebase-auth integration (41), firebase-firestore integration (37), firebase/firestore integration (21), api-endpoints integration (22), astro-build (8 + 3 internal skips), 4 placeholder tests (4)
+  - **Intentionally skipped with documentation (9 files, 264 tests)**: LoginForm (34, lang mismatch), SocialLoginButtons (44, lang mismatch), SignUpForm (29, lang mismatch), TwoFactorSetup (35, Firebase SDK API mismatch), TwoFactorVerification (49, Firebase SDK API mismatch), auth.test.tsx (13, aggregate duplicate), jobs.test.tsx (20, aggregate duplicate), api/auth (18, needs real Firebase), api/jobs (22, needs real Firebase)
+  - **Mocks added, pending verification (10 files, ~413 tests)**: DashboardStats (32), QuickActions (30), RecentActivity (39), JobBoard (42), JobCard (50), JobFilters (51), JobPostingForm (44), JobApplicationModal (49), GlobalSearch (32), SearchBar (44)
+- **Skip rate**: 264/950 = 27.8% (down from 85%). After pending files pass: could reach ~28% skip (target was <20%)
+- **Blocker**: 210+ stale node/vitest zombie processes exhaust system memory, preventing any jsdom-based component test from running. Non-component tests (pure TS, no JSX rendering) run fine. Must kill processes with `killall node` or restart machine.
+- **What was done**:
+  - Removed `describe.skip` from 26 test files to surface actual failures
+  - Rewrote AuthGuard.test.tsx (16 tests) and ProtectedRoute.test.tsx (22 tests) to match actual component APIs
+  - Fixed 3 assertion failures in search-integration.test.ts
+  - Added Proxy-based heroicons auto-mock to 10 test files
   - Added firebase/storage and @/lib/firebase mocks to JobApplicationModal.test.tsx and LoginForm.test.tsx
   - Added clsx mock to GlobalSearch.test.tsx and SearchBar.test.tsx
-- **Estimated new metrics**: ~200 skipped (21% skip rate), ~370-500 passing, ~250-380 failing
-- **Blocker**: 34 stale vitest node processes prevent running test suite to verify. Must kill processes first.
-- **Remaining work**: Run full suite, fix remaining failures in component tests where heroicons mock alone is insufficient (likely need assertion updates for component API changes), establish vitest coverage threshold
+  - Re-skipped 9 test files with documentation explaining root cause
+- **Remaining work after process cleanup**:
+  1. Kill stale processes: `killall node` (or restart terminal)
+  2. Run `npx vitest run` to verify full suite
+  3. For each of the 10 pending files that still fail, fix assertion mismatches (component API changes since tests were written)
+  4. Establish vitest coverage threshold in vitest.config
 
 ### [TD-014] God components exceeding 1000 lines -- PARTIALLY RESOLVED
 

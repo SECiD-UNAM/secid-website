@@ -26,15 +26,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **TD-013**: Reduced test suite skip rate from 85% toward target of <20%:
+- **TD-013**: Reduced test suite skip rate from 85% to ~28% (34 files, ~950 tests):
   - Removed `describe.skip` from 26 test files to surface actual failures
   - Rewrote `AuthGuard.test.tsx` (16 tests) to match actual component API (no className prop, no error boundary, uses onAuthStateChanged directly). Isolated unauthenticated-state tests into separate describe blocks to prevent jsdom DOM contamination.
-  - Rewrote `ProtectedRoute.test.tsx` (~24 tests) -- component shows Sign In link instead of redirecting; removed all window.location mocking
+  - Rewrote `ProtectedRoute.test.tsx` (22 tests) with every test in its own describe block to eliminate jsdom DOM contamination. All 22 tests passing.
   - Fixed 3 assertion failures in `search-integration.test.ts` (boolean coercion, array assertion pattern, explicit index rebuild)
   - Added Proxy-based heroicons auto-mock to 10 test files to fix import failures (components import icons not in static mocks)
   - Added firebase/storage and @/lib/firebase mocks to `JobApplicationModal.test.tsx` and `LoginForm.test.tsx`
-  - Re-skipped 8 test files with documentation explaining root cause (lang mismatch, aggregate duplicates, Firebase SDK API mismatch)
-  - Full test suite verification blocked by 34 stale vitest processes -- requires process cleanup to confirm final metrics
+  - Added clsx mock to `GlobalSearch.test.tsx` and `SearchBar.test.tsx`
+  - Re-skipped 9 test files with documentation explaining root cause (lang mismatch, aggregate duplicates, Firebase SDK API mismatch)
+  - Verified 14 files / 270 tests passing individually. 10 component test files (413 tests) have mocks added but cannot be verified due to 210+ stale node processes exhausting system memory. Requires `killall node` or machine restart to verify.
 - **Dark theme**: Added `dark:` Tailwind variants to all dashboard components that were rendering white cards on dark backgrounds (AdminDashboard, Analytics, ContentModeration, ResourceLibrary, ForumHome)
 - **Mock data removal**: Removed all hardcoded fake data from Analytics (fake companies Google/Microsoft/Amazon/IBM/Meta, fake revenue, fake geographic data, fake skills), JobBoard (mock jobs), EventList (mock events), ForumHome (mock Top Contributors, mock user/online counts), and hardcoded stats bars in both English and Spanish Astro pages for Jobs (128/24/7) and Events (12/3/5)
 - **Duplicate headers**: Removed duplicate page titles from JobSearchDemo, EventList, ProfileEdit, ResourceLibrary, and ForumHome that were already rendered by their Astro page wrappers via DashboardLayout
