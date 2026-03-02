@@ -128,3 +128,19 @@ pnpm-lock.yaml
 .pa11y/
 # Snyk Security Extension - AI Rules (auto-generated)
 .github/instructions/snyk_rules.instructions.md
+
+# Agent Triforce — agent memory (session-specific, not shared)
+.claude/agent-memory/
+
+# Local config
+.claude/settings.local.json
+.mcp.json
+
+# Temporary files
+tmp/
+
+# Screenshots (dev reference, not source)
+*.png
+
+# Local dev tools
+tools/

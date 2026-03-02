@@ -10,8 +10,8 @@ export default defineConfig({
   site: process.env.SITE_URL || 'https://secid.mx',
   base: process.env.NODE_ENV === 'production' ? '' : '/',
 
-  // Hybrid mode: static by default, server-rendered for dynamic routes
-  output: 'hybrid',
+  // Static by default, server-rendered for routes with `export const prerender = false`
+  output: 'static',
   adapter: node({
     mode: 'standalone',
   }),
@@ -116,7 +116,4 @@ export default defineConfig({
     prefetchAll: true,
     defaultStrategy: 'viewport',
   },
-  
-  // View transitions
-  viewTransitions: true,
 });

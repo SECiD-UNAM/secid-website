@@ -4,70 +4,158 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a static website for SECiD (Sociedad de Egresados en Ciencia de Datos) - UNAM's Data Science Alumni Society. The website is built using HTML5 UP's Editorial template and serves as a platform to connect data science alumni, showcase job opportunities, and facilitate member registration.
+SECiD (Sociedad de Egresados en Ciencia de Datos) is UNAM's Data Science Alumni Society platform. It is a full-stack web application built with Astro, React, Firebase, and Stripe, providing member management, job boards, events, mentorship, forums, payments, and an admin dashboard.
 
 ## Architecture
 
-The project is a static HTML/CSS/JavaScript website with the following structure:
+**Astro 4.x hybrid SSR** application with React 18 islands, Firebase backend, and Stripe payments.
 
-- **Main pages**: `index.html` (homepage), `aboutus.html` (about page), `job-submission.html` (job posting form), `elements.html` (template elements showcase)
-- **Registration redirect**: `registro.html` redirects to a Google Form for member registration
-- **Assets**: Located in `assets/` directory with CSS, JavaScript, SASS source files, and web fonts
-- **Template source**: Original HTML5 UP template preserved in `raw_template/` directory
-- **Analytics**: Amplitude analytics integration for tracking user interactions and session replay
+- **Frontend**: Astro pages (`.astro`) + React components (`.tsx`) + Tailwind CSS
+- **Backend**: Firebase (Auth, Firestore, Storage, Cloud Functions) + Stripe
+- **Rendering**: Hybrid mode — static by default, server-rendered for dynamic routes
+- **i18n**: Spanish (default) + English, with route-based localization (`/es/`, `/en/`)
+- **API**: Astro API routes at `src/pages/api/` with middleware for auth, rate limiting, CORS, and CAPTCHA
 
-## Key Features
+### Key Modules
 
-- Responsive design using HTML5 UP Editorial template
-- Form-based job submission system
-- External registration via Google Forms redirect
-- Analytics tracking with Amplitude
-- FontAwesome icons and custom styling
-- SASS-based CSS architecture
+| Module     | Components                                      | Description                                                       |
+| ---------- | ----------------------------------------------- | ----------------------------------------------------------------- |
+| Auth       | `src/lib/auth/`, `src/contexts/AuthContext.tsx` | Firebase Auth, OAuth (Google/GitHub/LinkedIn), session management |
+| Dashboard  | `src/components/dashboard/`                     | Member dashboard with profile, jobs, events, forums, mentorship   |
+| Admin      | `src/components/admin/`                         | User management, content moderation, analytics, settings          |
+| Payments   | `src/pages/api/create-*.ts`, `src/lib/stripe/`  | Stripe subscriptions, invoices, Mexican tax (IVA/RFC)             |
+| Jobs       | `src/components/jobs/`                          | Job board with search, filters, posting                           |
+| Events     | `src/components/events/`                        | Event listing, registration                                       |
+| Forums     | `src/components/forums/`                        | Community forum                                                   |
+| Mentorship | `src/components/mentorship/`                    | Mentor-mentee matching and sessions                               |
 
 ## Development Requirements
 
-**Node.js Version:** 20.17.0 or higher (required by dependencies)
-- Use `.nvmrc` file for version consistency: `nvm use`
-- Engine-strict mode enabled to prevent version mismatches
+**Node.js Version:** >=20.0.0 (see `.nvmrc`)
+
+- Use `nvm use` for version consistency
+- Engine-strict mode enabled
 
 ## Development Commands
 
-This is a static website with Node.js tooling for validation and testing. Development commands:
-
 **Local Development:**
-- `npm run dev` - Build for development and start local server
-- `npm run serve` - Start local server on port 3000
-- `npm run build:dev` - Build for development environment
 
-**Testing & Validation:**
-- `npm run precommit` - Run all pre-commit validation checks
-- `npm run test:local` - Run complete local validation suite
-- `npm run validate:html` - Validate HTML structure
-- `npm run validate:schema` - Validate Schema.org structured data
+- `npm run dev` - Start Astro dev server + Firebase emulators + Functions watcher (concurrent)
+- `npm run preview` - Preview production build locally
 
-**Production:**
-- `npm run build` - Build for production
-- `npm run build:staging` - Build for staging environment
+**Build:**
+
+- `npm run build` - Production build (`astro check && astro build`)
+- `npm run check` - TypeScript/Astro type checking
+- `npm run type-check` - `tsc --noEmit`
+
+**Testing:**
+
+- `npm test` - Run all Vitest tests
+- `npm run test:unit` - Unit tests only (`tests/unit/`)
+- `npm run test:integration` - Integration tests only (`tests/integration/`)
+- `npm run test:e2e` - Playwright end-to-end tests
+- `npm run test:mobile` - Mobile-specific test suite
+- `npm run coverage` - Run with coverage report
+
+**Linting & Formatting:**
+
+- `npm run lint` - ESLint check
+- `npm run lint:fix` - ESLint auto-fix
+- `npm run format` - Prettier format all files
+- `npm run format:check` - Prettier check
+
+**Firebase:**
+
+- `npm run emulator:start` - Start Firebase emulators
+- `npm run seed` - Seed emulator with test data
+- `npm run functions:install` - Install Cloud Functions dependencies
 
 **Pre-commit Hooks:**
-Pre-commit hooks are automatically configured via Husky and will run validation on staged files before each commit. This prevents broken code from reaching the repository.
+Husky + lint-staged runs ESLint and Prettier on staged files before each commit.
 
 ## File Organization
 
-- `/assets/css/`: Compiled CSS files
-- `/assets/js/`: JavaScript files for UI interactions
-- `/assets/sass/`: SASS source files organized by components, layout, and base styles
-- `/images/`: Site images including logos and favicon
-- `/raw_template/`: Original HTML5 UP template (reference only)
+- `src/pages/` — Astro pages and API routes (organized by locale: `en/`, `es/`)
+- `src/components/` — React components (organized by feature module)
+- `src/lib/` — Utility functions, services, Firebase/Stripe clients
+- `src/types/` — TypeScript type definitions
+- `src/contexts/` — React Context providers (Auth, Search)
+- `src/hooks/` — Custom React hooks
+- `src/middleware/` — Astro middleware (security, sessions, rate limiting, CORS)
+- `src/i18n/` — Internationalization translations
+- `src/layouts/` — Astro layout components
+- `src/styles/` — Global CSS/Tailwind styles
+- `functions/` — Firebase Cloud Functions (TypeScript)
+- `tests/` — Test suites (unit, integration, e2e, mobile, fixtures)
+- `public/` — Static assets (CSS, JS, images, fonts)
+- `docs/` — Documentation (specs, reviews, ADRs, guides)
 
-## Analytics Integration
+---
 
-The site uses Amplitude analytics with session replay enabled. The tracking code is embedded in HTML files and captures element interactions automatically.
+# Agent Triforce Configuration
 
-## External Dependencies
+## System Overview
 
-- jQuery (minified, local copy)
-- FontAwesome (complete icon set included)
-- Amplitude Analytics (CDN-loaded)
-- HTML5 UP template framework
+This project uses the Agent Triforce multi-agent development system:
+
+- **Prometeo (PM)**: Product strategy, feature specs, business logic
+- **Forja (Dev)**: Architecture, implementation, testing, documentation
+- **Centinela (QA)**: Security audit, code review, compliance
+
+## Agent Invocation
+
+- "Use Prometeo to define the feature for [X]"
+- "Use Forja to implement [X]"
+- "Use Centinela to audit [X]"
+
+Or use skills:
+
+- `/agent-triforce:feature-spec [description]` — Create a feature specification
+- `/agent-triforce:implement-feature [spec-name]` — Implement a feature from its spec
+- `/agent-triforce:security-audit [scope]` — Run a security audit
+- `/agent-triforce:code-health` — Scan for dead code and tech debt
+- `/agent-triforce:release-check` — Pre-release verification gate
+- `/agent-triforce:review-findings [review-file]` — Fix QA review findings
+
+## Tech Stack Preferences
+
+- **Language**: TypeScript 5.x, JavaScript (ES modules)
+- **Frameworks**: Astro 4.x, React 18, Tailwind CSS 3.x
+- **Backend**: Firebase, Stripe
+- **Testing**: Vitest, Playwright
+- **Linting**: ESLint, Prettier
+- **Build tools**: Husky, lint-staged, Vite
+- **State management**: Zustand, TanStack React Query
+- **Forms**: React Hook Form + Zod
+- **i18n**: i18next, react-i18next
+- **Infrastructure**: Firebase Hosting, GitHub Actions
+- **Node.js**: >=20.0.0
+
+## Project Conventions
+
+### File Locations
+
+- Feature specs: `docs/specs/{feature-name}.md`
+- Architecture Decision Records: `docs/adr/ADR-{NNN}-{title}.md`
+- QA reviews: `docs/reviews/{feature-name}-review.md`
+- Source code: `src/`
+- Tests: `tests/`
+
+### Git Conventions
+
+- Branches: `{type}/{short-description}` (feat/, fix/, refactor/, docs/, test/, feature/)
+- Commits: Conventional Commits (feat:, fix:, docs:, refactor:, test:, chore:)
+
+### Code Standards
+
+- Functions <30 lines, one level of abstraction, meaningful names
+- No hardcoded secrets, URLs, or config values
+- No commented-out code (it belongs in git history)
+- Prefer exceptions over null returns for error handling
+
+## MCP Configuration
+
+- **GitHub Issues**: Available via `gh` CLI — use `gh issue list`, `gh issue create`, `gh issue view` for issue tracking
+- **Linear**: Not configured — run `/agent-triforce:issues-setup` to add Linear MCP server later
+- **SonarQube**: Not configured — run `/agent-triforce:mcp-setup` to add SonarQube MCP server later
