@@ -29,6 +29,9 @@ export default function ResourceUpload({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const previewInputRef = useRef<HTMLInputElement>(null);
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
+  const selectedFileRef = useRef<File | null>(null);
+  const selectedPreviewRef = useRef<File | null>(null);
+  const selectedThumbnailRef = useRef<File | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
@@ -169,14 +172,15 @@ export default function ResourceUpload({
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      selectedFileRef.current = file;
       setFileInfo({
         name: file.name,
         size: file.size,
-        type: file['type'],
+        type: file.type,
       });
 
       // Auto-detect file type
-      const extension = file['name'].split('').pop()?.toLowerCase();
+      const extension = file.name.split('.').pop()?.toLowerCase();
       if (extension) {
         const typeMap: { [key: string]: ResourceType } = {
           pdf: 'pdf',
@@ -215,6 +219,7 @@ export default function ResourceUpload({
   const handlePreviewFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      selectedPreviewRef.current = file;
       setPreviewInfo({
         name: file.name,
         size: file.size,
@@ -227,8 +232,9 @@ export default function ResourceUpload({
   ) => {
     const file = e.target.files?.[0];
     if (file) {
+      selectedThumbnailRef.current = file;
       setThumbnailInfo({
-        name: file['name'],
+        name: file.name,
         size: file.size,
       });
     }
@@ -278,7 +284,7 @@ export default function ResourceUpload({
       );
     if (!formData?.summary?.trim())
       return t?.resources?.validation?.summaryRequired || 'Summary is required';
-    if (!fileInputRef?.current?.files?.[0])
+    if (!fileInfo || !selectedFileRef.current)
       return t?.resources?.validation?.fileRequired || 'File is required';
     if (!formData?.tags?.length)
       return (
@@ -295,9 +301,9 @@ export default function ResourceUpload({
       return;
     }
 
-    const file = fileInputRef?.current?.files?.[0];
-    const previewFile = previewInputRef?.current?.files?.[0];
-    const thumbnailFile = thumbnailInputRef?.current?.files?.[0];
+    const file = selectedFileRef.current;
+    const previewFile = selectedPreviewRef.current ?? undefined;
+    const thumbnailFile = selectedThumbnailRef.current ?? undefined;
 
     if (!file) return;
 
@@ -340,6 +346,9 @@ export default function ResourceUpload({
       setFileInfo(null);
       setPreviewInfo(null);
       setThumbnailInfo(null);
+      selectedFileRef.current = null;
+      selectedPreviewRef.current = null;
+      selectedThumbnailRef.current = null;
       setStep(1);
     } catch (error) {
       console.error('Error uploading resource:', error);
@@ -512,6 +521,7 @@ export default function ResourceUpload({
               <button
                 onClick={() => {
                   setFileInfo(null);
+                  selectedFileRef.current = null;
                   if (fileInputRef.current) fileInputRef.current.value = '';
                 }}
                 className="text-red-600 hover:text-red-700"
