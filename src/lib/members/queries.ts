@@ -79,15 +79,13 @@ export async function getMemberProfiles(options: {
       case 'name':
         q = query(q, orderBy('displayName', sortOrder));
         break;
-      case 'joinDate':
-        q = query(q, orderBy('joinedAt', sortOrder));
-        break;
       case 'reputation':
         q = query(q, orderBy('activity.reputation', sortOrder));
         break;
       case 'activity':
-        q = query(q, orderBy('activity.lastActive', sortOrder));
+        q = query(q, orderBy('lifecycle.lastActiveDate', sortOrder));
         break;
+      case 'joinDate':
       default:
         q = query(q, orderBy('createdAt', sortOrder));
     }

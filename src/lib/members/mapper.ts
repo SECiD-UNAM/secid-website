@@ -84,7 +84,7 @@ export function mapUserDocToMemberProfile(uid: string, data: Record<string, any>
       commentsCount: 0,
       helpfulVotes: 0,
       reputation: 0,
-      lastActive: data.updatedAt?.toDate?.() || new Date(),
+      lastActive: data.lifecycle?.lastActiveDate?.toDate?.() || data.updatedAt?.toDate?.() || new Date(),
     },
     searchableKeywords: data.searchableKeywords || (data.skills || []).map((s: string) => s.toLowerCase()),
     featuredSkills: data.featuredSkills || (data.skills || []).slice(0, 5),
