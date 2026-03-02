@@ -186,7 +186,7 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
         key={i}
         onClick={() => interactive && onRate?.(i + 1)}
         className={`text-lg ${interactive ? 'hover:text-yellow-400 cursor-pointer' : ''} ${
-          i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300'
+          i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'
         }`}
         disabled={!interactive}
       >
@@ -206,10 +206,10 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
   if (!resource) {
     return (
       <div className="text-center py-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
           {t?.resources?.notFound || 'Resource not found'}
         </h2>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-400">
           {t?.resources?.notFoundDescription || 'The requested resource could not be found.'}
         </p>
       </div>
@@ -219,21 +219,21 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
   return (
     <div className="max-w-4xl mx-auto">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-2xl font-bold text-gray-900">{resource.title}</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{resource.title}</h1>
               {resource.accessLevel === 'premium' && (
-                <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
+                <span className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 text-xs px-2 py-1 rounded-full">
                   ⭐ {t?.resources?.premium || 'Premium'}
                 </span>
               )}
             </div>
             
-            <p className="text-gray-600 mb-4">{resource['description']}</p>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">{resource['description']}</p>
             
-            <div className="flex items-center gap-4 text-sm text-gray-500">
+            <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center gap-2">
                 {resource.author.avatar && (
                   <img
@@ -255,7 +255,7 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
           {onClose && (
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -266,7 +266,7 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
         
         {/* Stats and Actions */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-6 text-sm text-gray-600">
+          <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
             <div className="flex items-center gap-1">
               <span>⬇️</span>
               <span>{resource.downloadCount} {t?.resources?.downloads || 'downloads'}</span>
@@ -292,8 +292,8 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
               onClick={handleBookmark}
               className={`px-4 py-2 border rounded-lg transition-colors ${
                 isBookmarked
-                  ? 'bg-red-50 border-red-300 text-red-700'
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  ? 'bg-red-50 dark:bg-red-900/20 border-red-300 text-red-700 dark:text-red-400'
+                  : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
               }`}
             >
               {isBookmarked ? '❤️ Bookmarked' : '🤍 Bookmark'}
@@ -302,7 +302,7 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
             {resource.hasPreview && (
               <button
                 onClick={() => window.open(resource.previewUrl, '_blank')}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 {t?.resources?.preview || 'Preview'}
               </button>
@@ -327,8 +327,8 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
       </div>
 
       {/* Content Tabs */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div className="border-b border-gray-200 dark:border-gray-700">
           <div className="flex space-x-8 px-6">
             {['overview', 'reviews', 'versions'].map((tab) => (
               <button
@@ -337,7 +337,7 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
                 className={`py-4 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab
                     ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                 }`}
               >
                 {t?.resources?.tabs?.[tab] || tab}
@@ -367,24 +367,24 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
                   <h3 className="text-lg font-semibold mb-3">{t?.resources?.details || 'Details'}</h3>
                   <dl className="space-y-2">
                     <div>
-                      <dt className="text-sm text-gray-500">{t?.resources?.category || 'Category'}</dt>
+                      <dt className="text-sm text-gray-500 dark:text-gray-400">{t?.resources?.category || 'Category'}</dt>
                       <dd className="text-sm font-medium">{resource.category}</dd>
                     </div>
                     <div>
-                      <dt className="text-sm text-gray-500">{t?.resources?.type || 'Type'}</dt>
+                      <dt className="text-sm text-gray-500 dark:text-gray-400">{t?.resources?.type || 'Type'}</dt>
                       <dd className="text-sm font-medium">{resource['type']}</dd>
                     </div>
                     <div>
-                      <dt className="text-sm text-gray-500">{t?.resources?.difficulty?.title || 'Difficulty'}</dt>
+                      <dt className="text-sm text-gray-500 dark:text-gray-400">{t?.resources?.difficulty?.title || 'Difficulty'}</dt>
                       <dd className="text-sm font-medium">{resource.difficulty}</dd>
                     </div>
                     <div>
-                      <dt className="text-sm text-gray-500">{t?.resources?.language || 'Language'}</dt>
+                      <dt className="text-sm text-gray-500 dark:text-gray-400">{t?.resources?.language || 'Language'}</dt>
                       <dd className="text-sm font-medium">{resource.language}</dd>
                     </div>
                     {resource.estimatedTime && (
                       <div>
-                        <dt className="text-sm text-gray-500">{t?.resources?.estimatedTime || 'Estimated Time'}</dt>
+                        <dt className="text-sm text-gray-500 dark:text-gray-400">{t?.resources?.estimatedTime || 'Estimated Time'}</dt>
                         <dd className="text-sm font-medium">{resource.estimatedTime}</dd>
                       </div>
                     )}
@@ -397,7 +397,7 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
                     {resource.tags.map((tag, index) => (
                       <span
                         key={index}
-                        className="bg-blue-50 text-blue-700 text-sm px-3 py-1 rounded-full"
+                        className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-sm px-3 py-1 rounded-full"
                       >
                         #{tag}
                       </span>
@@ -406,10 +406,10 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
                   
                   {resource.prerequisites.length > 0 && (
                     <div className="mt-4">
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">
+                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {t?.resources?.prerequisites || 'Prerequisites'}
                       </h4>
-                      <ul className="text-sm text-gray-600 list-disc list-inside">
+                      <ul className="text-sm text-gray-600 dark:text-gray-400 list-disc list-inside">
                         {resource.prerequisites.map((prereq, index) => (
                           <li key={index}>{prereq}</li>
                         ))}
@@ -422,7 +422,7 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
               {/* Summary */}
               <div>
                 <h3 className="text-lg font-semibold mb-3">{t?.resources?.summary || 'Summary'}</h3>
-                <p className="text-gray-700 whitespace-pre-wrap">{resource.summary}</p>
+                <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{resource.summary}</p>
               </div>
             </div>
           )}
@@ -441,11 +441,11 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
                       {t?.resources?.writeReview || 'Write a Review'}
                     </button>
                   ) : (
-                    <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                       <h4 className="font-medium mb-3">{t?.resources?.writeReview || 'Write a Review'}</h4>
                       
                       <div className="mb-3">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                           {t?.resources?.rating || 'Rating'}
                         </label>
                         <div className="flex items-center gap-1">
@@ -454,14 +454,14 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
                       </div>
                       
                       <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                           {t?.resources?.comment || 'Comment'}
                         </label>
                         <textarea
                           value={reviewComment}
                           onChange={(e) => setReviewComment(e.target.value)}
                           rows={4}
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           placeholder={t?.resources?.reviewPlaceholder || 'Share your thoughts about this resource...'}
                         />
                       </div>
@@ -476,7 +476,7 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
                         </button>
                         <button
                           onClick={() => setShowReviewForm(false)}
-                          className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                          className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                         >
                           {t?.common?.cancel || 'Cancel'}
                         </button>
@@ -493,23 +493,23 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
                 </h3>
                 
                 {resource.reviews.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">
+                  <p className="text-gray-500 dark:text-gray-400 text-center py-8">
                     {t?.resources?.noReviews || 'No reviews yet. Be the first to review!'}
                   </p>
                 ) : (
                   <div className="space-y-4">
                     {resource.reviews.slice(0, 5).map((review, index) => (
-                      <div key={index} className="border-b border-gray-200 pb-4">
+                      <div key={index} className="border-b border-gray-200 dark:border-gray-700 pb-4">
                         <div className="flex items-start gap-3">
                           {/* This would need actual review data */}
-                          <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+                          <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
                               <span className="font-medium">User Name</span>
                               <div className="flex">{renderStars(5)}</div>
-                              <span className="text-sm text-gray-500">2 days ago</span>
+                              <span className="text-sm text-gray-500 dark:text-gray-400">2 days ago</span>
                             </div>
-                            <p className="text-gray-700">Sample review content...</p>
+                            <p className="text-gray-700 dark:text-gray-300">Sample review content...</p>
                           </div>
                         </div>
                       </div>
@@ -527,16 +527,16 @@ export default function ResourceDetail({ resourceId, onClose }: ResourceDetailPr
               
               <div className="space-y-4">
                 {resource.versions.map((version, index) => (
-                  <div key={version.id} className="border border-gray-200 rounded-lg p-4">
+                  <div key={version.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-medium">v{version.version}</h4>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
                         {new Date(version.releaseDate).toLocaleDateString()}
                       </span>
                     </div>
-                    <p className="text-gray-600 text-sm mb-3">{version.changelog}</p>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">{version.changelog}</p>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
                         {formatFileSize(version.fileSize)}
                       </span>
                       <button

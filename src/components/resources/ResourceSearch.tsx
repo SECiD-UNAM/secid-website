@@ -159,7 +159,7 @@ export default function ResourceSearch({
   });
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
       {/* Main Search Bar */}
       <div className="mb-4 flex gap-4">
         <div className="relative flex-1">
@@ -170,7 +170,7 @@ export default function ResourceSearch({
             }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white py-2 pl-10 pr-4 focus:border-transparent focus:ring-2 focus:ring-blue-500"
           />
           <div className="absolute left-3 top-2.5">
             <svg
@@ -199,7 +199,7 @@ export default function ResourceSearch({
           className={`rounded-lg border px-4 py-2 transition-colors ${
             showAdvanced || hasActiveFilters
               ? 'border-blue-300 bg-blue-50 text-blue-700'
-              : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
           }`}
         >
           {t?.resources?.advancedSearch || 'Advanced'}
@@ -209,7 +209,7 @@ export default function ResourceSearch({
       {/* Sort and Results Count */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-gray-600 dark:text-gray-400">
             {t?.resources?.sortBy || 'Sort by'}:
           </span>
           <select
@@ -221,7 +221,7 @@ export default function ResourceSearch({
                 direction: direction as 'asc' | 'desc',
               });
             }}
-            className="rounded border border-gray-300 px-2 py-1 text-sm focus:ring-1 focus:ring-blue-500"
+            className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-2 py-1 text-sm focus:ring-1 focus:ring-blue-500"
           >
             <option value="relevance-desc">
               {t?.resources?.sortOptions?.relevance || 'Relevance'}
@@ -246,7 +246,7 @@ export default function ResourceSearch({
 
         <div className="flex items-center gap-4">
           {resultCount > 0 && (
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
               {resultCount} {t?.resources?.results || 'results'}
             </span>
           )}
@@ -264,10 +264,10 @@ export default function ResourceSearch({
 
       {/* Advanced Filters */}
       {showAdvanced && (
-        <div className="space-y-4 border-t border-gray-200 pt-4">
+        <div className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-4">
           {/* Categories */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               {t?.resources?.categories?.title || 'Categories'}
             </label>
             <div className="flex flex-wrap gap-2">
@@ -278,7 +278,7 @@ export default function ResourceSearch({
                   className={`rounded-full border px-3 py-1 text-sm transition-colors ${
                     filters?.categories?.includes(category)
                       ? 'border-blue-300 bg-blue-100 text-blue-700'
-                      : 'border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100'
+                      : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
                   }`}
                 >
                   {t?.resources?.categories?.[category] || category}
@@ -289,7 +289,7 @@ export default function ResourceSearch({
 
           {/* File Types */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               {t?.resources?.fileTypes || 'File Types'}
             </label>
             <div className="flex flex-wrap gap-2">
@@ -300,7 +300,7 @@ export default function ResourceSearch({
                   className={`rounded-full border px-3 py-1 text-sm transition-colors ${
                     filters?.types?.includes(type)
                       ? 'border-green-300 bg-green-100 text-green-700'
-                      : 'border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100'
+                      : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
                   }`}
                 >
                   {type.toUpperCase()}
@@ -311,7 +311,7 @@ export default function ResourceSearch({
 
           {/* Access Levels */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               {t?.resources?.accessLevel || 'Access Level'}
             </label>
             <div className="flex flex-wrap gap-2">
@@ -322,7 +322,7 @@ export default function ResourceSearch({
                   className={`rounded-full border px-3 py-1 text-sm transition-colors ${
                     filters?.accessLevels?.includes(level)
                       ? 'border-purple-300 bg-purple-100 text-purple-700'
-                      : 'border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100'
+                      : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
                   }`}
                 >
                   {t?.resources?.accessLevels?.[level] || level}
@@ -333,7 +333,7 @@ export default function ResourceSearch({
 
           {/* Difficulty */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               {t?.resources?.difficulty?.title || 'Difficulty'}
             </label>
             <div className="flex flex-wrap gap-2">
@@ -344,7 +344,7 @@ export default function ResourceSearch({
                   className={`rounded-full border px-3 py-1 text-sm transition-colors ${
                     filters?.difficulties?.includes(difficulty as any)
                       ? 'border-yellow-300 bg-yellow-100 text-yellow-700'
-                      : 'border-gray-300 bg-gray-50 text-gray-700 hover:bg-gray-100'
+                      : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
                   }`}
                 >
                   {t?.resources?.difficulty?.[difficulty] || difficulty}
@@ -357,7 +357,7 @@ export default function ResourceSearch({
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {/* Language */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 {t?.resources?.language || 'Language'}
               </label>
               <select
@@ -368,7 +368,7 @@ export default function ResourceSearch({
                     e.target.value ? [e.target.value] : undefined
                   )
                 }
-                className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
+                className="w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
               >
                 <option value="">{t?.common?.all || 'All'}</option>
                 <option value="es">{t?.languages?.spanish || 'Spanish'}</option>
@@ -381,7 +381,7 @@ export default function ResourceSearch({
 
             {/* Minimum Rating */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 {t?.resources?.minimumRating || 'Minimum Rating'}
               </label>
               <select
@@ -392,7 +392,7 @@ export default function ResourceSearch({
                     e.target.value ? Number(e.target.value) : undefined
                   )
                 }
-                className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
+                className="w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
               >
                 <option value="">{t?.common?.any || 'Any'}</option>
                 <option value="4">4+ ⭐⭐⭐⭐</option>
@@ -404,7 +404,7 @@ export default function ResourceSearch({
 
             {/* Has Preview */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 {t?.resources?.preview || 'Preview'}
               </label>
               <select
@@ -417,7 +417,7 @@ export default function ResourceSearch({
                       : e.target.value === 'true'
                   )
                 }
-                className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
+                className="w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
               >
                 <option value="">{t?.common?.all || 'All'}</option>
                 <option value="true">
@@ -432,12 +432,12 @@ export default function ResourceSearch({
 
           {/* Date Range */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
+            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
               {t?.resources?.dateRange || 'Date Range'}
             </label>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-1 block text-xs text-gray-500">
+                <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">
                   {t?.common?.from || 'From'}
                 </label>
                 <input
@@ -461,11 +461,11 @@ export default function ResourceSearch({
                         : undefined
                     );
                   }}
-                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-gray-500">
+                <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">
                   {t?.common?.to || 'To'}
                 </label>
                 <input
@@ -489,7 +489,7 @@ export default function ResourceSearch({
                         : undefined
                     );
                   }}
-                  className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
+                  className="w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
                 />
               </div>
             </div>

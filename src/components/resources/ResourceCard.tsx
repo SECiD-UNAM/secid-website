@@ -104,11 +104,11 @@ export default function ResourceCard({
       books: 'bg-yellow-100 text-yellow-800',
       courses: 'bg-indigo-100 text-indigo-800',
       datasets: 'bg-red-100 text-red-800',
-      research: 'bg-gray-100 text-gray-800',
+      research: 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300',
       documentation: 'bg-teal-100 text-teal-800',
     };
     return (
-      colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800'
+      colors[category as keyof typeof colors] || 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
     );
   };
 
@@ -118,14 +118,14 @@ export default function ResourceCard({
       intermediate: 'text-yellow-600',
       advanced: 'text-red-600',
     };
-    return colors[difficulty as keyof typeof colors] || 'text-gray-600';
+    return colors[difficulty as keyof typeof colors] || 'text-gray-600 dark:text-gray-400';
   };
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <span
         key={i}
-        className={`text-sm ${i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300'}`}
+        className={`text-sm ${i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`}
       >
         ★
       </span>
@@ -134,7 +134,7 @@ export default function ResourceCard({
 
   return (
     <div
-      className={`rounded-lg border border-gray-200 bg-white shadow-md transition-shadow duration-200 hover:shadow-lg ${
+      className={`rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-md transition-shadow duration-200 hover:shadow-lg ${
         compact ? 'p-4' : 'p-6'
       }`}
       onClick={handleView}
@@ -192,14 +192,14 @@ export default function ResourceCard({
       {/* Title and Description */}
       <div className="mb-3">
         <h3
-          className={`mb-2 line-clamp-2 font-semibold text-gray-900 ${
+          className={`mb-2 line-clamp-2 font-semibold text-gray-900 dark:text-white ${
             compact ? 'text-sm' : 'text-lg'
           }`}
         >
           {resource.title}
         </h3>
         <p
-          className={`line-clamp-3 text-gray-600 ${
+          className={`line-clamp-3 text-gray-600 dark:text-gray-400 ${
             compact ? 'text-xs' : 'text-sm'
           }`}
         >
@@ -223,7 +223,7 @@ export default function ResourceCard({
               resource.difficulty}
           </span>
           {resource.language && (
-            <span className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-500">
+            <span className="rounded-full bg-gray-100 dark:bg-gray-700 px-2 py-1 text-xs text-gray-500 dark:text-gray-400">
               {resource.language.toUpperCase()}
             </span>
           )}
@@ -241,7 +241,7 @@ export default function ResourceCard({
               </span>
             ))}
             {resource.tags.length > 3 && (
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 +{resource.tags.length - 3} {t?.common?.more || 'more'}
               </span>
             )}
@@ -250,7 +250,7 @@ export default function ResourceCard({
       </div>
 
       {/* Author and Stats */}
-      <div className="mb-4 flex items-center justify-between text-sm text-gray-500">
+      <div className="mb-4 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
         <div className="flex items-center gap-2">
           {resource.author.avatar && (
             <img
@@ -288,7 +288,7 @@ export default function ResourceCard({
       </div>
 
       {/* File Info */}
-      <div className="mb-4 flex items-center justify-between text-xs text-gray-500">
+      <div className="mb-4 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
         <span>{formatFileSize(resource.fileSize)}</span>
         <span>{new Date(resource.createdAt).toLocaleDateString()}</span>
       </div>
@@ -312,7 +312,7 @@ export default function ResourceCard({
                 e.stopPropagation();
                 window.open(resource.previewUrl, '_blank');
               }}
-              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               {t?.resources?.preview || 'Preview'}
             </button>
@@ -322,8 +322,8 @@ export default function ResourceCard({
 
       {/* Estimated Time */}
       {resource.estimatedTime && !compact && (
-        <div className="mt-3 border-t border-gray-100 pt-3">
-          <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className="mt-3 border-t border-gray-100 dark:border-gray-700 pt-3">
+          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
             <span>⏱️</span>
             <span>
               {t?.resources?.estimatedTime || 'Estimated time'}:{' '}

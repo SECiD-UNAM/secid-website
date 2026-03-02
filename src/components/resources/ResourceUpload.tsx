@@ -68,10 +68,10 @@ export default function ResourceUpload({
   if (!user) {
     return (
       <div className="py-8 text-center">
-        <h2 className="mb-2 text-xl font-semibold text-gray-900">
+        <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
           {t?.auth?.signIn?.title || 'Sign In Required'}
         </h2>
-        <p className="mb-4 text-gray-600">
+        <p className="mb-4 text-gray-600 dark:text-gray-400">
           {t?.resources?.loginToUpload || 'Please sign in to upload resources.'}
         </p>
         <button
@@ -368,14 +368,14 @@ export default function ResourceUpload({
 
       {/* Title */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700">
+        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
           {t?.resources?.title || 'Title'} *
         </label>
         <input
           type="text"
           value={formData.title || ''}
           onChange={(e) => handleInputChange('title', e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
           placeholder={
             t?.resources?.titlePlaceholder || 'Enter a descriptive title...'
           }
@@ -384,14 +384,14 @@ export default function ResourceUpload({
 
       {/* Summary */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700">
+        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
           {t?.resources?.summary || 'Summary'} *
         </label>
         <textarea
           value={formData.summary || ''}
           onChange={(e) => handleInputChange('summary', e.target.value)}
           rows={3}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
           placeholder={
             t?.resources?.summaryPlaceholder ||
             'Brief summary (1-2 sentences)...'
@@ -401,14 +401,14 @@ export default function ResourceUpload({
 
       {/* Description */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700">
+        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
           {t?.resources?.description || 'Description'} *
         </label>
         <textarea
           value={formData['description'] || ''}
           onChange={(e) => handleInputChange('description', e.target.value)}
           rows={6}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
           placeholder={
             t?.resources?.descriptionPlaceholder ||
             'Detailed description of the resource...'
@@ -419,13 +419,13 @@ export default function ResourceUpload({
       {/* Category and Type */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
             {t?.resources?.category || 'Category'} *
           </label>
           <select
             value={formData.category}
             onChange={(e) => handleInputChange('category', e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
           >
             {categories.map((cat) => (
               <option key={cat.value} value={cat.value}>
@@ -436,13 +436,13 @@ export default function ResourceUpload({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
             {t?.resources?.type || 'Type'} *
           </label>
           <select
             value={formData['type']}
             onChange={(e) => handleInputChange('type', e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
           >
             {types.map((type) => (
               <option key={type.value} value={type.value}>
@@ -463,10 +463,10 @@ export default function ResourceUpload({
 
       {/* Main File */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700">
+        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
           {t?.resources?.mainFile || 'Main File'} *
         </label>
-        <div className="rounded-lg border-2 border-dashed border-gray-300 p-6">
+        <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-6">
           <input
             ref={fileInputRef}
             type="file"
@@ -477,7 +477,7 @@ export default function ResourceUpload({
           {!fileInfo ? (
             <div className="text-center">
               <svg
-                className="mx-auto h-12 w-12 text-gray-400"
+                className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
                 stroke="currentColor"
                 fill="none"
                 viewBox="0 0 48 48"
@@ -489,14 +489,14 @@ export default function ResourceUpload({
                   strokeLinejoin="round"
                 />
               </svg>
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                 {t?.resources?.dragDropFile ||
                   'Drag and drop your file here, or'}
               </p>
               <button
                 type="button"
                 onClick={() => fileInputRef?.current?.click()}
-                className="mt-2 font-medium text-blue-600 hover:text-blue-700"
+                className="mt-2 font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700"
               >
                 {t?.resources?.browseFiles || 'browse files'}
               </button>
@@ -505,7 +505,7 @@ export default function ResourceUpload({
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium">{fileInfo['name']}</p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {formatFileSize(fileInfo.size)}
                 </p>
               </div>
@@ -532,13 +532,13 @@ export default function ResourceUpload({
             onChange={(e) => handleInputChange('hasPreview', e.target.checked)}
             className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
           />
-          <label className="text-sm font-medium text-gray-700">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {t?.resources?.includePreview || 'Include Preview File'}
           </label>
         </div>
 
         {formData.hasPreview && (
-          <div className="rounded-lg border border-gray-300 p-4">
+          <div className="rounded-lg border border-gray-300 dark:border-gray-600 p-4">
             <input
               ref={previewInputRef}
               type="file"
@@ -550,7 +550,7 @@ export default function ResourceUpload({
               <button
                 type="button"
                 onClick={() => previewInputRef?.current?.click()}
-                className="w-full rounded-lg border-2 border-dashed border-gray-300 py-3 text-center text-gray-600 hover:border-gray-400"
+                className="w-full rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 py-3 text-center text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500"
               >
                 {t?.resources?.selectPreviewFile || 'Select Preview File'}
               </button>
@@ -558,7 +558,7 @@ export default function ResourceUpload({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">{previewInfo['name']}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     {formatFileSize(previewInfo.size)}
                   </p>
                 </div>
@@ -580,11 +580,11 @@ export default function ResourceUpload({
 
       {/* Thumbnail */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700">
+        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
           {t?.resources?.thumbnail || 'Thumbnail'} (
           {t?.common?.optional || 'Optional'})
         </label>
-        <div className="rounded-lg border border-gray-300 p-4">
+        <div className="rounded-lg border border-gray-300 dark:border-gray-600 p-4">
           <input
             ref={thumbnailInputRef}
             type="file"
@@ -596,7 +596,7 @@ export default function ResourceUpload({
             <button
               type="button"
               onClick={() => thumbnailInputRef?.current?.click()}
-              className="w-full rounded-lg border-2 border-dashed border-gray-300 py-3 text-center text-gray-600 hover:border-gray-400"
+              className="w-full rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 py-3 text-center text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500"
             >
               {t?.resources?.selectThumbnail || 'Select Thumbnail Image'}
             </button>
@@ -604,7 +604,7 @@ export default function ResourceUpload({
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium">{thumbnailInfo['name']}</p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {formatFileSize(thumbnailInfo.size)}
                 </p>
               </div>
@@ -633,7 +633,7 @@ export default function ResourceUpload({
 
       {/* Tags */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700">
+        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
           {t?.resources?.tags || 'Tags'} *
         </label>
         <div className="mb-2 flex gap-2">
@@ -644,7 +644,7 @@ export default function ResourceUpload({
             onKeyPress={(e) =>
               e.key === 'Enter' && (e.preventDefault(), addTag())
             }
-            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
             placeholder={t?.resources?.addTag || 'Add a tag...'}
           />
           <button
@@ -660,12 +660,12 @@ export default function ResourceUpload({
             {formData.tags.map((tag, index) => (
               <span
                 key={index}
-                className="flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700"
+                className="flex items-center gap-1 rounded-full bg-blue-100 dark:bg-blue-900/30 px-3 py-1 text-sm text-blue-700 dark:text-blue-400"
               >
                 #{tag}
                 <button
                   onClick={() => removeTag(tag)}
-                  className="text-blue-600 hover:text-blue-800"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                 >
                   ✕
                 </button>
@@ -678,13 +678,13 @@ export default function ResourceUpload({
       {/* Access Level and Language */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
             {t?.resources?.accessLevel || 'Access Level'}
           </label>
           <select
             value={formData.accessLevel}
             onChange={(e) => handleInputChange('accessLevel', e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
           >
             {accessLevels.map((level) => (
               <option key={level.value} value={level.value}>
@@ -695,13 +695,13 @@ export default function ResourceUpload({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
             {t?.resources?.language || 'Language'}
           </label>
           <select
             value={formData.language}
             onChange={(e) => handleInputChange('language', e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
           >
             <option value="es">{t?.languages?.spanish || 'Spanish'}</option>
             <option value="en">{t?.languages?.english || 'English'}</option>
@@ -715,13 +715,13 @@ export default function ResourceUpload({
       {/* Difficulty and Estimated Time */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
             {t?.resources?.difficulty?.title || 'Difficulty'}
           </label>
           <select
             value={formData.difficulty}
             onChange={(e) => handleInputChange('difficulty', e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
           >
             {difficulties.map((diff) => (
               <option key={diff.value} value={diff.value}>
@@ -732,7 +732,7 @@ export default function ResourceUpload({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
             {t?.resources?.estimatedTime || 'Estimated Time'} (
             {t?.common?.optional || 'Optional'})
           </label>
@@ -740,7 +740,7 @@ export default function ResourceUpload({
             type="text"
             value={formData.estimatedTime || ''}
             onChange={(e) => handleInputChange('estimatedTime', e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
             placeholder="e.g., 2 hours, 1 week"
           />
         </div>
@@ -748,7 +748,7 @@ export default function ResourceUpload({
 
       {/* Prerequisites */}
       <div>
-        <label className="mb-2 block text-sm font-medium text-gray-700">
+        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
           {t?.resources?.prerequisites || 'Prerequisites'} (
           {t?.common?.optional || 'Optional'})
         </label>
@@ -760,7 +760,7 @@ export default function ResourceUpload({
             onKeyPress={(e) =>
               e.key === 'Enter' && (e.preventDefault(), addPrerequisite())
             }
-            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
             placeholder={
               t?.resources?.addPrerequisite || 'Add a prerequisite...'
             }
@@ -778,12 +778,12 @@ export default function ResourceUpload({
             {formData.prerequisites.map((prereq, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between rounded bg-gray-100 px-3 py-2 text-gray-700"
+                className="flex items-center justify-between rounded bg-gray-100 dark:bg-gray-700 px-3 py-2 text-gray-700 dark:text-gray-300"
               >
                 <span>{prereq}</span>
                 <button
                   onClick={() => removePrerequisite(prereq)}
-                  className="text-gray-600 hover:text-gray-800"
+                  className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300"
                 >
                   ✕
                 </button>
@@ -796,16 +796,16 @@ export default function ResourceUpload({
   );
 
   return (
-    <div className="mx-auto max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="mx-auto max-w-2xl rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
           {t?.resources?.uploadResource || 'Upload Resource'}
         </h2>
         {onCancel && (
           <button
             onClick={onCancel}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
           >
             <svg
               className="h-6 w-6"
@@ -832,7 +832,7 @@ export default function ResourceUpload({
               className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
                 step >= stepNumber
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-600'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
               }`}
             >
               {stepNumber}
@@ -840,7 +840,7 @@ export default function ResourceUpload({
             {stepNumber < 3 && (
               <div
                 className={`mx-2 h-1 w-16 ${
-                  step > stepNumber ? 'bg-blue-600' : 'bg-gray-200'
+                  step > stepNumber ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
                 }`}
               />
             )}
@@ -854,11 +854,11 @@ export default function ResourceUpload({
       {step === 3 && renderStep3()}
 
       {/* Navigation */}
-      <div className="mt-8 flex justify-between border-t border-gray-200 pt-6">
+      <div className="mt-8 flex justify-between border-t border-gray-200 dark:border-gray-700 pt-6">
         <button
           onClick={() => setStep(Math.max(1, step - 1))}
           disabled={step === 1}
-          className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {t?.common?.previous || 'Previous'}
         </button>
@@ -891,8 +891,8 @@ export default function ResourceUpload({
       </div>
 
       {/* Upload Notice */}
-      <div className="mt-4 rounded-lg bg-blue-50 p-4">
-        <p className="text-sm text-blue-800">
+      <div className="mt-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 p-4">
+        <p className="text-sm text-blue-800 dark:text-blue-400">
           {t?.resources?.uploadNotice ||
             'Your resource will be reviewed by our team before being published. You will be notified once the review is complete.'}
         </p>
