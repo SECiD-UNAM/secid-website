@@ -2,11 +2,9 @@
 export const prerender = false;
 
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import EventForm from '@/components/events/EventForm';
 
 const { id } = Astro.params;
-
-// Event editing form component will be created separately
-// For now, we provide a basic edit structure following the pattern
 ---
 
 <DashboardLayout
@@ -55,53 +53,5 @@ const { id } = Astro.params;
     </div>
   </div>
 
-  <!-- Event Edit Form Placeholder -->
-  <div class="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
-    <div class="py-12 text-center">
-      <svg
-        class="mx-auto h-12 w-12 text-gray-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-        ></path>
-      </svg>
-      <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">
-        Event Edit Form
-      </h3>
-      <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-        The EventEditForm component will be implemented soon.
-        <br />
-        This form will allow editing all aspects of the event with ID: <code
-          class="rounded bg-gray-100 px-2 py-1 font-mono dark:bg-gray-700"
-          >{id}</code
-        >
-      </p>
-      <div class="mx-auto mt-6 max-w-md text-left">
-        <h4 class="mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          Edit functionalities:
-        </h4>
-        <ul class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
-          <li>• Modify basic information</li>
-          <li>• Update date and time</li>
-          <li>• Change location configuration</li>
-          <li>• Manage registration and capacity</li>
-          <li>• Edit agenda and speakers</li>
-          <li>• Modify pricing and settings</li>
-          <li>• Update event status</li>
-          <li>• Manage registered attendees</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- 
-    TODO: Implement EventEditForm component
-    Expected usage: <EventEditForm client:load eventId={id} lang="en" />
-  -->
+  <EventForm client:load lang="en" eventId={id} />
 </DashboardLayout>

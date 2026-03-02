@@ -1,8 +1,6 @@
 ---
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-
-// Event creation form component will be created separately
-// For now, we provide a basic form structure following the pattern
+import EventForm from '@/components/events/EventForm';
 ---
 
 <DashboardLayout
@@ -43,48 +41,5 @@ import DashboardLayout from '@/layouts/DashboardLayout.astro';
     </div>
   </div>
 
-  <!-- Event Creation Form Placeholder -->
-  <div class="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
-    <div class="py-12 text-center">
-      <svg
-        class="mx-auto h-12 w-12 text-gray-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-      </svg>
-      <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">
-        Formulario de Creación de Eventos
-      </h3>
-      <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-        El componente EventForm será implementado próximamente.
-        <br />
-        Este formulario permitirá crear y configurar eventos completos.
-      </p>
-      <div class="mx-auto mt-6 max-w-md text-left">
-        <h4 class="mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          Características incluidas:
-        </h4>
-        <ul class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
-          <li>• Información básica del evento</li>
-          <li>• Configuración de fecha y hora</li>
-          <li>• Gestión de ubicación (física/virtual/híbrida)</li>
-          <li>• Configuración de registro y capacidad</li>
-          <li>• Agenda y ponentes</li>
-          <li>• Configuración de precios</li>
-          <li>• Gestión de etiquetas y categorías</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- 
-    TODO: Implement EventForm component similar to JobPostingForm
-    Expected usage: <EventForm client:load lang="es" />
-  -->
+  <EventForm client:load lang="es" />
 </DashboardLayout>

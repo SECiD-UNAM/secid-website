@@ -3,6 +3,10 @@ import {
   SUBSCRIPTION_PLANS,
   calculateMexicanTaxes,
 } from '../../lib/stripe/stripe-client';
+import {
+  verifyRequest,
+  unauthorizedResponse,
+} from '../../lib/auth/verify-request';
 
 import type { APIRoute } from 'astro';
 
@@ -17,6 +21,12 @@ interface PaymentIntentRequest {
 }
 
 export const POST: APIRoute = async ({ request }) => {
+  // Verify authentication (defense-in-depth, also enforced by middleware)
+  const auth = verifyRequest(request);
+  if (!auth.authenticated) {
+    return unauthorizedResponse();
+  }
+
   try {
     const body: PaymentIntentRequest = await request.json();
 

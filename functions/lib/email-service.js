@@ -48,17 +48,24 @@ function generateJobMatchEmail(params) {
 <head>
   <meta charset="utf-8">
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
     .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; }
     .header { background: linear-gradient(135deg, #003B5C, #C4A24C); padding: 30px; text-align: center; color: white; }
     .header h1 { margin: 0; font-size: 24px; }
     .content { padding: 30px; }
-    .match-badge { display: inline-block; padding: 6px 16px; background: ${params.matchScore >= 80 ? "#22c55e" : params.matchScore >= 60 ? "#eab308" : "#3b82f6"}; color: white; border-radius: 20px; font-weight: 600; margin-bottom: 16px; }
+    .match-badge {
+      display: inline-block; padding: 6px 16px;
+      background: ${params.matchScore >= 80 ? "#22c55e" : "#3b82f6"};
+      color: white; border-radius: 20px; font-weight: 600; margin-bottom: 16px;
+    }
     .job-card { background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 16px 0; }
     .job-title { font-size: 18px; font-weight: 600; color: #003B5C; margin: 0 0 8px; }
     .company { color: #666; margin: 0 0 12px; }
-    .btn { display: inline-block; padding: 12px 24px; background: #003B5C; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; }
-    .footer { padding: 20px 30px; text-align: center; color: #999; font-size: 12px; border-top: 1px solid #eee; }
+    .btn {
+      display: inline-block; padding: 12px 24px; background: #003B5C;
+      color: white; text-decoration: none; border-radius: 8px; font-weight: 600;
+    }
+    .footer { padding: 20px 30px; text-align: center; color: #999; font-size: 12px; }
   </style>
 </head>
 <body>

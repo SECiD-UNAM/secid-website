@@ -3,6 +3,10 @@ import {
   createCustomer,
   SUBSCRIPTION_PLANS,
 } from '../../lib/stripe/stripe-client';
+import {
+  verifyRequest,
+  unauthorizedResponse,
+} from '../../lib/auth/verify-request';
 
 import type { APIRoute } from 'astro';
 
@@ -28,6 +32,12 @@ interface SubscriptionRequest {
 }
 
 export const POST: APIRoute = async ({ request }) => {
+  // Verify authentication (defense-in-depth, also enforced by middleware)
+  const auth = verifyRequest(request);
+  if (!auth.authenticated) {
+    return unauthorizedResponse();
+  }
+
   try {
     const body: SubscriptionRequest = await request.json();
 

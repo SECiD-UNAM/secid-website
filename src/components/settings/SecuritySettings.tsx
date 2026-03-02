@@ -3,37 +3,33 @@ import { useForm} from 'react-hook-form';
 import { zodResolver} from '@hookform/resolvers/zod';
 import { z} from 'zod';
 import Button from '@/components/ui/Button';
-import TwoFactorSetup from '@/components/auth/TwoFactorSetup';
 import { useTranslations} from '@/hooks/useTranslations';
 import { updatePassword, reauthenticateWithCredential, EmailAuthProvider} from 'firebase/auth';
 import toast from 'react-hot-toast';
 import {
-  getCurrentUser, 
-  getLinkedOAuthProviders, 
-  linkProvider, 
+  getCurrentUser,
+  getLinkedOAuthProviders,
+  linkProvider,
   unlinkProvider,
-  updateLastLogin 
+  updateLastLogin
 } from '@/lib/auth';
 import {
-  getTwoFactorStatus, 
-  disableTwoFactor, 
-  regenerateBackupCodes,
-  createTwoFactorSession,
-  verifyTwoFactorSession
+  getTwoFactorStatus,
+  TWO_FACTOR_AVAILABLE,
+  TWO_FACTOR_NOT_AVAILABLE_MESSAGE,
+  TWO_FACTOR_NOT_AVAILABLE_MESSAGE_ES,
 } from '@/lib/auth/two-factor';
 import {
   Shield, 
-  Key, 
-  Smartphone, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  AlertTriangle, 
-  CheckCircle, 
+  Key,
+  Smartphone,
+  Lock,
+  Eye,
+  EyeOff,
+  AlertTriangle,
+  CheckCircle,
   Clock,
   LogOut,
-  Trash2,
-  RefreshCw,
   Link as LinkIcon,
   Unlink,
   History,
@@ -85,12 +81,9 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
   const [loading, setLoading] = useState(false);
   const [twoFactorStatus, setTwoFactorStatus] = useState({ isEnabled: false, hasBackupCodes: false, unusedBackupCodes: 0 });
   const [linkedProviders, setLinkedProviders] = useState<LinkedAccount[]>([]);
-  const [showTwoFactorSetup, setShowTwoFactorSetup] = useState(false);
   const [showPasswords, setShowPasswords] = useState({ current: false, new: false, confirm: false });
   const [activeSessions, setActiveSessions] = useState<ActiveSession[]>([]);
   const [loginHistory, setLoginHistory] = useState<LoginHistory[]>([]);
-  const [backupCodes, setBackupCodes] = useState<string[]>([]);
-  const [showBackupCodes, setShowBackupCodes] = useState(false);
 
   const {
     register,
@@ -217,41 +210,6 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
     }
   };
 
-  const handleToggleTwoFactor = async () => {
-    if (twoFactorStatus.isEnabled) {
-      // Disable 2FA
-      try {
-        await disableTwoFactor();
-        setTwoFactorStatus({ ...twoFactorStatus, isEnabled: false });
-        toast.success(lang === 'es' 
-          ? 'Autenticación de dos factores deshabilitada' 
-          : 'Two-factor authentication disabled');
-      } catch (error) {
-        toast['error'](lang === 'es' 
-          ? 'Error al deshabilitar 2FA' 
-          : 'Error disabling 2FA');
-      }
-    } else {
-      // Enable 2FA
-      setShowTwoFactorSetup(true);
-    }
-  };
-
-  const handleRegenerateBackupCodes = async () => {
-    try {
-      const codes = await regenerateBackupCodes();
-      setBackupCodes(codes);
-      setShowBackupCodes(true);
-      toast.success(lang === 'es' 
-        ? 'Códigos de respaldo regenerados' 
-        : 'Backup codes regenerated');
-    } catch (error) {
-      toast['error'](lang === 'es' 
-        ? 'Error al regenerar códigos' 
-        : 'Error regenerating codes');
-    }
-  };
-
   const handleLinkProvider = async (providerId: SupportedProvider) => {
     try {
       await linkProvider(providerId);
@@ -335,19 +293,6 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
     const diffInDays = Math.floor(diffInHours / 24);
     return lang === 'es' ? `Hace ${diffInDays}d` : `${diffInDays}d ago`;
   };
-
-  if(showTwoFactorSetup) {
-    return (
-      <TwoFactorSetup
-        lang={lang}
-        onSetupComplete={() => {
-          setShowTwoFactorSetup(false);
-          loadSecurityData();
-        }}
-        onCancel={() => setShowTwoFactorSetup(false)}
-      />
-    );
-  }
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -510,115 +455,60 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
               <div className="flex items-start justify-between">
                 <div>
                   <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    {lang === 'es' ? 'Autenticación de Dos Factores' : 'Two-Factor Authentication'}
+                    {lang === 'es' ? 'Autenticaci\u00f3n de Dos Factores' : 'Two-Factor Authentication'}
                   </h2>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {lang === 'es' 
-                      ? 'Agrega una capa extra de seguridad a tu cuenta.' 
+                    {lang === 'es'
+                      ? 'Agrega una capa extra de seguridad a tu cuenta.'
                       : 'Add an extra layer of security to your account.'}
                   </p>
                 </div>
-                <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  twoFactorStatus.isEnabled 
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                    : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-                }`}>
-                  {twoFactorStatus.isEnabled 
-                    ? (lang === 'es' ? 'Activado' : 'Enabled')
-                    : (lang === 'es' ? 'Desactivado' : 'Disabled')
-                  }
+                <div className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                  {lang === 'es' ? 'Pr\u00f3ximamente' : 'Coming Soon'}
                 </div>
               </div>
 
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                <div className="flex items-center space-x-3 mb-4">
-                  <Smartphone className="h-8 w-8 text-primary-600 dark:text-primary-400" />
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <Smartphone className="h-8 w-8 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-medium text-gray-900 dark:text-white">
-                      {lang === 'es' ? 'Aplicación de Autenticación' : 'Authenticator App'}
+                    <h3 className="font-medium text-yellow-800 dark:text-yellow-300">
+                      {lang === 'es' ? 'Funci\u00f3n en Desarrollo' : 'Feature In Development'}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {twoFactorStatus.isEnabled 
-                        ? (lang === 'es' ? 'Configurado y activo' : 'Configured and active')
-                        : (lang === 'es' ? 'No configurado' : 'Not configured')
-                      }
+                    <p className="text-sm text-yellow-700 dark:text-yellow-400 mt-1">
+                      {lang === 'es'
+                        ? TWO_FACTOR_NOT_AVAILABLE_MESSAGE_ES
+                        : TWO_FACTOR_NOT_AVAILABLE_MESSAGE}
+                    </p>
+                    <p className="text-sm text-yellow-600 dark:text-yellow-500 mt-2">
+                      {lang === 'es'
+                        ? 'Estamos trabajando en integrar autenticaci\u00f3n TOTP con aplicaciones como Google Authenticator y Authy. Te notificaremos cuando est\u00e9 disponible.'
+                        : 'We are working on integrating TOTP authentication with apps like Google Authenticator and Authy. We will notify you when it becomes available.'}
                     </p>
                   </div>
                 </div>
-
-                <div className="flex space-x-3">
-                  <Button
-                    variant={twoFactorStatus.isEnabled ? "outline" : "primary"}
-                    onClick={handleToggleTwoFactor}
-                    loading={loading}
-                  >
-                    {twoFactorStatus.isEnabled 
-                      ? (lang === 'es' ? 'Deshabilitar' : 'Disable')
-                      : (lang === 'es' ? 'Configurar' : 'Set up')
-                    }
-                  </Button>
-
-                  {twoFactorStatus.isEnabled && (
-                    <Button
-                      variant="outline"
-                      onClick={handleRegenerateBackupCodes}
-                      loading={loading}
-                    >
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      {lang === 'es' ? 'Regenerar Códigos' : 'Regenerate Codes'}
-                    </Button>
-                  )}
-                </div>
-
-                {twoFactorStatus.isEnabled && (
-                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {lang === 'es' 
-                        ? `Códigos de respaldo disponibles: ${twoFactorStatus.unusedBackupCodes}` 
-                        : `Backup codes available: ${twoFactorStatus.unusedBackupCodes}`}
-                    </p>
-                  </div>
-                )}
               </div>
 
-              {/* Show backup codes modal */}
-              {showBackupCodes && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                  <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                      {lang === 'es' ? 'Nuevos Códigos de Respaldo' : 'New Backup Codes'}
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 opacity-60">
+                <div className="flex items-center space-x-3 mb-4">
+                  <Smartphone className="h-8 w-8 text-gray-400 dark:text-gray-500" />
+                  <div>
+                    <h3 className="font-medium text-gray-500 dark:text-gray-400">
+                      {lang === 'es' ? 'Aplicaci\u00f3n de Autenticaci\u00f3n' : 'Authenticator App'}
                     </h3>
-                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
-                      <div className="grid grid-cols-2 gap-2 text-sm font-mono">
-                        {backupCodes.map((code, index) => (
-                          <div key={index} className="text-center py-1">
-                            {code}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="flex space-x-3">
-                      <Button
-                        variant="outline"
-                        className="flex-1"
-                        onClick={() => {
-                          navigator.clipboard.writeText(backupCodes.join('\n'));
-                          toast.success(lang === 'es' ? 'Copiado' : 'Copied');
-                        }}
-                      >
-                        {lang === 'es' ? 'Copiar' : 'Copy'}
-                      </Button>
-                      <Button
-                        variant="primary"
-                        className="flex-1"
-                        onClick={() => setShowBackupCodes(false)}
-                      >
-                        {lang === 'es' ? 'Entendido' : 'Got it'}
-                      </Button>
-                    </div>
+                    <p className="text-sm text-gray-400 dark:text-gray-500">
+                      {lang === 'es' ? 'No disponible a\u00fan' : 'Not yet available'}
+                    </p>
                   </div>
                 </div>
-              )}
+
+                <Button
+                  variant="outline"
+                  disabled
+                >
+                  {lang === 'es' ? 'Configurar' : 'Set up'}
+                </Button>
+              </div>
             </div>
           )}
 

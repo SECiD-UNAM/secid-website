@@ -1,12 +1,10 @@
 /**
- * Mentorship Platform Firebase Operations
- *
- * This file re-exports everything from the modularized mentorship/ directory.
- * Existing imports from '../../lib/mentorship' continue to work unchanged.
+ * Mentorship module barrel file.
+ * Re-exports all public functions to preserve the original import paths.
  */
 
+// Profiles
 export {
-  // Profiles
   getMentorProfile,
   getMentorProfiles,
   createMentorProfile,
@@ -15,29 +13,47 @@ export {
   createMenteeProfile,
   updateMenteeProfile,
   uploadProfileImage,
-  // Matching
+} from './profiles';
+
+// Matching
+export {
   calculateMatchScore,
   getUserMatches,
   createMentorshipMatch,
-  // Requests
+} from './matching';
+
+// Requests
+export {
   getMentorshipRequests,
   createMentorshipRequest,
   updateMentorshipRequest,
-  // Sessions
+} from './requests';
+
+// Sessions
+export {
   getMentorshipSessions,
   getUpcomingSessions,
   createMentorshipSession,
   updateMentorshipSession,
-  // Feedback & Stats
+} from './sessions';
+
+// Feedback & Stats
+export {
   createMentorshipFeedback,
   getMentorshipStats,
-  // Subscriptions
+} from './feedback';
+
+// Real-time subscriptions
+export {
   subscribeMentorshipRequests,
   subscribeUpcomingSessions,
-  // Goals & Resources
+} from './subscriptions';
+
+// Goals & Resources
+export {
   createMentorshipResource,
   getMentorshipResources,
   createMentorshipGoal,
   updateMentorshipGoal,
   getMentorshipGoals,
-} from './mentorship/index';
+} from './goals';

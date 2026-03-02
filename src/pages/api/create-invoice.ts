@@ -3,6 +3,10 @@ import {
   calculateMexicanTaxes,
   validateRFC,
 } from '../../lib/stripe/stripe-client';
+import {
+  verifyRequest,
+  unauthorizedResponse,
+} from '../../lib/auth/verify-request';
 
 import type { APIRoute } from 'astro';
 
@@ -47,6 +51,12 @@ interface MexicanInvoiceData {
 }
 
 export const POST: APIRoute = async ({ request }) => {
+  // Verify authentication (defense-in-depth, also enforced by middleware)
+  const auth = verifyRequest(request);
+  if (!auth.authenticated) {
+    return unauthorizedResponse();
+  }
+
   try {
     const body: InvoiceRequest = await request.json();
 
@@ -243,7 +253,13 @@ export const POST: APIRoute = async ({ request }) => {
 };
 
 // Get invoice by ID
-export const GET: APIRoute = async ({ url }) => {
+export const GET: APIRoute = async ({ request, url }) => {
+  // Verify authentication (defense-in-depth, also enforced by middleware)
+  const auth = verifyRequest(request);
+  if (!auth.authenticated) {
+    return unauthorizedResponse();
+  }
+
   try {
     const invoiceId = url.searchParams.get('id');
 

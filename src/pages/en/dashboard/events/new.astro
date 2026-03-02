@@ -1,8 +1,6 @@
 ---
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-
-// Event creation form component will be created separately
-// For now, we provide a basic form structure following the pattern
+import EventForm from '@/components/events/EventForm';
 ---
 
 <DashboardLayout
@@ -43,48 +41,5 @@ import DashboardLayout from '@/layouts/DashboardLayout.astro';
     </div>
   </div>
 
-  <!-- Event Creation Form Placeholder -->
-  <div class="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
-    <div class="py-12 text-center">
-      <svg
-        class="mx-auto h-12 w-12 text-gray-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-      </svg>
-      <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">
-        Event Creation Form
-      </h3>
-      <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-        The EventForm component will be implemented soon.
-        <br />
-        This form will allow creating and configuring complete events.
-      </p>
-      <div class="mx-auto mt-6 max-w-md text-left">
-        <h4 class="mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          Features included:
-        </h4>
-        <ul class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
-          <li>• Basic event information</li>
-          <li>• Date and time configuration</li>
-          <li>• Location management (physical/virtual/hybrid)</li>
-          <li>• Registration and capacity settings</li>
-          <li>• Agenda and speakers</li>
-          <li>• Pricing configuration</li>
-          <li>• Tags and categories management</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- 
-    TODO: Implement EventForm component similar to JobPostingForm
-    Expected usage: <EventForm client:load lang="en" />
-  -->
+  <EventForm client:load lang="en" />
 </DashboardLayout>

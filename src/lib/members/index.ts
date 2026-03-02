@@ -1,12 +1,10 @@
 /**
- * Firebase utilities for member data operations.
- *
- * This file re-exports everything from the modularized members/ directory.
- * Existing imports from '@/lib/members' continue to work unchanged.
+ * Members module barrel file.
+ * Re-exports all public functions to preserve the original import paths.
  */
 
+// Queries
 export {
-  // Queries
   getMemberProfiles,
   searchMembers,
   getMemberProfile,
@@ -14,7 +12,10 @@ export {
   getDirectoryStatsData,
   generateVCard,
   getMemberRecommendations,
-  // Mutations
+} from './queries';
+
+// Mutations
+export {
   updateMemberProfile,
   sendConnectionRequest,
   acceptConnectionRequest,
@@ -23,7 +24,10 @@ export {
   trackProfileView,
   updateMemberStatus,
   bulkUpdateMemberStatus,
-  // Subscriptions
+} from './mutations';
+
+// Subscriptions
+export {
   subscribeToMemberUpdates,
   subscribeToConnectionRequests,
-} from './members/index';
+} from './subscriptions';
