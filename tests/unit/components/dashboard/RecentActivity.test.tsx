@@ -24,6 +24,19 @@ vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn(),
 }));
 
+vi.mock('@heroicons/react/24/outline', () =>
+  new Proxy({}, {
+    get: (_target, prop) => {
+      if (typeof prop === 'string' && prop !== '__esModule') {
+        const Icon = ({ className }: any) => <svg className={className} data-testid={`${prop}-icon`} />;
+        Icon.displayName = String(prop);
+        return Icon;
+      }
+      return undefined;
+    },
+  })
+);
+
 // Mock auth context
 const mockUseAuth = vi.mocked(await import('@/contexts/AuthContext')).useAuth;
 
@@ -41,7 +54,7 @@ const mockUserProfile = {
   isVerified: true,
 };
 
-describe.skip('RecentActivity', () => {
+describe('RecentActivity', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     

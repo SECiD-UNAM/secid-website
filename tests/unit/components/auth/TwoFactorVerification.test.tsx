@@ -78,6 +78,9 @@ vi.mock('@/components/ui/Button', () => ({
   ),
 }));
 
+// Skipped: Tests expect "Authentication Code" label and "Lost your device?"
+// button but component renders Spanish text by default. Mock setup assumes
+// different component structure than actual implementation. See TD-013.
 describe.skip('TwoFactorVerification', () => {
   const mockVerifyTwoFactorLogin = vi.mocked(verifyTwoFactorLogin);
   const mockUseBackupCode = vi.mocked(useBackupCode);

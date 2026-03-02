@@ -10,22 +10,33 @@ vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn(),
 }));
 
-vi.mock('@heroicons/react/24/outline', () => ({
-  MapPinIcon: ({ className }: any) => <svg className={className} data-testid="map-pin-icon" />,
-  BriefcaseIcon: ({ className }: any) => <svg className={className} data-testid="briefcase-icon" />,
-  CurrencyDollarIcon: ({ className }: any) => <svg className={className} data-testid="currency-icon" />,
-  ClockIcon: ({ className }: any) => <svg className={className} data-testid="clock-icon" />,
-  UserGroupIcon: ({ className }: any) => <svg className={className} data-testid="user-group-icon" />,
-  BookmarkIcon: ({ className }: any) => <svg className={className} data-testid="bookmark-icon" />,
-  EyeIcon: ({ className }: any) => <svg className={className} data-testid="eye-icon" />,
-  SparklesIcon: ({ className }: any) => <svg className={className} data-testid="sparkles-icon" />,
-}));
+vi.mock('@heroicons/react/24/outline', () =>
+  new Proxy({}, {
+    get: (_target, prop) => {
+      if (typeof prop === 'string' && prop !== '__esModule') {
+        const Icon = ({ className }: any) => <svg className={className} data-testid={`${prop}-icon`} />;
+        Icon.displayName = prop;
+        return Icon;
+      }
+      return undefined;
+    },
+  })
+);
 
-vi.mock('@heroicons/react/24/solid', () => ({
-  BookmarkIcon: ({ className }: any) => <svg className={className} data-testid="bookmark-solid-icon" />,
-}));
+vi.mock('@heroicons/react/24/solid', () =>
+  new Proxy({}, {
+    get: (_target, prop) => {
+      if (typeof prop === 'string' && prop !== '__esModule') {
+        const Icon = ({ className }: any) => <svg className={className} data-testid={`${prop}-solid-icon`} />;
+        Icon.displayName = prop;
+        return Icon;
+      }
+      return undefined;
+    },
+  })
+);
 
-describe.skip('JobCard', () => {
+describe('JobCard', () => {
   const mockUser = {
     uid: 'user123',
     email: 'test@example.com',

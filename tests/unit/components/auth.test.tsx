@@ -35,6 +35,11 @@ vi.mock('@/contexts/AuthContext', () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
+// Skipped: This aggregate test file duplicates individual component tests
+// (LoginForm.test.tsx, SignUpForm.test.tsx, AuthGuard.test.tsx) with an
+// incorrect Firebase mock API shape (method-based vs modular SDK).
+// Individual component tests have proper mocks and should be used instead.
+// See TD-013.
 describe.skip('Authentication Components', () => {
   beforeEach(() => {
     vi.clearAllMocks();

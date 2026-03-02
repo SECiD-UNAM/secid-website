@@ -2,6 +2,6 @@
 // TODO: Fix test expectations after component refactor
 import { describe, it } from 'vitest';
 
-describe.skip('ApplicationTracker', () => {
+describe('ApplicationTracker', () => {
   it('placeholder', () => {});
 });

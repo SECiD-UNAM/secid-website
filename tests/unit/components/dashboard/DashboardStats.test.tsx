@@ -34,6 +34,19 @@ vi.mock('@/lib/firebase', () => ({
   db: {},
 }));
 
+vi.mock('@heroicons/react/24/outline', () =>
+  new Proxy({}, {
+    get: (_target, prop) => {
+      if (typeof prop === 'string' && prop !== '__esModule') {
+        const Icon = ({ className }: any) => <svg className={className} data-testid={`${prop}-icon`} />;
+        Icon.displayName = String(prop);
+        return Icon;
+      }
+      return undefined;
+    },
+  })
+);
+
 // Mock Firestore functions
 const mockCollection = vi.mocked(collection);
 const mockQuery = vi.mocked(query);
@@ -68,7 +81,7 @@ const mockEventsSnapshot = {
   docs: [],
 };
 
-describe.skip('DashboardStats', () => {
+describe('DashboardStats', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     

@@ -100,6 +100,12 @@ vi.mock('@/components/auth/TwoFactorVerification', () => ({
   ),
 }));
 
+vi.mock('@/lib/firebase', () => ({
+  isDemoMode: vi.fn(() => false),
+  auth: {},
+  db: {},
+}));
+
 // Mock localStorage
 const mockLocalStorage = {
   getItem: vi.fn(),
@@ -112,7 +118,7 @@ Object.defineProperty(window, 'localStorage', {
   value: mockLocalStorage,
 });
 
-describe.skip('LoginForm', () => {
+describe('LoginForm', () => {
   const mockUser = {
     uid: 'user123',
     email: 'test@example.com',

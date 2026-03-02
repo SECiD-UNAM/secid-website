@@ -72,6 +72,10 @@ vi.mock('@/components/ui/Button', () => ({
   ),
 }));
 
+// Skipped: Tests assume English form labels but component renders Spanish by default.
+// Component uses react-hook-form + zod, but mock setup is incomplete (missing
+// firebase storage mock, Button component mock conflicts). Needs comprehensive
+// mock setup and lang="en" on all renders. See TD-013.
 describe.skip('SignUpForm', () => {
   const mockCreateUser = vi.mocked(createUserWithEmailAndPassword);
   const mockUpdateProfile = vi.mocked(updateProfile);

@@ -214,7 +214,7 @@ const mockAuthMiddleware = async (req: Request, res: Response, next: () => void)
   }
 };
 
-describe.skip('API Endpoints Integration', () => {
+describe('API Endpoints Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

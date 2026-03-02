@@ -14,23 +14,35 @@ vi.mock('@/contexts/AuthContext', () => ({
 vi.mock('firebase/firestore', () => ({
   collection: vi.fn(),
   addDoc: vi.fn(),
+  doc: vi.fn(),
+  getDoc: vi.fn(),
   serverTimestamp: vi.fn(),
+}));
+
+vi.mock('firebase/storage', () => ({
+  ref: vi.fn(),
+  uploadBytes: vi.fn(),
+  getDownloadURL: vi.fn(),
 }));
 
 vi.mock('@/lib/firebase', () => ({
   db: {},
+  storage: {},
 }));
 
-vi.mock('@heroicons/react/24/outline', () => ({
-  XMarkIcon: ({ className }: any) => <svg className={className} data-testid="x-mark-icon" />,
-  DocumentArrowUpIcon: ({ className }: any) => <svg className={className} data-testid="document-upload-icon" />,
-  PaperClipIcon: ({ className }: any) => <svg className={className} data-testid="paper-clip-icon" />,
-  UserIcon: ({ className }: any) => <svg className={className} data-testid="user-icon" />,
-  EnvelopeIcon: ({ className }: any) => <svg className={className} data-testid="envelope-icon" />,
-  PhoneIcon: ({ className }: any) => <svg className={className} data-testid="phone-icon" />,
-  CheckCircleIcon: ({ className }: any) => <svg className={className} data-testid="check-circle-icon" />,
-  ExclamationTriangleIcon: ({ className }: any) => <svg className={className} data-testid="exclamation-triangle-icon" />,
-}));
+// Mock all heroicons with Proxy to auto-handle any icon import
+vi.mock('@heroicons/react/24/outline', () =>
+  new Proxy({}, {
+    get: (_target, prop) => {
+      if (typeof prop === 'string' && prop !== '__esModule') {
+        const Icon = ({ className }: any) => <svg className={className} data-testid={`${prop}-icon`} />;
+        Icon.displayName = String(prop);
+        return Icon;
+      }
+      return undefined;
+    },
+  })
+);
 
 // Mock file upload
 const mockFileUpload = vi.fn();
@@ -38,7 +50,7 @@ vi.mock('@/lib/file-upload', () => ({
   uploadFile: mockFileUpload,
 }));
 
-describe.skip('JobApplicationModal', () => {
+describe('JobApplicationModal', () => {
   const mockUser = {
     uid: 'user123',
     email: 'john.doe@example.com',

@@ -4,18 +4,19 @@ import { render, screen, fireEvent, waitFor, within } from '@testing-library/rea
 import userEvent from '@testing-library/user-event';
 import { JobFilters } from '@/components/jobs/JobFilters';
 
-// Mock heroicons
-vi.mock('@heroicons/react/24/outline', () => ({
-  FunnelIcon: ({ className }: any) => <svg className={className} data-testid="funnel-icon" />,
-  MapPinIcon: ({ className }: any) => <svg className={className} data-testid="map-pin-icon" />,
-  BriefcaseIcon: ({ className }: any) => <svg className={className} data-testid="briefcase-icon" />,
-  CurrencyDollarIcon: ({ className }: any) => <svg className={className} data-testid="currency-icon" />,
-  AcademicCapIcon: ({ className }: any) => <svg className={className} data-testid="academic-cap-icon" />,
-  ClockIcon: ({ className }: any) => <svg className={className} data-testid="clock-icon" />,
-  BuildingOfficeIcon: ({ className }: any) => <svg className={className} data-testid="building-office-icon" />,
-  SparklesIcon: ({ className }: any) => <svg className={className} data-testid="sparkles-icon" />,
-  XMarkIcon: ({ className }: any) => <svg className={className} data-testid="x-mark-icon" />,
-}));
+// Mock heroicons with Proxy to auto-handle all icon imports
+vi.mock('@heroicons/react/24/outline', () =>
+  new Proxy({}, {
+    get: (_target, prop) => {
+      if (typeof prop === 'string' && prop !== '__esModule') {
+        const Icon = ({ className }: any) => <svg className={className} data-testid={`${prop}-icon`} />;
+        Icon.displayName = prop;
+        return Icon;
+      }
+      return undefined;
+    },
+  })
+);
 
 // Mock localStorage
 const mockLocalStorage = {
@@ -29,7 +30,7 @@ Object.defineProperty(window, 'localStorage', {
   value: mockLocalStorage,
 });
 
-describe.skip('JobFilters', () => {
+describe('JobFilters', () => {
   const mockOnFiltersChange = vi.fn();
   const user = userEvent.setup();
 

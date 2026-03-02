@@ -28,6 +28,10 @@ vi.mock('@/contexts/AuthContext', () => ({
   useAuth: () => mockAuthContext,
 }));
 
+// Skipped: This aggregate test file duplicates individual component tests
+// (JobBoard.test.tsx, JobCard.test.tsx, JobFilters.test.tsx, JobPostingForm.test.tsx)
+// with insufficient mocks (missing heroicons, firebase module mocks).
+// Individual component tests have comprehensive mocks. See TD-013.
 describe.skip('Job Components', () => {
   beforeEach(() => {
     vi.clearAllMocks();

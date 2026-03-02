@@ -88,6 +88,10 @@ Object.assign(window.URL, {
   revokeObjectURL: vi.fn(),
 });
 
+// Skipped: Tests assume component renders QR code setup UI with specific
+// button text that doesn't match actual component output. Component
+// uses useTranslations hook but tests expect hardcoded English strings.
+// Needs rewrite to match actual TwoFactorSetup component API. See TD-013.
 describe.skip('TwoFactorSetup', () => {
   const mockSetupTwoFactor = vi.mocked(setupTwoFactor);
   const mockEnableTwoFactor = vi.mocked(enableTwoFactor);

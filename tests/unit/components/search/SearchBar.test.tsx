@@ -19,6 +19,24 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import SearchBar from '@/components/search/SearchBar';
 import type { SearchSuggestion, SearchFilters } from '@/types/search';
 
+// Mock heroicons with Proxy-based auto-mock (component imports MagnifyingGlassIcon, XMarkIcon, MicrophoneIcon)
+vi.mock('@heroicons/react/24/outline', () =>
+  new Proxy({}, {
+    get: (_target, prop) => {
+      if (typeof prop === 'string' && prop !== '__esModule') {
+        const Icon = ({ className }: any) => <svg className={className} data-testid={`${prop}-icon`} />;
+        Icon.displayName = String(prop);
+        return Icon;
+      }
+      return undefined;
+    },
+  })
+);
+
+vi.mock('clsx', () => ({
+  clsx: (...args: any[]) => args.filter(Boolean).join(' '),
+}));
+
 // Mock dependencies
 vi.mock('@/lib/search/search-engine', () => ({
   searchEngine: {
@@ -74,7 +92,7 @@ const mockSuggestions: SearchSuggestion[] = [
   },
 ];
 
-describe.skip('SearchBar', () => {
+describe('SearchBar', () => {
   const defaultProps = {
     onSearch: vi.fn(),
     onSuggestionSelect: vi.fn(),

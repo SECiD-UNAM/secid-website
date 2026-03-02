@@ -48,6 +48,10 @@ vi.mock('@/components/ui/Button', () => ({
   ),
 }));
 
+// Skipped: Tests render with default lang="es" but assert English text.
+// Component uses inline lang checks (not useTranslations) for button text.
+// Needs 45 render calls updated to pass lang="en" or assertions updated
+// to match Spanish text. See TD-013.
 describe.skip('SocialLoginButtons', () => {
   const mockSignInWithProvider = vi.mocked(signInWithProvider);
   const mockToast = vi.mocked(toast);

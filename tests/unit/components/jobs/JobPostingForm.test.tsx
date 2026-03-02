@@ -21,22 +21,20 @@ vi.mock('@/lib/firebase', () => ({
   db: {},
 }));
 
-vi.mock('@heroicons/react/24/outline', () => ({
-  BriefcaseIcon: ({ className }: any) => <svg className={className} data-testid="briefcase-icon" />,
-  BuildingOfficeIcon: ({ className }: any) => <svg className={className} data-testid="building-office-icon" />,
-  MapPinIcon: ({ className }: any) => <svg className={className} data-testid="map-pin-icon" />,
-  CurrencyDollarIcon: ({ className }: any) => <svg className={className} data-testid="currency-icon" />,
-  CalendarIcon: ({ className }: any) => <svg className={className} data-testid="calendar-icon" />,
-  DocumentTextIcon: ({ className }: any) => <svg className={className} data-testid="document-text-icon" />,
-  CheckCircleIcon: ({ className }: any) => <svg className={className} data-testid="check-circle-icon" />,
-  ExclamationCircleIcon: ({ className }: any) => <svg className={className} data-testid="exclamation-circle-icon" />,
-  PlusIcon: ({ className }: any) => <svg className={className} data-testid="plus-icon" />,
-  XMarkIcon: ({ className }: any) => <svg className={className} data-testid="x-mark-icon" />,
-  SparklesIcon: ({ className }: any) => <svg className={className} data-testid="sparkles-icon" />,
-  InformationCircleIcon: ({ className }: any) => <svg className={className} data-testid="information-circle-icon" />,
-}));
+vi.mock('@heroicons/react/24/outline', () =>
+  new Proxy({}, {
+    get: (_target, prop) => {
+      if (typeof prop === 'string' && prop !== '__esModule') {
+        const Icon = ({ className }: any) => <svg className={className} data-testid={`${prop}-icon`} />;
+        Icon.displayName = prop;
+        return Icon;
+      }
+      return undefined;
+    },
+  })
+);
 
-describe.skip('JobPostingForm', () => {
+describe('JobPostingForm', () => {
   const mockUser = {
     uid: 'company123',
     email: 'hr@techcorp.com',
