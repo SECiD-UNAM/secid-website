@@ -9,6 +9,7 @@ import { authTranslations } from './auth';
 import { pricingTranslations } from './pricing';
 import { resourcesTranslations } from './resources-translations';
 import { mentorshipTranslations } from './mentorship-translations';
+import { forumTranslations } from './forum-translations';
 
 export type Language = 'es' | 'en';
 
@@ -140,6 +141,7 @@ export interface Translations {
     optional: string;
     clearFilters: string;
     button: string;
+    retry: string;
   };
   auth: {
     signUp: {
@@ -325,6 +327,92 @@ export interface Translations {
       [key: string]: string;
     };
   };
+  forum: {
+    title: string;
+    topics: string;
+    posts: string;
+    members: string;
+    categories: string;
+    searchPlaceholder: string;
+    createTopic: string;
+    latestActivity: string;
+    reply: string;
+    search: string;
+    searchResults: string;
+    noResults: string;
+    noResultsDescription: string;
+    sortByDate: string;
+    sortByReplies: string;
+    sortByVotes: string;
+    sortByRelevance: string;
+    filters: string;
+    clearFilters: string;
+    filterByCategory: string;
+    filterByDate: string;
+    categoryList: {
+      careerAdvice: { name: string; description: string };
+      technicalDiscussion: { name: string; description: string };
+      industryNews: { name: string; description: string };
+      jobOpportunities: { name: string; description: string };
+      networking: { name: string; description: string };
+      generalDiscussion: { name: string; description: string };
+    };
+    errors: {
+      notFound: string;
+      loadingFailed: string;
+      postingFailed: string;
+      validation: {
+        titleRequired: string;
+        contentRequired: string;
+        categoryRequired: string;
+        titleTooLong: string;
+        contentTooLong: string;
+      };
+    };
+    topic: {
+      createTopic: string;
+      edit: string;
+      title: string;
+      topicTitle: string;
+      category: string;
+      selectCategory: string;
+      content: string;
+      preview: string;
+      topicContent: string;
+      attachments: string;
+      maxFileSize: string;
+      allowedTypes: string;
+      tags: string;
+      tagPlaceholder: string;
+      uploadFile: string;
+      publish: string;
+      formatting: string;
+      solved: string;
+      pinned: string;
+      share: string;
+    };
+    post: {
+      writeReply: string;
+      replyPlaceholder: string;
+      postReply: string;
+      lastEdited: string;
+      showLess: string;
+      showMore: string;
+      attachments: string;
+      reply: string;
+      quote: string;
+      markSolution: string;
+      report: string;
+      noReplies: string;
+      loadMore: string;
+      edit: string;
+      bold: string;
+      italic: string;
+      codeBlock: string;
+      link: string;
+      list: string;
+    };
+  };
 }
 
 /**
@@ -337,6 +425,7 @@ export const translations: Record<Language, Translations> = {
     ...pricingTranslations.es,
     ...resourcesTranslations.es,
     ...mentorshipTranslations.es,
+    ...forumTranslations.es,
   },
   en: {
     ...commonTranslations.en,
@@ -344,6 +433,7 @@ export const translations: Record<Language, Translations> = {
     ...pricingTranslations.en,
     ...resourcesTranslations.en,
     ...mentorshipTranslations.en,
+    ...forumTranslations.en,
   },
 };
 

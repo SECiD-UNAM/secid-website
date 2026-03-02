@@ -1,6 +1,6 @@
 ---
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import EventForm from '@/components/events/EventForm';
+import EventFormPage from '@/components/wrappers/EventFormPage';
 ---
 
 <DashboardLayout
@@ -41,5 +41,5 @@ import EventForm from '@/components/events/EventForm';
     </div>
   </div>
 
-  <EventForm client:load lang="en" />
+  <EventFormPage client:only="react" lang="en" />
 </DashboardLayout>

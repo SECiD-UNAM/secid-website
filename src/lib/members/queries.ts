@@ -72,7 +72,7 @@ export async function getMemberProfiles(options: {
       q = query(q, where('joinedAt', '>=', filters.joinedAfter));
     }
 
-    const sortBy = filters.sortBy || 'activity';
+    const sortBy = filters.sortBy || 'joinDate';
     const sortOrder = filters.sortOrder || 'desc';
 
     switch(sortBy) {
@@ -85,8 +85,11 @@ export async function getMemberProfiles(options: {
       case 'reputation':
         q = query(q, orderBy('activity.reputation', sortOrder));
         break;
-      default:
+      case 'activity':
         q = query(q, orderBy('activity.lastActive', sortOrder));
+        break;
+      default:
+        q = query(q, orderBy('createdAt', sortOrder));
     }
 
     if(lastDoc) {

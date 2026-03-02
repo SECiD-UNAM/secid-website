@@ -45,7 +45,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
   const [itemsPerPage] = useState(12);
   const [showFilters, setShowFilters] = useState(false);
   const [searchFilters, setSearchFilters] = useState<MemberSearchFilters>({
-    sortBy: 'activity',
+    sortBy: 'joinDate',
     sortOrder: 'desc'
   });
 
@@ -173,7 +173,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
 
   const clearFilters = () => {
     setSearchFilters({
-      sortBy: 'activity',
+      sortBy: 'joinDate',
       sortOrder: 'desc'
     });
     setSearchResults([]);

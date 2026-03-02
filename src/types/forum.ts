@@ -7,15 +7,21 @@ export interface ForumCategory {
   name: string;
   slug: string;
   description: string;
-  icon?: string;
-  color?: string;
-  order: number;
+  icon: string;
+  color: string;
+  displayOrder: number;
   parentId?: string;
-  topicsCount: number;
-  postsCount: number;
-  lastActivity?: Date;
+  topicCount: number;
+  postCount: number;
+  lastActivity?: {
+    topicId?: string;
+    topicTitle: string;
+    userId: string;
+    userName: string;
+    timestamp: Date;
+  };
   isActive: boolean;
-  moderators: string[];
+  moderatorIds: string[];
   rules?: string[];
   createdAt: Date;
   updatedAt: Date;
@@ -35,12 +41,16 @@ export interface ForumTopic {
   isLocked: boolean;
   isSolved: boolean;
   isAnnouncement: boolean;
-  viewCount: number;
-  replyCount: number;
-  voteScore: number;
+  views: number;
+  postCount: number;
+  upvotes: number;
+  downvotes: number;
   tags: string[];
-  lastReplyAt?: Date;
-  lastReplyBy?: string;
+  lastActivity: {
+    userId: string;
+    userName: string;
+    timestamp: Date;
+  };
   createdAt: Date;
   updatedAt: Date;
   status: 'active' | 'closed' | 'archived' | 'moderated';
@@ -50,30 +60,39 @@ export interface ForumTopic {
 export interface ForumPost {
   id: string;
   topicId: string;
+  parentPostId?: string;
   content: string;
+  htmlContent?: string;
   authorId: string;
   authorName: string;
   authorAvatar?: string;
-  parentId?: string;
-  isAnswer: boolean;
-  voteScore: number;
-  editCount: number;
-  lastEditedAt?: Date;
-  lastEditedBy?: string;
+  isSolution: boolean;
+  isEdited: boolean;
+  upvotes: number;
+  downvotes: number;
+  reactions: Record<string, string[]>;
+  editHistory: Array<{
+    content: string;
+    editedAt: Date;
+    editedBy: string;
+  }>;
+  attachments: ForumAttachment[];
+  mentions: string[];
+  reportCount: number;
+  isReported: boolean;
+  depth: number;
+  childrenCount: number;
   createdAt: Date;
   updatedAt: Date;
   status: 'active' | 'deleted' | 'moderated';
-  attachments?: ForumAttachment[];
-  reactions?: ForumReaction[];
 }
 
 export interface ForumAttachment {
   id: string;
-  filename: string;
-  url: string;
-  type: string;
-  size: number;
-  uploadedAt: Date;
+  fileName: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
 }
 
 export interface ForumVote {
@@ -81,7 +100,7 @@ export interface ForumVote {
   userId: string;
   targetId: string;
   targetType: 'topic' | 'post';
-  value: 1 | -1;
+  voteType: 'upvote' | 'downvote';
   createdAt: Date;
 }
 
@@ -150,12 +169,15 @@ export interface ForumSearchResult {
   id: string;
   type: 'topic' | 'post';
   title: string;
+  content: string;
   excerpt: string;
   categoryId: string;
   categoryName: string;
   authorId: string;
   authorName: string;
   score: number;
+  highlights: string[];
+  topicId?: string;
   createdAt: Date;
   highlightedContent?: string;
 }

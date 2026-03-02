@@ -141,6 +141,7 @@ export const commonTranslations = {
       optional: 'Opcional',
       clearFilters: 'Limpiar filtros',
       button: 'Botón',
+      retry: 'Reintentar',
     },
     languages: {
       spanish: 'Español',
@@ -284,6 +285,7 @@ export const commonTranslations = {
       optional: 'Optional',
       clearFilters: 'Clear filters',
       button: 'Button',
+      retry: 'Retry',
     },
     languages: {
       spanish: 'Spanish',
