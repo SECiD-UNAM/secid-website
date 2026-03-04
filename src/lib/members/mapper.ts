@@ -55,7 +55,7 @@ export function mapUserDocToMemberProfile(uid: string, data: Record<string, any>
       github: data.githubUrl,
       portfolio: data.portfolioUrl,
     },
-    networking: data.networking || {
+    networking: {
       connections: [],
       pendingConnections: [],
       blockedUsers: [],
@@ -64,6 +64,7 @@ export function mapUserDocToMemberProfile(uid: string, data: Record<string, any>
       mentorshipStatus: 'none',
       availableForMentoring: data.privacySettings?.mentorshipAvailable || false,
       openToOpportunities: data.privacySettings?.jobSearching || false,
+      ...(data.networking || {}),
     },
     privacy: data.privacy || {
       profileVisibility: data.privacySettings?.profileVisible !== false ? 'public' : 'private',

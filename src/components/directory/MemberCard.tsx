@@ -61,12 +61,12 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     if (!currentUser || isOwnProfile) return;
 
     // Check follow status
-    if (member.networking.followers?.includes(currentUser.uid)) {
+    if (member.networking?.followers?.includes(currentUser.uid)) {
       setIsFollowing(true);
     }
 
     // Check connection status
-    if (member.networking.connections?.includes(currentUser.uid)) {
+    if (member.networking?.connections?.includes(currentUser.uid)) {
       setConnectionStatus('connected');
     } else {
       hasPendingConnectionRequest(currentUser.uid, member.uid)

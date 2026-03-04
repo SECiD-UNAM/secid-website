@@ -61,11 +61,11 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
   useEffect(() => {
     if (!currentUser || isOwnProfile) return;
 
-    if (member.networking.followers?.includes(currentUser.uid)) {
+    if (member.networking?.followers?.includes(currentUser.uid)) {
       setIsFollowing(true);
     }
 
-    if (member.networking.connections?.includes(currentUser.uid)) {
+    if (member.networking?.connections?.includes(currentUser.uid)) {
       setConnectionStatus('connected');
     } else {
       hasPendingConnectionRequest(currentUser.uid, member.uid)

@@ -69,7 +69,7 @@ export function getVisibleFields(
   }
 
   const isConnection = viewerUid
-    ? member.networking.connections.includes(viewerUid)
+    ? (member.networking?.connections ?? []).includes(viewerUid)
     : false;
   const isAuthenticated = !!viewerUid;
 
