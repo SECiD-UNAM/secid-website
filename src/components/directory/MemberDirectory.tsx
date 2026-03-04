@@ -74,12 +74,31 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
     }
   }, [showStats, memberType]);
 
-  // Search when filters change
+  // Search when filters change, or re-sort locally when only sort changes
   useEffect(() => {
     if (hasActiveFilters(searchFilters)) {
       handleSearch(searchFilters);
     } else {
       setSearchResults([]);
+      // Re-sort existing members client-side when only sort changes
+      if (members.length > 0 && searchFilters.sortBy) {
+        const sorted = [...members].sort((a, b) => {
+          const order = searchFilters.sortOrder === 'asc' ? 1 : -1;
+          switch (searchFilters.sortBy) {
+            case 'name':
+              return order * a.displayName.localeCompare(b.displayName);
+            case 'joinDate':
+              return order * (a.joinedAt.getTime() - b.joinedAt.getTime());
+            case 'activity':
+              return order * ((a.activity.lastActive?.getTime() || 0) - (b.activity.lastActive?.getTime() || 0));
+            case 'reputation':
+              return order * (a.activity.reputation - b.activity.reputation);
+            default:
+              return 0;
+          }
+        });
+        setMembers(sorted);
+      }
     }
   }, [searchFilters]);
 

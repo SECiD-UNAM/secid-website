@@ -19,11 +19,18 @@ export {
   sendConnectionRequest,
   acceptConnectionRequest,
   sendMessage,
+  followMember,
+  unfollowMember,
   uploadProfileImage,
   trackProfileView,
   updateMemberStatus,
   bulkUpdateMemberStatus,
+  // Connections & Privacy
+  hasPendingConnectionRequest,
+  getVisibleFields,
   // Subscriptions
   subscribeToMemberUpdates,
   subscribeToConnectionRequests,
 } from './members/index';
+
+export type { VisibleFields } from './members/index';

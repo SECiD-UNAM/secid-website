@@ -11,12 +11,14 @@ interface Props {
 }
 
 function MemberProfileInner({ memberId, lang = 'es' }: Props) {
-  const { user, userProfile } = useAuth();
+  const { user, userProfile, loading: authLoading } = useAuth();
   const [member, setMember] = useState<MemberProfileType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (authLoading) return;
+
     let cancelled = false;
 
     async function fetchMember() {
@@ -48,7 +50,7 @@ function MemberProfileInner({ memberId, lang = 'es' }: Props) {
     }
 
     return () => { cancelled = true; };
-  }, [memberId, lang]);
+  }, [memberId, lang, authLoading]);
 
   if (loading) {
     return (

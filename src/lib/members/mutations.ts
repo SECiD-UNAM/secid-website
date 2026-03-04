@@ -215,6 +215,41 @@ async function getOrCreateConversation(uid1: string, uid2: string): Promise<stri
 }
 
 /**
+ * Follow / unfollow
+ */
+export async function followMember(followerUid: string, targetUid: string): Promise<void> {
+  if (isUsingMockAPI()) {
+    console.log('Mock: Following member', { followerUid, targetUid });
+    return;
+  }
+
+  const batch = writeBatch(db);
+  batch.update(doc(db, COLLECTIONS.MEMBERS, followerUid), {
+    'networking.following': arrayUnion(targetUid),
+  });
+  batch.update(doc(db, COLLECTIONS.MEMBERS, targetUid), {
+    'networking.followers': arrayUnion(followerUid),
+  });
+  await batch.commit();
+}
+
+export async function unfollowMember(followerUid: string, targetUid: string): Promise<void> {
+  if (isUsingMockAPI()) {
+    console.log('Mock: Unfollowing member', { followerUid, targetUid });
+    return;
+  }
+
+  const batch = writeBatch(db);
+  batch.update(doc(db, COLLECTIONS.MEMBERS, followerUid), {
+    'networking.following': arrayRemove(targetUid),
+  });
+  batch.update(doc(db, COLLECTIONS.MEMBERS, targetUid), {
+    'networking.followers': arrayRemove(followerUid),
+  });
+  await batch.commit();
+}
+
+/**
  * File upload functions
  */
 export async function uploadProfileImage(uid: string, file: File): Promise<string> {

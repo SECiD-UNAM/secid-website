@@ -1,7 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import type { MemberProfile, ViewMode } from '@/types/member';
 import type { UserBasicInfo } from '@/types/user';
+import {
+  sendConnectionRequest,
+  followMember,
+  unfollowMember,
+  hasPendingConnectionRequest,
+  getVisibleFields,
+} from '@/lib/members';
+import { MessageModal } from './MessageModal';
 import {
   MapPinIcon,
   BuildingOfficeIcon,
@@ -14,8 +22,10 @@ import {
   StarIcon,
   CheckBadgeIcon,
   LinkIcon,
-  ArrowDownTrayIcon
+  ArrowDownTrayIcon,
+  AcademicCapIcon
 } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 
 interface MemberCardProps {
   member: MemberProfile;
@@ -38,8 +48,62 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 }) => {
   const [showFullBio, setShowFullBio] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [connectLoading, setConnectLoading] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
 
   const isOwnProfile = currentUser?.uid === member.uid;
+  const visibility = getVisibleFields(member, currentUser?.uid);
+
+  useEffect(() => {
+    if (!currentUser || isOwnProfile) return;
+
+    // Check follow status
+    if (member.networking.followers?.includes(currentUser.uid)) {
+      setIsFollowing(true);
+    }
+
+    // Check connection status
+    if (member.networking.connections?.includes(currentUser.uid)) {
+      setConnectionStatus('connected');
+    } else {
+      hasPendingConnectionRequest(currentUser.uid, member.uid)
+        .then((pending: boolean) => { if (pending) setConnectionStatus('pending'); })
+        .catch(() => {});
+    }
+  }, [currentUser?.uid, member.uid]);
+
+  const handleConnect = async () => {
+    if (!currentUser || connectionStatus !== 'none') return;
+    try {
+      setConnectLoading(true);
+      await sendConnectionRequest(currentUser.uid, member.uid);
+      setConnectionStatus('pending');
+    } catch (err) {
+      console.error('Error sending connection request:', err);
+    } finally {
+      setConnectLoading(false);
+    }
+  };
+
+  const handleFollowToggle = async () => {
+    if (!currentUser) return;
+    try {
+      setFollowLoading(true);
+      if (isFollowing) {
+        await unfollowMember(currentUser.uid, member.uid);
+      } else {
+        await followMember(currentUser.uid, member.uid);
+      }
+      setIsFollowing(!isFollowing);
+    } catch (err) {
+      console.error('Error toggling follow:', err);
+    } finally {
+      setFollowLoading(false);
+    }
+  };
 
   const formatLastSeen = (date: Date): string => {
     const now = new Date();
@@ -132,7 +196,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
             <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-semibold text-sm">
               {member.initials}
             </div>
-            {member.privacy.showOnlineStatus && (
+            {visibility.showOnlineStatus && (
               <div className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white dark:border-gray-800 ${
                 member.isOnline ? 'bg-green-500' : 'bg-gray-400'
               }`}></div>
@@ -180,7 +244,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-semibold text-base sm:text-lg">
                 {member.initials}
               </div>
-              {member.privacy.showOnlineStatus && (
+              {visibility.showOnlineStatus && (
                 <div className={`absolute -bottom-1 -right-1 h-4 w-4 sm:h-5 sm:w-5 rounded-full border-2 border-white dark:border-gray-800 ${
                   member.isOnline ? 'bg-green-500' : 'bg-gray-400'
                 }`}></div>
@@ -205,18 +269,26 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                     )}
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                    {member.profile.position} {lang === 'es' ? 'en' : 'at'} {member.profile.company}
+                    {member.profile.position} {visibility.showCompany ? `${lang === 'es' ? ' en ' : ' at '}${member.profile.company}` : ''}
                   </p>
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center">
-                      <MapPinIcon className="h-3 w-3 mr-1" />
-                      {member.profile.location}
-                    </div>
+                    {visibility.showLocation && (
+                      <div className="flex items-center">
+                        <MapPinIcon className="h-3 w-3 mr-1" />
+                        {member.profile.location}
+                      </div>
+                    )}
                     <div className="flex items-center">
                       <ClockIcon className="h-3 w-3 mr-1" />
                       {getExperienceLevelLabel(member.experience.level)}
                     </div>
-                    {member.privacy.showLastSeen && (
+                    {member.profile.graduationYear && (
+                      <div className="flex items-center">
+                        <AcademicCapIcon className="h-3 w-3 mr-1" />
+                        Gen. {member.profile.graduationYear}
+                      </div>
+                    )}
+                    {visibility.showLastSeen && (
                       <span>{formatLastSeen(member.lastSeen)}</span>
                     )}
                   </div>
@@ -258,23 +330,32 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
           {/* Actions — full-width row on mobile, side column on larger screens */}
           <div className="flex items-center space-x-2 sm:ml-auto sm:flex-shrink-0">
-            {!isOwnProfile && (
+            {!isOwnProfile && currentUser && (
               <>
-                <button
-                  disabled
-                  className="p-2 rounded-lg transition-colors bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed"
-                  title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
-                >
-                  <UserPlusIcon className="h-4 w-4" />
-                </button>
+                {visibility.allowConnectionRequests && connectionStatus !== 'connected' && (
+                  <button
+                    onClick={handleConnect}
+                    disabled={connectLoading || connectionStatus === 'pending'}
+                    className={`p-2 rounded-lg transition-colors ${
+                      connectionStatus === 'pending'
+                        ? 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-primary-100 dark:hover:bg-primary-900/20 hover:text-primary-700 dark:hover:text-primary-400'
+                    }`}
+                    title={connectionStatus === 'pending' ? (lang === 'es' ? 'Solicitud enviada' : 'Request sent') : (lang === 'es' ? 'Conectar' : 'Connect')}
+                  >
+                    <UserPlusIcon className="h-4 w-4" />
+                  </button>
+                )}
 
-                <button
-                  disabled
-                  className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-lg opacity-50 cursor-not-allowed"
-                  title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
-                >
-                  <ChatBubbleLeftEllipsisIcon className="h-4 w-4" />
-                </button>
+                {visibility.allowMessages && (
+                  <button
+                    onClick={() => setShowMessageModal(true)}
+                    className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/20 hover:text-primary-700 dark:hover:text-primary-400 transition-colors"
+                    title={lang === 'es' ? 'Mensaje' : 'Message'}
+                  >
+                    <ChatBubbleLeftEllipsisIcon className="h-4 w-4" />
+                  </button>
+                )}
               </>
             )}
 
@@ -332,7 +413,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-semibold text-lg sm:text-xl">
             {member.initials}
           </div>
-          {member.privacy.showOnlineStatus && (
+          {visibility.showOnlineStatus && (
             <div className={`absolute -bottom-1 -right-1 h-5 w-5 sm:h-6 sm:w-6 rounded-full border-2 sm:border-3 border-white dark:border-gray-800 ${
               member.isOnline ? 'bg-green-500' : 'bg-gray-400'
             }`}></div>
@@ -352,24 +433,34 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
           {member.profile.position}
         </p>
-        <p className="text-sm text-gray-500 dark:text-gray-500 mb-1">
-          {member.profile.company}
-        </p>
-        
+        {visibility.showCompany && (
+          <p className="text-sm text-gray-500 dark:text-gray-500 mb-1">
+            {member.profile.company}
+          </p>
+        )}
+
         {/* Location and experience */}
         <div className="flex items-center justify-center space-x-4 text-xs text-gray-500 dark:text-gray-400 mb-3">
-          <div className="flex items-center">
-            <MapPinIcon className="h-3 w-3 mr-1" />
-            {member.profile.location}
-          </div>
+          {visibility.showLocation && (
+            <div className="flex items-center">
+              <MapPinIcon className="h-3 w-3 mr-1" />
+              {member.profile.location}
+            </div>
+          )}
           <div className="flex items-center">
             <BuildingOfficeIcon className="h-3 w-3 mr-1" />
             {getExperienceLevelLabel(member.experience.level)}
           </div>
+          {member.profile.graduationYear && (
+            <div className="flex items-center">
+              <AcademicCapIcon className="h-3 w-3 mr-1" />
+              Gen. {member.profile.graduationYear}
+            </div>
+          )}
         </div>
-        
+
         {/* Last seen */}
-        {member.privacy.showLastSeen && (
+        {visibility.showLastSeen && (
           <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
             {formatLastSeen(member.lastSeen)}
           </p>
@@ -444,24 +535,40 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
       {/* Action buttons */}
       <div className="space-y-2">
-        {!isOwnProfile && (
+        {!isOwnProfile && currentUser && (
           <div className="flex space-x-2">
-            <button
-              disabled
-              className="flex-1 px-3 py-2 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed"
-              title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
-            >
-              <UserPlusIcon className="h-4 w-4 mr-1 inline" />
-              {lang === 'es' ? 'Conectar' : 'Connect'}
-            </button>
+            {visibility.allowConnectionRequests && connectionStatus !== 'connected' && (
+              <button
+                onClick={handleConnect}
+                disabled={connectLoading || connectionStatus === 'pending'}
+                className={`flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  connectionStatus === 'pending'
+                    ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                    : 'bg-primary-600 text-white hover:bg-primary-700'
+                }`}
+              >
+                <UserPlusIcon className="h-4 w-4 mr-1 inline" />
+                {connectionStatus === 'pending'
+                  ? (lang === 'es' ? 'Solicitud enviada' : 'Request sent')
+                  : (lang === 'es' ? 'Conectar' : 'Connect')}
+              </button>
+            )}
 
-            <button
-              disabled
-              className="px-3 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-lg opacity-50 cursor-not-allowed"
-              title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
-            >
-              <ChatBubbleLeftEllipsisIcon className="h-4 w-4" />
-            </button>
+            {connectionStatus === 'connected' && (
+              <span className="flex-1 px-3 py-2 text-sm font-medium rounded-lg bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-center">
+                {lang === 'es' ? 'Conectado' : 'Connected'}
+              </span>
+            )}
+
+            {visibility.allowMessages && (
+              <button
+                onClick={() => setShowMessageModal(true)}
+                className="px-3 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/20 hover:text-primary-700 dark:hover:text-primary-400 transition-colors"
+                title={lang === 'es' ? 'Mensaje' : 'Message'}
+              >
+                <ChatBubbleLeftEllipsisIcon className="h-4 w-4" />
+              </button>
+            )}
           </div>
         )}
 
@@ -483,14 +590,24 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           </button>
         </div>
 
-        {!isOwnProfile && (
+        {!isOwnProfile && currentUser && (
           <button
-            disabled
-            className="w-full px-3 py-2 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed"
-            title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
+            onClick={handleFollowToggle}
+            disabled={followLoading}
+            className={`w-full px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+              isFollowing
+                ? 'bg-pink-100 dark:bg-pink-900/20 text-pink-700 dark:text-pink-400 hover:bg-pink-200 dark:hover:bg-pink-900/30'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-pink-900/10 hover:text-pink-600 dark:hover:text-pink-400'
+            }`}
           >
-            <HeartIcon className="h-4 w-4 mr-1 inline" />
-            {lang === 'es' ? 'Seguir' : 'Follow'}
+            {isFollowing ? (
+              <HeartSolidIcon className="h-4 w-4 mr-1 inline text-pink-500" />
+            ) : (
+              <HeartIcon className="h-4 w-4 mr-1 inline" />
+            )}
+            {isFollowing
+              ? (lang === 'es' ? 'Dejar de seguir' : 'Unfollow')
+              : (lang === 'es' ? 'Seguir' : 'Follow')}
           </button>
         )}
       </div>
@@ -532,6 +649,17 @@ export const MemberCard: React.FC<MemberCardProps> = ({
             </a>
           )}
         </div>
+      )}
+
+      {/* Message Modal */}
+      {showMessageModal && currentUser && (
+        <MessageModal
+          fromUid={currentUser.uid}
+          toUid={member.uid}
+          toName={member.displayName}
+          lang={lang}
+          onClose={() => setShowMessageModal(false)}
+        />
       )}
     </div>
   );

@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
+  sendConnectionRequest,
+  followMember,
+  unfollowMember,
+  hasPendingConnectionRequest,
+  getVisibleFields,
+} from '@/lib/members';
+import { MessageModal } from './MessageModal';
+import {
   MapPinIcon,
   BuildingOfficeIcon,
   CalendarIcon,
@@ -22,6 +30,7 @@ import {
   CameraIcon,
   PencilIcon
 } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import type { MemberProfile as MemberProfileType, ProjectShowcase, Achievement, Certification } from '@/types/member';
 import type { UserBasicInfo } from '@/types/user';
 
@@ -40,8 +49,60 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'about' | 'portfolio' | 'activity' | 'connections'>('about');
   const [copied, setCopied] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [connectLoading, setConnectLoading] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
 
   const isOwnProfile = currentUser?.uid === member.uid;
+  const visibility = getVisibleFields(member, currentUser?.uid);
+
+  useEffect(() => {
+    if (!currentUser || isOwnProfile) return;
+
+    if (member.networking.followers?.includes(currentUser.uid)) {
+      setIsFollowing(true);
+    }
+
+    if (member.networking.connections?.includes(currentUser.uid)) {
+      setConnectionStatus('connected');
+    } else {
+      hasPendingConnectionRequest(currentUser.uid, member.uid)
+        .then((pending: boolean) => { if (pending) setConnectionStatus('pending'); })
+        .catch(() => {});
+    }
+  }, [currentUser?.uid, member.uid]);
+
+  const handleConnect = async () => {
+    if (!currentUser || connectionStatus !== 'none') return;
+    try {
+      setConnectLoading(true);
+      await sendConnectionRequest(currentUser.uid, member.uid);
+      setConnectionStatus('pending');
+    } catch (err) {
+      console.error('Error sending connection request:', err);
+    } finally {
+      setConnectLoading(false);
+    }
+  };
+
+  const handleFollowToggle = async () => {
+    if (!currentUser) return;
+    try {
+      setFollowLoading(true);
+      if (isFollowing) {
+        await unfollowMember(currentUser.uid, member.uid);
+      } else {
+        await followMember(currentUser.uid, member.uid);
+      }
+      setIsFollowing(!isFollowing);
+    } catch (err) {
+      console.error('Error toggling follow:', err);
+    } finally {
+      setFollowLoading(false);
+    }
+  };
 
   const formatJoinDate = (date: Date): string => {
     return date.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', {
@@ -135,6 +196,34 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
     }
   ];
 
+  if (!visibility.canViewProfile) {
+    return (
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-12 text-center">
+          <div className="text-6xl mb-4">🔒</div>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            {lang === 'es' ? 'Perfil privado' : 'Private profile'}
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            {lang === 'es'
+              ? 'Este miembro ha restringido la visibilidad de su perfil.'
+              : 'This member has restricted their profile visibility.'}
+          </p>
+          {visibility.allowConnectionRequests && currentUser && !isOwnProfile && connectionStatus === 'none' && (
+            <button
+              onClick={handleConnect}
+              disabled={connectLoading}
+              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+            >
+              <UserPlusIcon className="h-4 w-4 mr-2 inline" />
+              {lang === 'es' ? 'Enviar solicitud de conexion' : 'Send connection request'}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Header Section */}
@@ -156,7 +245,7 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                 <div className="h-32 w-32 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-bold text-3xl border-4 border-white dark:border-gray-800">
                   {member.initials}
                 </div>
-                {member.privacy.showOnlineStatus && (
+                {visibility.showOnlineStatus && (
                   <div className={`absolute bottom-2 right-2 h-8 w-8 rounded-full border-4 border-white dark:border-gray-800 ${
                     member.isOnline ? 'bg-green-500' : 'bg-gray-400'
                   }`}></div>
@@ -189,20 +278,24 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                 <p className="text-lg text-gray-600 dark:text-gray-400 mb-1">
                   {member.profile.position}
                 </p>
-                <p className="text-gray-500 dark:text-gray-500 mb-2">
-                  {member.profile.company}
-                </p>
-                
+                {visibility.showCompany && (
+                  <p className="text-gray-500 dark:text-gray-500 mb-2">
+                    {member.profile.company}
+                  </p>
+                )}
+
                 <div className="flex flex-wrap items-center justify-center lg:justify-start space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                  <div className="flex items-center">
-                    <MapPinIcon className="h-4 w-4 mr-1" />
-                    {member.profile.location}
-                  </div>
+                  {visibility.showLocation && (
+                    <div className="flex items-center">
+                      <MapPinIcon className="h-4 w-4 mr-1" />
+                      {member.profile.location}
+                    </div>
+                  )}
                   <div className="flex items-center">
                     <CalendarIcon className="h-4 w-4 mr-1" />
                     {lang === 'es' ? 'Miembro desde' : 'Member since'} {formatJoinDate(member.joinedAt)}
                   </div>
-                  {member.privacy.showLastSeen && (
+                  {visibility.showLastSeen && (
                     <div className="flex items-center">
                       <ClockIcon className="h-4 w-4 mr-1" />
                       {formatLastSeen(member.lastSeen)}
@@ -222,37 +315,62 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                   <PencilIcon className="h-4 w-4 mr-2" />
                   {lang === 'es' ? 'Editar perfil' : 'Edit profile'}
                 </button>
-              ) : (
+              ) : currentUser && (
                 <div className="flex space-x-2">
-                  <button
-                    disabled
-                    className="flex items-center px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed"
-                    title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
-                  >
-                    <UserPlusIcon className="h-4 w-4 mr-2" />
-                    {lang === 'es' ? 'Conectar' : 'Connect'}
-                  </button>
+                  {visibility.allowConnectionRequests && connectionStatus !== 'connected' && (
+                    <button
+                      onClick={handleConnect}
+                      disabled={connectLoading || connectionStatus === 'pending'}
+                      className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+                        connectionStatus === 'pending'
+                          ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                          : 'bg-primary-600 text-white hover:bg-primary-700'
+                      }`}
+                    >
+                      <UserPlusIcon className="h-4 w-4 mr-2" />
+                      {connectionStatus === 'pending'
+                        ? (lang === 'es' ? 'Solicitud enviada' : 'Request sent')
+                        : (lang === 'es' ? 'Conectar' : 'Connect')}
+                    </button>
+                  )}
 
-                  <button
-                    disabled
-                    className="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-lg opacity-50 cursor-not-allowed"
-                    title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
-                  >
-                    <ChatBubbleLeftEllipsisIcon className="h-4 w-4 mr-2" />
-                    {lang === 'es' ? 'Mensaje' : 'Message'}
-                  </button>
+                  {connectionStatus === 'connected' && (
+                    <span className="flex items-center px-4 py-2 rounded-lg bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400">
+                      {lang === 'es' ? 'Conectado' : 'Connected'}
+                    </span>
+                  )}
+
+                  {visibility.allowMessages && (
+                    <button
+                      onClick={() => setShowMessageModal(true)}
+                      className="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/20 hover:text-primary-700 dark:hover:text-primary-400 transition-colors"
+                    >
+                      <ChatBubbleLeftEllipsisIcon className="h-4 w-4 mr-2" />
+                      {lang === 'es' ? 'Mensaje' : 'Message'}
+                    </button>
+                  )}
                 </div>
               )}
 
               <div className="flex space-x-2">
-                {!isOwnProfile && (
+                {!isOwnProfile && currentUser && (
                   <button
-                    disabled
-                    className="flex items-center px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed"
-                    title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
+                    onClick={handleFollowToggle}
+                    disabled={followLoading}
+                    className={`flex items-center px-3 py-2 rounded-lg transition-colors ${
+                      isFollowing
+                        ? 'bg-pink-100 dark:bg-pink-900/20 text-pink-700 dark:text-pink-400 hover:bg-pink-200 dark:hover:bg-pink-900/30'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-pink-900/10 hover:text-pink-600 dark:hover:text-pink-400'
+                    }`}
                   >
-                    <HeartIcon className="h-4 w-4 mr-1" />
-                    {lang === 'es' ? 'Seguir' : 'Follow'}
+                    {isFollowing ? (
+                      <HeartSolidIcon className="h-4 w-4 mr-1 text-pink-500" />
+                    ) : (
+                      <HeartIcon className="h-4 w-4 mr-1" />
+                    )}
+                    {isFollowing
+                      ? (lang === 'es' ? 'Dejar de seguir' : 'Unfollow')
+                      : (lang === 'es' ? 'Seguir' : 'Follow')}
                   </button>
                 )}
 
@@ -356,6 +474,23 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                   {member.profile.bio}
                 </p>
+              </div>
+            )}
+
+            {/* Education */}
+            {(member.profile.graduationYear || member.profile.degree) && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                  {lang === 'es' ? 'Formacion Academica' : 'Education'}
+                </h3>
+                <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                  <AcademicCapIcon className="h-5 w-5 text-primary-500" />
+                  <span>
+                    {member.profile.graduationYear && `Gen. ${member.profile.graduationYear}`}
+                    {member.profile.graduationYear && member.profile.degree && ' — '}
+                    {member.profile.degree}
+                  </span>
+                </div>
               </div>
             )}
 
@@ -660,6 +795,17 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
           </div>
         )}
       </div>
+
+      {/* Message Modal */}
+      {showMessageModal && currentUser && (
+        <MessageModal
+          fromUid={currentUser.uid}
+          toUid={member.uid}
+          toName={member.displayName}
+          lang={lang}
+          onClose={() => setShowMessageModal(false)}
+        />
+      )}
     </div>
   );
 };

@@ -20,11 +20,20 @@ export {
   sendConnectionRequest,
   acceptConnectionRequest,
   sendMessage,
+  followMember,
+  unfollowMember,
   uploadProfileImage,
   trackProfileView,
   updateMemberStatus,
   bulkUpdateMemberStatus,
 } from './mutations';
+
+// Connections & Privacy
+export {
+  hasPendingConnectionRequest,
+  getVisibleFields,
+} from './connections';
+export type { VisibleFields } from './connections';
 
 // Subscriptions
 export {

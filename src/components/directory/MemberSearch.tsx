@@ -97,13 +97,10 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
     };
   }, [searchInput]);
 
-  useEffect(() => {
-    onSearch(filters);
-  }, [filters]);
-
   const handleFilterChange = (key: keyof MemberSearchFilters, value: any) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
+    onSearch(newFilters);
   };
 
   const handleArrayFilterChange = (key: keyof MemberSearchFilters, value: string, checked: boolean) => {
