@@ -10,9 +10,7 @@ import {
   getDoc,
   query,
   where,
-  orderBy,
   limit,
-  startAfter,
   DocumentSnapshot,
 } from 'firebase/firestore';
 import type {
@@ -69,35 +67,43 @@ export async function getMemberProfiles(options: {
     }
 
     if (filters.joinedAfter) {
-      q = query(q, where('joinedAt', '>=', filters.joinedAfter));
+      q = query(q, where('createdAt', '>=', filters.joinedAfter));
     }
 
     const sortBy = filters.sortBy || 'joinDate';
     const sortOrder = filters.sortOrder || 'desc';
 
-    switch(sortBy) {
-      case 'name':
-        q = query(q, orderBy('displayName', sortOrder));
-        break;
-      case 'reputation':
-        q = query(q, orderBy('activity.reputation', sortOrder));
-        break;
-      case 'activity':
-        q = query(q, orderBy('lifecycle.lastActiveDate', sortOrder));
-        break;
-      case 'joinDate':
-      default:
-        q = query(q, orderBy('createdAt', sortOrder));
-    }
-
-    if(lastDoc) {
-      q = query(q, startAfter(lastDoc));
-    }
-
+    // Note: Firestore orderBy excludes documents missing the ordered field
+    // and persistent local cache can return stale results for indexed queries.
+    // Fetch without orderBy and sort client-side for reliability.
     q = query(q, limit(queryLimit));
 
     const snapshot = await getDocs(q);
-    return snapshot['docs'].map(doc => mapUserDocToMemberProfile(doc['id'], doc.data()));
+    const members = snapshot['docs'].map(doc => mapUserDocToMemberProfile(doc['id'], doc.data()));
+
+    // Client-side sorting
+    const multiplier = sortOrder === 'desc' ? -1 : 1;
+    members.sort((a, b) => {
+      switch(sortBy) {
+        case 'name':
+          return multiplier * a.displayName.localeCompare(b.displayName);
+        case 'reputation':
+          return multiplier * ((a.activity.reputation || 0) - (b.activity.reputation || 0));
+        case 'activity': {
+          const aTime = a.activity.lastActive?.getTime?.() || 0;
+          const bTime = b.activity.lastActive?.getTime?.() || 0;
+          return multiplier * (aTime - bTime);
+        }
+        case 'joinDate':
+        default: {
+          const aTime = a.joinedAt?.getTime?.() || 0;
+          const bTime = b.joinedAt?.getTime?.() || 0;
+          return multiplier * (aTime - bTime);
+        }
+      }
+    });
+
+    return members;
   } catch (error) {
     console.error('Error fetching member profiles:', error);
     throw error;
@@ -205,7 +211,7 @@ export async function getMemberStats(): Promise<MemberStats> {
     startOfMonth.setHours(0, 0, 0, 0);
 
     const newMembersSnapshot = await getDocs(
-      query(membersRef, where('joinedAt', '>=', startOfMonth))
+      query(membersRef, where('createdAt', '>=', startOfMonth))
     );
     const newMembersThisMonth = newMembersSnapshot.size;
 
