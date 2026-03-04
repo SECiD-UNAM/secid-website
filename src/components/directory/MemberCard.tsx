@@ -434,7 +434,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           {member.profile.position}
         </p>
         {visibility.showCompany && (
-          <p className="text-sm text-gray-500 dark:text-gray-500 mb-1">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
             {member.profile.company}
           </p>
         )}
@@ -461,7 +461,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
         {/* Last seen */}
         {visibility.showLastSeen && (
-          <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
             {formatLastSeen(member.lastSeen)}
           </p>
         )}

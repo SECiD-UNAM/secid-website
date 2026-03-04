@@ -356,7 +356,7 @@ const langPathRegex = /^\/(es|en)/;
   </div>
 
   <!-- Community drawer for mobile -->
-  <div class="secid-bottom-nav__drawer" data-community-drawer aria-hidden="true">
+  <div class="secid-bottom-nav__drawer" data-community-drawer aria-hidden="true" inert>
     <div class="secid-bottom-nav__drawer-header">
       <span>{t.nav.community}</span>
       <button data-close-drawer aria-label={lang === 'es' ? 'Cerrar' : 'Close'}>
@@ -591,9 +591,11 @@ const langPathRegex = /^\/(es|en)/;
       if (isOpen) {
         drawer.removeAttribute('data-open');
         drawer.setAttribute('aria-hidden', 'true');
+        drawer.setAttribute('inert', '');
       } else {
         drawer.setAttribute('data-open', '');
         drawer.setAttribute('aria-hidden', 'false');
+        drawer.removeAttribute('inert');
       }
     });
   }
@@ -602,6 +604,7 @@ const langPathRegex = /^\/(es|en)/;
     closeBtn.addEventListener('click', () => {
       drawer.removeAttribute('data-open');
       drawer.setAttribute('aria-hidden', 'true');
+      drawer.setAttribute('inert', '');
     });
   }
 </script>

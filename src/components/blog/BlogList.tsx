@@ -277,8 +277,8 @@ export default function BlogList({ lang = 'es' }: Props) {
         }
         .secid-blog__category:hover,
         .secid-blog__category.active {
-          background: var(--secid-primary);
-          border-color: var(--secid-primary);
+          background: #d4431a;
+          border-color: #d4431a;
           color: white;
         }
         .secid-blog__search {
@@ -315,7 +315,7 @@ export default function BlogList({ lang = 'es' }: Props) {
           top: var(--space-lg);
           left: var(--space-lg);
           background: white;
-          color: var(--secid-primary);
+          color: #b5391a;
           padding: var(--space-xs) var(--space-md);
           border-radius: var(--radius-full);
           font-weight: 600;
@@ -371,7 +371,7 @@ export default function BlogList({ lang = 'es' }: Props) {
           position: absolute;
           top: var(--space-md);
           left: var(--space-md);
-          background: var(--secid-primary);
+          background: #d4431a;
           color: white;
           padding: var(--space-xs) var(--space-sm);
           border-radius: var(--radius-md);
@@ -390,7 +390,7 @@ export default function BlogList({ lang = 'es' }: Props) {
           margin-bottom: var(--space-md);
         }
         .secid-blog__category-tag {
-          color: var(--secid-primary);
+          color: #b5391a;
           font-weight: 600;
         }
         .secid-blog__card-title {
@@ -418,7 +418,7 @@ export default function BlogList({ lang = 'es' }: Props) {
           margin-bottom: var(--space-lg);
         }
         .secid-blog__tag {
-          color: var(--secid-secondary);
+          color: #3d5c70;
           font-size: 0.875rem;
         }
         .secid-blog__author {

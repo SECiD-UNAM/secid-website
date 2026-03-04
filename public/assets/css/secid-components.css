@@ -2547,6 +2547,10 @@ body {
   background: var(--color-surface-alt);
 }
 
+[data-theme='dark'] .secid-cta__title {
+  color: var(--color-text-primary);
+}
+
 /* CTA Box Dark Mode */
 [data-theme='dark'] .secid-cta-box {
   background: var(--color-surface-alt);
