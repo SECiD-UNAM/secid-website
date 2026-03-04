@@ -83,7 +83,7 @@ export async function sendConnectionRequest(
       id: requestRef['id'],
       from: fromUid,
       to: toUid,
-      message,
+      message: message || '',
       status: 'pending',
       createdAt: new Date()
     };
