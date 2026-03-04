@@ -8,6 +8,7 @@ import {
   doc,
   getDocs,
   getDoc,
+  getDocFromServer,
   query,
   where,
   limit,
@@ -79,7 +80,12 @@ export async function getMemberProfiles(options: {
     q = query(q, limit(queryLimit));
 
     const snapshot = await getDocs(q);
-    const members = snapshot['docs'].map(doc => mapUserDocToMemberProfile(doc['id'], doc.data()));
+    let members = snapshot['docs'].map(doc => mapUserDocToMemberProfile(doc['id'], doc.data()));
+
+    // Client-side role filtering
+    if (filters?.memberType && filters.memberType !== 'all') {
+      members = members.filter(m => m.role === filters.memberType);
+    }
 
     // Client-side sorting
     const multiplier = sortOrder === 'desc' ? -1 : 1;
@@ -157,7 +163,12 @@ export async function getMemberProfile(uid: string): Promise<MemberProfile | nul
 
   try {
     const docRef = doc(db, COLLECTIONS.MEMBERS, uid);
-    const docSnap = await getDoc(docRef);
+    let docSnap = await getDoc(docRef);
+
+    // Fallback to server if persistent cache returns a miss
+    if (!docSnap.exists()) {
+      docSnap = await getDocFromServer(docRef);
+    }
 
     if (docSnap.exists()) {
       return mapUserDocToMemberProfile(docSnap['id'], docSnap.data());

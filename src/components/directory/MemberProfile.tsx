@@ -22,8 +22,6 @@ import {
   CameraIcon,
   PencilIcon
 } from '@heroicons/react/24/outline';
-import { HeartIcon as HeartSolidIcon} from '@heroicons/react/24/solid';
-
 import type { MemberProfile as MemberProfileType, ProjectShowcase, Achievement, Certification } from '@/types/member';
 import type { UserBasicInfo } from '@/types/user';
 
@@ -31,9 +29,6 @@ interface MemberProfileProps {
   member: MemberProfileType;
   currentUser?: UserBasicInfo | null;
   lang?: 'es' | 'en';
-  onConnect?: (memberId: string) => void;
-  onMessage?: (memberId: string) => void;
-  onFollow?: (memberId: string) => void;
   onEdit?: () => void;
 }
 
@@ -41,19 +36,12 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
   member,
   currentUser,
   lang = 'es',
-  onConnect,
-  onMessage,
-  onFollow,
   onEdit
 }) => {
   const [activeTab, setActiveTab] = useState<'about' | 'portfolio' | 'activity' | 'connections'>('about');
-  const [isFollowing, setIsFollowing] = useState(
-    member.networking.followers.includes(currentUser?.uid || '')
-  );
+  const [copied, setCopied] = useState(false);
 
   const isOwnProfile = currentUser?.uid === member.uid;
-  const isConnected = member.networking.connections.includes(currentUser?.uid || '');
-  const hasPendingRequest = member.networking.pendingConnections.includes(currentUser?.uid || '');
 
   const formatJoinDate = (date: Date): string => {
     return date.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', {
@@ -90,48 +78,30 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
     return labels[level]?.[lang] || level;
   };
 
-  const handleConnect = () => {
-    if(onConnect) {
-      onConnect(member.uid);
-    }
-  };
-
-  const handleMessage = () => {
-    if(onMessage) {
-      onMessage(member.uid);
-    }
-  };
-
-  const handleFollow = () => {
-    setIsFollowing(!isFollowing);
-    if(onFollow) {
-      onFollow(member.uid);
-    }
-  };
-
-  const handleShare = () => {
+  const handleShare = async () => {
+    const url = window.location.href;
     if (navigator.share) {
-      navigator.share({
+      await navigator.share({
         title: `${member.displayName} - SECiD`,
         text: `${lang === 'es' ? 'Conoce a' : 'Meet'} ${member.displayName}, ${member.profile.position} ${lang === 'es' ? 'en' : 'at'} ${member.profile.company}`,
-        url: window.location.href
+        url
       });
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
   const downloadVCard = () => {
-    const vCard = `BEGIN:VCARD
-VERSION:3.0
-FN:${member.displayName}
-EMAIL:${member.email}
-ORG:${member.profile.company}
-TITLE:${member.profile.position}
-${member.social.linkedin ? `URL:${member.social.linkedin}` : ''}
-END:VCARD`;
+    const lines = ['BEGIN:VCARD', 'VERSION:3.0', `FN:${member.displayName}`];
+    if (member.email) lines.push(`EMAIL:${member.email}`);
+    if (member.profile.company) lines.push(`ORG:${member.profile.company}`);
+    if (member.profile.position) lines.push(`TITLE:${member.profile.position}`);
+    if (member.social?.linkedin) lines.push(`URL:${member.social.linkedin}`);
+    lines.push('END:VCARD');
 
-    const blob = new Blob([vCard], { type: 'text/vcard' });
+    const blob = new Blob([lines.join('\n')], { type: 'text/vcard' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -203,6 +173,11 @@ END:VCARD`;
                   <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                     {member.displayName}
                   </h1>
+                  {member.role === 'collaborator' && (
+                    <span className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 text-xs px-2 py-0.5 rounded-full">
+                      {lang === 'es' ? 'Colaborador' : 'Collaborator'}
+                    </span>
+                  )}
                   {member.isPremium && (
                     <StarIcon className="h-6 w-6 text-yellow-500 fill-current" title="Premium member" />
                   )}
@@ -250,65 +225,49 @@ END:VCARD`;
               ) : (
                 <div className="flex space-x-2">
                   <button
-                    onClick={handleConnect}
-                    disabled={isConnected || hasPendingRequest}
-                    className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-                      isConnected
-                        ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 cursor-not-allowed'
-                        : hasPendingRequest
-                        ? 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 cursor-not-allowed'
-                        : 'bg-primary-600 text-white hover:bg-primary-700'
-                    }`}
+                    disabled
+                    className="flex items-center px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed"
+                    title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
                   >
                     <UserPlusIcon className="h-4 w-4 mr-2" />
-                    {isConnected
-                      ? (lang === 'es' ? 'Conectado' : 'Connected')
-                      : hasPendingRequest
-                      ? (lang === 'es' ? 'Solicitud enviada' : 'Request sent')
-                      : (lang === 'es' ? 'Conectar' : 'Connect')
-                    }
+                    {lang === 'es' ? 'Conectar' : 'Connect'}
                   </button>
-                  
+
                   <button
-                    onClick={handleMessage}
-                    className="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    disabled
+                    className="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-lg opacity-50 cursor-not-allowed"
+                    title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
                   >
                     <ChatBubbleLeftEllipsisIcon className="h-4 w-4 mr-2" />
                     {lang === 'es' ? 'Mensaje' : 'Message'}
                   </button>
                 </div>
               )}
-              
+
               <div className="flex space-x-2">
                 {!isOwnProfile && (
                   <button
-                    onClick={handleFollow}
-                    className={`flex items-center px-3 py-2 rounded-lg transition-colors ${
-                      isFollowing
-                        ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/40'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                    }`}
+                    disabled
+                    className="flex items-center px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed"
+                    title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
                   >
-                    {isFollowing ? (
-                      <HeartSolidIcon className="h-4 w-4 mr-1" />
-                    ) : (
-                      <HeartIcon className="h-4 w-4 mr-1" />
-                    )}
-                    {isFollowing
-                      ? (lang === 'es' ? 'Siguiendo' : 'Following')
-                      : (lang === 'es' ? 'Seguir' : 'Follow')
-                    }
+                    <HeartIcon className="h-4 w-4 mr-1" />
+                    {lang === 'es' ? 'Seguir' : 'Follow'}
                   </button>
                 )}
-                
+
                 <button
                   onClick={handleShare}
                   className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                  title={lang === 'es' ? 'Compartir perfil' : 'Share profile'}
+                  title={copied ? (lang === 'es' ? 'Copiado!' : 'Copied!') : (lang === 'es' ? 'Compartir perfil' : 'Share profile')}
                 >
-                  <ShareIcon className="h-4 w-4" />
+                  {copied ? (
+                    <span className="text-xs font-medium text-green-600 dark:text-green-400">{lang === 'es' ? 'Copiado!' : 'Copied!'}</span>
+                  ) : (
+                    <ShareIcon className="h-4 w-4" />
+                  )}
                 </button>
-                
+
                 <button
                   onClick={downloadVCard}
                   className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
@@ -320,41 +279,43 @@ END:VCARD`;
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {member.activity.totalConnections}
+          {/* Stats — only show if any are non-zero */}
+          {(member.activity.totalConnections > 0 || member.activity.profileViews > 0 || member.activity.reputation > 0 || member.activity.postsCount > 0) && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {member.activity.totalConnections}
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  {lang === 'es' ? 'Conexiones' : 'Connections'}
+                </div>
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {lang === 'es' ? 'Conexiones' : 'Connections'}
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {member.activity.profileViews}
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  {lang === 'es' ? 'Vistas del perfil' : 'Profile views'}
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {member.activity.reputation}
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  {lang === 'es' ? 'Reputacion' : 'Reputation'}
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {member.activity.postsCount}
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  {lang === 'es' ? 'Publicaciones' : 'Posts'}
+                </div>
               </div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {member.activity.profileViews}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {lang === 'es' ? 'Vistas del perfil' : 'Profile views'}
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {member.activity.reputation}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {lang === 'es' ? 'Reputación' : 'Reputation'}
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {member.activity.postsCount}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {lang === 'es' ? 'Publicaciones' : 'Posts'}
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
 

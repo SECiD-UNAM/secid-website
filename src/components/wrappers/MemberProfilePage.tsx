@@ -17,17 +17,21 @@ function MemberProfileInner({ memberId, lang = 'es' }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+
     async function fetchMember() {
       try {
         setLoading(true);
         setError(null);
         const profile = await getMemberProfile(memberId);
+        if (cancelled) return;
         if (profile) {
           setMember(profile);
         } else {
           setError(lang === 'es' ? 'Miembro no encontrado' : 'Member not found');
         }
       } catch (err) {
+        if (cancelled) return;
         console.error('Error fetching member profile:', err);
         setError(
           lang === 'es'
@@ -35,13 +39,15 @@ function MemberProfileInner({ memberId, lang = 'es' }: Props) {
             : 'Error loading member profile'
         );
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
 
     if (memberId) {
       fetchMember();
     }
+
+    return () => { cancelled = true; };
   }, [memberId, lang]);
 
   if (loading) {

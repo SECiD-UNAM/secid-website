@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 
 import type { MemberProfile, ViewMode } from '@/types/member';
 import type { UserBasicInfo } from '@/types/user';
@@ -25,8 +24,6 @@ interface MemberCardProps {
   currentUser?: UserBasicInfo | null;
   showMatchScore?: boolean;
   matchScore?: number;
-  onConnect?: (memberId: string) => void;
-  onMessage?: (memberId: string) => void;
   onViewProfile?: (memberId: string) => void;
 }
 
@@ -37,18 +34,12 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   currentUser,
   showMatchScore = false,
   matchScore,
-  onConnect,
-  onMessage,
   onViewProfile
 }) => {
-  const [isFollowing, setIsFollowing] = useState(
-    member.networking.followers.includes(currentUser?.uid || '')
-  );
   const [showFullBio, setShowFullBio] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const isOwnProfile = currentUser?.uid === member.uid;
-  const isConnected = member.networking.connections.includes(currentUser?.uid || '');
-  const hasPendingRequest = member.networking.pendingConnections.includes(currentUser?.uid || '');
 
   const formatLastSeen = (date: Date): string => {
     const now = new Date();
@@ -88,18 +79,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     return 'bg-gray-100 dark:bg-gray-900/20 text-gray-700 dark:text-gray-400';
   };
 
-  const handleConnect = () => {
-    if(onConnect) {
-      onConnect(member.uid);
-    }
-  };
-
-  const handleMessage = () => {
-    if(onMessage) {
-      onMessage(member.uid);
-    }
-  };
-
   const handleViewProfile = () => {
     if(onViewProfile) {
       onViewProfile(member.uid);
@@ -109,35 +88,30 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     }
   };
 
-  const handleFollow = () => {
-    setIsFollowing(!isFollowing);
-    // In production, this would update Firestore
-  };
-
-  const handleShare = () => {
+  const handleShare = async () => {
+    const url = `${window.location.origin}/${lang}/members/${member.uid}`;
     if (navigator.share) {
-      navigator.share({
+      await navigator.share({
         title: `${member.displayName} - SECiD`,
         text: `${lang === 'es' ? 'Conoce a' : 'Meet'} ${member.displayName}, ${member.profile.position} ${lang === 'es' ? 'en' : 'at'} ${member.profile.company}`,
-        url: `${window.location.origin}/${lang}/members/${member.uid}`
+        url
       });
     } else {
-      // Fallback to clipboard
-      navigator.clipboard.writeText(`${window.location.origin}/${lang}/members/${member.uid}`);
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
   const downloadVCard = () => {
-    const vCard = `BEGIN:VCARD
-VERSION:3.0
-FN:${member.displayName}
-EMAIL:${member.email}
-ORG:${member.profile.company}
-TITLE:${member.profile.position}
-${member.social.linkedin ? `URL:${member.social.linkedin}` : ''}
-END:VCARD`;
+    const lines = ['BEGIN:VCARD', 'VERSION:3.0', `FN:${member.displayName}`];
+    if (member.email) lines.push(`EMAIL:${member.email}`);
+    if (member.profile.company) lines.push(`ORG:${member.profile.company}`);
+    if (member.profile.position) lines.push(`TITLE:${member.profile.position}`);
+    if (member.social?.linkedin) lines.push(`URL:${member.social.linkedin}`);
+    lines.push('END:VCARD');
 
-    const blob = new Blob([vCard], { type: 'text/vcard' });
+    const blob = new Blob([lines.join('\n')], { type: 'text/vcard' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -287,30 +261,17 @@ END:VCARD`;
             {!isOwnProfile && (
               <>
                 <button
-                  onClick={handleConnect}
-                  disabled={isConnected || hasPendingRequest}
-                  className={`p-2 rounded-lg transition-colors ${
-                    isConnected
-                      ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-                      : hasPendingRequest
-                      ? 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400'
-                      : 'bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-900/40'
-                  }`}
-                  title={
-                    isConnected
-                      ? (lang === 'es' ? 'Conectado' : 'Connected')
-                      : hasPendingRequest
-                      ? (lang === 'es' ? 'Solicitud enviada' : 'Request sent')
-                      : (lang === 'es' ? 'Conectar' : 'Connect')
-                  }
+                  disabled
+                  className="p-2 rounded-lg transition-colors bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed"
+                  title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
                 >
                   <UserPlusIcon className="h-4 w-4" />
                 </button>
 
                 <button
-                  onClick={handleMessage}
-                  className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                  title={lang === 'es' ? 'Enviar mensaje' : 'Send message'}
+                  disabled
+                  className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-lg opacity-50 cursor-not-allowed"
+                  title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
                 >
                   <ChatBubbleLeftEllipsisIcon className="h-4 w-4" />
                 </button>
@@ -348,14 +309,18 @@ END:VCARD`;
             <CheckBadgeIcon className="h-4 w-4 text-blue-500" title="Verified certifications" />
           )}
           
-          {/* Actions dropdown */}
+          {/* Share button */}
           <div className="relative">
             <button
               onClick={handleShare}
               className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              title={lang === 'es' ? 'Compartir perfil' : 'Share profile'}
+              title={copied ? (lang === 'es' ? 'Copiado!' : 'Copied!') : (lang === 'es' ? 'Compartir perfil' : 'Share profile')}
             >
-              <ShareIcon className="h-4 w-4" />
+              {copied ? (
+                <span className="text-xs font-medium text-green-600 dark:text-green-400">{lang === 'es' ? 'Copiado!' : 'Copied!'}</span>
+              ) : (
+                <ShareIcon className="h-4 w-4" />
+              )}
             </button>
           </div>
         </div>
@@ -379,6 +344,11 @@ END:VCARD`;
             {member.displayName}
           </a>
         </h3>
+        {member.role === 'collaborator' && (
+          <span className="inline-block bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 text-xs px-2 py-0.5 rounded-full mb-1">
+            {lang === 'es' ? 'Colaborador' : 'Collaborator'}
+          </span>
+        )}
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
           {member.profile.position}
         </p>
@@ -442,68 +412,59 @@ END:VCARD`;
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="flex justify-around text-center py-2 sm:py-3 border-t border-gray-200 dark:border-gray-700 mb-3 sm:mb-4">
-        <div>
-          <div className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
-            {member.activity.totalConnections}
+      {/* Stats — only show if any are non-zero */}
+      {(member.activity.totalConnections > 0 || member.activity.profileViews > 0 || member.activity.reputation > 0) && (
+        <div className="flex justify-around text-center py-2 sm:py-3 border-t border-gray-200 dark:border-gray-700 mb-3 sm:mb-4">
+          <div>
+            <div className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+              {member.activity.totalConnections}
+            </div>
+            <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
+              {lang === 'es' ? 'Conexiones' : 'Connections'}
+            </div>
           </div>
-          <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
-            {lang === 'es' ? 'Conexiones' : 'Connections'}
+          <div>
+            <div className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+              {member.activity.profileViews}
+            </div>
+            <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
+              {lang === 'es' ? 'Vistas' : 'Views'}
+            </div>
+          </div>
+          <div>
+            <div className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+              {member.activity.reputation}
+            </div>
+            <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
+              {lang === 'es' ? 'Reputacion' : 'Reputation'}
+            </div>
           </div>
         </div>
-        <div>
-          <div className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
-            {member.activity.profileViews}
-          </div>
-          <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
-            {lang === 'es' ? 'Vistas' : 'Views'}
-          </div>
-        </div>
-        <div>
-          <div className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
-            {member.activity.reputation}
-          </div>
-          <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
-            {lang === 'es' ? 'Reputación' : 'Reputation'}
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Action buttons */}
       <div className="space-y-2">
         {!isOwnProfile && (
           <div className="flex space-x-2">
             <button
-              onClick={handleConnect}
-              disabled={isConnected || hasPendingRequest}
-              className={`flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                isConnected
-                  ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 cursor-not-allowed'
-                  : hasPendingRequest
-                  ? 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 cursor-not-allowed'
-                  : 'bg-primary-600 text-white hover:bg-primary-700'
-              }`}
+              disabled
+              className="flex-1 px-3 py-2 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed"
+              title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
             >
               <UserPlusIcon className="h-4 w-4 mr-1 inline" />
-              {isConnected
-                ? (lang === 'es' ? 'Conectado' : 'Connected')
-                : hasPendingRequest
-                ? (lang === 'es' ? 'Solicitud enviada' : 'Request sent')
-                : (lang === 'es' ? 'Conectar' : 'Connect')
-              }
+              {lang === 'es' ? 'Conectar' : 'Connect'}
             </button>
-            
+
             <button
-              onClick={handleMessage}
-              className="px-3 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-              title={lang === 'es' ? 'Enviar mensaje' : 'Send message'}
+              disabled
+              className="px-3 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-lg opacity-50 cursor-not-allowed"
+              title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
             >
               <ChatBubbleLeftEllipsisIcon className="h-4 w-4" />
             </button>
           </div>
         )}
-        
+
         <div className="flex space-x-2">
           <a
             href={`/${lang}/members/${member.uid}`}
@@ -512,7 +473,7 @@ END:VCARD`;
             <EyeIcon className="h-4 w-4 mr-1 inline" />
             {lang === 'es' ? 'Ver perfil' : 'View profile'}
           </a>
-          
+
           <button
             onClick={downloadVCard}
             className="px-3 py-2 text-sm font-medium bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
@@ -521,25 +482,15 @@ END:VCARD`;
             <ArrowDownTrayIcon className="h-4 w-4" />
           </button>
         </div>
-        
+
         {!isOwnProfile && (
           <button
-            onClick={handleFollow}
-            className={`w-full px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-              isFollowing
-                ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/40'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-            }`}
+            disabled
+            className="w-full px-3 py-2 text-sm font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed"
+            title={lang === 'es' ? 'Proximamente' : 'Coming soon'}
           >
-            {isFollowing ? (
-              <HeartSolidIcon className="h-4 w-4 mr-1 inline" />
-            ) : (
-              <HeartIcon className="h-4 w-4 mr-1 inline" />
-            )}
-            {isFollowing
-              ? (lang === 'es' ? 'Dejar de seguir' : 'Unfollow')
-              : (lang === 'es' ? 'Seguir' : 'Follow')
-            }
+            <HeartIcon className="h-4 w-4 mr-1 inline" />
+            {lang === 'es' ? 'Seguir' : 'Follow'}
           </button>
         )}
       </div>

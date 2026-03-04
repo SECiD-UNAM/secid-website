@@ -44,6 +44,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);
   const [showFilters, setShowFilters] = useState(false);
+  const [memberType, setMemberType] = useState<'all' | 'member' | 'collaborator'>('member');
   const [searchFilters, setSearchFilters] = useState<MemberSearchFilters>({
     sortBy: 'joinDate',
     sortOrder: 'desc'
@@ -65,13 +66,13 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
     return () => clearTimeout(timeout);
   }, [loading, members.length, lang]);
 
-  // Load members and stats on component mount
+  // Load members and stats on component mount or when memberType changes
   useEffect(() => {
     loadMembers();
     if(showStats) {
       loadStats();
     }
-  }, [showStats]);
+  }, [showStats, memberType]);
 
   // Search when filters change
   useEffect(() => {
@@ -86,7 +87,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
     try {
       setLoading(true);
       setError(null);
-      const memberProfiles = await getMemberProfiles({ limit: maxMembers });
+      const memberProfiles = await getMemberProfiles({ filters: { memberType }, limit: maxMembers });
       setMembers(memberProfiles);
     } catch (err) {
       console.error('Error loading members:', err);
@@ -282,6 +283,27 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
           </div>
         </div>
       )}
+
+      {/* Member Type Tabs */}
+      <div className="flex gap-2">
+        {([
+          { value: 'member' as const, label: lang === 'es' ? 'Miembros' : 'Members' },
+          { value: 'collaborator' as const, label: lang === 'es' ? 'Colaboradores' : 'Collaborators' },
+          { value: 'all' as const, label: lang === 'es' ? 'Todos' : 'All' },
+        ]).map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => { setMemberType(tab.value); setCurrentPage(1); }}
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+              memberType === tab.value
+                ? 'bg-primary-600 text-white'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
       {/* Search and Filters */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">

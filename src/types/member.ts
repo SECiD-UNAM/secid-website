@@ -209,6 +209,7 @@ export interface MemberSearchFilters {
   hasPortfolio?: boolean;
   isPremium?: boolean;
   joinedAfter?: Date;
+  memberType?: 'all' | 'member' | 'collaborator';
   sortBy?: 'relevance' | 'name' | 'joinDate' | 'activity' | 'reputation';
   sortOrder?: 'asc' | 'desc';
 }
