@@ -79,10 +79,7 @@ service cloud.firestore {
     
     // Users collection with enhanced security
     match /users/{userId} {
-      allow read: if isAuthenticated() && 
-                     (isOwner(userId) || 
-                      isVerified() || 
-                      canModerate());
+      allow read: if true;
       
       allow create: if isAuthenticated() &&
                        isOwner(userId) &&
