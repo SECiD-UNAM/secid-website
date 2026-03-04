@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { MemberProfile } from '@/components/directory/MemberProfile';
 import { getMemberProfile } from '@/lib/members';
@@ -6,18 +6,40 @@ import type { MemberProfile as MemberProfileType } from '@/types/member';
 import type { UserBasicInfo } from '@/types/user';
 
 interface Props {
-  memberId: string;
+  memberId?: string;
   lang?: 'es' | 'en';
 }
 
-function MemberProfileInner({ memberId, lang = 'es' }: Props) {
+/** Extract member ID from the URL path (e.g. /es/members/{uid}) */
+function extractMemberIdFromUrl(): string | null {
+  if (typeof window === 'undefined') return null;
+  const segments = window.location.pathname.split('/').filter(Boolean);
+  const membersIdx = segments.indexOf('members');
+  if (membersIdx >= 0 && membersIdx + 1 < segments.length) {
+    const id = segments[membersIdx + 1];
+    if (id && id !== 'profile') return id;
+  }
+  return null;
+}
+
+function MemberProfileInner({ memberId: propMemberId, lang = 'es' }: Props) {
   const { user, userProfile, loading: authLoading } = useAuth();
   const [member, setMember] = useState<MemberProfileType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const memberId = useMemo(
+    () => propMemberId || extractMemberIdFromUrl(),
+    [propMemberId]
+  );
+
   useEffect(() => {
     if (authLoading) return;
+    if (!memberId) {
+      setLoading(false);
+      setError(lang === 'es' ? 'Miembro no encontrado' : 'Member not found');
+      return;
+    }
 
     let cancelled = false;
 
@@ -25,7 +47,7 @@ function MemberProfileInner({ memberId, lang = 'es' }: Props) {
       try {
         setLoading(true);
         setError(null);
-        const profile = await getMemberProfile(memberId);
+        const profile = await getMemberProfile(memberId!);
         if (cancelled) return;
         if (profile) {
           setMember(profile);
@@ -45,9 +67,7 @@ function MemberProfileInner({ memberId, lang = 'es' }: Props) {
       }
     }
 
-    if (memberId) {
-      fetchMember();
-    }
+    fetchMember();
 
     return () => { cancelled = true; };
   }, [memberId, lang, authLoading]);

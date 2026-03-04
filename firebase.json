@@ -2,7 +2,16 @@
   "hosting": {
     "public": "dist/client",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "rewrites": [],
+    "rewrites": [
+      {
+        "source": "/es/members/*",
+        "destination": "/es/members/profile/index.html"
+      },
+      {
+        "source": "/en/members/*",
+        "destination": "/en/members/profile/index.html"
+      }
+    ],
     "headers": [
       {
         "source": "/assets/**",
