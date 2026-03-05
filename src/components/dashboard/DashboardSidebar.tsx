@@ -1,6 +1,8 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from '@/hooks/useTranslations';
+import { useBeta } from '@/hooks/useBeta';
+import { isFeatureEnabled, type BetaFeatureId } from '@/lib/beta';
 import {
   HomeIcon,
   UserCircleIcon,
@@ -31,6 +33,7 @@ interface MenuItem {
   badge?: string | number;
   requireRole?: ('member' | 'admin' | 'moderator' | 'company' | 'collaborator')[];
   requireVerified?: boolean;
+  requireBeta?: BetaFeatureId;
 }
 
 export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
@@ -40,6 +43,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 }) => {
   const { userProfile, isVerified, isAdmin, isModerator, signOut } = useAuth();
   const t = useTranslations(lang);
+  const isBeta = useBeta();
 
   const currentPath =
     typeof window !== 'undefined' ? window.location.pathname : '';
@@ -119,6 +123,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   ];
 
   const isItemAccessible = (item: MenuItem): boolean => {
+    if (item.requireBeta && !isFeatureEnabled(item.requireBeta)) return false;
     if (item.requireVerified && !isVerified) return false;
     if (
       item.requireRole &&
@@ -167,20 +172,27 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             </span>
           )}
         </div>
-        {item.badge && accessible && (
-          <span
-            className={`
-            rounded-full px-2 py-1 text-xs font-semibold
-            ${
-              typeof item.badge === 'number'
-                ? 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
-                : 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400'
-            }
-          `}
-          >
-            {item.badge}
-          </span>
-        )}
+        <div className="flex items-center gap-1">
+          {item.requireBeta && isBeta && (
+            <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-semibold text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400">
+              Beta
+            </span>
+          )}
+          {item.badge && accessible && (
+            <span
+              className={`
+              rounded-full px-2 py-1 text-xs font-semibold
+              ${
+                typeof item.badge === 'number'
+                  ? 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+                  : 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400'
+              }
+            `}
+            >
+              {item.badge}
+            </span>
+          )}
+        </div>
       </a>
     );
   };

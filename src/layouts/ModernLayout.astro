@@ -62,6 +62,16 @@ const schemaOrgJson = JSON.stringify({
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
 
+    <!-- Beta environment detection (synchronous, before any rendering) -->
+    <script is:inline>
+    (function(){
+      var h = window.location.hostname;
+      if (h === 'beta.secid.mx' || h === 'beta.localhost') {
+        document.documentElement.dataset.beta = 'true';
+      }
+    })();
+    </script>
+
     <!-- Primary Meta Tags -->
     <title>{title}</title>
     <meta name="title" content={title} />
@@ -294,6 +304,24 @@ const schemaOrgJson = JSON.stringify({
     </script>
   </head>
   <body>
+    <!-- Beta environment banner (hidden by default, shown via CSS on beta hostnames) -->
+    <div class="beta-banner" role="status" aria-label="Beta environment notice">
+      <div class="beta-banner__content">
+        <span class="beta-banner__icon" aria-hidden="true">&#9888;</span>
+        <span class="beta-banner__text beta-banner__text--es">
+          Entorno Beta &mdash; Las funcionalidades pueden ser inestables o cambiar sin previo aviso.
+        </span>
+        <span class="beta-banner__text beta-banner__text--en">
+          Beta Environment &mdash; Features may be unstable or change without notice.
+        </span>
+        <button
+          class="beta-banner__dismiss"
+          aria-label="Dismiss beta notice"
+          onclick="this.closest('.beta-banner').style.display='none'"
+        >&times;</button>
+      </div>
+    </div>
+
     <!-- Main Content -->
     <main id="main">
       <slot />

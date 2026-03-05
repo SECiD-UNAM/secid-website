@@ -71,8 +71,14 @@ const corsMiddleware: MiddlewareHandler = async (context, next) => {
     // Clone response to modify headers
     const newResponse = new Response(response.body, response);
 
-    // Set CORS headers
-    newResponse.headers.set('Access-Control-Allow-Origin', 'https://secid.mx');
+    // Set CORS headers - allow both production and beta origins
+    const allowedOrigins = ['https://secid.mx', 'https://beta.secid.mx'];
+    const requestOrigin = context.request.headers.get('origin') || '';
+    const corsOrigin = allowedOrigins.includes(requestOrigin)
+      ? requestOrigin
+      : 'https://secid.mx';
+    newResponse.headers.set('Access-Control-Allow-Origin', corsOrigin);
+    newResponse.headers.set('Vary', 'Origin');
     newResponse.headers.set(
       'Access-Control-Allow-Methods',
       'GET, POST, PUT, DELETE, OPTIONS'

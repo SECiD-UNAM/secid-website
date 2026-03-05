@@ -87,6 +87,7 @@ declare global {
     __SECID__?: {
       version: string;
       environment: 'development' | 'production';
+      isBeta?: boolean;
     };
   }
 }
