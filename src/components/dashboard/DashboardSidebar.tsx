@@ -239,7 +239,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="fixed top-16 bottom-0 left-0 z-30 hidden w-64 overflow-y-auto border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:block">
+      <aside className={`fixed bottom-0 left-0 z-30 hidden w-64 overflow-y-auto border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:block ${isBeta ? 'top-24' : 'top-16'}`}>
         {sidebarContent}
       </aside>
 
@@ -250,7 +250,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             className="fixed inset-0 z-40 bg-black/50 lg:hidden"
             onClick={onClose}
           />
-          <aside className="fixed top-16 bottom-0 left-0 z-50 w-64 overflow-y-auto border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:hidden">
+          <aside className={`fixed bottom-0 left-0 z-50 w-64 overflow-y-auto border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:hidden ${isBeta ? 'top-24' : 'top-16'}`}>
             <div className="flex items-center justify-end px-4 py-2">
               <button
                 onClick={onClose}

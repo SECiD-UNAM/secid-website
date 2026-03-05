@@ -317,7 +317,7 @@ const schemaOrgJson = JSON.stringify({
         <button
           class="beta-banner__dismiss"
           aria-label="Dismiss beta notice"
-          onclick="this.closest('.beta-banner').style.display='none'"
+          onclick="this.closest('.beta-banner').style.display='none';document.documentElement.removeAttribute('data-beta')"
         >&times;</button>
       </div>
     </div>

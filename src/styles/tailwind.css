@@ -6,9 +6,11 @@
 /* ---- Beta Banner ---- */
 .beta-banner {
   display: none;
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 9999;
+  left: 0;
+  right: 0;
+  z-index: 10000;
   background: linear-gradient(90deg, #f59e0b, #d97706);
   color: #1a1a1a;
   font-size: 0.875rem;
@@ -21,6 +23,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* Push fixed elements down when beta banner is visible */
+[data-beta='true'] .secid-navbar {
+  top: 2rem !important;
+}
+
+[data-beta='true'] body {
+  padding-top: 2rem;
 }
 
 .beta-banner__content {
