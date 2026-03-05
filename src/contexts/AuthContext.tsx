@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
   type User,
   onAuthStateChanged,
@@ -86,6 +86,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const profileUnsubRef = useRef<Unsubscribe | null>(null);
 
   // Subscribe to user profile changes
   const subscribeToProfile = (uid: string): Unsubscribe => {
@@ -110,7 +111,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       (err) => {
         console.error('Error fetching user profile:', err);
         setError('Failed to load user profile');
-        setUserProfile(null);
+        // Keep last known profile to prevent auth flapping on transient errors
+
+        const firebaseErr = err as { code?: string };
+        if (firebaseErr.code === 'permission-denied') {
+          // Firebase terminates the listener on permission-denied; attempt recovery
+          setTimeout(() => {
+            auth.currentUser?.getIdToken(true).then(() => {
+              if (profileUnsubRef.current) {
+                profileUnsubRef.current();
+              }
+              profileUnsubRef.current = subscribeToProfile(uid);
+            }).catch((refreshErr) => {
+              console.error('Token refresh failed during recovery:', refreshErr);
+            });
+          }, 2000);
+        }
       }
     );
   };
@@ -151,7 +167,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    let unsubscribeProfile: Unsubscribe | null = null;
     let unsubscribeAuth: Unsubscribe | null = null;
 
     // Wait for Firebase to restore any persisted session before subscribing.
@@ -164,10 +179,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUser(firebaseUser);
 
           // Subscribe to profile changes
-          if (unsubscribeProfile) {
-            unsubscribeProfile();
+          if (profileUnsubRef.current) {
+            profileUnsubRef.current();
           }
-          unsubscribeProfile = subscribeToProfile(firebaseUser.uid);
+          profileUnsubRef.current = subscribeToProfile(firebaseUser.uid);
 
           // Show emulator status in development
           if (isEmulatorMode()) {
@@ -179,9 +194,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUserProfile(null);
 
           // Clean up profile subscription
-          if (unsubscribeProfile) {
-            unsubscribeProfile();
-            unsubscribeProfile = null;
+          if (profileUnsubRef.current) {
+            profileUnsubRef.current();
+            profileUnsubRef.current = null;
           }
         }
 
@@ -194,10 +209,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (unsubscribeAuth) {
         unsubscribeAuth();
       }
-      if (unsubscribeProfile) {
-        unsubscribeProfile();
+      if (profileUnsubRef.current) {
+        profileUnsubRef.current();
       }
     };
+  }, []);
+
+  // Force token refresh when tab becomes visible to prevent stale auth
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && auth.currentUser) {
+        auth.currentUser.getIdToken(true).catch((err) => {
+          console.warn('Token refresh failed:', err);
+        });
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
   // Compute derived state

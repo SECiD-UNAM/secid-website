@@ -32,7 +32,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
   showStats = true,
   maxMembers = 50
 }) => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [members, setMembers] = useState<MemberProfile[]>([]);
   const [searchResults, setSearchResults] = useState<MemberSearchResult[]>([]);
   const [stats, setStats] = useState<MemberStats | null>(null);
@@ -68,11 +68,12 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
 
   // Load members and stats on component mount or when memberType changes
   useEffect(() => {
+    if (authLoading) return;
     loadMembers();
     if(showStats) {
       loadStats();
     }
-  }, [showStats, memberType]);
+  }, [showStats, memberType, authLoading]);
 
   // Search when filters change, or re-sort locally when only sort changes
   useEffect(() => {
