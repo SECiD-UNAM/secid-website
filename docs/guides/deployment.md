@@ -14,11 +14,12 @@ This document describes the enhanced CI/CD pipeline for the SECiD website, which
 
 ### Environments
 
-| Environment | URL                               | Purpose                |
-| ----------- | --------------------------------- | ---------------------- |
-| Development | `http://localhost:3000`           | Local development      |
-| Staging     | `https://staging-secid.github.io` | Pre-production testing |
-| Production  | `https://secid.mx`                | Live website           |
+| Environment | URL                               | Purpose                            |
+| ----------- | --------------------------------- | ---------------------------------- |
+| Development | `http://localhost:4321`           | Local development                  |
+| Beta        | `https://beta.secid.mx`           | Beta features testing (same build) |
+| Staging     | `https://staging-secid.github.io` | Pre-production testing             |
+| Production  | `https://secid.mx`                | Live website                       |
 
 ## Local Development
 
