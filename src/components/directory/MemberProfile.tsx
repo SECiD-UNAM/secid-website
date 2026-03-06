@@ -306,106 +306,107 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
       {/* Header Section */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         {/* Cover */}
-        <div className="h-40 md:h-48 bg-gradient-to-br from-primary-600 via-primary-500 to-secondary-500" aria-hidden="true" />
-
-        {/* Profile info — avatar overlaps the cover, text sits on the card background */}
-        <div className="relative z-10 px-6 pb-6">
+        <div className="relative h-40 md:h-48 bg-gradient-to-br from-primary-600 via-primary-500 to-secondary-500">
           {isOwnProfile && (
             <button
               type="button"
-              className="absolute -top-12 right-6 p-2 bg-black/20 text-white rounded-lg hover:bg-black/30 transition-colors"
+              className="absolute bottom-3 right-3 p-2 bg-black/20 text-white rounded-lg hover:bg-black/30 transition-colors"
               aria-label={lang === 'es' ? 'Cambiar foto de portada' : 'Change cover photo'}
             >
               <CameraIcon className="h-4 w-4" aria-hidden="true" />
             </button>
           )}
+        </div>
 
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between -mt-16 gap-4">
-            {/* Avatar and basic info */}
-            <div className="flex flex-col lg:flex-row lg:items-end space-y-4 lg:space-y-0 lg:space-x-6">
-              <div className="relative shrink-0">
-                {(member as any).photoURL ? (
-                  <img
-                    src={(member as any).photoURL}
-                    alt=""
-                    loading="lazy"
-                    className="h-28 w-28 md:h-36 md:w-36 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-lg ring-4 ring-primary-500/20"
-                  />
-                ) : (
-                  <div
-                    className="h-28 w-28 md:h-36 md:w-36 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-bold text-3xl md:text-4xl border-4 border-white dark:border-gray-800 shadow-lg ring-4 ring-primary-500/20"
-                    aria-hidden="true"
-                  >
-                    {member.initials}
-                  </div>
+        {/* Profile info — fully on card background */}
+        <div className="relative z-10 px-6 pb-6">
+          {/* Avatar — overlaps the cover */}
+          <div className="flex items-end justify-between -mt-16 mb-4">
+            <div className="relative shrink-0">
+              {(member as any).photoURL ? (
+                <img
+                  src={(member as any).photoURL}
+                  alt=""
+                  loading="lazy"
+                  className="h-28 w-28 md:h-36 md:w-36 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-lg ring-4 ring-primary-500/20"
+                />
+              ) : (
+                <div
+                  className="h-28 w-28 md:h-36 md:w-36 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-bold text-3xl md:text-4xl border-4 border-white dark:border-gray-800 shadow-lg ring-4 ring-primary-500/20"
+                  aria-hidden="true"
+                >
+                  {member.initials}
+                </div>
+              )}
+              {visibility.showOnlineStatus && (
+                <span
+                  className={`absolute bottom-2 right-2 h-5 w-5 md:h-6 md:w-6 rounded-full border-[3px] border-white dark:border-gray-800 ${
+                    member.isOnline ? 'bg-green-500' : 'bg-gray-400'
+                  }`}
+                  role="status"
+                  aria-label={member.isOnline ? (lang === 'es' ? 'En linea' : 'Online') : (lang === 'es' ? 'Desconectado' : 'Offline')}
+                />
+              )}
+              {isOwnProfile && (
+                <button
+                  type="button"
+                  className="absolute bottom-0 right-0 p-1.5 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors shadow"
+                  aria-label={lang === 'es' ? 'Cambiar foto de perfil' : 'Change profile photo'}
+                >
+                  <CameraIcon className="h-4 w-4" aria-hidden="true" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Name, info, and actions — entirely on card background */}
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+            <div className="text-center lg:text-left min-w-0">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                  {member.displayName}
+                </h1>
+                {member.role === 'collaborator' && (
+                  <span className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 text-xs px-2 py-0.5 rounded-full">
+                    {lang === 'es' ? 'Colaborador' : 'Collaborator'}
+                  </span>
                 )}
-                {visibility.showOnlineStatus && (
-                  <span
-                    className={`absolute bottom-2 right-2 h-5 w-5 md:h-6 md:w-6 rounded-full border-[3px] border-white dark:border-gray-800 ${
-                      member.isOnline ? 'bg-green-500' : 'bg-gray-400'
-                    }`}
-                    role="status"
-                    aria-label={member.isOnline ? (lang === 'es' ? 'En linea' : 'Online') : (lang === 'es' ? 'Desconectado' : 'Offline')}
-                  />
+                {member.isPremium && (
+                  <StarIcon className="h-5 w-5 text-yellow-500 fill-current" aria-label="Premium member" />
                 )}
-                {isOwnProfile && (
-                  <button
-                    type="button"
-                    className="absolute bottom-0 right-0 p-1.5 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors shadow"
-                    aria-label={lang === 'es' ? 'Cambiar foto de perfil' : 'Change profile photo'}
-                  >
-                    <CameraIcon className="h-4 w-4" aria-hidden="true" />
-                  </button>
+                {member?.portfolio?.certifications.some(c => c.verified) && (
+                  <CheckBadgeIcon className="h-5 w-5 text-blue-500" aria-label={lang === 'es' ? 'Certificaciones verificadas' : 'Verified certifications'} />
                 )}
               </div>
 
-              <div className="text-center lg:text-left min-w-0">
-                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-2">
-                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-                    {member.displayName}
-                  </h1>
-                  {member.role === 'collaborator' && (
-                    <span className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 text-xs px-2 py-0.5 rounded-full">
-                      {lang === 'es' ? 'Colaborador' : 'Collaborator'}
-                    </span>
-                  )}
-                  {member.isPremium && (
-                    <StarIcon className="h-5 w-5 text-yellow-500 fill-current" aria-label="Premium member" />
-                  )}
-                  {member?.portfolio?.certifications.some(c => c.verified) && (
-                    <CheckBadgeIcon className="h-5 w-5 text-blue-500" aria-label={lang === 'es' ? 'Certificaciones verificadas' : 'Verified certifications'} />
-                  )}
-                </div>
-
-                <p className="text-lg text-gray-600 dark:text-gray-400 mb-1">
-                  {member.profile.position}
+              <p className="text-lg text-gray-600 dark:text-gray-400 mb-1">
+                {member.profile.position}
+              </p>
+              {visibility.showCompany && (
+                <p className="text-gray-500 dark:text-gray-500 mb-2">
+                  {member.profile.company}
                 </p>
-                {visibility.showCompany && (
-                  <p className="text-gray-500 dark:text-gray-500 mb-2">
-                    {member.profile.company}
-                  </p>
-                )}
+              )}
 
-                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
-                  {visibility.showLocation && (
-                    <span className="flex items-center">
-                      <MapPinIcon className="h-4 w-4 mr-1 text-primary-500" aria-hidden="true" />
-                      {member.profile.location}
-                    </span>
-                  )}
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
+                {visibility.showLocation && (
                   <span className="flex items-center">
-                    <CalendarIcon className="h-4 w-4 mr-1 text-secondary-500" aria-hidden="true" />
-                    <time dateTime={member.joinedAt.toISOString()}>
-                      {lang === 'es' ? 'Miembro desde' : 'Member since'} {formatJoinDate(member.joinedAt)}
-                    </time>
+                    <MapPinIcon className="h-4 w-4 mr-1 text-primary-500" aria-hidden="true" />
+                    {member.profile.location}
                   </span>
-                  {visibility.showLastSeen && (
-                    <span className="flex items-center">
-                      <ClockIcon className="h-4 w-4 mr-1 text-green-500" aria-hidden="true" />
-                      {formatLastSeen(member.lastSeen)}
-                    </span>
-                  )}
-                </div>
+                )}
+                <span className="flex items-center">
+                  <CalendarIcon className="h-4 w-4 mr-1 text-secondary-500" aria-hidden="true" />
+                  <time dateTime={member.joinedAt.toISOString()}>
+                    {lang === 'es' ? 'Miembro desde' : 'Member since'} {formatJoinDate(member.joinedAt)}
+                  </time>
+                </span>
+                {visibility.showLastSeen && (
+                  <span className="flex items-center">
+                    <ClockIcon className="h-4 w-4 mr-1 text-green-500" aria-hidden="true" />
+                    {formatLastSeen(member.lastSeen)}
+                  </span>
+                )}
               </div>
             </div>
 
