@@ -305,22 +305,22 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
     <article className="max-w-6xl mx-auto space-y-6" aria-label={`${lang === 'es' ? 'Perfil de' : 'Profile of'} ${member.displayName}`}>
       {/* Header Section */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-        {/* Cover — tall enough to sit behind the name/title text */}
-        <div className="h-64 md:h-72 bg-gradient-to-br from-primary-600 via-primary-500 to-secondary-500" aria-hidden="true" />
+        {/* Cover */}
+        <div className="h-40 md:h-48 bg-gradient-to-br from-primary-600 via-primary-500 to-secondary-500" aria-hidden="true" />
 
-        {/* Profile info — pulls up into the cover so name renders on top of the gradient */}
+        {/* Profile info — avatar overlaps the cover, text sits on the card background */}
         <div className="relative z-10 px-6 pb-6">
           {isOwnProfile && (
             <button
               type="button"
-              className="absolute -top-28 right-6 p-2 bg-black/20 text-white rounded-lg hover:bg-black/30 transition-colors"
+              className="absolute -top-12 right-6 p-2 bg-black/20 text-white rounded-lg hover:bg-black/30 transition-colors"
               aria-label={lang === 'es' ? 'Cambiar foto de portada' : 'Change cover photo'}
             >
               <CameraIcon className="h-4 w-4" aria-hidden="true" />
             </button>
           )}
 
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between -mt-32">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between -mt-16 gap-4">
             {/* Avatar and basic info */}
             <div className="flex flex-col lg:flex-row lg:items-end space-y-4 lg:space-y-0 lg:space-x-6">
               <div className="relative shrink-0">
@@ -361,7 +361,7 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
 
               <div className="text-center lg:text-left min-w-0">
                 <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-2">
-                  <h1 className="text-2xl md:text-3xl font-bold text-white drop-shadow-sm">
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
                     {member.displayName}
                   </h1>
                   {member.role === 'collaborator' && (
@@ -377,16 +377,16 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                   )}
                 </div>
 
-                <p className="text-lg text-white/80 mb-1">
+                <p className="text-lg text-gray-600 dark:text-gray-400 mb-1">
                   {member.profile.position}
                 </p>
                 {visibility.showCompany && (
-                  <p className="text-white/70 mb-2">
+                  <p className="text-gray-500 dark:text-gray-500 mb-2">
                     {member.profile.company}
                   </p>
                 )}
 
-                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-4 gap-y-1 text-sm text-white/60">
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
                   {visibility.showLocation && (
                     <span className="flex items-center">
                       <MapPinIcon className="h-4 w-4 mr-1 text-primary-500" aria-hidden="true" />
