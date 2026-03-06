@@ -306,9 +306,7 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
       {/* Header Section */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         {/* Cover */}
-        <div className="h-48 md:h-56 bg-gradient-to-br from-primary-600 via-primary-500 to-secondary-500 relative" aria-hidden="true">
-          <div className="absolute inset-0 bottom-16 bg-[radial-gradient(ellipse_at_30%_20%,rgba(255,255,255,0.15),transparent_70%)]" />
-        </div>
+        <div className="h-48 md:h-56 bg-gradient-to-br from-primary-600 via-primary-500 to-secondary-500" aria-hidden="true" />
 
         {/* Profile info — relative + z-10 so it renders above the cover gradient */}
         <div className="relative z-10 px-6 pb-6">
