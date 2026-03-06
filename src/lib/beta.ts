@@ -11,6 +11,9 @@
  */
 export const BETA_FEATURES = {
   hub: true,
+  gamification: true,
+  messaging: true,
+  learningPaths: true,
 } as const;
 
 export type BetaFeatureId = keyof typeof BETA_FEATURES;
