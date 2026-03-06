@@ -148,12 +148,12 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       onViewProfile(member.uid);
     } else {
       // Default navigation
-      window.location.href = `/${lang}/members/${member.uid}`;
+      window.location.href = `/${lang}/members/${member.slug || member.uid}`;
     }
   };
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/${lang}/members/${member.uid}`;
+    const url = `${window.location.origin}/${lang}/members/${member.slug || member.uid}`;
     if (navigator.share) {
       await navigator.share({
         title: `${member.displayName} - SECiD`,
@@ -211,7 +211,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           {/* Name and title */}
           <div>
             <h4 className="font-semibold text-sm text-gray-900 dark:text-white truncate">
-              <a href={`/${lang}/members/${member.uid}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+              <a href={`/${lang}/members/${member.slug || member.uid}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                 {member.displayName}
               </a>
             </h4>
@@ -222,7 +222,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
           {/* Quick action */}
           <a
-            href={`/${lang}/members/${member.uid}`}
+            href={`/${lang}/members/${member.slug || member.uid}`}
             className="w-full px-2 py-1 text-xs text-center bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 rounded hover:bg-primary-200 dark:hover:bg-primary-900/40 transition-colors"
           >
             {lang === 'es' ? 'Ver perfil' : 'View profile'}
@@ -257,7 +257,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                 <div className="min-w-0">
                   <div className="flex items-center space-x-2">
                     <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
-                      <a href={`/${lang}/members/${member.uid}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                      <a href={`/${lang}/members/${member.slug || member.uid}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                         {member.displayName}
                       </a>
                     </h3>
@@ -360,7 +360,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
             )}
 
             <a
-              href={`/${lang}/members/${member.uid}`}
+              href={`/${lang}/members/${member.slug || member.uid}`}
               className="flex-1 sm:flex-initial px-3 py-2 text-sm text-center bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors whitespace-nowrap"
             >
               {lang === 'es' ? 'Ver perfil' : 'View profile'}
@@ -421,7 +421,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         </div>
 
         <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-1">
-          <a href={`/${lang}/members/${member.uid}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+          <a href={`/${lang}/members/${member.slug || member.uid}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
             {member.displayName}
           </a>
         </h3>
@@ -574,7 +574,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
         <div className="flex space-x-2">
           <a
-            href={`/${lang}/members/${member.uid}`}
+            href={`/${lang}/members/${member.slug || member.uid}`}
             className="flex-1 px-3 py-2 text-sm font-medium text-center bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             <EyeIcon className="h-4 w-4 mr-1 inline" />

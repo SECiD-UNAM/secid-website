@@ -4,6 +4,15 @@
 
 import type { MemberProfile } from '@/types/member';
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
 /**
  * Map a flat Firestore user document (as written by Cloud Functions)
  * to the MemberProfile shape expected by the UI components.
@@ -18,6 +27,7 @@ export function mapUserDocToMemberProfile(uid: string, data: Record<string, any>
     .join('')
     .toUpperCase()
     .slice(0, 2);
+  const slug = slugify(displayName);
 
   return {
     uid,
@@ -25,6 +35,7 @@ export function mapUserDocToMemberProfile(uid: string, data: Record<string, any>
     role: data.role || 'member',
     createdAt: data.createdAt?.toDate?.() || data.createdAt || new Date(),
     displayName,
+    slug,
     initials,
     isOnline: data.isOnline || false,
     lastSeen: data.updatedAt?.toDate?.() || data.updatedAt || new Date(),
@@ -105,6 +116,7 @@ export const createMockMemberProfile = (index: number): MemberProfile => ({
   role: 'member',
   createdAt: new Date(2023, 0, index),
   displayName: `Member ${index}`,
+  slug: `member-${index}`,
   initials: `M${index}`,
   isOnline: Math.random() > 0.5,
   lastSeen: new Date(Date.now() - Math.random() * 86400000 * 7),

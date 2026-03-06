@@ -154,15 +154,22 @@ export async function searchMembers(filters: MemberSearchFilters): Promise<Membe
 }
 
 /**
- * Get a single member profile by UID
+ * Get a single member profile by UID or slug.
+ * Slugs are detected by the presence of a hyphen (UIDs are alphanumeric).
  */
-export async function getMemberProfile(uid: string): Promise<MemberProfile | null> {
+export async function getMemberProfile(idOrSlug: string): Promise<MemberProfile | null> {
   if (isUsingMockAPI()) {
     return createMockMemberProfile(1);
   }
 
+  const isSlug = idOrSlug.includes('-');
+
+  if (isSlug) {
+    return getMemberBySlug(idOrSlug);
+  }
+
   try {
-    const docRef = doc(db, COLLECTIONS.MEMBERS, uid);
+    const docRef = doc(db, COLLECTIONS.MEMBERS, idOrSlug);
     let docSnap = await getDoc(docRef);
 
     // Fallback to server if persistent cache returns a miss
@@ -177,6 +184,29 @@ export async function getMemberProfile(uid: string): Promise<MemberProfile | nul
     return null;
   } catch (error) {
     console.error('Error fetching member profile:', error);
+    throw error;
+  }
+}
+
+/**
+ * Look up a member by their URL slug (derived from displayName).
+ */
+async function getMemberBySlug(slug: string): Promise<MemberProfile | null> {
+  try {
+    const snapshot = await getDocs(
+      query(collection(db, COLLECTIONS.MEMBERS), limit(200))
+    );
+
+    for (const d of snapshot.docs) {
+      const profile = mapUserDocToMemberProfile(d.id, d.data());
+      if (profile.slug === slug) {
+        return profile;
+      }
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error fetching member by slug:', error);
     throw error;
   }
 }

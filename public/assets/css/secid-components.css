@@ -38,7 +38,7 @@ body {
   /* SECiD Brand Colors */
   --secid-primary: #f65425; /* Mandarina/Orange - Primary CTA */
   --secid-secondary: #5b7f99; /* Azul/Blue - Secondary */
-  --secid-dark-blue: #385061; /* Azul Oscuro/Dark Blue - Text */
+  --secid-dark-blue: #1e293b; /* Slate 800 - Text & Footer */
   --secid-gold: #fdb157; /* Dorado/Gold - Accents */
   --secid-cream: #f4efe0; /* Crema/Cream - Backgrounds */
 
@@ -47,7 +47,7 @@ body {
   --secid-primary-dark: #e63d14;
   --secid-secondary-light: #7a9bb8;
   --secid-secondary-dark: #465d73;
-  --secid-dark-blue-light: #4a677a;
+  --secid-dark-blue-light: #334155; /* Slate 700 */
   --secid-gold-light: #ffca7a;
   --secid-gold-dark: #e89d3f;
 

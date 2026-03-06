@@ -28,6 +28,7 @@ export interface StatusChange {
 export interface MemberProfile extends UserProfile {
   uid: string;
   displayName: string;
+  slug: string;
   initials: string;
   isOnline: boolean;
   lastSeen: Date;
