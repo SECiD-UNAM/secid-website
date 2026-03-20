@@ -19,6 +19,7 @@ import type {
   MemberSearchFilters,
   MemberSearchResult,
   MemberStats,
+  MemberStatisticsData,
   MemberRecommendation,
   vCardData,
 } from '@/types/member';
@@ -354,6 +355,199 @@ export async function getDirectoryStatsData(): Promise<DirectoryStats> {
     dormant,
     profileCompleteness: completeness,
   };
+}
+
+/**
+ * Get aggregated member statistics for the statistics view
+ */
+export async function getMemberStatistics(): Promise<MemberStatisticsData> {
+  if (isUsingMockAPI()) {
+    return {
+      totalMembers: 21,
+      totalCollaborators: 3,
+      companies: [
+        { name: 'Datateam Analytics Force', count: 1 },
+        { name: 'Xaldigital', count: 1 },
+        { name: 'Cognodata', count: 1 },
+        { name: 'Universal', count: 1 },
+        { name: 'J.D. Power', count: 1 },
+        { name: 'Grupo Financiero Banorte', count: 1 },
+        { name: 'NielsenIQ', count: 1 },
+        { name: 'BBVA', count: 1 },
+        { name: 'Círculo de Crédito', count: 1 },
+        { name: 'Kuona', count: 1 },
+        { name: 'Arkham', count: 1 },
+        { name: 'Algorithmia', count: 1 },
+        { name: 'Uber', count: 1 },
+        { name: 'The Coca-Cola Company', count: 1 },
+        { name: 'El Puerto de Liverpool', count: 1 },
+        { name: 'Microsoft', count: 1 },
+      ],
+      roleComposition: [
+        { label: 'Miembros', count: 21 },
+        { label: 'Colaboradores', count: 3 },
+      ],
+      campusComposition: [
+        { label: 'IIMAS', count: 18 },
+        { label: 'FES Acatlán', count: 3 },
+      ],
+      degreeComposition: [
+        { label: 'Licenciatura', count: 18 },
+        { label: 'Maestría', count: 3 },
+      ],
+      genderComposition: [
+        { label: 'Masculino', count: 18 },
+        { label: 'Femenino', count: 3 },
+      ],
+      generationDistribution: [
+        { year: '2019', count: 4 },
+        { year: '2020', count: 6 },
+        { year: '2021', count: 4 },
+        { year: '2022', count: 4 },
+        { year: '2023', count: 1 },
+        { year: '2024', count: 2 },
+      ],
+      initiativeImportance: [
+        { initiative: 'Bolsa de Trabajo', avgScore: 4 },
+        { initiative: 'Cursos', avgScore: 4 },
+        { initiative: 'Seminarios', avgScore: 3.5 },
+        { initiative: 'Hackatones', avgScore: 3.1 },
+        { initiative: 'Mentoría', avgScore: 3.1 },
+        { initiative: 'Newsletter', avgScore: 3 },
+        { initiative: 'Asesorías', avgScore: 2.7 },
+      ],
+    };
+  }
+
+  try {
+    const membersRef = collection(db, COLLECTIONS.MEMBERS);
+    const snapshot = await getDocs(membersRef);
+
+    let totalMembers = 0;
+    let totalCollaborators = 0;
+    const companyMap = new Map<string, number>();
+    const campusMap = new Map<string, number>();
+    const degreeMap = new Map<string, number>();
+    const genderMap = new Map<string, number>();
+    const generationMap = new Map<string, number>();
+
+    const priorityKeys = [
+      'bolsaTrabajo',
+      'cursosEspecializados',
+      'seminarios',
+      'hackatones',
+      'mentoria',
+      'newsletter',
+      'asesorias',
+    ];
+    const prioritySums = new Map<string, number>();
+    const priorityCounts = new Map<string, number>();
+    for (const key of priorityKeys) {
+      prioritySums.set(key, 0);
+      priorityCounts.set(key, 0);
+    }
+
+    snapshot.forEach((d) => {
+      const data = d.data();
+
+      // Role composition
+      const role = data.role || 'member';
+      if (role === 'collaborator') {
+        totalCollaborators++;
+      } else {
+        totalMembers++;
+      }
+
+      // Company
+      const company = data.profile?.company || data.currentCompany;
+      if (company) {
+        companyMap.set(company, (companyMap.get(company) || 0) + 1);
+      }
+
+      // Campus
+      const campus = data.campus;
+      if (campus) {
+        campusMap.set(campus, (campusMap.get(campus) || 0) + 1);
+      }
+
+      // Generation
+      const generation = data.generation;
+      if (generation) {
+        generationMap.set(String(generation), (generationMap.get(String(generation)) || 0) + 1);
+      }
+
+      // Gender (from registrationData)
+      const gender = data.registrationData?.gender || data.gender;
+      if (gender) {
+        genderMap.set(gender, (genderMap.get(gender) || 0) + 1);
+      }
+
+      // Max degree (from registrationData, fallback to academicLevel)
+      const maxDegree = data.registrationData?.maxDegree || data.academicLevel;
+      if (maxDegree) {
+        degreeMap.set(maxDegree, (degreeMap.get(maxDegree) || 0) + 1);
+      }
+
+      // Initiative priorities
+      const priorities = data.registrationData?.priorities || data.priorities;
+      if (priorities) {
+        for (const key of priorityKeys) {
+          const val = parseFloat(priorities[key]);
+          if (!isNaN(val)) {
+            prioritySums.set(key, (prioritySums.get(key) || 0) + val);
+            priorityCounts.set(key, (priorityCounts.get(key) || 0) + 1);
+          }
+        }
+      }
+    });
+
+    const priorityLabels: Record<string, string> = {
+      bolsaTrabajo: 'Bolsa de Trabajo',
+      cursosEspecializados: 'Cursos',
+      seminarios: 'Seminarios',
+      hackatones: 'Hackatones',
+      mentoria: 'Mentoría',
+      newsletter: 'Newsletter',
+      asesorias: 'Asesorías',
+    };
+
+    const mapToArray = (map: Map<string, number>) =>
+      Array.from(map.entries())
+        .map(([label, count]) => ({ label, count }))
+        .sort((a, b) => b.count - a.count);
+
+    return {
+      totalMembers,
+      totalCollaborators,
+      companies: Array.from(companyMap.entries())
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count),
+      roleComposition: [
+        { label: 'Miembros', count: totalMembers },
+        { label: 'Colaboradores', count: totalCollaborators },
+      ],
+      campusComposition: mapToArray(campusMap),
+      degreeComposition: mapToArray(degreeMap),
+      genderComposition: mapToArray(genderMap),
+      generationDistribution: Array.from(generationMap.entries())
+        .map(([year, count]) => ({ year, count }))
+        .sort((a, b) => a.year.localeCompare(b.year)),
+      initiativeImportance: priorityKeys
+        .map((key) => {
+          const count = priorityCounts.get(key) || 0;
+          const sum = prioritySums.get(key) || 0;
+          return {
+            initiative: priorityLabels[key] || key,
+            avgScore: count > 0 ? Math.round((sum / count) * 10) / 10 : 0,
+          };
+        })
+        .filter((item) => item.avgScore > 0)
+        .sort((a, b) => b.avgScore - a.avgScore),
+    };
+  } catch (error) {
+    console.error('Error fetching member statistics:', error);
+    throw error;
+  }
 }
 
 /**

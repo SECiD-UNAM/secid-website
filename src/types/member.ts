@@ -231,6 +231,19 @@ export interface MemberStats {
   topLocations: Array<{ location: string; count: number }>;
 }
 
+// Aggregated statistics for the member statistics view
+export interface MemberStatisticsData {
+  totalMembers: number;
+  totalCollaborators: number;
+  companies: Array<{ name: string; count: number }>;
+  roleComposition: Array<{ label: string; count: number }>;
+  campusComposition: Array<{ label: string; count: number }>;
+  degreeComposition: Array<{ label: string; count: number }>;
+  genderComposition: Array<{ label: string; count: number }>;
+  generationDistribution: Array<{ year: string; count: number }>;
+  initiativeImportance: Array<{ initiative: string; avgScore: number }>;
+}
+
 // View mode types
 export type ViewMode = 'grid' | 'list' | 'compact';
 

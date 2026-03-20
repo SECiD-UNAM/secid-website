@@ -9,6 +9,7 @@ export {
   searchMembers,
   getMemberProfile,
   getMemberStats,
+  getMemberStatistics,
   getDirectoryStatsData,
   generateVCard,
   getMemberRecommendations,

@@ -10,6 +10,7 @@ import type {
   ViewMode,
   MemberStats
 } from '@/types/member';
+import { MemberStatistics } from './MemberStatistics';
 import {
   Squares2X2Icon,
   ListBulletIcon,
@@ -39,6 +40,9 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
+  // Top-level view: directory vs statistics
+  const [activeView, setActiveView] = useState<'directory' | 'statistics'>('directory');
+
   // View and pagination state
   const [viewMode, setViewMode] = useState<ViewMode>(initialView);
   const [currentPage, setCurrentPage] = useState(1);
@@ -304,6 +308,32 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
         </div>
       )}
 
+      {/* View Toggle: Directory / Statistics */}
+      <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700 pb-3">
+        {([
+          { value: 'directory' as const, label: lang === 'es' ? 'Directorio' : 'Directory' },
+          { value: 'statistics' as const, label: lang === 'es' ? 'Estadísticas' : 'Statistics' },
+        ]).map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => setActiveView(tab.value)}
+            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+              activeView === tab.value
+                ? 'bg-primary-600 text-white'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+            }`}
+          >
+            {tab.value === 'statistics' && <ChartBarIcon className="h-4 w-4 inline-block mr-1.5 -mt-0.5" />}
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Statistics View */}
+      {activeView === 'statistics' && <MemberStatistics lang={lang} />}
+
+      {/* Directory View */}
+      {activeView === 'directory' && <>
       {/* Member Type Tabs */}
       <div className="flex gap-2">
         {([
@@ -481,6 +511,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
           </button>
         </div>
       )}
+      </>}
     </div>
   );
 };
