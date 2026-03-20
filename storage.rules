@@ -14,10 +14,11 @@ service firebase.storage {
     }
     
     // Company logos
-    match /companies/{companyId}/{allPaths=**} {
+    match /companies/{companyId}/{fileName} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null && 
-                      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'company'];
+      allow write: if request.auth != null
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
     }
     
     // Event images
