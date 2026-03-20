@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Member Hub**: Created MemberDashboard shell with 3-tab navigation (Overview, Members, Insights), FilterState type, and wrapper page. Stub tab components ready for full implementation in subsequent tasks.
 - **TD-012**: Implemented `EventForm` component (`src/components/events/EventForm.tsx`) for creating and editing events through the dashboard. Uses React Hook Form + Zod validation, Firestore CRUD, bilingual labels (en/es), dark mode, conditional location fields based on event format, loading skeleton for edit mode. Schema and helpers extracted to `event-form-schema.ts`. Wired into all 4 Astro event pages (en/es new + edit), replacing TODO placeholders.
 - **TD-011**: Implemented all Stripe webhook handlers in `src/lib/stripe/stripe-webhooks.ts`. Subscription lifecycle (created, updated, deleted, paused, resumed), invoice payments (succeeded, failed), customer management (created, updated, deleted), payment intents (succeeded, failed), and checkout sessions are now fully handled with Firestore persistence and audit logging via a `webhookEvents` collection.
 
@@ -25,6 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **TD-002/TD-003**: Migrated from Astro 4.16.19 to Astro 5.18.0 to fix 5 critical/high security CVEs (middleware auth bypass via URL encoding, double URL encoding auth bypass, reflected XSS via server islands, SSRF via Host header injection, dev server file read). Upgraded all integration packages: `@astrojs/node` 8.3.4 -> 9.5.4, `@astrojs/react` 3.6.3 -> 4.4.2, `@astrojs/tailwind` 5.1.5 -> 6.0.2, `@astrojs/sitemap` 3.4.2 -> 3.7.0, `@astrojs/check` 0.5.10 -> 0.9.6, `astro-compress` 2.3.8 -> 2.3.9. Config changes: `output: 'hybrid'` -> `output: 'static'`, removed deprecated `viewTransitions: true` top-level config.
 
 ### Fixed
+
+- **Auth session resilience**: Fixed intermittent auth session loss where verified members could lose access to member resources:
+  - `AuthContext.tsx`: Removed `setUserProfile(null)` from `onSnapshot` error handler to retain last known profile on transient errors, preventing auth state flapping
+  - `AuthContext.tsx`: Added `permission-denied` error recovery -- forces token refresh via `getIdToken(true)` and re-subscribes to the profile listener after a 2-second delay
+  - `AuthContext.tsx`: Added `visibilitychange` event listener that refreshes the auth token when a backgrounded tab returns to foreground, preventing stale token errors
+  - `MemberDirectory.tsx`: Gated member/stats loading on `authLoading` to prevent Firestore queries from firing before the auth session is resolved
 
 - **TD-013**: Reduced test suite skip rate from 85% to ~28% (34 files, ~950 tests):
   - Removed `describe.skip` from 26 test files to surface actual failures
