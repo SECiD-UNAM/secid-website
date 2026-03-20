@@ -1,48 +1,48 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+'use strict';
+Object.defineProperty(exports, '__esModule', { value: true });
 exports.sendEmail = sendEmail;
 exports.sendBatchEmails = sendBatchEmails;
 exports.generateJobMatchEmail = generateJobMatchEmail;
-const admin = require("firebase-admin");
+const admin = require('firebase-admin');
 /**
  * Writes an email document to the 'mail' collection.
  * Firebase Trigger Email extension picks these up and sends via configured SMTP/SendGrid.
  */
-async function sendEmail({ to, subject, html, }) {
-    const docRef = await admin.firestore().collection('mail').add({
-        to,
-        message: {
-            subject,
-            html,
-        },
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-    return docRef.id;
+async function sendEmail({ to, subject, html }) {
+  const docRef = await admin.firestore().collection('mail').add({
+    to,
+    message: {
+      subject,
+      html,
+    },
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+  return docRef.id;
 }
 /**
  * Send email to multiple recipients (batch)
  */
 async function sendBatchEmails(emails) {
-    const batch = admin.firestore().batch();
-    const mailCollection = admin.firestore().collection('mail');
-    for (const email of emails) {
-        const docRef = mailCollection.doc();
-        batch.set(docRef, {
-            to: email.to,
-            message: {
-                subject: email.subject,
-                html: email.html,
-            },
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
-    }
-    await batch.commit();
+  const batch = admin.firestore().batch();
+  const mailCollection = admin.firestore().collection('mail');
+  for (const email of emails) {
+    const docRef = mailCollection.doc();
+    batch.set(docRef, {
+      to: email.to,
+      message: {
+        subject: email.subject,
+        html: email.html,
+      },
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  }
+  await batch.commit();
 }
 /**
  * Generate job match notification email HTML
  */
 function generateJobMatchEmail(params) {
-    return `
+  return `
 <!DOCTYPE html>
 <html>
 <head>
