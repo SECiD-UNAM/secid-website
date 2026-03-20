@@ -411,9 +411,24 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
         { initiative: 'Newsletter', avgScore: 3 },
         { initiative: 'Asesorías', avgScore: 2.7 },
       ],
-      skillsDistribution: [],
-      experienceDistribution: [],
-      professionalStatusDistribution: [],
+      skillsDistribution: [
+        { skill: 'Python', count: 15 },
+        { skill: 'SQL', count: 12 },
+        { skill: 'Machine Learning', count: 10 },
+        { skill: 'R', count: 8 },
+        { skill: 'Tableau', count: 5 },
+      ],
+      experienceDistribution: [
+        { level: 'Intermedio', count: 10 },
+        { level: 'Avanzado', count: 6 },
+        { level: 'Principiante', count: 3 },
+        { level: 'Experto', count: 2 },
+      ],
+      professionalStatusDistribution: [
+        { status: 'Empleado', count: 16 },
+        { status: 'Freelance', count: 3 },
+        { status: 'Buscando empleo', count: 2 },
+      ],
     };
   }
 
@@ -427,6 +442,9 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
     const degreeMap = new Map<string, number>();
     const genderMap = new Map<string, number>();
     const generationMap = new Map<string, number>();
+    const skillsMap = new Map<string, number>();
+    const experienceMap = new Map<string, number>();
+    const professionalStatusMap = new Map<string, number>();
 
     const priorityKeys = [
       'bolsaTrabajo',
@@ -447,7 +465,9 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
     snapshot.forEach((d) => {
       const data = d.data();
 
-      // Count all documents as members (collaborators excluded from stats view)
+      // Skip collaborators — statistics are members-only
+      if (data.role === 'collaborator') return;
+
       totalMembers++;
 
       // Company
@@ -491,6 +511,26 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
           }
         }
       }
+
+      // Skills (top-level array or nested under profile)
+      const skills: string[] = data.skills || data.profile?.skills || [];
+      for (const skill of skills) {
+        if (skill) {
+          skillsMap.set(skill, (skillsMap.get(skill) || 0) + 1);
+        }
+      }
+
+      // Experience level
+      const experienceLevel = data.registrationData?.experienceLevel;
+      if (experienceLevel) {
+        experienceMap.set(experienceLevel, (experienceMap.get(experienceLevel) || 0) + 1);
+      }
+
+      // Professional status
+      const professionalStatus = data.registrationData?.professionalStatus;
+      if (professionalStatus) {
+        professionalStatusMap.set(professionalStatus, (professionalStatusMap.get(professionalStatus) || 0) + 1);
+      }
     });
 
     const priorityLabels: Record<string, string> = {
@@ -530,9 +570,16 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
         })
         .filter((item) => item.avgScore > 0)
         .sort((a, b) => b.avgScore - a.avgScore),
-      skillsDistribution: [],
-      experienceDistribution: [],
-      professionalStatusDistribution: [],
+      skillsDistribution: Array.from(skillsMap.entries())
+        .map(([skill, count]) => ({ skill, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 20),
+      experienceDistribution: Array.from(experienceMap.entries())
+        .map(([level, count]) => ({ level, count }))
+        .sort((a, b) => b.count - a.count),
+      professionalStatusDistribution: Array.from(professionalStatusMap.entries())
+        .map(([status, count]) => ({ status, count }))
+        .sort((a, b) => b.count - a.count),
     };
   } catch (error) {
     console.error('Error fetching member statistics:', error);
