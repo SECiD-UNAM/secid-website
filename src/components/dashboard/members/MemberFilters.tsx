@@ -179,7 +179,7 @@ export function countActiveFilters(filters: FilterState): number {
  */
 export function filterMembers(
   members: MemberProfile[],
-  filters: FilterState,
+  filters: FilterState
 ): MemberProfile[] {
   return members.filter((m) => {
     // Role filter
@@ -191,48 +191,63 @@ export function filterMembers(
     }
 
     if (filters.generations?.length) {
-      if (!m.generation || !filters.generations.includes(m.generation)) return false;
+      if (!m.generation || !filters.generations.includes(m.generation))
+        return false;
     }
 
     if (filters.genders?.length) {
       // registrationData and gender are on Firestore docs but not on the typed interface
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const raw = m as any;
-      const gender: string | undefined = raw.registrationData?.gender || raw.gender;
+      const gender: string | undefined =
+        raw.registrationData?.gender || raw.gender;
       if (!gender || !filters.genders.includes(gender)) return false;
     }
 
     if (filters.degrees?.length) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const raw = m as any;
-      const degree: string | undefined = raw.registrationData?.maxDegree || m.academicLevel;
+      const degree: string | undefined =
+        raw.registrationData?.maxDegree || m.academicLevel;
       if (!degree || !filters.degrees.includes(degree)) return false;
     }
 
-    if (filters.companies?.length && !filters.companies.includes(m.profile.company)) {
+    if (
+      filters.companies?.length &&
+      !filters.companies.includes(m.profile.company)
+    ) {
       return false;
     }
 
     if (filters.skills?.length) {
-      if (!filters.skills.some((s) => m.profile.skills.includes(s))) return false;
+      if (!filters.skills.some((s) => m.profile.skills.includes(s)))
+        return false;
     }
 
-    if (filters.experienceLevels?.length && !filters.experienceLevels.includes(m.experience.level)) {
+    if (
+      filters.experienceLevels?.length &&
+      !filters.experienceLevels.includes(m.experience.level)
+    ) {
       return false;
     }
 
     if (filters.professionalStatuses?.length) {
-      if (!m.professionalStatus || !filters.professionalStatuses.includes(m.professionalStatus)) {
+      if (
+        !m.professionalStatus ||
+        !filters.professionalStatuses.includes(m.professionalStatus)
+      ) {
         return false;
       }
     }
 
     // Boolean filters
     if (filters.onlineOnly && !m.isOnline) return false;
-    if (filters.mentorshipAvailable && !m.networking.availableForMentoring) return false;
+    if (filters.mentorshipAvailable && !m.networking.availableForMentoring)
+      return false;
 
     // Date filter
-    if (filters.joinedAfter && m.joinedAt < new Date(filters.joinedAfter)) return false;
+    if (filters.joinedAfter && m.joinedAt < new Date(filters.joinedAfter))
+      return false;
 
     return true;
   });
@@ -276,29 +291,29 @@ function MultiSelectFilter({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg border transition-colors ${
+        className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-sm transition-colors ${
           selected.length > 0
-            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
-            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'
+            ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300'
+            : 'border-gray-300 bg-white text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300'
         } hover:border-primary-400 dark:hover:border-primary-500`}
       >
         <span className="truncate">
           {label}
           {selected.length > 0 && (
-            <span className="ml-1.5 inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary-600 text-white text-xs font-medium">
+            <span className="ml-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary-600 text-xs font-medium text-white">
               {selected.length}
             </span>
           )}
         </span>
         {isOpen ? (
-          <ChevronUpIcon className="h-4 w-4 flex-shrink-0 ml-1" />
+          <ChevronUpIcon className="ml-1 h-4 w-4 flex-shrink-0" />
         ) : (
-          <ChevronDownIcon className="h-4 w-4 flex-shrink-0 ml-1" />
+          <ChevronDownIcon className="ml-1 h-4 w-4 flex-shrink-0" />
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute z-20 mt-1 w-full max-h-48 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg">
+        <div className="absolute z-20 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
           {options.length === 0 ? (
             <p className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
               {noOptionsLabel}
@@ -307,13 +322,13 @@ function MultiSelectFilter({
             options.map((option) => (
               <label
                 key={option}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+                className="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 <input
                   type="checkbox"
                   checked={selected.includes(option)}
                   onChange={() => toggleOption(option)}
-                  className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500"
+                  className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600"
                 />
                 <span className="truncate">{option}</span>
               </label>
@@ -333,12 +348,12 @@ interface CheckboxFilterProps {
 
 function CheckboxFilter({ label, checked, onChange }: CheckboxFilterProps) {
   return (
-    <label className="flex items-center gap-2 px-3 py-2 text-sm cursor-pointer text-gray-700 dark:text-gray-300">
+    <label className="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
       <input
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500"
+        className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600"
       />
       <span>{label}</span>
     </label>
@@ -361,7 +376,10 @@ export const MemberFilters: React.FC<MemberFiltersProps> = ({
   const options = useMemo(() => extractFilterOptions(members), [members]);
   const activeCount = useMemo(() => countActiveFilters(filters), [filters]);
 
-  function updateFilter<K extends keyof FilterState>(key: K, value: FilterState[K]) {
+  function updateFilter<K extends keyof FilterState>(
+    key: K,
+    value: FilterState[K]
+  ) {
     onFiltersChange({ ...filters, [key]: value });
   }
 
@@ -370,18 +388,18 @@ export const MemberFilters: React.FC<MemberFiltersProps> = ({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+    <div className="rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
       {/* Toggle Button */}
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
+        className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50"
       >
         <span className="flex items-center gap-2">
           <FunnelIcon className="h-5 w-5" />
           <span>{t.filters}</span>
           {activeCount > 0 && (
-            <span className="inline-flex items-center justify-center h-5 min-w-[1.25rem] px-1.5 rounded-full bg-primary-600 text-white text-xs font-medium">
+            <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-primary-600 px-1.5 text-xs font-medium text-white">
               {activeCount}
             </span>
           )}
@@ -395,9 +413,9 @@ export const MemberFilters: React.FC<MemberFiltersProps> = ({
 
       {/* Filter Panel */}
       {isExpanded && (
-        <div className="px-4 pb-4 space-y-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+        <div className="space-y-4 border-t border-gray-200 px-4 pb-4 pt-4 dark:border-gray-700">
           {/* Multi-select filters in responsive grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <MultiSelectFilter
               label={t.campus}
               options={options.campuses}
@@ -457,7 +475,7 @@ export const MemberFilters: React.FC<MemberFiltersProps> = ({
           </div>
 
           {/* Checkbox and date filters */}
-          <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-gray-100 dark:border-gray-700">
+          <div className="flex flex-wrap items-center gap-4 border-t border-gray-100 pt-2 dark:border-gray-700">
             <CheckboxFilter
               label={t.includeCollaborators}
               checked={filters.includeCollaborators}
@@ -478,7 +496,7 @@ export const MemberFilters: React.FC<MemberFiltersProps> = ({
             <div className="flex items-center gap-2">
               <label
                 htmlFor="joinedAfter"
-                className="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap"
+                className="whitespace-nowrap text-sm text-gray-700 dark:text-gray-300"
               >
                 {t.joinedAfter}
               </label>
@@ -489,18 +507,18 @@ export const MemberFilters: React.FC<MemberFiltersProps> = ({
                 onChange={(e) =>
                   updateFilter('joinedAfter', e.target.value || undefined)
                 }
-                className="px-2 py-1 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-primary-500 focus:border-primary-500"
+                className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
               />
             </div>
           </div>
 
           {/* Clear all */}
           {activeCount > 0 && (
-            <div className="pt-2 border-t border-gray-100 dark:border-gray-700">
+            <div className="border-t border-gray-100 pt-2 dark:border-gray-700">
               <button
                 type="button"
                 onClick={clearAll}
-                className="flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 transition-colors"
+                className="flex items-center gap-1.5 text-sm text-red-600 transition-colors hover:text-red-800 dark:text-red-400 dark:hover:text-red-200"
               >
                 <XMarkIcon className="h-4 w-4" />
                 {t.clearAll}

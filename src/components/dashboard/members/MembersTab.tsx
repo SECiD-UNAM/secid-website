@@ -8,7 +8,13 @@ import { ChevronDownIcon } from '@heroicons/react/24/outline';
 // Types
 // ---------------------------------------------------------------------------
 
-export type SortColumn = 'name' | 'company' | 'campus' | 'generation' | 'skills' | 'status';
+export type SortColumn =
+  | 'name'
+  | 'company'
+  | 'campus'
+  | 'generation'
+  | 'skills'
+  | 'status';
 export type SortDirection = 'asc' | 'desc';
 
 interface MembersTabProps {
@@ -101,14 +107,16 @@ function getStringValue(m: MemberProfile, column: SortColumn): string {
 export function sortMembers(
   members: MemberProfile[],
   column: SortColumn,
-  direction: SortDirection,
+  direction: SortDirection
 ): MemberProfile[] {
   const sorted = [...members];
   const dirMultiplier = direction === 'asc' ? 1 : -1;
 
   sorted.sort((a, b) => {
     if (column === 'skills') {
-      return (a.profile.skills.length - b.profile.skills.length) * dirMultiplier;
+      return (
+        (a.profile.skills.length - b.profile.skills.length) * dirMultiplier
+      );
     }
     const aVal = getStringValue(a, column);
     const bVal = getStringValue(b, column);
@@ -130,12 +138,18 @@ interface SortableHeaderProps {
   onSort: (column: SortColumn) => void;
 }
 
-function SortableHeader({ label, column, activeColumn, direction, onSort }: SortableHeaderProps) {
+function SortableHeader({
+  label,
+  column,
+  activeColumn,
+  direction,
+  onSort,
+}: SortableHeaderProps) {
   const isActive = column === activeColumn;
 
   return (
     <th
-      className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+      className="cursor-pointer select-none px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
       onClick={() => onSort(column)}
     >
       <span className="inline-flex items-center gap-1">
@@ -167,7 +181,7 @@ function SkillTags({ skills, max = 3 }: SkillTagsProps) {
       {visible.map((skill) => (
         <span
           key={skill}
-          className="px-2 py-0.5 text-xs bg-primary-100 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 rounded-full"
+          className="rounded-full bg-primary-100 px-2 py-0.5 text-xs text-primary-700 dark:bg-primary-900/20 dark:text-primary-400"
         >
           {skill}
         </span>
@@ -188,33 +202,43 @@ interface ExpandedRowProps {
 
 function ExpandedRow({ member, lang }: ExpandedRowProps) {
   const t = labels[lang];
-  const mentorshipLabel = getMentorshipLabel(member.networking.mentorshipStatus, lang);
-  const joinedDate = member.joinedAt instanceof Date
-    ? member.joinedAt.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
-    : '';
+  const mentorshipLabel = getMentorshipLabel(
+    member.networking.mentorshipStatus,
+    lang
+  );
+  const joinedDate =
+    member.joinedAt instanceof Date
+      ? member.joinedAt.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })
+      : '';
 
   return (
     <tr>
       <td colSpan={7} className="px-0 py-0">
-        <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-t border-gray-100 dark:border-gray-700">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+        <div className="border-t border-gray-100 bg-gray-50 px-6 py-4 dark:border-gray-700 dark:bg-gray-800">
+          <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2 lg:grid-cols-3">
             {/* Full name */}
             <div>
-              <span className="font-medium text-gray-700 dark:text-gray-300">{t.name}:</span>{' '}
-              <span className="text-gray-900 dark:text-white">{member.displayName}</span>
+              <span className="font-medium text-gray-700 dark:text-gray-300">
+                {t.name}:
+              </span>{' '}
+              <span className="text-gray-900 dark:text-white">
+                {member.displayName}
+              </span>
             </div>
 
             {/* Email — only if privacy allows */}
             {member.privacy.showEmail && member.email && (
               <div>
-                <span className="font-medium text-gray-700 dark:text-gray-300">{t.email}:</span>{' '}
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  {t.email}:
+                </span>{' '}
                 <a
                   href={`mailto:${member.email}`}
-                  className="text-primary-600 dark:text-primary-400 hover:underline"
+                  className="text-primary-600 hover:underline dark:text-primary-400"
                 >
                   {member.email}
                 </a>
@@ -224,7 +248,9 @@ function ExpandedRow({ member, lang }: ExpandedRowProps) {
             {/* Company + position */}
             {member.profile.company && (
               <div>
-                <span className="font-medium text-gray-700 dark:text-gray-300">{t.company}:</span>{' '}
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  {t.company}:
+                </span>{' '}
                 <span className="text-gray-900 dark:text-white">
                   {member.profile.company}
                   {member.profile.position && ` — ${member.profile.position}`}
@@ -235,46 +261,70 @@ function ExpandedRow({ member, lang }: ExpandedRowProps) {
             {/* Position (if no company) */}
             {!member.profile.company && member.profile.position && (
               <div>
-                <span className="font-medium text-gray-700 dark:text-gray-300">{t.position}:</span>{' '}
-                <span className="text-gray-900 dark:text-white">{member.profile.position}</span>
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  {t.position}:
+                </span>{' '}
+                <span className="text-gray-900 dark:text-white">
+                  {member.profile.position}
+                </span>
               </div>
             )}
 
             {/* Campus */}
             {member.campus && (
               <div>
-                <span className="font-medium text-gray-700 dark:text-gray-300">{t.campus}:</span>{' '}
-                <span className="text-gray-900 dark:text-white">{member.campus}</span>
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  {t.campus}:
+                </span>{' '}
+                <span className="text-gray-900 dark:text-white">
+                  {member.campus}
+                </span>
               </div>
             )}
 
             {/* Generation */}
             {member.generation && (
               <div>
-                <span className="font-medium text-gray-700 dark:text-gray-300">{t.generation}:</span>{' '}
-                <span className="text-gray-900 dark:text-white">{member.generation}</span>
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  {t.generation}:
+                </span>{' '}
+                <span className="text-gray-900 dark:text-white">
+                  {member.generation}
+                </span>
               </div>
             )}
 
             {/* Degree */}
             {member.academicLevel && (
               <div>
-                <span className="font-medium text-gray-700 dark:text-gray-300">{t.degree}:</span>{' '}
-                <span className="text-gray-900 dark:text-white">{member.academicLevel}</span>
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  {t.degree}:
+                </span>{' '}
+                <span className="text-gray-900 dark:text-white">
+                  {member.academicLevel}
+                </span>
               </div>
             )}
 
             {/* Mentorship status */}
             <div>
-              <span className="font-medium text-gray-700 dark:text-gray-300">{t.mentorship}:</span>{' '}
-              <span className="text-gray-900 dark:text-white">{mentorshipLabel}</span>
+              <span className="font-medium text-gray-700 dark:text-gray-300">
+                {t.mentorship}:
+              </span>{' '}
+              <span className="text-gray-900 dark:text-white">
+                {mentorshipLabel}
+              </span>
             </div>
 
             {/* Joined date */}
             {joinedDate && (
               <div>
-                <span className="font-medium text-gray-700 dark:text-gray-300">{t.joined}:</span>{' '}
-                <span className="text-gray-900 dark:text-white">{joinedDate}</span>
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  {t.joined}:
+                </span>{' '}
+                <span className="text-gray-900 dark:text-white">
+                  {joinedDate}
+                </span>
               </div>
             )}
           </div>
@@ -282,20 +332,26 @@ function ExpandedRow({ member, lang }: ExpandedRowProps) {
           {/* Bio */}
           {member.profile.bio && (
             <div className="mt-3">
-              <span className="font-medium text-sm text-gray-700 dark:text-gray-300">{t.bio}:</span>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{member.profile.bio}</p>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t.bio}:
+              </span>
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                {member.profile.bio}
+              </p>
             </div>
           )}
 
           {/* Skills as tags (all) */}
           {member.profile.skills.length > 0 && (
             <div className="mt-3">
-              <span className="font-medium text-sm text-gray-700 dark:text-gray-300">{t.skills}:</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t.skills}:
+              </span>
               <div className="mt-1 flex flex-wrap gap-1.5">
                 {member.profile.skills.map((skill) => (
                   <span
                     key={skill}
-                    className="px-2 py-0.5 text-xs bg-primary-100 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 rounded-full"
+                    className="rounded-full bg-primary-100 px-2 py-0.5 text-xs text-primary-700 dark:bg-primary-900/20 dark:text-primary-400"
                   >
                     {skill}
                   </span>
@@ -312,7 +368,7 @@ function ExpandedRow({ member, lang }: ExpandedRowProps) {
                   href={member.social.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+                  className="text-sm text-primary-600 hover:underline dark:text-primary-400"
                 >
                   LinkedIn
                 </a>
@@ -322,7 +378,7 @@ function ExpandedRow({ member, lang }: ExpandedRowProps) {
                   href={member.social.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+                  className="text-sm text-primary-600 hover:underline dark:text-primary-400"
                 >
                   GitHub
                 </a>
@@ -337,7 +393,7 @@ function ExpandedRow({ member, lang }: ExpandedRowProps) {
 
 function getMentorshipLabel(
   status: 'mentor' | 'mentee' | 'both' | 'none' | undefined,
-  lang: 'es' | 'en',
+  lang: 'es' | 'en'
 ): string {
   const t = labels[lang];
   switch (status) {
@@ -369,10 +425,13 @@ export const MembersTab: React.FC<MembersTabProps> = ({
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [expandedUid, setExpandedUid] = useState<string | null>(null);
 
-  const filtered = useMemo(() => filterMembers(members, filters), [members, filters]);
+  const filtered = useMemo(
+    () => filterMembers(members, filters),
+    [members, filters]
+  );
   const sorted = useMemo(
     () => sortMembers(filtered, sortColumn, sortDirection),
-    [filtered, sortColumn, sortDirection],
+    [filtered, sortColumn, sortDirection]
   );
 
   function handleSort(column: SortColumn) {
@@ -459,7 +518,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
                 />
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-gray-200 bg-white dark:divide-gray-700 dark:bg-gray-800">
               {sorted.map((member) => {
                 const isExpanded = expandedUid === member.uid;
                 const status = getMemberStatus(member);
@@ -467,35 +526,35 @@ export const MembersTab: React.FC<MembersTabProps> = ({
                 return (
                   <React.Fragment key={member.uid}>
                     <tr
-                      className="hover:bg-gray-50 dark:hover:bg-gray-800/80 cursor-pointer transition-colors"
+                      className="cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/80"
                       onClick={() => handleRowClick(member.uid)}
                     >
                       {/* Chevron */}
                       <td className="w-10 px-2 py-3 text-center">
                         <ChevronDownIcon
-                          className={`h-4 w-4 text-gray-400 dark:text-gray-500 transition-transform inline-block ${
+                          className={`inline-block h-4 w-4 text-gray-400 transition-transform dark:text-gray-500 ${
                             isExpanded ? 'rotate-180' : ''
                           }`}
                         />
                       </td>
 
                       {/* Name */}
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                      <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
                         {member.displayName}
                       </td>
 
                       {/* Company */}
-                      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                         {member.profile.company || '—'}
                       </td>
 
                       {/* Campus */}
-                      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                         {member.campus || '—'}
                       </td>
 
                       {/* Generation */}
-                      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
                         {member.generation || '—'}
                       </td>
 
@@ -505,7 +564,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
                       </td>
 
                       {/* Status */}
-                      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap capitalize">
+                      <td className="whitespace-nowrap px-4 py-3 text-sm capitalize text-gray-600 dark:text-gray-300">
                         {status}
                       </td>
                     </tr>

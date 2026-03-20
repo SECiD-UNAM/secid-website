@@ -5,10 +5,16 @@
  * Verifies sorting logic for all sortable columns
  */
 import { describe, it, expect } from 'vitest';
-import { sortMembers, type SortColumn, type SortDirection } from '@/components/dashboard/members/MembersTab';
+import {
+  sortMembers,
+  type SortColumn,
+  type SortDirection,
+} from '@/components/dashboard/members/MembersTab';
 import type { MemberProfile } from '@/types/member';
 
-function createMockMember(overrides: Record<string, unknown> = {}): MemberProfile {
+function createMockMember(
+  overrides: Record<string, unknown> = {}
+): MemberProfile {
   const base = {
     uid: 'test-uid',
     displayName: 'Test User',
@@ -85,9 +91,17 @@ function createMockMember(overrides: Record<string, unknown> = {}): MemberProfil
 
   const merged = { ...base };
   for (const [key, value] of Object.entries(overrides)) {
-    if (value && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+    if (
+      value &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      !(value instanceof Date)
+    ) {
       (merged as Record<string, unknown>)[key] = {
-        ...((base as Record<string, unknown>)[key] as Record<string, unknown> || {}),
+        ...(((base as Record<string, unknown>)[key] as Record<
+          string,
+          unknown
+        >) || {}),
         ...(value as Record<string, unknown>),
       };
     } else {
@@ -262,7 +276,9 @@ describe('sortMembers', () => {
       const original = [bob, alice, clara];
       const originalCopy = [...original];
       sortMembers(original, 'name', 'asc');
-      expect(original.map((m) => m.uid)).toEqual(originalCopy.map((m) => m.uid));
+      expect(original.map((m) => m.uid)).toEqual(
+        originalCopy.map((m) => m.uid)
+      );
     });
   });
 

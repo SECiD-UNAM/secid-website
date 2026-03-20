@@ -22,11 +22,23 @@ interface OverviewTabProps {
 const COMPOSITION_COLORS = ['#7C9EB2', '#2C4A5A', '#A3C4D9', '#1E3A5F'];
 
 const GENERATION_COLORS = [
-  '#1E3A5F', '#7C9EB2', '#334155', '#64748B', '#86EFAC', '#F97316', '#5EAAA8',
+  '#1E3A5F',
+  '#7C9EB2',
+  '#334155',
+  '#64748B',
+  '#86EFAC',
+  '#F97316',
+  '#5EAAA8',
 ];
 
 const INITIATIVE_COLORS = [
-  '#1E3A5F', '#7C9EB2', '#F97316', '#334155', '#86EFAC', '#A78BFA', '#D4A5C4',
+  '#1E3A5F',
+  '#7C9EB2',
+  '#F97316',
+  '#334155',
+  '#86EFAC',
+  '#A78BFA',
+  '#D4A5C4',
 ];
 
 const TOOLTIP_STYLE = {
@@ -36,33 +48,45 @@ const TOOLTIP_STYLE = {
   color: '#F9FAFB',
 };
 
-export const OverviewTab: React.FC<OverviewTabProps> = ({ statistics, stats, lang }) => {
+export const OverviewTab: React.FC<OverviewTabProps> = ({
+  statistics,
+  stats,
+  lang,
+}) => {
   const topSkill = statistics.skillsDistribution[0]?.skill || 'N/A';
 
   return (
     <div className="space-y-8">
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          icon={<UserGroupIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />}
+          icon={
+            <UserGroupIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+          }
           label={lang === 'es' ? 'Total de miembros' : 'Total members'}
           value={statistics.totalMembers}
           bgClass="bg-blue-50 dark:bg-blue-900/20"
         />
         <StatCard
-          icon={<span className="inline-block h-3 w-3 rounded-full bg-green-500" />}
+          icon={
+            <span className="inline-block h-3 w-3 rounded-full bg-green-500" />
+          }
           label={lang === 'es' ? 'En linea' : 'Online'}
           value={stats.onlineMembers}
           bgClass="bg-green-50 dark:bg-green-900/20"
         />
         <StatCard
-          icon={<UserGroupIcon className="h-6 w-6 text-purple-600 dark:text-purple-400" />}
+          icon={
+            <UserGroupIcon className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+          }
           label={lang === 'es' ? 'Nuevos este mes' : 'New this month'}
           value={stats.newMembersThisMonth}
           bgClass="bg-purple-50 dark:bg-purple-900/20"
         />
         <StatCard
-          icon={<ChartBarIcon className="h-6 w-6 text-amber-600 dark:text-amber-400" />}
+          icon={
+            <ChartBarIcon className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+          }
           label={lang === 'es' ? 'Habilidad principal' : 'Top skill'}
           value={topSkill}
           bgClass="bg-amber-50 dark:bg-amber-900/20"
@@ -70,9 +94,11 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ statistics, stats, lan
       </div>
 
       {/* Composition Charts — 2x2 Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <HorizontalBarCard
-          title={lang === 'es' ? 'Composicion por campus' : 'Campus composition'}
+          title={
+            lang === 'es' ? 'Composicion por campus' : 'Campus composition'
+          }
           data={statistics.campusComposition}
           lang={lang}
         />
@@ -82,12 +108,18 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ statistics, stats, lan
           lang={lang}
         />
         <HorizontalBarCard
-          title={lang === 'es' ? 'Composicion por genero' : 'Gender composition'}
+          title={
+            lang === 'es' ? 'Composicion por genero' : 'Gender composition'
+          }
           data={statistics.genderComposition}
           lang={lang}
         />
         <GenerationBarCard
-          title={lang === 'es' ? 'Composicion por generacion' : 'Generation composition'}
+          title={
+            lang === 'es'
+              ? 'Composicion por generacion'
+              : 'Generation composition'
+          }
           data={statistics.generationDistribution}
           lang={lang}
         />
@@ -95,7 +127,11 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ statistics, stats, lan
 
       {/* Initiative Importance — Vertical Bar Chart */}
       <InitiativeChart
-        title={lang === 'es' ? 'Importancia media por iniciativa' : 'Average initiative importance'}
+        title={
+          lang === 'es'
+            ? 'Importancia media por iniciativa'
+            : 'Average initiative importance'
+        }
         data={statistics.initiativeImportance}
         lang={lang}
       />
@@ -119,11 +155,13 @@ function StatCard({
   bgClass: string;
 }) {
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center gap-4">
-      <div className={`p-3 rounded-lg ${bgClass}`}>{icon}</div>
+    <div className="flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+      <div className={`rounded-lg p-3 ${bgClass}`}>{icon}</div>
       <div>
         <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
-        <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+        <p className="text-2xl font-bold text-gray-900 dark:text-white">
+          {value}
+        </p>
       </div>
     </div>
   );
@@ -160,15 +198,18 @@ function HorizontalBarCard({
   return (
     <ChartCard title={title}>
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 mb-3">
+      <div className="mb-3 flex flex-wrap gap-4">
         {data.map((d, i) => (
           <div
             key={d.label}
             className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300"
           >
             <span
-              className="inline-block w-3 h-3 rounded-sm"
-              style={{ backgroundColor: COMPOSITION_COLORS[i % COMPOSITION_COLORS.length] }}
+              className="inline-block h-3 w-3 rounded-sm"
+              style={{
+                backgroundColor:
+                  COMPOSITION_COLORS[i % COMPOSITION_COLORS.length],
+              }}
             />
             {d.label}
           </div>
@@ -183,7 +224,12 @@ function HorizontalBarCard({
           stackOffset="none"
         >
           <XAxis type="number" domain={[0, total]} tick={{ fill: '#6B7280' }} />
-          <YAxis type="category" dataKey="name" tick={{ fill: '#6B7280' }} width={70} />
+          <YAxis
+            type="category"
+            dataKey="name"
+            tick={{ fill: '#6B7280' }}
+            width={70}
+          />
           <Tooltip contentStyle={TOOLTIP_STYLE} />
           {data.map((d, i) => (
             <Bar
@@ -238,15 +284,18 @@ function GenerationBarCard({
   return (
     <ChartCard title={title}>
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 mb-3">
+      <div className="mb-3 flex flex-wrap gap-4">
         {data.map((d, i) => (
           <div
             key={d.year}
             className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300"
           >
             <span
-              className="inline-block w-3 h-3 rounded-sm"
-              style={{ backgroundColor: GENERATION_COLORS[i % GENERATION_COLORS.length] }}
+              className="inline-block h-3 w-3 rounded-sm"
+              style={{
+                backgroundColor:
+                  GENERATION_COLORS[i % GENERATION_COLORS.length],
+              }}
             />
             {d.year}
           </div>
@@ -261,7 +310,12 @@ function GenerationBarCard({
           stackOffset="none"
         >
           <XAxis type="number" domain={[0, total]} tick={{ fill: '#6B7280' }} />
-          <YAxis type="category" dataKey="name" tick={{ fill: '#6B7280' }} width={70} />
+          <YAxis
+            type="category"
+            dataKey="name"
+            tick={{ fill: '#6B7280' }}
+            width={70}
+          />
           <Tooltip contentStyle={TOOLTIP_STYLE} />
           {data.map((d, i) => (
             <Bar
@@ -324,7 +378,12 @@ function InitiativeChart({
           <YAxis domain={[0, 5]} tick={{ fill: '#6B7280' }} />
           <Tooltip contentStyle={TOOLTIP_STYLE} />
           <Bar dataKey="avgScore" radius={[4, 4, 0, 0]}>
-            <LabelList dataKey="avgScore" position="top" fill="#6B7280" fontWeight={600} />
+            <LabelList
+              dataKey="avgScore"
+              position="top"
+              fill="#6B7280"
+              fontWeight={600}
+            />
             {data.map((_, index) => (
               <Cell
                 key={`initiative-${index}`}
@@ -342,10 +401,16 @@ function InitiativeChart({
 /*  Shared layout helpers                                              */
 /* ------------------------------------------------------------------ */
 
-function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
+function ChartCard({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <h3 className="text-base font-semibold text-gray-500 dark:text-gray-400 mb-4">
+    <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      <h3 className="mb-4 text-base font-semibold text-gray-500 dark:text-gray-400">
         {title}
       </h3>
       {children}
@@ -355,7 +420,7 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
 
 function EmptyState({ lang }: { lang: 'es' | 'en' }) {
   return (
-    <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+    <p className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
       {lang === 'es' ? 'Sin datos disponibles' : 'No data available'}
     </p>
   );

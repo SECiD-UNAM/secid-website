@@ -7,9 +7,21 @@ interface MemberShowcaseProps {
 }
 
 const COMPANY_COLORS = [
-  '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
-  '#06B6D4', '#EC4899', '#14B8A6', '#F97316', '#6366F1',
-  '#84CC16', '#E11D48', '#0EA5E9', '#A855F7', '#22C55E',
+  '#3B82F6',
+  '#10B981',
+  '#F59E0B',
+  '#EF4444',
+  '#8B5CF6',
+  '#06B6D4',
+  '#EC4899',
+  '#14B8A6',
+  '#F97316',
+  '#6366F1',
+  '#84CC16',
+  '#E11D48',
+  '#0EA5E9',
+  '#A855F7',
+  '#22C55E',
   '#D946EF',
 ];
 
@@ -43,7 +55,9 @@ const translations = {
   },
 };
 
-export const MemberShowcase: React.FC<MemberShowcaseProps> = ({ lang = 'es' }) => {
+export const MemberShowcase: React.FC<MemberShowcaseProps> = ({
+  lang = 'es',
+}) => {
   const [data, setData] = useState<MemberStatisticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const t = translations[lang];
@@ -69,7 +83,9 @@ export const MemberShowcase: React.FC<MemberShowcaseProps> = ({ lang = 'es' }) =
     return (
       <div className="flex items-center justify-center py-12">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
-        <span className="ml-3 text-gray-600 dark:text-gray-400">{t.loading}</span>
+        <span className="ml-3 text-gray-600 dark:text-gray-400">
+          {t.loading}
+        </span>
       </div>
     );
   }
@@ -80,7 +96,7 @@ export const MemberShowcase: React.FC<MemberShowcaseProps> = ({ lang = 'es' }) =
         <p className="text-gray-500 dark:text-gray-400">{t.noData}</p>
         <button
           onClick={loadData}
-          className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+          className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
         >
           {t.retry}
         </button>
@@ -94,7 +110,7 @@ export const MemberShowcase: React.FC<MemberShowcaseProps> = ({ lang = 'es' }) =
         {t.title}
       </h2>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
         {data.companies.map((company) => {
           const color = getCompanyColor(company.name);
           return (

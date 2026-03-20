@@ -6,7 +6,14 @@
 import type { UserProfile } from './user';
 
 // Member lifecycle status
-export type MemberStatus = 'collaborator' | 'pending' | 'active' | 'inactive' | 'suspended' | 'alumni' | 'deactivated';
+export type MemberStatus =
+  | 'collaborator'
+  | 'pending'
+  | 'active'
+  | 'inactive'
+  | 'suspended'
+  | 'alumni'
+  | 'deactivated';
 
 export interface MemberLifecycle {
   status: MemberStatus;

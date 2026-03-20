@@ -34,14 +34,18 @@ const COLLECTIONS = {
 /**
  * Get member profiles with optional filters and pagination
  */
-export async function getMemberProfiles(options: {
-  filters?: Partial<MemberSearchFilters>;
-  limit?: number;
-  lastDoc?: DocumentSnapshot;
-} = {}): Promise<MemberProfile[]> {
+export async function getMemberProfiles(
+  options: {
+    filters?: Partial<MemberSearchFilters>;
+    limit?: number;
+    lastDoc?: DocumentSnapshot;
+  } = {}
+): Promise<MemberProfile[]> {
   if (isUsingMockAPI()) {
     const count = options.limit || 20;
-    return Array.from({ length: count }, (_, i) => createMockMemberProfile(i + 1));
+    return Array.from({ length: count }, (_, i) =>
+      createMockMemberProfile(i + 1)
+    );
   }
 
   try {
@@ -81,21 +85,26 @@ export async function getMemberProfiles(options: {
     q = query(q, limit(queryLimit));
 
     const snapshot = await getDocs(q);
-    let members = snapshot['docs'].map(doc => mapUserDocToMemberProfile(doc['id'], doc.data()));
+    let members = snapshot['docs'].map((doc) =>
+      mapUserDocToMemberProfile(doc['id'], doc.data())
+    );
 
     // Client-side role filtering
     if (filters?.memberType && filters.memberType !== 'all') {
-      members = members.filter(m => m.role === filters.memberType);
+      members = members.filter((m) => m.role === filters.memberType);
     }
 
     // Client-side sorting
     const multiplier = sortOrder === 'desc' ? -1 : 1;
     members.sort((a, b) => {
-      switch(sortBy) {
+      switch (sortBy) {
         case 'name':
           return multiplier * a.displayName.localeCompare(b.displayName);
         case 'reputation':
-          return multiplier * ((a.activity.reputation || 0) - (b.activity.reputation || 0));
+          return (
+            multiplier *
+            ((a.activity.reputation || 0) - (b.activity.reputation || 0))
+          );
         case 'activity': {
           const aTime = a.activity.lastActive?.getTime?.() || 0;
           const bTime = b.activity.lastActive?.getTime?.() || 0;
@@ -120,14 +129,18 @@ export async function getMemberProfiles(options: {
 /**
  * Search members with advanced filters
  */
-export async function searchMembers(filters: MemberSearchFilters): Promise<MemberSearchResult[]> {
+export async function searchMembers(
+  filters: MemberSearchFilters
+): Promise<MemberSearchResult[]> {
   if (isUsingMockAPI()) {
-    const mockMembers = Array.from({ length: 10 }, (_, i) => createMockMemberProfile(i + 1));
-    return mockMembers.map(member => ({
+    const mockMembers = Array.from({ length: 10 }, (_, i) =>
+      createMockMemberProfile(i + 1)
+    );
+    return mockMembers.map((member) => ({
       member,
       matchScore: Math.floor(Math.random() * 40) + 60,
       matchReasons: ['Similar skills', 'Same location'],
-      relevantSkills: member.featuredSkills.slice(0, 2)
+      relevantSkills: member.featuredSkills.slice(0, 2),
     }));
   }
 
@@ -136,17 +149,22 @@ export async function searchMembers(filters: MemberSearchFilters): Promise<Membe
 
     if (filters.query) {
       const keywords = filters.query.toLowerCase().split(' ');
-      baseQuery = query(baseQuery, where('searchableKeywords', 'array-contains-any', keywords));
+      baseQuery = query(
+        baseQuery,
+        where('searchableKeywords', 'array-contains-any', keywords)
+      );
     }
 
     const snapshot = await getDocs(baseQuery);
-    const members = snapshot['docs'].map(doc => mapUserDocToMemberProfile(doc['id'], doc.data()));
+    const members = snapshot['docs'].map((doc) =>
+      mapUserDocToMemberProfile(doc['id'], doc.data())
+    );
 
-    return members.map(member => ({
+    return members.map((member) => ({
       member,
       matchScore: calculateMatchScore(member, filters),
       matchReasons: getMatchReasons(member, filters),
-      relevantSkills: getRelevantSkills(member, filters)
+      relevantSkills: getRelevantSkills(member, filters),
     }));
   } catch (error) {
     console.error('Error searching members:', error);
@@ -158,7 +176,9 @@ export async function searchMembers(filters: MemberSearchFilters): Promise<Membe
  * Get a single member profile by UID or slug.
  * Slugs are detected by the presence of a hyphen (UIDs are alphanumeric).
  */
-export async function getMemberProfile(idOrSlug: string): Promise<MemberProfile | null> {
+export async function getMemberProfile(
+  idOrSlug: string
+): Promise<MemberProfile | null> {
   if (isUsingMockAPI()) {
     return createMockMemberProfile(1);
   }
@@ -224,18 +244,18 @@ export async function getMemberStats(): Promise<MemberStats> {
       topSkills: [
         { skill: 'Python', count: 892 },
         { skill: 'SQL', count: 756 },
-        { skill: 'Machine Learning', count: 634 }
+        { skill: 'Machine Learning', count: 634 },
       ],
       topCompanies: [
         { company: 'Google', count: 45 },
         { company: 'Microsoft', count: 38 },
-        { company: 'Amazon', count: 32 }
+        { company: 'Amazon', count: 32 },
       ],
       topLocations: [
         { location: 'Mexico City', count: 234 },
         { location: 'Guadalajara', count: 123 },
-        { location: 'Remote', count: 89 }
-      ]
+        { location: 'Remote', count: 89 },
+      ],
     };
   }
 
@@ -245,7 +265,9 @@ export async function getMemberStats(): Promise<MemberStats> {
     const totalSnapshot = await getDocs(query(membersRef));
     const totalMembers = totalSnapshot.size;
 
-    const onlineSnapshot = await getDocs(query(membersRef, where('isOnline', '==', true)));
+    const onlineSnapshot = await getDocs(
+      query(membersRef, where('isOnline', '==', true))
+    );
     const onlineMembers = onlineSnapshot.size;
 
     const startOfMonth = new Date();
@@ -263,7 +285,7 @@ export async function getMemberStats(): Promise<MemberStats> {
       newMembersThisMonth,
       topSkills: [],
       topCompanies: [],
-      topLocations: []
+      topLocations: [],
     };
   } catch (error) {
     console.error('Error fetching member stats:', error);
@@ -323,17 +345,24 @@ export async function getDirectoryStatsData(): Promise<DirectoryStats> {
 
   snapshot.forEach((d) => {
     const data = d.data();
-    const status = data.lifecycle?.status || (data.role === 'member' ? 'active' : 'collaborator');
+    const status =
+      data.lifecycle?.status ||
+      (data.role === 'member' ? 'active' : 'collaborator');
     if (status && status in byStatus) {
-      (byStatus as Record<string, number>)[status] = ((byStatus as Record<string, number>)[status] || 0) + 1;
+      (byStatus as Record<string, number>)[status] =
+        ((byStatus as Record<string, number>)[status] || 0) + 1;
     }
 
     const createdAt = data.createdAt?.toDate?.() || new Date(0);
     if (createdAt >= startOfMonth) newThisMonth++;
 
-    if (data.verificationStatus === 'pending' || status === 'pending') pendingApproval++;
+    if (data.verificationStatus === 'pending' || status === 'pending')
+      pendingApproval++;
 
-    const lastActive = data.lifecycle?.lastActiveDate?.toDate?.() || data.updatedAt?.toDate?.() || new Date(0);
+    const lastActive =
+      data.lifecycle?.lastActiveDate?.toDate?.() ||
+      data.updatedAt?.toDate?.() ||
+      new Date(0);
     if (lastActive >= thirtyDaysAgo) {
       recentlyActive++;
     } else if (status === 'active') {
@@ -485,7 +514,10 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
       // Generation
       const generation = data.generation;
       if (generation) {
-        generationMap.set(String(generation), (generationMap.get(String(generation)) || 0) + 1);
+        generationMap.set(
+          String(generation),
+          (generationMap.get(String(generation)) || 0) + 1
+        );
       }
 
       // Gender (from registrationData)
@@ -523,13 +555,19 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
       // Experience level
       const experienceLevel = data.registrationData?.experienceLevel;
       if (experienceLevel) {
-        experienceMap.set(experienceLevel, (experienceMap.get(experienceLevel) || 0) + 1);
+        experienceMap.set(
+          experienceLevel,
+          (experienceMap.get(experienceLevel) || 0) + 1
+        );
       }
 
       // Professional status
       const professionalStatus = data.registrationData?.professionalStatus;
       if (professionalStatus) {
-        professionalStatusMap.set(professionalStatus, (professionalStatusMap.get(professionalStatus) || 0) + 1);
+        professionalStatusMap.set(
+          professionalStatus,
+          (professionalStatusMap.get(professionalStatus) || 0) + 1
+        );
       }
     });
 
@@ -577,7 +615,9 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
       experienceDistribution: Array.from(experienceMap.entries())
         .map(([level, count]) => ({ level, count }))
         .sort((a, b) => b.count - a.count),
-      professionalStatusDistribution: Array.from(professionalStatusMap.entries())
+      professionalStatusDistribution: Array.from(
+        professionalStatusMap.entries()
+      )
         .map(([status, count]) => ({ status, count }))
         .sort((a, b) => b.count - a.count),
     };
@@ -598,21 +638,27 @@ export function generateVCard(member: MemberProfile): vCardData {
     company: member.profile.company,
     title: member.profile.position,
     linkedin: member.social.linkedin,
-    website: member.social.portfolio
+    website: member.social.portfolio,
   };
 }
 
 /**
  * Member recommendations
  */
-export async function getMemberRecommendations(uid: string): Promise<MemberRecommendation[]> {
+export async function getMemberRecommendations(
+  uid: string
+): Promise<MemberRecommendation[]> {
   if (isUsingMockAPI()) {
-    const mockMembers = Array.from({ length: 5 }, (_, i) => createMockMemberProfile(i + 10));
-    return mockMembers.map(member => ({
+    const mockMembers = Array.from({ length: 5 }, (_, i) =>
+      createMockMemberProfile(i + 10)
+    );
+    return mockMembers.map((member) => ({
       member,
-      reason: ['similar_skills', 'same_company', 'mutual_connections'][Math.floor(Math.random() * 3)] as any,
+      reason: ['similar_skills', 'same_company', 'mutual_connections'][
+        Math.floor(Math.random() * 3)
+      ] as any,
       score: Math.floor(Math.random() * 30) + 70,
-      commonElements: ['Python', 'Machine Learning']
+      commonElements: ['Python', 'Machine Learning'],
     }));
   }
 
@@ -623,9 +669,9 @@ export async function getMemberRecommendations(uid: string): Promise<MemberRecom
     const allMembers = await getMemberProfiles({ limit: 100 });
 
     return allMembers
-      .filter(member => member.uid !== uid)
-      .map(member => {
-        const commonSkills = member.profile.skills.filter(skill =>
+      .filter((member) => member.uid !== uid)
+      .map((member) => {
+        const commonSkills = member.profile.skills.filter((skill) =>
           userProfile.profile.skills.includes(skill)
         );
 
@@ -650,10 +696,10 @@ export async function getMemberRecommendations(uid: string): Promise<MemberRecom
           member,
           reason,
           score: Math.min(score, 100),
-          commonElements: commonSkills
+          commonElements: commonSkills,
         };
       })
-      .filter(rec => rec.score > 60)
+      .filter((rec) => rec.score > 60)
       .sort((a, b) => b.score - a.score)
       .slice(0, 10);
   } catch (error) {
@@ -664,12 +710,15 @@ export async function getMemberRecommendations(uid: string): Promise<MemberRecom
 
 // --- Internal utility functions ---
 
-function calculateMatchScore(member: MemberProfile, filters: MemberSearchFilters): number {
+function calculateMatchScore(
+  member: MemberProfile,
+  filters: MemberSearchFilters
+): number {
   let score = 0;
 
   if (filters?.skills?.length) {
-    const commonSkills = member.profile.skills.filter(skill =>
-      filters.skills!.some(filterSkill =>
+    const commonSkills = member.profile.skills.filter((skill) =>
+      filters.skills!.some((filterSkill) =>
         skill.toLowerCase().includes(filterSkill.toLowerCase())
       )
     );
@@ -689,10 +738,13 @@ function calculateMatchScore(member: MemberProfile, filters: MemberSearchFilters
   return Math.min(Math.round(score), 100);
 }
 
-function getMatchReasons(member: MemberProfile, filters: MemberSearchFilters): string[] {
+function getMatchReasons(
+  member: MemberProfile,
+  filters: MemberSearchFilters
+): string[] {
   const reasons: string[] = [];
 
-  if (filters?.skills?.some(skill => member.profile.skills.includes(skill))) {
+  if (filters?.skills?.some((skill) => member.profile.skills.includes(skill))) {
     reasons.push('Similar skills');
   }
 
@@ -707,11 +759,14 @@ function getMatchReasons(member: MemberProfile, filters: MemberSearchFilters): s
   return reasons;
 }
 
-function getRelevantSkills(member: MemberProfile, filters: MemberSearchFilters): string[] {
+function getRelevantSkills(
+  member: MemberProfile,
+  filters: MemberSearchFilters
+): string[] {
   if (!filters?.skills?.length) return [];
 
-  return member.profile.skills.filter(skill =>
-    filters.skills!.some(filterSkill =>
+  return member.profile.skills.filter((skill) =>
+    filters.skills!.some((filterSkill) =>
       skill.toLowerCase().includes(filterSkill.toLowerCase())
     )
   );

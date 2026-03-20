@@ -17,14 +17,34 @@ interface InsightsTabProps {
 }
 
 const CHART_COLORS = [
-  '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
-  '#06B6D4', '#EC4899', '#14B8A6', '#F97316', '#6366F1',
+  '#3B82F6',
+  '#10B981',
+  '#F59E0B',
+  '#EF4444',
+  '#8B5CF6',
+  '#06B6D4',
+  '#EC4899',
+  '#14B8A6',
+  '#F97316',
+  '#6366F1',
 ];
 
 const COMPANY_COLORS = [
-  '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
-  '#06B6D4', '#EC4899', '#14B8A6', '#F97316', '#6366F1',
-  '#84CC16', '#E11D48', '#0EA5E9', '#A855F7', '#22C55E',
+  '#3B82F6',
+  '#10B981',
+  '#F59E0B',
+  '#EF4444',
+  '#8B5CF6',
+  '#06B6D4',
+  '#EC4899',
+  '#14B8A6',
+  '#F97316',
+  '#6366F1',
+  '#84CC16',
+  '#E11D48',
+  '#0EA5E9',
+  '#A855F7',
+  '#22C55E',
   '#D946EF',
 ];
 
@@ -64,7 +84,10 @@ function getCompanyInitial(name: string): string {
   return name.charAt(0).toUpperCase();
 }
 
-export const InsightsTab: React.FC<InsightsTabProps> = ({ statistics, lang }) => {
+export const InsightsTab: React.FC<InsightsTabProps> = ({
+  statistics,
+  lang,
+}) => {
   const t = translations[lang];
 
   const topSkills = statistics.skillsDistribution.slice(0, 10);
@@ -88,14 +111,20 @@ export const InsightsTab: React.FC<InsightsTabProps> = ({ statistics, lang }) =>
       {/* Experience Level Breakdown */}
       <HorizontalBarSection
         title={t.experienceTitle}
-        data={statistics.experienceDistribution.map((e) => ({ name: e.level, value: e.count }))}
+        data={statistics.experienceDistribution.map((e) => ({
+          name: e.level,
+          value: e.count,
+        }))}
         lang={lang}
       />
 
       {/* Professional Status Breakdown */}
       <HorizontalBarSection
         title={t.statusTitle}
-        data={statistics.professionalStatusDistribution.map((s) => ({ name: s.status, value: s.count }))}
+        data={statistics.professionalStatusDistribution.map((s) => ({
+          name: s.status,
+          value: s.count,
+        }))}
         lang={lang}
       />
     </div>
@@ -127,7 +156,7 @@ function CompanyGrid({
 
   return (
     <SectionCard title={title}>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
         {companies.map((company) => {
           const color = getCompanyColor(company.name);
           return (
@@ -217,10 +246,16 @@ function HorizontalBarSection({
 /*  Shared layout helpers                                              */
 /* ------------------------------------------------------------------ */
 
-function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
+function SectionCard({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <h3 className="text-lg font-semibold text-gray-500 dark:text-gray-400 mb-4">
+    <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      <h3 className="mb-4 text-lg font-semibold text-gray-500 dark:text-gray-400">
         {title}
       </h3>
       {children}
@@ -230,7 +265,7 @@ function SectionCard({ title, children }: { title: string; children: React.React
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+    <p className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
       {message}
     </p>
   );

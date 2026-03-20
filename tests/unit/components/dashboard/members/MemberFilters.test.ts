@@ -14,7 +14,9 @@ import {
 } from '@/components/dashboard/members/MemberFilters';
 import type { MemberProfile } from '@/types/member';
 
-function createMockMember(overrides: Record<string, unknown> = {}): MemberProfile {
+function createMockMember(
+  overrides: Record<string, unknown> = {}
+): MemberProfile {
   const base = {
     uid: 'test-uid',
     displayName: 'Test User',
@@ -90,9 +92,17 @@ function createMockMember(overrides: Record<string, unknown> = {}): MemberProfil
   // Deep merge for nested objects
   const merged = { ...base };
   for (const [key, value] of Object.entries(overrides)) {
-    if (value && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+    if (
+      value &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      !(value instanceof Date)
+    ) {
       (merged as Record<string, unknown>)[key] = {
-        ...((base as Record<string, unknown>)[key] as Record<string, unknown> || {}),
+        ...(((base as Record<string, unknown>)[key] as Record<
+          string,
+          unknown
+        >) || {}),
         ...(value as Record<string, unknown>),
       };
     } else {
@@ -180,7 +190,10 @@ describe('filterMembers', () => {
         createMockMember({ uid: '2', campus: 'FES Acatlan' }),
         createMockMember({ uid: '3', campus: 'CU' }),
       ];
-      const filters: FilterState = { includeCollaborators: true, campuses: ['CU'] };
+      const filters: FilterState = {
+        includeCollaborators: true,
+        campuses: ['CU'],
+      };
 
       const result = filterMembers(members, filters);
 
@@ -211,7 +224,10 @@ describe('filterMembers', () => {
         createMockMember({ uid: '2', generation: '2021' }),
         createMockMember({ uid: '3', generation: '2020' }),
       ];
-      const filters: FilterState = { includeCollaborators: true, generations: ['2020'] };
+      const filters: FilterState = {
+        includeCollaborators: true,
+        generations: ['2020'],
+      };
 
       const result = filterMembers(members, filters);
 
@@ -230,7 +246,10 @@ describe('filterMembers', () => {
         createMockMember({ uid: '2', profile: { company: 'Meta' } }),
         createMockMember({ uid: '3', profile: { company: 'Google' } }),
       ];
-      const filters: FilterState = { includeCollaborators: true, companies: ['Google'] };
+      const filters: FilterState = {
+        includeCollaborators: true,
+        companies: ['Google'],
+      };
 
       const result = filterMembers(members, filters);
 
@@ -249,7 +268,10 @@ describe('filterMembers', () => {
         createMockMember({ uid: '2', profile: { skills: ['Java'] } }),
         createMockMember({ uid: '3', profile: { skills: ['Python', 'SQL'] } }),
       ];
-      const filters: FilterState = { includeCollaborators: true, skills: ['Python'] };
+      const filters: FilterState = {
+        includeCollaborators: true,
+        skills: ['Python'],
+      };
 
       const result = filterMembers(members, filters);
 
@@ -261,7 +283,10 @@ describe('filterMembers', () => {
         createMockMember({ uid: '1', profile: { skills: ['Python', 'R'] } }),
         createMockMember({ uid: '2', profile: { skills: ['Java'] } }),
       ];
-      const filters: FilterState = { includeCollaborators: true, skills: ['Python', 'Java'] };
+      const filters: FilterState = {
+        includeCollaborators: true,
+        skills: ['Python', 'Java'],
+      };
 
       const result = filterMembers(members, filters);
 
@@ -280,7 +305,10 @@ describe('filterMembers', () => {
         createMockMember({ uid: '2', experience: { level: 'junior' } }),
         createMockMember({ uid: '3', experience: { level: 'senior' } }),
       ];
-      const filters: FilterState = { includeCollaborators: true, experienceLevels: ['senior'] };
+      const filters: FilterState = {
+        includeCollaborators: true,
+        experienceLevels: ['senior'],
+      };
 
       const result = filterMembers(members, filters);
 
@@ -338,7 +366,10 @@ describe('filterMembers', () => {
         createMockMember({ uid: '2', isOnline: false }),
         createMockMember({ uid: '3', isOnline: true }),
       ];
-      const filters: FilterState = { includeCollaborators: true, onlineOnly: true };
+      const filters: FilterState = {
+        includeCollaborators: true,
+        onlineOnly: true,
+      };
 
       const result = filterMembers(members, filters);
 
@@ -361,7 +392,10 @@ describe('filterMembers', () => {
           networking: { availableForMentoring: false },
         }),
       ];
-      const filters: FilterState = { includeCollaborators: true, mentorshipAvailable: true };
+      const filters: FilterState = {
+        includeCollaborators: true,
+        mentorshipAvailable: true,
+      };
 
       const result = filterMembers(members, filters);
 
@@ -374,7 +408,10 @@ describe('filterMembers', () => {
         createMockMember({ uid: '1', isOnline: true }),
         createMockMember({ uid: '2', isOnline: false }),
       ];
-      const filters: FilterState = { includeCollaborators: true, onlineOnly: false };
+      const filters: FilterState = {
+        includeCollaborators: true,
+        onlineOnly: false,
+      };
 
       const result = filterMembers(members, filters);
 
@@ -467,11 +504,23 @@ describe('filterMembers', () => {
      */
     it('should filter by gender from registrationData', () => {
       const members = [
-        createMockMember({ uid: '1', registrationData: { gender: 'M' } } as Record<string, unknown>),
-        createMockMember({ uid: '2', registrationData: { gender: 'F' } } as Record<string, unknown>),
-        createMockMember({ uid: '3', registrationData: { gender: 'M' } } as Record<string, unknown>),
+        createMockMember({
+          uid: '1',
+          registrationData: { gender: 'M' },
+        } as Record<string, unknown>),
+        createMockMember({
+          uid: '2',
+          registrationData: { gender: 'F' },
+        } as Record<string, unknown>),
+        createMockMember({
+          uid: '3',
+          registrationData: { gender: 'M' },
+        } as Record<string, unknown>),
       ];
-      const filters: FilterState = { includeCollaborators: true, genders: ['M'] };
+      const filters: FilterState = {
+        includeCollaborators: true,
+        genders: ['M'],
+      };
 
       const result = filterMembers(members, filters);
 
@@ -490,7 +539,10 @@ describe('filterMembers', () => {
         createMockMember({ uid: '2', academicLevel: 'posgrado' }),
         createMockMember({ uid: '3', academicLevel: 'licenciatura' }),
       ];
-      const filters: FilterState = { includeCollaborators: true, degrees: ['licenciatura'] };
+      const filters: FilterState = {
+        includeCollaborators: true,
+        degrees: ['licenciatura'],
+      };
 
       const result = filterMembers(members, filters);
 
@@ -540,7 +592,9 @@ describe('extractFilterOptions', () => {
 
     const options = extractFilterOptions(members);
 
-    expect(options.campuses).toEqual(expect.arrayContaining(['CU', 'FES Acatlan']));
+    expect(options.campuses).toEqual(
+      expect.arrayContaining(['CU', 'FES Acatlan'])
+    );
     expect(options.campuses).toHaveLength(2);
   });
 
@@ -552,7 +606,9 @@ describe('extractFilterOptions', () => {
 
     const options = extractFilterOptions(members);
 
-    expect(options.skills).toEqual(expect.arrayContaining(['Python', 'R', 'SQL']));
+    expect(options.skills).toEqual(
+      expect.arrayContaining(['Python', 'R', 'SQL'])
+    );
     expect(options.skills).toHaveLength(3);
   });
 
@@ -565,7 +621,9 @@ describe('extractFilterOptions', () => {
 
     const options = extractFilterOptions(members);
 
-    expect(options.experienceLevels).toEqual(expect.arrayContaining(['senior', 'junior']));
+    expect(options.experienceLevels).toEqual(
+      expect.arrayContaining(['senior', 'junior'])
+    );
     expect(options.experienceLevels).toHaveLength(2);
   });
 
