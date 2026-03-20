@@ -5,11 +5,13 @@ import {
   getMemberStats,
   getMemberProfiles,
 } from '@/lib/members';
+import { getCompaniesWithMembers } from '@/lib/companies';
 import type {
   MemberStatisticsData,
   MemberStats,
   MemberProfile,
 } from '@/types/member';
+import type { Company } from '@/types/company';
 import { OverviewTab } from './OverviewTab';
 import { MembersTab } from './MembersTab';
 import { InsightsTab } from './InsightsTab';
@@ -31,6 +33,7 @@ export const MemberDashboard: React.FC<MemberDashboardProps> = ({
   );
   const [stats, setStats] = useState<MemberStats | null>(null);
   const [members, setMembers] = useState<MemberProfile[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<FilterState>({
@@ -41,14 +44,17 @@ export const MemberDashboard: React.FC<MemberDashboardProps> = ({
     try {
       setLoading(true);
       setError(null);
-      const [statisticsData, statsData, membersData] = await Promise.all([
-        getMemberStatistics(),
-        getMemberStats(),
-        getMemberProfiles({ limit: 200 }),
-      ]);
+      const [statisticsData, statsData, membersData, companiesData] =
+        await Promise.all([
+          getMemberStatistics(),
+          getMemberStats(),
+          getMemberProfiles({ limit: 200 }),
+          getCompaniesWithMembers(),
+        ]);
       setStatistics(statisticsData);
       setStats(statsData);
       setMembers(membersData);
+      setCompanies(companiesData);
     } catch (err) {
       console.error('Error loading dashboard data:', err);
       setError(
@@ -128,7 +134,11 @@ export const MemberDashboard: React.FC<MemberDashboardProps> = ({
         />
       )}
       {activeTab === 'insights' && statistics && (
-        <InsightsTab statistics={statistics} lang={lang} />
+        <InsightsTab
+          statistics={statistics}
+          companies={companies}
+          lang={lang}
+        />
       )}
     </div>
   );

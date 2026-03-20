@@ -10,9 +10,12 @@ import {
   Cell,
 } from 'recharts';
 import type { MemberStatisticsData } from '@/types/member';
+import type { Company } from '@/types/company';
+import { CompanyLogo } from '@/components/shared/CompanyLogo';
 
 interface InsightsTabProps {
   statistics: MemberStatisticsData;
+  companies: Company[];
   lang: 'es' | 'en';
 }
 
@@ -27,25 +30,6 @@ const CHART_COLORS = [
   '#14B8A6',
   '#F97316',
   '#6366F1',
-];
-
-const COMPANY_COLORS = [
-  '#3B82F6',
-  '#10B981',
-  '#F59E0B',
-  '#EF4444',
-  '#8B5CF6',
-  '#06B6D4',
-  '#EC4899',
-  '#14B8A6',
-  '#F97316',
-  '#6366F1',
-  '#84CC16',
-  '#E11D48',
-  '#0EA5E9',
-  '#A855F7',
-  '#22C55E',
-  '#D946EF',
 ];
 
 const TOOLTIP_STYLE = {
@@ -72,20 +56,9 @@ const translations = {
   },
 };
 
-function getCompanyColor(name: string): string {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return COMPANY_COLORS[Math.abs(hash) % COMPANY_COLORS.length] ?? '#3B82F6';
-}
-
-function getCompanyInitial(name: string): string {
-  return name.charAt(0).toUpperCase();
-}
-
 export const InsightsTab: React.FC<InsightsTabProps> = ({
   statistics,
+  companies,
   lang,
 }) => {
   const t = translations[lang];
@@ -95,11 +68,7 @@ export const InsightsTab: React.FC<InsightsTabProps> = ({
   return (
     <div className="space-y-8">
       {/* Company Grid */}
-      <CompanyGrid
-        companies={statistics.companies}
-        title={t.companyTitle}
-        lang={lang}
-      />
+      <CompanyGrid companies={companies} title={t.companyTitle} lang={lang} />
 
       {/* Skills Distribution */}
       <HorizontalBarSection
@@ -140,7 +109,7 @@ function CompanyGrid({
   title,
   lang,
 }: {
-  companies: Array<{ name: string; count: number }>;
+  companies: Company[];
   title: string;
   lang: 'es' | 'en';
 }) {
@@ -157,25 +126,17 @@ function CompanyGrid({
   return (
     <SectionCard title={title}>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-        {companies.map((company) => {
-          const color = getCompanyColor(company.name);
-          return (
-            <div
-              key={company.name}
-              className="flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50"
-            >
-              <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-bold text-white"
-                style={{ backgroundColor: color }}
-              >
-                {getCompanyInitial(company.name)}
-              </div>
-              <span className="truncate text-sm font-medium text-gray-700 dark:text-gray-200">
-                {company.name}
-              </span>
-            </div>
-          );
-        })}
+        {companies.map((c) => (
+          <div
+            key={c.id}
+            className="flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50"
+          >
+            <CompanyLogo company={c} size="md" />
+            <span className="truncate text-sm font-medium text-gray-700 dark:text-gray-200">
+              {c.name}
+            </span>
+          </div>
+        ))}
       </div>
     </SectionCard>
   );

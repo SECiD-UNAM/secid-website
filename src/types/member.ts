@@ -245,7 +245,6 @@ export interface MemberStats {
 // Aggregated statistics for the member statistics view
 export interface MemberStatisticsData {
   totalMembers: number;
-  companies: Array<{ name: string; count: number }>;
   campusComposition: Array<{ label: string; count: number }>;
   degreeComposition: Array<{ label: string; count: number }>;
   genderComposition: Array<{ label: string; count: number }>;

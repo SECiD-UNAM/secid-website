@@ -393,24 +393,6 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
   if (isUsingMockAPI()) {
     return {
       totalMembers: 21,
-      companies: [
-        { name: 'Datateam Analytics Force', count: 1 },
-        { name: 'Xaldigital', count: 1 },
-        { name: 'Cognodata', count: 1 },
-        { name: 'Universal', count: 1 },
-        { name: 'J.D. Power', count: 1 },
-        { name: 'Grupo Financiero Banorte', count: 1 },
-        { name: 'NielsenIQ', count: 1 },
-        { name: 'BBVA', count: 1 },
-        { name: 'Círculo de Crédito', count: 1 },
-        { name: 'Kuona', count: 1 },
-        { name: 'Arkham', count: 1 },
-        { name: 'Algorithmia', count: 1 },
-        { name: 'Uber', count: 1 },
-        { name: 'The Coca-Cola Company', count: 1 },
-        { name: 'El Puerto de Liverpool', count: 1 },
-        { name: 'Microsoft', count: 1 },
-      ],
       campusComposition: [
         { label: 'IIMAS', count: 18 },
         { label: 'FES Acatlán', count: 3 },
@@ -466,7 +448,6 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
     const snapshot = await getDocs(membersRef);
 
     let totalMembers = 0;
-    const companyMap = new Map<string, number>();
     const campusMap = new Map<string, number>();
     const degreeMap = new Map<string, number>();
     const genderMap = new Map<string, number>();
@@ -498,12 +479,6 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
       if (data.role === 'collaborator') return;
 
       totalMembers++;
-
-      // Company
-      const company = data.profile?.company || data.currentCompany;
-      if (company) {
-        companyMap.set(company, (companyMap.get(company) || 0) + 1);
-      }
 
       // Campus
       const campus = data.campus;
@@ -599,9 +574,6 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
 
     return {
       totalMembers,
-      companies: Array.from(companyMap.entries())
-        .map(([name, count]) => ({ name, count }))
-        .sort((a, b) => b.count - a.count),
       campusComposition: mapToArray(campusMap),
       degreeComposition: mapToArray(degreeMap),
       genderComposition: mapToArray(genderMap),
