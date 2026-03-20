@@ -66,6 +66,7 @@ export function mapUserDocToMemberProfile(
       lastName,
       bio: data.bio || '',
       company: data.currentCompany || '',
+      companyId: data.profile?.companyId || data.companyId || undefined,
       position: data.currentPosition || '',
       location: data.location || '',
       linkedin: data.linkedinUrl || '',
