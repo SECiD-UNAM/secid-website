@@ -9,7 +9,9 @@ export default function SpotlightEditor({ lang = 'es' }: Props) {
   const [name, setName] = useState('');
   const [title, setTitle] = useState('');
   const [company, setCompany] = useState('');
-  const [graduationYear, setGraduationYear] = useState<number>(new Date().getFullYear());
+  const [graduationYear, setGraduationYear] = useState<number>(
+    new Date().getFullYear()
+  );
   const [story, setStory] = useState('');
   const [excerpt, setExcerpt] = useState('');
   const [tagsInput, setTagsInput] = useState('');
@@ -21,7 +23,8 @@ export default function SpotlightEditor({ lang = 'es' }: Props) {
   const t = {
     es: {
       pageTitle: 'Publicar Historia de Egresado',
-      pageDescription: 'Comparte la historia de éxito de un egresado de la comunidad SECiD.',
+      pageDescription:
+        'Comparte la historia de éxito de un egresado de la comunidad SECiD.',
       name: 'Nombre completo',
       namePlaceholder: 'Ej. María García López',
       title: 'Puesto / Título',
@@ -45,7 +48,8 @@ export default function SpotlightEditor({ lang = 'es' }: Props) {
     },
     en: {
       pageTitle: 'Publish Alumni Story',
-      pageDescription: 'Share the success story of a SECiD alumni community member.',
+      pageDescription:
+        'Share the success story of a SECiD alumni community member.',
       name: 'Full name',
       namePlaceholder: 'E.g. María García López',
       title: 'Position / Title',
@@ -222,7 +226,14 @@ export default function SpotlightEditor({ lang = 'es' }: Props) {
           />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', ...fieldStyle }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '1rem',
+            ...fieldStyle,
+          }}
+        >
           <div>
             <label style={labelStyle}>{t.title}</label>
             <input
@@ -279,7 +290,11 @@ export default function SpotlightEditor({ lang = 'es' }: Props) {
             onChange={(e) => setStory(e.target.value)}
             placeholder={t.storyPlaceholder}
             rows={10}
-            style={{ ...inputStyle, resize: 'vertical', fontFamily: 'monospace' }}
+            style={{
+              ...inputStyle,
+              resize: 'vertical',
+              fontFamily: 'monospace',
+            }}
             required
           />
         </div>
@@ -295,7 +310,14 @@ export default function SpotlightEditor({ lang = 'es' }: Props) {
           />
         </div>
 
-        <div style={{ ...fieldStyle, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div
+          style={{
+            ...fieldStyle,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+          }}
+        >
           <input
             type="checkbox"
             id="featured"
@@ -303,7 +325,14 @@ export default function SpotlightEditor({ lang = 'es' }: Props) {
             onChange={(e) => setFeatured(e.target.checked)}
             style={{ width: '1.1rem', height: '1.1rem' }}
           />
-          <label htmlFor="featured" style={{ fontWeight: 500, color: 'var(--color-text-primary)', cursor: 'pointer' }}>
+          <label
+            htmlFor="featured"
+            style={{
+              fontWeight: 500,
+              color: 'var(--color-text-primary)',
+              cursor: 'pointer',
+            }}
+          >
             {t.featured}
           </label>
         </div>

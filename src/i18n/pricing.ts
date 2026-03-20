@@ -6,7 +6,8 @@ export const pricingTranslations = {
   es: {
     pricing: {
       title: 'Planes de Membresía',
-      subtitle: 'Elige el plan que mejor se adapte a tus necesidades profesionales',
+      subtitle:
+        'Elige el plan que mejor se adapte a tus necesidades profesionales',
       monthly: 'Mensual',
       yearly: 'Anual',
       save17: 'Ahorra 17%',
@@ -23,16 +24,21 @@ export const pricingTranslations = {
       upgrade: 'Mejorar Plan',
       checkout: 'Finalizar Compra',
       chooseCommission: 'Elige tu Comisión',
-      commissionDescription: 'Selecciona la comisión que más se alinee con tus intereses profesionales',
+      commissionDescription:
+        'Selecciona la comisión que más se alinee con tus intereses profesionales',
       faq: 'Preguntas Frecuentes',
       faq1Question: '¿Puedo cambiar de plan después?',
-      faq1Answer: 'Sí, puedes actualizar o cambiar tu plan en cualquier momento desde tu panel de control.',
+      faq1Answer:
+        'Sí, puedes actualizar o cambiar tu plan en cualquier momento desde tu panel de control.',
       faq2Question: '¿Qué métodos de pago aceptan?',
-      faq2Answer: 'Aceptamos tarjetas de crédito/débito (Visa, Mastercard, AMEX) y transferencias bancarias.',
+      faq2Answer:
+        'Aceptamos tarjetas de crédito/débito (Visa, Mastercard, AMEX) y transferencias bancarias.',
       faq3Question: '¿Hay descuento para estudiantes?',
-      faq3Answer: 'Sí, ofrecemos un 50% de descuento para estudiantes activos de la UNAM con credencial vigente.',
+      faq3Answer:
+        'Sí, ofrecemos un 50% de descuento para estudiantes activos de la UNAM con credencial vigente.',
       faq4Question: '¿Puedo cancelar en cualquier momento?',
-      faq4Answer: 'Sí, puedes cancelar tu suscripción en cualquier momento sin penalización.',
+      faq4Answer:
+        'Sí, puedes cancelar tu suscripción en cualquier momento sin penalización.',
     },
   },
   en: {
@@ -55,16 +61,21 @@ export const pricingTranslations = {
       upgrade: 'Upgrade',
       checkout: 'Checkout',
       chooseCommission: 'Choose Your Commission',
-      commissionDescription: 'Select the commission that best aligns with your professional interests',
+      commissionDescription:
+        'Select the commission that best aligns with your professional interests',
       faq: 'Frequently Asked Questions',
       faq1Question: 'Can I change my plan later?',
-      faq1Answer: 'Yes, you can upgrade or change your plan at any time from your dashboard.',
+      faq1Answer:
+        'Yes, you can upgrade or change your plan at any time from your dashboard.',
       faq2Question: 'What payment methods do you accept?',
-      faq2Answer: 'We accept credit/debit cards (Visa, Mastercard, AMEX) and bank transfers.',
+      faq2Answer:
+        'We accept credit/debit cards (Visa, Mastercard, AMEX) and bank transfers.',
       faq3Question: 'Is there a student discount?',
-      faq3Answer: 'Yes, we offer a 50% discount for active UNAM students with a valid ID.',
+      faq3Answer:
+        'Yes, we offer a 50% discount for active UNAM students with a valid ID.',
       faq4Question: 'Can I cancel at any time?',
-      faq4Answer: 'Yes, you can cancel your subscription at any time without penalty.',
+      faq4Answer:
+        'Yes, you can cancel your subscription at any time without penalty.',
     },
   },
 } as const;

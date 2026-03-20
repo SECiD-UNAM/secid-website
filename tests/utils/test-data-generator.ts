@@ -73,7 +73,7 @@ export class TestDataGenerator {
    */
   static generateUser(overrides?: Partial<TestUserData>): TestUserData {
     const graduationYear = faker.number.int({ min: 2015, max: 2024 });
-    
+
     return {
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
@@ -85,7 +85,7 @@ export class TestDataGenerator {
         'Licenciatura en Ciencia de Datos',
         'Ingeniería en Datos',
         'Maestría en Ciencia de Datos',
-        'Doctorado en Ciencia de Datos'
+        'Doctorado en Ciencia de Datos',
       ]),
       specialization: faker.helpers.arrayElement([
         'Machine Learning',
@@ -95,7 +95,7 @@ export class TestDataGenerator {
         'Natural Language Processing',
         'Computer Vision',
         'Big Data',
-        'Data Visualization'
+        'Data Visualization',
       ]),
       company: faker.company.name(),
       position: faker.helpers.arrayElement([
@@ -104,29 +104,32 @@ export class TestDataGenerator {
         'ML Engineer',
         'Data Analyst',
         'AI Researcher',
-        'Business Intelligence Analyst'
+        'Business Intelligence Analyst',
       ]),
       bio: faker.lorem.paragraph(),
-      skills: faker.helpers.arrayElements([
-        'Python',
-        'R',
-        'SQL',
-        'TensorFlow',
-        'PyTorch',
-        'Spark',
-        'Hadoop',
-        'Tableau',
-        'Power BI',
-        'AWS',
-        'Azure',
-        'GCP',
-        'Docker',
-        'Kubernetes'
-      ], { min: 3, max: 8 }),
+      skills: faker.helpers.arrayElements(
+        [
+          'Python',
+          'R',
+          'SQL',
+          'TensorFlow',
+          'PyTorch',
+          'Spark',
+          'Hadoop',
+          'Tableau',
+          'Power BI',
+          'AWS',
+          'Azure',
+          'GCP',
+          'Docker',
+          'Kubernetes',
+        ],
+        { min: 3, max: 8 }
+      ),
       linkedIn: `https://linkedin.com/in/${faker.internet.userName()}`,
       github: `https://github.com/${faker.internet.userName()}`,
       website: faker.internet.url(),
-      ...overrides
+      ...overrides,
     };
   }
 
@@ -144,7 +147,7 @@ export class TestDataGenerator {
       'Research Scientist',
       'Data Analyst',
       'MLOps Engineer',
-      'Computer Vision Engineer'
+      'Computer Vision Engineer',
     ];
 
     const companies = [
@@ -157,60 +160,74 @@ export class TestDataGenerator {
       'Big Data México',
       'Neural Networks Inc',
       'Data Insights Group',
-      'AI México'
+      'AI México',
     ];
 
     return {
       title: faker.helpers.arrayElement(jobTitles),
       company: faker.helpers.arrayElement(companies),
       description: faker.lorem.paragraphs(3),
-      requirements: faker.helpers.arrayElements([
-        '3+ años de experiencia en ciencia de datos',
-        'Dominio de Python y librerías de ML',
-        'Experiencia con SQL y bases de datos',
-        'Conocimiento de estadística avanzada',
-        'Experiencia con cloud computing (AWS/Azure/GCP)',
-        'Habilidades de comunicación',
-        'Inglés avanzado',
-        'Experiencia con metodologías ágiles'
-      ], { min: 4, max: 6 }),
+      requirements: faker.helpers.arrayElements(
+        [
+          '3+ años de experiencia en ciencia de datos',
+          'Dominio de Python y librerías de ML',
+          'Experiencia con SQL y bases de datos',
+          'Conocimiento de estadística avanzada',
+          'Experiencia con cloud computing (AWS/Azure/GCP)',
+          'Habilidades de comunicación',
+          'Inglés avanzado',
+          'Experiencia con metodologías ágiles',
+        ],
+        { min: 4, max: 6 }
+      ),
       location: faker.helpers.arrayElement([
         'Ciudad de México',
         'Guadalajara',
         'Monterrey',
         'Querétaro',
-        'Puebla'
+        'Puebla',
       ]),
-      type: faker.helpers.arrayElement(['full-time', 'part-time', 'contract', 'internship']),
+      type: faker.helpers.arrayElement([
+        'full-time',
+        'part-time',
+        'contract',
+        'internship',
+      ]),
       remote: faker.helpers.arrayElement(['remote', 'hybrid', 'onsite']),
       salary: {
         min: faker.number.int({ min: 30000, max: 60000 }),
         max: faker.number.int({ min: 60000, max: 150000 }),
-        currency: 'MXN'
+        currency: 'MXN',
       },
-      benefits: faker.helpers.arrayElements([
-        'Seguro de gastos médicos mayores',
-        'Vales de despensa',
-        'Home office',
-        'Horario flexible',
-        'Capacitación continua',
-        'Bonos por desempeño',
-        'Stock options',
-        'Gimnasio',
-        'Días de vacaciones superiores a la ley'
-      ], { min: 3, max: 6 }),
-      tags: faker.helpers.arrayElements([
-        'Python',
-        'Machine Learning',
-        'SQL',
-        'AWS',
-        'TensorFlow',
-        'Data Engineering',
-        'Statistics',
-        'Big Data'
-      ], { min: 3, max: 5 }),
+      benefits: faker.helpers.arrayElements(
+        [
+          'Seguro de gastos médicos mayores',
+          'Vales de despensa',
+          'Home office',
+          'Horario flexible',
+          'Capacitación continua',
+          'Bonos por desempeño',
+          'Stock options',
+          'Gimnasio',
+          'Días de vacaciones superiores a la ley',
+        ],
+        { min: 3, max: 6 }
+      ),
+      tags: faker.helpers.arrayElements(
+        [
+          'Python',
+          'Machine Learning',
+          'SQL',
+          'AWS',
+          'TensorFlow',
+          'Data Engineering',
+          'Statistics',
+          'Big Data',
+        ],
+        { min: 3, max: 5 }
+      ),
       applicationDeadline: faker.date.future({ days: 30 }),
-      ...overrides
+      ...overrides,
     };
   }
 
@@ -226,7 +243,7 @@ export class TestDataGenerator {
       'Webinar: MLOps Best Practices',
       'Hackathon: Data for Good',
       'Panel: Mujeres en Data Science',
-      'Curso: SQL para Data Scientists'
+      'Curso: SQL para Data Scientists',
     ];
 
     return {
@@ -239,33 +256,41 @@ export class TestDataGenerator {
         'Hotel Hilton Reforma',
         'WeWork Polanco',
         'Online via Zoom',
-        'Google Meet'
+        'Google Meet',
       ]),
       type: faker.helpers.arrayElement(['online', 'presencial', 'hybrid']),
       capacity: faker.number.int({ min: 20, max: 200 }),
       price: faker.helpers.arrayElement([0, 0, 0, 500, 1000, 1500]), // Many free events
-      speakers: Array.from({ length: faker.number.int({ min: 1, max: 3 }) }, () => ({
-        name: faker.person.fullName(),
-        title: faker.person.jobTitle(),
-        bio: faker.lorem.sentence()
-      })),
-      tags: faker.helpers.arrayElements([
-        'Machine Learning',
-        'Data Science',
-        'Python',
-        'Career Development',
-        'Networking',
-        'Technical Workshop',
-        'Industry Insights'
-      ], { min: 2, max: 4 }),
-      ...overrides
+      speakers: Array.from(
+        { length: faker.number.int({ min: 1, max: 3 }) },
+        () => ({
+          name: faker.person.fullName(),
+          title: faker.person.jobTitle(),
+          bio: faker.lorem.sentence(),
+        })
+      ),
+      tags: faker.helpers.arrayElements(
+        [
+          'Machine Learning',
+          'Data Science',
+          'Python',
+          'Career Development',
+          'Networking',
+          'Technical Workshop',
+          'Industry Insights',
+        ],
+        { min: 2, max: 4 }
+      ),
+      ...overrides,
     };
   }
 
   /**
    * Generate test payment data
    */
-  static generatePaymentData(overrides?: Partial<TestPaymentData>): TestPaymentData {
+  static generatePaymentData(
+    overrides?: Partial<TestPaymentData>
+  ): TestPaymentData {
     return {
       cardNumber: '4242424242424242', // Stripe test card
       cardHolder: faker.person.fullName().toUpperCase(),
@@ -276,9 +301,9 @@ export class TestDataGenerator {
         city: faker.location.city(),
         state: faker.location.state(),
         zipCode: faker.location.zipCode(),
-        country: 'México'
+        country: 'México',
       },
-      ...overrides
+      ...overrides,
     };
   }
 
@@ -306,7 +331,7 @@ export class TestDataGenerator {
   static generateMessage(): { subject: string; content: string } {
     return {
       subject: faker.lorem.sentence(),
-      content: faker.lorem.paragraphs(2)
+      content: faker.lorem.paragraphs(2),
     };
   }
 
@@ -321,18 +346,30 @@ export class TestDataGenerator {
         'Estadística Aplicada',
         'Deep Learning Avanzado',
         'Big Data con Spark',
-        'Visualización de Datos'
+        'Visualización de Datos',
       ]),
       description: faker.lorem.paragraph(),
-      duration: faker.helpers.arrayElement(['4 semanas', '6 semanas', '8 semanas', '3 meses']),
-      level: faker.helpers.arrayElement(['Principiante', 'Intermedio', 'Avanzado']),
+      duration: faker.helpers.arrayElement([
+        '4 semanas',
+        '6 semanas',
+        '8 semanas',
+        '3 meses',
+      ]),
+      level: faker.helpers.arrayElement([
+        'Principiante',
+        'Intermedio',
+        'Avanzado',
+      ]),
       price: faker.helpers.arrayElement([0, 1500, 2500, 3500]),
       instructor: faker.person.fullName(),
-      modules: Array.from({ length: faker.number.int({ min: 4, max: 8 }) }, () => ({
-        title: faker.lorem.sentence({ min: 3, max: 6 }),
-        duration: `${faker.number.int({ min: 30, max: 120 })} minutos`,
-        lessons: faker.number.int({ min: 3, max: 8 })
-      }))
+      modules: Array.from(
+        { length: faker.number.int({ min: 4, max: 8 }) },
+        () => ({
+          title: faker.lorem.sentence({ min: 3, max: 6 }),
+          duration: `${faker.number.int({ min: 30, max: 120 })} minutos`,
+          lessons: faker.number.int({ min: 3, max: 8 }),
+        })
+      ),
     };
   }
 
@@ -344,31 +381,42 @@ export class TestDataGenerator {
       name: faker.person.fullName(),
       title: faker.person.jobTitle(),
       company: faker.company.name(),
-      expertise: faker.helpers.arrayElements([
-        'Machine Learning',
-        'Career Development',
-        'Data Engineering',
-        'Leadership',
-        'Technical Interviews',
-        'Project Management'
-      ], { min: 2, max: 4 }),
+      expertise: faker.helpers.arrayElements(
+        [
+          'Machine Learning',
+          'Career Development',
+          'Data Engineering',
+          'Leadership',
+          'Technical Interviews',
+          'Project Management',
+        ],
+        { min: 2, max: 4 }
+      ),
       experience: `${faker.number.int({ min: 5, max: 20 })} años`,
       bio: faker.lorem.paragraphs(2),
       availability: faker.helpers.arrayElement([
         'Lunes a Viernes, 6-8 PM',
         'Sábados, 10 AM - 2 PM',
         'Flexible por las tardes',
-        'Fines de semana'
+        'Fines de semana',
       ]),
-      rate: faker.helpers.arrayElement(['Gratis', '$500/hora', '$800/hora', '$1000/hora']),
-      languages: ['Español', 'Inglés']
+      rate: faker.helpers.arrayElement([
+        'Gratis',
+        '$500/hora',
+        '$800/hora',
+        '$1000/hora',
+      ]),
+      languages: ['Español', 'Inglés'],
     };
   }
 
   /**
    * Generate bulk test data
    */
-  static generateBulkData(type: 'users' | 'jobs' | 'events', count: number = 10) {
+  static generateBulkData(
+    type: 'users' | 'jobs' | 'events',
+    count: number = 10
+  ) {
     switch (type) {
       case 'users':
         return Array.from({ length: count }, () => this.generateUser());
@@ -394,7 +442,7 @@ export class TestDataGenerator {
       'senior',
       'junior',
       'aws',
-      'tensorflow'
+      'tensorflow',
     ]);
   }
 
@@ -403,11 +451,30 @@ export class TestDataGenerator {
    */
   static generateFilterCriteria() {
     return {
-      location: faker.helpers.arrayElement(['Ciudad de México', 'Guadalajara', 'Monterrey', 'Remoto', '']),
-      type: faker.helpers.arrayElement(['full-time', 'part-time', 'contract', '']),
+      location: faker.helpers.arrayElement([
+        'Ciudad de México',
+        'Guadalajara',
+        'Monterrey',
+        'Remoto',
+        '',
+      ]),
+      type: faker.helpers.arrayElement([
+        'full-time',
+        'part-time',
+        'contract',
+        '',
+      ]),
       experience: faker.helpers.arrayElement(['junior', 'mid', 'senior', '']),
-      salary: faker.helpers.arrayElement(['0-50000', '50000-100000', '100000+', '']),
-      tags: faker.helpers.arrayElements(['Python', 'Machine Learning', 'SQL', 'AWS'], { min: 0, max: 3 })
+      salary: faker.helpers.arrayElement([
+        '0-50000',
+        '50000-100000',
+        '100000+',
+        '',
+      ]),
+      tags: faker.helpers.arrayElements(
+        ['Python', 'Machine Learning', 'SQL', 'AWS'],
+        { min: 0, max: 3 }
+      ),
     };
   }
 }

@@ -4,15 +4,15 @@
  */
 
 export const GROUP_MAP = {
-  members: "miembros@secid.mx",
-  board: "direccion@secid.mx",
-  collaborators: "colaboradores@secid.mx",
-  outreach: "divulgacion@secid.mx",
-  finance: "finanzas@secid.mx",
+  members: 'miembros@secid.mx',
+  board: 'direccion@secid.mx',
+  collaborators: 'colaboradores@secid.mx',
+  outreach: 'divulgacion@secid.mx',
+  finance: 'finanzas@secid.mx',
 } as const;
 
 export type GroupKey = keyof typeof GROUP_MAP;
-export type GroupEmail = typeof GROUP_MAP[GroupKey];
+export type GroupEmail = (typeof GROUP_MAP)[GroupKey];
 
 /**
  * Returns the default group for new users (collaborators)

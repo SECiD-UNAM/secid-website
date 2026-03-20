@@ -19,12 +19,12 @@ import {
 
 import type { UserProfile } from '@/types/user';
 import {
-  signInWithOAuth, 
-  linkOAuthProvider, 
+  signInWithOAuth,
+  linkOAuthProvider,
   unlinkOAuthProvider,
   getLinkedProviders,
   type SupportedProvider,
-  type LinkedAccount 
+  type LinkedAccount,
 } from './auth/oauth-providers';
 
 /**
@@ -34,7 +34,7 @@ export async function signIn(email: string, password: string): Promise<User> {
   if (isUsingMockAPI()) {
     return auth.signIn(email, password);
   }
-  
+
   const credential = await signInWithEmailAndPassword(auth, email, password);
   return credential.user;
 }
@@ -43,22 +43,27 @@ export async function signIn(email: string, password: string): Promise<User> {
  * Create a new user account
  */
 export async function signUp(
-  email: string, 
-  password: string, 
+  email: string,
+  password: string,
   profile: Partial<UserProfile.profile>
 ): Promise<User> {
   if (isUsingMockAPI()) {
     return auth.signUp(email, password, profile);
   }
-  
+
   // Create auth user — profile is created by the beforeUserCreated Cloud Function
-  const credential = await createUserWithEmailAndPassword(auth, email, password);
+  const credential = await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
   const user = credential.user;
 
   // Update display name
   if (profile.firstName || profile.lastName) {
     await updateProfile(user, {
-      displayName: `${profile.firstName || ''} ${profile.lastName || ''}`.trim()
+      displayName:
+        `${profile.firstName || ''} ${profile.lastName || ''}`.trim(),
     });
   }
 
@@ -72,7 +77,7 @@ export async function signOut(): Promise<void> {
   if (isUsingMockAPI()) {
     return auth.signOut();
   }
-  
+
   return firebaseSignOut(auth);
 }
 
@@ -83,18 +88,20 @@ export function getCurrentUser(): User | null {
   if (isUsingMockAPI()) {
     return auth.currentUser();
   }
-  
+
   return auth.currentUser;
 }
 
 /**
  * Subscribe to auth state changes
  */
-export function onAuthStateChanged(callback: (user: User | null) => void): () => void {
+export function onAuthStateChanged(
+  callback: (user: User | null) => void
+): () => void {
   if (isUsingMockAPI()) {
     return auth.onAuthStateChanged(callback);
   }
-  
+
   return firebaseOnAuthStateChanged(auth, callback);
 }
 
@@ -104,11 +111,11 @@ export function onAuthStateChanged(callback: (user: User | null) => void): () =>
 export async function resetPassword(email: string): Promise<void> {
   if (isUsingMockAPI()) {
     // Mock implementation
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     console.log('Mock: Password reset email sent to', email);
     return;
   }
-  
+
   return sendPasswordResetEmail(auth, email);
 }
 
@@ -120,25 +127,28 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
     const result = await db.getDoc('users', uid);
     return result.exists ? result.data() : null;
   }
-  
+
   const docRef = doc(db, 'users', uid);
   const docSnap = await getDoc(docRef);
-  
+
   if (docSnap.exists()) {
     return docSnap.data() as UserProfile;
   }
-  
+
   return null;
 }
 
 /**
  * Update user profile
  */
-export async function updateUserProfile(uid: string, updates: Partial<UserProfile>): Promise<void> {
+export async function updateUserProfile(
+  uid: string,
+  updates: Partial<UserProfile>
+): Promise<void> {
   if (isUsingMockAPI()) {
     return db.updateDoc('users', uid, { profile: updates });
   }
-  
+
   const docRef = doc(db, 'users', uid);
   return setDoc(docRef, { profile: updates }, { merge: true });
 }
@@ -148,7 +158,9 @@ export async function updateUserProfile(uid: string, updates: Partial<UserProfil
 /**
  * Sign in with OAuth provider (Google, GitHub, LinkedIn)
  */
-export async function signInWithProvider(providerId: SupportedProvider): Promise<{
+export async function signInWithProvider(
+  providerId: SupportedProvider
+): Promise<{
   user: User;
   isNewUser: boolean;
 }> {
@@ -160,10 +172,10 @@ export async function signInWithProvider(providerId: SupportedProvider): Promise
       displayName: `Mock ${providerId} User`,
       photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${providerId}`,
     } as User;
-    
+
     return { user: mockUser, isNewUser: true };
   }
-  
+
   const result = await signInWithOAuth(providerId);
   return { user: result.user, isNewUser: result.isNewUser };
 }
@@ -171,41 +183,47 @@ export async function signInWithProvider(providerId: SupportedProvider): Promise
 /**
  * Link OAuth provider to existing account
  */
-export async function linkProvider(providerId: SupportedProvider): Promise<void> {
+export async function linkProvider(
+  providerId: SupportedProvider
+): Promise<void> {
   if (isUsingMockAPI()) {
     console.log(`Mock: Linking ${providerId} provider`);
     return;
   }
-  
+
   const user = getCurrentUser();
   if (!user) {
     throw new Error('No authenticated user found');
   }
-  
+
   await linkOAuthProvider(user, providerId);
 }
 
 /**
  * Unlink OAuth provider from account
  */
-export async function unlinkProvider(providerId: SupportedProvider): Promise<void> {
+export async function unlinkProvider(
+  providerId: SupportedProvider
+): Promise<void> {
   if (isUsingMockAPI()) {
     console.log(`Mock: Unlinking ${providerId} provider`);
     return;
   }
-  
+
   const user = getCurrentUser();
   if (!user) {
     throw new Error('No authenticated user found');
   }
-  
+
   await unlinkOAuthProvider(user, providerId);
 }
 
 /**
  * Get linked OAuth providers for user
  */
-export async function getLinkedOAuthProviders(uid: string): Promise<LinkedAccount[]> {
+export async function getLinkedOAuthProviders(
+  uid: string
+): Promise<LinkedAccount[]> {
   if (isUsingMockAPI()) {
     // Mock linked providers
     return [
@@ -214,22 +232,27 @@ export async function getLinkedOAuthProviders(uid: string): Promise<LinkedAccoun
         email: 'user@google.com',
         displayName: 'Google User',
         linkedAt: new Date(),
-      }
+      },
     ];
   }
-  
+
   return getLinkedProviders(uid);
 }
 
 /**
  * Update last login timestamp
  */
-export async function updateLastLogin(uid: string, provider?: string): Promise<void> {
+export async function updateLastLogin(
+  uid: string,
+  provider?: string
+): Promise<void> {
   if (isUsingMockAPI()) {
-    console.log(`Mock: Updated last login for ${uid} with ${provider || 'email'}`);
+    console.log(
+      `Mock: Updated last login for ${uid} with ${provider || 'email'}`
+    );
     return;
   }
-  
+
   const userRef = doc(db, 'users', uid);
   await updateDoc(userRef, {
     lastLogin: new Date(),

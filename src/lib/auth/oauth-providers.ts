@@ -7,11 +7,11 @@ import {
   unlink,
   type User,
   type UserCredential,
-  type AuthProvider
+  type AuthProvider,
 } from 'firebase/auth';
-import { auth} from '@/lib/firebase';
-import { doc, setDoc, getDoc, updateDoc} from 'firebase/firestore';
-import { db} from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
+import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 /**
  * OAuth Providers Configuration and Management
@@ -44,16 +44,16 @@ export interface LinkedAccount {
  */
 export function createGoogleProvider(): GoogleAuthProvider {
   const provider = new GoogleAuthProvider();
-  
+
   // Request additional scopes
   provider.addScope('profile');
   provider.addScope('email');
-  
+
   // Custom parameters
   provider.setCustomParameters({
-    prompt: 'select_account'
+    prompt: 'select_account',
   });
-  
+
   return provider;
 }
 
@@ -62,11 +62,11 @@ export function createGoogleProvider(): GoogleAuthProvider {
  */
 export function createGitHubProvider(): GithubAuthProvider {
   const provider = new GithubAuthProvider();
-  
+
   // Request additional scopes
   provider.addScope('user:email');
   provider.addScope('read:user');
-  
+
   return provider;
 }
 
@@ -75,12 +75,12 @@ export function createGitHubProvider(): GithubAuthProvider {
  */
 export function createLinkedInProvider(): OAuthProvider {
   const provider = new OAuthProvider('linkedin.com');
-  
+
   // Request additional scopes
   provider.addScope('openid');
   provider.addScope('profile');
   provider.addScope('email');
-  
+
   return provider;
 }
 
@@ -88,7 +88,7 @@ export function createLinkedInProvider(): OAuthProvider {
  * Get provider instance by name
  */
 export function getProvider(providerId: SupportedProvider): AuthProvider {
-  switch(providerId) {
+  switch (providerId) {
     case 'google':
       return createGoogleProvider();
     case 'github':
@@ -112,7 +112,7 @@ export async function signInWithOAuth(providerId: SupportedProvider): Promise<{
     const provider = getProvider(providerId);
     const credential = await signInWithPopup(auth, provider);
     const user = credential.user;
-    
+
     // Check if this is a new user — profile is created by beforeUserCreated Cloud Function
     const userDoc = await getDoc(doc(db, 'users', user.uid));
     const isNewUser = !userDoc.exists();
@@ -125,7 +125,7 @@ export async function signInWithOAuth(providerId: SupportedProvider): Promise<{
       photoURL: user.photoURL || undefined,
       providerId,
     });
-    
+
     return { user, credential, isNewUser };
   } catch (error: any) {
     console.error(`OAuth sign-in error with ${providerId}:`, error);
@@ -145,7 +145,7 @@ export async function linkOAuthProvider(
   try {
     const provider = getProvider(providerId);
     const credential = await linkWithPopup(user, provider);
-    
+
     // Update user profile with linked account info
     await addLinkedAccount(user.uid, {
       providerId,
@@ -154,7 +154,7 @@ export async function linkOAuthProvider(
       photoURL: credential.user.photoURL || undefined,
       linkedAt: new Date(),
     });
-    
+
     return credential;
   } catch (error: any) {
     console.error(`OAuth linking error with ${providerId}:`, error);
@@ -171,10 +171,10 @@ export async function unlinkOAuthProvider(
 ): Promise<User> {
   try {
     const updatedUser = await unlink(user, providerId);
-    
+
     // Remove linked account info from user profile
     await removeLinkedAccount(user.uid, providerId);
-    
+
     return updatedUser;
   } catch (error: any) {
     console.error(`OAuth unlinking error with ${providerId}:`, error);
@@ -185,13 +185,15 @@ export async function unlinkOAuthProvider(
 /**
  * Get user's linked OAuth providers
  */
-export async function getLinkedProviders(uid: string): Promise<LinkedAccount[]> {
+export async function getLinkedProviders(
+  uid: string
+): Promise<LinkedAccount[]> {
   try {
     const userDoc = await getDoc(doc(db, 'users', uid));
     if (!userDoc.exists()) {
       return [];
     }
-    
+
     const userData = userDoc.data();
     return userData.linkedAccounts || [];
   } catch (error) {
@@ -203,7 +205,10 @@ export async function getLinkedProviders(uid: string): Promise<LinkedAccount[]> 
 /**
  * Update user's OAuth information
  */
-async function updateUserOAuthInfo(uid: string, oauthInfo: OAuthUserInfo): Promise<void> {
+async function updateUserOAuthInfo(
+  uid: string,
+  oauthInfo: OAuthUserInfo
+): Promise<void> {
   try {
     const userRef = doc(db, 'users', uid);
     await updateDoc(userRef, {
@@ -220,22 +225,26 @@ async function updateUserOAuthInfo(uid: string, oauthInfo: OAuthUserInfo): Promi
 /**
  * Add linked account to user profile
  */
-async function addLinkedAccount(uid: string, linkedAccount: LinkedAccount): Promise<void> {
+async function addLinkedAccount(
+  uid: string,
+  linkedAccount: LinkedAccount
+): Promise<void> {
   const userRef = doc(db, 'users', uid);
   const userDoc = await getDoc(userRef);
-  
+
   if (userDoc.exists()) {
     const userData = userDoc.data();
     const linkedAccounts = userData.linkedAccounts || [];
-    
+
     // Remove existing account with same provider if exists
     const filteredAccounts = linkedAccounts.filter(
-      (account: LinkedAccount) => account.providerId !== linkedAccount.providerId
+      (account: LinkedAccount) =>
+        account.providerId !== linkedAccount.providerId
     );
-    
+
     // Add new linked account
     filteredAccounts.push(linkedAccount);
-    
+
     await updateDoc(userRef, {
       linkedAccounts: filteredAccounts,
     });
@@ -245,19 +254,22 @@ async function addLinkedAccount(uid: string, linkedAccount: LinkedAccount): Prom
 /**
  * Remove linked account from user profile
  */
-async function removeLinkedAccount(uid: string, providerId: string): Promise<void> {
+async function removeLinkedAccount(
+  uid: string,
+  providerId: string
+): Promise<void> {
   const userRef = doc(db, 'users', uid);
   const userDoc = await getDoc(userRef);
-  
+
   if (userDoc.exists()) {
     const userData = userDoc.data();
     const linkedAccounts = userData.linkedAccounts || [];
-    
+
     // Remove account with specified provider
     const filteredAccounts = linkedAccounts.filter(
       (account: LinkedAccount) => account.providerId !== providerId
     );
-    
+
     await updateDoc(userRef, {
       linkedAccounts: filteredAccounts,
     });
@@ -267,10 +279,13 @@ async function removeLinkedAccount(uid: string, providerId: string): Promise<voi
 /**
  * Get user-friendly error messages for OAuth errors
  */
-function getOAuthErrorMessage(errorCode: string, providerId: SupportedProvider): string {
+function getOAuthErrorMessage(
+  errorCode: string,
+  providerId: SupportedProvider
+): string {
   const providerName = providerId.charAt(0).toUpperCase() + providerId.slice(1);
-  
-  switch(errorCode) {
+
+  switch (errorCode) {
     case 'auth/popup-closed-by-user':
       return `The ${providerName} sign-in window was closed. Please try again.`;
     case 'auth/popup-blocked':
@@ -308,7 +323,7 @@ export function validateOAuthConfig(): {
 } {
   const errors: string[] = [];
   const missingProviders: SupportedProvider[] = [];
-  
+
   try {
     // Test provider creation
     createGoogleProvider();
@@ -316,21 +331,21 @@ export function validateOAuthConfig(): {
     missingProviders.push('google');
     errors.push('Google OAuth configuration is missing or invalid');
   }
-  
+
   try {
     createGitHubProvider();
   } catch (error) {
     missingProviders.push('github');
     errors.push('GitHub OAuth configuration is missing or invalid');
   }
-  
+
   try {
     createLinkedInProvider();
   } catch (error) {
     missingProviders.push('linkedin');
     errors.push('LinkedIn OAuth configuration is missing or invalid');
   }
-  
+
   return {
     isValid: errors.length === 0,
     missingProviders,

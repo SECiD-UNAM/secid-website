@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { BaseCommissionDashboard} from './BaseCommissionDashboard';
-import { COMMISSION_TYPES} from '../../lib/stripe/stripe-client';
-import { useTranslations} from '../../hooks/useTranslations';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Bar, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
+import { BaseCommissionDashboard } from './BaseCommissionDashboard';
+import { COMMISSION_TYPES } from '../../lib/stripe/stripe-client';
+import { useTranslations } from '../../hooks/useTranslations';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Bar,
+  Radar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+} from 'recharts';
 import {
   CpuChipIcon,
   BeakerIcon,
@@ -47,7 +61,7 @@ const SAMPLE_EXPERIMENTS: Experiment[] = [
     f1Score: 0.915,
     startTime: new Date('2024-01-15T10:30:00'),
     duration: 3600,
-    hyperparameters: { n_estimators: 100, max_depth: 10 }
+    hyperparameters: { n_estimators: 100, max_depth: 10 },
   },
   {
     id: 'exp-002',
@@ -60,7 +74,7 @@ const SAMPLE_EXPERIMENTS: Experiment[] = [
     f1Score: 0.87,
     startTime: new Date('2024-01-16T09:15:00'),
     duration: 1800,
-    hyperparameters: { learning_rate: 0.1, max_depth: 6 }
+    hyperparameters: { learning_rate: 0.1, max_depth: 6 },
   },
   {
     id: 'exp-003',
@@ -73,8 +87,8 @@ const SAMPLE_EXPERIMENTS: Experiment[] = [
     f1Score: 0.0,
     startTime: new Date('2024-01-16T14:00:00'),
     duration: 0,
-    hyperparameters: { hidden_layers: 3, neurons: [128, 64, 32] }
-  }
+    hyperparameters: { hidden_layers: 3, neurons: [128, 64, 32] },
+  },
 ];
 
 const modelPerformanceData = [
@@ -87,11 +101,26 @@ const modelPerformanceData = [
 ];
 
 const algorithmComparison = [
-  { algorithm: 'Random Forest', accuracy: 0.94, speed: 0.85, interpretability: 0.9 },
+  {
+    algorithm: 'Random Forest',
+    accuracy: 0.94,
+    speed: 0.85,
+    interpretability: 0.9,
+  },
   { algorithm: 'XGBoost', accuracy: 0.92, speed: 0.8, interpretability: 0.7 },
-  { algorithm: 'Neural Network', accuracy: 0.96, speed: 0.6, interpretability: 0.3 },
+  {
+    algorithm: 'Neural Network',
+    accuracy: 0.96,
+    speed: 0.6,
+    interpretability: 0.3,
+  },
   { algorithm: 'SVM', accuracy: 0.89, speed: 0.9, interpretability: 0.8 },
-  { algorithm: 'Logistic Regression', accuracy: 0.87, speed: 0.95, interpretability: 0.95 },
+  {
+    algorithm: 'Logistic Regression',
+    accuracy: 0.87,
+    speed: 0.95,
+    interpretability: 0.95,
+  },
 ];
 
 export const MLDashboard: React.FC = () => {
@@ -105,33 +134,46 @@ export const MLDashboard: React.FC = () => {
     deploymentsToday: 5,
   });
 
-  const [experiments, setExperiments] = useState<Experiment[]>(SAMPLE_EXPERIMENTS);
-  const [selectedExperiment, setSelectedExperiment] = useState<string | null>(null);
+  const [experiments, setExperiments] =
+    useState<Experiment[]>(SAMPLE_EXPERIMENTS);
+  const [selectedExperiment, setSelectedExperiment] = useState<string | null>(
+    null
+  );
 
   const customMetrics = (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">
           {t('ml.performanceMetrics')}
         </h3>
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <span className="text-sm text-gray-600">{t('ml.avgAccuracy')}</span>
-            <span className="text-lg font-semibold text-purple-600">{metrics.avgAccuracy}%</span>
+            <span className="text-lg font-semibold text-purple-600">
+              {metrics.avgAccuracy}%
+            </span>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">{t('ml.totalTrainingTime')}</span>
-            <span className="text-lg font-semibold text-blue-600">{metrics.totalTrainingTime}h</span>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">
+              {t('ml.totalTrainingTime')}
+            </span>
+            <span className="text-lg font-semibold text-blue-600">
+              {metrics.totalTrainingTime}h
+            </span>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">{t('ml.featuresEngineered')}</span>
-            <span className="text-lg font-semibold text-green-600">{metrics.featuresEngineered}</span>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">
+              {t('ml.featuresEngineered')}
+            </span>
+            <span className="text-lg font-semibold text-green-600">
+              {metrics.featuresEngineered}
+            </span>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">
           {t('ml.modelPerformance')}
         </h3>
         <ResponsiveContainer width="100%" height={200}>
@@ -139,8 +181,15 @@ export const MLDashboard: React.FC = () => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis domain={[0.8, 1]} />
-            <Tooltip formatter={(value) => `${(value as number * 100).toFixed(1)}%`} />
-            <Line type="monotone" dataKey="accuracy" stroke="#8B5CF6" strokeWidth={2} />
+            <Tooltip
+              formatter={(value) => `${((value as number) * 100).toFixed(1)}%`}
+            />
+            <Line
+              type="monotone"
+              dataKey="accuracy"
+              stroke="#8B5CF6"
+              strokeWidth={2}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -150,60 +199,73 @@ export const MLDashboard: React.FC = () => {
   const customTools = (
     <div className="space-y-8">
       {/* Experiment Tracker */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-6 text-lg font-semibold text-gray-900">
           {t('ml.experimentTracker')}
         </h3>
-        
+
         <div className="space-y-4">
           {experiments.map((exp) => (
-            <div key={exp.id} className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
+            <div key={exp.id} className="rounded-lg border border-gray-200 p-4">
+              <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <h4 className="font-medium text-gray-900">{exp['name']}</h4>
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${
-                    exp['status'] === 'completed' ? 'bg-green-100 text-green-800' :
-                    exp['status'] === 'running' ? 'bg-blue-100 text-blue-800' :
-                    exp['status'] === 'failed' ? 'bg-red-100 text-red-800' :
-                    'bg-yellow-100 text-yellow-800'
-                  }`}>
+                  <span
+                    className={`rounded px-2 py-1 text-xs font-medium ${
+                      exp['status'] === 'completed'
+                        ? 'bg-green-100 text-green-800'
+                        : exp['status'] === 'running'
+                          ? 'bg-blue-100 text-blue-800'
+                          : exp['status'] === 'failed'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                    }`}
+                  >
                     {exp['status']}
                   </span>
                 </div>
                 <span className="text-sm text-gray-500">{exp.algorithm}</span>
               </div>
-              
+
               {exp['status'] === 'completed' && (
                 <div className="grid grid-cols-4 gap-4 text-sm">
                   <div>
                     <span className="text-gray-500">Accuracy:</span>
-                    <span className="ml-1 font-medium">{(exp.accuracy * 100).toFixed(1)}%</span>
+                    <span className="ml-1 font-medium">
+                      {(exp.accuracy * 100).toFixed(1)}%
+                    </span>
                   </div>
                   <div>
                     <span className="text-gray-500">Precision:</span>
-                    <span className="ml-1 font-medium">{(exp.precision * 100).toFixed(1)}%</span>
+                    <span className="ml-1 font-medium">
+                      {(exp.precision * 100).toFixed(1)}%
+                    </span>
                   </div>
                   <div>
                     <span className="text-gray-500">Recall:</span>
-                    <span className="ml-1 font-medium">{(exp.recall * 100).toFixed(1)}%</span>
+                    <span className="ml-1 font-medium">
+                      {(exp.recall * 100).toFixed(1)}%
+                    </span>
                   </div>
                   <div>
                     <span className="text-gray-500">F1-Score:</span>
-                    <span className="ml-1 font-medium">{(exp.f1Score * 100).toFixed(1)}%</span>
+                    <span className="ml-1 font-medium">
+                      {(exp.f1Score * 100).toFixed(1)}%
+                    </span>
                   </div>
                 </div>
               )}
-              
-              <div className="mt-3 flex justify-between items-center">
+
+              <div className="mt-3 flex items-center justify-between">
                 <span className="text-xs text-gray-500">
                   Started: {exp.startTime.toLocaleString()}
                 </span>
                 <div className="flex space-x-2">
-                  <button className="text-blue-600 hover:text-blue-700 text-sm">
+                  <button className="text-sm text-blue-600 hover:text-blue-700">
                     {t('ml.viewDetails')}
                   </button>
                   {exp['status'] === 'running' && (
-                    <button className="text-red-600 hover:text-red-700 text-sm">
+                    <button className="text-sm text-red-600 hover:text-red-700">
                       {t('ml.stop')}
                     </button>
                   )}
@@ -215,42 +277,83 @@ export const MLDashboard: React.FC = () => {
       </div>
 
       {/* Algorithm Comparison */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-6 text-lg font-semibold text-gray-900">
           {t('ml.algorithmComparison')}
         </h3>
-        
+
         <ResponsiveContainer width="100%" height={400}>
           <RadarChart data={algorithmComparison}>
             <PolarGrid />
             <PolarAngleAxis dataKey="algorithm" />
             <PolarRadiusAxis angle={30} domain={[0, 1]} />
-            <Radar name="Accuracy" dataKey="accuracy" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.1} />
-            <Radar name="Speed" dataKey="speed" stroke="#10B981" fill="#10B981" fillOpacity={0.1} />
-            <Radar name="Interpretability" dataKey="interpretability" stroke="#F59E0B" fill="#F59E0B" fillOpacity={0.1} />
-            <Tooltip formatter={(value) => `${(value as number * 100).toFixed(0)}%`} />
+            <Radar
+              name="Accuracy"
+              dataKey="accuracy"
+              stroke="#8B5CF6"
+              fill="#8B5CF6"
+              fillOpacity={0.1}
+            />
+            <Radar
+              name="Speed"
+              dataKey="speed"
+              stroke="#10B981"
+              fill="#10B981"
+              fillOpacity={0.1}
+            />
+            <Radar
+              name="Interpretability"
+              dataKey="interpretability"
+              stroke="#F59E0B"
+              fill="#F59E0B"
+              fillOpacity={0.1}
+            />
+            <Tooltip
+              formatter={(value) => `${((value as number) * 100).toFixed(0)}%`}
+            />
           </RadarChart>
         </ResponsiveContainer>
       </div>
 
       {/* Model Deployment Tools */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-6 text-lg font-semibold text-gray-900">
           {t('ml.deploymentTools')}
         </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {[
-            { name: t('ml.hyperparameterTuning'), icon: BeakerIcon, color: 'bg-purple-100 text-purple-600' },
-            { name: t('ml.crossValidation'), icon: ChartBarIcon, color: 'bg-blue-100 text-blue-600' },
-            { name: t('ml.featureSelection'), icon: CpuChipIcon, color: 'bg-green-100 text-green-600' },
-            { name: t('ml.modelMonitoring'), icon: ClockIcon, color: 'bg-orange-100 text-orange-600' },
+            {
+              name: t('ml.hyperparameterTuning'),
+              icon: BeakerIcon,
+              color: 'bg-purple-100 text-purple-600',
+            },
+            {
+              name: t('ml.crossValidation'),
+              icon: ChartBarIcon,
+              color: 'bg-blue-100 text-blue-600',
+            },
+            {
+              name: t('ml.featureSelection'),
+              icon: CpuChipIcon,
+              color: 'bg-green-100 text-green-600',
+            },
+            {
+              name: t('ml.modelMonitoring'),
+              icon: ClockIcon,
+              color: 'bg-orange-100 text-orange-600',
+            },
           ].map((tool, index) => {
             const Icon = tool.icon;
             return (
-              <div key={index} className="border border-gray-200 rounded-lg p-4 text-center hover:shadow-sm transition-shadow">
-                <div className={`p-3 ${tool.color} rounded-lg inline-block mb-3`}>
-                  <Icon className="w-6 h-6" />
+              <div
+                key={index}
+                className="rounded-lg border border-gray-200 p-4 text-center transition-shadow hover:shadow-sm"
+              >
+                <div
+                  className={`p-3 ${tool.color} mb-3 inline-block rounded-lg`}
+                >
+                  <Icon className="h-6 w-6" />
                 </div>
                 <h4 className="font-medium text-gray-900">{tool['name']}</h4>
               </div>

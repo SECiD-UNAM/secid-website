@@ -131,9 +131,7 @@ export async function regenerateBackupCodes(): Promise<string[]> {
  * Get 2FA status for user.
  * When 2FA is not available, always returns disabled status.
  */
-export async function getTwoFactorStatus(
-  _uid: string
-): Promise<{
+export async function getTwoFactorStatus(_uid: string): Promise<{
   isEnabled: boolean;
   hasBackupCodes: boolean;
   unusedBackupCodes: number;

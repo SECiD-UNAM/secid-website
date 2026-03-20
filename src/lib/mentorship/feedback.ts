@@ -11,13 +11,13 @@ import {
   addDoc,
   query,
   where,
-  serverTimestamp
+  serverTimestamp,
 } from 'firebase/firestore';
 import type {
   MentorProfile,
   MentorshipMatch,
   MentorshipFeedback,
-  MentorshipStats
+  MentorshipStats,
 } from '../../types';
 import { COLLECTIONS, firestoreToDate } from './constants';
 
@@ -27,10 +27,13 @@ export async function createMentorshipFeedback(
   try {
     const feedbackData = {
       ...feedback,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
     };
 
-    const docRef = await addDoc(collection(db, COLLECTIONS.FEEDBACK), feedbackData);
+    const docRef = await addDoc(
+      collection(db, COLLECTIONS.FEEDBACK),
+      feedbackData
+    );
 
     // Update mentor's rating if this is feedback for a mentor
     if (feedback['type'] === 'session' || feedback['type'] === 'overall') {
@@ -40,7 +43,7 @@ export async function createMentorshipFeedback(
     return {
       ...feedback,
       id: docRef['id'],
-      createdAt: new Date()
+      createdAt: new Date(),
     };
   } catch (error) {
     console.error('Error creating mentorship feedback:', error);
@@ -59,19 +62,25 @@ async function updateMentorRating(mentorId: string): Promise<void> {
     const feedbacks: MentorshipFeedback[] = [];
 
     querySnapshot.forEach((doc) => {
-      feedbacks.push({ ...doc.data(), id: doc['id'] } as unknown as MentorshipFeedback);
+      feedbacks.push({
+        ...doc.data(),
+        id: doc['id'],
+      } as unknown as MentorshipFeedback);
     });
 
     if (feedbacks.length === 0) return;
 
-    const totalRating = feedbacks.reduce((sum, feedback) => sum + feedback.rating, 0);
+    const totalRating = feedbacks.reduce(
+      (sum, feedback) => sum + feedback.rating,
+      0
+    );
     const averageRating = totalRating / feedbacks.length;
 
     const mentorRef = doc(db, COLLECTIONS.MENTORS, mentorId);
     await updateDoc(mentorRef, {
       rating: averageRating,
-      totalSessions: feedbacks.filter(f => f['type'] === 'session').length,
-      updatedAt: serverTimestamp()
+      totalSessions: feedbacks.filter((f) => f['type'] === 'session').length,
+      updatedAt: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error updating mentor rating:', error);
@@ -80,12 +89,28 @@ async function updateMentorRating(mentorId: string): Promise<void> {
 
 export async function getMentorshipStats(): Promise<MentorshipStats> {
   try {
-    const [mentorsSnap, menteesSnap, matchesSnap, feedbackSnap] = await Promise.all([
-      getDocs(query(collection(db, COLLECTIONS.MENTORS), where('isActive', '==', true))),
-      getDocs(query(collection(db, COLLECTIONS.MENTEES), where('isActive', '==', true))),
-      getDocs(query(collection(db, COLLECTIONS.MATCHES), where('status', '==', 'active'))),
-      getDocs(collection(db, COLLECTIONS.FEEDBACK))
-    ]);
+    const [mentorsSnap, menteesSnap, matchesSnap, feedbackSnap] =
+      await Promise.all([
+        getDocs(
+          query(
+            collection(db, COLLECTIONS.MENTORS),
+            where('isActive', '==', true)
+          )
+        ),
+        getDocs(
+          query(
+            collection(db, COLLECTIONS.MENTEES),
+            where('isActive', '==', true)
+          )
+        ),
+        getDocs(
+          query(
+            collection(db, COLLECTIONS.MATCHES),
+            where('status', '==', 'active')
+          )
+        ),
+        getDocs(collection(db, COLLECTIONS.FEEDBACK)),
+      ]);
 
     const mentors: MentorProfile[] = [];
     mentorsSnap.forEach((doc) => {
@@ -94,18 +119,21 @@ export async function getMentorshipStats(): Promise<MentorshipStats> {
         ...data,
         id: doc['id'],
         joinedAt: firestoreToDate(data['joinedAt']),
-        updatedAt: firestoreToDate(data['updatedAt'])
+        updatedAt: firestoreToDate(data['updatedAt']),
       } as unknown as MentorProfile);
     });
 
     const feedbacks: MentorshipFeedback[] = [];
     feedbackSnap.forEach((doc) => {
-      feedbacks.push({ ...doc.data(), id: doc['id'] } as unknown as MentorshipFeedback);
+      feedbacks.push({
+        ...doc.data(),
+        id: doc['id'],
+      } as unknown as MentorshipFeedback);
     });
 
     // Calculate popular skills
     const skillCounts: Record<string, number> = {};
-    mentors.forEach(mentor => {
+    mentors.forEach((mentor) => {
       mentor.expertiseAreas.forEach((skill: string) => {
         skillCounts[skill] = (skillCounts[skill] || 0) + 1;
       });
@@ -118,37 +146,47 @@ export async function getMentorshipStats(): Promise<MentorshipStats> {
 
     // Calculate success rate
     const completedMatches = await getDocs(
-      query(collection(db, COLLECTIONS.MATCHES), where('status', '==', 'completed'))
+      query(
+        collection(db, COLLECTIONS.MATCHES),
+        where('status', '==', 'completed')
+      )
     );
 
     const totalMatches = matchesSnap.size + completedMatches.size;
-    const successRate = totalMatches > 0 ? completedMatches.size / totalMatches : 0;
+    const successRate =
+      totalMatches > 0 ? completedMatches.size / totalMatches : 0;
 
     // Calculate average rating
-    const averageRating = feedbacks.length > 0
-      ? feedbacks.reduce((sum, f) => sum + f.rating, 0) / feedbacks.length
-      : 0;
+    const averageRating =
+      feedbacks.length > 0
+        ? feedbacks.reduce((sum, f) => sum + f.rating, 0) / feedbacks.length
+        : 0;
 
     // Calculate average match score
     const matches: MentorshipMatch[] = [];
     matchesSnap.forEach((doc) => {
-      matches.push({ ...doc.data(), id: doc['id'] } as unknown as MentorshipMatch);
+      matches.push({
+        ...doc.data(),
+        id: doc['id'],
+      } as unknown as MentorshipMatch);
     });
 
-    const averageMatchScore = matches.length > 0
-      ? matches.reduce((sum, m) => sum + m.matchScore, 0) / matches.length
-      : 0;
+    const averageMatchScore =
+      matches.length > 0
+        ? matches.reduce((sum, m) => sum + m.matchScore, 0) / matches.length
+        : 0;
 
     return {
       totalMentors: mentorsSnap.size,
       totalMentees: menteesSnap.size,
       activeMatches: matchesSnap.size,
-      completedSessions: feedbacks.filter(f => f['type'] === 'session').length,
+      completedSessions: feedbacks.filter((f) => f['type'] === 'session')
+        .length,
       averageRating,
       averageMatchScore,
       topExpertise: popularSkills,
       popularSkills,
-      successRate
+      successRate,
     };
   } catch (error) {
     console.error('Error getting mentorship stats:', error);

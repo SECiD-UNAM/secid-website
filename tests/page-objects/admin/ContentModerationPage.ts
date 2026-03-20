@@ -164,12 +164,18 @@ export class ContentModerationPage extends BasePage {
     this.pendingCount = page.locator('[data-testid="pending-count"]');
     this.dailyApprovals = page.locator('[data-testid="daily-approvals"]');
     this.dailyRejections = page.locator('[data-testid="daily-rejections"]');
-    this.averageReviewTime = page.locator('[data-testid="average-review-time"]');
-    this.automationEfficiency = page.locator('[data-testid="automation-efficiency"]');
+    this.averageReviewTime = page.locator(
+      '[data-testid="average-review-time"]'
+    );
+    this.automationEfficiency = page.locator(
+      '[data-testid="automation-efficiency"]'
+    );
 
     // Filters and search
     this.searchInput = page.locator('[data-testid="moderation-search"]');
-    this.contentTypeFilter = page.locator('[data-testid="content-type-filter"]');
+    this.contentTypeFilter = page.locator(
+      '[data-testid="content-type-filter"]'
+    );
     this.priorityFilter = page.locator('[data-testid="priority-filter"]');
     this.dateRangeFilter = page.locator('[data-testid="date-range-filter"]');
     this.authorFilter = page.locator('[data-testid="author-filter"]');
@@ -186,7 +192,9 @@ export class ContentModerationPage extends BasePage {
     this.refreshQueueBtn = page.locator('[data-testid="refresh-queue"]');
 
     // Content detail view
-    this.contentDetailModal = page.locator('[data-testid="content-detail-modal"]');
+    this.contentDetailModal = page.locator(
+      '[data-testid="content-detail-modal"]'
+    );
     this.contentTitle = page.locator('[data-testid="content-title"]');
     this.contentBody = page.locator('[data-testid="content-body"]');
     this.contentAuthor = page.locator('[data-testid="content-author"]');
@@ -204,7 +212,9 @@ export class ContentModerationPage extends BasePage {
     this.deleteBtn = page.locator('[data-testid="delete-content"]');
     this.editContentBtn = page.locator('[data-testid="edit-content"]');
     this.contactAuthorBtn = page.locator('[data-testid="contact-author"]');
-    this.viewAuthorProfileBtn = page.locator('[data-testid="view-author-profile"]');
+    this.viewAuthorProfileBtn = page.locator(
+      '[data-testid="view-author-profile"]'
+    );
 
     // Bulk actions
     this.bulkActionsPanel = page.locator('[data-testid="bulk-actions-panel"]');
@@ -214,7 +224,9 @@ export class ContentModerationPage extends BasePage {
     this.bulkAssignBtn = page.locator('[data-testid="bulk-assign"]');
 
     // Action dialogs
-    this.actionReasonModal = page.locator('[data-testid="action-reason-modal"]');
+    this.actionReasonModal = page.locator(
+      '[data-testid="action-reason-modal"]'
+    );
     this.reasonTextarea = page.locator('[data-testid="action-reason"]');
     this.notifyAuthorCheckbox = page.locator('[data-testid="notify-author"]');
     this.internalNotesTextarea = page.locator('[data-testid="internal-notes"]');
@@ -250,7 +262,9 @@ export class ContentModerationPage extends BasePage {
     this.dismissReportBtn = page.locator('[data-testid="dismiss-report"]');
 
     // ML/AI moderation
-    this.aiModerationPanel = page.locator('[data-testid="ai-moderation-panel"]');
+    this.aiModerationPanel = page.locator(
+      '[data-testid="ai-moderation-panel"]'
+    );
     this.confidenceScore = page.locator('[data-testid="confidence-score"]');
     this.aiRecommendation = page.locator('[data-testid="ai-recommendation"]');
     this.aiExplanation = page.locator('[data-testid="ai-explanation"]');
@@ -261,7 +275,9 @@ export class ContentModerationPage extends BasePage {
     this.moderatorActivity = page.locator('[data-testid="moderator-activity"]');
     this.recentActions = page.locator('[data-testid="recent-actions"]');
     this.auditTrail = page.locator('[data-testid="audit-trail"]');
-    this.performanceMetrics = page.locator('[data-testid="performance-metrics"]');
+    this.performanceMetrics = page.locator(
+      '[data-testid="performance-metrics"]'
+    );
   }
 
   /**
@@ -276,14 +292,16 @@ export class ContentModerationPage extends BasePage {
   /**
    * Switch to moderation tab
    */
-  async switchToTab(tab: 'pending' | 'approved' | 'rejected' | 'flagged' | 'reports' | 'rules') {
+  async switchToTab(
+    tab: 'pending' | 'approved' | 'rejected' | 'flagged' | 'reports' | 'rules'
+  ) {
     const tabMap = {
       pending: this.pendingTab,
       approved: this.approvedTab,
       rejected: this.rejectedTab,
       flagged: this.flaggedTab,
       reports: this.reportsTab,
-      rules: this.rulesTab
+      rules: this.rulesTab,
     };
 
     await tabMap[tab].click();
@@ -299,9 +317,15 @@ export class ContentModerationPage extends BasePage {
     return {
       pending: await this.extractNumberFromElement(this.pendingCount),
       dailyApprovals: await this.extractNumberFromElement(this.dailyApprovals),
-      dailyRejections: await this.extractNumberFromElement(this.dailyRejections),
-      averageReviewTime: await this.getElementText('[data-testid="average-review-time"] .value'),
-      automationEfficiency: await this.getElementText('[data-testid="automation-efficiency"] .value')
+      dailyRejections: await this.extractNumberFromElement(
+        this.dailyRejections
+      ),
+      averageReviewTime: await this.getElementText(
+        '[data-testid="average-review-time"] .value'
+      ),
+      automationEfficiency: await this.getElementText(
+        '[data-testid="automation-efficiency"] .value'
+      ),
     };
   }
 
@@ -309,7 +333,7 @@ export class ContentModerationPage extends BasePage {
    * Extract number from element
    */
   private async extractNumberFromElement(element: Locator): Promise<number> {
-    const text = await element.textContent() || '0';
+    const text = (await element.textContent()) || '0';
     return parseInt(text.replace(/[^\d]/g, ''), 10) || 0;
   }
 
@@ -354,22 +378,31 @@ export class ContentModerationPage extends BasePage {
   async getModerationItems(): Promise<ModerationItem[]> {
     await this.moderationQueue.waitFor({ state: 'visible' });
     const items = await this.moderationItems.all();
-    
+
     const moderationItems: ModerationItem[] = [];
     for (const item of items) {
       const moderationItem: ModerationItem = {
-        id: await item.getAttribute('data-item-id') || '',
-        type: await item.getAttribute('data-content-type') as any || 'job',
-        title: await item.locator('[data-testid="item-title"]').textContent() || '',
-        content: await item.locator('[data-testid="item-content"]').textContent() || '',
-        author: await item.locator('[data-testid="item-author"]').textContent() || '',
-        createdAt: await item.locator('[data-testid="item-created"]').textContent() || '',
-        status: await item.getAttribute('data-status') as any || 'pending',
-        priority: await item.getAttribute('data-priority') as any || 'medium'
+        id: (await item.getAttribute('data-item-id')) || '',
+        type: ((await item.getAttribute('data-content-type')) as any) || 'job',
+        title:
+          (await item.locator('[data-testid="item-title"]').textContent()) ||
+          '',
+        content:
+          (await item.locator('[data-testid="item-content"]').textContent()) ||
+          '',
+        author:
+          (await item.locator('[data-testid="item-author"]').textContent()) ||
+          '',
+        createdAt:
+          (await item.locator('[data-testid="item-created"]').textContent()) ||
+          '',
+        status: ((await item.getAttribute('data-status')) as any) || 'pending',
+        priority:
+          ((await item.getAttribute('data-priority')) as any) || 'medium',
       };
       moderationItems.push(moderationItem);
     }
-    
+
     return moderationItems;
   }
 
@@ -394,7 +427,7 @@ export class ContentModerationPage extends BasePage {
       reject: this.rejectBtn,
       flag: this.flagBtn,
       escalate: this.escalateBtn,
-      delete: this.deleteBtn
+      delete: this.deleteBtn,
     };
 
     await actionMap[action.action].click();
@@ -402,7 +435,7 @@ export class ContentModerationPage extends BasePage {
     // Handle action dialog if needed
     if (action.reason || action.notes) {
       await this.actionReasonModal.waitFor({ state: 'visible' });
-      
+
       if (action.reason) {
         await this.reasonTextarea.fill(action.reason);
       }
@@ -416,7 +449,7 @@ export class ContentModerationPage extends BasePage {
           await this.notifyAuthorCheckbox.uncheck();
         }
       }
-      
+
       await this.confirmActionBtn.click();
     }
 
@@ -426,13 +459,19 @@ export class ContentModerationPage extends BasePage {
   /**
    * Perform bulk moderation
    */
-  async performBulkModeration(itemIds: string[], action: 'approve' | 'reject' | 'delete' | 'assign', parameters?: any) {
+  async performBulkModeration(
+    itemIds: string[],
+    action: 'approve' | 'reject' | 'delete' | 'assign',
+    parameters?: any
+  ) {
     // Enter bulk select mode
     await this.bulkSelectMode.click();
 
     // Select items
     for (const itemId of itemIds) {
-      const checkbox = this.page.locator(`[data-item-id="${itemId}"] [data-testid="item-checkbox"]`);
+      const checkbox = this.page.locator(
+        `[data-item-id="${itemId}"] [data-testid="item-checkbox"]`
+      );
       await checkbox.check();
     }
 
@@ -441,7 +480,7 @@ export class ContentModerationPage extends BasePage {
       approve: this.bulkApproveBtn,
       reject: this.bulkRejectBtn,
       delete: this.bulkDeleteBtn,
-      assign: this.bulkAssignBtn
+      assign: this.bulkAssignBtn,
     };
 
     await actionMap[action].click();
@@ -460,7 +499,9 @@ export class ContentModerationPage extends BasePage {
   /**
    * Create auto-moderation rule
    */
-  async createAutoModerationRule(rule: Omit<AutoModerationRule, 'id' | 'isActive'>) {
+  async createAutoModerationRule(
+    rule: Omit<AutoModerationRule, 'id' | 'isActive'>
+  ) {
     await this.switchToTab('rules');
     await this.addRuleBtn.click();
     await this.ruleModal.waitFor({ state: 'visible' });
@@ -489,22 +530,34 @@ export class ContentModerationPage extends BasePage {
   async getAutoModerationRules(): Promise<AutoModerationRule[]> {
     await this.switchToTab('rules');
     await this.rulesList.waitFor({ state: 'visible' });
-    
+
     const ruleElements = await this.ruleItems.all();
     const rules: AutoModerationRule[] = [];
-    
+
     for (const ruleElement of ruleElements) {
       const rule: AutoModerationRule = {
-        id: await ruleElement.getAttribute('data-rule-id') || '',
-        name: await ruleElement.locator('[data-testid="rule-name"]').textContent() || '',
-        type: await ruleElement.getAttribute('data-rule-type') as any || 'keyword',
-        condition: await ruleElement.locator('[data-testid="rule-condition"]').textContent() || '',
-        action: await ruleElement.getAttribute('data-rule-action') as any || 'require_review',
-        isActive: await ruleElement.locator('[data-testid="rule-status"]').isChecked()
+        id: (await ruleElement.getAttribute('data-rule-id')) || '',
+        name:
+          (await ruleElement
+            .locator('[data-testid="rule-name"]')
+            .textContent()) || '',
+        type:
+          ((await ruleElement.getAttribute('data-rule-type')) as any) ||
+          'keyword',
+        condition:
+          (await ruleElement
+            .locator('[data-testid="rule-condition"]')
+            .textContent()) || '',
+        action:
+          ((await ruleElement.getAttribute('data-rule-action')) as any) ||
+          'require_review',
+        isActive: await ruleElement
+          .locator('[data-testid="rule-status"]')
+          .isChecked(),
       };
       rules.push(rule);
     }
-    
+
     return rules;
   }
 
@@ -530,23 +583,27 @@ export class ContentModerationPage extends BasePage {
   /**
    * Handle user reports
    */
-  async handleUserReport(reportId: string, action: 'resolve' | 'escalate' | 'dismiss', reason?: string) {
+  async handleUserReport(
+    reportId: string,
+    action: 'resolve' | 'escalate' | 'dismiss',
+    reason?: string
+  ) {
     await this.switchToTab('reports');
-    
+
     const report = this.page.locator(`[data-report-id="${reportId}"]`);
     await report.click();
 
     // Get report details
     const reportDetails = {
       reason: await this.reportReason.textContent(),
-      reporter: await this.reporterInfo.textContent()
+      reporter: await this.reporterInfo.textContent(),
     };
 
     // Perform action
     const actionMap = {
       resolve: this.resolveReportBtn,
       escalate: this.escalateReportBtn,
-      dismiss: this.dismissReportBtn
+      dismiss: this.dismissReportBtn,
     };
 
     await actionMap[action].click();
@@ -566,24 +623,28 @@ export class ContentModerationPage extends BasePage {
    */
   async getAIModerationInsights(itemId: string) {
     await this.viewContentDetails(itemId);
-    
+
     if (await this.aiModerationPanel.isVisible()) {
       return {
         confidence: await this.confidenceScore.textContent(),
         recommendation: await this.aiRecommendation.textContent(),
-        explanation: await this.aiExplanation.textContent()
+        explanation: await this.aiExplanation.textContent(),
       };
     }
-    
+
     return null;
   }
 
   /**
    * Override AI recommendation
    */
-  async overrideAIRecommendation(itemId: string, humanDecision: 'approve' | 'reject', reason: string) {
+  async overrideAIRecommendation(
+    itemId: string,
+    humanDecision: 'approve' | 'reject',
+    reason: string
+  ) {
     await this.viewContentDetails(itemId);
-    
+
     if (await this.aiModerationPanel.isVisible()) {
       await this.overrideAiBtn.click();
       await this.fillField('[data-testid="override-reason"]', reason);
@@ -597,12 +658,20 @@ export class ContentModerationPage extends BasePage {
    */
   async getModeratorMetrics() {
     await this.performanceMetrics.waitFor({ state: 'visible' });
-    
+
     return {
-      actionsToday: await this.extractNumberFromElement(this.page.locator('[data-testid="actions-today"]')),
-      accuracy: await this.getElementText('[data-testid="moderation-accuracy"]'),
-      averageTime: await this.getElementText('[data-testid="average-action-time"]'),
-      consistency: await this.getElementText('[data-testid="consistency-score"]')
+      actionsToday: await this.extractNumberFromElement(
+        this.page.locator('[data-testid="actions-today"]')
+      ),
+      accuracy: await this.getElementText(
+        '[data-testid="moderation-accuracy"]'
+      ),
+      averageTime: await this.getElementText(
+        '[data-testid="average-action-time"]'
+      ),
+      consistency: await this.getElementText(
+        '[data-testid="consistency-score"]'
+      ),
     };
   }
 
@@ -611,14 +680,16 @@ export class ContentModerationPage extends BasePage {
    */
   async getRecentActivity(): Promise<string[]> {
     await this.recentActions.waitFor({ state: 'visible' });
-    const actions = await this.page.locator('[data-testid="recent-action-item"]').all();
-    
+    const actions = await this.page
+      .locator('[data-testid="recent-action-item"]')
+      .all();
+
     const activities: string[] = [];
     for (const action of actions) {
       const text = await action.textContent();
       if (text) activities.push(text.trim());
     }
-    
+
     return activities;
   }
 
@@ -628,11 +699,11 @@ export class ContentModerationPage extends BasePage {
   async contactAuthor(itemId: string, subject: string, message: string) {
     await this.viewContentDetails(itemId);
     await this.contactAuthorBtn.click();
-    
+
     await this.fillField('[data-testid="contact-subject"]', subject);
     await this.fillField('[data-testid="contact-message"]', message);
     await this.clickElement('[data-testid="send-message"]');
-    
+
     await this.waitForAPIResponse('/api/admin/moderation/contact');
   }
 
@@ -642,14 +713,14 @@ export class ContentModerationPage extends BasePage {
   async editContent(itemId: string, newTitle?: string, newContent?: string) {
     await this.viewContentDetails(itemId);
     await this.editContentBtn.click();
-    
+
     if (newTitle) {
       await this.fillField('[data-testid="edit-title"]', newTitle);
     }
     if (newContent) {
       await this.fillField('[data-testid="edit-content"]', newContent);
     }
-    
+
     await this.clickElement('[data-testid="save-content-changes"]');
     await this.waitForAPIResponse('/api/admin/moderation/edit');
   }
@@ -659,19 +730,21 @@ export class ContentModerationPage extends BasePage {
    */
   async checkSimilarContent(itemId: string): Promise<string[]> {
     await this.viewContentDetails(itemId);
-    
+
     if (await this.similarContent.isVisible()) {
-      const similarItems = await this.page.locator('[data-testid="similar-item"]').all();
+      const similarItems = await this.page
+        .locator('[data-testid="similar-item"]')
+        .all();
       const similarities: string[] = [];
-      
+
       for (const item of similarItems) {
         const text = await item.textContent();
         if (text) similarities.push(text.trim());
       }
-      
+
       return similarities;
     }
-    
+
     return [];
   }
 
@@ -707,29 +780,29 @@ export class ContentModerationPage extends BasePage {
   async testCompleteWorkflow(contentType: 'job' | 'post' | 'comment') {
     // Start with pending content
     await this.switchToTab('pending');
-    
+
     // Apply content type filter
     await this.applyFilters({ contentType });
-    
+
     // Get first item
     const items = await this.getModerationItems();
     if (items.length === 0) return null;
-    
+
     const firstItem = items[0];
-    
+
     // View details and moderate
     await this.moderateContent(firstItem.id, {
       action: 'approve',
       reason: 'Content meets community guidelines',
       notify: true,
-      notes: 'Automated test approval'
+      notes: 'Automated test approval',
     });
-    
+
     // Verify action was recorded
     await this.switchToTab('approved');
     const approvedItems = await this.getModerationItems();
-    const wasApproved = approvedItems.some(item => item.id === firstItem.id);
-    
+    const wasApproved = approvedItems.some((item) => item.id === firstItem.id);
+
     return { item: firstItem, approved: wasApproved };
   }
 

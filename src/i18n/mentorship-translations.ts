@@ -70,10 +70,12 @@ export const mentorshipTranslations = {
         poor: 'Bajo',
         loading: 'Buscando mentores...',
         createProfile: 'Crea tu Perfil',
-        createProfileDescription: 'Necesitas crear un perfil de mentee para buscar mentores.',
+        createProfileDescription:
+          'Necesitas crear un perfil de mentee para buscar mentores.',
         createMenteeProfile: 'Crear Perfil de Mentee',
         title: 'Encuentra tu Mentor',
-        description: 'Encuentra el mentor ideal basado en tu perfil e intereses.',
+        description:
+          'Encuentra el mentor ideal basado en tu perfil e intereses.',
         availableMentors: 'Mentores Disponibles',
         matches: 'Coincidencias',
         filters: 'Filtros',
@@ -95,9 +97,11 @@ export const mentorshipTranslations = {
         hoursPerWeek: 'horas/semana',
         clearFilters: 'Limpiar Filtros',
         analyzingProfiles: 'Analizando perfiles...',
-        calculatingCompatibility: 'Calculando compatibilidad con mentores disponibles.',
+        calculatingCompatibility:
+          'Calculando compatibilidad con mentores disponibles.',
         noMatches: 'Sin Coincidencias',
-        noMatchesDescription: 'No se encontraron mentores con los filtros actuales.',
+        noMatchesDescription:
+          'No se encontraron mentores con los filtros actuales.',
         adjustFilters: 'Ajustar Filtros',
         yearsExperience: 'años de experiencia',
         sessions: 'sesiones',
@@ -112,7 +116,8 @@ export const mentorshipTranslations = {
         viewProfile: 'Ver Perfil',
         requestPending: 'Solicitud Pendiente',
         requestMentorship: 'Solicitar Mentoría',
-        requestModalDescription: 'Envía una solicitud de mentoría a este mentor.',
+        requestModalDescription:
+          'Envía una solicitud de mentoría a este mentor.',
         yourGoals: 'Tus Objetivos',
         continueRequest: 'Continuar Solicitud',
       },
@@ -176,7 +181,7 @@ export const mentorshipTranslations = {
         successRate: 'Success Rate',
         yourMatches: 'Your Matches',
         noMatches: 'No Matches',
-        noMatchesDescription: 'You don\'t have any mentorship matches yet.',
+        noMatchesDescription: "You don't have any mentorship matches yet.",
         becomeMentor: 'Become a Mentor',
         menteeMatch: 'Mentee Match',
         mentorMatch: 'Mentor Match',
@@ -202,7 +207,8 @@ export const mentorshipTranslations = {
         interests: 'Interests',
         yearsExperience: 'years of experience',
         noProfile: 'No Profile',
-        noProfileDescription: 'Create a profile to get started with mentorship.',
+        noProfileDescription:
+          'Create a profile to get started with mentorship.',
         createMentorProfile: 'Create Mentor Profile',
         createMenteeProfile: 'Create Mentee Profile',
       },
@@ -214,10 +220,12 @@ export const mentorshipTranslations = {
         poor: 'Poor',
         loading: 'Finding mentors...',
         createProfile: 'Create Your Profile',
-        createProfileDescription: 'You need to create a mentee profile to find mentors.',
+        createProfileDescription:
+          'You need to create a mentee profile to find mentors.',
         createMenteeProfile: 'Create Mentee Profile',
         title: 'Find Your Mentor',
-        description: 'Find the ideal mentor based on your profile and interests.',
+        description:
+          'Find the ideal mentor based on your profile and interests.',
         availableMentors: 'Available Mentors',
         matches: 'Matches',
         filters: 'Filters',
@@ -239,7 +247,8 @@ export const mentorshipTranslations = {
         hoursPerWeek: 'hours/week',
         clearFilters: 'Clear Filters',
         analyzingProfiles: 'Analyzing profiles...',
-        calculatingCompatibility: 'Calculating compatibility with available mentors.',
+        calculatingCompatibility:
+          'Calculating compatibility with available mentors.',
         noMatches: 'No Matches',
         noMatchesDescription: 'No mentors found with current filters.',
         adjustFilters: 'Adjust Filters',

@@ -168,7 +168,12 @@ const sessionValidationMiddleware: MiddlewareHandler = async (
   }
 
   // Only validate sessions for protected endpoints
-  const protectedPaths = ['/api/user/', '/api/admin/', '/dashboard', '/api/create-'];
+  const protectedPaths = [
+    '/api/user/',
+    '/api/admin/',
+    '/dashboard',
+    '/api/create-',
+  ];
   const needsSession = protectedPaths.some((path) =>
     context.url.pathname.startsWith(path)
   );
@@ -188,16 +193,13 @@ const sessionValidationMiddleware: MiddlewareHandler = async (
 
   // Reject requests to protected paths that have no valid session token
   if (!(context.request as any).session) {
-    return new Response(
-      JSON.stringify({ error: 'Authentication required' }),
-      {
-        status: 401,
-        headers: {
-          'Content-Type': 'application/json',
-          'WWW-Authenticate': 'Bearer',
-        },
-      }
-    );
+    return new Response(JSON.stringify({ error: 'Authentication required' }), {
+      status: 401,
+      headers: {
+        'Content-Type': 'application/json',
+        'WWW-Authenticate': 'Bearer',
+      },
+    });
   }
 
   return next();

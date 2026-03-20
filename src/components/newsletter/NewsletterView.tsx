@@ -44,7 +44,14 @@ export default function NewsletterView({ newsletterId, lang = 'es' }: Props) {
     return (
       <div style={{ textAlign: 'center', padding: '3rem' }}>
         <p>{t.notFound}</p>
-        <a href={`/${lang}/newsletter/archive`} style={{ color: 'var(--secid-primary)', marginTop: '1rem', display: 'inline-block' }}>
+        <a
+          href={`/${lang}/newsletter/archive`}
+          style={{
+            color: 'var(--secid-primary)',
+            marginTop: '1rem',
+            display: 'inline-block',
+          }}
+        >
           {t.backToArchive}
         </a>
       </div>
@@ -55,21 +62,33 @@ export default function NewsletterView({ newsletterId, lang = 'es' }: Props) {
     <div style={{ maxWidth: '800px', margin: '0 auto' }}>
       <a
         href={`/${lang}/newsletter/archive`}
-        style={{ color: 'var(--secid-primary)', display: 'inline-block', marginBottom: '2rem', textDecoration: 'none' }}
+        style={{
+          color: 'var(--secid-primary)',
+          display: 'inline-block',
+          marginBottom: '2rem',
+          textDecoration: 'none',
+        }}
       >
         {t.backToArchive}
       </a>
 
-      <div style={{
-        background: 'linear-gradient(135deg, var(--secid-primary), var(--secid-gold))',
-        borderRadius: 'var(--radius-xl)',
-        padding: '3rem',
-        color: 'white',
-        textAlign: 'center',
-        marginBottom: '2rem',
-      }}>
+      <div
+        style={{
+          background:
+            'linear-gradient(135deg, var(--secid-primary), var(--secid-gold))',
+          borderRadius: 'var(--radius-xl)',
+          padding: '3rem',
+          color: 'white',
+          textAlign: 'center',
+          marginBottom: '2rem',
+        }}
+      >
         <span style={{ fontSize: '0.875rem', opacity: 0.9 }}>
-          {t.issue} #{newsletter.issueNumber} &middot; {newsletter.publishedAt.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          {t.issue} #{newsletter.issueNumber} &middot;{' '}
+          {newsletter.publishedAt.toLocaleDateString(
+            lang === 'es' ? 'es-MX' : 'en-US',
+            { year: 'numeric', month: 'long', day: 'numeric' }
+          )}
         </span>
         <h1 style={{ fontSize: '2rem', fontWeight: 700, marginTop: '0.5rem' }}>
           {newsletter.title}

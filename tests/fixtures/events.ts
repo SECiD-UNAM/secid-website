@@ -2,7 +2,8 @@ export const mockEvents = {
   upcomingEvent: {
     id: 'event-1',
     title: 'Machine Learning Workshop',
-    description: 'Learn the fundamentals of machine learning in this hands-on workshop...',
+    description:
+      'Learn the fundamentals of machine learning in this hands-on workshop...',
     startDate: new Date('2024-06-15T10:00:00Z'),
     endDate: new Date('2024-06-15T17:00:00Z'),
     location: {
@@ -31,11 +32,12 @@ export const mockEvents = {
     createdAt: new Date('2024-01-10'),
     updatedAt: new Date('2024-01-15'),
   },
-  
+
   virtualEvent: {
     id: 'event-2',
     title: 'Career Development Webinar',
-    description: 'Tips and strategies for advancing your data science career...',
+    description:
+      'Tips and strategies for advancing your data science career...',
     startDate: new Date('2024-07-20T16:00:00Z'),
     endDate: new Date('2024-07-20T18:00:00Z'),
     location: {
@@ -64,7 +66,7 @@ export const mockEvents = {
     createdAt: new Date('2024-01-05'),
     updatedAt: new Date('2024-01-05'),
   },
-  
+
   pastEvent: {
     id: 'event-3',
     title: 'Data Visualization Conference',
@@ -98,7 +100,7 @@ export const mockEvents = {
     createdAt: new Date('2023-10-01'),
     updatedAt: new Date('2023-12-11'),
   },
-  
+
   draftEvent: {
     id: 'event-4',
     title: 'Deep Learning Bootcamp',
@@ -148,7 +150,7 @@ export const mockEventRegistrations = {
       tshirtSize: 'M',
     },
   },
-  
+
   registration2: {
     id: 'reg-2',
     eventId: 'event-2',

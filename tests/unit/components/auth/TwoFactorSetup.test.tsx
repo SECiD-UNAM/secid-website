@@ -3,7 +3,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TwoFactorSetup } from '@/components/auth/TwoFactorSetup';
-import { setupTwoFactor, enableTwoFactor, regenerateBackupCodes } from '@/lib/auth/two-factor';
+import {
+  setupTwoFactor,
+  enableTwoFactor,
+  regenerateBackupCodes,
+} from '@/lib/auth/two-factor';
 import { getCurrentUser } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
@@ -34,9 +38,11 @@ vi.mock('@/hooks/useTranslations', () => ({
         manualInstructions: 'Or manually enter this code:',
         verificationLabel: 'Verification code (6 digits)',
         backupCodesTitle: 'Backup Codes',
-        backupCodesInstructions: 'Save these codes in a safe place. You can use them to access your account if you lose your authentication device.',
+        backupCodesInstructions:
+          'Save these codes in a safe place. You can use them to access your account if you lose your authentication device.',
         completeTitle: 'Setup Complete!',
-        completeMessage: 'Two-factor authentication has been successfully enabled on your account.',
+        completeMessage:
+          'Two-factor authentication has been successfully enabled on your account.',
       },
       buttons: {
         cancel: 'Cancel',
@@ -58,7 +64,15 @@ vi.mock('@/hooks/useTranslations', () => ({
 }));
 
 vi.mock('@/components/ui/Button', () => ({
-  default: ({ children, loading, disabled, onClick, type, variant, ...props }: any) => (
+  default: ({
+    children,
+    loading,
+    disabled,
+    onClick,
+    type,
+    variant,
+    ...props
+  }: any) => (
     <button
       type={type}
       onClick={onClick}
@@ -139,7 +153,10 @@ describe.skip('TwoFactorSetup', () => {
       render(<TwoFactorSetup />);
 
       expect(screen.getByText(/setting up/i)).toBeInTheDocument();
-      expect(screen.getByRole('progressbar') || document.querySelector('.animate-spin')).toBeInTheDocument();
+      expect(
+        screen.getByRole('progressbar') ||
+          document.querySelector('.animate-spin')
+      ).toBeInTheDocument();
     });
 
     it('initializes setup on component mount', async () => {
@@ -161,7 +178,9 @@ describe.skip('TwoFactorSetup', () => {
       render(<TwoFactorSetup onCancel={onCancel} />);
 
       await waitFor(() => {
-        expect(mockToast.error).toHaveBeenCalledWith('Error setting up two-factor authentication');
+        expect(mockToast.error).toHaveBeenCalledWith(
+          'Error setting up two-factor authentication'
+        );
         expect(onCancel).toHaveBeenCalled();
       });
     });
@@ -174,7 +193,9 @@ describe.skip('TwoFactorSetup', () => {
       render(<TwoFactorSetup onCancel={onCancel} />);
 
       await waitFor(() => {
-        expect(mockToast.error).toHaveBeenCalledWith('Error setting up two-factor authentication');
+        expect(mockToast.error).toHaveBeenCalledWith(
+          'Error setting up two-factor authentication'
+        );
         expect(onCancel).toHaveBeenCalled();
       });
     });
@@ -192,7 +213,9 @@ describe.skip('TwoFactorSetup', () => {
       await waitFor(() => {
         expect(screen.getByText(/scan the qr code/i)).toBeInTheDocument();
         expect(screen.getByAltText('QR Code')).toBeInTheDocument();
-        expect(screen.getByText(/or manually enter this code/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/or manually enter this code/i)
+        ).toBeInTheDocument();
         expect(screen.getByText('JBSWY3DPEHPK3PXP')).toBeInTheDocument();
       });
     });
@@ -212,8 +235,12 @@ describe.skip('TwoFactorSetup', () => {
       await waitFor(() => {
         expect(screen.getByLabelText(/verification code/i)).toBeInTheDocument();
         expect(screen.getByPlaceholderText('123456')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /verify/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /verify/i })
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /cancel/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -257,7 +284,9 @@ describe.skip('TwoFactorSetup', () => {
       render(<TwoFactorSetup />);
 
       await waitFor(() => {
-        const stepIndicators = document.querySelectorAll('.h-2.w-8.rounded-full');
+        const stepIndicators = document.querySelectorAll(
+          '.h-2.w-8.rounded-full'
+        );
         expect(stepIndicators.length).toBe(3);
         expect(stepIndicators[0]).toHaveClass('bg-primary-600'); // Current step
       });
@@ -317,7 +346,9 @@ describe.skip('TwoFactorSetup', () => {
       await waitFor(() => {
         expect(mockEnableTwoFactor).toHaveBeenCalledWith('123456');
         expect(mockRegenerateBackupCodes).toHaveBeenCalled();
-        expect(mockToast.success).toHaveBeenCalledWith('Two-factor authentication enabled successfully');
+        expect(mockToast.success).toHaveBeenCalledWith(
+          'Two-factor authentication enabled successfully'
+        );
       });
     });
 
@@ -372,7 +403,9 @@ describe.skip('TwoFactorSetup', () => {
       render(<TwoFactorSetup onCancel={onCancel} />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /cancel/i })
+        ).toBeInTheDocument();
       });
 
       const cancelButton = screen.getByRole('button', { name: /cancel/i });
@@ -407,9 +440,11 @@ describe.skip('TwoFactorSetup', () => {
       // Should now show backup codes
       await waitFor(() => {
         expect(screen.getByText(/backup codes/i)).toBeInTheDocument();
-        expect(screen.getByText(/save these codes in a safe place/i)).toBeInTheDocument();
-        
-        mockBackupCodes.forEach(code => {
+        expect(
+          screen.getByText(/save these codes in a safe place/i)
+        ).toBeInTheDocument();
+
+        mockBackupCodes.forEach((code) => {
           expect(screen.getByText(code)).toBeInTheDocument();
         });
       });
@@ -430,7 +465,9 @@ describe.skip('TwoFactorSetup', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        const codesContainer = document.querySelector('.grid.grid-cols-2.gap-2');
+        const codesContainer = document.querySelector(
+          '.grid.grid-cols-2.gap-2'
+        );
         expect(codesContainer).toBeInTheDocument();
       });
     });
@@ -453,7 +490,9 @@ describe.skip('TwoFactorSetup', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /copy/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /copy/i })
+        ).toBeInTheDocument();
       });
 
       const copyButton = screen.getByRole('button', { name: /copy/i });
@@ -481,7 +520,9 @@ describe.skip('TwoFactorSetup', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /download/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /download/i })
+        ).toBeInTheDocument();
       });
 
       const downloadButton = screen.getByRole('button', { name: /download/i });
@@ -506,16 +547,22 @@ describe.skip('TwoFactorSetup', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        const continueButton = screen.getByRole('button', { name: /continue/i });
+        const continueButton = screen.getByRole('button', {
+          name: /continue/i,
+        });
         expect(continueButton).toBeDisabled();
-        expect(screen.getByText(/please download the codes/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/please download the codes/i)
+        ).toBeInTheDocument();
       });
 
       const downloadButton = screen.getByRole('button', { name: /download/i });
       await user.click(downloadButton);
 
       await waitFor(() => {
-        const continueButton = screen.getByRole('button', { name: /continue/i });
+        const continueButton = screen.getByRole('button', {
+          name: /continue/i,
+        });
         expect(continueButton).not.toBeDisabled();
       });
     });
@@ -535,7 +582,9 @@ describe.skip('TwoFactorSetup', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        const stepIndicators = document.querySelectorAll('.h-2.w-8.rounded-full');
+        const stepIndicators = document.querySelectorAll(
+          '.h-2.w-8.rounded-full'
+        );
         expect(stepIndicators[0]).toHaveClass('bg-primary-600'); // Completed
         expect(stepIndicators[1]).toHaveClass('bg-primary-600'); // Current
       });
@@ -566,14 +615,18 @@ describe.skip('TwoFactorSetup', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /download/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /download/i })
+        ).toBeInTheDocument();
       });
 
       const downloadButton = screen.getByRole('button', { name: /download/i });
       await user.click(downloadButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /continue/i })).not.toBeDisabled();
+        expect(
+          screen.getByRole('button', { name: /continue/i })
+        ).not.toBeDisabled();
       });
 
       const continueButton = screen.getByRole('button', { name: /continue/i });
@@ -581,14 +634,18 @@ describe.skip('TwoFactorSetup', () => {
 
       await waitFor(() => {
         expect(screen.getByText(/setup complete/i)).toBeInTheDocument();
-        expect(screen.getByText(/two-factor authentication has been successfully enabled/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            /two-factor authentication has been successfully enabled/i
+          )
+        ).toBeInTheDocument();
         expect(screen.getByText(/redirecting/i)).toBeInTheDocument();
       });
     });
 
     it('calls onSetupComplete after delay', async () => {
       vi.useFakeTimers();
-      
+
       const onSetupComplete = vi.fn();
       render(<TwoFactorSetup onSetupComplete={onSetupComplete} />);
 
@@ -604,14 +661,18 @@ describe.skip('TwoFactorSetup', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /download/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /download/i })
+        ).toBeInTheDocument();
       });
 
       const downloadButton = screen.getByRole('button', { name: /download/i });
       await user.click(downloadButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /continue/i })).not.toBeDisabled();
+        expect(
+          screen.getByRole('button', { name: /continue/i })
+        ).not.toBeDisabled();
       });
 
       const continueButton = screen.getByRole('button', { name: /continue/i });
@@ -646,7 +707,9 @@ describe.skip('TwoFactorSetup', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /download/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /download/i })
+        ).toBeInTheDocument();
       });
 
       const downloadButton = screen.getByRole('button', { name: /download/i });
@@ -656,8 +719,10 @@ describe.skip('TwoFactorSetup', () => {
       await user.click(continueButton);
 
       await waitFor(() => {
-        const stepIndicators = document.querySelectorAll('.h-2.w-8.rounded-full');
-        stepIndicators.forEach(indicator => {
+        const stepIndicators = document.querySelectorAll(
+          '.h-2.w-8.rounded-full'
+        );
+        stepIndicators.forEach((indicator) => {
           expect(indicator).toHaveClass('bg-primary-600');
         });
       });
@@ -674,7 +739,9 @@ describe.skip('TwoFactorSetup', () => {
       render(<TwoFactorSetup lang="es" />);
 
       await waitFor(() => {
-        expect(screen.getByText(/configurar autenticación de dos factores/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/configurar autenticación de dos factores/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -682,7 +749,9 @@ describe.skip('TwoFactorSetup', () => {
       render(<TwoFactorSetup lang="en" />);
 
       await waitFor(() => {
-        expect(screen.getByText(/set up two-factor authentication/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/set up two-factor authentication/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -693,7 +762,9 @@ describe.skip('TwoFactorSetup', () => {
       render(<TwoFactorSetup lang="en" onCancel={onCancel} />);
 
       await waitFor(() => {
-        expect(mockToast.error).toHaveBeenCalledWith('Error setting up two-factor authentication');
+        expect(mockToast.error).toHaveBeenCalledWith(
+          'Error setting up two-factor authentication'
+        );
       });
     });
   });
@@ -719,9 +790,15 @@ describe.skip('TwoFactorSetup', () => {
       render(<TwoFactorSetup />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /verify/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /copy/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /verify/i })
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /cancel/i })
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /copy/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -792,7 +869,7 @@ describe.skip('TwoFactorSetup', () => {
       const verifyButton = screen.getByRole('button', { name: /verify/i });
 
       await user.type(codeInput, '123456');
-      
+
       expect(async () => {
         await user.click(verifyButton);
       }).not.toThrow();
@@ -805,11 +882,13 @@ describe.skip('TwoFactorSetup', () => {
       render(<TwoFactorSetup />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /copy/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /copy/i })
+        ).toBeInTheDocument();
       });
 
       const copyButton = screen.getByRole('button', { name: /copy/i });
-      
+
       // Rapid clicks
       await user.click(copyButton);
       await user.click(copyButton);

@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import {
-  MessageCircle, 
-  Users, 
-  TrendingUp, 
-  Search, 
+  MessageCircle,
+  Users,
+  TrendingUp,
+  Search,
   Plus,
   Pin,
   MessageSquare,
   Eye,
   Clock,
   Award,
-  Flame
+  Flame,
 } from 'lucide-react';
-import { useTranslations} from '../../hooks/useTranslations';
-import { forumCategories, forumTopics} from '../../lib/forum';
+import { useTranslations } from '../../hooks/useTranslations';
+import { forumCategories, forumTopics } from '../../lib/forum';
 import type { ForumCategory, ForumTopic, Language } from '../../types';
 
 interface ForumHomeProps {
@@ -41,7 +41,7 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
     totalTopics: 0,
     totalPosts: 0,
     totalUsers: 0,
-    onlineUsers: 0
+    onlineUsers: 0,
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -62,7 +62,7 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
       postCount: 0,
       displayOrder: 1,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     },
     {
       id: 'technical-discussion',
@@ -77,7 +77,7 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
       postCount: 0,
       displayOrder: 2,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     },
     {
       id: 'industry-news',
@@ -92,7 +92,7 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
       postCount: 0,
       displayOrder: 3,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     },
     {
       id: 'job-opportunities',
@@ -107,7 +107,7 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
       postCount: 0,
       displayOrder: 4,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     },
     {
       id: 'networking',
@@ -122,7 +122,7 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
       postCount: 0,
       displayOrder: 5,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     },
     {
       id: 'general-discussion',
@@ -137,8 +137,8 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
       postCount: 0,
       displayOrder: 6,
       createdAt: new Date(),
-      updatedAt: new Date()
-    }
+      updatedAt: new Date(),
+    },
   ];
 
   useEffect(() => {
@@ -156,7 +156,9 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
       } catch (err) {
         console.warn('Error loading forum categories, using defaults:', err);
       }
-      setCategories(categoriesData.length > 0 ? categoriesData : defaultCategories);
+      setCategories(
+        categoriesData.length > 0 ? categoriesData : defaultCategories
+      );
 
       // Load trending topics
       try {
@@ -169,25 +171,36 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
 
       // Load recent topics from all categories
       const recent: ForumTopic[] = [];
-      const activeCategories = categoriesData.length > 0 ? categoriesData : defaultCategories;
+      const activeCategories =
+        categoriesData.length > 0 ? categoriesData : defaultCategories;
       for (const category of activeCategories) {
         try {
-          const { topics } = await forumTopics.getByCategory(category.id, undefined, 2);
+          const { topics } = await forumTopics.getByCategory(
+            category.id,
+            undefined,
+            2
+          );
           recent.push(...topics);
         } catch (err) {
-          console.warn(`Error loading topics for category ${category.id}:`, err);
+          console.warn(
+            `Error loading topics for category ${category.id}:`,
+            err
+          );
         }
       }
-      setRecentTopics(recent.sort((a, b) => b.createdAt.getTime() - a['createdAt'].getTime()).slice(0, 5));
+      setRecentTopics(
+        recent
+          .sort((a, b) => b.createdAt.getTime() - a['createdAt'].getTime())
+          .slice(0, 5)
+      );
 
       // Compute stats from loaded data
       setStats({
         totalTopics: recent.length,
         totalPosts: recent.reduce((sum, topic) => sum + topic.postCount, 0),
         totalUsers: 0,
-        onlineUsers: 0
+        onlineUsers: 0,
       });
-
     } catch (err) {
       console.error('Error loading forum data:', err);
       // Use default data on error
@@ -216,7 +229,7 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
+
     if (days === 0) {
       const hours = Math.floor(diff / (1000 * 60 * 60));
       if (hours === 0) {
@@ -231,15 +244,18 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
     }
   };
 
-  if(loading) {
+  if (loading) {
     return (
       <div className="py-8">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-300 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
-          <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/2 mb-8"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="mb-4 h-8 w-1/4 rounded bg-gray-300 dark:bg-gray-700"></div>
+          <div className="mb-8 h-4 w-1/2 rounded bg-gray-300 dark:bg-gray-700"></div>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-32 bg-gray-300 dark:bg-gray-700 rounded-lg"></div>
+              <div
+                key={i}
+                className="h-32 rounded-lg bg-gray-300 dark:bg-gray-700"
+              ></div>
             ))}
           </div>
         </div>
@@ -247,14 +263,14 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
     );
   }
 
-  if(error) {
+  if (error) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <div className="text-red-500 text-xl mb-4">{error}</div>
+          <div className="mb-4 text-xl text-red-500">{error}</div>
           <button
             onClick={loadForumData}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
           >
             {t.common.retry}
           </button>
@@ -266,16 +282,16 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
   return (
     <div>
       {/* Search and Actions Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row">
         <form onSubmit={handleSearch} className="flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.forum.searchPlaceholder}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-gray-900 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
         </form>
@@ -283,74 +299,94 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
         {currentUser && (
           <a
             href={`/${language}/forum/new-topic`}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors whitespace-nowrap"
+            className="flex items-center gap-2 whitespace-nowrap rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="h-5 w-5" />
             {t.forum.createTopic}
           </a>
         )}
       </div>
 
       <div>
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           {/* Main Content */}
           <div className="lg:col-span-3">
             {/* Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-blue-500">{formatNumber(stats.totalTopics)}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">{t.forum.topics}</div>
+            <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+              <div className="rounded-lg bg-white p-4 text-center dark:bg-gray-800">
+                <div className="text-2xl font-bold text-blue-500">
+                  {formatNumber(stats.totalTopics)}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  {t.forum.topics}
+                </div>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-green-500">{formatNumber(stats.totalPosts)}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">{t.forum.posts}</div>
+              <div className="rounded-lg bg-white p-4 text-center dark:bg-gray-800">
+                <div className="text-2xl font-bold text-green-500">
+                  {formatNumber(stats.totalPosts)}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  {t.forum.posts}
+                </div>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-purple-500">{formatNumber(stats.totalUsers)}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">{t.forum.members}</div>
+              <div className="rounded-lg bg-white p-4 text-center dark:bg-gray-800">
+                <div className="text-2xl font-bold text-purple-500">
+                  {formatNumber(stats.totalUsers)}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  {t.forum.members}
+                </div>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-orange-500">{stats.onlineUsers}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Online</div>
+              <div className="rounded-lg bg-white p-4 text-center dark:bg-gray-800">
+                <div className="text-2xl font-bold text-orange-500">
+                  {stats.onlineUsers}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Online
+                </div>
               </div>
             </div>
 
             {/* Categories */}
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t.forum.categories}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
+                {t.forum.categories}
+              </h2>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {categories.map((category) => (
                   <a
                     key={category.id}
                     href={`/${language}/forum/category/${category.slug}`}
-                    className="block bg-white dark:bg-gray-800 rounded-lg p-6 hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700"
+                    className="block rounded-lg border border-gray-200 bg-white p-6 transition-shadow hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
                   >
                     <div className="flex items-start gap-4">
-                      <div className={`w-12 h-12 rounded-lg ${category.color} flex items-center justify-center text-white text-xl`}>
+                      <div
+                        className={`h-12 w-12 rounded-lg ${category.color} flex items-center justify-center text-xl text-white`}
+                      >
                         {category.icon}
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                        <h3 className="mb-1 text-lg font-semibold text-gray-900 dark:text-white">
                           {category['name']}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
+                        <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">
                           {category['description']}
                         </p>
                         <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                           <div className="flex items-center gap-1">
-                            <MessageCircle className="w-4 h-4" />
+                            <MessageCircle className="h-4 w-4" />
                             {category.topicCount} {t.forum.topics}
                           </div>
                           <div className="flex items-center gap-1">
-                            <MessageSquare className="w-4 h-4" />
+                            <MessageSquare className="h-4 w-4" />
                             {category.postCount} {t.forum.posts}
                           </div>
                         </div>
                       </div>
                     </div>
-                    
+
                     {category.lastActivity && (
-                      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <div className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
                         <div className="flex items-center justify-between text-sm">
                           <div className="text-gray-600 dark:text-gray-400">
                             {t.forum.latestActivity}:{' '}
@@ -374,9 +410,9 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
           <div className="lg:col-span-1">
             {/* Trending Topics */}
             {trendingTopics.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <Flame className="w-5 h-5 text-orange-500" />
+              <div className="mb-6 rounded-lg bg-white p-6 dark:bg-gray-800">
+                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
+                  <Flame className="h-5 w-5 text-orange-500" />
                   Trending
                 </h3>
                 <div className="space-y-3">
@@ -384,23 +420,25 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
                     <a
                       key={topic.id}
                       href={`/${language}/forum/topic/${topic.slug}`}
-                      className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      className="block rounded-lg p-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
-                      <div className="font-medium text-gray-900 dark:text-white text-sm line-clamp-2 mb-1">
-                        {topic.isPinned && <Pin className="inline w-3 h-3 mr-1 text-yellow-500" />}
+                      <div className="mb-1 line-clamp-2 text-sm font-medium text-gray-900 dark:text-white">
+                        {topic.isPinned && (
+                          <Pin className="mr-1 inline h-3 w-3 text-yellow-500" />
+                        )}
                         {topic.title}
                       </div>
                       <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                         <div className="flex items-center gap-1">
-                          <TrendingUp className="w-3 h-3" />
+                          <TrendingUp className="h-3 w-3" />
                           {topic.upvotes}
                         </div>
                         <div className="flex items-center gap-1">
-                          <MessageSquare className="w-3 h-3" />
+                          <MessageSquare className="h-3 w-3" />
                           {topic.postCount}
                         </div>
                         <div className="flex items-center gap-1">
-                          <Eye className="w-3 h-3" />
+                          <Eye className="h-3 w-3" />
                           {topic.views}
                         </div>
                       </div>
@@ -412,9 +450,9 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
 
             {/* Recent Activity */}
             {recentTopics.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-blue-500" />
+              <div className="rounded-lg bg-white p-6 dark:bg-gray-800">
+                <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
+                  <Clock className="h-5 w-5 text-blue-500" />
                   {t.forum.latestActivity}
                 </h3>
                 <div className="space-y-3">
@@ -422,10 +460,12 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
                     <a
                       key={topic.id}
                       href={`/${language}/forum/topic/${topic.slug}`}
-                      className="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      className="block rounded-lg p-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
-                      <div className="font-medium text-gray-900 dark:text-white text-sm line-clamp-2 mb-1">
-                        {topic.isPinned && <Pin className="inline w-3 h-3 mr-1 text-yellow-500" />}
+                      <div className="mb-1 line-clamp-2 text-sm font-medium text-gray-900 dark:text-white">
+                        {topic.isPinned && (
+                          <Pin className="mr-1 inline h-3 w-3 text-yellow-500" />
+                        )}
                         {topic.title}
                       </div>
                       <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
@@ -439,14 +479,16 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
             )}
 
             {/* User Recognition */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mt-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <Award className="w-5 h-5 text-yellow-500" />
+            <div className="mt-6 rounded-lg bg-white p-6 dark:bg-gray-800">
+              <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
+                <Award className="h-5 w-5 text-yellow-500" />
                 Top Contributors
               </h3>
               <div className="space-y-3">
-                <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
-                  {language === 'es' ? 'Sin datos disponibles' : 'No data available'}
+                <p className="py-2 text-center text-sm text-gray-500 dark:text-gray-400">
+                  {language === 'es'
+                    ? 'Sin datos disponibles'
+                    : 'No data available'}
                 </p>
               </div>
             </div>

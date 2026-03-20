@@ -102,8 +102,7 @@ export default function SpotlightCard({ spotlight, lang = 'es' }: Props) {
             marginBottom: '0.75rem',
           }}
         >
-          {lang === 'es' ? 'Generación' : 'Class of'}{' '}
-          {spotlight.graduationYear}
+          {lang === 'es' ? 'Generación' : 'Class of'} {spotlight.graduationYear}
         </p>
         <p
           style={{

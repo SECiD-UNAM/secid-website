@@ -110,9 +110,13 @@ describe('AuthGuard', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByRole('heading', { name: /dashboard/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('heading', { name: /dashboard/i })
+        ).toBeInTheDocument();
         expect(screen.getByText(/welcome back/i)).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /action/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /action/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -133,7 +137,9 @@ describe('AuthGuard', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByTestId('test-component')).toHaveTextContent('Hello John');
+        expect(screen.getByTestId('test-component')).toHaveTextContent(
+          'Hello John'
+        );
       });
     });
   });
@@ -154,7 +160,9 @@ describe('AuthGuard', () => {
       await waitFor(() => {
         // Title and message
         expect(screen.getByText('Authentication Required')).toBeInTheDocument();
-        expect(screen.getByText('Please sign in to access this page.')).toBeInTheDocument();
+        expect(
+          screen.getByText('Please sign in to access this page.')
+        ).toBeInTheDocument();
         expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
 
         // Links with correct hrefs (defaults to Spanish)
@@ -198,7 +206,9 @@ describe('AuthGuard', () => {
         return vi.fn();
       });
 
-      const customFallback = <div data-testid="custom-fallback">Custom unauthorized message</div>;
+      const customFallback = (
+        <div data-testid="custom-fallback">Custom unauthorized message</div>
+      );
 
       render(
         <AuthGuard fallback={customFallback}>
@@ -208,8 +218,12 @@ describe('AuthGuard', () => {
 
       await waitFor(() => {
         expect(screen.getByTestId('custom-fallback')).toBeInTheDocument();
-        expect(screen.getByText('Custom unauthorized message')).toBeInTheDocument();
-        expect(screen.queryByText('Authentication Required')).not.toBeInTheDocument();
+        expect(
+          screen.getByText('Custom unauthorized message')
+        ).toBeInTheDocument();
+        expect(
+          screen.queryByText('Authentication Required')
+        ).not.toBeInTheDocument();
       });
     });
   });
@@ -329,7 +343,9 @@ describe('AuthGuard', () => {
       );
 
       await waitFor(() => {
-        const heading = screen.getByRole('heading', { name: /authentication required/i });
+        const heading = screen.getByRole('heading', {
+          name: /authentication required/i,
+        });
         expect(heading).toBeInTheDocument();
       });
     });

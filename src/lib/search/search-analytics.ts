@@ -7,32 +7,32 @@ import { db, auth } from '@/lib/firebase';
  */
 
 import {
-  collection, 
-  doc, 
-  addDoc, 
-  getDocs, 
+  collection,
+  doc,
+  addDoc,
+  getDocs,
   getDoc,
-  query, 
-  where, 
-  orderBy, 
-  limit, 
+  query,
+  where,
+  orderBy,
+  limit,
   updateDoc,
   increment,
   serverTimestamp,
-  Timestamp
+  Timestamp,
 } from 'firebase/firestore';
 import type {
   SearchAnalyticsEvent,
   SearchHistoryItem,
   PopularSearch,
-  SearchFilters
+  SearchFilters,
 } from '@/types/search';
 
 // Local storage keys
 const STORAGE_KEYS = {
   SESSION_ID: 'secid_search_session',
   RECENT_SEARCHES: 'secid_recent_searches',
-  SEARCH_PREFERENCES: 'secid_search_preferences'
+  SEARCH_PREFERENCES: 'secid_search_preferences',
 } as const;
 
 // Session management
@@ -68,7 +68,7 @@ class SearchSession {
       sessionId: this.sessionId,
       startTime: this.startTime,
       searchCount: this.searchCount,
-      duration: Date.now() - this.startTime.getTime()
+      duration: Date.now() - this.startTime.getTime(),
     };
   }
 
@@ -107,8 +107,8 @@ export class SearchAnalytics {
 
   // Track search event
   async trackSearch(
-    query: string, 
-    filters: SearchFilters, 
+    query: string,
+    filters: SearchFilters,
     resultCount: number,
     searchTime: number
   ): Promise<void> {
@@ -123,16 +123,19 @@ export class SearchAnalytics {
         userId: auth?.currentUser?.uid,
         sessionId: this.session.getSessionId(),
         userAgent: navigator.userAgent,
-        language: filters.language || 'es'
+        language: filters.language || 'es',
       };
 
       // Track in Firebase
       await this.saveAnalyticsEvent(event, {
         resultCount,
         searchTime,
-        hasFilters: Object.keys(filters).some(key => 
-          key !== 'contentTypes' && key !== 'language' && filters[key as keyof SearchFilters]
-        )
+        hasFilters: Object.keys(filters).some(
+          (key) =>
+            key !== 'contentTypes' &&
+            key !== 'language' &&
+            filters[key as keyof SearchFilters]
+        ),
       });
 
       // Update search count
@@ -167,13 +170,13 @@ export class SearchAnalytics {
         userId: auth?.currentUser?.uid,
         sessionId: this.session.getSessionId(),
         userAgent: navigator.userAgent,
-        language: 'es'
+        language: 'es',
       };
 
       await this.saveAnalyticsEvent(event, {
         resultTitle,
         resultType,
-        clickThrough: true
+        clickThrough: true,
       });
 
       console.log('Result click tracked:', { resultId, position });
@@ -200,13 +203,13 @@ export class SearchAnalytics {
         userId: auth?.currentUser?.uid,
         sessionId: this.session.getSessionId(),
         userAgent: navigator.userAgent,
-        language: 'es'
+        language: 'es',
       };
 
       await this.saveAnalyticsEvent(event, {
         resultCountBefore,
         resultCountAfter,
-        filterEffectiveness: resultCountAfter / resultCountBefore
+        filterEffectiveness: resultCountAfter / resultCountBefore,
       });
 
       console.log('Filter application tracked:', appliedFilters);
@@ -231,12 +234,12 @@ export class SearchAnalytics {
         userId: auth?.currentUser?.uid,
         sessionId: this.session.getSessionId(),
         userAgent: navigator.userAgent,
-        language: 'es'
+        language: 'es',
       };
 
       await this.saveAnalyticsEvent(event, {
         suggestion,
-        suggestionType
+        suggestionType,
       });
 
       console.log('Suggestion click tracked:', { suggestion, suggestionType });
@@ -261,16 +264,20 @@ export class SearchAnalytics {
         userId: auth?.currentUser?.uid,
         sessionId: this.session.getSessionId(),
         userAgent: navigator.userAgent,
-        language: 'es'
+        language: 'es',
       };
 
       await this.saveAnalyticsEvent(event, {
         originalQuery,
         confidence,
-        voiceEnabled: true
+        voiceEnabled: true,
       });
 
-      console.log('Voice search tracked:', { originalQuery, recognizedQuery, confidence });
+      console.log('Voice search tracked:', {
+        originalQuery,
+        recognizedQuery,
+        confidence,
+      });
     } catch (error) {
       console.error('Error tracking voice search:', error);
     }
@@ -278,7 +285,7 @@ export class SearchAnalytics {
 
   // Save analytics event to Firebase
   private async saveAnalyticsEvent(
-    event: SearchAnalyticsEvent, 
+    event: SearchAnalyticsEvent,
     additionalData: Record<string, any> = {}
   ): Promise<void> {
     try {
@@ -287,7 +294,7 @@ export class SearchAnalytics {
         ...event,
         ...additionalData,
         timestamp: serverTimestamp(),
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
       });
     } catch (error) {
       console.error('Error saving analytics event:', error);
@@ -298,7 +305,7 @@ export class SearchAnalytics {
 
   // Fallback local storage for offline analytics
   private saveEventLocally(
-    event: SearchAnalyticsEvent, 
+    event: SearchAnalyticsEvent,
     additionalData: Record<string, any>
   ): void {
     try {
@@ -306,13 +313,16 @@ export class SearchAnalytics {
         localStorage.getItem('secid_search_analytics_offline') || '[]'
       );
       localEvents.push({ ...event, ...additionalData });
-      
+
       // Keep only last 100 events locally
       if (localEvents.length > 100) {
         localEvents.splice(0, localEvents.length - 100);
       }
-      
-      localStorage.setItem('secid_search_analytics_offline', JSON.stringify(localEvents));
+
+      localStorage.setItem(
+        'secid_search_analytics_offline',
+        JSON.stringify(localEvents)
+      );
     } catch (error) {
       console.error('Error saving event locally:', error);
     }
@@ -331,7 +341,7 @@ export class SearchAnalytics {
         await updateDoc(popularRef, {
           count: increment(1),
           lastSearched: serverTimestamp(),
-          updatedAt: serverTimestamp()
+          updatedAt: serverTimestamp(),
         });
       } else {
         await updateDoc(popularRef, {
@@ -340,7 +350,7 @@ export class SearchAnalytics {
           firstSearched: serverTimestamp(),
           lastSearched: serverTimestamp(),
           createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
+          updatedAt: serverTimestamp(),
         });
       }
     } catch (error) {
@@ -388,7 +398,8 @@ export class SearchHistoryManager {
         timestamp: new Date(),
         resultCount,
         clickedResults,
-        sessionId: SearchAnalytics.getInstance().getSessionAnalytics().sessionId
+        sessionId:
+          SearchAnalytics.getInstance().getSessionAnalytics().sessionId,
       };
 
       // Save to Firebase if user is authenticated
@@ -398,7 +409,6 @@ export class SearchHistoryManager {
 
       // Always save to local storage
       this.saveToLocalStorage(historyItem);
-
     } catch (error) {
       console.error('Error adding to search history:', error);
     }
@@ -437,8 +447,8 @@ export class SearchHistoryManager {
           where('userId', '==', auth.currentUser.uid)
         );
         const snapshot = await getDocs(userHistoryQuery);
-        
-        const deletePromises = snapshot.docs.map(doc => 
+
+        const deletePromises = snapshot.docs.map((doc) =>
           updateDoc(doc['ref'], { deletedAt: serverTimestamp() })
         );
         await Promise.all(deletePromises);
@@ -455,7 +465,7 @@ export class SearchHistoryManager {
       await addDoc(historyRef, {
         ...historyItem,
         timestamp: serverTimestamp(),
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
       });
     } catch (error) {
       console.error('Error saving to Firebase:', error);
@@ -477,12 +487,12 @@ export class SearchHistoryManager {
       );
 
       const snapshot = await getDocs(userHistoryQuery);
-      return snapshot['docs'].map(doc => {
+      return snapshot['docs'].map((doc) => {
         const data = doc['data']();
         return {
           ...data,
           id: doc['id'],
-          timestamp: data['timestamp']?.toDate() || new Date()
+          timestamp: data['timestamp']?.toDate() || new Date(),
         } as SearchHistoryItem;
       });
     } catch (error) {
@@ -495,20 +505,25 @@ export class SearchHistoryManager {
   private saveToLocalStorage(historyItem: SearchHistoryItem): void {
     try {
       const history = this.getFromLocalStorage(this.maxHistoryItems - 1);
-      
+
       // Remove duplicate queries
-      const filteredHistory = history.filter(item => 
-        item.query !== historyItem.query
+      const filteredHistory = history.filter(
+        (item) => item.query !== historyItem.query
       );
 
-      const newHistory = [historyItem, ...filteredHistory].slice(0, this.maxHistoryItems);
-      
+      const newHistory = [historyItem, ...filteredHistory].slice(
+        0,
+        this.maxHistoryItems
+      );
+
       localStorage.setItem(
-        STORAGE_KEYS.RECENT_SEARCHES, 
-        JSON.stringify(newHistory.map(item => ({
-          ...item,
-          timestamp: item.timestamp.toISOString()
-        })))
+        STORAGE_KEYS.RECENT_SEARCHES,
+        JSON.stringify(
+          newHistory.map((item) => ({
+            ...item,
+            timestamp: item.timestamp.toISOString(),
+          }))
+        )
       );
     } catch (error) {
       console.error('Error saving to local storage:', error);
@@ -525,7 +540,7 @@ export class SearchHistoryManager {
       return history
         .map((item: any) => ({
           ...item,
-          timestamp: new Date(item.timestamp)
+          timestamp: new Date(item.timestamp),
         }))
         .slice(0, limit);
     } catch (error) {
@@ -553,12 +568,12 @@ export class PopularSearchManager {
   ): Promise<PopularSearch[]> {
     try {
       const popularRef = collection(db, 'search_popular');
-      
+
       // Calculate date filter based on period
       let dateFilter: Date | null = null;
       if (period !== 'all') {
         const now = new Date();
-        switch(period) {
+        switch (period) {
           case 'day':
             dateFilter = new Date(now.getTime() - 24 * 60 * 60 * 1000);
             break;
@@ -577,7 +592,7 @@ export class PopularSearchManager {
         limit(limit)
       );
 
-      if(dateFilter) {
+      if (dateFilter) {
         popularQuery = query(
           popularRef,
           where('lastSearched', '>=', Timestamp.fromDate(dateFilter)),
@@ -587,14 +602,14 @@ export class PopularSearchManager {
       }
 
       const snapshot = await getDocs(popularQuery);
-      
-      return snapshot['docs'].map(doc => {
+
+      return snapshot['docs'].map((doc) => {
         const data = doc['data']();
         return {
           query: data['query'],
           count: data['count'],
           period,
-          trending: this.isTrending(data)
+          trending: this.isTrending(data),
         };
       });
     } catch (error) {
@@ -608,13 +623,14 @@ export class PopularSearchManager {
     const now = new Date();
     const lastSearched = data['lastSearched']?.toDate();
     const firstSearched = data['firstSearched']?.toDate();
-    
+
     if (!lastSearched || !firstSearched) return false;
-    
+
     // Consider trending if searched recently and growing in popularity
-    const recentlySearched = (now.getTime() - lastSearched.getTime()) < (24 * 60 * 60 * 1000);
+    const recentlySearched =
+      now.getTime() - lastSearched.getTime() < 24 * 60 * 60 * 1000;
     const hasGrowth = data.count > 5; // Minimum threshold
-    
+
     return recentlySearched && hasGrowth;
   }
 }

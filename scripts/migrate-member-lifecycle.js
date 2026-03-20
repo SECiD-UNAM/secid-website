@@ -31,7 +31,9 @@ if (!getApps().length) {
 const db = getFirestore();
 
 async function migrate() {
-  console.log(`\n🔄 Member Lifecycle Migration${isDryRun ? ' (DRY RUN)' : ''}\n`);
+  console.log(
+    `\n🔄 Member Lifecycle Migration${isDryRun ? ' (DRY RUN)' : ''}\n`
+  );
 
   const usersSnapshot = await db.collection('users').get();
   console.log(`Found ${usersSnapshot.size} user documents\n`);
@@ -84,7 +86,8 @@ async function migrate() {
         status,
         statusChangedAt: data.createdAt || FieldValue.serverTimestamp(),
         statusHistory: [],
-        lastActiveDate: data.updatedAt || data.createdAt || FieldValue.serverTimestamp(),
+        lastActiveDate:
+          data.updatedAt || data.createdAt || FieldValue.serverTimestamp(),
       },
       registrationType: data.registrationType || registrationType,
       verificationStatus: data.verificationStatus || verificationStatus,
@@ -95,7 +98,9 @@ async function migrate() {
       updates.numeroCuenta = data.studentId;
     }
 
-    console.log(`  ✏️  ${uid} (${data.email}) — status: ${status}, type: ${registrationType}, verification: ${verificationStatus}`);
+    console.log(
+      `  ✏️  ${uid} (${data.email}) — status: ${status}, type: ${registrationType}, verification: ${verificationStatus}`
+    );
 
     if (!isDryRun) {
       batch.update(doc.ref, updates);

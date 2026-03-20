@@ -19,7 +19,7 @@ import {
   serverTimestamp,
   type QueryConstraint,
 } from 'firebase/firestore';
-import { db, isUsingMockAPI} from './firebase';
+import { db, isUsingMockAPI } from './firebase';
 
 /**
  * Assessment System Firebase Functions
@@ -56,7 +56,9 @@ const QUESTION_BANKS_COLLECTION = 'question_banks';
 const PEER_REVIEWS_COLLECTION = 'peer_reviews';
 
 // Assessment Management
-export async function createAssessment(assessment: Omit<Assessment, 'id'>): Promise<string> {
+export async function createAssessment(
+  assessment: Omit<Assessment, 'id'>
+): Promise<string> {
   if (isUsingMockAPI()) {
     const mockId = `assessment_${Date.now()}`;
     console.log('Mock: Created assessment', mockId);
@@ -79,7 +81,9 @@ export async function createAssessment(assessment: Omit<Assessment, 'id'>): Prom
   }
 }
 
-export async function getAssessment(assessmentId: string): Promise<Assessment | null> {
+export async function getAssessment(
+  assessmentId: string
+): Promise<Assessment | null> {
   if (isUsingMockAPI()) {
     return {
       id: assessmentId,
@@ -119,7 +123,9 @@ export async function getAssessment(assessmentId: string): Promise<Assessment | 
   }
 }
 
-export async function getAssessments(filters?: AssessmentFilters): Promise<Assessment[]> {
+export async function getAssessments(
+  filters?: AssessmentFilters
+): Promise<Assessment[]> {
   if (isUsingMockAPI()) {
     return [
       {
@@ -175,25 +181,29 @@ export async function getAssessments(filters?: AssessmentFilters): Promise<Asses
 
   try {
     const constraints: QueryConstraint[] = [where('isActive', '==', true)];
-    
+
     if (filters?.categories?.length) {
       constraints.push(where('category', 'in', filters.categories));
     }
-    
+
     if (filters?.difficulties?.length) {
       constraints.push(where('difficulty', 'in', filters.difficulties));
     }
-    
+
     if (filters?.modes?.length) {
       constraints.push(where('mode', 'in', filters.modes));
     }
 
-    const q = query(collection(db, ASSESSMENTS_COLLECTION), ...constraints, orderBy('createdAt', 'desc'));
+    const q = query(
+      collection(db, ASSESSMENTS_COLLECTION),
+      ...constraints,
+      orderBy('createdAt', 'desc')
+    );
     const querySnapshot = await getDocs(q);
-    
-    return querySnapshot.docs.map(doc => ({
+
+    return querySnapshot.docs.map((doc) => ({
       id: doc['id'],
-      ...doc['data']()
+      ...doc['data'](),
     })) as Assessment[];
   } catch (error) {
     console.error('Error getting assessments:', error);
@@ -201,7 +211,10 @@ export async function getAssessments(filters?: AssessmentFilters): Promise<Asses
   }
 }
 
-export async function updateAssessment(assessmentId: string, updates: Partial<Assessment>): Promise<void> {
+export async function updateAssessment(
+  assessmentId: string,
+  updates: Partial<Assessment>
+): Promise<void> {
   if (isUsingMockAPI()) {
     console.log('Mock: Updated assessment', assessmentId, updates);
     return;
@@ -219,7 +232,9 @@ export async function updateAssessment(assessmentId: string, updates: Partial<As
 }
 
 // Question Management
-export async function createQuestion(question: Omit<Question, 'id'>): Promise<string> {
+export async function createQuestion(
+  question: Omit<Question, 'id'>
+): Promise<string> {
   if (isUsingMockAPI()) {
     const mockId = `question_${Date.now()}`;
     console.log('Mock: Created question', mockId);
@@ -241,7 +256,9 @@ export async function createQuestion(question: Omit<Question, 'id'>): Promise<st
   }
 }
 
-export async function getQuestion(questionId: string): Promise<Question | null> {
+export async function getQuestion(
+  questionId: string
+): Promise<Question | null> {
   if (isUsingMockAPI()) {
     return {
       id: questionId,
@@ -253,12 +270,33 @@ export async function getQuestion(questionId: string): Promise<Question | null> 
       points: 10,
       timeLimit: 60,
       options: [
-        { id: 'a', text: 'Tuple', isCorrect: false, explanation: 'Tuples are immutable' },
-        { id: 'b', text: 'String', isCorrect: false, explanation: 'Strings are immutable' },
-        { id: 'c', text: 'List', isCorrect: true, explanation: 'Lists are mutable' },
-        { id: 'd', text: 'Integer', isCorrect: false, explanation: 'Integers are immutable' },
+        {
+          id: 'a',
+          text: 'Tuple',
+          isCorrect: false,
+          explanation: 'Tuples are immutable',
+        },
+        {
+          id: 'b',
+          text: 'String',
+          isCorrect: false,
+          explanation: 'Strings are immutable',
+        },
+        {
+          id: 'c',
+          text: 'List',
+          isCorrect: true,
+          explanation: 'Lists are mutable',
+        },
+        {
+          id: 'd',
+          text: 'Integer',
+          isCorrect: false,
+          explanation: 'Integers are immutable',
+        },
       ],
-      explanation: 'Lists in Python are mutable, meaning their contents can be changed after creation.',
+      explanation:
+        'Lists in Python are mutable, meaning their contents can be changed after creation.',
       resources: [
         {
           title: 'Python Data Types Documentation',
@@ -317,7 +355,7 @@ export async function getQuestions(questionIds: string[]): Promise<Question[]> {
     const questions: Question[] = [];
     for (const questionId of questionIds) {
       const question = await getQuestion(questionId);
-      if(question) {
+      if (question) {
         questions.push(question);
       }
     }
@@ -329,7 +367,10 @@ export async function getQuestions(questionIds: string[]): Promise<Question[]> {
 }
 
 // Assessment Attempts
-export async function startAssessment(userId: string, assessmentId: string): Promise<string> {
+export async function startAssessment(
+  userId: string,
+  assessmentId: string
+): Promise<string> {
   if (isUsingMockAPI()) {
     const mockId = `attempt_${Date.now()}`;
     console.log('Mock: Started assessment attempt', mockId);
@@ -372,7 +413,9 @@ export async function startAssessment(userId: string, assessmentId: string): Pro
   }
 }
 
-export async function getAssessmentAttempt(attemptId: string): Promise<AssessmentAttempt | null> {
+export async function getAssessmentAttempt(
+  attemptId: string
+): Promise<AssessmentAttempt | null> {
   if (isUsingMockAPI()) {
     return {
       id: attemptId,
@@ -406,7 +449,10 @@ export async function getAssessmentAttempt(attemptId: string): Promise<Assessmen
   }
 }
 
-export async function saveAnswer(attemptId: string, answer: UserAnswer): Promise<void> {
+export async function saveAnswer(
+  attemptId: string,
+  answer: UserAnswer
+): Promise<void> {
   if (isUsingMockAPI()) {
     console.log('Mock: Saved answer for attempt', attemptId, answer);
     return;
@@ -425,7 +471,7 @@ export async function saveAnswer(attemptId: string, answer: UserAnswer): Promise
 }
 
 export async function updateAttemptProgress(
-  attemptId: string, 
+  attemptId: string,
   updates: Partial<AssessmentAttempt>
 ): Promise<void> {
   if (isUsingMockAPI()) {
@@ -444,7 +490,9 @@ export async function updateAttemptProgress(
   }
 }
 
-export async function submitAssessment(attemptId: string): Promise<AssessmentResult> {
+export async function submitAssessment(
+  attemptId: string
+): Promise<AssessmentResult> {
   if (isUsingMockAPI()) {
     return {
       attemptId,
@@ -455,10 +503,20 @@ export async function submitAssessment(attemptId: string): Promise<AssessmentRes
       passed: true,
       completedAt: new Date(),
       categoryScores: [
-        { category: 'python', score: 85, totalQuestions: 10, correctAnswers: 8 },
+        {
+          category: 'python',
+          score: 85,
+          totalQuestions: 10,
+          correctAnswers: 8,
+        },
       ],
       difficultyScores: [
-        { difficulty: 'intermediate', score: 85, totalQuestions: 10, correctAnswers: 8 },
+        {
+          difficulty: 'intermediate',
+          score: 85,
+          totalQuestions: 10,
+          correctAnswers: 8,
+        },
       ],
       questionResults: [],
       percentileRank: 75,
@@ -486,7 +544,7 @@ export async function submitAssessment(attemptId: string): Promise<AssessmentRes
 
     // Calculate scores (simplified)
     const totalQuestions = attempt.answers.length;
-    const correctAnswers = attempt.answers.filter(a => a.isCorrect).length;
+    const correctAnswers = attempt.answers.filter((a) => a.isCorrect).length;
     const score = Math.round((correctAnswers / totalQuestions) * 100);
 
     const result: Omit<AssessmentResult, 'attemptId'> = {
@@ -532,7 +590,9 @@ export async function submitAssessment(attemptId: string): Promise<AssessmentRes
 }
 
 // Progress and Analytics
-export async function getUserProgress(userId: string): Promise<AssessmentProgress> {
+export async function getUserProgress(
+  userId: string
+): Promise<AssessmentProgress> {
   if (isUsingMockAPI()) {
     return {
       userId,
@@ -568,14 +628,18 @@ export async function getUserProgress(userId: string): Promise<AssessmentProgres
     );
 
     const attempts = await getDocs(attemptsQuery);
-    const recentAttempts = attempts.docs.map(doc => ({
+    const recentAttempts = attempts.docs.map((doc) => ({
       id: doc['id'],
-      ...doc['data']()
+      ...doc['data'](),
     })) as AssessmentAttempt[];
 
     // Calculate statistics
-    const totalScore = recentAttempts.reduce((sum, attempt) => sum + attempt.score, 0);
-    const averageScore = recentAttempts.length > 0 ? totalScore / recentAttempts.length : 0;
+    const totalScore = recentAttempts.reduce(
+      (sum, attempt) => sum + attempt.score,
+      0
+    );
+    const averageScore =
+      recentAttempts.length > 0 ? totalScore / recentAttempts.length : 0;
 
     return {
       userId,
@@ -598,7 +662,10 @@ export async function getUserProgress(userId: string): Promise<AssessmentProgres
   }
 }
 
-export async function getLeaderboard(type: 'global' | 'category' | 'monthly' | 'weekly', category?: SkillCategory): Promise<Leaderboard> {
+export async function getLeaderboard(
+  type: 'global' | 'category' | 'monthly' | 'weekly',
+  category?: SkillCategory
+): Promise<Leaderboard> {
   if (isUsingMockAPI()) {
     return {
       id: `${type}_${category || 'global'}`,
@@ -644,8 +711,10 @@ export async function getLeaderboard(type: 'global' | 'category' | 'monthly' | '
   try {
     // This would be generated by a Cloud Function and cached
     const leaderboardId = `${type}_${category || 'global'}`;
-    const docSnap = await getDoc(doc(db, LEADERBOARDS_COLLECTION, leaderboardId));
-    
+    const docSnap = await getDoc(
+      doc(db, LEADERBOARDS_COLLECTION, leaderboardId)
+    );
+
     if (docSnap.exists()) {
       return { id: docSnap['id'], ...docSnap.data() } as Leaderboard;
     }
@@ -667,8 +736,8 @@ export async function getLeaderboard(type: 'global' | 'category' | 'monthly' | '
 
 // Certificate Management
 export async function generateCertificate(
-  userId: string, 
-  assessmentId: string, 
+  userId: string,
+  assessmentId: string,
   attemptId: string
 ): Promise<Certificate> {
   if (isUsingMockAPI()) {
@@ -680,7 +749,8 @@ export async function generateCertificate(
       title: 'Python Fundamentals Certificate',
       description: 'Certified completion of Python Fundamentals Assessment',
       issuedAt: new Date(),
-      verificationCode: 'SEC-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+      verificationCode:
+        'SEC-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
       score: 85,
       level: 'intermediate',
       skills: ['python'],
@@ -697,9 +767,11 @@ export async function generateCertificate(
 
     const resultData = result['data']() as AssessmentResult;
     const assessment = await getAssessment(assessmentId);
-    
+
     if (!assessment || !resultData.passed) {
-      throw new Error('Certificate cannot be generated - assessment not passed');
+      throw new Error(
+        'Certificate cannot be generated - assessment not passed'
+      );
     }
 
     const certificate: Omit<Certificate, 'id'> = {
@@ -709,7 +781,8 @@ export async function generateCertificate(
       title: `${assessment.title} Certificate`,
       description: `Certified completion of ${assessment.title}`,
       issuedAt: new Date(),
-      verificationCode: 'SEC-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+      verificationCode:
+        'SEC-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
       score: resultData.score,
       level: assessment.difficulty,
       skills: [assessment.category],
@@ -728,7 +801,9 @@ export async function generateCertificate(
   }
 }
 
-export async function getUserCertificates(userId: string): Promise<Certificate[]> {
+export async function getUserCertificates(
+  userId: string
+): Promise<Certificate[]> {
   if (isUsingMockAPI()) {
     return [
       {
@@ -754,11 +829,11 @@ export async function getUserCertificates(userId: string): Promise<Certificate[]
       where('userId', '==', userId),
       orderBy('issuedAt', 'desc')
     );
-    
+
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
+    return querySnapshot.docs.map((doc) => ({
       id: doc['id'],
-      ...doc['data']()
+      ...doc['data'](),
     })) as Certificate[];
   } catch (error) {
     console.error('Error getting user certificates:', error);
@@ -767,16 +842,24 @@ export async function getUserCertificates(userId: string): Promise<Certificate[]
 }
 
 // Search and Discovery
-export async function searchAssessments(searchTerm: string, filters?: AssessmentFilters): Promise<AssessmentSearchResult[]> {
+export async function searchAssessments(
+  searchTerm: string,
+  filters?: AssessmentFilters
+): Promise<AssessmentSearchResult[]> {
   if (isUsingMockAPI()) {
     const mockAssessments = await getAssessments(filters);
     return mockAssessments
-      .filter(assessment => 
-        assessment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        assessment.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        assessment.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      .filter(
+        (assessment) =>
+          assessment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          assessment.description
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          assessment.tags.some((tag) =>
+            tag.toLowerCase().includes(searchTerm.toLowerCase())
+          )
       )
-      .map(assessment => ({
+      .map((assessment) => ({
         assessment,
         relevanceScore: Math.random() * 100,
         matchedFields: ['title'],
@@ -789,14 +872,15 @@ export async function searchAssessments(searchTerm: string, filters?: Assessment
     // For now, implement basic filtering
     const assessments = await getAssessments(filters);
     const searchLower = searchTerm.toLowerCase();
-    
+
     return assessments
-      .filter(assessment => 
-        assessment.title.toLowerCase().includes(searchLower) ||
-        assessment.description.toLowerCase().includes(searchLower) ||
-        assessment.tags.some(tag => tag.toLowerCase().includes(searchLower))
+      .filter(
+        (assessment) =>
+          assessment.title.toLowerCase().includes(searchLower) ||
+          assessment.description.toLowerCase().includes(searchLower) ||
+          assessment.tags.some((tag) => tag.toLowerCase().includes(searchLower))
       )
-      .map(assessment => ({
+      .map((assessment) => ({
         assessment,
         relevanceScore: calculateRelevanceScore(assessment, searchTerm),
         matchedFields: getMatchedFields(assessment, searchTerm),
@@ -810,30 +894,43 @@ export async function searchAssessments(searchTerm: string, filters?: Assessment
 }
 
 // Helper functions
-function calculateRelevanceScore(assessment: Assessment, searchTerm: string): number {
+function calculateRelevanceScore(
+  assessment: Assessment,
+  searchTerm: string
+): number {
   const searchLower = searchTerm.toLowerCase();
   let score = 0;
-  
+
   if (assessment.title.toLowerCase().includes(searchLower)) score += 50;
   if (assessment.description.toLowerCase().includes(searchLower)) score += 30;
-  if (assessment.tags.some(tag => tag.toLowerCase().includes(searchLower))) score += 20;
-  
+  if (assessment.tags.some((tag) => tag.toLowerCase().includes(searchLower)))
+    score += 20;
+
   return score;
 }
 
-function getMatchedFields(assessment: Assessment, searchTerm: string): string[] {
+function getMatchedFields(
+  assessment: Assessment,
+  searchTerm: string
+): string[] {
   const searchLower = searchTerm.toLowerCase();
   const fields: string[] = [];
-  
-  if (assessment.title.toLowerCase().includes(searchLower)) fields['push']('title');
-  if (assessment['description'].toLowerCase().includes(searchLower)) fields['push']('description');
-  if (assessment.tags.some(tag => tag.toLowerCase().includes(searchLower))) fields['push']('tags');
-  
+
+  if (assessment.title.toLowerCase().includes(searchLower))
+    fields['push']('title');
+  if (assessment['description'].toLowerCase().includes(searchLower))
+    fields['push']('description');
+  if (assessment.tags.some((tag) => tag.toLowerCase().includes(searchLower)))
+    fields['push']('tags');
+
   return fields;
 }
 
 // Real-time subscriptions
-export function subscribeToAttempt(attemptId: string, callback: (attempt: AssessmentAttempt) => void): () => void {
+export function subscribeToAttempt(
+  attemptId: string,
+  callback: (attempt: AssessmentAttempt) => void
+): () => void {
   if (isUsingMockAPI()) {
     console.log('Mock: Subscribed to attempt', attemptId);
     return () => console.log('Mock: Unsubscribed from attempt', attemptId);

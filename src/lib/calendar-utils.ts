@@ -9,11 +9,16 @@ export interface CalendarEvent {
 
 export function generateICS(event: CalendarEvent): string {
   const formatDate = (date: Date): string => {
-    return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    return date
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\.\d{3}/, '');
   };
 
   const escapeText = (text: string): string => {
-    return text.replace(/[,;\\]/g, (match) => '\\' + match).replace(/\n/g, '\\n');
+    return text
+      .replace(/[,;\\]/g, (match) => '\\' + match)
+      .replace(/\n/g, '\\n');
   };
 
   const lines = [

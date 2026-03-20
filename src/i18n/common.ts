@@ -29,7 +29,8 @@ export const commonTranslations = {
     },
     hero: {
       title: 'Bienvenidos a SECiD',
-      subtitle: 'El sitio para conectar con la Sociedad de Egresados en Ciencia de Datos de la UNAM.',
+      subtitle:
+        'El sitio para conectar con la Sociedad de Egresados en Ciencia de Datos de la UNAM.',
       description:
         'SECiD (Sociedad de Egresados en Ciencia de Datos, A. C.) es una red profesional vibrante que empodera a los egresados de ciencia de datos de la UNAM. Nuestro objetivo es fomentar conexiones significativas, impulsar el crecimiento profesional y crear oportunidades para nuestra comunidad a través de eventos de networking, publicaciones de empleo exclusivas, iniciativas de aprendizaje continuo y colaboraciones que apoyan el éxito continuo de los profesionales de ciencia de datos de la Universidad Nacional Autónoma de México (UNAM).',
       joinButton: 'Únete a SECiD',
@@ -62,32 +63,38 @@ export const commonTranslations = {
       title: 'Iniciativas',
       talentMatcher: {
         title: 'Bolsa de Trabajo',
-        description: 'Un lugar para publicar y suscribirte a oportunidades laborales.',
+        description:
+          'Un lugar para publicar y suscribirte a oportunidades laborales.',
         cta: 'Publica tu vacante y encuentra al mejor talento.',
       },
       consulting: {
         title: 'Consultoría',
-        description: 'Obtén servicios de consultoría de los mejores profesionales en ciencia de datos y machine learning en México.',
+        description:
+          'Obtén servicios de consultoría de los mejores profesionales en ciencia de datos y machine learning en México.',
         cta: 'Contáctanos.',
       },
       hackathons: {
         title: 'Hackathons',
-        description: '¿Tienes un problema interesante en tu organización y te gustaría co-organizar un hackathon?',
+        description:
+          '¿Tienes un problema interesante en tu organización y te gustaría co-organizar un hackathon?',
         cta: 'Contáctanos.',
       },
       workshops: {
         title: 'Talleres y Cursos',
-        description: 'Adquiere conocimientos de nuestra comunidad con cursos bajo demanda de expertos en ciencia de datos y machine learning.',
+        description:
+          'Adquiere conocimientos de nuestra comunidad con cursos bajo demanda de expertos en ciencia de datos y machine learning.',
         cta: 'En Roadmap.',
       },
       seminars: {
         title: 'Seminarios',
-        description: 'Reúnete con expertos del campo para presentar y discutir temas académicos y de ingeniería de actualidad.',
+        description:
+          'Reúnete con expertos del campo para presentar y discutir temas académicos y de ingeniería de actualidad.',
         cta: 'En Roadmap.',
       },
       mentoring: {
         title: 'Mentoría',
-        description: '¿Eres egresado de ciencia de datos y buscas mentoría o retroalimentación de tus pares? Recibe mentoría o conviértete en Mentor.',
+        description:
+          '¿Eres egresado de ciencia de datos y buscas mentoría o retroalimentación de tus pares? Recibe mentoría o conviértete en Mentor.',
         cta: 'En Roadmap.',
       },
     },
@@ -173,7 +180,7 @@ export const commonTranslations = {
     },
     hero: {
       title: 'Welcome to SECiD',
-      subtitle: 'The site to connect with UNAM\'s Data Science Alumni Society.',
+      subtitle: "The site to connect with UNAM's Data Science Alumni Society.",
       description:
         'SECiD (Sociedad de Egresados en Ciencia de Datos, A. C.) is a vibrant professional network empowering UNAM data science graduates. Our goal is to foster meaningful connections, drive professional growth, and create opportunities for our community through networking events, exclusive job postings, continuous learning initiatives, and collaborations that support and boost the ongoing success of data science professionals from the National Autonomous University of Mexico (UNAM).',
       joinButton: 'Join SECiD',
@@ -211,27 +218,32 @@ export const commonTranslations = {
       },
       consulting: {
         title: 'Consulting',
-        description: 'Get consulting services from the best prepared professionals on data science and machine learning in Mexico.',
+        description:
+          'Get consulting services from the best prepared professionals on data science and machine learning in Mexico.',
         cta: 'Contact Us.',
       },
       hackathons: {
         title: 'Hackathons',
-        description: 'Do you have an interesting problem within your organization and would like to co-host a hackathon?',
+        description:
+          'Do you have an interesting problem within your organization and would like to co-host a hackathon?',
         cta: 'Contact Us.',
       },
       workshops: {
         title: 'Workshops and Courses',
-        description: 'Get the knowledge from our community with on-demand courses from experts on data science and machine learning.',
+        description:
+          'Get the knowledge from our community with on-demand courses from experts on data science and machine learning.',
         cta: 'In Roadmap.',
       },
       seminars: {
         title: 'Seminars',
-        description: 'Gather around with experts in the field to present and discuss academic and engineering hot topics.',
+        description:
+          'Gather around with experts in the field to present and discuss academic and engineering hot topics.',
         cta: 'In Roadmap.',
       },
       mentoring: {
         title: 'Mentoring',
-        description: 'Are you a data science graduate who wants some mentoring or feedback from your peers? Get mentoring or become a Mentor.',
+        description:
+          'Are you a data science graduate who wants some mentoring or feedback from your peers? Get mentoring or become a Mentor.',
         cta: 'In Roadmap.',
       },
     },

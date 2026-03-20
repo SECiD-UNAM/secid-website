@@ -4,7 +4,12 @@ import Navigation from '@/components/Navigation.astro';
 import DashboardHomePage from '@/components/dashboard/DashboardHomePage';
 ---
 
-<ModernLayout title="Dashboard - SECiD" description="SECiD Member Dashboard" lang="en" noIndex>
+<ModernLayout
+  title="Dashboard - SECiD"
+  description="SECiD Member Dashboard"
+  lang="en"
+  noIndex
+>
   <Navigation lang="en" />
   <DashboardHomePage client:only="react" lang="en" />
 </ModernLayout>

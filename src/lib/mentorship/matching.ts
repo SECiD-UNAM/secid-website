@@ -38,50 +38,57 @@ export async function calculateMatchScore(
       availability: 0,
       style: 0,
       language: 0,
-      experience: 0
+      experience: 0,
     };
 
     const reasons: string[] = [];
 
     // Skills compatibility (40% weight)
-    const menteeInterests = mentee.interests.map(i => i.toLowerCase());
-    const mentorExpertise = mentor.expertiseAreas.map(e => e.toLowerCase());
-    const skillMatches = menteeInterests.filter(interest =>
-      mentorExpertise.some(expertise =>
-        expertise.includes(interest) || interest.includes(expertise)
+    const menteeInterests = mentee.interests.map((i) => i.toLowerCase());
+    const mentorExpertise = mentor.expertiseAreas.map((e) => e.toLowerCase());
+    const skillMatches = menteeInterests.filter((interest) =>
+      mentorExpertise.some(
+        (expertise) =>
+          expertise.includes(interest) || interest.includes(expertise)
       )
     );
 
-    compatibility.skills = skillMatches.length / Math.max(menteeInterests.length, 1);
+    compatibility.skills =
+      skillMatches.length / Math.max(menteeInterests.length, 1);
 
     if (skillMatches.length > 0) {
-      reasons.push(`Shared expertise in: ${skillMatches.slice(0, 2).join(', ')}`);
+      reasons.push(
+        `Shared expertise in: ${skillMatches.slice(0, 2).join(', ')}`
+      );
     }
 
     // Availability compatibility (20% weight)
-    const sharedDays = mentee.availability.preferredDays.filter(day =>
+    const sharedDays = mentee.availability.preferredDays.filter((day) =>
       mentor.availability.preferredDays.includes(day)
     );
 
     compatibility.availability = sharedDays.length / 7;
 
     if (sharedDays.length > 0) {
-      reasons.push(`Available on shared days: ${sharedDays.slice(0, 3).join(', ')}`);
+      reasons.push(
+        `Available on shared days: ${sharedDays.slice(0, 3).join(', ')}`
+      );
     }
 
     // Style compatibility (15% weight)
-    const sharedStyles = mentee.preferredMentorshipStyle.filter(style =>
+    const sharedStyles = mentee.preferredMentorshipStyle.filter((style) =>
       mentor.mentorshipStyle.includes(style)
     );
 
-    compatibility.style = sharedStyles.length / Math.max(mentee.preferredMentorshipStyle.length, 1);
+    compatibility.style =
+      sharedStyles.length / Math.max(mentee.preferredMentorshipStyle.length, 1);
 
     if (sharedStyles.length > 0) {
       reasons.push(`Compatible mentorship styles: ${sharedStyles?.[0]}`);
     }
 
     // Language compatibility (10% weight)
-    const sharedLanguages = mentee.languages.filter(lang =>
+    const sharedLanguages = mentee.languages.filter((lang) =>
       mentor.languages.includes(lang)
     );
 
@@ -92,11 +99,14 @@ export async function calculateMatchScore(
     }
 
     // Experience level compatibility (15% weight)
-    const experienceGap = mentor.experience.yearsInField - mentee.background.yearsOfExperience;
+    const experienceGap =
+      mentor.experience.yearsInField - mentee.background.yearsOfExperience;
 
     if (experienceGap >= 3 && experienceGap <= 10) {
       compatibility.experience = 1;
-      reasons.push(`Ideal experience gap for mentorship (${experienceGap} years)`);
+      reasons.push(
+        `Ideal experience gap for mentorship (${experienceGap} years)`
+      );
     } else if (experienceGap >= 1) {
       compatibility.experience = 0.7;
     } else {
@@ -109,16 +119,15 @@ export async function calculateMatchScore(
       availability: 0.2,
       style: 0.15,
       language: 0.1,
-      experience: 0.15
+      experience: 0.15,
     };
 
-    const score = (
+    const score =
       compatibility.skills * weights.skills +
       compatibility.availability * weights.availability +
       compatibility.style * weights.style +
       compatibility.language * weights.language +
-      compatibility.experience * weights.experience
-    );
+      compatibility.experience * weights.experience;
 
     // Add bonus for high mentor rating
     const ratingBonus = (mentor.rating - 3) * 0.05;
@@ -131,7 +140,7 @@ export async function calculateMatchScore(
     return {
       score: finalScore,
       reasons,
-      compatibility
+      compatibility,
     };
   } catch (error) {
     console.error('Error calculating match score:', error);
@@ -141,7 +150,9 @@ export async function calculateMatchScore(
 
 // --- Match CRUD Operations ---
 
-export async function getUserMatches(userId: string): Promise<MentorshipMatch[]> {
+export async function getUserMatches(
+  userId: string
+): Promise<MentorshipMatch[]> {
   try {
     const q = query(
       collection(db, COLLECTIONS.MATCHES),
@@ -155,7 +166,7 @@ export async function getUserMatches(userId: string): Promise<MentorshipMatch[]>
 
     const [mentorMatches, menteeMatches] = await Promise.all([
       getDocs(q),
-      getDocs(q2)
+      getDocs(q2),
     ]);
 
     const matches: MentorshipMatch[] = [];
@@ -167,20 +178,28 @@ export async function getUserMatches(userId: string): Promise<MentorshipMatch[]>
         id: doc['id'],
         createdAt: firestoreToDate(data['createdAt']),
         updatedAt: firestoreToDate(data['updatedAt']),
-        startDate: data['startDate'] ? firestoreToDate(data['startDate']) : undefined,
+        startDate: data['startDate']
+          ? firestoreToDate(data['startDate'])
+          : undefined,
         endDate: data['endDate'] ? firestoreToDate(data['endDate']) : undefined,
-        lastActivity: data['lastActivity'] ? firestoreToDate(data['lastActivity']) : undefined
+        lastActivity: data['lastActivity']
+          ? firestoreToDate(data['lastActivity'])
+          : undefined,
       } as unknown as MentorshipMatch);
     });
 
-    return matches.sort((a, b) => b['updatedAt'].getTime() - a['updatedAt'].getTime());
+    return matches.sort(
+      (a, b) => b['updatedAt'].getTime() - a['updatedAt'].getTime()
+    );
   } catch (error) {
     console.error('Error getting user matches:', error);
     throw new Error('Failed to load matches');
   }
 }
 
-export async function createMentorshipMatch(match: Omit<MentorshipMatch, 'id'>): Promise<MentorshipMatch> {
+export async function createMentorshipMatch(
+  match: Omit<MentorshipMatch, 'id'>
+): Promise<MentorshipMatch> {
   try {
     const matchData = {
       ...match,
@@ -188,14 +207,16 @@ export async function createMentorshipMatch(match: Omit<MentorshipMatch, 'id'>):
       updatedAt: dateToFirestore(match['updatedAt']),
       startDate: match.startDate ? dateToFirestore(match.startDate) : null,
       endDate: match.endDate ? dateToFirestore(match.endDate) : null,
-      lastActivity: match.lastActivity ? dateToFirestore(match.lastActivity) : null
+      lastActivity: match.lastActivity
+        ? dateToFirestore(match.lastActivity)
+        : null,
     };
 
     const docRef = await addDoc(collection(db, COLLECTIONS.MATCHES), matchData);
 
     return {
       ...match,
-      id: docRef['id']
+      id: docRef['id'],
     };
   } catch (error) {
     console.error('Error creating mentorship match:', error);

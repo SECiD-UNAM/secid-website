@@ -14,19 +14,21 @@ import {
   where,
   orderBy,
   limit,
-  serverTimestamp
+  serverTimestamp,
 } from 'firebase/firestore';
 import {
   ref as storageRef,
   uploadBytes,
-  getDownloadURL
+  getDownloadURL,
 } from 'firebase/storage';
 import type { MentorProfile, MenteeProfile } from '../../types';
 import { COLLECTIONS, firestoreToDate, dateToFirestore } from './constants';
 
 // --- Mentor Profile Operations ---
 
-export async function getMentorProfile(userId: string): Promise<MentorProfile | null> {
+export async function getMentorProfile(
+  userId: string
+): Promise<MentorProfile | null> {
   try {
     const docRef = doc(db, COLLECTIONS.MENTORS, userId);
     const docSnap = await getDoc(docRef);
@@ -37,7 +39,7 @@ export async function getMentorProfile(userId: string): Promise<MentorProfile | 
         ...data,
         id: docSnap['id'],
         joinedAt: firestoreToDate(data['joinedAt']),
-        updatedAt: firestoreToDate(data['updatedAt'])
+        updatedAt: firestoreToDate(data['updatedAt']),
       } as unknown as MentorProfile;
     }
 
@@ -61,7 +63,10 @@ export async function getMentorProfiles(filters?: {
     }
 
     if (filters?.expertiseAreas && filters.expertiseAreas.length > 0) {
-      q = query(q, where('expertiseAreas', 'array-contains-any', filters.expertiseAreas));
+      q = query(
+        q,
+        where('expertiseAreas', 'array-contains-any', filters.expertiseAreas)
+      );
     }
 
     q = query(q, orderBy('rating', 'desc'));
@@ -79,7 +84,7 @@ export async function getMentorProfiles(filters?: {
         ...data,
         id: doc['id'],
         joinedAt: firestoreToDate(data['joinedAt']),
-        updatedAt: firestoreToDate(data['updatedAt'])
+        updatedAt: firestoreToDate(data['updatedAt']),
       } as unknown as MentorProfile);
     });
 
@@ -90,19 +95,24 @@ export async function getMentorProfiles(filters?: {
   }
 }
 
-export async function createMentorProfile(profile: MentorProfile): Promise<MentorProfile> {
+export async function createMentorProfile(
+  profile: MentorProfile
+): Promise<MentorProfile> {
   try {
     const profileData = {
       ...profile,
       joinedAt: dateToFirestore(profile.joinedAt),
-      updatedAt: dateToFirestore(profile['updatedAt'])
+      updatedAt: dateToFirestore(profile['updatedAt']),
     };
 
-    const docRef = await addDoc(collection(db, COLLECTIONS.MENTORS), profileData);
+    const docRef = await addDoc(
+      collection(db, COLLECTIONS.MENTORS),
+      profileData
+    );
 
     return {
       ...profile,
-      id: docRef['id']
+      id: docRef['id'],
     };
   } catch (error) {
     console.error('Error creating mentor profile:', error);
@@ -118,7 +128,7 @@ export async function updateMentorProfile(
     const docRef = doc(db, COLLECTIONS.MENTORS, userId);
     const updateData: Record<string, any> = {
       ...updates,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
 
     if (updates.joinedAt) {
@@ -141,7 +151,9 @@ export async function updateMentorProfile(
 
 // --- Mentee Profile Operations ---
 
-export async function getMenteeProfile(userId: string): Promise<MenteeProfile | null> {
+export async function getMenteeProfile(
+  userId: string
+): Promise<MenteeProfile | null> {
   try {
     const docRef = doc(db, COLLECTIONS.MENTEES, userId);
     const docSnap = await getDoc(docRef);
@@ -152,7 +164,7 @@ export async function getMenteeProfile(userId: string): Promise<MenteeProfile | 
         ...data,
         id: docSnap['id'],
         joinedAt: firestoreToDate(data['joinedAt']),
-        updatedAt: firestoreToDate(data['updatedAt'])
+        updatedAt: firestoreToDate(data['updatedAt']),
       } as unknown as MenteeProfile;
     }
 
@@ -163,19 +175,24 @@ export async function getMenteeProfile(userId: string): Promise<MenteeProfile | 
   }
 }
 
-export async function createMenteeProfile(profile: MenteeProfile): Promise<MenteeProfile> {
+export async function createMenteeProfile(
+  profile: MenteeProfile
+): Promise<MenteeProfile> {
   try {
     const profileData = {
       ...profile,
       joinedAt: dateToFirestore(profile.joinedAt),
-      updatedAt: dateToFirestore(profile['updatedAt'])
+      updatedAt: dateToFirestore(profile['updatedAt']),
     };
 
-    const docRef = await addDoc(collection(db, COLLECTIONS.MENTEES), profileData);
+    const docRef = await addDoc(
+      collection(db, COLLECTIONS.MENTEES),
+      profileData
+    );
 
     return {
       ...profile,
-      id: docRef['id']
+      id: docRef['id'],
     };
   } catch (error) {
     console.error('Error creating mentee profile:', error);
@@ -191,7 +208,7 @@ export async function updateMenteeProfile(
     const docRef = doc(db, COLLECTIONS.MENTEES, userId);
     const updateData: Record<string, any> = {
       ...updates,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
 
     if (updates.joinedAt) {
@@ -214,9 +231,15 @@ export async function updateMenteeProfile(
 
 // --- File Upload ---
 
-export async function uploadProfileImage(userId: string, file: File): Promise<string> {
+export async function uploadProfileImage(
+  userId: string,
+  file: File
+): Promise<string> {
   try {
-    const imageRef = storageRef(storage, `mentorship/profiles/${userId}/${file['name']}`);
+    const imageRef = storageRef(
+      storage,
+      `mentorship/profiles/${userId}/${file['name']}`
+    );
     const snapshot = await uploadBytes(imageRef, file);
     const downloadURL = await getDownloadURL(snapshot['ref']);
 

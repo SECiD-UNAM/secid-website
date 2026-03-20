@@ -9,11 +9,11 @@ exports.getDefaultGroup = getDefaultGroup;
 exports.getMembersGroup = getMembersGroup;
 exports.getAllGroups = getAllGroups;
 exports.GROUP_MAP = {
-    members: "miembros@secid.mx",
-    board: "direccion@secid.mx",
-    collaborators: "colaboradores@secid.mx",
-    outreach: "divulgacion@secid.mx",
-    finance: "finanzas@secid.mx",
+    members: 'miembros@secid.mx',
+    board: 'direccion@secid.mx',
+    collaborators: 'colaboradores@secid.mx',
+    outreach: 'divulgacion@secid.mx',
+    finance: 'finanzas@secid.mx',
 };
 /**
  * Returns the default group for new users (collaborators)

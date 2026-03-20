@@ -80,13 +80,19 @@ export class AdminDashboardPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    
+
     // Navigation
     this.adminNavBar = page.locator('[data-testid="admin-nav-bar"]');
-    this.userManagementTab = page.locator('[data-testid="nav-user-management"]');
-    this.contentModerationTab = page.locator('[data-testid="nav-content-moderation"]');
+    this.userManagementTab = page.locator(
+      '[data-testid="nav-user-management"]'
+    );
+    this.contentModerationTab = page.locator(
+      '[data-testid="nav-content-moderation"]'
+    );
     this.analyticsTab = page.locator('[data-testid="nav-analytics"]');
-    this.systemSettingsTab = page.locator('[data-testid="nav-system-settings"]');
+    this.systemSettingsTab = page.locator(
+      '[data-testid="nav-system-settings"]'
+    );
     this.commissionsTab = page.locator('[data-testid="nav-commissions"]');
     this.eventsTab = page.locator('[data-testid="nav-events"]');
     this.paymentsTab = page.locator('[data-testid="nav-payments"]');
@@ -99,16 +105,26 @@ export class AdminDashboardPage extends BasePage {
     this.totalUsersCard = page.locator('[data-testid="stat-total-users"]');
     this.activeUsersCard = page.locator('[data-testid="stat-active-users"]');
     this.pendingJobsCard = page.locator('[data-testid="stat-pending-jobs"]');
-    this.moderationQueueCard = page.locator('[data-testid="stat-moderation-queue"]');
+    this.moderationQueueCard = page.locator(
+      '[data-testid="stat-moderation-queue"]'
+    );
     this.systemHealthCard = page.locator('[data-testid="stat-system-health"]');
     this.revenueCard = page.locator('[data-testid="stat-revenue"]');
 
     // Quick actions
-    this.quickActionsPanel = page.locator('[data-testid="quick-actions-panel"]');
-    this.broadcastAnnouncementBtn = page.locator('[data-testid="broadcast-announcement"]');
-    this.systemMaintenanceBtn = page.locator('[data-testid="system-maintenance"]');
+    this.quickActionsPanel = page.locator(
+      '[data-testid="quick-actions-panel"]'
+    );
+    this.broadcastAnnouncementBtn = page.locator(
+      '[data-testid="broadcast-announcement"]'
+    );
+    this.systemMaintenanceBtn = page.locator(
+      '[data-testid="system-maintenance"]'
+    );
     this.exportDataBtn = page.locator('[data-testid="export-data"]');
-    this.emergencyLockdownBtn = page.locator('[data-testid="emergency-lockdown"]');
+    this.emergencyLockdownBtn = page.locator(
+      '[data-testid="emergency-lockdown"]'
+    );
 
     // Activity feed
     this.activityFeed = page.locator('[data-testid="activity-feed"]');
@@ -117,26 +133,38 @@ export class AdminDashboardPage extends BasePage {
 
     // User role
     this.currentUserRole = page.locator('[data-testid="current-user-role"]');
-    this.rolePermissionsBadge = page.locator('[data-testid="role-permissions-badge"]');
+    this.rolePermissionsBadge = page.locator(
+      '[data-testid="role-permissions-badge"]'
+    );
     this.impersonationMode = page.locator('[data-testid="impersonation-mode"]');
 
     // Notifications
     this.notificationBell = page.locator('[data-testid="notification-bell"]');
     this.notificationCount = page.locator('[data-testid="notification-count"]');
-    this.notificationDropdown = page.locator('[data-testid="notification-dropdown"]');
+    this.notificationDropdown = page.locator(
+      '[data-testid="notification-dropdown"]'
+    );
     this.emergencyAlerts = page.locator('[data-testid="emergency-alerts"]');
 
     // Search and filters
-    this.globalAdminSearch = page.locator('[data-testid="global-admin-search"]');
+    this.globalAdminSearch = page.locator(
+      '[data-testid="global-admin-search"]'
+    );
     this.dateRangeFilter = page.locator('[data-testid="date-range-filter"]');
     this.roleFilter = page.locator('[data-testid="role-filter"]');
 
     // System status
-    this.systemStatusPanel = page.locator('[data-testid="system-status-panel"]');
+    this.systemStatusPanel = page.locator(
+      '[data-testid="system-status-panel"]'
+    );
     this.databaseStatus = page.locator('[data-testid="database-status"]');
     this.apiStatus = page.locator('[data-testid="api-status"]');
-    this.paymentGatewayStatus = page.locator('[data-testid="payment-gateway-status"]');
-    this.emailServiceStatus = page.locator('[data-testid="email-service-status"]');
+    this.paymentGatewayStatus = page.locator(
+      '[data-testid="payment-gateway-status"]'
+    );
+    this.emailServiceStatus = page.locator(
+      '[data-testid="email-service-status"]'
+    );
   }
 
   /**
@@ -151,16 +179,18 @@ export class AdminDashboardPage extends BasePage {
   /**
    * Login as admin user with specific role
    */
-  async loginAsAdmin(role: 'super_admin' | 'admin' | 'moderator' | 'support' = 'admin') {
+  async loginAsAdmin(
+    role: 'super_admin' | 'admin' | 'moderator' | 'support' = 'admin'
+  ) {
     const credentials = {
       super_admin: { email: 'superadmin@secid.mx', password: 'SuperAdmin123!' },
       admin: { email: 'admin@secid.mx', password: 'Admin123!' },
       moderator: { email: 'moderator@secid.mx', password: 'Moderator123!' },
-      support: { email: 'support@secid.mx', password: 'Support123!' }
+      support: { email: 'support@secid.mx', password: 'Support123!' },
     };
 
     const { email, password } = credentials[role];
-    
+
     // Navigate to login if not already there
     if (!this.page.url().includes('/login')) {
       await this.navigate('/login');
@@ -200,7 +230,7 @@ export class AdminDashboardPage extends BasePage {
    */
   async getCurrentUserRole(): Promise<string> {
     await this.currentUserRole.waitFor({ state: 'visible' });
-    return await this.currentUserRole.textContent() || '';
+    return (await this.currentUserRole.textContent()) || '';
   }
 
   /**
@@ -210,11 +240,15 @@ export class AdminDashboardPage extends BasePage {
     await this.statsContainer.waitFor({ state: 'visible' });
 
     const totalUsers = await this.extractNumberFromCard(this.totalUsersCard);
-    const activeUsers = await this.extractNumberFromCard(this.activeUsersCard);  
+    const activeUsers = await this.extractNumberFromCard(this.activeUsersCard);
     const pendingJobs = await this.extractNumberFromCard(this.pendingJobsCard);
-    const moderationQueue = await this.extractNumberFromCard(this.moderationQueueCard);
-    const systemHealth = await this.getElementText('[data-testid="stat-system-health"] .value');
-    
+    const moderationQueue = await this.extractNumberFromCard(
+      this.moderationQueueCard
+    );
+    const systemHealth = await this.getElementText(
+      '[data-testid="stat-system-health"] .value'
+    );
+
     let dailyRevenue: number | undefined;
     if (await this.revenueCard.isVisible()) {
       dailyRevenue = await this.extractNumberFromCard(this.revenueCard);
@@ -226,7 +260,7 @@ export class AdminDashboardPage extends BasePage {
       pendingJobs,
       moderationQueue,
       systemHealth,
-      dailyRevenue
+      dailyRevenue,
     };
   }
 
@@ -234,14 +268,25 @@ export class AdminDashboardPage extends BasePage {
    * Extract number from stat card
    */
   private async extractNumberFromCard(card: Locator): Promise<number> {
-    const text = await card.locator('.value').textContent() || '0';
+    const text = (await card.locator('.value').textContent()) || '0';
     return parseInt(text.replace(/[^\d]/g, ''), 10) || 0;
   }
 
   /**
    * Navigate to specific admin section
    */
-  async navigateToSection(section: 'users' | 'moderation' | 'analytics' | 'settings' | 'commissions' | 'events' | 'payments' | 'support' | 'audit') {
+  async navigateToSection(
+    section:
+      | 'users'
+      | 'moderation'
+      | 'analytics'
+      | 'settings'
+      | 'commissions'
+      | 'events'
+      | 'payments'
+      | 'support'
+      | 'audit'
+  ) {
     const tabMap = {
       users: this.userManagementTab,
       moderation: this.contentModerationTab,
@@ -251,7 +296,7 @@ export class AdminDashboardPage extends BasePage {
       events: this.eventsTab,
       payments: this.paymentsTab,
       support: this.supportTab,
-      audit: this.auditLogsTab
+      audit: this.auditLogsTab,
     };
 
     const tab = tabMap[section];
@@ -263,12 +308,14 @@ export class AdminDashboardPage extends BasePage {
   /**
    * Perform quick action
    */
-  async performQuickAction(action: 'broadcast' | 'maintenance' | 'export' | 'lockdown') {
+  async performQuickAction(
+    action: 'broadcast' | 'maintenance' | 'export' | 'lockdown'
+  ) {
     const actionMap = {
       broadcast: this.broadcastAnnouncementBtn,
       maintenance: this.systemMaintenanceBtn,
       export: this.exportDataBtn,
-      lockdown: this.emergencyLockdownBtn
+      lockdown: this.emergencyLockdownBtn,
     };
 
     const button = actionMap[action];
@@ -286,13 +333,13 @@ export class AdminDashboardPage extends BasePage {
   async getRecentActivity(): Promise<string[]> {
     await this.activityFeed.waitFor({ state: 'visible' });
     const items = await this.activityItems.all();
-    
+
     const activities: string[] = [];
     for (const item of items) {
       const text = await item.textContent();
       if (text) activities.push(text.trim());
     }
-    
+
     return activities;
   }
 
@@ -301,7 +348,7 @@ export class AdminDashboardPage extends BasePage {
    */
   async getNotificationCount(): Promise<number> {
     if (await this.notificationCount.isVisible()) {
-      const countText = await this.notificationCount.textContent() || '0';
+      const countText = (await this.notificationCount.textContent()) || '0';
       return parseInt(countText, 10) || 0;
     }
     return 0;
@@ -336,7 +383,7 @@ export class AdminDashboardPage extends BasePage {
    */
   async setDateRangeFilter(startDate: string, endDate: string) {
     await this.dateRangeFilter.click();
-    
+
     // Interact with date picker (implementation depends on date picker component)
     await this.fillField('[data-testid="start-date"]', startDate);
     await this.fillField('[data-testid="end-date"]', endDate);
@@ -361,7 +408,7 @@ export class AdminDashboardPage extends BasePage {
       database: await this.getStatusIndicator(this.databaseStatus),
       api: await this.getStatusIndicator(this.apiStatus),
       paymentGateway: await this.getStatusIndicator(this.paymentGatewayStatus),
-      emailService: await this.getStatusIndicator(this.emailServiceStatus)
+      emailService: await this.getStatusIndicator(this.emailServiceStatus),
     };
   }
 
@@ -369,7 +416,7 @@ export class AdminDashboardPage extends BasePage {
    * Get status indicator value
    */
   private async getStatusIndicator(locator: Locator): Promise<string> {
-    const classes = await locator.getAttribute('class') || '';
+    const classes = (await locator.getAttribute('class')) || '';
     if (classes.includes('status-healthy')) return 'healthy';
     if (classes.includes('status-warning')) return 'warning';
     if (classes.includes('status-error')) return 'error';
@@ -383,7 +430,7 @@ export class AdminDashboardPage extends BasePage {
     await this.clickElement('[data-testid="enable-impersonation"]');
     await this.fillField('[data-testid="impersonation-user-id"]', userId);
     await this.clickElement('[data-testid="start-impersonation"]');
-    
+
     // Wait for impersonation mode to activate
     await this.impersonationMode.waitFor({ state: 'visible' });
   }
@@ -405,26 +452,36 @@ export class AdminDashboardPage extends BasePage {
     const permissions = await this.page.evaluate(() => {
       return (window as any).adminPermissions || [];
     });
-    
+
     return permissions.includes(permission);
   }
 
   /**
    * Verify role-based access to features
    */
-  async verifyRoleAccess(role: 'super_admin' | 'admin' | 'moderator' | 'support') {
+  async verifyRoleAccess(
+    role: 'super_admin' | 'admin' | 'moderator' | 'support'
+  ) {
     const expectedFeatures = {
-      super_admin: ['user_management', 'system_settings', 'payments', 'audit_logs', 'emergency_controls'],
+      super_admin: [
+        'user_management',
+        'system_settings',
+        'payments',
+        'audit_logs',
+        'emergency_controls',
+      ],
       admin: ['user_management', 'content_moderation', 'analytics', 'events'],
       moderator: ['content_moderation', 'user_reports', 'basic_analytics'],
-      support: ['user_support', 'ticket_management', 'basic_user_info']
+      support: ['user_support', 'ticket_management', 'basic_user_info'],
     };
 
     const features = expectedFeatures[role];
-    
+
     for (const feature of features) {
       const hasAccess = await this.hasPermission(feature);
-      expect(hasAccess, `Role ${role} should have access to ${feature}`).toBe(true);
+      expect(hasAccess, `Role ${role} should have access to ${feature}`).toBe(
+        true
+      );
     }
   }
 
@@ -433,7 +490,7 @@ export class AdminDashboardPage extends BasePage {
    */
   async testUnauthorizedAccess(restrictedUrl: string) {
     await this.navigate(restrictedUrl);
-    
+
     // Should redirect to access denied or login
     const currentUrl = await this.getCurrentURL();
     expect(currentUrl).toMatch(/(access-denied|login|unauthorized)/);
@@ -444,16 +501,16 @@ export class AdminDashboardPage extends BasePage {
    */
   async exportData(format: 'csv' | 'xlsx' | 'json' = 'csv') {
     await this.exportDataBtn.click();
-    
+
     // Select format
     await this.selectOption('[data-testid="export-format"]', format);
     await this.clickElement('[data-testid="confirm-export"]');
-    
+
     // Wait for download to start
     const downloadPromise = this.page.waitForEvent('download');
     await this.clickElement('[data-testid="download-export"]');
     const download = await downloadPromise;
-    
+
     return download;
   }
 
@@ -471,8 +528,12 @@ export class AdminDashboardPage extends BasePage {
     await expect(mobileNav).toBeVisible();
 
     // Check if stats cards stack properly on mobile
-    const statsGrid = this.page.locator('[data-testid="admin-stats-container"]');
-    const gridStyle = await statsGrid.evaluate(el => getComputedStyle(el).gridTemplateColumns);
+    const statsGrid = this.page.locator(
+      '[data-testid="admin-stats-container"]'
+    );
+    const gridStyle = await statsGrid.evaluate(
+      (el) => getComputedStyle(el).gridTemplateColumns
+    );
     expect(gridStyle).toBe('1fr'); // Should be single column on mobile
   }
 
@@ -485,7 +546,7 @@ export class AdminDashboardPage extends BasePage {
       { keys: 'ctrl+k', expectedAction: 'global-search-focus' },
       { keys: 'ctrl+u', expectedAction: 'user-management-nav' },
       { keys: 'ctrl+m', expectedAction: 'moderation-nav' },
-      { keys: 'ctrl+a', expectedAction: 'analytics-nav' }
+      { keys: 'ctrl+a', expectedAction: 'analytics-nav' },
     ];
 
     for (const shortcut of shortcuts) {
@@ -499,25 +560,31 @@ export class AdminDashboardPage extends BasePage {
    * Check multi-language admin interface
    */
   async switchLanguage(language: 'en' | 'es') {
-    const langSwitcher = this.page.locator('[data-testid="admin-language-switcher"]');
+    const langSwitcher = this.page.locator(
+      '[data-testid="admin-language-switcher"]'
+    );
     await langSwitcher.selectOption(language);
-    
+
     // Wait for UI to update
     await this.waitForPageLoad();
-    
+
     // Verify language change
     const dashboardTitleText = await this.dashboardTitle.textContent();
-    const expectedText = language === 'es' ? 'Panel de Administración' : 'Admin Dashboard';
+    const expectedText =
+      language === 'es' ? 'Panel de Administración' : 'Admin Dashboard';
     expect(dashboardTitleText).toContain(expectedText);
   }
 
   /**
    * Wait for real-time updates
    */
-  async waitForRealTimeUpdate(elementSelector: string, timeout: number = 30000) {
+  async waitForRealTimeUpdate(
+    elementSelector: string,
+    timeout: number = 30000
+  ) {
     const element = this.page.locator(elementSelector);
     const initialValue = await element.textContent();
-    
+
     // Wait for element to change
     await this.page.waitForFunction(
       (selector, initial) => {
@@ -537,15 +604,17 @@ export class AdminDashboardPage extends BasePage {
     // This would typically check if an audit log entry was created
     // Implementation depends on how audit logs are tracked
     await this.waitForAPIResponse('/api/admin/audit-logs');
-    
+
     // Navigate to audit logs to verify
     await this.navigateToSection('audit');
-    
+
     // Check for recent entry
-    const recentEntry = this.page.locator('[data-testid="audit-entry"]').first();
+    const recentEntry = this.page
+      .locator('[data-testid="audit-entry"]')
+      .first();
     const entryText = await recentEntry.textContent();
     expect(entryText).toContain(action);
-    
+
     if (details) {
       expect(entryText).toContain(details);
     }

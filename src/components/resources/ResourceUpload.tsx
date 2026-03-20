@@ -384,7 +384,7 @@ export default function ResourceUpload({
           type="text"
           value={formData.title || ''}
           onChange={(e) => handleInputChange('title', e.target.value)}
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           placeholder={
             t?.resources?.titlePlaceholder || 'Enter a descriptive title...'
           }
@@ -400,7 +400,7 @@ export default function ResourceUpload({
           value={formData.summary || ''}
           onChange={(e) => handleInputChange('summary', e.target.value)}
           rows={3}
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           placeholder={
             t?.resources?.summaryPlaceholder ||
             'Brief summary (1-2 sentences)...'
@@ -417,7 +417,7 @@ export default function ResourceUpload({
           value={formData['description'] || ''}
           onChange={(e) => handleInputChange('description', e.target.value)}
           rows={6}
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           placeholder={
             t?.resources?.descriptionPlaceholder ||
             'Detailed description of the resource...'
@@ -434,7 +434,7 @@ export default function ResourceUpload({
           <select
             value={formData.category}
             onChange={(e) => handleInputChange('category', e.target.value)}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           >
             {categories.map((cat) => (
               <option key={cat.value} value={cat.value}>
@@ -451,7 +451,7 @@ export default function ResourceUpload({
           <select
             value={formData['type']}
             onChange={(e) => handleInputChange('type', e.target.value)}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           >
             {types.map((type) => (
               <option key={type.value} value={type.value}>
@@ -475,7 +475,7 @@ export default function ResourceUpload({
         <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
           {t?.resources?.mainFile || 'Main File'} *
         </label>
-        <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-6">
+        <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 dark:border-gray-600">
           <input
             ref={fileInputRef}
             type="file"
@@ -505,7 +505,7 @@ export default function ResourceUpload({
               <button
                 type="button"
                 onClick={() => fileInputRef?.current?.click()}
-                className="mt-2 font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700"
+                className="mt-2 font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400"
               >
                 {t?.resources?.browseFiles || 'browse files'}
               </button>
@@ -548,7 +548,7 @@ export default function ResourceUpload({
         </div>
 
         {formData.hasPreview && (
-          <div className="rounded-lg border border-gray-300 dark:border-gray-600 p-4">
+          <div className="rounded-lg border border-gray-300 p-4 dark:border-gray-600">
             <input
               ref={previewInputRef}
               type="file"
@@ -560,7 +560,7 @@ export default function ResourceUpload({
               <button
                 type="button"
                 onClick={() => previewInputRef?.current?.click()}
-                className="w-full rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 py-3 text-center text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500"
+                className="w-full rounded-lg border-2 border-dashed border-gray-300 py-3 text-center text-gray-600 hover:border-gray-400 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-500"
               >
                 {t?.resources?.selectPreviewFile || 'Select Preview File'}
               </button>
@@ -594,7 +594,7 @@ export default function ResourceUpload({
           {t?.resources?.thumbnail || 'Thumbnail'} (
           {t?.common?.optional || 'Optional'})
         </label>
-        <div className="rounded-lg border border-gray-300 dark:border-gray-600 p-4">
+        <div className="rounded-lg border border-gray-300 p-4 dark:border-gray-600">
           <input
             ref={thumbnailInputRef}
             type="file"
@@ -606,7 +606,7 @@ export default function ResourceUpload({
             <button
               type="button"
               onClick={() => thumbnailInputRef?.current?.click()}
-              className="w-full rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 py-3 text-center text-gray-600 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500"
+              className="w-full rounded-lg border-2 border-dashed border-gray-300 py-3 text-center text-gray-600 hover:border-gray-400 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-500"
             >
               {t?.resources?.selectThumbnail || 'Select Thumbnail Image'}
             </button>
@@ -654,7 +654,7 @@ export default function ResourceUpload({
             onKeyPress={(e) =>
               e.key === 'Enter' && (e.preventDefault(), addTag())
             }
-            className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             placeholder={t?.resources?.addTag || 'Add a tag...'}
           />
           <button
@@ -670,12 +670,12 @@ export default function ResourceUpload({
             {formData.tags.map((tag, index) => (
               <span
                 key={index}
-                className="flex items-center gap-1 rounded-full bg-blue-100 dark:bg-blue-900/30 px-3 py-1 text-sm text-blue-700 dark:text-blue-400"
+                className="flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
               >
                 #{tag}
                 <button
                   onClick={() => removeTag(tag)}
-                  className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                  className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                 >
                   ✕
                 </button>
@@ -694,7 +694,7 @@ export default function ResourceUpload({
           <select
             value={formData.accessLevel}
             onChange={(e) => handleInputChange('accessLevel', e.target.value)}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           >
             {accessLevels.map((level) => (
               <option key={level.value} value={level.value}>
@@ -711,7 +711,7 @@ export default function ResourceUpload({
           <select
             value={formData.language}
             onChange={(e) => handleInputChange('language', e.target.value)}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           >
             <option value="es">{t?.languages?.spanish || 'Spanish'}</option>
             <option value="en">{t?.languages?.english || 'English'}</option>
@@ -731,7 +731,7 @@ export default function ResourceUpload({
           <select
             value={formData.difficulty}
             onChange={(e) => handleInputChange('difficulty', e.target.value)}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           >
             {difficulties.map((diff) => (
               <option key={diff.value} value={diff.value}>
@@ -750,7 +750,7 @@ export default function ResourceUpload({
             type="text"
             value={formData.estimatedTime || ''}
             onChange={(e) => handleInputChange('estimatedTime', e.target.value)}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             placeholder="e.g., 2 hours, 1 week"
           />
         </div>
@@ -770,7 +770,7 @@ export default function ResourceUpload({
             onKeyPress={(e) =>
               e.key === 'Enter' && (e.preventDefault(), addPrerequisite())
             }
-            className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 dark:bg-gray-700 dark:text-white focus:border-transparent focus:ring-2 focus:ring-blue-500"
+            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             placeholder={
               t?.resources?.addPrerequisite || 'Add a prerequisite...'
             }
@@ -788,12 +788,12 @@ export default function ResourceUpload({
             {formData.prerequisites.map((prereq, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between rounded bg-gray-100 dark:bg-gray-700 px-3 py-2 text-gray-700 dark:text-gray-300"
+                className="flex items-center justify-between rounded bg-gray-100 px-3 py-2 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
               >
                 <span>{prereq}</span>
                 <button
                   onClick={() => removePrerequisite(prereq)}
-                  className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300"
+                  className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300"
                 >
                   ✕
                 </button>
@@ -806,7 +806,7 @@ export default function ResourceUpload({
   );
 
   return (
-    <div className="mx-auto max-w-2xl rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+    <div className="mx-auto max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -815,7 +815,7 @@ export default function ResourceUpload({
         {onCancel && (
           <button
             onClick={onCancel}
-            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
+            className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400"
           >
             <svg
               className="h-6 w-6"
@@ -842,7 +842,7 @@ export default function ResourceUpload({
               className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
                 step >= stepNumber
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                  : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
               }`}
             >
               {stepNumber}
@@ -850,7 +850,9 @@ export default function ResourceUpload({
             {stepNumber < 3 && (
               <div
                 className={`mx-2 h-1 w-16 ${
-                  step > stepNumber ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'
+                  step > stepNumber
+                    ? 'bg-blue-600'
+                    : 'bg-gray-200 dark:bg-gray-700'
                 }`}
               />
             )}
@@ -864,11 +866,11 @@ export default function ResourceUpload({
       {step === 3 && renderStep3()}
 
       {/* Navigation */}
-      <div className="mt-8 flex justify-between border-t border-gray-200 dark:border-gray-700 pt-6">
+      <div className="mt-8 flex justify-between border-t border-gray-200 pt-6 dark:border-gray-700">
         <button
           onClick={() => setStep(Math.max(1, step - 1))}
           disabled={step === 1}
-          className="rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           {t?.common?.previous || 'Previous'}
         </button>
@@ -901,7 +903,7 @@ export default function ResourceUpload({
       </div>
 
       {/* Upload Notice */}
-      <div className="mt-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 p-4">
+      <div className="mt-4 rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
         <p className="text-sm text-blue-800 dark:text-blue-400">
           {t?.resources?.uploadNotice ||
             'Your resource will be reviewed by our team before being published. You will be notified once the review is complete.'}

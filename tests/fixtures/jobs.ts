@@ -12,9 +12,10 @@ export const mockJobs = {
       currency: 'MXN',
       period: 'monthly',
     },
-    description: 'We are looking for a Senior Data Scientist to join our team...',
+    description:
+      'We are looking for a Senior Data Scientist to join our team...',
     requirements: [
-      'Master\'s degree in Data Science, Statistics, or related field',
+      "Master's degree in Data Science, Statistics, or related field",
       '5+ years of experience in data science',
       'Proficiency in Python and R',
       'Experience with machine learning frameworks',
@@ -31,7 +32,7 @@ export const mockJobs = {
     companyId: 'company-test-uid',
     applicationsCount: 25,
   },
-  
+
   juniorAnalystJob: {
     id: 'job-2',
     title: 'Junior Data Analyst',
@@ -47,7 +48,7 @@ export const mockJobs = {
     },
     description: 'Entry-level position for recent graduates...',
     requirements: [
-      'Bachelor\'s degree in related field',
+      "Bachelor's degree in related field",
       'Basic knowledge of SQL and Excel',
       'Eagerness to learn',
     ],
@@ -63,7 +64,7 @@ export const mockJobs = {
     companyId: 'company-test-uid',
     applicationsCount: 45,
   },
-  
+
   internshipJob: {
     id: 'job-3',
     title: 'Data Science Internship',
@@ -84,7 +85,11 @@ export const mockJobs = {
       'Interest in data science',
     ],
     skills: ['Python', 'Statistics', 'Data Visualization'],
-    benefits: ['Mentorship', 'Learning opportunities', 'Potential full-time offer'],
+    benefits: [
+      'Mentorship',
+      'Learning opportunities',
+      'Potential full-time offer',
+    ],
     applicationDeadline: new Date('2024-03-15'),
     createdAt: new Date('2024-01-05'),
     updatedAt: new Date('2024-01-05'),
@@ -95,7 +100,7 @@ export const mockJobs = {
     companyId: 'company-test-uid',
     applicationsCount: 120,
   },
-  
+
   expiredJob: {
     id: 'job-4',
     title: 'Expired Position',
@@ -139,7 +144,7 @@ export const mockJobApplications = {
       availableStartDate: '2024-03-01',
     },
   },
-  
+
   application2: {
     id: 'app-2',
     jobId: 'job-2',

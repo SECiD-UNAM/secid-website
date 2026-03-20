@@ -43,7 +43,7 @@ vi.mock('stripe', () => {
       constructEvent: vi.fn(),
     },
   };
-  
+
   return {
     default: vi.fn(() => mockStripe),
     Stripe: vi.fn(() => mockStripe),
@@ -77,15 +77,16 @@ vi.mock('process', () => ({
 }));
 
 // Test utilities
-const createMockRequest = (overrides: Partial<Request> = {}): Request => ({
-  body: {},
-  headers: {},
-  query: {},
-  params: {},
-  method: 'GET',
-  url: '/',
-  ...overrides,
-} as Request);
+const createMockRequest = (overrides: Partial<Request> = {}): Request =>
+  ({
+    body: {},
+    headers: {},
+    query: {},
+    params: {},
+    method: 'GET',
+    url: '/',
+    ...overrides,
+  }) as Request;
 
 const createMockResponse = (): Response => {
   const res = {} as Response;
@@ -133,7 +134,7 @@ const mockCreateSubscription = async (req: Request, res: Response) => {
       customer: customerId,
       status: 'active',
       current_period_start: Date.now() / 1000,
-      current_period_end: (Date.now() / 1000) + (30 * 24 * 60 * 60), // 30 days
+      current_period_end: Date.now() / 1000 + 30 * 24 * 60 * 60, // 30 days
       items: {
         data: [{ price: { id: priceId } }],
       },
@@ -148,7 +149,7 @@ const mockCreateSubscription = async (req: Request, res: Response) => {
 const mockStripeWebhook = async (req: Request, res: Response) => {
   try {
     const signature = req.headers['stripe-signature'];
-    
+
     if (!signature) {
       return res.status(400).json({ error: 'Missing stripe signature' });
     }
@@ -188,16 +189,20 @@ const mockStripeWebhook = async (req: Request, res: Response) => {
   }
 };
 
-const mockAuthMiddleware = async (req: Request, res: Response, next: () => void) => {
+const mockAuthMiddleware = async (
+  req: Request,
+  res: Response,
+  next: () => void
+) => {
   try {
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
     const token = authHeader.split(' ')[1];
-    
+
     if (token === 'invalid_token') {
       return res.status(401).json({ error: 'Invalid token' });
     }
@@ -337,7 +342,9 @@ describe('API Endpoints Integration', () => {
       await mockCreateSubscription(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Missing required fields' });
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Missing required fields',
+      });
     });
 
     it('rejects subscription with missing price ID', async () => {
@@ -352,7 +359,9 @@ describe('API Endpoints Integration', () => {
       await mockCreateSubscription(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Missing required fields' });
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Missing required fields',
+      });
     });
 
     it('sets correct subscription period', async () => {
@@ -372,7 +381,9 @@ describe('API Endpoints Integration', () => {
       const response = (res.json as any).mock.calls[0][0];
       expect(response.current_period_start).toBeGreaterThanOrEqual(beforeCall);
       expect(response.current_period_start).toBeLessThanOrEqual(afterCall);
-      expect(response.current_period_end).toBeGreaterThan(response.current_period_start);
+      expect(response.current_period_end).toBeGreaterThan(
+        response.current_period_start
+      );
     });
   });
 
@@ -410,7 +421,9 @@ describe('API Endpoints Integration', () => {
       await mockStripeWebhook(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Missing stripe signature' });
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Missing stripe signature',
+      });
     });
 
     it('handles different webhook event types', async () => {
@@ -514,9 +527,12 @@ describe('API Endpoints Integration', () => {
         try {
           throw new Error('Database connection failed');
         } catch (error) {
-          res.status(500).json({ 
+          res.status(500).json({
             error: 'Internal server error',
-            message: process.env.NODE_ENV === 'development' ? error.message : undefined,
+            message:
+              process.env.NODE_ENV === 'development'
+                ? error.message
+                : undefined,
           });
         }
       };
@@ -585,14 +601,26 @@ describe('API Endpoints Integration', () => {
       await mockValidationHandler(validReq, validRes);
 
       expect(validRes.status).toHaveBeenCalledWith(200);
-      expect(validRes.json).toHaveBeenCalledWith({ message: 'Validation passed' });
+      expect(validRes.json).toHaveBeenCalledWith({
+        message: 'Validation passed',
+      });
     });
 
     it('handles rate limiting', async () => {
-      const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+      const rateLimitStore = new Map<
+        string,
+        { count: number; resetTime: number }
+      >();
 
-      const mockRateLimitHandler = async (req: Request, res: Response, next: () => void) => {
-        const clientId = req.headers['x-forwarded-for'] || req.connection?.remoteAddress || 'unknown';
+      const mockRateLimitHandler = async (
+        req: Request,
+        res: Response,
+        next: () => void
+      ) => {
+        const clientId =
+          req.headers['x-forwarded-for'] ||
+          req.connection?.remoteAddress ||
+          'unknown';
         const now = Date.now();
         const windowMs = 15 * 60 * 1000; // 15 minutes
         const maxRequests = 100;
@@ -644,7 +672,11 @@ describe('API Endpoints Integration', () => {
       const rateLimitedRes = createMockResponse();
       const nextRateLimited = vi.fn();
 
-      await mockRateLimitHandler(rateLimitedReq, rateLimitedRes, nextRateLimited);
+      await mockRateLimitHandler(
+        rateLimitedReq,
+        rateLimitedRes,
+        nextRateLimited
+      );
 
       expect(rateLimitedRes.status).toHaveBeenCalledWith(429);
       expect(rateLimitedRes.json).toHaveBeenCalledWith({
@@ -669,8 +701,14 @@ describe('API Endpoints Integration', () => {
           res.setHeader('Access-Control-Allow-Origin', origin as string);
         }
 
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader(
+          'Access-Control-Allow-Methods',
+          'GET, POST, PUT, DELETE, OPTIONS'
+        );
+        res.setHeader(
+          'Access-Control-Allow-Headers',
+          'Content-Type, Authorization'
+        );
         res.setHeader('Access-Control-Max-Age', '86400');
 
         if (req.method === 'OPTIONS') {
@@ -691,8 +729,14 @@ describe('API Endpoints Integration', () => {
 
       await mockCorsHandler(optionsReq, optionsRes);
 
-      expect(optionsRes.setHeader).toHaveBeenCalledWith('Access-Control-Allow-Origin', 'https://secid.com');
-      expect(optionsRes.setHeader).toHaveBeenCalledWith('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      expect(optionsRes.setHeader).toHaveBeenCalledWith(
+        'Access-Control-Allow-Origin',
+        'https://secid.com'
+      );
+      expect(optionsRes.setHeader).toHaveBeenCalledWith(
+        'Access-Control-Allow-Methods',
+        'GET, POST, PUT, DELETE, OPTIONS'
+      );
       expect(optionsRes.status).toHaveBeenCalledWith(200);
       expect(optionsRes.end).toHaveBeenCalled();
 
@@ -707,7 +751,10 @@ describe('API Endpoints Integration', () => {
 
       await mockCorsHandler(getReq, getRes);
 
-      expect(getRes.setHeader).toHaveBeenCalledWith('Access-Control-Allow-Origin', 'http://localhost:3000');
+      expect(getRes.setHeader).toHaveBeenCalledWith(
+        'Access-Control-Allow-Origin',
+        'http://localhost:3000'
+      );
       expect(getRes.json).toHaveBeenCalledWith({ message: 'CORS handled' });
     });
 
@@ -744,17 +791,17 @@ describe('API Endpoints Integration', () => {
 
       const mockLoggingHandler = async (req: Request, res: Response) => {
         const start = Date.now();
-        
+
         console.log(`${req.method} ${req.url} - Started`);
-        
+
         // Simulate API processing
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
         const duration = Date.now() - start;
         const statusCode = 200;
-        
+
         console.log(`${req.method} ${req.url} - ${statusCode} - ${duration}ms`);
-        
+
         res.status(statusCode).json({ message: 'Success' });
       };
 
@@ -767,8 +814,10 @@ describe('API Endpoints Integration', () => {
       await mockLoggingHandler(req, res);
 
       expect(logSpy).toHaveBeenCalledWith('GET /api/test - Started');
-      expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/GET \/api\/test - 200 - \d+ms/));
-      
+      expect(logSpy).toHaveBeenCalledWith(
+        expect.stringMatching(/GET \/api\/test - 200 - \d+ms/)
+      );
+
       logSpy.mockRestore();
     });
   });

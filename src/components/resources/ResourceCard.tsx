@@ -108,7 +108,8 @@ export default function ResourceCard({
       documentation: 'bg-teal-100 text-teal-800',
     };
     return (
-      colors[category as keyof typeof colors] || 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
+      colors[category as keyof typeof colors] ||
+      'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
     );
   };
 
@@ -118,7 +119,10 @@ export default function ResourceCard({
       intermediate: 'text-yellow-600',
       advanced: 'text-red-600',
     };
-    return colors[difficulty as keyof typeof colors] || 'text-gray-600 dark:text-gray-400';
+    return (
+      colors[difficulty as keyof typeof colors] ||
+      'text-gray-600 dark:text-gray-400'
+    );
   };
 
   const renderStars = (rating: number) => {
@@ -134,7 +138,7 @@ export default function ResourceCard({
 
   return (
     <div
-      className={`rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-md transition-shadow duration-200 hover:shadow-lg ${
+      className={`rounded-lg border border-gray-200 bg-white shadow-md transition-shadow duration-200 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800 ${
         compact ? 'p-4' : 'p-6'
       }`}
       onClick={handleView}
@@ -223,7 +227,7 @@ export default function ResourceCard({
               resource.difficulty}
           </span>
           {resource.language && (
-            <span className="rounded-full bg-gray-100 dark:bg-gray-700 px-2 py-1 text-xs text-gray-500 dark:text-gray-400">
+            <span className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-500 dark:bg-gray-700 dark:text-gray-400">
               {resource.language.toUpperCase()}
             </span>
           )}
@@ -312,7 +316,7 @@ export default function ResourceCard({
                 e.stopPropagation();
                 window.open(resource.previewUrl, '_blank');
               }}
-              className="rounded-md border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
             >
               {t?.resources?.preview || 'Preview'}
             </button>
@@ -322,7 +326,7 @@ export default function ResourceCard({
 
       {/* Estimated Time */}
       {resource.estimatedTime && !compact && (
-        <div className="mt-3 border-t border-gray-100 dark:border-gray-700 pt-3">
+        <div className="mt-3 border-t border-gray-100 pt-3 dark:border-gray-700">
           <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
             <span>⏱️</span>
             <span>

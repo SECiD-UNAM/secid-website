@@ -6,10 +6,15 @@ import AdminAuthGuard from '@/components/admin/AdminAuthGuard.tsx';
 export const prerender = false;
 
 const title = 'Directorio - Admin SECiD';
-const description = 'Directorio de miembros y colaboradores de SECiD con gestión de Google Groups';
+const description =
+  'Directorio de miembros y colaboradores de SECiD con gestión de Google Groups';
 ---
 
-<AdminLayout title={title} description={description} currentPath="/admin/directory">
+<AdminLayout
+  title={title}
+  description={description}
+  currentPath="/admin/directory"
+>
   <AdminAuthGuard requiredRole="moderator" client:load>
     <DirectoryManagement client:load />
   </AdminAuthGuard>

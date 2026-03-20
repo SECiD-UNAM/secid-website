@@ -21,7 +21,8 @@ const mockSpotlights: AlumniSpotlight[] = [
     title: 'Senior Data Scientist',
     company: 'Google',
     graduationYear: 2019,
-    story: '<h2>Mi camino en la ciencia de datos</h2><p>Desde que me gradué de la UNAM, mi pasión por los datos me ha llevado a trabajar en proyectos increíbles...</p><p>En Google, lidero un equipo que desarrolla modelos de ML para mejorar la experiencia de búsqueda...</p>',
+    story:
+      '<h2>Mi camino en la ciencia de datos</h2><p>Desde que me gradué de la UNAM, mi pasión por los datos me ha llevado a trabajar en proyectos increíbles...</p><p>En Google, lidero un equipo que desarrolla modelos de ML para mejorar la experiencia de búsqueda...</p>',
     excerpt:
       'De la UNAM a Google: cómo la ciencia de datos transformó mi carrera profesional.',
     featuredImage: '/images/spotlight-1.jpg',
@@ -36,7 +37,8 @@ const mockSpotlights: AlumniSpotlight[] = [
     title: 'Co-Founder & CTO',
     company: 'DataMX',
     graduationYear: 2018,
-    story: '<h2>Emprendiendo con datos</h2><p>Después de graduarme, decidí que quería crear mi propia empresa enfocada en democratizar el acceso a herramientas de análisis de datos...</p>',
+    story:
+      '<h2>Emprendiendo con datos</h2><p>Después de graduarme, decidí que quería crear mi propia empresa enfocada en democratizar el acceso a herramientas de análisis de datos...</p>',
     excerpt:
       'Fundó DataMX, una startup que democratiza el análisis de datos para PyMEs mexicanas.',
     tags: ['Emprendimiento', 'Startup', 'Analytics'],
@@ -50,7 +52,8 @@ const mockSpotlights: AlumniSpotlight[] = [
     title: 'Research Scientist',
     company: 'Meta AI',
     graduationYear: 2020,
-    story: '<h2>Investigación en NLP</h2><p>Mi pasión por el procesamiento de lenguaje natural comenzó en la UNAM durante mi proyecto de tesis...</p>',
+    story:
+      '<h2>Investigación en NLP</h2><p>Mi pasión por el procesamiento de lenguaje natural comenzó en la UNAM durante mi proyecto de tesis...</p>',
     excerpt:
       'Investigadora en Meta AI trabajando en modelos de lenguaje multilingües.',
     tags: ['NLP', 'Investigación', 'Meta'],
@@ -64,7 +67,8 @@ const mockSpotlights: AlumniSpotlight[] = [
     title: 'Head of Data Engineering',
     company: 'Mercado Libre',
     graduationYear: 2017,
-    story: '<h2>Escalando datos en Latinoamérica</h2><p>En Mercado Libre, el reto es procesar millones de transacciones diarias...</p>',
+    story:
+      '<h2>Escalando datos en Latinoamérica</h2><p>En Mercado Libre, el reto es procesar millones de transacciones diarias...</p>',
     excerpt:
       'Lidera el equipo de ingeniería de datos que procesa millones de transacciones diarias.',
     tags: ['Data Engineering', 'Big Data', 'Mercado Libre'],

@@ -48,10 +48,12 @@ export const resourcesTranslations = {
       recent: 'Reciente',
       upload: 'Subir',
       noResults: 'No se encontraron recursos',
-      noResultsDescription: 'Intenta ajustar tus filtros de búsqueda o navega por categoría.',
+      noResultsDescription:
+        'Intenta ajustar tus filtros de búsqueda o navega por categoría.',
       contributeFirst: '¡Sé el primero en contribuir!',
       library: 'Biblioteca de recursos',
-      libraryDescription: 'Descubre y comparte materiales de aprendizaje, plantillas, herramientas y conjuntos de datos para acelerar tu camino en ciencia de datos.',
+      libraryDescription:
+        'Descubre y comparte materiales de aprendizaje, plantillas, herramientas y conjuntos de datos para acelerar tu camino en ciencia de datos.',
       searchPlaceholder: 'Buscar recursos...',
       advancedSearch: 'Avanzado',
       sortBy: 'Ordenar por',
@@ -84,8 +86,10 @@ export const resourcesTranslations = {
       uploadResource: 'Subir recurso',
       uploading: 'Subiendo...',
       submitForReview: 'Enviar para revisión',
-      uploadNotice: 'Tu recurso será revisado por nuestro equipo antes de ser publicado. Serás notificado cuando la revisión esté completa.',
-      uploadSuccess: '¡Recurso subido exitosamente! Será revisado antes de su publicación.',
+      uploadNotice:
+        'Tu recurso será revisado por nuestro equipo antes de ser publicado. Serás notificado cuando la revisión esté completa.',
+      uploadSuccess:
+        '¡Recurso subido exitosamente! Será revisado antes de su publicación.',
       uploadError: 'Error al subir recurso. Por favor intenta de nuevo.',
       categories: {
         title: 'Categorías',
@@ -177,10 +181,12 @@ export const resourcesTranslations = {
       recent: 'Recent',
       upload: 'Upload',
       noResults: 'No resources found',
-      noResultsDescription: 'Try adjusting your search filters or browse by category.',
+      noResultsDescription:
+        'Try adjusting your search filters or browse by category.',
       contributeFirst: 'Be the first to contribute!',
       library: 'Resource Library',
-      libraryDescription: 'Discover and share learning materials, templates, tools, and datasets to accelerate your data science journey.',
+      libraryDescription:
+        'Discover and share learning materials, templates, tools, and datasets to accelerate your data science journey.',
       searchPlaceholder: 'Search resources...',
       advancedSearch: 'Advanced',
       sortBy: 'Sort by',
@@ -213,8 +219,10 @@ export const resourcesTranslations = {
       uploadResource: 'Upload Resource',
       uploading: 'Uploading...',
       submitForReview: 'Submit for Review',
-      uploadNotice: 'Your resource will be reviewed by our team before being published. You will be notified once the review is complete.',
-      uploadSuccess: 'Resource uploaded successfully! It will be reviewed before publication.',
+      uploadNotice:
+        'Your resource will be reviewed by our team before being published. You will be notified once the review is complete.',
+      uploadSuccess:
+        'Resource uploaded successfully! It will be reviewed before publication.',
       uploadError: 'Error uploading resource. Please try again.',
       categories: {
         title: 'Categories',

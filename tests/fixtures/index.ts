@@ -9,7 +9,7 @@ export const mockApiResponses = {
     data: {},
     message: 'Operation completed successfully',
   },
-  
+
   error: {
     status: 'error',
     error: {
@@ -17,7 +17,7 @@ export const mockApiResponses = {
       message: 'An error occurred',
     },
   },
-  
+
   validationError: {
     status: 'error',
     error: {
@@ -29,7 +29,7 @@ export const mockApiResponses = {
       },
     },
   },
-  
+
   unauthorized: {
     status: 'error',
     error: {
@@ -37,7 +37,7 @@ export const mockApiResponses = {
       message: 'Authentication required',
     },
   },
-  
+
   forbidden: {
     status: 'error',
     error: {
@@ -45,7 +45,7 @@ export const mockApiResponses = {
       message: 'Insufficient permissions',
     },
   },
-  
+
   notFound: {
     status: 'error',
     error: {

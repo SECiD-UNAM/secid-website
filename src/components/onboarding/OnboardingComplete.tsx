@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence} from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import { useTranslations} from '../../hooks/useTranslations';
-import { getOnboardingAchievements, calculateProfileCompleteness} from '../../lib/onboarding';
+import { useTranslations } from '../../hooks/useTranslations';
+import {
+  getOnboardingAchievements,
+  calculateProfileCompleteness,
+} from '../../lib/onboarding';
 import {
   CheckCircleIcon,
   SparklesIcon,
@@ -25,16 +28,19 @@ import {
   HeartIcon,
   ChartBarIcon,
   DevicePhoneMobileIcon,
-  XMarkIcon
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
 
-import type { OnboardingStepProps, QuickStartStep } from '../../types/onboarding';
+import type {
+  OnboardingStepProps,
+  QuickStartStep,
+} from '../../types/onboarding';
 import type { OnboardingAchievement } from '../../types/onboarding';
 
 // Generate personalized recommendations based on onboarding data
 const generatePersonalizedRecommendations = (data: any) => {
   const recommendations = [];
-  
+
   // Job recommendations
   if (data['goalsDefinition'].careerGoals.targetCompanies.length > 0) {
     recommendations.push({
@@ -44,10 +50,10 @@ const generatePersonalizedRecommendations = (data: any) => {
       action: 'View Jobs',
       url: '/jobs',
       icon: <BriefcaseIcon className="h-6 w-6" />,
-      priority: 'high'
+      priority: 'high',
     });
   }
-  
+
   // Learning recommendations
   if (data['goalsDefinition'].learningGoals.skillsToLearn.length > 0) {
     recommendations.push({
@@ -57,10 +63,10 @@ const generatePersonalizedRecommendations = (data: any) => {
       action: 'Explore Courses',
       url: '/resources',
       icon: <AcademicCapIcon className="h-6 w-6" />,
-      priority: 'medium'
+      priority: 'medium',
     });
   }
-  
+
   // Networking recommendations
   if (data['connectionSuggestions'].selectedConnections.length > 3) {
     recommendations.push({
@@ -70,10 +76,10 @@ const generatePersonalizedRecommendations = (data: any) => {
       action: 'View Events',
       url: '/events',
       icon: <CalendarIcon className="h-6 w-6" />,
-      priority: 'medium'
+      priority: 'medium',
     });
   }
-  
+
   // Industry insights
   if (data['interestsSelection'].industries.length > 0) {
     recommendations.push({
@@ -83,10 +89,10 @@ const generatePersonalizedRecommendations = (data: any) => {
       action: 'Read Articles',
       url: '/blog',
       icon: <ChartBarIcon className="h-6 w-6" />,
-      priority: 'low'
+      priority: 'low',
     });
   }
-  
+
   return recommendations;
 };
 
@@ -94,47 +100,57 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
   data,
   onNext,
   progress,
-  className = ''
+  className = '',
 }) => {
   const t = useTranslations();
 
   // Form state
   const [tourPreferences, setTourPreferences] = useState({
-    takePlatformTour: data['completion'].tourPreferences.takePlatformTour ?? true,
-    focusAreas: data['completion'].tourPreferences.focusAreas || []
+    takePlatformTour:
+      data['completion'].tourPreferences.takePlatformTour ?? true,
+    focusAreas: data['completion'].tourPreferences.focusAreas || [],
   });
 
   const [notificationPreferences, setNotificationPreferences] = useState({
     email: data?.completion?.notificationPreferences['email'] ?? true,
     push: data['completion'].notificationPreferences.push ?? false,
     frequency: data['completion'].notificationPreferences.frequency || 'weekly',
-    types: data['completion'].notificationPreferences.types || []
+    types: data['completion'].notificationPreferences.types || [],
   });
 
   const [quickStartActions, setQuickStartActions] = useState<string[]>(
     data['completion'].quickStartActions || []
   );
 
-  const [currentView, setCurrentView] = useState<'celebration' | 'achievements' | 'recommendations' | 'tour' | 'notifications' | 'quickstart'>('celebration');
+  const [currentView, setCurrentView] = useState<
+    | 'celebration'
+    | 'achievements'
+    | 'recommendations'
+    | 'tour'
+    | 'notifications'
+    | 'quickstart'
+  >('celebration');
   const [achievementsUnlocked, setAchievementsUnlocked] = useState(false);
   const [achievements, setAchievements] = useState<OnboardingAchievement[]>([]);
   const [profileCompleteness, setProfileCompleteness] = useState(0);
   const [showAchievementModal, setShowAchievementModal] = useState(false);
-  const [currentAchievement, setCurrentAchievement] = useState<OnboardingAchievement | null>(null);
-  const [personalizedRecommendations, setPersonalizedRecommendations] = useState<any[]>([]);
+  const [currentAchievement, setCurrentAchievement] =
+    useState<OnboardingAchievement | null>(null);
+  const [personalizedRecommendations, setPersonalizedRecommendations] =
+    useState<any[]>([]);
 
   // Load achievements and recommendations
   useEffect(() => {
     const loadedAchievements = getOnboardingAchievements(data);
     const completeness = calculateProfileCompleteness(data);
-    
+
     setAchievements(loadedAchievements);
     setProfileCompleteness(completeness);
-    
+
     // Generate personalized recommendations
     const recommendations = generatePersonalizedRecommendations(data);
     setPersonalizedRecommendations(recommendations);
-    
+
     // Show achievement modal if there are achievements
     if (loadedAchievements.length > 0) {
       setTimeout(() => {
@@ -164,14 +180,18 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
       }
 
       const particleCount = 50 * (timeLeft / duration);
-      confetti(Object.assign({}, defaults, {
-        particleCount,
-        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-      }));
-      confetti(Object.assign({}, defaults, {
-        particleCount,
-        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-      }));
+      confetti(
+        Object.assign({}, defaults, {
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        })
+      );
+      confetti(
+        Object.assign({}, defaults, {
+          particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        })
+      );
     }, 250);
 
     // Mark achievements as unlocked after a delay
@@ -188,26 +208,28 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
       id: 'jobs',
       title: t.onboarding.complete.tour.focusAreas.jobs.title,
       description: t.onboarding.complete.tour.focusAreas.jobs['description'],
-      icon: <BriefcaseIcon className="h-8 w-8" />
+      icon: <BriefcaseIcon className="h-8 w-8" />,
     },
     {
       id: 'networking',
       title: t.onboarding.complete.tour.focusAreas.networking.title,
-      description: t.onboarding.complete.tour.focusAreas.networking['description'],
-      icon: <UsersIcon className="h-8 w-8" />
+      description:
+        t.onboarding.complete.tour.focusAreas.networking['description'],
+      icon: <UsersIcon className="h-8 w-8" />,
     },
     {
       id: 'learning',
       title: t.onboarding.complete.tour.focusAreas.learning.title,
-      description: t.onboarding.complete.tour.focusAreas.learning['description'],
-      icon: <BookOpenIcon className="h-8 w-8" />
+      description:
+        t.onboarding.complete.tour.focusAreas.learning['description'],
+      icon: <BookOpenIcon className="h-8 w-8" />,
     },
     {
       id: 'events',
       title: t.onboarding.complete.tour.focusAreas.events.title,
       description: t.onboarding.complete.tour.focusAreas.events['description'],
-      icon: <CalendarIcon className="h-8 w-8" />
-    }
+      icon: <CalendarIcon className="h-8 w-8" />,
+    },
   ];
 
   // Notification types
@@ -215,23 +237,23 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
     {
       id: 'connections',
       title: t.onboarding.complete.notifications.types.connections,
-      icon: <UsersIcon className="h-5 w-5" />
+      icon: <UsersIcon className="h-5 w-5" />,
     },
     {
       id: 'jobs',
       title: t.onboarding.complete.notifications.types.jobs,
-      icon: <BriefcaseIcon className="h-5 w-5" />
+      icon: <BriefcaseIcon className="h-5 w-5" />,
     },
     {
       id: 'events',
       title: t.onboarding.complete.notifications.types.events,
-      icon: <CalendarIcon className="h-5 w-5" />
+      icon: <CalendarIcon className="h-5 w-5" />,
     },
     {
       id: 'content',
       title: t.onboarding.complete.notifications.types.content,
-      icon: <BookOpenIcon className="h-5 w-5" />
-    }
+      icon: <BookOpenIcon className="h-5 w-5" />,
+    },
   ];
 
   // Generate personalized quick start guide
@@ -243,12 +265,13 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
       steps.push({
         id: 'upload_photo',
         title: t.onboarding.complete.quickStart.steps.uploadPhoto.title,
-        description: t.onboarding.complete.quickStart.steps.uploadPhoto.description,
+        description:
+          t.onboarding.complete.quickStart.steps.uploadPhoto.description,
         actionUrl: '/dashboard/profile/edit',
         estimatedTime: 5,
         importance: 'recommended',
         category: 'profile',
-        completed: false
+        completed: false,
       });
     }
 
@@ -256,12 +279,13 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
       steps.push({
         id: 'add_skills',
         title: t.onboarding.complete.quickStart.steps.addSkills.title,
-        description: t.onboarding.complete.quickStart.steps.addSkills.description,
+        description:
+          t.onboarding.complete.quickStart.steps.addSkills.description,
         actionUrl: '/dashboard/profile/edit',
         estimatedTime: 3,
         importance: 'recommended',
         category: 'profile',
-        completed: false
+        completed: false,
       });
     }
 
@@ -270,12 +294,16 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
       steps.push({
         id: 'connect_members',
         title: t.onboarding.complete.quickStart.steps.connectMembers.title,
-        description: t.onboarding.complete.quickStart.steps.connectMembers.description.replace('{count}', data['connectionSuggestions'].selectedConnections.length.toString()),
+        description:
+          t.onboarding.complete.quickStart.steps.connectMembers.description.replace(
+            '{count}',
+            data['connectionSuggestions'].selectedConnections.length.toString()
+          ),
         actionUrl: '/members',
         estimatedTime: 10,
         importance: 'critical',
         category: 'networking',
-        completed: false
+        completed: false,
       });
     }
 
@@ -287,7 +315,7 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
       estimatedTime: 5,
       importance: 'recommended',
       category: 'networking',
-      completed: false
+      completed: false,
     });
 
     // Job search steps
@@ -295,12 +323,13 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
       steps.push({
         id: 'setup_job_alerts',
         title: t.onboarding.complete.quickStart.steps.setupJobAlerts.title,
-        description: t.onboarding.complete.quickStart.steps.setupJobAlerts.description,
+        description:
+          t.onboarding.complete.quickStart.steps.setupJobAlerts.description,
         actionUrl: '/jobs',
         estimatedTime: 8,
         importance: 'critical',
         category: 'job-search',
-        completed: false
+        completed: false,
       });
     }
 
@@ -309,12 +338,13 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
       steps.push({
         id: 'explore_resources',
         title: t.onboarding.complete.quickStart.steps.exploreResources.title,
-        description: t.onboarding.complete.quickStart.steps.exploreResources.description,
+        description:
+          t.onboarding.complete.quickStart.steps.exploreResources.description,
         actionUrl: '/resources',
         estimatedTime: 15,
         importance: 'recommended',
         category: 'learning',
-        completed: false
+        completed: false,
       });
     }
 
@@ -331,16 +361,17 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
     {
       id: 'profile_creator',
       title: t.onboarding.complete.achievements.profileCreator.title,
-      description: t.onboarding.complete.achievements.profileCreator.description,
+      description:
+        t.onboarding.complete.achievements.profileCreator.description,
       icon: '👤',
-      rarity: 'common'
+      rarity: 'common',
     },
     {
       id: 'goal_setter',
       title: t.onboarding.complete.achievements.goalSetter.title,
       description: t.onboarding.complete.achievements.goalSetter.description,
       icon: '🎯',
-      rarity: 'common'
+      rarity: 'common',
     },
     {
       id: 'connector',
@@ -348,7 +379,7 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
       description: t.onboarding.complete.achievements.connector.description,
       icon: '🤝',
       rarity: 'rare',
-      condition: data['connectionSuggestions'].selectedConnections.length > 3
+      condition: data['connectionSuggestions'].selectedConnections.length > 3,
     },
     {
       id: 'learner',
@@ -356,35 +387,35 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
       description: t.onboarding.complete.achievements.learner.description,
       icon: '📚',
       rarity: 'common',
-      condition: data['goalsDefinition'].learningGoals.skillsToLearn.length > 0
-    }
-  ].filter(achievement => !achievement.condition || achievement.condition);
+      condition: data['goalsDefinition'].learningGoals.skillsToLearn.length > 0,
+    },
+  ].filter((achievement) => !achievement.condition || achievement.condition);
 
   // Toggle focus area
   const toggleFocusArea = (areaId: string) => {
-    setTourPreferences(prev => ({
+    setTourPreferences((prev) => ({
       ...prev,
       focusAreas: prev.focusAreas.includes(areaId)
-        ? prev.focusAreas.filter(id => id !== areaId)
-        : [...prev.focusAreas, areaId]
+        ? prev.focusAreas.filter((id) => id !== areaId)
+        : [...prev.focusAreas, areaId],
     }));
   };
 
   // Toggle notification type
   const toggleNotificationType = (typeId: string) => {
-    setNotificationPreferences(prev => ({
+    setNotificationPreferences((prev) => ({
       ...prev,
       types: prev.types.includes(typeId)
-        ? prev.types.filter(id => id !== typeId)
-        : [...prev.types, typeId]
+        ? prev.types.filter((id) => id !== typeId)
+        : [...prev.types, typeId],
     }));
   };
 
   // Toggle quick start action
   const toggleQuickStartAction = (actionId: string) => {
-    setQuickStartActions(prev =>
+    setQuickStartActions((prev) =>
       prev.includes(actionId)
-        ? prev.filter(id => id !== actionId)
+        ? prev.filter((id) => id !== actionId)
         : [...prev, actionId]
     );
   };
@@ -393,7 +424,7 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
     onNext({
       tourPreferences,
       notificationPreferences,
-      quickStartActions
+      quickStartActions,
     });
   };
 
@@ -401,42 +432,45 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
     { id: 'celebration', title: t.onboarding.complete.steps.celebration },
     { id: 'tour', title: t.onboarding.complete.steps.tour },
     { id: 'notifications', title: t.onboarding.complete.steps.notifications },
-    { id: 'quickstart', title: t.onboarding.complete.steps.quickStart }
+    { id: 'quickstart', title: t.onboarding.complete.steps.quickStart },
   ];
 
   return (
     <div className={`onboarding-complete-step ${className}`}>
-      <div className="max-w-4xl mx-auto">
-
+      <div className="mx-auto max-w-4xl">
         {/* Progress Indicator */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex justify-center mb-8"
+          className="mb-8 flex justify-center"
         >
           <div className="flex items-center space-x-4">
             {viewSteps.map((step, index) => (
               <React.Fragment key={step.id}>
-                <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
-                  currentView === step.id
-                    ? 'bg-blue-600 text-white'
-                    : index < viewSteps.findIndex(s => s.id === currentView)
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-200 text-gray-600'
-                }`}>
-                  {index < viewSteps.findIndex(s => s.id === currentView) ? (
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                    currentView === step.id
+                      ? 'bg-blue-600 text-white'
+                      : index < viewSteps.findIndex((s) => s.id === currentView)
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-200 text-gray-600'
+                  }`}
+                >
+                  {index < viewSteps.findIndex((s) => s.id === currentView) ? (
                     <CheckCircleIcon className="h-6 w-6" />
                   ) : (
                     <span>{index + 1}</span>
                   )}
                 </div>
                 {index < viewSteps.length - 1 && (
-                  <div className={`w-16 h-1 ${
-                    index < viewSteps.findIndex(s => s.id === currentView)
-                      ? 'bg-green-600'
-                      : 'bg-gray-200'
-                  }`} />
+                  <div
+                    className={`h-1 w-16 ${
+                      index < viewSteps.findIndex((s) => s.id === currentView)
+                        ? 'bg-green-600'
+                        : 'bg-gray-200'
+                    }`}
+                  />
                 )}
               </React.Fragment>
             ))}
@@ -459,25 +493,25 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
-                  className="inline-flex items-center justify-center w-24 h-24 bg-green-100 rounded-full mb-6"
+                  className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full bg-green-100"
                 >
                   <CheckCircleIcon className="h-16 w-16 text-green-600" />
                 </motion.div>
-                
+
                 <motion.h1
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
-                  className="text-4xl font-bold text-gray-900 mb-4"
+                  className="mb-4 text-4xl font-bold text-gray-900"
                 >
                   {t.onboarding.complete.celebration.title}
                 </motion.h1>
-                
+
                 <motion.p
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.6 }}
-                  className="text-xl text-gray-600 max-w-2xl mx-auto mb-8"
+                  className="mx-auto mb-8 max-w-2xl text-xl text-gray-600"
                 >
                   {t.onboarding.complete.celebration.description}
                 </motion.p>
@@ -486,40 +520,49 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
               {/* Achievements */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: achievementsUnlocked ? 1 : 0, y: achievementsUnlocked ? 0 : 20 }}
+                animate={{
+                  opacity: achievementsUnlocked ? 1 : 0,
+                  y: achievementsUnlocked ? 0 : 20,
+                }}
                 transition={{ duration: 0.6, delay: 0.8 }}
-                className="bg-white rounded-xl shadow-lg border border-gray-200 p-8 mb-8"
+                className="mb-8 rounded-xl border border-gray-200 bg-white p-8 shadow-lg"
               >
-                <div className="flex items-center justify-center mb-6">
-                  <TrophyIcon className="h-8 w-8 text-yellow-600 mr-3" />
+                <div className="mb-6 flex items-center justify-center">
+                  <TrophyIcon className="mr-3 h-8 w-8 text-yellow-600" />
                   <h3 className="text-2xl font-bold text-gray-900">
                     {t.onboarding.complete.achievements.title}
                   </h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {staticAchievements.map((achievement, index) => (
                     <motion.div
                       key={achievement.id}
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 0.4, delay: 1 + index * 0.1 }}
-                      className={`p-4 rounded-lg border-2 ${
+                      className={`rounded-lg border-2 p-4 ${
                         achievement.rarity === 'rare'
                           ? 'border-purple-200 bg-purple-50'
                           : 'border-gray-200 bg-gray-50'
                       }`}
                     >
-                      <div className="flex items-center mb-2">
-                        <span className="text-2xl mr-3">{achievement.icon}</span>
+                      <div className="mb-2 flex items-center">
+                        <span className="mr-3 text-2xl">
+                          {achievement.icon}
+                        </span>
                         <div>
-                          <h4 className="font-semibold text-gray-900">{achievement.title}</h4>
-                          <p className="text-sm text-gray-600">{achievement['description']}</p>
+                          <h4 className="font-semibold text-gray-900">
+                            {achievement.title}
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            {achievement['description']}
+                          </p>
                         </div>
                       </div>
                       {achievement.rarity === 'rare' && (
-                        <div className="flex items-center text-purple-600 text-xs">
-                          <SparklesIcon className="h-3 w-3 mr-1" />
+                        <div className="flex items-center text-xs text-purple-600">
+                          <SparklesIcon className="mr-1 h-3 w-3" />
                           {t.onboarding.complete.achievements.rare}
                         </div>
                       )}
@@ -533,29 +576,36 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 1.2 }}
-                className="bg-blue-50 rounded-xl p-6 mb-8"
+                className="mb-8 rounded-xl bg-blue-50 p-6"
               >
-                <h3 className="text-lg font-semibold text-blue-900 mb-4">
+                <h3 className="mb-4 text-lg font-semibold text-blue-900">
                   {t.onboarding.complete.summary.title}
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                <div className="grid grid-cols-1 gap-6 text-sm md:grid-cols-3">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-blue-600">
                       {data['interestsSelection'].primarySkills.length}
                     </div>
-                    <div className="text-blue-800">{t.onboarding.complete.summary.skills}</div>
+                    <div className="text-blue-800">
+                      {t.onboarding.complete.summary.skills}
+                    </div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-blue-600">
-                      {data['goalsDefinition'].careerGoals.shortTerm.length + data['goalsDefinition'].careerGoals.longTerm.length}
+                      {data['goalsDefinition'].careerGoals.shortTerm.length +
+                        data['goalsDefinition'].careerGoals.longTerm.length}
                     </div>
-                    <div className="text-blue-800">{t.onboarding.complete.summary.goals}</div>
+                    <div className="text-blue-800">
+                      {t.onboarding.complete.summary.goals}
+                    </div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-blue-600">
                       {data['connectionSuggestions'].selectedConnections.length}
                     </div>
-                    <div className="text-blue-800">{t.onboarding.complete.summary.connections}</div>
+                    <div className="text-blue-800">
+                      {t.onboarding.complete.summary.connections}
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -565,7 +615,7 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 1.4 }}
                 onClick={() => setCurrentView('achievements')}
-                className="inline-flex items-center px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg"
+                className="inline-flex items-center rounded-lg bg-blue-600 px-8 py-4 text-lg font-medium text-white transition-colors hover:bg-blue-700"
               >
                 {t.onboarding.complete.celebration.continue}
                 <RocketLaunchIcon className="ml-2 h-5 w-5" />
@@ -584,33 +634,34 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
               className="text-center"
             >
               <div className="mb-8">
-                <div className="inline-flex items-center justify-center w-24 h-24 bg-yellow-100 rounded-full mb-6">
+                <div className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full bg-yellow-100">
                   <TrophyIcon className="h-16 w-16 text-yellow-600" />
                 </div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                <h1 className="mb-4 text-4xl font-bold text-gray-900">
                   Achievements Unlocked!
                 </h1>
-                <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-                  Congratulations! You've earned these achievements by completing your profile.
+                <p className="mx-auto mb-8 max-w-2xl text-xl text-gray-600">
+                  Congratulations! You've earned these achievements by
+                  completing your profile.
                 </p>
               </div>
 
               {/* Achievements Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {staticAchievements.map((achievement, index) => (
                   <motion.div
                     key={achievement.id}
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="bg-white rounded-xl shadow-lg border border-gray-200 p-6"
+                    className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg"
                   >
                     <div className="text-center">
-                      <div className="text-4xl mb-4">{achievement.icon}</div>
-                      <h3 className="text-lg font-bold text-gray-900 mb-2">
+                      <div className="mb-4 text-4xl">{achievement.icon}</div>
+                      <h3 className="mb-2 text-lg font-bold text-gray-900">
                         {achievement['name']}
                       </h3>
-                      <p className="text-sm text-gray-600 mb-4">
+                      <p className="mb-4 text-sm text-gray-600">
                         {achievement['description']}
                       </p>
                       <div className="flex items-center justify-center space-x-2">
@@ -620,13 +671,19 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
                         </span>
                       </div>
                       <div className="mt-2">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          achievement.rarity === 'legendary' ? 'bg-purple-100 text-purple-800' :
-                          achievement.rarity === 'epic' ? 'bg-orange-100 text-orange-800' :
-                          achievement.rarity === 'rare' ? 'bg-blue-100 text-blue-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {achievement.rarity.charAt(0).toUpperCase() + achievement.rarity.slice(1)}
+                        <span
+                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                            achievement.rarity === 'legendary'
+                              ? 'bg-purple-100 text-purple-800'
+                              : achievement.rarity === 'epic'
+                                ? 'bg-orange-100 text-orange-800'
+                                : achievement.rarity === 'rare'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : 'bg-gray-100 text-gray-800'
+                          }`}
+                        >
+                          {achievement.rarity.charAt(0).toUpperCase() +
+                            achievement.rarity.slice(1)}
                         </span>
                       </div>
                     </div>
@@ -635,8 +692,8 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
               </div>
 
               {staticAchievements.length === 0 && (
-                <div className="bg-gray-50 rounded-xl p-8 mb-8">
-                  <TrophyIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <div className="mb-8 rounded-xl bg-gray-50 p-8">
+                  <TrophyIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                   <p className="text-gray-600">
                     Complete more of your profile to unlock achievements!
                   </p>
@@ -644,32 +701,35 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
               )}
 
               {/* Profile Completeness */}
-              <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Profile Completeness</h3>
-                  <span className="text-2xl font-bold text-blue-600">{profileCompleteness}%</span>
+              <div className="mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Profile Completeness
+                  </h3>
+                  <span className="text-2xl font-bold text-blue-600">
+                    {profileCompleteness}%
+                  </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+                <div className="mb-4 h-3 w-full rounded-full bg-gray-200">
                   <motion.div
-                    className="bg-blue-600 h-3 rounded-full"
+                    className="h-3 rounded-full bg-blue-600"
                     initial={{ width: 0 }}
                     animate={{ width: `${profileCompleteness}%` }}
                     transition={{ duration: 1.5, delay: 0.5 }}
                   />
                 </div>
                 <p className="text-sm text-gray-600">
-                  {profileCompleteness >= 80 ? 
-                    'Excellent! Your profile is well-developed.' :
-                    profileCompleteness >= 60 ?
-                    'Good progress! Add more details to improve your visibility.' :
-                    'Keep building your profile to unlock more features.'
-                  }
+                  {profileCompleteness >= 80
+                    ? 'Excellent! Your profile is well-developed.'
+                    : profileCompleteness >= 60
+                      ? 'Good progress! Add more details to improve your visibility.'
+                      : 'Keep building your profile to unlock more features.'}
                 </p>
               </div>
 
               <button
                 onClick={() => setCurrentView('recommendations')}
-                className="inline-flex items-center px-8 py-4 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-medium text-lg"
+                className="inline-flex items-center rounded-lg bg-yellow-600 px-8 py-4 text-lg font-medium text-white transition-colors hover:bg-yellow-700"
               >
                 View Recommendations
                 <SparklesIcon className="ml-2 h-5 w-5" />
@@ -688,65 +748,84 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
               className="text-center"
             >
               <div className="mb-8">
-                <div className="inline-flex items-center justify-center w-24 h-24 bg-purple-100 rounded-full mb-6">
+                <div className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full bg-purple-100">
                   <SparklesIcon className="h-16 w-16 text-purple-600" />
                 </div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                <h1 className="mb-4 text-4xl font-bold text-gray-900">
                   Personalized for You
                 </h1>
-                <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-                  Based on your profile, here are some recommendations to help you achieve your goals.
+                <p className="mx-auto mb-8 max-w-2xl text-xl text-gray-600">
+                  Based on your profile, here are some recommendations to help
+                  you achieve your goals.
                 </p>
               </div>
 
               {/* Recommendations Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
                 {personalizedRecommendations.map((recommendation, index) => (
                   <motion.div
                     key={recommendation['type']}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className={`bg-white rounded-xl shadow-lg border-2 p-6 text-left ${
-                      recommendation.priority === 'high' ? 'border-red-200' :
-                      recommendation.priority === 'medium' ? 'border-yellow-200' :
-                      'border-gray-200'
+                    className={`rounded-xl border-2 bg-white p-6 text-left shadow-lg ${
+                      recommendation.priority === 'high'
+                        ? 'border-red-200'
+                        : recommendation.priority === 'medium'
+                          ? 'border-yellow-200'
+                          : 'border-gray-200'
                     }`}
                   >
                     <div className="flex items-start space-x-4">
-                      <div className={`p-3 rounded-lg ${
-                        recommendation.priority === 'high' ? 'bg-red-100 text-red-600' :
-                        recommendation.priority === 'medium' ? 'bg-yellow-100 text-yellow-600' :
-                        'bg-gray-100 text-gray-600'
-                      }`}>
+                      <div
+                        className={`rounded-lg p-3 ${
+                          recommendation.priority === 'high'
+                            ? 'bg-red-100 text-red-600'
+                            : recommendation.priority === 'medium'
+                              ? 'bg-yellow-100 text-yellow-600'
+                              : 'bg-gray-100 text-gray-600'
+                        }`}
+                      >
                         {recommendation.icon}
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center justify-between mb-2">
+                        <div className="mb-2 flex items-center justify-between">
                           <h3 className="text-lg font-bold text-gray-900">
                             {recommendation.title}
                           </h3>
                           {recommendation.priority === 'high' && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                              <FireIcon className="h-3 w-3 mr-1" />
+                            <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">
+                              <FireIcon className="mr-1 h-3 w-3" />
                               Priority
                             </span>
                           )}
                         </div>
-                        <p className="text-gray-600 mb-4">
+                        <p className="mb-4 text-gray-600">
                           {recommendation['description']}
                         </p>
                         <a
                           href={recommendation.url}
-                          className={`inline-flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${
-                            recommendation.priority === 'high' ? 'bg-red-600 text-white hover:bg-red-700' :
-                            recommendation.priority === 'medium' ? 'bg-yellow-600 text-white hover:bg-yellow-700' :
-                            'bg-gray-600 text-white hover:bg-gray-700'
+                          className={`inline-flex items-center rounded-lg px-4 py-2 font-medium transition-colors ${
+                            recommendation.priority === 'high'
+                              ? 'bg-red-600 text-white hover:bg-red-700'
+                              : recommendation.priority === 'medium'
+                                ? 'bg-yellow-600 text-white hover:bg-yellow-700'
+                                : 'bg-gray-600 text-white hover:bg-gray-700'
                           }`}
                         >
                           {recommendation.action}
-                          <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          <svg
+                            className="ml-2 h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
                           </svg>
                         </a>
                       </div>
@@ -756,17 +835,18 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
               </div>
 
               {personalizedRecommendations.length === 0 && (
-                <div className="bg-gray-50 rounded-xl p-8 mb-8">
-                  <SparklesIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <div className="mb-8 rounded-xl bg-gray-50 p-8">
+                  <SparklesIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                   <p className="text-gray-600">
-                    We'll provide personalized recommendations as you use the platform!
+                    We'll provide personalized recommendations as you use the
+                    platform!
                   </p>
                 </div>
               )}
 
               <button
                 onClick={() => setCurrentView('tour')}
-                className="inline-flex items-center px-8 py-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium text-lg"
+                className="inline-flex items-center rounded-lg bg-purple-600 px-8 py-4 text-lg font-medium text-white transition-colors hover:bg-purple-700"
               >
                 Continue Setup
                 <RocketLaunchIcon className="ml-2 h-5 w-5" />
@@ -782,11 +862,11 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.6 }}
-              className="bg-white rounded-xl shadow-lg border border-gray-200 p-8"
+              className="rounded-xl border border-gray-200 bg-white p-8 shadow-lg"
             >
-              <div className="text-center mb-8">
-                <PlayIcon className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              <div className="mb-8 text-center">
+                <PlayIcon className="mx-auto mb-4 h-12 w-12 text-blue-600" />
+                <h2 className="mb-4 text-2xl font-bold text-gray-900">
                   {t.onboarding.complete.tour.title}
                 </h2>
                 <p className="text-gray-600">
@@ -795,7 +875,7 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
               </div>
 
               {/* Take Tour Toggle */}
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg mb-6">
+              <div className="mb-6 flex items-center justify-between rounded-lg bg-gray-50 p-4">
                 <div>
                   <h3 className="font-semibold text-gray-900">
                     {t.onboarding.complete.tour.enable.title}
@@ -804,47 +884,58 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
                     {t.onboarding.complete.tour.enable.description}
                   </p>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
+                <label className="relative inline-flex cursor-pointer items-center">
                   <input
                     type="checkbox"
                     checked={tourPreferences.takePlatformTour}
-                    onChange={(e) => setTourPreferences(prev => ({ ...prev, takePlatformTour: e.target.checked }))}
-                    className="sr-only peer"
+                    onChange={(e) =>
+                      setTourPreferences((prev) => ({
+                        ...prev,
+                        takePlatformTour: e.target.checked,
+                      }))
+                    }
+                    className="peer sr-only"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300"></div>
                 </label>
               </div>
 
               {/* Focus Areas */}
               {tourPreferences.takePlatformTour && (
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  <h3 className="mb-4 text-lg font-semibold text-gray-900">
                     {t.onboarding.complete.tour.focusAreas.title}
                   </h3>
-                  <p className="text-gray-600 mb-6">
+                  <p className="mb-6 text-gray-600">
                     {t.onboarding.complete.tour.focusAreas.description}
                   </p>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                  <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2">
                     {focusAreasOptions.map((area) => (
                       <button
                         key={area.id}
                         onClick={() => toggleFocusArea(area.id)}
-                        className={`p-6 rounded-lg border-2 text-left transition-colors ${
+                        className={`rounded-lg border-2 p-6 text-left transition-colors ${
                           tourPreferences.focusAreas.includes(area.id)
                             ? 'border-blue-500 bg-blue-50 text-blue-900'
-                            : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                            : 'border-gray-200 text-gray-700 hover:border-gray-300'
                         }`}
                       >
-                        <div className="flex items-center mb-3">
-                          <div className={`${
-                            tourPreferences.focusAreas.includes(area.id) ? 'text-blue-600' : 'text-gray-600'
-                          }`}>
+                        <div className="mb-3 flex items-center">
+                          <div
+                            className={`${
+                              tourPreferences.focusAreas.includes(area.id)
+                                ? 'text-blue-600'
+                                : 'text-gray-600'
+                            }`}
+                          >
                             {area.icon}
                           </div>
-                          <h4 className="font-semibold ml-3">{area.title}</h4>
+                          <h4 className="ml-3 font-semibold">{area.title}</h4>
                         </div>
-                        <p className="text-sm opacity-75">{area['description']}</p>
+                        <p className="text-sm opacity-75">
+                          {area['description']}
+                        </p>
                       </button>
                     ))}
                   </div>
@@ -854,13 +945,13 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
               <div className="flex justify-between">
                 <button
                   onClick={() => setCurrentView('celebration')}
-                  className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="rounded-lg border border-gray-300 px-6 py-3 text-gray-700 transition-colors hover:bg-gray-50"
                 >
                   {t.onboarding.navigation.back}
                 </button>
                 <button
                   onClick={() => setCurrentView('notifications')}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700"
                 >
                   {t.onboarding.navigation.next}
                 </button>
@@ -876,11 +967,11 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.6 }}
-              className="bg-white rounded-xl shadow-lg border border-gray-200 p-8"
+              className="rounded-xl border border-gray-200 bg-white p-8 shadow-lg"
             >
-              <div className="text-center mb-8">
-                <BellIcon className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              <div className="mb-8 text-center">
+                <BellIcon className="mx-auto mb-4 h-12 w-12 text-blue-600" />
+                <h2 className="mb-4 text-2xl font-bold text-gray-900">
                   {t.onboarding.complete.notifications.title}
                 </h2>
                 <p className="text-gray-600">
@@ -890,48 +981,76 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
 
               {/* Email Notifications */}
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4">
                   <div className="flex items-center">
-                    <EnvelopeIcon className="h-6 w-6 text-gray-600 mr-3" />
+                    <EnvelopeIcon className="mr-3 h-6 w-6 text-gray-600" />
                     <div>
                       <h3 className="font-semibold text-gray-900">
                         {t.onboarding.complete.notifications.email.title}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        {t.onboarding.complete.notifications['email']['description']}
+                        {
+                          t.onboarding.complete.notifications['email'][
+                            'description'
+                          ]
+                        }
                       </p>
                     </div>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
+                  <label className="relative inline-flex cursor-pointer items-center">
                     <input
                       type="checkbox"
                       checked={notificationPreferences['email']}
-                      onChange={(e) => setNotificationPreferences(prev => ({ ...prev, email: e.target.checked }))}
-                      className="sr-only peer"
+                      onChange={(e) =>
+                        setNotificationPreferences((prev) => ({
+                          ...prev,
+                          email: e.target.checked,
+                        }))
+                      }
+                      className="peer sr-only"
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300"></div>
                   </label>
                 </div>
 
                 {/* Frequency */}
                 {notificationPreferences['email'] && (
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    <h3 className="mb-4 text-lg font-semibold text-gray-900">
                       {t.onboarding.complete.notifications.frequency.title}
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
                       {[
-                        { value: 'immediate', label: t.onboarding.complete.notifications.frequency.immediate },
-                        { value: 'daily', label: t.onboarding.complete.notifications.frequency.daily },
-                        { value: 'weekly', label: t.onboarding.complete.notifications.frequency.weekly }
+                        {
+                          value: 'immediate',
+                          label:
+                            t.onboarding.complete.notifications.frequency
+                              .immediate,
+                        },
+                        {
+                          value: 'daily',
+                          label:
+                            t.onboarding.complete.notifications.frequency.daily,
+                        },
+                        {
+                          value: 'weekly',
+                          label:
+                            t.onboarding.complete.notifications.frequency
+                              .weekly,
+                        },
                       ].map((freq) => (
                         <button
                           key={freq.value}
-                          onClick={() => setNotificationPreferences(prev => ({ ...prev, frequency: freq.value as any }))}
-                          className={`p-4 rounded-lg border-2 transition-colors ${
+                          onClick={() =>
+                            setNotificationPreferences((prev) => ({
+                              ...prev,
+                              frequency: freq.value as any,
+                            }))
+                          }
+                          className={`rounded-lg border-2 p-4 transition-colors ${
                             notificationPreferences.frequency === freq.value
                               ? 'border-blue-500 bg-blue-50 text-blue-900'
-                              : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                              : 'border-gray-200 text-gray-700 hover:border-gray-300'
                           }`}
                         >
                           {freq.label}
@@ -940,21 +1059,30 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
                     </div>
 
                     {/* Notification Types */}
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    <h3 className="mb-4 text-lg font-semibold text-gray-900">
                       {t.onboarding.complete.notifications.types.title}
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                       {notificationTypes.map((type) => (
-                        <label key={type.id} className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <label
+                          key={type.id}
+                          className="flex cursor-pointer items-center rounded-lg border border-gray-200 p-4 hover:bg-gray-50"
+                        >
                           <input
                             type="checkbox"
-                            checked={notificationPreferences.types.includes(type.id)}
+                            checked={notificationPreferences.types.includes(
+                              type.id
+                            )}
                             onChange={() => toggleNotificationType(type.id)}
-                            className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                            className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                           />
                           <div className="ml-3 flex items-center">
-                            <div className="text-gray-600 mr-3">{type.icon}</div>
-                            <span className="font-medium text-gray-900">{type.title}</span>
+                            <div className="mr-3 text-gray-600">
+                              {type.icon}
+                            </div>
+                            <span className="font-medium text-gray-900">
+                              {type.title}
+                            </span>
                           </div>
                         </label>
                       ))}
@@ -963,16 +1091,16 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
                 )}
               </div>
 
-              <div className="flex justify-between mt-8">
+              <div className="mt-8 flex justify-between">
                 <button
                   onClick={() => setCurrentView('tour')}
-                  className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="rounded-lg border border-gray-300 px-6 py-3 text-gray-700 transition-colors hover:bg-gray-50"
                 >
                   {t.onboarding.navigation.back}
                 </button>
                 <button
                   onClick={() => setCurrentView('quickstart')}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700"
                 >
                   {t.onboarding.navigation.next}
                 </button>
@@ -988,11 +1116,11 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.6 }}
-              className="bg-white rounded-xl shadow-lg border border-gray-200 p-8"
+              className="rounded-xl border border-gray-200 bg-white p-8 shadow-lg"
             >
-              <div className="text-center mb-8">
-                <RocketLaunchIcon className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              <div className="mb-8 text-center">
+                <RocketLaunchIcon className="mx-auto mb-4 h-12 w-12 text-blue-600" />
+                <h2 className="mb-4 text-2xl font-bold text-gray-900">
                   {t.onboarding.complete.quickStart.title}
                 </h2>
                 <p className="text-gray-600">
@@ -1001,50 +1129,65 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
               </div>
 
               {/* Quick Start Items */}
-              <div className="space-y-4 mb-8">
+              <div className="mb-8 space-y-4">
                 {quickStartGuide.map((step, index) => (
                   <div
                     key={step.id}
-                    className={`p-6 rounded-lg border-2 ${
+                    className={`rounded-lg border-2 p-6 ${
                       step.importance === 'critical'
                         ? 'border-red-200 bg-red-50'
                         : step.importance === 'recommended'
-                        ? 'border-yellow-200 bg-yellow-50'
-                        : 'border-gray-200 bg-gray-50'
+                          ? 'border-yellow-200 bg-yellow-50'
+                          : 'border-gray-200 bg-gray-50'
                     }`}
                   >
                     <div className="flex items-start space-x-4">
-                      <div className="flex-shrink-0 mt-1">
-                        <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
-                          step.importance === 'critical'
-                            ? 'bg-red-100 text-red-800'
-                            : step.importance === 'recommended'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
+                      <div className="mt-1 flex-shrink-0">
+                        <span
+                          className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
+                            step.importance === 'critical'
+                              ? 'bg-red-100 text-red-800'
+                              : step.importance === 'recommended'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-gray-100 text-gray-800'
+                          }`}
+                        >
                           {index + 1}
                         </span>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-lg font-semibold text-gray-900">{step.title}</h3>
-                          <span className="text-sm text-gray-500">{step.estimatedTime} min</span>
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-2 flex items-center justify-between">
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {step.title}
+                          </h3>
+                          <span className="text-sm text-gray-500">
+                            {step.estimatedTime} min
+                          </span>
                         </div>
-                        <p className="text-gray-600 mb-4">{step['description']}</p>
+                        <p className="mb-4 text-gray-600">
+                          {step['description']}
+                        </p>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
-                            <span className={`px-2 py-1 text-xs rounded-full ${
-                              step.importance === 'critical'
-                                ? 'bg-red-100 text-red-800'
+                            <span
+                              className={`rounded-full px-2 py-1 text-xs ${
+                                step.importance === 'critical'
+                                  ? 'bg-red-100 text-red-800'
+                                  : step.importance === 'recommended'
+                                    ? 'bg-yellow-100 text-yellow-800'
+                                    : 'bg-gray-100 text-gray-800'
+                              }`}
+                            >
+                              {step.importance === 'critical'
+                                ? t.onboarding.complete.quickStart.importance
+                                    .critical
                                 : step.importance === 'recommended'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-gray-100 text-gray-800'
-                            }`}>
-                              {step.importance === 'critical' ? t.onboarding.complete.quickStart.importance.critical :
-                               step.importance === 'recommended' ? t.onboarding.complete.quickStart.importance.recommended :
-                               t.onboarding.complete.quickStart.importance.optional}
+                                  ? t.onboarding.complete.quickStart.importance
+                                      .recommended
+                                  : t.onboarding.complete.quickStart.importance
+                                      .optional}
                             </span>
-                            <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">
+                            <span className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-800">
                               {step.category}
                             </span>
                           </div>
@@ -1053,7 +1196,7 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
                               type="checkbox"
                               checked={quickStartActions.includes(step.id)}
                               onChange={() => toggleQuickStartAction(step.id)}
-                              className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                             />
                             <span className="ml-2 text-sm text-gray-600">
                               {t.onboarding.complete.quickStart.addToList}
@@ -1069,13 +1212,13 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
               <div className="flex justify-between">
                 <button
                   onClick={() => setCurrentView('notifications')}
-                  className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="rounded-lg border border-gray-300 px-6 py-3 text-gray-700 transition-colors hover:bg-gray-50"
                 >
                   {t.onboarding.navigation.back}
                 </button>
                 <button
                   onClick={handleComplete}
-                  className="inline-flex items-center px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-lg"
+                  className="inline-flex items-center rounded-lg bg-green-600 px-8 py-3 text-lg font-medium text-white transition-colors hover:bg-green-700"
                 >
                   {t.onboarding.complete.finish}
                   <CheckCircleIcon className="ml-2 h-5 w-5" />
@@ -1092,21 +1235,21 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
               onClick={() => setShowAchievementModal(false)}
             >
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ type: "spring", duration: 0.5 }}
-                className="bg-white rounded-2xl p-8 max-w-md w-full text-center relative"
+                transition={{ type: 'spring', duration: 0.5 }}
+                className="relative w-full max-w-md rounded-2xl bg-white p-8 text-center"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Close button */}
                 <button
                   onClick={() => setShowAchievementModal(false)}
-                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                  className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
                 >
                   <XMarkIcon className="h-6 w-6" />
                 </button>
@@ -1117,31 +1260,37 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
                 >
-                  <div className="text-6xl mb-4">{currentAchievement.icon}</div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  <div className="mb-4 text-6xl">{currentAchievement.icon}</div>
+                  <h2 className="mb-2 text-2xl font-bold text-gray-900">
                     Achievement Unlocked!
                   </h2>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  <h3 className="mb-2 text-xl font-semibold text-gray-800">
                     {currentAchievement['name']}
                   </h3>
-                  <p className="text-gray-600 mb-6">
+                  <p className="mb-6 text-gray-600">
                     {currentAchievement['description']}
                   </p>
-                  
-                  <div className="flex items-center justify-center space-x-4 mb-6">
+
+                  <div className="mb-6 flex items-center justify-center space-x-4">
                     <div className="flex items-center space-x-1">
                       <StarIcon className="h-5 w-5 text-yellow-500" />
                       <span className="font-medium text-yellow-600">
                         {currentAchievement.points} points
                       </span>
                     </div>
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                      currentAchievement.rarity === 'legendary' ? 'bg-purple-100 text-purple-800' :
-                      currentAchievement.rarity === 'epic' ? 'bg-orange-100 text-orange-800' :
-                      currentAchievement.rarity === 'rare' ? 'bg-blue-100 text-blue-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {currentAchievement.rarity.charAt(0).toUpperCase() + currentAchievement.rarity.slice(1)}
+                    <span
+                      className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${
+                        currentAchievement.rarity === 'legendary'
+                          ? 'bg-purple-100 text-purple-800'
+                          : currentAchievement.rarity === 'epic'
+                            ? 'bg-orange-100 text-orange-800'
+                            : currentAchievement.rarity === 'rare'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-gray-100 text-gray-800'
+                      }`}
+                    >
+                      {currentAchievement.rarity.charAt(0).toUpperCase() +
+                        currentAchievement.rarity.slice(1)}
                     </span>
                   </div>
 
@@ -1149,21 +1298,34 @@ const OnboardingComplete: React.FC<OnboardingStepProps> = ({
                     onClick={() => {
                       setShowAchievementModal(false);
                       // Show next achievement if there are more
-                      const currentIndex = staticAchievements.findIndex(a => a.id === currentAchievement.id);
+                      const currentIndex = staticAchievements.findIndex(
+                        (a) => a.id === currentAchievement.id
+                      );
                       if (currentIndex < staticAchievements.length - 1) {
                         setTimeout(() => {
-                          setCurrentAchievement(staticAchievements[currentIndex + 1]);
+                          setCurrentAchievement(
+                            staticAchievements[currentIndex + 1]
+                          );
                           setShowAchievementModal(true);
                         }, 500);
                       }
                     }}
-                    className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    className="inline-flex items-center rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700"
                   >
-                    {staticAchievements.findIndex(a => a.id === currentAchievement.id) < staticAchievements.length - 1 ? 'Next Achievement' : 'Continue'}
-                    {staticAchievements.findIndex(a => a.id === currentAchievement.id) < staticAchievements.length - 1 ? 
-                      <TrophyIcon className="ml-2 h-5 w-5" /> : 
+                    {staticAchievements.findIndex(
+                      (a) => a.id === currentAchievement.id
+                    ) <
+                    staticAchievements.length - 1
+                      ? 'Next Achievement'
+                      : 'Continue'}
+                    {staticAchievements.findIndex(
+                      (a) => a.id === currentAchievement.id
+                    ) <
+                    staticAchievements.length - 1 ? (
+                      <TrophyIcon className="ml-2 h-5 w-5" />
+                    ) : (
                       <CheckCircleIcon className="ml-2 h-5 w-5" />
-                    }
+                    )}
                   </button>
                 </motion.div>
               </motion.div>

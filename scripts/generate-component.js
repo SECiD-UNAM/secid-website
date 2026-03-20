@@ -30,11 +30,15 @@ const templates = {
   component: (name, props = false) => `import React from 'react';
 import clsx from 'clsx';
 
-${props ? `export interface ${name}Props {
+${
+  props
+    ? `export interface ${name}Props {
   className?: string;
   children?: React.ReactNode;
   // TODO: Add your props here
-}` : ''}
+}`
+    : ''
+}
 
 /**
  * ${name} Component
@@ -52,7 +56,10 @@ export const ${name}: React.FC${props ? `<${name}Props>` : ''} = (${props ? '{ c
 
 export default ${name};`,
 
-  story: (name, category) => `import type { Meta, StoryObj } from '@storybook/react';
+  story: (
+    name,
+    category
+  ) => `import type { Meta, StoryObj } from '@storybook/react';
 import { ${name} } from './${name}';
 
 const meta = {
@@ -192,7 +199,7 @@ function parseArgs() {
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    
+
     if (arg === '--help' || arg === '-h') {
       showHelp();
       process.exit(0);
@@ -250,7 +257,7 @@ Categories:
 // Create component files
 function createComponent(options) {
   const { name, type, category, props, test, story, force } = options;
-  
+
   if (!name) {
     log.error('Component name is required');
     showHelp();
@@ -258,14 +265,19 @@ function createComponent(options) {
   }
 
   // Ensure PascalCase for components and camelCase for hooks/utils
-  const componentName = type === 'component' 
-    ? name.charAt(0).toUpperCase() + name.slice(1)
-    : name.charAt(0).toLowerCase() + name.slice(1);
+  const componentName =
+    type === 'component'
+      ? name.charAt(0).toUpperCase() + name.slice(1)
+      : name.charAt(0).toLowerCase() + name.slice(1);
 
   // Determine base path
   let basePath;
   if (type === 'component') {
-    basePath = path.join(process.cwd(), categories[category] || category, componentName);
+    basePath = path.join(
+      process.cwd(),
+      categories[category] || category,
+      componentName
+    );
   } else if (type === 'hook') {
     basePath = path.join(process.cwd(), 'src/hooks');
   } else if (type === 'util') {
@@ -354,17 +366,25 @@ function createComponent(options) {
   });
 
   // Success message
-  console.log(`\n${colors.green}✨ ${componentName} ${type} created successfully!${colors.reset}`);
-  
+  console.log(
+    `\n${colors.green}✨ ${componentName} ${type} created successfully!${colors.reset}`
+  );
+
   if (type === 'component') {
     console.log(`\nImport it with:`);
-    console.log(`  ${colors.cyan}import { ${componentName} } from '@/components/${category}/${componentName}';${colors.reset}`);
+    console.log(
+      `  ${colors.cyan}import { ${componentName} } from '@/components/${category}/${componentName}';${colors.reset}`
+    );
   } else if (type === 'hook') {
     console.log(`\nImport it with:`);
-    console.log(`  ${colors.cyan}import { ${componentName} } from '@/hooks/${componentName}';${colors.reset}`);
+    console.log(
+      `  ${colors.cyan}import { ${componentName} } from '@/hooks/${componentName}';${colors.reset}`
+    );
   } else if (type === 'util') {
     console.log(`\nImport it with:`);
-    console.log(`  ${colors.cyan}import { ${componentName} } from '@/lib/utils/${componentName}';${colors.reset}`);
+    console.log(
+      `  ${colors.cyan}import { ${componentName} } from '@/lib/utils/${componentName}';${colors.reset}`
+    );
   }
 
   if (test) {

@@ -20,14 +20,14 @@ test.describe('Email Authentication', () => {
     test('should login with valid credentials', async ({ page }) => {
       // Arrange
       const user = validUsers.regularUser;
-      
+
       // Act
       await loginPage.login(user.email, user.password);
-      
+
       // Assert
       await expect(page).toHaveURL(/\/(dashboard|home)/);
       expect(await navigation.isUserLoggedIn()).toBe(true);
-      
+
       // Verify user info in navigation
       const userInfo = await navigation.getUserInfo();
       expect(userInfo?.email).toBe(user.email);
@@ -36,16 +36,18 @@ test.describe('Email Authentication', () => {
     test('should login and remember user', async ({ page, context }) => {
       // Arrange
       const user = validUsers.regularUser;
-      
+
       // Act
       await loginPage.login(user.email, user.password, true);
-      
+
       // Assert
       await expect(page).toHaveURL(/\/(dashboard|home)/);
-      
+
       // Check cookies persist
       const cookies = await context.cookies();
-      const authCookie = cookies.find(c => c.name.includes('auth') || c.name.includes('session'));
+      const authCookie = cookies.find(
+        (c) => c.name.includes('auth') || c.name.includes('session')
+      );
       expect(authCookie).toBeDefined();
       expect(authCookie?.expires).toBeGreaterThan(Date.now() / 1000 + 86400); // More than 1 day
     });
@@ -53,11 +55,11 @@ test.describe('Email Authentication', () => {
     test('should login with Enter key', async ({ page }) => {
       // Arrange
       const user = validUsers.regularUser;
-      
+
       // Act
       await loginPage.fillLoginForm(user.email, user.password);
       await loginPage.submitWithEnter();
-      
+
       // Assert
       await expect(page).toHaveURL(/\/(dashboard|home)/);
       expect(await navigation.isUserLoggedIn()).toBe(true);
@@ -66,14 +68,14 @@ test.describe('Email Authentication', () => {
     test('should redirect to original page after login', async ({ page }) => {
       // Navigate to protected page
       await page.goto('/dashboard/profile');
-      
+
       // Should redirect to login
       await expect(page).toHaveURL(/\/login/);
-      
+
       // Login
       const user = validUsers.regularUser;
       await loginPage.login(user.email, user.password);
-      
+
       // Should redirect back to profile
       await expect(page).toHaveURL(/\/dashboard\/profile/);
     });
@@ -83,10 +85,10 @@ test.describe('Email Authentication', () => {
     test('should show error for invalid email', async () => {
       // Arrange
       const user = invalidUsers.invalidEmail;
-      
+
       // Act
       await loginPage.login(user.email, user.password);
-      
+
       // Assert
       const errorMessage = await loginPage.getErrorMessage();
       expect(errorMessage).toContain('correo electrónico válido');
@@ -96,22 +98,24 @@ test.describe('Email Authentication', () => {
       // Arrange
       const email = validUsers.regularUser.email;
       const wrongPassword = 'WrongPassword123!';
-      
+
       // Act
       await loginPage.login(email, wrongPassword);
-      
+
       // Assert
       const errorMessage = await loginPage.getErrorMessage();
-      expect(errorMessage).toMatch(/contraseña incorrecta|credenciales inválidas/i);
+      expect(errorMessage).toMatch(
+        /contraseña incorrecta|credenciales inválidas/i
+      );
     });
 
     test('should show error for non-existent user', async () => {
       // Arrange
       const nonExistentUser = TestDataGenerator.generateUser();
-      
+
       // Act
       await loginPage.login(nonExistentUser.email, nonExistentUser.password);
-      
+
       // Assert
       const errorMessage = await loginPage.getErrorMessage();
       expect(errorMessage).toMatch(/no existe|usuario no encontrado/i);
@@ -120,14 +124,14 @@ test.describe('Email Authentication', () => {
     test('should handle SQL injection attempts', async ({ page }) => {
       // Arrange
       const maliciousUser = invalidUsers.sqlInjection;
-      
+
       // Act
       await loginPage.login(maliciousUser.email, maliciousUser.password);
-      
+
       // Assert
       const errorMessage = await loginPage.getErrorMessage();
       expect(errorMessage).toBeTruthy();
-      
+
       // Verify no redirect occurred
       await expect(page).toHaveURL(/\/login/);
     });
@@ -135,11 +139,11 @@ test.describe('Email Authentication', () => {
     test('should handle XSS attempts', async ({ page }) => {
       // Arrange
       const xssUser = invalidUsers.xssAttempt;
-      
+
       // Act
       await loginPage.fillLoginForm(xssUser.email, xssUser.password);
       await loginPage.submitLogin();
-      
+
       // Assert
       // Check that no script was executed
       const alertTriggered = await page.evaluate(() => {
@@ -153,7 +157,7 @@ test.describe('Email Authentication', () => {
     test('should validate required fields', async () => {
       // Act - Submit empty form
       await loginPage.submitLogin();
-      
+
       // Assert
       const errors = await loginPage.validateFormErrors();
       expect(errors.email).toBeTruthy();
@@ -164,7 +168,7 @@ test.describe('Email Authentication', () => {
       // Act
       await loginPage.fillLoginForm('invalid-email', 'Password123!');
       await loginPage.submitLogin();
-      
+
       // Assert
       const errorMessage = await loginPage.getErrorMessage();
       expect(errorMessage).toContain('correo electrónico válido');
@@ -173,15 +177,15 @@ test.describe('Email Authentication', () => {
     test('should disable submit button while loading', async () => {
       // Arrange
       const user = validUsers.regularUser;
-      
+
       // Act
       await loginPage.fillLoginForm(user.email, user.password);
       const submitPromise = loginPage.submitLogin();
-      
+
       // Assert - Check button is disabled during submission
       const isDisabled = await loginPage.isLoginButtonEnabled();
       expect(isDisabled).toBe(false);
-      
+
       await submitPromise;
     });
 
@@ -189,11 +193,11 @@ test.describe('Email Authentication', () => {
       // Submit with invalid data
       await loginPage.login('invalid', 'short');
       expect(await loginPage.hasError()).toBe(true);
-      
+
       // Start typing valid data
       await loginPage.clearForm();
       await loginPage.fillLoginForm('valid@email.com', 'ValidPassword123!');
-      
+
       // Error should clear
       expect(await loginPage.hasError()).toBe(false);
     });
@@ -204,19 +208,19 @@ test.describe('Email Authentication', () => {
       // Arrange
       const password = 'TestPassword123!';
       await loginPage.fillLoginForm('test@example.com', password);
-      
+
       // Assert - Initially password type
       expect(await loginPage.getPasswordFieldType()).toBe('password');
-      
+
       // Act - Toggle visibility
       await loginPage.togglePasswordVisibility();
-      
+
       // Assert - Should be text type
       expect(await loginPage.getPasswordFieldType()).toBe('text');
-      
+
       // Act - Toggle back
       await loginPage.togglePasswordVisibility();
-      
+
       // Assert - Should be password type again
       expect(await loginPage.getPasswordFieldType()).toBe('password');
     });
@@ -224,7 +228,7 @@ test.describe('Email Authentication', () => {
     test('should navigate to forgot password', async ({ page }) => {
       // Act
       await loginPage.clickForgotPassword();
-      
+
       // Assert
       await expect(page).toHaveURL(/\/forgot-password/);
     });
@@ -234,20 +238,22 @@ test.describe('Email Authentication', () => {
     test('should navigate to signup page', async ({ page }) => {
       // Act
       await loginPage.clickSignUp();
-      
+
       // Assert
       await expect(page).toHaveURL(/\/signup/);
     });
 
-    test('should redirect logged-in users away from login', async ({ page }) => {
+    test('should redirect logged-in users away from login', async ({
+      page,
+    }) => {
       // Login first
       const user = validUsers.regularUser;
       await loginPage.login(user.email, user.password);
       await expect(page).toHaveURL(/\/(dashboard|home)/);
-      
+
       // Try to access login page again
       await page.goto('/login');
-      
+
       // Should redirect to dashboard/home
       await expect(page).toHaveURL(/\/(dashboard|home)/);
     });
@@ -258,10 +264,10 @@ test.describe('Email Authentication', () => {
       // Login
       const user = validUsers.regularUser;
       await loginPage.login(user.email, user.password);
-      
+
       // Refresh page
       await page.reload();
-      
+
       // Should still be logged in
       expect(await navigation.isUserLoggedIn()).toBe(true);
     });
@@ -271,30 +277,33 @@ test.describe('Email Authentication', () => {
       const user = validUsers.regularUser;
       await loginPage.login(user.email, user.password);
       expect(await navigation.isUserLoggedIn()).toBe(true);
-      
+
       // Logout
       await navigation.logout();
-      
+
       // Verify logged out
       expect(await navigation.isUserLoggedIn()).toBe(false);
       await expect(page).toHaveURL(/\/(home|login)/);
     });
 
-    test('should handle concurrent login attempts', async ({ page, context }) => {
+    test('should handle concurrent login attempts', async ({
+      page,
+      context,
+    }) => {
       // Open second tab
       const page2 = await context.newPage();
       const loginPage2 = new LoginPage(page2);
       await loginPage2.goto();
-      
+
       // Login in first tab
       const user = validUsers.regularUser;
       await loginPage.login(user.email, user.password);
-      
+
       // Second tab should also reflect logged-in state when refreshed
       await page2.reload();
       const navigation2 = new NavigationComponent(page2);
       expect(await navigation2.isUserLoggedIn()).toBe(true);
-      
+
       await page2.close();
     });
   });
@@ -306,12 +315,14 @@ test.describe('Email Authentication', () => {
         await loginPage.login('test@example.com', `WrongPassword${i}`);
         await loginPage.clearForm();
       }
-      
+
       // Next attempt should show rate limit error
       await loginPage.login('test@example.com', 'AnotherWrongPassword');
       const errorMessage = await loginPage.getErrorMessage();
-      
-      expect(errorMessage).toMatch(/demasiados intentos|intenta más tarde|rate limit/i);
+
+      expect(errorMessage).toMatch(
+        /demasiados intentos|intenta más tarde|rate limit/i
+      );
     });
   });
 
@@ -320,33 +331,37 @@ test.describe('Email Authentication', () => {
       // Tab through form elements
       await page.keyboard.press('Tab'); // Focus email
       await page.keyboard.type('test@example.com');
-      
+
       await page.keyboard.press('Tab'); // Focus password
       await page.keyboard.type('Password123!');
-      
+
       await page.keyboard.press('Tab'); // Focus remember me
       await page.keyboard.press('Space'); // Check it
-      
+
       await page.keyboard.press('Tab'); // Focus submit button
       await page.keyboard.press('Enter'); // Submit
-      
+
       // Should attempt login
-      expect(await loginPage.hasError() || await page.url().includes('dashboard')).toBe(true);
+      expect(
+        (await loginPage.hasError()) || (await page.url().includes('dashboard'))
+      ).toBe(true);
     });
 
     test('should have proper ARIA labels', async ({ page }) => {
       // Check form accessibility
       const formAccessibility = await page.accessibility.snapshot();
-      
+
       // Email input should have label
-      const emailLabel = await page.$eval('[data-testid="login-email"]', el => 
-        el.getAttribute('aria-label') || el.getAttribute('placeholder')
+      const emailLabel = await page.$eval(
+        '[data-testid="login-email"]',
+        (el) => el.getAttribute('aria-label') || el.getAttribute('placeholder')
       );
       expect(emailLabel).toBeTruthy();
-      
+
       // Password input should have label
-      const passwordLabel = await page.$eval('[data-testid="login-password"]', el => 
-        el.getAttribute('aria-label') || el.getAttribute('placeholder')
+      const passwordLabel = await page.$eval(
+        '[data-testid="login-password"]',
+        (el) => el.getAttribute('aria-label') || el.getAttribute('placeholder')
       );
       expect(passwordLabel).toBeTruthy();
     });

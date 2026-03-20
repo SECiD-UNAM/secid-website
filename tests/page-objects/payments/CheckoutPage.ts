@@ -151,7 +151,9 @@ export class CheckoutPage extends BasePage {
     this.currencyDisplay = page.locator('[data-testid="currency-display"]');
 
     // Payment method selection
-    this.paymentMethodSection = page.locator('[data-testid="payment-method-section"]');
+    this.paymentMethodSection = page.locator(
+      '[data-testid="payment-method-section"]'
+    );
     this.creditCardOption = page.locator('[data-testid="payment-credit-card"]');
     this.debitCardOption = page.locator('[data-testid="payment-debit-card"]');
     this.oxxoOption = page.locator('[data-testid="payment-oxxo"]');
@@ -213,7 +215,9 @@ export class CheckoutPage extends BasePage {
     // Submit and navigation buttons
     this.continueButton = page.locator('[data-testid="continue-button"]');
     this.backButton = page.locator('[data-testid="back-button"]');
-    this.submitPaymentButton = page.locator('[data-testid="submit-payment-button"]');
+    this.submitPaymentButton = page.locator(
+      '[data-testid="submit-payment-button"]'
+    );
     this.cancelButton = page.locator('[data-testid="cancel-button"]');
 
     // Error and success elements
@@ -227,8 +231,12 @@ export class CheckoutPage extends BasePage {
     this.threeDSecureSubmit = page.locator('[data-testid="3ds-submit"]');
 
     // Mobile-specific elements
-    this.mobileStepIndicator = page.locator('[data-testid="mobile-step-indicator"]');
-    this.mobileCollapsibleSections = page.locator('[data-testid="collapsible-section"]');
+    this.mobileStepIndicator = page.locator(
+      '[data-testid="mobile-step-indicator"]'
+    );
+    this.mobileCollapsibleSections = page.locator(
+      '[data-testid="collapsible-section"]'
+    );
   }
 
   /**
@@ -273,19 +281,25 @@ export class CheckoutPage extends BasePage {
 
     return {
       tier: tier || '',
-      interval: (interval?.includes('year') ? 'year' : 'month') as 'month' | 'year',
+      interval: (interval?.includes('year') ? 'year' : 'month') as
+        | 'month'
+        | 'year',
       basePrice: parseFloat(basePriceText?.replace(/[^\d.]/g, '') || '0'),
       tax: parseFloat(taxText?.replace(/[^\d.]/g, '') || '0'),
-      discount: discountText ? parseFloat(discountText.replace(/[^\d.]/g, '')) : undefined,
+      discount: discountText
+        ? parseFloat(discountText.replace(/[^\d.]/g, ''))
+        : undefined,
       total: parseFloat(totalText?.replace(/[^\d.]/g, '') || '0'),
-      currency: currency?.replace(/[^\w]/g, '') || 'MXN'
+      currency: currency?.replace(/[^\w]/g, '') || 'MXN',
     };
   }
 
   /**
    * Select payment method
    */
-  async selectPaymentMethod(method: 'credit-card' | 'debit-card' | 'oxxo' | 'spei' | 'paypal'): Promise<void> {
+  async selectPaymentMethod(
+    method: 'credit-card' | 'debit-card' | 'oxxo' | 'spei' | 'paypal'
+  ): Promise<void> {
     switch (method) {
       case 'credit-card':
         await this.creditCardOption.click();
@@ -303,7 +317,7 @@ export class CheckoutPage extends BasePage {
         await this.paypalOption.click();
         break;
     }
-    
+
     // Wait for payment form to appear
     await this.page.waitForTimeout(500);
   }
@@ -319,7 +333,7 @@ export class CheckoutPage extends BasePage {
   }): Promise<void> {
     // Wait for Stripe elements to load
     await this.stripeCardElement.waitFor({ state: 'visible' });
-    
+
     // Fill card information in Stripe element
     await this.stripeCardElement.click();
     await this.page.keyboard.type(cardData.number);
@@ -327,7 +341,7 @@ export class CheckoutPage extends BasePage {
     await this.page.keyboard.type(cardData.expiry);
     await this.page.keyboard.press('Tab');
     await this.page.keyboard.type(cardData.cvc);
-    
+
     // Fill cardholder name if field exists
     if (await this.cardHolderNameInput.isVisible()) {
       await this.cardHolderNameInput.fill(cardData.name);
@@ -341,18 +355,18 @@ export class CheckoutPage extends BasePage {
     await this.firstNameInput.fill(address.firstName);
     await this.lastNameInput.fill(address.lastName);
     await this.emailInput.fill(address.email);
-    
-    if (address.company && await this.companyInput.isVisible()) {
+
+    if (address.company && (await this.companyInput.isVisible())) {
       await this.companyInput.fill(address.company);
     }
-    
+
     await this.addressInput.fill(address.address);
     await this.cityInput.fill(address.city);
     await this.stateSelect.selectOption(address.state);
     await this.postalCodeInput.fill(address.postalCode);
     await this.countrySelect.selectOption(address.country);
-    
-    if (address.taxId && await this.taxIdInput.isVisible()) {
+
+    if (address.taxId && (await this.taxIdInput.isVisible())) {
       await this.taxIdInput.fill(address.taxId);
     }
   }
@@ -369,15 +383,15 @@ export class CheckoutPage extends BasePage {
     if (await this.rfcInput.isVisible()) {
       await this.rfcInput.fill(fiscalData.rfc);
     }
-    
-    if (fiscalData.curp && await this.curpInput.isVisible()) {
+
+    if (fiscalData.curp && (await this.curpInput.isVisible())) {
       await this.curpInput.fill(fiscalData.curp);
     }
-    
+
     if (await this.fiscalRegimeSelect.isVisible()) {
       await this.fiscalRegimeSelect.selectOption(fiscalData.fiscalRegime);
     }
-    
+
     if (await this.cfdiUseSelect.isVisible()) {
       await this.cfdiUseSelect.selectOption(fiscalData.cfdiUse);
     }
@@ -392,35 +406,37 @@ export class CheckoutPage extends BasePage {
   }> {
     if (!(await this.promoCodeSection.isVisible())) {
       // Expand promo code section if it's collapsed
-      const expandButton = this.page.locator('[data-testid="expand-promo-code"]');
+      const expandButton = this.page.locator(
+        '[data-testid="expand-promo-code"]'
+      );
       if (await expandButton.isVisible()) {
         await expandButton.click();
       }
     }
-    
+
     await this.promoCodeInput.fill(code);
     await this.applyPromoButton.click();
-    
+
     // Wait for response
     await this.page.waitForTimeout(2000);
-    
+
     if (await this.promoCodeSuccess.isVisible()) {
       const message = await this.promoCodeSuccess.textContent();
       return {
         success: true,
-        message: message || 'Promotional code applied successfully'
+        message: message || 'Promotional code applied successfully',
       };
     } else if (await this.promoCodeError.isVisible()) {
       const message = await this.promoCodeError.textContent();
       return {
         success: false,
-        message: message || 'Invalid promotional code'
+        message: message || 'Invalid promotional code',
       };
     }
-    
+
     return {
       success: false,
-      message: 'Unknown error applying promotional code'
+      message: 'Unknown error applying promotional code',
     };
   }
 
@@ -432,15 +448,15 @@ export class CheckoutPage extends BasePage {
     acceptPrivacy: boolean = true,
     acceptMarketing: boolean = false
   ): Promise<void> {
-    if (acceptTerms && await this.termsCheckbox.isVisible()) {
+    if (acceptTerms && (await this.termsCheckbox.isVisible())) {
       await this.termsCheckbox.check();
     }
-    
-    if (acceptPrivacy && await this.privacyCheckbox.isVisible()) {
+
+    if (acceptPrivacy && (await this.privacyCheckbox.isVisible())) {
       await this.privacyCheckbox.check();
     }
-    
-    if (acceptMarketing && await this.marketingCheckbox.isVisible()) {
+
+    if (acceptMarketing && (await this.marketingCheckbox.isVisible())) {
       await this.marketingCheckbox.check();
     }
   }
@@ -458,16 +474,16 @@ export class CheckoutPage extends BasePage {
   async handle3DSecure(shouldSucceed: boolean = true): Promise<void> {
     // Wait for 3D Secure modal to appear
     await this.threeDSecureModal.waitFor({ state: 'visible', timeout: 10000 });
-    
+
     // Switch to 3D Secure frame context
     const frame = this.page.frameLocator('[data-testid="3ds-frame"]');
-    
+
     if (shouldSucceed) {
       await frame.locator('[data-testid="3ds-complete"]').click();
     } else {
       await frame.locator('[data-testid="3ds-fail"]').click();
     }
-    
+
     // Wait for modal to close
     await this.threeDSecureModal.waitFor({ state: 'hidden', timeout: 10000 });
   }
@@ -484,21 +500,21 @@ export class CheckoutPage extends BasePage {
     if (!(await this.oxxoInstructions.isVisible())) {
       return null;
     }
-    
+
     const reference = await this.oxxoReferenceNumber.textContent();
     const amount = await this.speiAmount.textContent(); // Same element for amount
     const instructions = await this.oxxoInstructions.textContent();
-    
+
     let barcodeUrl = null;
     if (await this.oxxoBarcode.isVisible()) {
       barcodeUrl = await this.oxxoBarcode.getAttribute('src');
     }
-    
+
     return {
       reference: reference || '',
       amount: amount || '',
       instructions: instructions || '',
-      barcodeUrl
+      barcodeUrl,
     };
   }
 
@@ -514,17 +530,17 @@ export class CheckoutPage extends BasePage {
     if (!(await this.speiInstructions.isVisible())) {
       return null;
     }
-    
+
     const bankAccount = await this.speiBankAccount.textContent();
     const reference = await this.speiReference.textContent();
     const amount = await this.speiAmount.textContent();
     const instructions = await this.speiInstructions.textContent();
-    
+
     return {
       bankAccount: bankAccount || '',
       reference: reference || '',
       amount: amount || '',
-      instructions: instructions || ''
+      instructions: instructions || '',
     };
   }
 
@@ -532,8 +548,10 @@ export class CheckoutPage extends BasePage {
    * Check if payment is processing
    */
   async isProcessing(): Promise<boolean> {
-    return await this.loadingOverlay.isVisible() || 
-           await this.submitPaymentButton.getAttribute('disabled') === '';
+    return (
+      (await this.loadingOverlay.isVisible()) ||
+      (await this.submitPaymentButton.getAttribute('disabled')) === ''
+    );
   }
 
   /**
@@ -549,14 +567,14 @@ export class CheckoutPage extends BasePage {
   async getValidationErrors(): Promise<string[]> {
     const errorElements = await this.validationErrors.all();
     const errors = [];
-    
+
     for (const element of errorElements) {
       const text = await element.textContent();
       if (text) {
         errors.push(text);
       }
     }
-    
+
     return errors;
   }
 
@@ -567,7 +585,7 @@ export class CheckoutPage extends BasePage {
     if (!(await this.errorMessage.isVisible())) {
       return null;
     }
-    
+
     return await this.errorMessage.textContent();
   }
 
@@ -578,7 +596,7 @@ export class CheckoutPage extends BasePage {
     if (!(await this.successMessage.isVisible())) {
       return null;
     }
-    
+
     return await this.successMessage.textContent();
   }
 
@@ -630,7 +648,7 @@ export class CheckoutPage extends BasePage {
         if (!promoResult.success) {
           return {
             success: false,
-            message: `Promo code error: ${promoResult.message}`
+            message: `Promo code error: ${promoResult.message}`,
           };
         }
       }
@@ -639,20 +657,23 @@ export class CheckoutPage extends BasePage {
       await this.selectPaymentMethod(paymentMethod);
 
       // Fill payment details based on method
-      if ((paymentMethod === 'credit-card' || paymentMethod === 'debit-card') && cardData) {
+      if (
+        (paymentMethod === 'credit-card' || paymentMethod === 'debit-card') &&
+        cardData
+      ) {
         await this.fillCreditCardInfo(cardData);
       }
 
       // Fill billing address if provided
       if (billingAddress) {
         await this.fillBillingAddress(billingAddress);
-        
+
         // Fill Mexican fiscal info if country is Mexico
         if (billingAddress.country === 'MX' && billingAddress.taxId) {
           await this.fillMexicanFiscalInfo({
             rfc: billingAddress.taxId,
             fiscalRegime: '601', // General Regime
-            cfdiUse: 'G03' // General expenses
+            cfdiUse: 'G03', // General expenses
           });
         }
       }
@@ -670,33 +691,32 @@ export class CheckoutPage extends BasePage {
       const successMessage = await this.getSuccessMessage();
       if (successMessage) {
         let paymentInstructions = null;
-        
+
         if (paymentMethod === 'oxxo') {
           paymentInstructions = await this.getOXXOInstructions();
         } else if (paymentMethod === 'spei') {
           paymentInstructions = await this.getSPEIInstructions();
         }
-        
+
         return {
           success: true,
           message: successMessage,
-          paymentInstructions
+          paymentInstructions,
         };
       }
 
       // Check for errors
       const errorMessage = await this.getErrorMessage();
       const validationErrors = await this.getValidationErrors();
-      
+
       return {
         success: false,
-        message: errorMessage || validationErrors.join(', ') || 'Unknown error'
+        message: errorMessage || validationErrors.join(', ') || 'Unknown error',
       };
-      
     } catch (error) {
       return {
         success: false,
-        message: `Checkout error: ${error}`
+        message: `Checkout error: ${error}`,
       };
     }
   }
@@ -712,26 +732,28 @@ export class CheckoutPage extends BasePage {
     await this.selectPaymentMethod('credit-card');
     await this.acceptTermsAndConditions();
     await this.submitPayment();
-    
+
     // Wait for validation messages
     await this.page.waitForTimeout(1000);
-    
+
     const validationErrors = await this.getValidationErrors();
-    
+
     // Get required field indicators
     const requiredFields = [];
-    const requiredElements = await this.page.locator('.required, [required]').all();
-    
+    const requiredElements = await this.page
+      .locator('.required, [required]')
+      .all();
+
     for (const element of requiredElements) {
       const testId = await element.getAttribute('data-testid');
       if (testId) {
         requiredFields.push(testId);
       }
     }
-    
+
     return {
       requiredFields,
-      validationMessages: validationErrors
+      validationMessages: validationErrors,
     };
   }
 
@@ -767,12 +789,14 @@ export class CheckoutPage extends BasePage {
     // Check for proper labels
     const inputs = await this.page.locator('input, select').all();
     let hasProperLabels = true;
-    
+
     for (const input of inputs) {
       const id = await input.getAttribute('id');
       const ariaLabel = await input.getAttribute('aria-label');
-      const label = id ? await this.page.locator(`label[for="${id}"]`).count() : 0;
-      
+      const label = id
+        ? await this.page.locator(`label[for="${id}"]`).count()
+        : 0;
+
       if (!label && !ariaLabel) {
         hasProperLabels = false;
         break;
@@ -782,7 +806,7 @@ export class CheckoutPage extends BasePage {
     // Check for error descriptions
     const errorElements = await this.page.locator('[aria-describedby]').all();
     let hasErrorDescriptions = true;
-    
+
     for (const element of errorElements) {
       const describedBy = await element.getAttribute('aria-describedby');
       if (describedBy) {
@@ -801,7 +825,7 @@ export class CheckoutPage extends BasePage {
       keyboardNavigable,
       hasProperLabels,
       hasErrorDescriptions,
-      colorContrastOk
+      colorContrastOk,
     };
   }
 
@@ -809,7 +833,7 @@ export class CheckoutPage extends BasePage {
    * Simulate network failure during payment
    */
   async simulateNetworkFailure(): Promise<void> {
-    await this.page.route('**/api/payments/**', route => {
+    await this.page.route('**/api/payments/**', (route) => {
       route.abort('failed');
     });
   }

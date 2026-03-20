@@ -41,28 +41,23 @@ export const forumTranslations = {
         },
         technicalDiscussion: {
           name: 'Discusión Técnica',
-          description:
-            'Debates sobre herramientas, algoritmos y metodologías',
+          description: 'Debates sobre herramientas, algoritmos y metodologías',
         },
         industryNews: {
           name: 'Noticias de la Industria',
-          description:
-            'Últimas noticias y tendencias en ciencia de datos',
+          description: 'Últimas noticias y tendencias en ciencia de datos',
         },
         jobOpportunities: {
           name: 'Oportunidades Laborales',
-          description:
-            'Ofertas de trabajo y oportunidades profesionales',
+          description: 'Ofertas de trabajo y oportunidades profesionales',
         },
         networking: {
           name: 'Networking',
-          description:
-            'Conecta con otros profesionales y egresados',
+          description: 'Conecta con otros profesionales y egresados',
         },
         generalDiscussion: {
           name: 'Discusión General',
-          description:
-            'Temas generales y conversaciones de la comunidad',
+          description: 'Temas generales y conversaciones de la comunidad',
         },
       },
 
@@ -75,8 +70,7 @@ export const forumTranslations = {
           titleRequired: 'El título es obligatorio',
           contentRequired: 'El contenido es obligatorio',
           categoryRequired: 'La categoría es obligatoria',
-          titleTooLong:
-            'El título es demasiado largo (máximo 200 caracteres)',
+          titleTooLong: 'El título es demasiado largo (máximo 200 caracteres)',
           contentTooLong:
             'El contenido es demasiado largo (máximo 10000 caracteres)',
         },
@@ -144,8 +138,7 @@ export const forumTranslations = {
       search: 'Search',
       searchResults: 'results found',
       noResults: 'No results',
-      noResultsDescription:
-        'No results found. Try different search terms.',
+      noResultsDescription: 'No results found. Try different search terms.',
 
       // Sorting
       sortByDate: 'Most recent',
@@ -168,28 +161,23 @@ export const forumTranslations = {
         },
         technicalDiscussion: {
           name: 'Technical Discussion',
-          description:
-            'Discussions about tools, algorithms, and methodologies',
+          description: 'Discussions about tools, algorithms, and methodologies',
         },
         industryNews: {
           name: 'Industry News',
-          description:
-            'Latest news and trends in data science',
+          description: 'Latest news and trends in data science',
         },
         jobOpportunities: {
           name: 'Job Opportunities',
-          description:
-            'Job listings and professional opportunities',
+          description: 'Job listings and professional opportunities',
         },
         networking: {
           name: 'Networking',
-          description:
-            'Connect with other professionals and alumni',
+          description: 'Connect with other professionals and alumni',
         },
         generalDiscussion: {
           name: 'General Discussion',
-          description:
-            'General topics and community conversations',
+          description: 'General topics and community conversations',
         },
       },
 
@@ -202,10 +190,8 @@ export const forumTranslations = {
           titleRequired: 'Title is required',
           contentRequired: 'Content is required',
           categoryRequired: 'Category is required',
-          titleTooLong:
-            'Title is too long (maximum 200 characters)',
-          contentTooLong:
-            'Content is too long (maximum 10000 characters)',
+          titleTooLong: 'Title is too long (maximum 200 characters)',
+          contentTooLong: 'Content is too long (maximum 10000 characters)',
         },
       },
 

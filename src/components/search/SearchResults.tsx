@@ -9,41 +9,60 @@ import {
   ListBulletIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  EllipsisHorizontalIcon
+  EllipsisHorizontalIcon,
 } from '@heroicons/react/24/outline';
-import { clsx} from 'clsx';
+import { clsx } from 'clsx';
 import SearchBar from './SearchBar';
-import { searchEngine} from '@/lib/search/search-engine';
-import { useTranslations} from '@/hooks/useTranslations';
+import { searchEngine } from '@/lib/search/search-engine';
+import { useTranslations } from '@/hooks/useTranslations';
 
 /**
  * SearchResults Component - Full search results page with advanced filtering
  * Features: Pagination, sorting, filtering, export, search within results
  */
-import type { 
-  SearchResultsProps, 
-  SearchResultItem, 
+import type {
+  SearchResultsProps,
+  SearchResultItem,
   SearchFilters,
   SearchContentType,
   SearchFacets,
   SearchExportConfig,
-  SearchSort
+  SearchSort,
 } from '@/types/search';
 
 // Content type configurations (reused from GlobalSearch)
-const CONTENT_TYPE_CONFIG: Record<SearchContentType, {
-  label: string;
-  color: string;
-  bgColor: string;
-}> = {
+const CONTENT_TYPE_CONFIG: Record<
+  SearchContentType,
+  {
+    label: string;
+    color: string;
+    bgColor: string;
+  }
+> = {
   all: { label: 'All', color: 'text-gray-700', bgColor: 'bg-gray-100' },
   jobs: { label: 'Jobs', color: 'text-blue-700', bgColor: 'bg-blue-100' },
   events: { label: 'Events', color: 'text-green-700', bgColor: 'bg-green-100' },
-  forums: { label: 'Forums', color: 'text-purple-700', bgColor: 'bg-purple-100' },
-  members: { label: 'Members', color: 'text-orange-700', bgColor: 'bg-orange-100' },
-  mentors: { label: 'Mentors', color: 'text-indigo-700', bgColor: 'bg-indigo-100' },
-  resources: { label: 'Resources', color: 'text-teal-700', bgColor: 'bg-teal-100' },
-  news: { label: 'News', color: 'text-red-700', bgColor: 'bg-red-100' }
+  forums: {
+    label: 'Forums',
+    color: 'text-purple-700',
+    bgColor: 'bg-purple-100',
+  },
+  members: {
+    label: 'Members',
+    color: 'text-orange-700',
+    bgColor: 'bg-orange-100',
+  },
+  mentors: {
+    label: 'Mentors',
+    color: 'text-indigo-700',
+    bgColor: 'bg-indigo-100',
+  },
+  resources: {
+    label: 'Resources',
+    color: 'text-teal-700',
+    bgColor: 'bg-teal-100',
+  },
+  news: { label: 'News', color: 'text-red-700', bgColor: 'bg-red-100' },
 };
 
 // View modes
@@ -54,7 +73,7 @@ const SORT_OPTIONS = [
   { field: 'relevance', label: 'Relevance', direction: 'desc' },
   { field: 'date', label: 'Date', direction: 'desc' },
   { field: 'title', label: 'Title', direction: 'asc' },
-  { field: 'popularity', label: 'Popularity', direction: 'desc' }
+  { field: 'popularity', label: 'Popularity', direction: 'desc' },
 ] as const;
 
 export const SearchResults: React.FC<SearchResultsProps> = ({
@@ -62,104 +81,118 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   filters: initialFilters,
   onFilterChange,
   onExport,
-  className
+  className,
 }) => {
   const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<SearchResultItem[]>([]);
   const [facets, setFacets] = useState<SearchFacets | null>(null);
   const [filters, setFilters] = useState<SearchFilters>(initialFilters);
-  const [sort, setSort] = useState<SearchSort>({ field: 'relevance', direction: 'desc' });
+  const [sort, setSort] = useState<SearchSort>({
+    field: 'relevance',
+    direction: 'desc',
+  });
   const [currentPage, setCurrentPage] = useState(0);
   const [totalResults, setTotalResults] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
-  const [selectedResults, setSelectedResults] = useState<Set<string>>(new Set());
+  const [selectedResults, setSelectedResults] = useState<Set<string>>(
+    new Set()
+  );
   const [searchWithinResults, setSearchWithinResults] = useState('');
-  
+
   const { t } = useTranslations();
   const resultsPerPage = 20;
 
   // Perform search
-  const performSearch = useCallback(async (
-    searchQuery: string,
-    searchFilters: SearchFilters,
-    searchSort: SearchSort,
-    page: number = 0
-  ) => {
-    if (!searchQuery.trim()) {
-      setResults([]);
-      setTotalResults(0);
-      setTotalPages(0);
-      return;
-    }
+  const performSearch = useCallback(
+    async (
+      searchQuery: string,
+      searchFilters: SearchFilters,
+      searchSort: SearchSort,
+      page: number = 0
+    ) => {
+      if (!searchQuery.trim()) {
+        setResults([]);
+        setTotalResults(0);
+        setTotalPages(0);
+        return;
+      }
 
-    setIsLoading(true);
-    try {
-      const response = await searchEngine.search({
-        query: searchQuery,
-        filters: searchFilters,
-        sort: searchSort,
-        pagination: { 
-          page, 
-          limit: resultsPerPage, 
-          offset: page * resultsPerPage 
-        },
-        options: {
-          fuzzyMatching: true,
-          typoTolerance: true,
-          highlightResults: true,
-          includeContent: true,
-          minScore: 0.1,
-          maxResults: 1000
-        }
-      });
+      setIsLoading(true);
+      try {
+        const response = await searchEngine.search({
+          query: searchQuery,
+          filters: searchFilters,
+          sort: searchSort,
+          pagination: {
+            page,
+            limit: resultsPerPage,
+            offset: page * resultsPerPage,
+          },
+          options: {
+            fuzzyMatching: true,
+            typoTolerance: true,
+            highlightResults: true,
+            includeContent: true,
+            minScore: 0.1,
+            maxResults: 1000,
+          },
+        });
 
-      setResults(response.results);
-      setFacets(response.facets);
-      setTotalResults(response.total);
-      setTotalPages(response.totalPages);
-      setCurrentPage(page);
-
-    } catch (error) {
-      console.error('Search error:', error);
-      setResults([]);
-      setTotalResults(0);
-      setTotalPages(0);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+        setResults(response.results);
+        setFacets(response.facets);
+        setTotalResults(response.total);
+        setTotalPages(response.totalPages);
+        setCurrentPage(page);
+      } catch (error) {
+        console.error('Search error:', error);
+        setResults([]);
+        setTotalResults(0);
+        setTotalPages(0);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   // Filter results when searching within results
   const filteredResults = useMemo(() => {
     if (!searchWithinResults.trim()) return results;
-    
+
     const searchTerm = searchWithinResults.toLowerCase();
-    return results.filter(result => 
-      result?.title?.toLowerCase().includes(searchTerm) ||
-      result?.description?.toLowerCase().includes(searchTerm) ||
-      result?.content?.toLowerCase().includes(searchTerm) ||
-      result?.tags?.some(tag => tag.toLowerCase().includes(searchTerm))
+    return results.filter(
+      (result) =>
+        result?.title?.toLowerCase().includes(searchTerm) ||
+        result?.description?.toLowerCase().includes(searchTerm) ||
+        result?.content?.toLowerCase().includes(searchTerm) ||
+        result?.tags?.some((tag) => tag.toLowerCase().includes(searchTerm))
     );
   }, [results, searchWithinResults]);
 
   // Handle search
-  const handleSearch = useCallback((newQuery: string) => {
-    setQuery(newQuery);
-    setCurrentPage(0);
-    performSearch(newQuery, filters, sort, 0);
-  }, [filters, sort, performSearch]);
+  const handleSearch = useCallback(
+    (newQuery: string) => {
+      setQuery(newQuery);
+      setCurrentPage(0);
+      performSearch(newQuery, filters, sort, 0);
+    },
+    [filters, sort, performSearch]
+  );
 
   // Handle filter changes
-  const handleFilterChange = useCallback((newFilters: Partial<SearchFilters>) => {
-    const updatedFilters = { ...filters, ...newFilters };
-    setFilters(updatedFilters);
-    setCurrentPage(0);
-    onFilterChange(updatedFilters);
-    performSearch(query, updatedFilters, sort, 0);
-  }, [filters, query, sort, performSearch, onFilterChange]);
+  const handleFilterChange = useCallback(
+    (newFilters: Partial<SearchFilters>) => {
+      const updatedFilters = { ...filters, ...newFilters };
+      setFilters(updatedFilters);
+      setCurrentPage(0);
+      onFilterChange(updatedFilters);
+      performSearch(query, updatedFilters, sort, 0);
+    },
+    [filters, query, sort, performSearch, onFilterChange]
+  );
 
   // Handle sort change
   const handleSortChange = (newSort: SearchSort) => {
@@ -178,7 +211,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   // Handle result selection
   const handleResultSelect = (resultId: string, selected: boolean) => {
     const newSelected = new Set(selectedResults);
-    if(selected) {
+    if (selected) {
       newSelected.add(resultId);
     } else {
       newSelected.delete(resultId);
@@ -188,8 +221,8 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
 
   // Handle select all
   const handleSelectAll = (selected: boolean) => {
-    if(selected) {
-      setSelectedResults(new Set(filteredResults.map(r => r.id)));
+    if (selected) {
+      setSelectedResults(new Set(filteredResults.map((r) => r.id)));
     } else {
       setSelectedResults(new Set());
     }
@@ -203,8 +236,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
       format,
       fields: ['title', 'description', 'type', 'url', 'tags', 'createdAt'],
       filters,
-      maxResults: selectedResults.size > 0 ? selectedResults.size : totalResults,
-      includeMetadata: true
+      maxResults:
+        selectedResults.size > 0 ? selectedResults.size : totalResults,
+      includeMetadata: true,
     };
 
     try {
@@ -216,7 +250,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
 
   // Initial search
   useEffect(() => {
-    if(initialQuery) {
+    if (initialQuery) {
       performSearch(initialQuery, initialFilters, sort, 0);
     }
   }, [initialQuery, initialFilters, sort, performSearch]);
@@ -226,7 +260,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
     return new Intl.DateTimeFormat('es-ES', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     }).format(date);
   };
 
@@ -239,7 +273,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
       <div
         key={result.id}
         className={clsx(
-          'border rounded-lg transition-all duration-200',
+          'rounded-lg border transition-all duration-200',
           'hover:border-gray-300 hover:shadow-md',
           isSelected ? 'border-blue-300 bg-blue-50' : 'border-gray-200 bg-white'
         )}
@@ -250,16 +284,18 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
               type="checkbox"
               checked={isSelected}
               onChange={(e) => handleResultSelect(result.id, e.target.checked)}
-              className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
-            
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center space-x-2 mb-2">
-                <span className={clsx(
-                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                  config.bgColor,
-                  config.color
-                )}>
+
+            <div className="min-w-0 flex-1">
+              <div className="mb-2 flex items-center space-x-2">
+                <span
+                  className={clsx(
+                    'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
+                    config.bgColor,
+                    config.color
+                  )}
+                >
                   {config.label}
                 </span>
                 {result['metadata'].category && (
@@ -272,10 +308,10 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                 </span>
               </div>
 
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                <a 
+              <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                <a
                   href={result.url}
-                  className="hover:text-blue-600 transition-colors"
+                  className="transition-colors hover:text-blue-600"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -283,13 +319,13 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                 </a>
               </h3>
 
-              <p className="text-gray-600 mb-3 line-clamp-3">
+              <p className="mb-3 line-clamp-3 text-gray-600">
                 {result['description']}
               </p>
 
               {result?.highlights?.length > 0 && (
                 <div className="mb-3">
-                  <div className="text-sm text-gray-700 bg-yellow-50 p-2 rounded border-l-2 border-yellow-200">
+                  <div className="rounded border-l-2 border-yellow-200 bg-yellow-50 p-2 text-sm text-gray-700">
                     <strong>Matches:</strong> {result.highlights?.[0].snippet}
                   </div>
                 </div>
@@ -308,10 +344,10 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
 
                 {result?.tags?.length > 0 && (
                   <div className="flex flex-wrap gap-1">
-                    {result?.tags?.slice(0, 3).map(tag => (
+                    {result?.tags?.slice(0, 3).map((tag) => (
                       <span
                         key={tag}
-                        className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-600"
+                        className="inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-600"
                       >
                         {tag}
                       </span>
@@ -337,31 +373,37 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             type="checkbox"
             checked={isSelected}
             onChange={(e) => handleResultSelect(result.id, e.target.checked)}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
           />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center space-x-2 mb-1">
-              <span className={clsx(
-                'inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium',
-                config.bgColor,
-                config.color
-              )}>
+          <div className="min-w-0 flex-1">
+            <div className="mb-1 flex items-center space-x-2">
+              <span
+                className={clsx(
+                  'inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium',
+                  config.bgColor,
+                  config.color
+                )}
+              >
                 {config.label}
               </span>
-              <h3 className="text-sm font-medium text-gray-900 truncate">
+              <h3 className="truncate text-sm font-medium text-gray-900">
                 <a href={result.url} className="hover:text-blue-600">
                   {result.title}
                 </a>
               </h3>
             </div>
-            <p className="text-sm text-gray-600 truncate">{result['description']}</p>
+            <p className="truncate text-sm text-gray-600">
+              {result['description']}
+            </p>
           </div>
           <div className="text-xs text-gray-400">
             {formatDate(result['metadata'].createdAt)}
           </div>
         </div>
       </div>
-    ) : baseCard;
+    ) : (
+      baseCard
+    );
   };
 
   // Pagination component
@@ -370,7 +412,10 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
 
     const pages = [];
     const maxVisiblePages = 7;
-    const startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
+    const startPage = Math.max(
+      0,
+      currentPage - Math.floor(maxVisiblePages / 2)
+    );
     const endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
 
     for (let i = startPage; i <= endPage; i++) {
@@ -378,7 +423,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
     }
 
     return (
-      <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-white">
+      <div className="flex items-center justify-between border-t border-gray-200 bg-white px-6 py-4">
         <div className="flex items-center space-x-2 text-sm text-gray-500">
           <span>
             Showing {currentPage * resultsPerPage + 1} to{' '}
@@ -392,9 +437,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 0}
             className={clsx(
-              'p-2 rounded-lg border transition-colors',
+              'rounded-lg border p-2 transition-colors',
               currentPage === 0
-                ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+                ? 'cursor-not-allowed border-gray-200 text-gray-400'
                 : 'border-gray-300 text-gray-700 hover:bg-gray-50'
             )}
           >
@@ -405,7 +450,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             <>
               <button
                 onClick={() => handlePageChange(0)}
-                className="px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-50"
+                className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
               >
                 1
               </button>
@@ -417,12 +462,12 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             </>
           )}
 
-          {pages.map(page => (
+          {pages.map((page) => (
             <button
               key={page}
               onClick={() => handlePageChange(page)}
               className={clsx(
-                'px-3 py-2 rounded-lg border text-sm transition-colors',
+                'rounded-lg border px-3 py-2 text-sm transition-colors',
                 page === currentPage
                   ? 'border-blue-500 bg-blue-50 text-blue-700'
                   : 'border-gray-300 text-gray-700 hover:bg-gray-50'
@@ -441,7 +486,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
               )}
               <button
                 onClick={() => handlePageChange(totalPages - 1)}
-                className="px-3 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-50"
+                className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
               >
                 {totalPages}
               </button>
@@ -452,9 +497,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages - 1}
             className={clsx(
-              'p-2 rounded-lg border transition-colors',
+              'rounded-lg border p-2 transition-colors',
               currentPage === totalPages - 1
-                ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+                ? 'cursor-not-allowed border-gray-200 text-gray-400'
                 : 'border-gray-300 text-gray-700 hover:bg-gray-50'
             )}
           >
@@ -466,22 +511,24 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   };
 
   return (
-    <div className={clsx('max-w-7xl mx-auto', className)}>
+    <div className={clsx('mx-auto max-w-7xl', className)}>
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between mb-4">
+      <div className="border-b border-gray-200 bg-white px-6 py-4">
+        <div className="mb-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-900">
             {t('search.results.title', 'Search Results')}
           </h1>
-          
+
           <div className="flex items-center space-x-2">
             {/* View Mode Toggles */}
-            <div className="flex items-center border border-gray-300 rounded-lg">
+            <div className="flex items-center rounded-lg border border-gray-300">
               <button
                 onClick={() => setViewMode('list')}
                 className={clsx(
-                  'p-2 rounded-l-lg transition-colors',
-                  viewMode === 'list' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'
+                  'rounded-l-lg p-2 transition-colors',
+                  viewMode === 'list'
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-gray-600 hover:bg-gray-50'
                 )}
                 title="List view"
               >
@@ -491,7 +538,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                 onClick={() => setViewMode('grid')}
                 className={clsx(
                   'p-2 transition-colors',
-                  viewMode === 'grid' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'
+                  viewMode === 'grid'
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-gray-600 hover:bg-gray-50'
                 )}
                 title="Grid view"
               >
@@ -500,8 +549,10 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
               <button
                 onClick={() => setViewMode('compact')}
                 className={clsx(
-                  'p-2 rounded-r-lg transition-colors',
-                  viewMode === 'compact' ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-50'
+                  'rounded-r-lg p-2 transition-colors',
+                  viewMode === 'compact'
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-gray-600 hover:bg-gray-50'
                 )}
                 title="Compact view"
               >
@@ -514,7 +565,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
               <div className="relative">
                 <button
                   onClick={() => handleExport('csv')}
-                  className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
+                  className="flex items-center space-x-2 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
                 >
                   <ArrowDownTrayIcon className="h-4 w-4" />
                   <span>{t('search.export', 'Export')}</span>
@@ -526,9 +577,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={clsx(
-                'flex items-center space-x-2 px-3 py-2 border rounded-lg text-sm transition-colors',
-                showFilters 
-                  ? 'border-blue-300 bg-blue-50 text-blue-700' 
+                'flex items-center space-x-2 rounded-lg border px-3 py-2 text-sm transition-colors',
+                showFilters
+                  ? 'border-blue-300 bg-blue-50 text-blue-700'
                   : 'border-gray-300 text-gray-700 hover:bg-gray-50'
               )}
             >
@@ -552,15 +603,15 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
       <div className="flex">
         {/* Sidebar Filters */}
         {showFilters && facets && (
-          <aside className="w-80 bg-gray-50 border-r border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          <aside className="w-80 border-r border-gray-200 bg-gray-50 p-6">
+            <h2 className="mb-4 text-lg font-semibold text-gray-900">
               {t('search.filters.title', 'Filters')}
             </h2>
 
             {/* Content Types */}
             {facets.contentTypes.length > 0 && (
               <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">
+                <h3 className="mb-3 text-sm font-medium text-gray-700">
                   {t('search.filters.contentType', 'Content Type')}
                 </h3>
                 <div className="space-y-2">
@@ -572,10 +623,10 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                         onChange={(e) => {
                           const newTypes = e.target.checked
                             ? [...filters.contentTypes, type]
-                            : filters.contentTypes.filter(t => t !== type);
+                            : filters.contentTypes.filter((t) => t !== type);
                           handleFilterChange({ contentTypes: newTypes });
                         }}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                       <span className="ml-2 text-sm text-gray-700">
                         {label} ({count})
@@ -589,10 +640,10 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             {/* Categories */}
             {facets.categories.length > 0 && (
               <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">
+                <h3 className="mb-3 text-sm font-medium text-gray-700">
                   {t('search.filters.category', 'Category')}
                 </h3>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
+                <div className="max-h-48 space-y-2 overflow-y-auto">
                   {facets.categories.map(({ category, count }) => (
                     <label key={category} className="flex items-center">
                       <input
@@ -602,10 +653,10 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                           const currentCategories = filters.category || [];
                           const newCategories = e.target.checked
                             ? [...currentCategories, category]
-                            : currentCategories.filter(c => c !== category);
+                            : currentCategories.filter((c) => c !== category);
                           handleFilterChange({ category: newCategories });
                         }}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                       <span className="ml-2 text-sm text-gray-700">
                         {category} ({count})
@@ -619,7 +670,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             {/* Popular Tags */}
             {facets.tags.length > 0 && (
               <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">
+                <h3 className="mb-3 text-sm font-medium text-gray-700">
                   {t('search.filters.tags', 'Tags')}
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -630,14 +681,14 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                         const currentTags = filters.tags || [];
                         const isSelected = currentTags.includes(tag);
                         const newTags = isSelected
-                          ? currentTags.filter(t => t !== tag)
+                          ? currentTags.filter((t) => t !== tag)
                           : [...currentTags, tag];
                         handleFilterChange({ tags: newTags });
                       }}
                       className={clsx(
-                        'inline-flex items-center px-2 py-1 rounded-full text-xs transition-colors',
+                        'inline-flex items-center rounded-full px-2 py-1 text-xs transition-colors',
                         filters?.tags?.includes(tag)
-                          ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                          ? 'border border-blue-200 bg-blue-100 text-blue-700'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       )}
                     >
@@ -653,13 +704,17 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
         {/* Main Content */}
         <main className="flex-1">
           {/* Results Header */}
-          <div className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="border-b border-gray-200 bg-white px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="text-sm text-gray-600">
-                  {totalResults.toLocaleString()} results for <strong>"{query}"</strong>
+                  {totalResults.toLocaleString()} results for{' '}
+                  <strong>"{query}"</strong>
                   {searchWithinResults && (
-                    <span> filtered by <strong>"{searchWithinResults}"</strong></span>
+                    <span>
+                      {' '}
+                      filtered by <strong>"{searchWithinResults}"</strong>
+                    </span>
                   )}
                 </div>
 
@@ -667,15 +722,18 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder={t('search.withinResults', 'Search within results...')}
+                    placeholder={t(
+                      'search.withinResults',
+                      'Search within results...'
+                    )}
                     value={searchWithinResults}
                     onChange={(e) => setSearchWithinResults(e.target.value)}
-                    className="pl-3 pr-8 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="rounded border border-gray-300 py-1 pl-3 pr-8 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                   />
                   {searchWithinResults && (
                     <button
                       onClick={() => setSearchWithinResults('')}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-gray-600"
                     >
                       ×
                     </button>
@@ -688,9 +746,12 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                 <label className="flex items-center text-sm">
                   <input
                     type="checkbox"
-                    checked={selectedResults.size === filteredResults.length && filteredResults.length > 0}
+                    checked={
+                      selectedResults.size === filteredResults.length &&
+                      filteredResults.length > 0
+                    }
                     onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   <span className="ml-2 text-gray-700">
                     Select all ({selectedResults.size} selected)
@@ -704,15 +765,15 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                     value={`${sort.field}-${sort.direction}`}
                     onChange={(e) => {
                       const [field, direction] = e.target.value.split('-');
-                      handleSortChange({ 
-                        field: field as any, 
-                        direction: direction as 'asc' | 'desc' 
+                      handleSortChange({
+                        field: field as any,
+                        direction: direction as 'asc' | 'desc',
                       });
                     }}
-                    className="border border-gray-300 rounded px-3 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="rounded border border-gray-300 px-3 py-1 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                   >
-                    {SORT_OPTIONS.map(option => (
-                      <option 
+                    {SORT_OPTIONS.map((option) => (
+                      <option
                         key={`${option.field}-${option.direction}`}
                         value={`${option.field}-${option.direction}`}
                       >
@@ -730,28 +791,36 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="flex items-center space-x-3 text-gray-500">
-                  <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-blue-600" />
+                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
                   <span>{t('search.loading', 'Searching...')}</span>
                 </div>
               </div>
             ) : filteredResults.length > 0 ? (
-              <div className={clsx(
-                viewMode === 'grid' && 'grid grid-cols-1 lg:grid-cols-2 gap-6',
-                viewMode === 'list' && 'space-y-6',
-                viewMode === 'compact' && 'divide-y divide-gray-200'
-              )}>
-                {filteredResults.map((result, index) => renderResultItem(result, index))}
+              <div
+                className={clsx(
+                  viewMode === 'grid' &&
+                    'grid grid-cols-1 gap-6 lg:grid-cols-2',
+                  viewMode === 'list' && 'space-y-6',
+                  viewMode === 'compact' && 'divide-y divide-gray-200'
+                )}
+              >
+                {filteredResults.map((result, index) =>
+                  renderResultItem(result, index)
+                )}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <div className="text-gray-400 mb-4">
-                  <FunnelIcon className="h-12 w-12 mx-auto" />
+              <div className="py-12 text-center">
+                <div className="mb-4 text-gray-400">
+                  <FunnelIcon className="mx-auto h-12 w-12" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="mb-2 text-lg font-medium text-gray-900">
                   {t('search.noResults.title', 'No results found')}
                 </h3>
                 <p className="text-gray-600">
-                  {t('search.noResultsdescription', 'Try adjusting your search terms or filters')}
+                  {t(
+                    'search.noResultsdescription',
+                    'Try adjusting your search terms or filters'
+                  )}
                 </p>
               </div>
             )}

@@ -44,7 +44,10 @@ export default function SpotlightDetail({ spotlightId, lang = 'es' }: Props) {
     return (
       <div style={{ textAlign: 'center', padding: '3rem' }}>
         <p>{t.notFound}</p>
-        <a href={`/${lang}/spotlights`} style={{ color: 'var(--secid-primary)' }}>
+        <a
+          href={`/${lang}/spotlights`}
+          style={{ color: 'var(--secid-primary)' }}
+        >
           {t.back}
         </a>
       </div>

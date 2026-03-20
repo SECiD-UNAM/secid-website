@@ -114,7 +114,10 @@ describe('Firebase Service', () => {
     it('returns fallback for unknown error codes', async () => {
       const { handleFirebaseError } = await import('@/lib/firebase');
 
-      const error = { code: 'some/unknown-code', message: 'Something went wrong' };
+      const error = {
+        code: 'some/unknown-code',
+        message: 'Something went wrong',
+      };
       expect(handleFirebaseError(error)).toBe('Error: Something went wrong');
     });
 

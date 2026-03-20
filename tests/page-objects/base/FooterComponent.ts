@@ -8,7 +8,7 @@ export class FooterComponent extends BasePage {
   private readonly communitySection: Locator;
   private readonly supportSection: Locator;
   private readonly legalSection: Locator;
-  
+
   // Footer links
   private readonly jobsLink: Locator;
   private readonly membersLink: Locator;
@@ -25,65 +25,71 @@ export class FooterComponent extends BasePage {
   private readonly privacyLink: Locator;
   private readonly termsLink: Locator;
   private readonly cookiesLink: Locator;
-  
+
   // Social media links
   private readonly facebookLink: Locator;
   private readonly twitterLink: Locator;
   private readonly linkedinLink: Locator;
   private readonly githubLink: Locator;
-  
+
   // Newsletter form
   private readonly newsletterForm: Locator;
   private readonly newsletterInput: Locator;
   private readonly newsletterSubmit: Locator;
-  
+
   // Copyright
   private readonly copyrightText: Locator;
 
   constructor(page: Page) {
     super(page);
-    
+
     // Footer sections
     this.footer = page.locator('footer[data-testid="footer"]');
     this.platformSection = page.locator('[data-testid="footer-platform"]');
     this.communitySection = page.locator('[data-testid="footer-community"]');
     this.supportSection = page.locator('[data-testid="footer-support"]');
     this.legalSection = page.locator('[data-testid="footer-legal"]');
-    
+
     // Platform links
     this.jobsLink = page.locator('[data-testid="footer-jobs"]');
     this.membersLink = page.locator('[data-testid="footer-members"]');
     this.eventsLink = page.locator('[data-testid="footer-events"]');
     this.resourcesLink = page.locator('[data-testid="footer-resources"]');
-    
+
     // Community links
     this.slackLink = page.locator('[data-testid="footer-slack"]');
     this.discordLink = page.locator('[data-testid="footer-discord"]');
     this.newsletterLink = page.locator('[data-testid="footer-newsletter"]');
     this.blogLink = page.locator('[data-testid="footer-blog"]');
-    
+
     // Support links
     this.helpCenterLink = page.locator('[data-testid="footer-help"]');
     this.contactLink = page.locator('[data-testid="footer-contact"]');
     this.faqLink = page.locator('[data-testid="footer-faq"]');
     this.statusLink = page.locator('[data-testid="footer-status"]');
-    
+
     // Legal links
     this.privacyLink = page.locator('[data-testid="footer-privacy"]');
     this.termsLink = page.locator('[data-testid="footer-terms"]');
     this.cookiesLink = page.locator('[data-testid="footer-cookies"]');
-    
+
     // Social media
     this.facebookLink = page.locator('[data-testid="footer-facebook"]');
     this.twitterLink = page.locator('[data-testid="footer-twitter"]');
     this.linkedinLink = page.locator('[data-testid="footer-linkedin"]');
     this.githubLink = page.locator('[data-testid="footer-github"]');
-    
+
     // Newsletter
-    this.newsletterForm = page.locator('[data-testid="footer-newsletter-form"]');
-    this.newsletterInput = page.locator('[data-testid="footer-newsletter-input"]');
-    this.newsletterSubmit = page.locator('[data-testid="footer-newsletter-submit"]');
-    
+    this.newsletterForm = page.locator(
+      '[data-testid="footer-newsletter-form"]'
+    );
+    this.newsletterInput = page.locator(
+      '[data-testid="footer-newsletter-input"]'
+    );
+    this.newsletterSubmit = page.locator(
+      '[data-testid="footer-newsletter-submit"]'
+    );
+
     // Copyright
     this.copyrightText = page.locator('[data-testid="footer-copyright"]');
   }
@@ -188,15 +194,17 @@ export class FooterComponent extends BasePage {
   /**
    * Open external social media link
    */
-  async openSocialMedia(platform: 'facebook' | 'twitter' | 'linkedin' | 'github') {
+  async openSocialMedia(
+    platform: 'facebook' | 'twitter' | 'linkedin' | 'github'
+  ) {
     await this.scrollToElement('[data-testid="footer"]');
-    
+
     // Handle external links in new tab
     const [newPage] = await Promise.all([
       this.page.context().waitForEvent('page'),
-      this.page.locator(`[data-testid="footer-${platform}"]`).click()
+      this.page.locator(`[data-testid="footer-${platform}"]`).click(),
     ]);
-    
+
     await newPage.waitForLoadState();
     return newPage;
   }
@@ -208,7 +216,7 @@ export class FooterComponent extends BasePage {
     await this.scrollToElement('[data-testid="footer"]');
     await this.newsletterInput.fill(email);
     await this.newsletterSubmit.click();
-    
+
     // Wait for success message or API response
     await this.waitForAPIResponse(/newsletter|subscribe/);
   }
@@ -218,7 +226,7 @@ export class FooterComponent extends BasePage {
    */
   async getCopyrightText(): Promise<string> {
     await this.scrollToElement('[data-testid="footer"]');
-    return await this.copyrightText.textContent() || '';
+    return (await this.copyrightText.textContent()) || '';
   }
 
   /**
@@ -226,20 +234,20 @@ export class FooterComponent extends BasePage {
    */
   async validateFooterStructure(): Promise<boolean> {
     await this.scrollToElement('[data-testid="footer"]');
-    
+
     const sections = [
       this.platformSection,
       this.communitySection,
       this.supportSection,
-      this.legalSection
+      this.legalSection,
     ];
-    
+
     for (const section of sections) {
-      if (!await section.isVisible()) {
+      if (!(await section.isVisible())) {
         return false;
       }
     }
-    
+
     return true;
   }
 
@@ -248,19 +256,19 @@ export class FooterComponent extends BasePage {
    */
   async getAllFooterLinks(): Promise<Array<{ text: string; href: string }>> {
     await this.scrollToElement('[data-testid="footer"]');
-    
+
     const links = await this.footer.locator('a').all();
     const linkData: Array<{ text: string; href: string }> = [];
-    
+
     for (const link of links) {
       const text = await link.textContent();
       const href = await link.getAttribute('href');
-      
+
       if (text && href) {
         linkData.push({ text: text.trim(), href });
       }
     }
-    
+
     return linkData;
   }
 
@@ -268,10 +276,10 @@ export class FooterComponent extends BasePage {
    * Check if footer is sticky
    */
   async isFooterSticky(): Promise<boolean> {
-    const position = await this.footer.evaluate(el => {
+    const position = await this.footer.evaluate((el) => {
       return window.getComputedStyle(el).position;
     });
-    
+
     return position === 'fixed' || position === 'sticky';
   }
 
@@ -282,18 +290,18 @@ export class FooterComponent extends BasePage {
     // Check for proper heading structure
     const headings = await this.footer.locator('h2, h3, h4').count();
     if (headings === 0) return false;
-    
+
     // Check for link accessibility
     const links = await this.footer.locator('a').all();
     for (const link of links) {
       const ariaLabel = await link.getAttribute('aria-label');
       const text = await link.textContent();
-      
+
       if (!ariaLabel && !text?.trim()) {
         return false;
       }
     }
-    
+
     return true;
   }
 
@@ -302,14 +310,16 @@ export class FooterComponent extends BasePage {
    */
   async validateNewsletterForm(invalidEmail: string): Promise<boolean> {
     await this.scrollToElement('[data-testid="footer"]');
-    
+
     // Try submitting with invalid email
     await this.newsletterInput.fill(invalidEmail);
     await this.newsletterSubmit.click();
-    
+
     // Check for validation error
-    const errorMessage = await this.page.locator('[data-testid="newsletter-error"]').isVisible();
-    
+    const errorMessage = await this.page
+      .locator('[data-testid="newsletter-error"]')
+      .isVisible();
+
     return errorMessage;
   }
 
@@ -317,7 +327,7 @@ export class FooterComponent extends BasePage {
    * Get footer background color
    */
   async getFooterBackgroundColor(): Promise<string> {
-    return await this.footer.evaluate(el => {
+    return await this.footer.evaluate((el) => {
       return window.getComputedStyle(el).backgroundColor;
     });
   }

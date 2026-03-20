@@ -7,9 +7,17 @@ interface Props {
 
 export default function VerifiedBadge({ size = 'md', lang = 'es' }: Props) {
   const sizes = {
-    sm: { fontSize: '0.7rem', padding: '0.125rem 0.375rem', iconSize: '0.625rem' },
+    sm: {
+      fontSize: '0.7rem',
+      padding: '0.125rem 0.375rem',
+      iconSize: '0.625rem',
+    },
     md: { fontSize: '0.75rem', padding: '0.25rem 0.5rem', iconSize: '0.75rem' },
-    lg: { fontSize: '0.875rem', padding: '0.375rem 0.75rem', iconSize: '0.875rem' },
+    lg: {
+      fontSize: '0.875rem',
+      padding: '0.375rem 0.75rem',
+      iconSize: '0.875rem',
+    },
   };
 
   const s = sizes[size];
@@ -29,7 +37,11 @@ export default function VerifiedBadge({ size = 'md', lang = 'es' }: Props) {
         fontWeight: 600,
         whiteSpace: 'nowrap',
       }}
-      title={lang === 'es' ? 'Empresa verificada por SECiD' : 'Company verified by SECiD'}
+      title={
+        lang === 'es'
+          ? 'Empresa verificada por SECiD'
+          : 'Company verified by SECiD'
+      }
     >
       <svg
         width={s.iconSize}

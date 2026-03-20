@@ -38,10 +38,7 @@ export {
 } from './sessions';
 
 // Feedback & Stats
-export {
-  createMentorshipFeedback,
-  getMentorshipStats,
-} from './feedback';
+export { createMentorshipFeedback, getMentorshipStats } from './feedback';
 
 // Real-time subscriptions
 export {

@@ -64,9 +64,7 @@ export default defineConfig({
         '**/*.test.*',
         '**/*.spec.*',
       ],
-      include: [
-        'src/**/*.{js,ts,jsx,tsx}',
-      ],
+      include: ['src/**/*.{js,ts,jsx,tsx}'],
       thresholds: {
         global: {
           branches: 0,

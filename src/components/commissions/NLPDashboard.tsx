@@ -1,8 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { BaseCommissionDashboard} from './BaseCommissionDashboard';
-import { COMMISSION_TYPES} from '../../lib/stripe/stripe-client';
-import { useTranslations} from '../../hooks/useTranslations';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { BaseCommissionDashboard } from './BaseCommissionDashboard';
+import { COMMISSION_TYPES } from '../../lib/stripe/stripe-client';
+import { useTranslations } from '../../hooks/useTranslations';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+} from 'recharts';
 import {
   ChatBubbleLeftRightIcon,
   LanguageIcon,
@@ -26,7 +39,12 @@ interface LanguageModel {
   id: string;
   name: string;
   description: string;
-  type: 'sentiment' | 'classification' | 'ner' | 'translation' | 'summarization';
+  type:
+    | 'sentiment'
+    | 'classification'
+    | 'ner'
+    | 'translation'
+    | 'summarization';
   language: string;
   accuracy: number;
   lastTrained: Date;
@@ -127,19 +145,21 @@ export const NLPDashboard: React.FC = () => {
 
   const handleTextAnalysis = async () => {
     if (!inputText.trim()) return;
-    
+
     setIsAnalyzing(true);
-    
+
     // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     // Mock analysis results
-    const model = LANGUAGE_MODELS.find(m => m.id === selectedModel);
+    const model = LANGUAGE_MODELS.find((m) => m.id === selectedModel);
     let result: any = { model: model?.name };
-    
+
     switch (model?.type) {
       case 'sentiment':
-        result.sentiment = ['positive', 'negative', 'neutral'][Math.floor(Math.random() * 3)];
+        result.sentiment = ['positive', 'negative', 'neutral'][
+          Math.floor(Math.random() * 3)
+        ];
         result.confidence = (Math.random() * 0.3 + 0.7).toFixed(3);
         break;
       case 'ner':
@@ -150,40 +170,49 @@ export const NLPDashboard: React.FC = () => {
         ];
         break;
       case 'classification':
-        result.category = ['Technology', 'Science', 'Business', 'Education'][Math.floor(Math.random() * 4)];
+        result.category = ['Technology', 'Science', 'Business', 'Education'][
+          Math.floor(Math.random() * 4)
+        ];
         result.confidence = (Math.random() * 0.3 + 0.7).toFixed(3);
         break;
       case 'summarization':
-        result.summary = 'This is a generated summary of the input text highlighting the main points and key information.';
+        result.summary =
+          'This is a generated summary of the input text highlighting the main points and key information.';
         break;
     }
-    
+
     setAnalysisResult(result);
     setIsAnalyzing(false);
   };
 
   const customMetrics = (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
       {/* NLP Specific Metrics */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">
           {t('nlp.performanceMetrics')}
         </h3>
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">{t('nlp.sentimentAccuracy')}</span>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">
+              {t('nlp.sentimentAccuracy')}
+            </span>
             <span className="text-lg font-semibold text-green-600">
               {metrics.sentimentAccuracy}%
             </span>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">{t('nlp.avgProcessingTime')}</span>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">
+              {t('nlp.avgProcessingTime')}
+            </span>
             <span className="text-lg font-semibold text-blue-600">
               {metrics.avgProcessingTime}ms
             </span>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">{t('nlp.apiCallsToday')}</span>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">
+              {t('nlp.apiCallsToday')}
+            </span>
             <span className="text-lg font-semibold text-purple-600">
               {metrics.apiCallsToday.toLocaleString()}
             </span>
@@ -192,8 +221,8 @@ export const NLPDashboard: React.FC = () => {
       </div>
 
       {/* Language Distribution */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">
           {t('nlp.languageDistribution')}
         </h3>
         <ResponsiveContainer width="100%" height={200}>
@@ -221,33 +250,33 @@ export const NLPDashboard: React.FC = () => {
   const customTools = (
     <div className="space-y-8">
       {/* Interactive Text Analysis */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-6 text-lg font-semibold text-gray-900">
           {t('nlp.textAnalysisPlayground')}
         </h3>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Input Section */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 {t('nlp.selectModel')}
               </label>
               <select
                 value={selectedModel}
                 onChange={(e) => setSelectedModel(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2"
+                className="w-full rounded-md border border-gray-300 px-3 py-2"
               >
-                {LANGUAGE_MODELS.map(model => (
+                {LANGUAGE_MODELS.map((model) => (
                   <option key={model.id} value={model.id}>
                     {model.name} ({model.language})
                   </option>
                 ))}
               </select>
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 {t('nlp.inputText')}
               </label>
               <textarea
@@ -255,18 +284,18 @@ export const NLPDashboard: React.FC = () => {
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder={t('nlp.textPlaceholder')}
                 rows={6}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 resize-none"
+                className="w-full resize-none rounded-md border border-gray-300 px-3 py-2"
               />
             </div>
-            
+
             <button
               onClick={handleTextAnalysis}
               disabled={!inputText.trim() || isAnalyzing}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isAnalyzing ? (
                 <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
                   {t('nlp.analyzing')}
                 </div>
               ) : (
@@ -280,79 +309,105 @@ export const NLPDashboard: React.FC = () => {
             <h4 className="text-sm font-medium text-gray-700">
               {t('nlp.analysisResults')}
             </h4>
-            <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 min-h-[200px]">
+            <div className="min-h-[200px] rounded-lg border border-gray-200 bg-gray-50 p-4">
               {analysisResult ? (
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <SparklesIcon className="w-4 h-4" />
-                    <span>{t('nlp.model')}: {analysisResult.model}</span>
+                    <SparklesIcon className="h-4 w-4" />
+                    <span>
+                      {t('nlp.model')}: {analysisResult.model}
+                    </span>
                   </div>
-                  
+
                   {analysisResult.sentiment && (
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium">{t('nlp.sentiment')}:</span>
-                        <span className={`px-2 py-1 rounded text-sm ${
-                          analysisResult.sentiment === 'positive' 
-                            ? 'bg-green-100 text-green-800'
-                            : analysisResult.sentiment === 'negative'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
+                        <span className="text-sm font-medium">
+                          {t('nlp.sentiment')}:
+                        </span>
+                        <span
+                          className={`rounded px-2 py-1 text-sm ${
+                            analysisResult.sentiment === 'positive'
+                              ? 'bg-green-100 text-green-800'
+                              : analysisResult.sentiment === 'negative'
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-gray-100 text-gray-800'
+                          }`}
+                        >
                           {analysisResult.sentiment}
                         </span>
                       </div>
                       <div className="text-sm text-gray-600">
-                        {t('nlp.confidence')}: {(parseFloat(analysisResult.confidence) * 100).toFixed(1)}%
+                        {t('nlp.confidence')}:{' '}
+                        {(parseFloat(analysisResult.confidence) * 100).toFixed(
+                          1
+                        )}
+                        %
                       </div>
                     </div>
                   )}
-                  
+
                   {analysisResult.entities && (
                     <div className="space-y-2">
-                      <div className="text-sm font-medium">{t('nlp.entities')}:</div>
+                      <div className="text-sm font-medium">
+                        {t('nlp.entities')}:
+                      </div>
                       <div className="space-y-1">
-                        {analysisResult.entities.map((entity: any, index: number) => (
-                          <div key={index} className="flex items-center space-x-2 text-sm">
-                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                              {entity.text}
-                            </span>
-                            <span className="text-gray-600">
-                              {entity.label} ({(entity.confidence * 100).toFixed(0)}%)
-                            </span>
-                          </div>
-                        ))}
+                        {analysisResult.entities.map(
+                          (entity: any, index: number) => (
+                            <div
+                              key={index}
+                              className="flex items-center space-x-2 text-sm"
+                            >
+                              <span className="rounded bg-blue-100 px-2 py-1 text-blue-800">
+                                {entity.text}
+                              </span>
+                              <span className="text-gray-600">
+                                {entity.label} (
+                                {(entity.confidence * 100).toFixed(0)}%)
+                              </span>
+                            </div>
+                          )
+                        )}
                       </div>
                     </div>
                   )}
-                  
+
                   {analysisResult.category && (
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium">{t('nlp.category')}:</span>
-                        <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm">
+                        <span className="text-sm font-medium">
+                          {t('nlp.category')}:
+                        </span>
+                        <span className="rounded bg-purple-100 px-2 py-1 text-sm text-purple-800">
                           {analysisResult.category}
                         </span>
                       </div>
                       <div className="text-sm text-gray-600">
-                        {t('nlp.confidence')}: {(parseFloat(analysisResult.confidence) * 100).toFixed(1)}%
+                        {t('nlp.confidence')}:{' '}
+                        {(parseFloat(analysisResult.confidence) * 100).toFixed(
+                          1
+                        )}
+                        %
                       </div>
                     </div>
                   )}
-                  
+
                   {analysisResult.summary && (
                     <div className="space-y-2">
-                      <div className="text-sm font-medium">{t('nlp.summary')}:</div>
-                      <div className="text-sm text-gray-700 bg-white p-3 rounded border">
+                      <div className="text-sm font-medium">
+                        {t('nlp.summary')}:
+                      </div>
+                      <div className="rounded border bg-white p-3 text-sm text-gray-700">
                         {analysisResult.summary}
                       </div>
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="flex h-full items-center justify-center text-gray-500">
                   <div className="text-center">
-                    <DocumentTextIcon className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                    <DocumentTextIcon className="mx-auto mb-2 h-12 w-12 text-gray-300" />
                     <p className="text-sm">{t('nlp.noResults')}</p>
                   </div>
                 </div>
@@ -363,15 +418,15 @@ export const NLPDashboard: React.FC = () => {
       </div>
 
       {/* Model Performance Dashboard */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-6 text-lg font-semibold text-gray-900">
           {t('nlp.modelPerformance')}
         </h3>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Performance Chart */}
           <div>
-            <h4 className="text-sm font-medium text-gray-700 mb-3">
+            <h4 className="mb-3 text-sm font-medium text-gray-700">
               {t('nlp.accuracyTrend')}
             </h4>
             <ResponsiveContainer width="100%" height={250}>
@@ -380,10 +435,10 @@ export const NLPDashboard: React.FC = () => {
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip />
-                <Line 
-                  type="monotone" 
-                  dataKey="accuracy" 
-                  stroke="#3B82F6" 
+                <Line
+                  type="monotone"
+                  dataKey="accuracy"
+                  stroke="#3B82F6"
                   strokeWidth={2}
                   name="Accuracy (%)"
                 />
@@ -393,7 +448,7 @@ export const NLPDashboard: React.FC = () => {
 
           {/* Language Processing */}
           <div>
-            <h4 className="text-sm font-medium text-gray-700 mb-3">
+            <h4 className="mb-3 text-sm font-medium text-gray-700">
               {t('nlp.processingByLanguage')}
             </h4>
             <ResponsiveContainer width="100%" height={250}>
@@ -410,12 +465,12 @@ export const NLPDashboard: React.FC = () => {
       </div>
 
       {/* Available Models */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-6 text-lg font-semibold text-gray-900">
           {t('nlp.availableModels')}
         </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {LANGUAGE_MODELS.map((model) => {
             const typeIcons = {
               sentiment: ChatBubbleLeftRightIcon,
@@ -424,21 +479,28 @@ export const NLPDashboard: React.FC = () => {
               translation: LanguageIcon,
               summarization: DocumentTextIcon,
             };
-            
+
             const Icon = typeIcons[model.type];
-            
+
             return (
-              <div key={model.id} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex items-start space-x-3 mb-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <Icon className="w-5 h-5 text-green-600" />
+              <div
+                key={model.id}
+                className="rounded-lg border border-gray-200 p-4"
+              >
+                <div className="mb-3 flex items-start space-x-3">
+                  <div className="rounded-lg bg-green-100 p-2">
+                    <Icon className="h-5 w-5 text-green-600" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-medium text-gray-900">{model['name']}</h4>
-                    <p className="text-sm text-gray-600">{model['description']}</p>
+                    <h4 className="font-medium text-gray-900">
+                      {model['name']}
+                    </h4>
+                    <p className="text-sm text-gray-600">
+                      {model['description']}
+                    </p>
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-500">{t('nlp.language')}:</span>
@@ -446,23 +508,31 @@ export const NLPDashboard: React.FC = () => {
                   </div>
                   <div>
                     <span className="text-gray-500">{t('nlp.accuracy')}:</span>
-                    <span className="ml-1 font-medium text-green-600">{model.accuracy}%</span>
+                    <span className="ml-1 font-medium text-green-600">
+                      {model.accuracy}%
+                    </span>
                   </div>
                   <div>
                     <span className="text-gray-500">{t('nlp.usage')}:</span>
-                    <span className="ml-1 font-medium">{model.usageCount.toLocaleString()}</span>
+                    <span className="ml-1 font-medium">
+                      {model.usageCount.toLocaleString()}
+                    </span>
                   </div>
                   <div>
-                    <span className="text-gray-500">{t('nlp.lastTrained')}:</span>
-                    <span className="ml-1 font-medium">{model.lastTrained.toLocaleDateString()}</span>
+                    <span className="text-gray-500">
+                      {t('nlp.lastTrained')}:
+                    </span>
+                    <span className="ml-1 font-medium">
+                      {model.lastTrained.toLocaleDateString()}
+                    </span>
                   </div>
                 </div>
-                
+
                 <div className="mt-4 flex space-x-2">
-                  <button className="flex-1 bg-green-600 text-white py-1 px-3 rounded text-sm hover:bg-green-700">
+                  <button className="flex-1 rounded bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700">
                     {t('nlp.useModel')}
                   </button>
-                  <button className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50">
+                  <button className="rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50">
                     {t('nlpdetails')}
                   </button>
                 </div>
@@ -473,45 +543,52 @@ export const NLPDashboard: React.FC = () => {
       </div>
 
       {/* NLP Tools & Resources */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-6 text-lg font-semibold text-gray-900">
           {t('nlp.toolsAndResources')}
         </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {[
-            { 
-              name: t('nlp.textPreprocessing'), 
-              desc: t('nlp.textPreprocessingDesc'), 
+            {
+              name: t('nlp.textPreprocessing'),
+              desc: t('nlp.textPreprocessingDesc'),
               icon: DocumentTextIcon,
-              color: 'bg-blue-100 text-blue-600'
+              color: 'bg-blue-100 text-blue-600',
             },
-            { 
-              name: t('nlp.languageDetection'), 
-              desc: t('nlp.languageDetectionDesc'), 
+            {
+              name: t('nlp.languageDetection'),
+              desc: t('nlp.languageDetectionDesc'),
               icon: LanguageIcon,
-              color: 'bg-green-100 text-green-600'
+              color: 'bg-green-100 text-green-600',
             },
-            { 
-              name: t('nlp.speechProcessing'), 
-              desc: t('nlp.speechProcessingDesc'), 
+            {
+              name: t('nlp.speechProcessing'),
+              desc: t('nlp.speechProcessingDesc'),
               icon: SpeakerWaveIcon,
-              color: 'bg-purple-100 text-purple-600'
+              color: 'bg-purple-100 text-purple-600',
             },
-            { 
-              name: t('nlp.modelTraining'), 
-              desc: t('nlp.modelTrainingDesc'), 
+            {
+              name: t('nlp.modelTraining'),
+              desc: t('nlp.modelTrainingDesc'),
               icon: SparklesIcon,
-              color: 'bg-orange-100 text-orange-600'
+              color: 'bg-orange-100 text-orange-600',
             },
           ].map((tool, index) => {
             const Icon = tool.icon;
             return (
-              <div key={index} className="border border-gray-200 rounded-lg p-4 text-center hover:shadow-sm transition-shadow">
-                <div className={`p-3 ${tool.color} rounded-lg inline-block mb-3`}>
-                  <Icon className="w-6 h-6" />
+              <div
+                key={index}
+                className="rounded-lg border border-gray-200 p-4 text-center transition-shadow hover:shadow-sm"
+              >
+                <div
+                  className={`p-3 ${tool.color} mb-3 inline-block rounded-lg`}
+                >
+                  <Icon className="h-6 w-6" />
                 </div>
-                <h4 className="font-medium text-gray-900 mb-2">{tool['name']}</h4>
+                <h4 className="mb-2 font-medium text-gray-900">
+                  {tool['name']}
+                </h4>
                 <p className="text-sm text-gray-600">{tool.desc}</p>
               </div>
             );

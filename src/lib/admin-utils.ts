@@ -2,19 +2,19 @@
 import {
   collection,
   doc,
-  query, 
-  where, 
-  orderBy, 
-  limit, 
-  getDocs, 
-  updateDoc, 
-  deleteDoc, 
+  query,
+  where,
+  orderBy,
+  limit,
+  getDocs,
+  updateDoc,
+  deleteDoc,
   addDoc,
   Timestamp,
-  QueryConstraint
+  QueryConstraint,
 } from 'firebase/firestore';
-import { db} from '@/lib/firebase';
-import { UserProfile} from '@/contexts/AuthContext';
+import { db } from '@/lib/firebase';
+import { UserProfile } from '@/contexts/AuthContext';
 
 /**
  * Admin Utilities
@@ -126,16 +126,18 @@ export const AdminPermissions = {
 
   canManagePayments: (userProfile: UserProfile | null): boolean => {
     return userProfile?.role === 'admin';
-  }
+  },
 };
 
 // Activity Logging
 export const ActivityLogger = {
-  async logAction(action: Omit<AdminAction, 'id' | 'timestamp'>): Promise<void> {
+  async logAction(
+    action: Omit<AdminAction, 'id' | 'timestamp'>
+  ): Promise<void> {
     try {
       await addDoc(collection(db, 'admin_activity_log'), {
         ...action,
-        timestamp: Timestamp.now()
+        timestamp: Timestamp.now(),
       });
     } catch (error) {
       console.error('Failed to log admin action:', error);
@@ -156,7 +158,7 @@ export const ActivityLogger = {
       targetType: 'user',
       targetId: targetUserId,
       description,
-      metadata
+      metadata,
     });
   },
 
@@ -172,7 +174,7 @@ export const ActivityLogger = {
       action,
       targetType: 'system',
       description,
-      metadata
+      metadata,
     });
   },
 
@@ -183,42 +185,44 @@ export const ActivityLogger = {
         orderBy('timestamp', 'desc'),
         limit(limit)
       );
-      
+
       const snapshot = await getDocs(q);
-      return snapshot['docs'].map(doc => ({
+      return snapshot['docs'].map((doc) => ({
         id: doc['id'],
         ...doc.data(),
-        timestamp: doc['data']().timestamp.toDate()
+        timestamp: doc['data']().timestamp.toDate(),
       })) as AdminAction[];
     } catch (error) {
       console.error('Failed to fetch admin activity:', error);
       return [];
     }
-  }
+  },
 };
 
 // Data Export Utilities
 export const DataExporter = {
   convertToCSV(data: any[], headers?: string[]): string {
     if (data['length'] === 0) return '';
-    
+
     const csvHeaders = headers || Object.keys(data?.[0]);
-    const csvRows = data.map(row => 
-      csvHeaders.map(header => {
-        const value = row[header];
-        // Handle dates, objects, and null values
-        if (value instanceof Date) {
-          return value.toISOString();
-        } else if (typeof value === 'object' && value !== null) {
-          return JSON.stringify(value);
-        } else if (value === null || value === undefined) {
-          return '';
-        }
-        // Escape commas and quotes in CSV
-        return `"${String(value).replace(/"/g, '""')}"`;
-      }).join(',')
+    const csvRows = data.map((row) =>
+      csvHeaders
+        .map((header) => {
+          const value = row[header];
+          // Handle dates, objects, and null values
+          if (value instanceof Date) {
+            return value.toISOString();
+          } else if (typeof value === 'object' && value !== null) {
+            return JSON.stringify(value);
+          } else if (value === null || value === undefined) {
+            return '';
+          }
+          // Escape commas and quotes in CSV
+          return `"${String(value).replace(/"/g, '""')}"`;
+        })
+        .join(',')
     );
-    
+
     return [csvHeaders.join(','), ...csvRows].join('\n');
   },
 
@@ -226,11 +230,14 @@ export const DataExporter = {
     const csv = this.convertToCSV(data, headers);
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document['createElement']('a');
-    
+
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
-      link.setAttribute('download', `${filename}-${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute(
+        'download',
+        `${filename}-${new Date().toISOString().split('T')[0]}.csv`
+      );
       link.style.visibility = 'hidden';
       document['body'].appendChild(link);
       link.click();
@@ -242,17 +249,20 @@ export const DataExporter = {
     const jsonString = JSON.stringify(data, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const link = document['createElement']('a');
-    
+
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute('href', url);
-      link.setAttribute('download', `${filename}-${new Date().toISOString().split('T')[0]}.json`);
+      link.setAttribute(
+        'download',
+        `${filename}-${new Date().toISOString().split('T')[0]}.json`
+      );
       link.style.visibility = 'hidden';
       document['body'].appendChild(link);
       link.click();
       document['body'].removeChild(link);
     }
-  }
+  },
 };
 
 // System Health Monitoring
@@ -271,19 +281,19 @@ export const SystemHealthChecker = {
 
   async checkSystemHealth(): Promise<SystemHealth> {
     const startTime = Date.now();
-    
+
     const checks = {
       database: await this.checkDatabaseHealth(),
       email: true, // Would implement actual email service check
       storage: true, // Would implement actual storage check
       analytics: true, // Would implement analytics service check
-      payments: true // Would implement payment service check
+      payments: true, // Would implement payment service check
     };
 
     const responseTime = Date.now() - startTime;
     const healthyChecks = Object.values(checks).filter(Boolean).length;
     const totalChecks = Object.keys(checks).length;
-    
+
     let status: 'healthy' | 'warning' | 'critical';
     if (healthyChecks === totalChecks) {
       status = 'healthy';
@@ -298,9 +308,9 @@ export const SystemHealthChecker = {
       checks,
       lastChecked: new Date(),
       uptime: 99.9, // Would calculate actual uptime
-      responseTime
+      responseTime,
     };
-  }
+  },
 };
 
 // Bulk Operations
@@ -318,7 +328,7 @@ export const BulkOperations = {
         const userRef = doc(db, 'users', userId);
         await updateDoc(userRef, {
           ...updates,
-          updatedAt: Timestamp.now()
+          updatedAt: Timestamp.now(),
         });
 
         // Log the action
@@ -366,7 +376,7 @@ export const BulkOperations = {
     }
 
     return { success, errors };
-  }
+  },
 };
 
 // Query Builders
@@ -407,7 +417,7 @@ export const QueryBuilder = {
     constraints.push(orderBy('createdAt', 'desc'));
 
     return constraints;
-  }
+  },
 };
 
 // Validation Utilities
@@ -425,7 +435,10 @@ export const AdminValidation = {
       errors.push('Site name is required');
     }
 
-    if (!settings?.general?.supportEmail || !this.validateEmail(settings?.general?.supportEmail)) {
+    if (
+      !settings?.general?.supportEmail ||
+      !this.validateEmail(settings?.general?.supportEmail)
+    ) {
       errors.push('Valid support email is required');
     }
 
@@ -437,7 +450,10 @@ export const AdminValidation = {
       if (!settings['email']?.smtpUser?.trim()) {
         errors.push('SMTP user is required when email is enabled');
       }
-      if (!settings['email']?.fromEmail || !this.validateEmail(settings['email'].fromEmail)) {
+      if (
+        !settings['email']?.fromEmail ||
+        !this.validateEmail(settings['email'].fromEmail)
+      ) {
         errors.push('Valid from email is required when email is enabled');
       }
     }
@@ -445,15 +461,17 @@ export const AdminValidation = {
     // Validate payment settings if enabled
     if (settings?.payments?.paymentEnabled) {
       if (!settings?.payments?.stripePublishableKey?.trim()) {
-        errors.push('Stripe publishable key is required when payments are enabled');
+        errors.push(
+          'Stripe publishable key is required when payments are enabled'
+        );
       }
     }
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
-  }
+  },
 };
 
 // Formatting Utilities
@@ -461,7 +479,7 @@ export const AdminFormatters = {
   formatCurrency(amount: number, currency = 'MXN', locale = 'es-MX'): string {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
-      currency
+      currency,
     }).format(amount);
   },
 
@@ -473,20 +491,26 @@ export const AdminFormatters = {
     return new Intl.NumberFormat(locale, {
       style: 'percent',
       minimumFractionDigits: 1,
-      maximumFractionDigits: 1
+      maximumFractionDigits: 1,
     }).format(num / 100);
   },
 
-  formatDate(date: Date, locale = 'es-MX', options?: Intl.DateTimeFormatOptions): string {
+  formatDate(
+    date: Date,
+    locale = 'es-MX',
+    options?: Intl.DateTimeFormatOptions
+  ): string {
     const defaultOptions: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     };
 
-    return new Intl.DateTimeFormat(locale, options || defaultOptions).format(date);
+    return new Intl.DateTimeFormat(locale, options || defaultOptions).format(
+      date
+    );
   },
 
   formatRelativeTime(date: Date, locale = 'es-MX'): string {
@@ -525,17 +549,21 @@ export const AdminFormatters = {
   formatFileSize(bytes: number): string {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     if (bytes === 0) return '0 Bytes';
-    
+
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     const size = Math.round((bytes / Math.pow(1024, i)) * 100) / 100;
-    
+
     return `${size} ${sizes[i]}`;
-  }
+  },
 };
 
 // Email Templates
 export const EmailTemplates = {
-  generateUserSuspensionEmail(userName: string, reason: string, language: 'es' | 'en'): {
+  generateUserSuspensionEmail(
+    userName: string,
+    reason: string,
+    language: 'es' | 'en'
+  ): {
     subject: string;
     body: string;
   } {
@@ -553,7 +581,7 @@ export const EmailTemplates = {
           
           Saludos,
           Equipo SECiD
-        `
+        `,
       };
     } else {
       return {
@@ -569,7 +597,7 @@ export const EmailTemplates = {
           
           Best regards,
           SECiD Team
-        `
+        `,
       };
     }
   },
@@ -595,7 +623,7 @@ export const EmailTemplates = {
           
           Saludos,
           Equipo de Moderación SECiD
-        `
+        `,
       };
     } else {
       return {
@@ -611,10 +639,10 @@ export const EmailTemplates = {
           
           Best regards,
           SECiD Moderation Team
-        `
+        `,
       };
     }
-  }
+  },
 };
 
 export default {
@@ -626,5 +654,5 @@ export default {
   QueryBuilder,
   AdminValidation,
   AdminFormatters,
-  EmailTemplates
+  EmailTemplates,
 };

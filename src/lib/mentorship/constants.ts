@@ -12,7 +12,7 @@ export const COLLECTIONS = {
   REQUESTS: 'mentorship_requests',
   FEEDBACK: 'mentorship_feedback',
   GOALS: 'mentorship_goals',
-  RESOURCES: 'mentorship_resources'
+  RESOURCES: 'mentorship_resources',
 } as const;
 
 export const firestoreToDate = (timestamp: any): Date => {

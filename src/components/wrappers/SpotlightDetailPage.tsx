@@ -7,7 +7,10 @@ interface Props {
   lang?: 'es' | 'en';
 }
 
-export default function SpotlightDetailPage({ spotlightId, lang = 'es' }: Props) {
+export default function SpotlightDetailPage({
+  spotlightId,
+  lang = 'es',
+}: Props) {
   return (
     <AuthProvider>
       <SpotlightDetail spotlightId={spotlightId || ''} lang={lang} />

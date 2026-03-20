@@ -10,8 +10,11 @@ export interface TestUser {
 }
 
 export class AuthHelpers {
-  private static readonly AUTH_STATE_DIR = path.join(__dirname, '../../test-results/.auth');
-  
+  private static readonly AUTH_STATE_DIR = path.join(
+    __dirname,
+    '../../test-results/.auth'
+  );
+
   /**
    * Login as a test user and save authentication state
    */
@@ -22,17 +25,17 @@ export class AuthHelpers {
   ): Promise<void> {
     // Navigate to login page
     await page.goto('/login');
-    
+
     // Fill login form
     await page.fill('[data-testid="login-email"]', user.email);
     await page.fill('[data-testid="login-password"]', user.password);
-    
+
     // Submit form
     await page.click('[data-testid="login-submit"]');
-    
+
     // Wait for successful login
     await page.waitForURL(/\/(dashboard|home)/);
-    
+
     // Save authentication state
     await this.saveAuthState(page.context(), stateName);
   }
@@ -46,7 +49,7 @@ export class AuthHelpers {
   ): Promise<void> {
     // Ensure directory exists
     await fs.mkdir(this.AUTH_STATE_DIR, { recursive: true });
-    
+
     // Save state
     const statePath = path.join(this.AUTH_STATE_DIR, `${stateName}.json`);
     await context.storageState({ path: statePath });
@@ -60,15 +63,15 @@ export class AuthHelpers {
     stateName: string
   ): Promise<boolean> {
     const statePath = path.join(this.AUTH_STATE_DIR, `${stateName}.json`);
-    
+
     try {
       // Check if state file exists
       await fs.access(statePath);
-      
+
       // Load state into context
       const state = JSON.parse(await fs.readFile(statePath, 'utf-8'));
       await context.addCookies(state.cookies);
-      
+
       // Set local storage
       if (state.origins && state.origins.length > 0) {
         for (const origin of state.origins) {
@@ -81,7 +84,7 @@ export class AuthHelpers {
           }
         }
       }
-      
+
       return true;
     } catch (error) {
       return false;
@@ -96,9 +99,9 @@ export class AuthHelpers {
       email: process.env.TEST_USER_EMAIL || 'test@secid.mx',
       password: process.env.TEST_USER_PASSWORD || 'TestPassword123!',
       name: process.env.TEST_USER_NAME || 'Test User',
-      role: 'user'
+      role: 'user',
     };
-    
+
     await this.loginAndSaveState(page, user, 'user');
   }
 
@@ -110,9 +113,9 @@ export class AuthHelpers {
       email: process.env.ADMIN_EMAIL || 'admin@secid.mx',
       password: process.env.ADMIN_PASSWORD || 'AdminPassword123!',
       name: process.env.ADMIN_NAME || 'Admin User',
-      role: 'admin'
+      role: 'admin',
     };
-    
+
     await this.loginAndSaveState(page, admin, 'admin');
   }
 
@@ -123,9 +126,9 @@ export class AuthHelpers {
     const premium: TestUser = {
       email: process.env.PREMIUM_USER_EMAIL || 'premium@secid.mx',
       password: process.env.PREMIUM_USER_PASSWORD || 'PremiumPassword123!',
-      role: 'premium'
+      role: 'premium',
     };
-    
+
     await this.loginAndSaveState(page, premium, 'premium');
   }
 
@@ -137,9 +140,9 @@ export class AuthHelpers {
       email: process.env.COMPANY_EMAIL || 'company@techcorp.mx',
       password: process.env.COMPANY_PASSWORD || 'CompanyPassword123!',
       name: process.env.COMPANY_NAME || 'TechCorp',
-      role: 'company'
+      role: 'company',
     };
-    
+
     await this.loginAndSaveState(page, company, 'company');
   }
 
@@ -155,32 +158,35 @@ export class AuthHelpers {
       email: userData?.email || `test-${timestamp}@secid.mx`,
       password: userData?.password || 'TestPassword123!',
       name: userData?.name || `Test User ${timestamp}`,
-      ...userData
+      ...userData,
     };
-    
+
     // Navigate to signup page
     await page.goto('/signup');
-    
+
     // Fill registration form
     if (user.name) {
       const [firstName, ...lastNameParts] = user.name.split(' ');
       await page.fill('[data-testid="signup-firstname"]', firstName);
-      await page.fill('[data-testid="signup-lastname"]', lastNameParts.join(' ') || 'User');
+      await page.fill(
+        '[data-testid="signup-lastname"]',
+        lastNameParts.join(' ') || 'User'
+      );
     }
-    
+
     await page.fill('[data-testid="signup-email"]', user.email);
     await page.fill('[data-testid="signup-password"]', user.password);
     await page.fill('[data-testid="signup-password-confirm"]', user.password);
-    
+
     // Accept terms
     await page.check('[data-testid="signup-terms"]');
-    
+
     // Submit form
     await page.click('[data-testid="signup-submit"]');
-    
+
     // Wait for successful registration
     await page.waitForURL(/\/(onboarding|dashboard|verify-email)/);
-    
+
     return user;
   }
 
@@ -190,13 +196,13 @@ export class AuthHelpers {
   static async logout(page: Page): Promise<void> {
     // Click user menu
     await page.click('[data-testid="user-menu"]');
-    
+
     // Click logout
     await page.click('[data-testid="nav-logout"]');
-    
+
     // Wait for redirect
     await page.waitForURL(/\/(home|login|\/$)/);
-    
+
     // Clear storage
     await page.evaluate(() => {
       localStorage.clear();
@@ -217,16 +223,16 @@ export class AuthHelpers {
    * Get current user info
    */
   static async getCurrentUser(page: Page): Promise<any | null> {
-    if (!await this.isLoggedIn(page)) {
+    if (!(await this.isLoggedIn(page))) {
       return null;
     }
-    
+
     // Get user data from local storage or API
     const userData = await page.evaluate(() => {
       const userStr = localStorage.getItem('user');
       return userStr ? JSON.parse(userStr) : null;
     });
-    
+
     return userData;
   }
 
@@ -236,21 +242,21 @@ export class AuthHelpers {
   static async setupTwoFactor(page: Page): Promise<string> {
     // Navigate to security settings
     await page.goto('/settings/security');
-    
+
     // Enable 2FA
     await page.click('[data-testid="enable-2fa"]');
-    
+
     // Get QR code or secret
     const secret = await page.textContent('[data-testid="2fa-secret"]');
-    
+
     // Confirm setup with test code
     const testCode = this.generateTOTP(secret || '');
     await page.fill('[data-testid="2fa-code"]', testCode);
     await page.click('[data-testid="2fa-confirm"]');
-    
+
     // Wait for success
     await page.waitForSelector('[data-testid="2fa-success"]');
-    
+
     return secret || '';
   }
 
@@ -276,14 +282,14 @@ export class AuthHelpers {
     await page.fill('[data-testid="login-email"]', user.email);
     await page.fill('[data-testid="login-password"]', user.password);
     await page.click('[data-testid="login-submit"]');
-    
+
     // Wait for 2FA prompt
     await page.waitForURL(/\/auth\/2fa/);
-    
+
     // Enter 2FA code
     await page.fill('[data-testid="2fa-code"]', totpCode);
     await page.click('[data-testid="2fa-submit"]');
-    
+
     // Wait for successful login
     await page.waitForURL(/\/(dashboard|home)/);
   }
@@ -291,17 +297,14 @@ export class AuthHelpers {
   /**
    * Reset password
    */
-  static async resetPassword(
-    page: Page,
-    email: string
-  ): Promise<void> {
+  static async resetPassword(page: Page, email: string): Promise<void> {
     // Navigate to forgot password
     await page.goto('/forgot-password');
-    
+
     // Enter email
     await page.fill('[data-testid="reset-email"]', email);
     await page.click('[data-testid="reset-submit"]');
-    
+
     // Wait for success message
     await page.waitForSelector('[data-testid="reset-success"]');
   }
@@ -316,12 +319,12 @@ export class AuthHelpers {
   ): Promise<void> {
     // Navigate to reset page with token
     await page.goto(`/reset-password?token=${token}`);
-    
+
     // Enter new password
     await page.fill('[data-testid="new-password"]', newPassword);
     await page.fill('[data-testid="confirm-password"]', newPassword);
     await page.click('[data-testid="reset-password-submit"]');
-    
+
     // Wait for success
     await page.waitForURL(/\/login/);
   }

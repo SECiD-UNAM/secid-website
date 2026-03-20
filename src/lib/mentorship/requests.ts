@@ -13,7 +13,7 @@ import {
   query,
   where,
   orderBy,
-  serverTimestamp
+  serverTimestamp,
 } from 'firebase/firestore';
 import type { MentorshipRequest } from '../../types';
 import { COLLECTIONS, firestoreToDate, dateToFirestore } from './constants';
@@ -34,12 +34,16 @@ export async function getMentorshipRequests(filters: {
 
       if (docSnap.exists()) {
         const data = docSnap.data();
-        return [{
-          ...data,
-          id: docSnap['id'],
-          createdAt: firestoreToDate(data['createdAt']),
-          respondedAt: data['respondedAt'] ? firestoreToDate(data['respondedAt']) : undefined
-        } as unknown as MentorshipRequest];
+        return [
+          {
+            ...data,
+            id: docSnap['id'],
+            createdAt: firestoreToDate(data['createdAt']),
+            respondedAt: data['respondedAt']
+              ? firestoreToDate(data['respondedAt'])
+              : undefined,
+          } as unknown as MentorshipRequest,
+        ];
       }
 
       return [];
@@ -68,7 +72,9 @@ export async function getMentorshipRequests(filters: {
         ...data,
         id: doc['id'],
         createdAt: firestoreToDate(data['createdAt']),
-        respondedAt: data['respondedAt'] ? firestoreToDate(data['respondedAt']) : undefined
+        respondedAt: data['respondedAt']
+          ? firestoreToDate(data['respondedAt'])
+          : undefined,
       } as unknown as MentorshipRequest);
     });
 
@@ -85,15 +91,18 @@ export async function createMentorshipRequest(
   try {
     const requestData = {
       ...request,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
     };
 
-    const docRef = await addDoc(collection(db, COLLECTIONS.REQUESTS), requestData);
+    const docRef = await addDoc(
+      collection(db, COLLECTIONS.REQUESTS),
+      requestData
+    );
 
     return {
       ...request,
       id: docRef['id'],
-      createdAt: new Date()
+      createdAt: new Date(),
     };
   } catch (error) {
     console.error('Error creating mentorship request:', error);
@@ -134,7 +143,7 @@ export async function updateMentorshipRequest(
           sessionsCompleted: 0,
           createdAt: new Date(),
           updatedAt: new Date(),
-          startDate: new Date()
+          startDate: new Date(),
         });
       }
     }

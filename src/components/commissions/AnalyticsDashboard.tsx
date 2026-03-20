@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { BaseCommissionDashboard} from './BaseCommissionDashboard';
-import { COMMISSION_TYPES} from '../../lib/stripe/stripe-client';
-import { useTranslations} from '../../hooks/useTranslations';
+import { BaseCommissionDashboard } from './BaseCommissionDashboard';
+import { COMMISSION_TYPES } from '../../lib/stripe/stripe-client';
+import { useTranslations } from '../../hooks/useTranslations';
 import {
-  ChartBarIcon, 
+  ChartBarIcon,
   PresentationChartLineIcon,
   TableCellsIcon,
   FunnelIcon,
@@ -11,12 +11,12 @@ import {
   DocumentChartBarIcon,
 } from '@heroicons/react/24/outline';
 import {
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   BarChart,
   Bar,
@@ -120,7 +120,8 @@ const SAMPLE_DATASETS: Dataset[] = [
   {
     id: 'sales-data-2024',
     name: 'Sales Performance 2024',
-    description: 'Comprehensive sales data including revenue, units sold, and customer segments',
+    description:
+      'Comprehensive sales data including revenue, units sold, and customer segments',
     size: '2.3 MB',
     format: 'CSV',
     lastUpdated: new Date('2024-01-15'),
@@ -130,7 +131,8 @@ const SAMPLE_DATASETS: Dataset[] = [
   {
     id: 'user-behavior',
     name: 'User Behavior Analytics',
-    description: 'Web analytics data with page views, bounce rates, and conversion metrics',
+    description:
+      'Web analytics data with page views, bounce rates, and conversion metrics',
     size: '5.7 MB',
     format: 'JSON',
     lastUpdated: new Date('2024-01-10'),
@@ -151,7 +153,20 @@ const SAMPLE_DATASETS: Dataset[] = [
 
 // Mock data for sample visualizations
 const timeSeriesData = Array.from({ length: 12 }, (_, i) => ({
-  month: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i],
+  month: [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ][i],
   revenue: Math.floor(Math.random() * 100000) + 50000,
   users: Math.floor(Math.random() * 1000) + 500,
   conversion: Math.random() * 5 + 2,
@@ -179,31 +194,38 @@ export const AnalyticsDashboard: React.FC = () => {
     avgProcessingTime: 2.3,
     dataQualityScore: 94.2,
   });
-  const [selectedTemplate, setSelectedTemplate] = useState<ChartTemplate | null>(null);
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<ChartTemplate | null>(null);
   const [showDatasets, setShowDatasets] = useState(false);
 
   const customMetrics = (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
       {/* Analytics Specific Metrics */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">
           {t('analytics.performanceMetrics')}
         </h3>
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">{t('analytics.dataQuality')}</span>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">
+              {t('analytics.dataQuality')}
+            </span>
             <span className="text-lg font-semibold text-green-600">
               {metrics.dataQualityScore}%
             </span>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">{t('analytics.avgProcessingTime')}</span>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">
+              {t('analytics.avgProcessingTime')}
+            </span>
             <span className="text-lg font-semibold text-blue-600">
               {metrics.avgProcessingTime}s
             </span>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">{t('analytics.activeDashboards')}</span>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">
+              {t('analytics.activeDashboards')}
+            </span>
             <span className="text-lg font-semibold text-purple-600">
               {metrics.dashboardsActive}
             </span>
@@ -212,8 +234,8 @@ export const AnalyticsDashboard: React.FC = () => {
       </div>
 
       {/* Sample Visualization */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">
           {t('analytics.sampleVisualization')}
         </h3>
         <ResponsiveContainer width="100%" height={200}>
@@ -222,12 +244,12 @@ export const AnalyticsDashboard: React.FC = () => {
             <XAxis dataKey="month" />
             <YAxis />
             <Tooltip />
-            <Area 
-              type="monotone" 
-              dataKey="revenue" 
+            <Area
+              type="monotone"
+              dataKey="revenue"
               stackId="1"
-              stroke="#3B82F6" 
-              fill="#3B82F6" 
+              stroke="#3B82F6"
+              fill="#3B82F6"
               fillOpacity={0.6}
             />
           </AreaChart>
@@ -239,17 +261,17 @@ export const AnalyticsDashboard: React.FC = () => {
   const customTools = (
     <div className="space-y-8">
       {/* Chart Templates Gallery */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-6">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-6 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900">
             {t('analytics.chartTemplates')}
           </h3>
-          <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+          <button className="text-sm font-medium text-blue-600 hover:text-blue-700">
             {t('analytics.viewAll')}
           </button>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {CHART_TEMPLATES.map((template) => {
             const IconComponent = {
               line: PresentationChartLineIcon,
@@ -263,27 +285,33 @@ export const AnalyticsDashboard: React.FC = () => {
             return (
               <div
                 key={template.id}
-                className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                className="cursor-pointer rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-md"
                 onClick={() => setSelectedTemplate(template)}
               >
-                <div className="flex items-center space-x-3 mb-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <IconComponent className="w-5 h-5 text-blue-600" />
+                <div className="mb-3 flex items-center space-x-3">
+                  <div className="rounded-lg bg-blue-100 p-2">
+                    <IconComponent className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900">{template['name']}</h4>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                      template.difficulty === 'beginner' 
-                        ? 'bg-green-100 text-green-800'
-                        : template.difficulty === 'intermediate'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}>
+                    <h4 className="font-medium text-gray-900">
+                      {template['name']}
+                    </h4>
+                    <span
+                      className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium ${
+                        template.difficulty === 'beginner'
+                          ? 'bg-green-100 text-green-800'
+                          : template.difficulty === 'intermediate'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-red-100 text-red-800'
+                      }`}
+                    >
                       {template.difficulty}
                     </span>
                   </div>
                 </div>
-                <p className="text-sm text-gray-600 mb-2">{template['description']}</p>
+                <p className="mb-2 text-sm text-gray-600">
+                  {template['description']}
+                </p>
                 <p className="text-xs text-gray-500">{template.useCase}</p>
               </div>
             );
@@ -292,71 +320,71 @@ export const AnalyticsDashboard: React.FC = () => {
       </div>
 
       {/* Interactive Visualization Playground */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-6 text-lg font-semibold text-gray-900">
           {t('analytics.visualizationPlayground')}
         </h3>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {/* Chart Controls */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 {t('analytics.chartType')}
               </label>
-              <select className="w-full border border-gray-300 rounded-md px-3 py-2">
+              <select className="w-full rounded-md border border-gray-300 px-3 py-2">
                 <option value="line">{t('analytics.lineChart')}</option>
                 <option value="bar">{t('analytics.barChart')}</option>
                 <option value="pie">{t('analytics.pieChart')}</option>
                 <option value="scatter">{t('analytics.scatterPlot')}</option>
               </select>
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 {t('analytics.dataSource')}
               </label>
               <button
                 onClick={() => setShowDatasets(!showDatasets)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-left flex items-center justify-between hover:bg-gray-50"
+                className="flex w-full items-center justify-between rounded-md border border-gray-300 px-3 py-2 text-left hover:bg-gray-50"
               >
                 <span>{t('analytics.selectDataset')}</span>
-                <TableCellsIcon className="w-4 h-4 text-gray-400" />
+                <TableCellsIcon className="h-4 w-4 text-gray-400" />
               </button>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   X-Axis
                 </label>
-                <select className="w-full border border-gray-300 rounded-md px-3 py-2">
+                <select className="w-full rounded-md border border-gray-300 px-3 py-2">
                   <option value="month">{t('analytics.month')}</option>
                   <option value="category">{t('analytics.category')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Y-Axis
                 </label>
-                <select className="w-full border border-gray-300 rounded-md px-3 py-2">
+                <select className="w-full rounded-md border border-gray-300 px-3 py-2">
                   <option value="revenue">{t('analytics.revenue')}</option>
                   <option value="users">{t('analytics.users')}</option>
                 </select>
               </div>
             </div>
 
-            <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+            <button className="w-full rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700">
               {t('analytics.generateChart')}
             </button>
           </div>
 
           {/* Live Preview */}
           <div>
-            <h4 className="text-sm font-medium text-gray-700 mb-3">
+            <h4 className="mb-3 text-sm font-medium text-gray-700">
               {t('analytics.livePreview')}
             </h4>
-            <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={timeSeriesData.slice(0, 6)}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -373,29 +401,36 @@ export const AnalyticsDashboard: React.FC = () => {
 
       {/* Sample Datasets */}
       {showDatasets && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">
+        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+          <h3 className="mb-6 text-lg font-semibold text-gray-900">
             {t('analytics.sampleDatasets')}
           </h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {SAMPLE_DATASETS.map((dataset) => (
-              <div key={dataset.id} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <h4 className="font-medium text-gray-900">{dataset['name']}</h4>
+              <div
+                key={dataset.id}
+                className="rounded-lg border border-gray-200 p-4"
+              >
+                <div className="mb-3 flex items-start justify-between">
+                  <h4 className="font-medium text-gray-900">
+                    {dataset['name']}
+                  </h4>
                   <span className="text-xs text-gray-500">{dataset.size}</span>
                 </div>
-                <p className="text-sm text-gray-600 mb-3">{dataset['description']}</p>
-                <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+                <p className="mb-3 text-sm text-gray-600">
+                  {dataset['description']}
+                </p>
+                <div className="mb-3 flex items-center justify-between text-xs text-gray-500">
                   <span>{dataset.format}</span>
                   <span>{dataset.downloadCount} downloads</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <button className="flex-1 bg-blue-600 text-white py-1 px-3 rounded text-sm hover:bg-blue-700">
+                  <button className="flex-1 rounded bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700">
                     {t('analytics.useDataset')}
                   </button>
                   <button className="p-1 text-gray-400 hover:text-gray-600">
-                    <EyeIcon className="w-4 h-4" />
+                    <EyeIcon className="h-4 w-4" />
                   </button>
                 </div>
               </div>
@@ -405,25 +440,46 @@ export const AnalyticsDashboard: React.FC = () => {
       )}
 
       {/* Statistical Analysis Tools */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-6 text-lg font-semibold text-gray-900">
           {t('analytics.statisticalTools')}
         </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {[
-            { name: t('analytics.correlation'), desc: t('analytics.correlationDesc'), icon: ChartBarIcon },
-            { name: t('analytics.regression'), desc: t('analytics.regressionDesc'), icon: PresentationChartLineIcon },
-            { name: t('analytics.clustering'), desc: t('analytics.clusteringDesc'), icon: DocumentChartBarIcon },
-            { name: t('analytics.forecasting'), desc: t('analytics.forecastingDesc'), icon: PresentationChartLineIcon },
+            {
+              name: t('analytics.correlation'),
+              desc: t('analytics.correlationDesc'),
+              icon: ChartBarIcon,
+            },
+            {
+              name: t('analytics.regression'),
+              desc: t('analytics.regressionDesc'),
+              icon: PresentationChartLineIcon,
+            },
+            {
+              name: t('analytics.clustering'),
+              desc: t('analytics.clusteringDesc'),
+              icon: DocumentChartBarIcon,
+            },
+            {
+              name: t('analytics.forecasting'),
+              desc: t('analytics.forecastingDesc'),
+              icon: PresentationChartLineIcon,
+            },
           ].map((tool, index) => {
             const Icon = tool.icon;
             return (
-              <div key={index} className="border border-gray-200 rounded-lg p-4 text-center hover:shadow-sm transition-shadow">
-                <div className="p-3 bg-blue-100 rounded-lg inline-block mb-3">
-                  <Icon className="w-6 h-6 text-blue-600" />
+              <div
+                key={index}
+                className="rounded-lg border border-gray-200 p-4 text-center transition-shadow hover:shadow-sm"
+              >
+                <div className="mb-3 inline-block rounded-lg bg-blue-100 p-3">
+                  <Icon className="h-6 w-6 text-blue-600" />
                 </div>
-                <h4 className="font-medium text-gray-900 mb-2">{tool['name']}</h4>
+                <h4 className="mb-2 font-medium text-gray-900">
+                  {tool['name']}
+                </h4>
                 <p className="text-sm text-gray-600">{tool.desc}</p>
               </div>
             );
@@ -441,10 +497,10 @@ export const AnalyticsDashboard: React.FC = () => {
     >
       {/* Template Modal */}
       {selectedTemplate && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white">
             <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
+              <div className="mb-4 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">
                   {selectedTemplate['name']}
                 </h3>
@@ -455,8 +511,10 @@ export const AnalyticsDashboard: React.FC = () => {
                   ×
                 </button>
               </div>
-              <p className="text-gray-600 mb-4">{selectedTemplate['description']}</p>
-              <div className="border border-gray-200 rounded-lg p-4 mb-4">
+              <p className="mb-4 text-gray-600">
+                {selectedTemplate['description']}
+              </p>
+              <div className="mb-4 rounded-lg border border-gray-200 p-4">
                 <ResponsiveContainer width="100%" height={300}>
                   {selectedTemplate['type'] === 'line' && (
                     <LineChart data={timeSeriesData}>
@@ -464,7 +522,12 @@ export const AnalyticsDashboard: React.FC = () => {
                       <XAxis dataKey="month" />
                       <YAxis />
                       <Tooltip />
-                      <Line type="monotone" dataKey="revenue" stroke="#3B82F6" strokeWidth={2} />
+                      <Line
+                        type="monotone"
+                        dataKey="revenue"
+                        stroke="#3B82F6"
+                        strokeWidth={2}
+                      />
                     </LineChart>
                   )}
                   {selectedTemplate['type'] === 'bar' && (
@@ -508,11 +571,11 @@ export const AnalyticsDashboard: React.FC = () => {
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={() => setSelectedTemplate(null)}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  className="rounded-md border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50"
                 >
                   {t('common.close')}
                 </button>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                <button className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
                   {t('analytics.useTemplate')}
                 </button>
               </div>

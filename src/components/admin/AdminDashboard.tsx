@@ -10,19 +10,19 @@ import {
   onSnapshot,
   where,
   getDocs,
-  Timestamp
+  Timestamp,
 } from 'firebase/firestore';
 import {
   Users,
   Briefcase,
   Calendar,
-  MessageSquare, 
-  TrendingUp, 
+  MessageSquare,
+  TrendingUp,
   AlertTriangle,
   CheckCircle,
   Clock,
   DollarSign,
-  Activity
+  Activity,
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -42,7 +42,12 @@ interface DashboardStats {
 
 interface RecentActivity {
   id: string;
-  type: 'user_registration' | 'job_posted' | 'event_created' | 'forum_report' | 'payment_received';
+  type:
+    | 'user_registration'
+    | 'job_posted'
+    | 'event_created'
+    | 'forum_report'
+    | 'payment_received';
   description: string;
   timestamp: Date;
   userId?: string;
@@ -65,7 +70,7 @@ export const AdminDashboard: React.FC = () => {
     pendingReports: 0,
     monthlyRevenue: 0,
     membershipRevenue: 0,
-    systemHealth: 'good'
+    systemHealth: 'good',
   });
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -116,7 +121,10 @@ export const AdminDashboard: React.FC = () => {
         const activeJobsQuery = query(jobsRef, where('status', '==', 'active'));
         const activeJobsSnapshot = await getDocs(activeJobsQuery);
         activeJobs = activeJobsSnapshot.size;
-        const pendingJobsQuery = query(jobsRef, where('status', '==', 'pending'));
+        const pendingJobsQuery = query(
+          jobsRef,
+          where('status', '==', 'pending')
+        );
         const pendingJobsSnapshot = await getDocs(pendingJobsQuery);
         pendingJobs = pendingJobsSnapshot.size;
       } catch (err) {
@@ -163,8 +171,7 @@ export const AdminDashboard: React.FC = () => {
       // Determine system health
       const pendingCount = pendingJobs + pendingReports;
       const systemHealth: 'good' | 'warning' | 'critical' =
-        pendingCount > 50 ? 'critical' :
-        pendingCount > 20 ? 'warning' : 'good';
+        pendingCount > 50 ? 'critical' : pendingCount > 20 ? 'warning' : 'good';
 
       setStats({
         totalUsers,
@@ -178,7 +185,7 @@ export const AdminDashboard: React.FC = () => {
         pendingReports,
         monthlyRevenue: 0,
         membershipRevenue: 0,
-        systemHealth
+        systemHealth,
       });
 
       setLoading(false);
@@ -204,7 +211,7 @@ export const AdminDashboard: React.FC = () => {
             timestamp: data['timestamp'].toDate(),
             userId: data['userId'],
             userEmail: data['userEmail'],
-            metadata: data['metadata']
+            metadata: data['metadata'],
           });
         });
         setRecentActivity(activities);
@@ -222,7 +229,7 @@ export const AdminDashboard: React.FC = () => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat(language === 'es' ? 'es-MX' : 'en-US', {
       style: 'currency',
-      currency: 'MXN'
+      currency: 'MXN',
     }).format(amount);
   };
 
@@ -231,27 +238,37 @@ export const AdminDashboard: React.FC = () => {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     }).format(date);
   };
 
   const getSystemHealthColor = (health: string) => {
-    switch(health) {
-      case 'good': return 'text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400';
-      case 'warning': return 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-400';
-      case 'critical': return 'text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400';
-      default: return 'text-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-gray-400';
+    switch (health) {
+      case 'good':
+        return 'text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400';
+      case 'warning':
+        return 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-400';
+      case 'critical':
+        return 'text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400';
+      default:
+        return 'text-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-gray-400';
     }
   };
 
   const getActivityIcon = (type: string) => {
-    switch(type) {
-      case 'user_registration': return <Users className="w-4 h-4" />;
-      case 'job_posted': return <Briefcase className="w-4 h-4" />;
-      case 'event_created': return <Calendar className="w-4 h-4" />;
-      case 'forum_report': return <MessageSquare className="w-4 h-4" />;
-      case 'payment_received': return <DollarSign className="w-4 h-4" />;
-      default: return <Activity className="w-4 h-4" />;
+    switch (type) {
+      case 'user_registration':
+        return <Users className="h-4 w-4" />;
+      case 'job_posted':
+        return <Briefcase className="h-4 w-4" />;
+      case 'event_created':
+        return <Calendar className="h-4 w-4" />;
+      case 'forum_report':
+        return <MessageSquare className="h-4 w-4" />;
+      case 'payment_received':
+        return <DollarSign className="h-4 w-4" />;
+      default:
+        return <Activity className="h-4 w-4" />;
     }
   };
 
@@ -259,46 +276,47 @@ export const AdminDashboard: React.FC = () => {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <AlertTriangle className="mx-auto mb-4 h-16 w-16 text-red-500" />
+          <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
             {language === 'es' ? 'Acceso Denegado' : 'Access Denied'}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
             {language === 'es'
               ? 'Se requieren privilegios de administrador para acceder a esta página.'
-              : 'Administrator privileges are required to access this page.'
-            }
+              : 'Administrator privileges are required to access this page.'}
           </p>
         </div>
       </div>
     );
   }
 
-  if(loading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-400">
-            {language === 'es' ? 'Cargando panel de administración...' : 'Loading admin dashboard...'}
+            {language === 'es'
+              ? 'Cargando panel de administración...'
+              : 'Loading admin dashboard...'}
           </p>
         </div>
       </div>
     );
   }
 
-  if(error) {
+  if (error) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <AlertTriangle className="mx-auto mb-4 h-16 w-16 text-red-500" />
+          <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
             {language === 'es' ? 'Error' : 'Error'}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
+          <p className="mb-4 text-gray-600 dark:text-gray-400">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
           >
             {language === 'es' ? 'Reintentar' : 'Retry'}
           </button>
@@ -316,150 +334,180 @@ export const AdminDashboard: React.FC = () => {
             {language === 'es' ? 'Panel de Administración' : 'Admin Dashboard'}
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            {language === 'es' 
+            {language === 'es'
               ? 'Bienvenido de vuelta, ' + userProfile?.firstName
-              : 'Welcome back, ' + userProfile?.firstName
-            }
+              : 'Welcome back, ' + userProfile?.firstName}
           </p>
         </div>
-        <div className={`mt-4 sm:mt-0 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getSystemHealthColor(stats.systemHealth)}`}>
-          <div className={`w-2 h-2 rounded-full mr-2 ${
-            stats.systemHealth === 'good' ? 'bg-green-400' :
-            stats.systemHealth === 'warning' ? 'bg-yellow-400' : 'bg-red-400'
-          }`}></div>
+        <div
+          className={`mt-4 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium sm:mt-0 ${getSystemHealthColor(stats.systemHealth)}`}
+        >
+          <div
+            className={`mr-2 h-2 w-2 rounded-full ${
+              stats.systemHealth === 'good'
+                ? 'bg-green-400'
+                : stats.systemHealth === 'warning'
+                  ? 'bg-yellow-400'
+                  : 'bg-red-400'
+            }`}
+          ></div>
           {language === 'es' ? 'Estado del Sistema: ' : 'System Health: '}
-          {stats.systemHealth === 'good' && (language === 'es' ? 'Bueno' : 'Good')}
-          {stats.systemHealth === 'warning' && (language === 'es' ? 'Advertencia' : 'Warning')}
-          {stats.systemHealth === 'critical' && (language === 'es' ? 'Crítico' : 'Critical')}
+          {stats.systemHealth === 'good' &&
+            (language === 'es' ? 'Bueno' : 'Good')}
+          {stats.systemHealth === 'warning' &&
+            (language === 'es' ? 'Advertencia' : 'Warning')}
+          {stats.systemHealth === 'critical' &&
+            (language === 'es' ? 'Crítico' : 'Critical')}
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {/* Users */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {language === 'es' ? 'Usuarios Totales' : 'Total Users'}
               </p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.totalUsers.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                {stats.totalUsers.toLocaleString()}
+              </p>
               <p className="text-sm text-green-600 dark:text-green-400">
-                +{stats.newUsersThisMonth} {language === 'es' ? 'este mes' : 'this month'}
+                +{stats.newUsersThisMonth}{' '}
+                {language === 'es' ? 'este mes' : 'this month'}
               </p>
             </div>
-            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <div className="rounded-lg bg-blue-50 p-3 dark:bg-blue-900/20">
+              <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
         </div>
 
         {/* Jobs */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {language === 'es' ? 'Empleos Activos' : 'Active Jobs'}
               </p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.activeJobs}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                {stats.activeJobs}
+              </p>
               <p className="text-sm text-yellow-600 dark:text-yellow-400">
-                {stats.pendingJobs} {language === 'es' ? 'pendientes' : 'pending'}
+                {stats.pendingJobs}{' '}
+                {language === 'es' ? 'pendientes' : 'pending'}
               </p>
             </div>
-            <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-              <Briefcase className="w-6 h-6 text-green-600 dark:text-green-400" />
+            <div className="rounded-lg bg-green-50 p-3 dark:bg-green-900/20">
+              <Briefcase className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
           </div>
         </div>
 
         {/* Events */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {language === 'es' ? 'Próximos Eventos' : 'Upcoming Events'}
               </p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.upcomingEvents}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                {stats.upcomingEvents}
+              </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {stats.totalEvents} {language === 'es' ? 'total' : 'total'}
               </p>
             </div>
-            <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-              <Calendar className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            <div className="rounded-lg bg-purple-50 p-3 dark:bg-purple-900/20">
+              <Calendar className="h-6 w-6 text-purple-600 dark:text-purple-400" />
             </div>
           </div>
         </div>
 
         {/* Pending Reports */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                 {language === 'es' ? 'Reportes Pendientes' : 'Pending Reports'}
               </p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.pendingReports}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                {stats.pendingReports}
+              </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {stats.totalForumPosts} {language === 'es' ? 'posts del foro' : 'forum posts'}
+                {stats.totalForumPosts}{' '}
+                {language === 'es' ? 'posts del foro' : 'forum posts'}
               </p>
             </div>
-            <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-              <AlertTriangle className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+            <div className="rounded-lg bg-yellow-50 p-3 dark:bg-yellow-900/20">
+              <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
           {language === 'es' ? 'Acciones Rápidas' : 'Quick Actions'}
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button className="flex items-center p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-            <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mr-3" />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <button className="flex items-center rounded-lg border border-gray-200 p-3 text-left transition-colors hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700">
+            <CheckCircle className="mr-3 h-5 w-5 text-green-600 dark:text-green-400" />
             <div>
               <p className="font-medium text-gray-900 dark:text-white">
                 {language === 'es' ? 'Aprobar Empleos' : 'Approve Jobs'}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{stats.pendingJobs} {language === 'es' ? 'pendientes' : 'pending'}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {stats.pendingJobs}{' '}
+                {language === 'es' ? 'pendientes' : 'pending'}
+              </p>
             </div>
           </button>
 
-          <button className="flex items-center p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-            <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 mr-3" />
+          <button className="flex items-center rounded-lg border border-gray-200 p-3 text-left transition-colors hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700">
+            <AlertTriangle className="mr-3 h-5 w-5 text-red-600 dark:text-red-400" />
             <div>
               <p className="font-medium text-gray-900 dark:text-white">
                 {language === 'es' ? 'Revisar Reportes' : 'Review Reports'}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{stats.pendingReports} {language === 'es' ? 'pendientes' : 'pending'}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {stats.pendingReports}{' '}
+                {language === 'es' ? 'pendientes' : 'pending'}
+              </p>
             </div>
           </button>
 
-          <button className="flex items-center p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-            <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3" />
+          <button className="flex items-center rounded-lg border border-gray-200 p-3 text-left transition-colors hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700">
+            <TrendingUp className="mr-3 h-5 w-5 text-blue-600 dark:text-blue-400" />
             <div>
               <p className="font-medium text-gray-900 dark:text-white">
                 {language === 'es' ? 'Ver Analytics' : 'View Analytics'}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{language === 'es' ? 'Reportes detallados' : 'Detailed reports'}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {language === 'es' ? 'Reportes detallados' : 'Detailed reports'}
+              </p>
             </div>
           </button>
 
-          <button className="flex items-center p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-            <Clock className="w-5 h-5 text-purple-600 dark:text-purple-400 mr-3" />
+          <button className="flex items-center rounded-lg border border-gray-200 p-3 text-left transition-colors hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700">
+            <Clock className="mr-3 h-5 w-5 text-purple-600 dark:text-purple-400" />
             <div>
               <p className="font-medium text-gray-900 dark:text-white">
                 {language === 'es' ? 'Logs del Sistema' : 'System Logs'}
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{language === 'es' ? 'Actividad reciente' : 'Recent activity'}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {language === 'es' ? 'Actividad reciente' : 'Recent activity'}
+              </p>
             </div>
           </button>
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="border-b border-gray-200 p-6 dark:border-gray-700">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             {language === 'es' ? 'Actividad Reciente' : 'Recent Activity'}
           </h2>
@@ -467,22 +515,33 @@ export const AdminDashboard: React.FC = () => {
         <div className="divide-y divide-gray-200 dark:divide-gray-700">
           {recentActivity.length > 0 ? (
             recentActivity.map((activity) => (
-              <div key={activity['id']} className="p-6 flex items-start space-x-3">
-                <div className="p-1 bg-gray-100 dark:bg-gray-700 rounded-full">
+              <div
+                key={activity['id']}
+                className="flex items-start space-x-3 p-6"
+              >
+                <div className="rounded-full bg-gray-100 p-1 dark:bg-gray-700">
                   {getActivityIcon(activity['type'])}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-900 dark:text-white">{activity['description']}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{formatDate(activity['timestamp'])}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm text-gray-900 dark:text-white">
+                    {activity['description']}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {formatDate(activity['timestamp'])}
+                  </p>
                   {activity['userEmail'] && (
-                    <p className="text-xs text-blue-600 dark:text-blue-400">{activity['userEmail']}</p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400">
+                      {activity['userEmail']}
+                    </p>
                   )}
                 </div>
               </div>
             ))
           ) : (
             <div className="p-6 text-center text-gray-500 dark:text-gray-400">
-              {language === 'es' ? 'No hay actividad reciente' : 'No recent activity'}
+              {language === 'es'
+                ? 'No hay actividad reciente'
+                : 'No recent activity'}
             </div>
           )}
         </div>

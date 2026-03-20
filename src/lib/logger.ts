@@ -47,14 +47,23 @@ class Logger {
     return LOG_LEVELS[level] >= LOG_LEVELS[this.config.level];
   }
 
-  private formatMessage(level: LogLevel, message: string, data?: Record<string, unknown>): string {
+  private formatMessage(
+    level: LogLevel,
+    message: string,
+    data?: Record<string, unknown>
+  ): string {
     const timestamp = new Date().toISOString();
     const contextStr = this.context ? `[${this.context}]` : '';
     const dataStr = data ? ` ${JSON.stringify(data)}` : '';
     return `${timestamp} ${level.toUpperCase()} ${contextStr} ${message}${dataStr}`;
   }
 
-  private log(level: LogLevel, message: string, data?: Record<string, unknown>, error?: Error): void {
+  private log(
+    level: LogLevel,
+    message: string,
+    data?: Record<string, unknown>,
+    error?: Error
+  ): void {
     if (!this.shouldLog(level)) return;
 
     const entry: LogEntry = {
@@ -120,11 +129,16 @@ class Logger {
     this.log('warn', message, data);
   }
 
-  error(message: string, error?: Error | unknown, data?: Record<string, unknown>): void {
+  error(
+    message: string,
+    error?: Error | unknown,
+    data?: Record<string, unknown>
+  ): void {
     const errorObj = error instanceof Error ? error : undefined;
-    const errorData = error instanceof Error
-      ? { ...data, errorName: error.name, errorStack: error.stack }
-      : { ...data, error: String(error) };
+    const errorData =
+      error instanceof Error
+        ? { ...data, errorName: error.name, errorStack: error.stack }
+        : { ...data, error: String(error) };
     this.log('error', message, errorData, errorObj);
   }
 
@@ -141,7 +155,10 @@ class Logger {
 export const logger = new Logger();
 
 // Factory function to create loggers with specific context
-export function createLogger(context: string, config?: Partial<LoggerConfig>): Logger {
+export function createLogger(
+  context: string,
+  config?: Partial<LoggerConfig>
+): Logger {
   return new Logger({ ...config, context });
 }
 

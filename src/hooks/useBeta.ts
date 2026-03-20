@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
-import { isBetaEnvironment, isFeatureEnabled, type BetaFeatureId } from '@/lib/beta';
+import {
+  isBetaEnvironment,
+  isFeatureEnabled,
+  type BetaFeatureId,
+} from '@/lib/beta';
 
 /**
  * Hook to check if current session is on a beta environment.

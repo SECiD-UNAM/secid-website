@@ -11,11 +11,11 @@ import {
   ShieldCheckIcon,
   ChatBubbleLeftRightIcon,
   MagnifyingGlassIcon,
-  UsersIcon
+  UsersIcon,
 } from '@heroicons/react/24/outline';
-import { CheckIcon} from '@heroicons/react/24/solid';
-import { motion, AnimatePresence} from 'framer-motion';
-import { useTranslations} from '../../hooks/useTranslations';
+import { CheckIcon } from '@heroicons/react/24/solid';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslations } from '../../hooks/useTranslations';
 
 import type { OnboardingStepProps } from '../../types/onboarding';
 import type { MemberProfile } from '../../types/member';
@@ -26,7 +26,7 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
   onBack,
   onSkip,
   progress,
-  className = ''
+  className = '',
 }) => {
   const t = useTranslations();
 
@@ -35,19 +35,29 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
     data['connectionSuggestions'].selectedConnections || []
   );
   const [connectionCriteria, setConnectionCriteria] = useState({
-    sameCompany: data['connectionSuggestions'].connectionCriteria.sameCompany ?? true,
-    sameLocation: data?.connectionSuggestions?.connectionCriteria.sameLocation ?? true,
-    similarSkills: data['connectionSuggestions'].connectionCriteria.similarSkills ?? true,
-    similarGoals: data?.connectionSuggestions?.connectionCriteria.similarGoals ?? true,
-    mentorshipMatch: data['connectionSuggestions'].connectionCriteria.mentorshipMatch ?? false
+    sameCompany:
+      data['connectionSuggestions'].connectionCriteria.sameCompany ?? true,
+    sameLocation:
+      data?.connectionSuggestions?.connectionCriteria.sameLocation ?? true,
+    similarSkills:
+      data['connectionSuggestions'].connectionCriteria.similarSkills ?? true,
+    similarGoals:
+      data?.connectionSuggestions?.connectionCriteria.similarGoals ?? true,
+    mentorshipMatch:
+      data['connectionSuggestions'].connectionCriteria.mentorshipMatch ?? false,
   });
   const [privacySettings, setPrivacySettings] = useState({
-    allowDiscovery: data?.connectionSuggestions?.privacySettings.allowDiscovery ?? true,
-    showInDirectory: data['connectionSuggestions'].privacySettings.showInDirectory ?? true,
-    allowDirectMessages: data?.connectionSuggestions?.privacySettings.allowDirectMessages ?? true
+    allowDiscovery:
+      data?.connectionSuggestions?.privacySettings.allowDiscovery ?? true,
+    showInDirectory:
+      data['connectionSuggestions'].privacySettings.showInDirectory ?? true,
+    allowDirectMessages:
+      data?.connectionSuggestions?.privacySettings.allowDirectMessages ?? true,
   });
 
-  const [currentTab, setCurrentTab] = useState<'suggestions' | 'criteria' | 'privacy'>('suggestions');
+  const [currentTab, setCurrentTab] = useState<
+    'suggestions' | 'criteria' | 'privacy'
+  >('suggestions');
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -72,10 +82,10 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
         level: 'senior',
         currentRole: 'Senior Data Scientist',
         previousRoles: [],
-        industries: ['Technology']
+        industries: ['Technology'],
       },
       social: {
-        linkedin: 'https://linkedin.com/in/mariagonzalez'
+        linkedin: 'https://linkedin.com/in/mariagonzalez',
       },
       networking: {
         connections: [],
@@ -84,7 +94,7 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
         followers: [],
         following: [],
         availableForMentoring: true,
-        openToOpportunities: false
+        openToOpportunities: false,
       },
       privacy: {
         profileVisibility: 'public',
@@ -96,7 +106,7 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
         allowMessages: 'all',
         allowConnectionRequests: true,
         showOnlineStatus: true,
-        showLastSeen: true
+        showLastSeen: true,
       },
       activity: {
         profileViews: 125,
@@ -105,11 +115,11 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
         commentsCount: 34,
         helpfulVotes: 67,
         reputation: 85,
-        lastActive: new Date()
+        lastActive: new Date(),
       },
       searchableKeywords: ['python', 'machine learning', 'data science'],
       featuredSkills: ['Python', 'Machine Learning', 'Data Analysis'],
-      isPremium: false
+      isPremium: false,
     },
     {
       uid: 'user2',
@@ -130,10 +140,10 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
         level: 'lead',
         currentRole: 'Lead Data Analyst',
         previousRoles: [],
-        industries: ['Finance']
+        industries: ['Finance'],
       },
       social: {
-        linkedin: 'https://linkedin.com/in/carlosrodriguez'
+        linkedin: 'https://linkedin.com/in/carlosrodriguez',
       },
       networking: {
         connections: [],
@@ -142,7 +152,7 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
         followers: [],
         following: [],
         availableForMentoring: true,
-        openToOpportunities: false
+        openToOpportunities: false,
       },
       privacy: {
         profileVisibility: 'public',
@@ -154,7 +164,7 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
         allowMessages: 'all',
         allowConnectionRequests: true,
         showOnlineStatus: true,
-        showLastSeen: true
+        showLastSeen: true,
       },
       activity: {
         profileViews: 89,
@@ -163,11 +173,11 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
         commentsCount: 21,
         helpfulVotes: 45,
         reputation: 72,
-        lastActive: new Date()
+        lastActive: new Date(),
       },
       searchableKeywords: ['r', 'statistics', 'business intelligence'],
       featuredSkills: ['R', 'Statistics', 'Business Intelligence'],
-      isPremium: true
+      isPremium: true,
     },
     {
       uid: 'user3',
@@ -188,10 +198,10 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
         level: 'mid',
         currentRole: 'BI Developer',
         previousRoles: [],
-        industries: ['Manufacturing']
+        industries: ['Manufacturing'],
       },
       social: {
-        linkedin: 'https://linkedin.com/in/analopez'
+        linkedin: 'https://linkedin.com/in/analopez',
       },
       networking: {
         connections: [],
@@ -200,7 +210,7 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
         followers: [],
         following: [],
         availableForMentoring: false,
-        openToOpportunities: true
+        openToOpportunities: true,
       },
       privacy: {
         profileVisibility: 'public',
@@ -212,7 +222,7 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
         allowMessages: 'all',
         allowConnectionRequests: true,
         showOnlineStatus: true,
-        showLastSeen: true
+        showLastSeen: true,
       },
       activity: {
         profileViews: 67,
@@ -221,52 +231,70 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
         commentsCount: 42,
         helpfulVotes: 38,
         reputation: 65,
-        lastActive: new Date()
+        lastActive: new Date(),
       },
       searchableKeywords: ['sql', 'tableau', 'power bi'],
       featuredSkills: ['SQL', 'Tableau', 'Power BI'],
-      isPremium: false
-    }
+      isPremium: false,
+    },
   ]);
 
   // Filter suggestions based on criteria and search
-  const filteredSuggestions = suggestedMembers.filter(member => {
+  const filteredSuggestions = suggestedMembers.filter((member) => {
     // Search filter
-    if(searchTerm) {
+    if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
-      const matchesSearch = 
+      const matchesSearch =
         member.displayName.toLowerCase().includes(searchLower) ||
         member?.company?.toLowerCase().includes(searchLower) ||
         member?.jobTitle?.toLowerCase().includes(searchLower) ||
-        member?.skills?.some(skill => skill.toLowerCase().includes(searchLower)) ||
+        member?.skills?.some((skill) =>
+          skill.toLowerCase().includes(searchLower)
+        ) ||
         member?.location?.city?.toLowerCase().includes(searchLower);
-      
+
       if (!matchesSearch) return false;
     }
 
     // Criteria filters
     let matchesCriteria = true;
 
-    if (connectionCriteria.sameCompany && data?.profileSetup?.professional.currentCompany) {
-      matchesCriteria = matchesCriteria && member.company === data['profileSetup'].professional.currentCompany;
+    if (
+      connectionCriteria.sameCompany &&
+      data?.profileSetup?.professional.currentCompany
+    ) {
+      matchesCriteria =
+        matchesCriteria &&
+        member.company === data['profileSetup'].professional.currentCompany;
     }
 
-    if (connectionCriteria.sameLocation && data?.profileSetup?.basicInfo?.location?.city) {
-      matchesCriteria = matchesCriteria && member?.location?.city === data['profileSetup'].basicInfo.location.city;
+    if (
+      connectionCriteria.sameLocation &&
+      data?.profileSetup?.basicInfo?.location?.city
+    ) {
+      matchesCriteria =
+        matchesCriteria &&
+        member?.location?.city === data['profileSetup'].basicInfo.location.city;
     }
 
-    if (connectionCriteria.similarSkills && data?.interestsSelection?.primarySkills.length > 0) {
-      const commonSkills = member?.skills?.filter(skill => 
-        data['interestsSelection'].primarySkills.includes(skill)
-      ).length || 0;
+    if (
+      connectionCriteria.similarSkills &&
+      data?.interestsSelection?.primarySkills.length > 0
+    ) {
+      const commonSkills =
+        member?.skills?.filter((skill) =>
+          data['interestsSelection'].primarySkills.includes(skill)
+        ).length || 0;
       matchesCriteria = matchesCriteria && commonSkills > 0;
     }
 
     if (connectionCriteria.mentorshipMatch) {
-      const userWantsMentoring = data?.goalsDefinition?.networkingGoals.mentorshipInterest === 'mentee' ||
-                                data['goalsDefinition'].networkingGoals.mentorshipInterest === 'both';
+      const userWantsMentoring =
+        data?.goalsDefinition?.networkingGoals.mentorshipInterest ===
+          'mentee' ||
+        data['goalsDefinition'].networkingGoals.mentorshipInterest === 'both';
       const memberIsMentor = member.networking.availableForMentoring;
-      matchesCriteria = matchesCriteria && (userWantsMentoring && memberIsMentor);
+      matchesCriteria = matchesCriteria && userWantsMentoring && memberIsMentor;
     }
 
     return matchesCriteria;
@@ -274,10 +302,8 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
 
   // Toggle connection selection
   const toggleConnection = (uid: string) => {
-    setSelectedConnections(prev => 
-      prev.includes(uid) 
-        ? prev.filter(id => id !== uid)
-        : [...prev, uid]
+    setSelectedConnections((prev) =>
+      prev.includes(uid) ? prev.filter((id) => id !== uid) : [...prev, uid]
     );
   };
 
@@ -289,20 +315,30 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
       reasons.push(t.onboarding.connections.matchReasons.sameCompany);
     }
 
-    if (member?.location?.city === data['profileSetup'].basicInfo?.location?.city) {
+    if (
+      member?.location?.city === data['profileSetup'].basicInfo?.location?.city
+    ) {
       reasons.push(t.onboarding.connections.matchReasons.sameLocation);
     }
 
-    const commonSkills = member?.skills?.filter(skill => 
-      data?.interestsSelection?.primarySkills.includes(skill)
-    ) || [];
+    const commonSkills =
+      member?.skills?.filter((skill) =>
+        data?.interestsSelection?.primarySkills.includes(skill)
+      ) || [];
     if (commonSkills.length > 0) {
-      reasons.push(t.onboarding.connections.matchReasons.similarSkills.replace('{count}', commonSkills.length.toString()));
+      reasons.push(
+        t.onboarding.connections.matchReasons.similarSkills.replace(
+          '{count}',
+          commonSkills.length.toString()
+        )
+      );
     }
 
-    if (member.networking.availableForMentoring && 
-        (data?.goalsDefinition?.networkingGoals.mentorshipInterest === 'mentee' ||
-         data['goalsDefinition'].networkingGoals.mentorshipInterest === 'both')) {
+    if (
+      member.networking.availableForMentoring &&
+      (data?.goalsDefinition?.networkingGoals.mentorshipInterest === 'mentee' ||
+        data['goalsDefinition'].networkingGoals.mentorshipInterest === 'both')
+    ) {
       reasons.push(t.onboarding.connections.matchReasons.mentoring);
     }
 
@@ -313,7 +349,7 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
     onNext({
       selectedConnections,
       connectionCriteria,
-      privacySettings
+      privacySettings,
     });
   };
 
@@ -322,35 +358,34 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
       id: 'suggestions',
       title: t.onboarding.connections.tabs.suggestions,
       icon: <UsersIcon className="h-5 w-5" />,
-      count: filteredSuggestions.length
+      count: filteredSuggestions.length,
     },
     {
       id: 'criteria',
       title: t.onboarding.connections.tabs.criteria,
-      icon: <MagnifyingGlassIcon className="h-5 w-5" />
+      icon: <MagnifyingGlassIcon className="h-5 w-5" />,
     },
     {
       id: 'privacy',
       title: t.onboarding.connections.tabs.privacy,
-      icon: <ShieldCheckIcon className="h-5 w-5" />
-    }
+      icon: <ShieldCheckIcon className="h-5 w-5" />,
+    },
   ];
 
   return (
     <div className={`connection-suggestions-step ${className}`}>
-      <div className="max-w-6xl mx-auto">
-        
+      <div className="mx-auto max-w-6xl">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-8"
+          className="mb-8 text-center"
         >
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          <h1 className="mb-4 text-3xl font-bold text-gray-900">
             {t.onboarding.connections.title}
           </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          <p className="mx-auto max-w-3xl text-lg text-gray-600">
             {t.onboarding.connections.description}
           </p>
         </motion.div>
@@ -360,17 +395,20 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="bg-blue-50 rounded-xl p-6 mb-8"
+          className="mb-8 rounded-xl bg-blue-50 p-6"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <UserPlusIcon className="h-6 w-6 text-blue-600 mr-3" />
+              <UserPlusIcon className="mr-3 h-6 w-6 text-blue-600" />
               <div>
                 <h3 className="text-lg font-semibold text-blue-900">
                   {t.onboarding.connections.summary.title}
                 </h3>
                 <p className="text-blue-700">
-                  {t.onboarding.connections.summary['description'].replace('{count}', selectedConnections.length.toString())}
+                  {t.onboarding.connections.summary['description'].replace(
+                    '{count}',
+                    selectedConnections.length.toString()
+                  )}
                 </p>
               </div>
             </div>
@@ -393,18 +431,22 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
                 <button
                   key={tab.id}
                   onClick={() => setCurrentTab(tab.id as any)}
-                  className={`flex items-center py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  className={`flex items-center border-b-2 px-1 py-2 text-sm font-medium transition-colors ${
                     currentTab === tab.id
                       ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                   }`}
                 >
                   {tab.icon}
                   <span className="ml-2">{tab.title}</span>
                   {tab.count !== undefined && (
-                    <span className={`ml-2 px-2 py-1 text-xs rounded-full ${
-                      currentTab === tab.id ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'
-                    }`}>
+                    <span
+                      className={`ml-2 rounded-full px-2 py-1 text-xs ${
+                        currentTab === tab.id
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
                       {tab.count}
                     </span>
                   )}
@@ -418,21 +460,20 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4 }}
-          className="bg-white rounded-xl shadow-lg border border-gray-200 p-8"
+          className="rounded-xl border border-gray-200 bg-white p-8 shadow-lg"
         >
-
           {/* Suggestions Tab */}
           {currentTab === 'suggestions' && (
             <div>
               {/* Search */}
               <div className="mb-6">
                 <div className="relative">
-                  <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
                   <input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-gray-300 py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder={t.onboarding.connections.searchPlaceholder}
                   />
                 </div>
@@ -451,7 +492,7 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className={`border-2 rounded-xl p-6 transition-all cursor-pointer ${
+                        className={`cursor-pointer rounded-xl border-2 p-6 transition-all ${
                           isSelected
                             ? 'border-blue-500 bg-blue-50'
                             : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
@@ -461,11 +502,11 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
                         <div className="flex items-start space-x-4">
                           {/* Avatar */}
                           <div className="relative">
-                            <div className="h-16 w-16 rounded-full bg-gray-100 flex items-center justify-center">
+                            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
                               {member.avatar ? (
-                                <img 
-                                  src={member.avatar} 
-                                  alt={member.displayName} 
+                                <img
+                                  src={member.avatar}
+                                  alt={member.displayName}
                                   className="h-full w-full rounded-full object-cover"
                                 />
                               ) : (
@@ -475,36 +516,38 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
                               )}
                             </div>
                             {member.isOnline && (
-                              <div className="absolute bottom-0 right-0 h-4 w-4 bg-green-400 rounded-full border-2 border-white"></div>
+                              <div className="absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-white bg-green-400"></div>
                             )}
                             {member.isPremium && (
-                              <div className="absolute -top-1 -right-1 h-5 w-5 bg-yellow-400 rounded-full flex items-center justify-center">
+                              <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-yellow-400">
                                 <SparklesIcon className="h-3 w-3 text-yellow-800" />
                               </div>
                             )}
                           </div>
 
                           {/* Content */}
-                          <div className="flex-1 min-w-0">
+                          <div className="min-w-0 flex-1">
                             <div className="flex items-start justify-between">
-                              <div className="flex-1 min-w-0">
-                                <h3 className="text-lg font-semibold text-gray-900 truncate">
+                              <div className="min-w-0 flex-1">
+                                <h3 className="truncate text-lg font-semibold text-gray-900">
                                   {member.displayName}
                                 </h3>
-                                <p className="text-sm text-gray-600 mb-2">
+                                <p className="mb-2 text-sm text-gray-600">
                                   {member.jobTitle} at {member.company}
                                 </p>
-                                <p className="text-sm text-gray-500 line-clamp-2 mb-3">
+                                <p className="mb-3 line-clamp-2 text-sm text-gray-500">
                                   {member.bio}
                                 </p>
                               </div>
-                              
+
                               {/* Selection Indicator */}
-                              <div className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-                                isSelected
-                                  ? 'border-blue-500 bg-blue-500'
-                                  : 'border-gray-300'
-                              }`}>
+                              <div
+                                className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+                                  isSelected
+                                    ? 'border-blue-500 bg-blue-500'
+                                    : 'border-gray-300'
+                                }`}
+                              >
                                 {isSelected && (
                                   <CheckIcon className="h-4 w-4 text-white" />
                                 )}
@@ -512,37 +555,41 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
                             </div>
 
                             {/* Details */}
-                            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-3">
+                            <div className="mb-3 flex flex-wrap items-center gap-4 text-sm text-gray-500">
                               {member.location && (
                                 <div className="flex items-center">
-                                  <MapPinIcon className="h-4 w-4 mr-1" />
-                                  {member.location.city}, {member.location.country}
+                                  <MapPinIcon className="mr-1 h-4 w-4" />
+                                  {member.location.city},{' '}
+                                  {member.location.country}
                                 </div>
                               )}
                               <div className="flex items-center">
-                                <UsersIcon className="h-4 w-4 mr-1" />
-                                {member.activity.totalConnections} {t.onboarding.connections.connectionCount}
+                                <UsersIcon className="mr-1 h-4 w-4" />
+                                {member.activity.totalConnections}{' '}
+                                {t.onboarding.connections.connectionCount}
                               </div>
                               {member.networking.availableForMentoring && (
                                 <div className="flex items-center text-green-600">
-                                  <AcademicCapIcon className="h-4 w-4 mr-1" />
+                                  <AcademicCapIcon className="mr-1 h-4 w-4" />
                                   {t.onboarding.connections.mentor}
                                 </div>
                               )}
                             </div>
 
                             {/* Skills */}
-                            <div className="flex flex-wrap gap-2 mb-3">
-                              {member.featuredSkills.slice(0, 3).map((skill) => (
-                                <span
-                                  key={skill}
-                                  className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
-                                >
-                                  {skill}
-                                </span>
-                              ))}
+                            <div className="mb-3 flex flex-wrap gap-2">
+                              {member.featuredSkills
+                                .slice(0, 3)
+                                .map((skill) => (
+                                  <span
+                                    key={skill}
+                                    className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700"
+                                  >
+                                    {skill}
+                                  </span>
+                                ))}
                               {member.featuredSkills.length > 3 && (
-                                <span className="px-2 py-1 bg-gray-100 text-gray-500 text-xs rounded-full">
+                                <span className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-500">
                                   +{member.featuredSkills.length - 3} more
                                 </span>
                               )}
@@ -554,9 +601,9 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
                                 {matchReasons.map((reason, index) => (
                                   <span
                                     key={index}
-                                    className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full flex items-center"
+                                    className="flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800"
                                   >
-                                    <SparklesIcon className="h-3 w-3 mr-1" />
+                                    <SparklesIcon className="mr-1 h-3 w-3" />
                                     {reason}
                                   </span>
                                 ))}
@@ -570,9 +617,9 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
                 </AnimatePresence>
 
                 {filteredSuggestions.length === 0 && (
-                  <div className="text-center py-12">
-                    <UsersIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <div className="py-12 text-center">
+                    <UsersIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                    <h3 className="mb-2 text-lg font-medium text-gray-900">
                       {t.onboarding.connections.noSuggestions.title}
                     </h3>
                     <p className="text-gray-600">
@@ -588,10 +635,10 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
           {currentTab === 'criteria' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <h3 className="mb-4 text-lg font-semibold text-gray-900">
                   {t.onboarding.connections.criteria.title}
                 </h3>
-                <p className="text-gray-600 mb-6">
+                <p className="mb-6 text-gray-600">
                   {t.onboarding.connections.criteria.description}
                 </p>
 
@@ -600,17 +647,29 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
                     <input
                       type="checkbox"
                       checked={connectionCriteria.sameCompany}
-                      onChange={(e) => setConnectionCriteria(prev => ({ ...prev, sameCompany: e.target.checked }))}
-                      className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      onChange={(e) =>
+                        setConnectionCriteria((prev) => ({
+                          ...prev,
+                          sameCompany: e.target.checked,
+                        }))
+                      }
+                      className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <div className="ml-3">
                       <div className="font-medium text-gray-900">
                         {t.onboarding.connections.criteria.sameCompany.title}
                       </div>
                       <div className="text-sm text-gray-600">
-                        {t.onboarding.connections.criteria.sameCompany['description']}
+                        {
+                          t.onboarding.connections.criteria.sameCompany[
+                            'description'
+                          ]
+                        }
                         {data['profileSetup'].professional.currentCompany && (
-                          <span className="font-medium"> ({data['profileSetup'].professional.currentCompany})</span>
+                          <span className="font-medium">
+                            {' '}
+                            ({data['profileSetup'].professional.currentCompany})
+                          </span>
                         )}
                       </div>
                     </div>
@@ -620,17 +679,29 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
                     <input
                       type="checkbox"
                       checked={connectionCriteria.sameLocation}
-                      onChange={(e) => setConnectionCriteria(prev => ({ ...prev, sameLocation: e.target.checked }))}
-                      className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      onChange={(e) =>
+                        setConnectionCriteria((prev) => ({
+                          ...prev,
+                          sameLocation: e.target.checked,
+                        }))
+                      }
+                      className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <div className="ml-3">
                       <div className="font-medium text-gray-900">
                         {t.onboarding.connections.criteria.sameLocation.title}
                       </div>
                       <div className="text-sm text-gray-600">
-                        {t.onboarding.connections.criteria.sameLocation['description']}
+                        {
+                          t.onboarding.connections.criteria.sameLocation[
+                            'description'
+                          ]
+                        }
                         {data['profileSetup'].basicInfo?.location?.city && (
-                          <span className="font-medium"> ({data['profileSetup'].basicInfo.location.city})</span>
+                          <span className="font-medium">
+                            {' '}
+                            ({data['profileSetup'].basicInfo.location.city})
+                          </span>
                         )}
                       </div>
                     </div>
@@ -640,15 +711,23 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
                     <input
                       type="checkbox"
                       checked={connectionCriteria.similarSkills}
-                      onChange={(e) => setConnectionCriteria(prev => ({ ...prev, similarSkills: e.target.checked }))}
-                      className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      onChange={(e) =>
+                        setConnectionCriteria((prev) => ({
+                          ...prev,
+                          similarSkills: e.target.checked,
+                        }))
+                      }
+                      className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <div className="ml-3">
                       <div className="font-medium text-gray-900">
                         {t.onboarding.connections.criteria.similarSkills.title}
                       </div>
                       <div className="text-sm text-gray-600">
-                        {t.onboarding.connections.criteria.similarSkills.description}
+                        {
+                          t.onboarding.connections.criteria.similarSkills
+                            .description
+                        }
                       </div>
                     </div>
                   </label>
@@ -657,15 +736,23 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
                     <input
                       type="checkbox"
                       checked={connectionCriteria.similarGoals}
-                      onChange={(e) => setConnectionCriteria(prev => ({ ...prev, similarGoals: e.target.checked }))}
-                      className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      onChange={(e) =>
+                        setConnectionCriteria((prev) => ({
+                          ...prev,
+                          similarGoals: e.target.checked,
+                        }))
+                      }
+                      className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <div className="ml-3">
                       <div className="font-medium text-gray-900">
                         {t.onboarding.connections.criteria.similarGoals.title}
                       </div>
                       <div className="text-sm text-gray-600">
-                        {t.onboarding.connections.criteria.similarGoals.description}
+                        {
+                          t.onboarding.connections.criteria.similarGoals
+                            .description
+                        }
                       </div>
                     </div>
                   </label>
@@ -674,15 +761,27 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
                     <input
                       type="checkbox"
                       checked={connectionCriteria.mentorshipMatch}
-                      onChange={(e) => setConnectionCriteria(prev => ({ ...prev, mentorshipMatch: e.target.checked }))}
-                      className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      onChange={(e) =>
+                        setConnectionCriteria((prev) => ({
+                          ...prev,
+                          mentorshipMatch: e.target.checked,
+                        }))
+                      }
+                      className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <div className="ml-3">
                       <div className="font-medium text-gray-900">
-                        {t.onboarding.connections.criteria.mentorshipMatch.title}
+                        {
+                          t.onboarding.connections.criteria.mentorshipMatch
+                            .title
+                        }
                       </div>
                       <div className="text-sm text-gray-600">
-                        {t.onboarding.connections.criteria.mentorshipMatch['description']}
+                        {
+                          t.onboarding.connections.criteria.mentorshipMatch[
+                            'description'
+                          ]
+                        }
                       </div>
                     </div>
                   </label>
@@ -695,80 +794,113 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
           {currentTab === 'privacy' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <h3 className="mb-4 text-lg font-semibold text-gray-900">
                   {t.onboarding.connections.privacy.title}
                 </h3>
-                <p className="text-gray-600 mb-6">
+                <p className="mb-6 text-gray-600">
                   {t.onboarding.connections.privacy.description}
                 </p>
 
                 <div className="space-y-6">
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4">
                     <div className="flex items-center">
-                      <EyeIcon className="h-6 w-6 text-gray-600 mr-3" />
+                      <EyeIcon className="mr-3 h-6 w-6 text-gray-600" />
                       <div>
                         <div className="font-medium text-gray-900">
-                          {t.onboarding.connections.privacy.allowDiscovery.title}
+                          {
+                            t.onboarding.connections.privacy.allowDiscovery
+                              .title
+                          }
                         </div>
                         <div className="text-sm text-gray-600">
-                          {t.onboarding.connections.privacy.allowDiscovery.description}
+                          {
+                            t.onboarding.connections.privacy.allowDiscovery
+                              .description
+                          }
                         </div>
                       </div>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
+                    <label className="relative inline-flex cursor-pointer items-center">
                       <input
                         type="checkbox"
                         checked={privacySettings.allowDiscovery}
-                        onChange={(e) => setPrivacySettings(prev => ({ ...prev, allowDiscovery: e.target.checked }))}
-                        className="sr-only peer"
+                        onChange={(e) =>
+                          setPrivacySettings((prev) => ({
+                            ...prev,
+                            allowDiscovery: e.target.checked,
+                          }))
+                        }
+                        className="peer sr-only"
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300"></div>
                     </label>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4">
                     <div className="flex items-center">
-                      <UsersIcon className="h-6 w-6 text-gray-600 mr-3" />
+                      <UsersIcon className="mr-3 h-6 w-6 text-gray-600" />
                       <div>
                         <div className="font-medium text-gray-900">
-                          {t.onboarding.connections.privacy.showInDirectory.title}
+                          {
+                            t.onboarding.connections.privacy.showInDirectory
+                              .title
+                          }
                         </div>
                         <div className="text-sm text-gray-600">
-                          {t.onboarding.connections.privacy.showInDirectory.description}
+                          {
+                            t.onboarding.connections.privacy.showInDirectory
+                              .description
+                          }
                         </div>
                       </div>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
+                    <label className="relative inline-flex cursor-pointer items-center">
                       <input
                         type="checkbox"
                         checked={privacySettings.showInDirectory}
-                        onChange={(e) => setPrivacySettings(prev => ({ ...prev, showInDirectory: e.target.checked }))}
-                        className="sr-only peer"
+                        onChange={(e) =>
+                          setPrivacySettings((prev) => ({
+                            ...prev,
+                            showInDirectory: e.target.checked,
+                          }))
+                        }
+                        className="peer sr-only"
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300"></div>
                     </label>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex items-center justify-between rounded-lg bg-gray-50 p-4">
                     <div className="flex items-center">
-                      <ChatBubbleLeftRightIcon className="h-6 w-6 text-gray-600 mr-3" />
+                      <ChatBubbleLeftRightIcon className="mr-3 h-6 w-6 text-gray-600" />
                       <div>
                         <div className="font-medium text-gray-900">
-                          {t.onboarding.connections.privacy.allowDirectMessages.title}
+                          {
+                            t.onboarding.connections.privacy.allowDirectMessages
+                              .title
+                          }
                         </div>
                         <div className="text-sm text-gray-600">
-                          {t.onboarding.connections.privacy.allowDirectMessages.description}
+                          {
+                            t.onboarding.connections.privacy.allowDirectMessages
+                              .description
+                          }
                         </div>
                       </div>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
+                    <label className="relative inline-flex cursor-pointer items-center">
                       <input
                         type="checkbox"
                         checked={privacySettings.allowDirectMessages}
-                        onChange={(e) => setPrivacySettings(prev => ({ ...prev, allowDirectMessages: e.target.checked }))}
-                        className="sr-only peer"
+                        onChange={(e) =>
+                          setPrivacySettings((prev) => ({
+                            ...prev,
+                            allowDirectMessages: e.target.checked,
+                          }))
+                        }
+                        className="peer sr-only"
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      <div className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300"></div>
                     </label>
                   </div>
                 </div>
@@ -782,11 +914,11 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex justify-between items-center mt-8"
+          className="mt-8 flex items-center justify-between"
         >
           <button
             onClick={onBack}
-            className="inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-6 py-3 text-gray-700 transition-colors hover:bg-gray-50"
           >
             {t.onboarding.navigation.back}
           </button>
@@ -795,19 +927,29 @@ const ConnectionSuggestions: React.FC<OnboardingStepProps> = ({
             {onSkip && (
               <button
                 onClick={onSkip}
-                className="text-gray-500 hover:text-gray-700 transition-colors"
+                className="text-gray-500 transition-colors hover:text-gray-700"
               >
                 {t.onboarding.navigation.skip}
               </button>
             )}
-            
+
             <button
               onClick={handleNext}
-              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              className="inline-flex items-center rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700"
             >
               {t.onboarding.navigation.continue}
-              <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <svg
+                className="ml-2 h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </button>
           </div>

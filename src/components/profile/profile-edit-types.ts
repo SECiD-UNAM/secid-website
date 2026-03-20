@@ -46,7 +46,12 @@ export interface FormData {
   forumNotifications: boolean;
 }
 
-export type TabId = 'personal' | 'professional' | 'education' | 'privacy' | 'security';
+export type TabId =
+  | 'personal'
+  | 'professional'
+  | 'education'
+  | 'privacy'
+  | 'security';
 
 export interface ProfileTabProps {
   lang: 'es' | 'en';

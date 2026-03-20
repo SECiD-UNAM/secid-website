@@ -39,15 +39,17 @@ describe.skip('Authentication API Integration Tests', () => {
       const mockUserCredential = {
         user: mockUsers.regularUser,
       };
-      
-      vi.mocked(auth.signInWithEmailAndPassword).mockResolvedValue(mockUserCredential);
+
+      vi.mocked(auth.signInWithEmailAndPassword).mockResolvedValue(
+        mockUserCredential
+      );
       vi.mocked(firestore.getDoc).mockResolvedValue({
         exists: () => true,
         data: () => mockUsers.regularUser.profile,
       });
-      
+
       const result = await signIn('user@example.com', 'password123');
-      
+
       expect(auth.signInWithEmailAndPassword).toHaveBeenCalledWith(
         auth,
         'user@example.com',
@@ -60,7 +62,7 @@ describe.skip('Authentication API Integration Tests', () => {
       vi.mocked(auth.signInWithEmailAndPassword).mockRejectedValue(
         new Error('auth/invalid-credential')
       );
-      
+
       await expect(signIn('user@example.com', 'wrongpassword')).rejects.toThrow(
         'auth/invalid-credential'
       );
@@ -70,19 +72,21 @@ describe.skip('Authentication API Integration Tests', () => {
       const mockUnverifiedUser = {
         user: { ...mockUsers.unverifiedUser, emailVerified: false },
       };
-      
-      vi.mocked(auth.signInWithEmailAndPassword).mockResolvedValue(mockUnverifiedUser);
-      
-      await expect(signIn('unverified@example.com', 'password123')).rejects.toThrow(
-        'Email not verified'
+
+      vi.mocked(auth.signInWithEmailAndPassword).mockResolvedValue(
+        mockUnverifiedUser
       );
+
+      await expect(
+        signIn('unverified@example.com', 'password123')
+      ).rejects.toThrow('Email not verified');
     });
 
     it('handles network errors during sign in', async () => {
       vi.mocked(auth.signInWithEmailAndPassword).mockRejectedValue(
         new Error('auth/network-request-failed')
       );
-      
+
       await expect(signIn('user@example.com', 'password123')).rejects.toThrow(
         'auth/network-request-failed'
       );
@@ -104,18 +108,20 @@ describe.skip('Authentication API Integration Tests', () => {
       const mockUserCredential = {
         user: { uid: 'new-user-uid', email: signUpData.email },
       };
-      
-      vi.mocked(auth.createUserWithEmailAndPassword).mockResolvedValue(mockUserCredential);
+
+      vi.mocked(auth.createUserWithEmailAndPassword).mockResolvedValue(
+        mockUserCredential
+      );
       vi.mocked(firestore.setDoc).mockResolvedValue(undefined);
-      
+
       const result = await signUp(signUpData);
-      
+
       expect(auth.createUserWithEmailAndPassword).toHaveBeenCalledWith(
         auth,
         signUpData.email,
         signUpData.password
       );
-      
+
       expect(firestore.setDoc).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
@@ -127,7 +133,7 @@ describe.skip('Authentication API Integration Tests', () => {
           major: signUpData.major,
         })
       );
-      
+
       expect(result.user.uid).toBe('new-user-uid');
     });
 
@@ -135,15 +141,17 @@ describe.skip('Authentication API Integration Tests', () => {
       vi.mocked(auth.createUserWithEmailAndPassword).mockRejectedValue(
         new Error('auth/email-already-in-use')
       );
-      
-      await expect(signUp(signUpData)).rejects.toThrow('auth/email-already-in-use');
+
+      await expect(signUp(signUpData)).rejects.toThrow(
+        'auth/email-already-in-use'
+      );
     });
 
     it('throws error for weak password', async () => {
       vi.mocked(auth.createUserWithEmailAndPassword).mockRejectedValue(
         new Error('auth/weak-password')
       );
-      
+
       await expect(signUp({ ...signUpData, password: '123' })).rejects.toThrow(
         'auth/weak-password'
       );
@@ -153,11 +161,17 @@ describe.skip('Authentication API Integration Tests', () => {
       const mockUserCredential = {
         user: { uid: 'new-user-uid', email: signUpData.email, delete: vi.fn() },
       };
-      
-      vi.mocked(auth.createUserWithEmailAndPassword).mockResolvedValue(mockUserCredential);
-      vi.mocked(firestore.setDoc).mockRejectedValue(new Error('Profile creation failed'));
-      
-      await expect(signUp(signUpData)).rejects.toThrow('Profile creation failed');
+
+      vi.mocked(auth.createUserWithEmailAndPassword).mockResolvedValue(
+        mockUserCredential
+      );
+      vi.mocked(firestore.setDoc).mockRejectedValue(
+        new Error('Profile creation failed')
+      );
+
+      await expect(signUp(signUpData)).rejects.toThrow(
+        'Profile creation failed'
+      );
       expect(mockUserCredential.user.delete).toHaveBeenCalled();
     });
   });
@@ -165,15 +179,15 @@ describe.skip('Authentication API Integration Tests', () => {
   describe('Sign Out', () => {
     it('successfully signs out user', async () => {
       vi.mocked(auth.signOut).mockResolvedValue(undefined);
-      
+
       await signOut();
-      
+
       expect(auth.signOut).toHaveBeenCalledWith(auth);
     });
 
     it('handles sign out errors', async () => {
       vi.mocked(auth.signOut).mockRejectedValue(new Error('Sign out failed'));
-      
+
       await expect(signOut()).rejects.toThrow('Sign out failed');
     });
   });
@@ -181,9 +195,9 @@ describe.skip('Authentication API Integration Tests', () => {
   describe('Password Reset', () => {
     it('successfully sends password reset email', async () => {
       vi.mocked(auth.sendPasswordResetEmail).mockResolvedValue(undefined);
-      
+
       await resetPassword('user@example.com');
-      
+
       expect(auth.sendPasswordResetEmail).toHaveBeenCalledWith(
         auth,
         'user@example.com'
@@ -194,15 +208,17 @@ describe.skip('Authentication API Integration Tests', () => {
       vi.mocked(auth.sendPasswordResetEmail).mockRejectedValue(
         new Error('auth/invalid-email')
       );
-      
-      await expect(resetPassword('invalid-email')).rejects.toThrow('auth/invalid-email');
+
+      await expect(resetPassword('invalid-email')).rejects.toThrow(
+        'auth/invalid-email'
+      );
     });
 
     it('throws error for user not found', async () => {
       vi.mocked(auth.sendPasswordResetEmail).mockRejectedValue(
         new Error('auth/user-not-found')
       );
-      
+
       await expect(resetPassword('nonexistent@example.com')).rejects.toThrow(
         'auth/user-not-found'
       );
@@ -212,26 +228,26 @@ describe.skip('Authentication API Integration Tests', () => {
   describe('Session Management', () => {
     it('maintains user session across page refreshes', async () => {
       const mockUser = mockUsers.regularUser;
-      
+
       // Simulate page refresh
       Object.defineProperty(auth, 'currentUser', {
         value: mockUser,
         writable: true,
       });
-      
+
       expect(auth.currentUser).toEqual(mockUser);
     });
 
     it('expires session after inactivity', async () => {
       // Mock token expiration
       vi.mocked(auth.signOut).mockResolvedValue(undefined);
-      
+
       // Simulate token expiration
       Object.defineProperty(auth, 'currentUser', {
         value: null,
         writable: true,
       });
-      
+
       expect(auth.currentUser).toBeNull();
     });
   });
@@ -242,7 +258,7 @@ describe.skip('Authentication API Integration Tests', () => {
       vi.mocked(auth.signInWithEmailAndPassword).mockRejectedValue(
         new Error('auth/too-many-requests')
       );
-      
+
       await expect(signIn('user@example.com', 'wrongpassword')).rejects.toThrow(
         'auth/too-many-requests'
       );
@@ -250,21 +266,25 @@ describe.skip('Authentication API Integration Tests', () => {
 
     it('validates email domain restrictions', async () => {
       const invalidDomainEmail = 'user@blacklisted-domain.com';
-      
-      await expect(signUp({ 
-        ...mockUsers.regularUser, 
-        email: invalidDomainEmail 
-      })).rejects.toThrow('Domain not allowed');
+
+      await expect(
+        signUp({
+          ...mockUsers.regularUser,
+          email: invalidDomainEmail,
+        })
+      ).rejects.toThrow('Domain not allowed');
     });
 
     it('enforces password complexity requirements', async () => {
       const weakPasswords = ['123', 'password', 'abc123'];
-      
+
       for (const password of weakPasswords) {
-        await expect(signUp({ 
-          ...mockUsers.regularUser, 
-          password 
-        })).rejects.toThrow(/password/i);
+        await expect(
+          signUp({
+            ...mockUsers.regularUser,
+            password,
+          })
+        ).rejects.toThrow(/password/i);
       }
     });
   });

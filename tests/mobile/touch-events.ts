@@ -23,37 +23,44 @@ const SWIPE_CONFIGURATIONS = {
 };
 
 test.describe('Touch Events and Mobile Interactions', () => {
-  
   test.beforeEach(async ({ page }) => {
     // Set mobile viewport for touch testing
     await page.setViewportSize({ width: 375, height: 667 });
-    
+
     // Enable touch events
-    await page.emulateMedia({ 
+    await page.emulateMedia({
       media: 'screen',
-      colorScheme: 'light'
+      colorScheme: 'light',
     });
-    
+
     // Add touch event monitoring
     await page.addInitScript(() => {
       (window as any).touchEvents = [];
-      
-      ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach(eventType => {
-        document.addEventListener(eventType, (event) => {
-          (window as any).touchEvents.push({
-            type: eventType,
-            timestamp: Date.now(),
-            touches: event.touches.length,
-            changedTouches: event.changedTouches.length,
-            target: event.target?.tagName || 'unknown',
-          });
-        }, { passive: true });
-      });
+
+      ['touchstart', 'touchmove', 'touchend', 'touchcancel'].forEach(
+        (eventType) => {
+          document.addEventListener(
+            eventType,
+            (event) => {
+              (window as any).touchEvents.push({
+                type: eventType,
+                timestamp: Date.now(),
+                touches: event.touches.length,
+                changedTouches: event.changedTouches.length,
+                target: event.target?.tagName || 'unknown',
+              });
+            },
+            { passive: true }
+          );
+        }
+      );
     });
   });
 
   test.describe('Basic Touch Interactions', () => {
-    test('should handle tap events on interactive elements', async ({ page }) => {
+    test('should handle tap events on interactive elements', async ({
+      page,
+    }) => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
@@ -63,23 +70,27 @@ test.describe('Touch Events and Mobile Interactions', () => {
 
       if (linkCount > 0) {
         const firstLink = links.first();
-        
+
         // Ensure link is visible and has adequate touch target size
         await expect(firstLink).toBeVisible();
-        
+
         const linkBox = await firstLink.boundingBox();
         if (linkBox) {
           // Touch target should be at least 44x44px (iOS HIG recommendation)
-          expect(Math.min(linkBox.width, linkBox.height)).toBeGreaterThanOrEqual(32);
+          expect(
+            Math.min(linkBox.width, linkBox.height)
+          ).toBeGreaterThanOrEqual(32);
         }
 
         // Perform tap
         await firstLink.tap();
-        
+
         // Check if touch events were registered
-        const touchEvents = await page.evaluate(() => (window as any).touchEvents);
+        const touchEvents = await page.evaluate(
+          () => (window as any).touchEvents
+        );
         expect(touchEvents.length).toBeGreaterThan(0);
-        
+
         // Should have touchstart and touchend events
         const eventTypes = touchEvents.map((e: any) => e.type);
         expect(eventTypes).toContain('touchstart');
@@ -91,7 +102,9 @@ test.describe('Touch Events and Mobile Interactions', () => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
-      const buttons = page.locator('button, input[type="button"], input[type="submit"]');
+      const buttons = page.locator(
+        'button, input[type="button"], input[type="submit"]'
+      );
       const buttonCount = await buttons.count();
 
       if (buttonCount > 0) {
@@ -101,17 +114,23 @@ test.describe('Touch Events and Mobile Interactions', () => {
         // Check touch target size
         const buttonBox = await firstButton.boundingBox();
         if (buttonBox) {
-          expect(Math.min(buttonBox.width, buttonBox.height)).toBeGreaterThanOrEqual(32);
+          expect(
+            Math.min(buttonBox.width, buttonBox.height)
+          ).toBeGreaterThanOrEqual(32);
         }
 
         // Clear previous touch events
-        await page.evaluate(() => { (window as any).touchEvents = []; });
+        await page.evaluate(() => {
+          (window as any).touchEvents = [];
+        });
 
         // Tap the button
         await firstButton.tap();
 
         // Verify touch events
-        const touchEvents = await page.evaluate(() => (window as any).touchEvents);
+        const touchEvents = await page.evaluate(
+          () => (window as any).touchEvents
+        );
         expect(touchEvents.length).toBeGreaterThan(0);
 
         // Button should respond to touch
@@ -131,7 +150,9 @@ test.describe('Touch Events and Mobile Interactions', () => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
-      const interactiveElements = page.locator('a, button, [onclick], [role="button"]');
+      const interactiveElements = page.locator(
+        'a, button, [onclick], [role="button"]'
+      );
       const elementCount = await interactiveElements.count();
 
       if (elementCount > 0) {
@@ -144,23 +165,33 @@ test.describe('Touch Events and Mobile Interactions', () => {
           const centerY = elementBox.y + elementBox.height / 2;
 
           // Clear touch events
-          await page.evaluate(() => { (window as any).touchEvents = []; });
+          await page.evaluate(() => {
+            (window as any).touchEvents = [];
+          });
 
           // Perform long press
-          await page.touchscreen.tap(centerX, centerY, { 
-            delay: TOUCH_GESTURES.longPress.duration 
+          await page.touchscreen.tap(centerX, centerY, {
+            delay: TOUCH_GESTURES.longPress.duration,
           });
 
           // Check touch duration
-          const touchEvents = await page.evaluate(() => (window as any).touchEvents);
-          
+          const touchEvents = await page.evaluate(
+            () => (window as any).touchEvents
+          );
+
           if (touchEvents.length >= 2) {
-            const startEvent = touchEvents.find((e: any) => e.type === 'touchstart');
-            const endEvent = touchEvents.find((e: any) => e.type === 'touchend');
-            
+            const startEvent = touchEvents.find(
+              (e: any) => e.type === 'touchstart'
+            );
+            const endEvent = touchEvents.find(
+              (e: any) => e.type === 'touchend'
+            );
+
             if (startEvent && endEvent) {
               const duration = endEvent.timestamp - startEvent.timestamp;
-              expect(duration).toBeGreaterThanOrEqual(TOUCH_GESTURES.longPress.duration - 100);
+              expect(duration).toBeGreaterThanOrEqual(
+                TOUCH_GESTURES.longPress.duration - 100
+              );
             }
           }
         }
@@ -171,7 +202,9 @@ test.describe('Touch Events and Mobile Interactions', () => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
-      const tappableElements = page.locator('div, p, span, img').filter({ hasText: /.+/ });
+      const tappableElements = page
+        .locator('div, p, span, img')
+        .filter({ hasText: /.+/ });
       const elementCount = await tappableElements.count();
 
       if (elementCount > 0) {
@@ -184,7 +217,9 @@ test.describe('Touch Events and Mobile Interactions', () => {
           const centerY = elementBox.y + elementBox.height / 2;
 
           // Clear touch events
-          await page.evaluate(() => { (window as any).touchEvents = []; });
+          await page.evaluate(() => {
+            (window as any).touchEvents = [];
+          });
 
           // Perform double tap
           await page.touchscreen.tap(centerX, centerY);
@@ -192,8 +227,12 @@ test.describe('Touch Events and Mobile Interactions', () => {
           await page.touchscreen.tap(centerX, centerY);
 
           // Verify double tap was registered
-          const touchEvents = await page.evaluate(() => (window as any).touchEvents);
-          const touchStarts = touchEvents.filter((e: any) => e.type === 'touchstart');
+          const touchEvents = await page.evaluate(
+            () => (window as any).touchEvents
+          );
+          const touchStarts = touchEvents.filter(
+            (e: any) => e.type === 'touchstart'
+          );
           expect(touchStarts.length).toBeGreaterThanOrEqual(2);
         }
       }
@@ -208,7 +247,7 @@ test.describe('Touch Events and Mobile Interactions', () => {
       // Test swiping on different elements
       const swipeableElements = page.locator('main, .content, body');
       const element = swipeableElements.first();
-      
+
       const elementBox = await element.boundingBox();
       if (elementBox) {
         const startX = elementBox.x + elementBox.width * 0.8;
@@ -216,17 +255,23 @@ test.describe('Touch Events and Mobile Interactions', () => {
         const endX = startX + SWIPE_CONFIGURATIONS.left.deltaX;
 
         // Clear touch events
-        await page.evaluate(() => { (window as any).touchEvents = []; });
+        await page.evaluate(() => {
+          (window as any).touchEvents = [];
+        });
 
         // Perform left swipe
         await page.touchscreen.swipe(startX, startY, endX, startY, {
           steps: 10,
-          delay: TOUCH_GESTURES.swipe.duration / 10
+          delay: TOUCH_GESTURES.swipe.duration / 10,
         });
 
         // Verify swipe gesture
-        const touchEvents = await page.evaluate(() => (window as any).touchEvents);
-        const touchMoves = touchEvents.filter((e: any) => e.type === 'touchmove');
+        const touchEvents = await page.evaluate(
+          () => (window as any).touchEvents
+        );
+        const touchMoves = touchEvents.filter(
+          (e: any) => e.type === 'touchmove'
+        );
         expect(touchMoves.length).toBeGreaterThan(0);
 
         // Check if page handled the swipe (e.g., carousel, navigation)
@@ -242,24 +287,30 @@ test.describe('Touch Events and Mobile Interactions', () => {
 
       const element = page.locator('body');
       const elementBox = await element.boundingBox();
-      
+
       if (elementBox) {
         const startX = elementBox.width / 2;
         const startY = elementBox.y + 100;
         const endY = startY + SWIPE_CONFIGURATIONS.down.deltaY;
 
         // Clear touch events
-        await page.evaluate(() => { (window as any).touchEvents = []; });
+        await page.evaluate(() => {
+          (window as any).touchEvents = [];
+        });
 
         // Perform downward swipe
         await page.touchscreen.swipe(startX, startY, startX, endY, {
           steps: 10,
-          delay: TOUCH_GESTURES.swipe.duration / 10
+          delay: TOUCH_GESTURES.swipe.duration / 10,
         });
 
         // Verify swipe gesture
-        const touchEvents = await page.evaluate(() => (window as any).touchEvents);
-        const touchMoves = touchEvents.filter((e: any) => e.type === 'touchmove');
+        const touchEvents = await page.evaluate(
+          () => (window as any).touchEvents
+        );
+        const touchMoves = touchEvents.filter(
+          (e: any) => e.type === 'touchmove'
+        );
         expect(touchMoves.length).toBeGreaterThan(0);
 
         // Check scroll behavior
@@ -274,40 +325,50 @@ test.describe('Touch Events and Mobile Interactions', () => {
 
       // Simulate pull-to-refresh gesture (swipe down from top)
       const startX = 187; // Center of 375px width
-      const startY = 10;  // Near top of screen
+      const startY = 10; // Near top of screen
       const endY = startY + 150; // Pull down 150px
 
       // Clear touch events
-      await page.evaluate(() => { (window as any).touchEvents = []; });
+      await page.evaluate(() => {
+        (window as any).touchEvents = [];
+      });
 
       // Perform pull-to-refresh gesture
       await page.touchscreen.swipe(startX, startY, startX, endY, {
         steps: 15,
-        delay: 20
+        delay: 20,
       });
 
       // Verify the gesture was captured
-      const touchEvents = await page.evaluate(() => (window as any).touchEvents);
+      const touchEvents = await page.evaluate(
+        () => (window as any).touchEvents
+      );
       expect(touchEvents.length).toBeGreaterThan(0);
 
       // Check if page implements pull-to-refresh
       // (This would depend on the actual implementation)
-      const hasRefreshIndicator = await page.locator('.refresh-indicator, .pull-to-refresh').count();
+      const hasRefreshIndicator = await page
+        .locator('.refresh-indicator, .pull-to-refresh')
+        .count();
       // Just verify the gesture was registered, actual refresh behavior varies
-      expect(touchEvents.filter((e: any) => e.type === 'touchmove').length).toBeGreaterThan(5);
+      expect(
+        touchEvents.filter((e: any) => e.type === 'touchmove').length
+      ).toBeGreaterThan(5);
     });
   });
 
   test.describe('Form Touch Interactions', () => {
     test('should handle touch inputs on form fields', async ({ page }) => {
       const formPages = ['/', '/job-submission.html'];
-      
+
       for (const formPage of formPages) {
         try {
           await page.goto(formPage);
           await page.waitForLoadState('networkidle');
 
-          const textInputs = page.locator('input[type="text"], input[type="email"], textarea');
+          const textInputs = page.locator(
+            'input[type="text"], input[type="email"], textarea'
+          );
           const inputCount = await textInputs.count();
 
           if (inputCount > 0) {
@@ -321,13 +382,17 @@ test.describe('Touch Events and Mobile Interactions', () => {
             }
 
             // Clear touch events
-            await page.evaluate(() => { (window as any).touchEvents = []; });
+            await page.evaluate(() => {
+              (window as any).touchEvents = [];
+            });
 
             // Tap to focus
             await input.tap();
 
             // Verify focus
-            const isFocused = await input.evaluate((el) => document.activeElement === el);
+            const isFocused = await input.evaluate(
+              (el) => document.activeElement === el
+            );
             expect(isFocused).toBe(true);
 
             // Type text
@@ -336,7 +401,9 @@ test.describe('Touch Events and Mobile Interactions', () => {
             expect(inputValue).toBe('Test input text');
 
             // Verify touch events were triggered
-            const touchEvents = await page.evaluate(() => (window as any).touchEvents);
+            const touchEvents = await page.evaluate(
+              () => (window as any).touchEvents
+            );
             expect(touchEvents.length).toBeGreaterThan(0);
           }
         } catch (error) {
@@ -345,7 +412,9 @@ test.describe('Touch Events and Mobile Interactions', () => {
       }
     });
 
-    test('should handle select dropdown touch interactions', async ({ page }) => {
+    test('should handle select dropdown touch interactions', async ({
+      page,
+    }) => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
@@ -363,22 +432,26 @@ test.describe('Touch Events and Mobile Interactions', () => {
         }
 
         // Clear touch events
-        await page.evaluate(() => { (window as any).touchEvents = []; });
+        await page.evaluate(() => {
+          (window as any).touchEvents = [];
+        });
 
         // Tap to open dropdown
         await select.tap();
 
         // Verify touch events
-        const touchEvents = await page.evaluate(() => (window as any).touchEvents);
+        const touchEvents = await page.evaluate(
+          () => (window as any).touchEvents
+        );
         expect(touchEvents.length).toBeGreaterThan(0);
 
         // Try to select an option
         const options = select.locator('option');
         const optionCount = await options.count();
-        
+
         if (optionCount > 1) {
           await select.selectOption({ index: 1 });
-          
+
           // Verify selection
           const selectedValue = await select.inputValue();
           expect(selectedValue).toBeTruthy();
@@ -386,7 +459,9 @@ test.describe('Touch Events and Mobile Interactions', () => {
       }
     });
 
-    test('should handle checkbox and radio button touch interactions', async ({ page }) => {
+    test('should handle checkbox and radio button touch interactions', async ({
+      page,
+    }) => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
@@ -396,17 +471,21 @@ test.describe('Touch Events and Mobile Interactions', () => {
 
       if (checkboxCount > 0) {
         const checkbox = checkboxes.first();
-        
+
         // Check if checkbox is visible or has a label
         const isVisible = await checkbox.isVisible();
-        const label = page.locator(`label[for="${await checkbox.getAttribute('id')}"]`);
-        const hasLabel = await label.count() > 0;
+        const label = page.locator(
+          `label[for="${await checkbox.getAttribute('id')}"]`
+        );
+        const hasLabel = (await label.count()) > 0;
 
         if (isVisible || hasLabel) {
           const targetElement = hasLabel ? label : checkbox;
-          
+
           // Clear touch events
-          await page.evaluate(() => { (window as any).touchEvents = []; });
+          await page.evaluate(() => {
+            (window as any).touchEvents = [];
+          });
 
           // Tap checkbox
           await targetElement.tap();
@@ -416,7 +495,9 @@ test.describe('Touch Events and Mobile Interactions', () => {
           expect(typeof isChecked).toBe('boolean');
 
           // Verify touch events
-          const touchEvents = await page.evaluate(() => (window as any).touchEvents);
+          const touchEvents = await page.evaluate(
+            () => (window as any).touchEvents
+          );
           expect(touchEvents.length).toBeGreaterThan(0);
         }
       }
@@ -427,14 +508,18 @@ test.describe('Touch Events and Mobile Interactions', () => {
 
       if (radioCount > 0) {
         const radio = radioButtons.first();
-        const radioLabel = page.locator(`label[for="${await radio.getAttribute('id')}"]`);
-        const hasRadioLabel = await radioLabel.count() > 0;
+        const radioLabel = page.locator(
+          `label[for="${await radio.getAttribute('id')}"]`
+        );
+        const hasRadioLabel = (await radioLabel.count()) > 0;
 
-        if (await radio.isVisible() || hasRadioLabel) {
+        if ((await radio.isVisible()) || hasRadioLabel) {
           const targetElement = hasRadioLabel ? radioLabel : radio;
-          
+
           // Clear touch events
-          await page.evaluate(() => { (window as any).touchEvents = []; });
+          await page.evaluate(() => {
+            (window as any).touchEvents = [];
+          });
 
           // Tap radio button
           await targetElement.tap();
@@ -444,7 +529,9 @@ test.describe('Touch Events and Mobile Interactions', () => {
           expect(isChecked).toBe(true);
 
           // Verify touch events
-          const touchEvents = await page.evaluate(() => (window as any).touchEvents);
+          const touchEvents = await page.evaluate(
+            () => (window as any).touchEvents
+          );
           expect(touchEvents.length).toBeGreaterThan(0);
         }
       }
@@ -461,18 +548,22 @@ test.describe('Touch Events and Mobile Interactions', () => {
         'button[aria-label*="menu"], .menu-toggle, .hamburger, [data-mobile-menu], [aria-expanded]'
       );
 
-      if (await menuButton.count() > 0) {
+      if ((await menuButton.count()) > 0) {
         const button = menuButton.first();
         await expect(button).toBeVisible();
 
         // Check touch target size
         const buttonBox = await button.boundingBox();
         if (buttonBox) {
-          expect(Math.min(buttonBox.width, buttonBox.height)).toBeGreaterThanOrEqual(32);
+          expect(
+            Math.min(buttonBox.width, buttonBox.height)
+          ).toBeGreaterThanOrEqual(32);
         }
 
         // Clear touch events
-        await page.evaluate(() => { (window as any).touchEvents = []; });
+        await page.evaluate(() => {
+          (window as any).touchEvents = [];
+        });
 
         // Tap to open menu
         await button.tap();
@@ -487,7 +578,7 @@ test.describe('Touch Events and Mobile Interactions', () => {
         // Look for menu items
         const menuItems = page.locator('nav a, .menu a, [role="menuitem"]');
         const menuItemCount = await menuItems.count();
-        
+
         if (menuItemCount > 0) {
           // Test tapping menu item
           const firstMenuItem = menuItems.first();
@@ -497,7 +588,9 @@ test.describe('Touch Events and Mobile Interactions', () => {
         }
 
         // Verify touch events were captured
-        const touchEvents = await page.evaluate(() => (window as any).touchEvents);
+        const touchEvents = await page.evaluate(
+          () => (window as any).touchEvents
+        );
         expect(touchEvents.length).toBeGreaterThan(0);
       }
     });
@@ -516,24 +609,28 @@ test.describe('Touch Events and Mobile Interactions', () => {
       const endY = startY - 200; // Scroll up
 
       // Clear touch events
-      await page.evaluate(() => { (window as any).touchEvents = []; });
+      await page.evaluate(() => {
+        (window as any).touchEvents = [];
+      });
 
       // Perform scroll gesture
       await page.touchscreen.swipe(startX, startY, startX, endY, {
         steps: 10,
-        delay: 20
+        delay: 20,
       });
 
       await page.waitForTimeout(500); // Wait for scroll to complete
 
       // Check if scroll occurred
       const finalScrollY = await page.evaluate(() => window.scrollY);
-      
+
       // Should have scrolled (direction may vary based on content)
       expect(finalScrollY).not.toBe(initialScrollY);
 
       // Verify touch events
-      const touchEvents = await page.evaluate(() => (window as any).touchEvents);
+      const touchEvents = await page.evaluate(
+        () => (window as any).touchEvents
+      );
       const touchMoves = touchEvents.filter((e: any) => e.type === 'touchmove');
       expect(touchMoves.length).toBeGreaterThan(0);
     });
@@ -545,8 +642,8 @@ test.describe('Touch Events and Mobile Interactions', () => {
       await page.waitForLoadState('networkidle');
 
       const tappableElements = page.locator('a, button').first();
-      
-      if (await tappableElements.count() > 0) {
+
+      if ((await tappableElements.count()) > 0) {
         const element = tappableElements.first();
         const elementBox = await element.boundingBox();
 
@@ -555,7 +652,9 @@ test.describe('Touch Events and Mobile Interactions', () => {
           const centerY = elementBox.y + elementBox.height / 2;
 
           // Clear touch events
-          await page.evaluate(() => { (window as any).touchEvents = []; });
+          await page.evaluate(() => {
+            (window as any).touchEvents = [];
+          });
 
           // Perform rapid taps
           const startTime = Date.now();
@@ -569,7 +668,9 @@ test.describe('Touch Events and Mobile Interactions', () => {
           expect(endTime - startTime).toBeLessThan(2000);
 
           // Verify all touch events were captured
-          const touchEvents = await page.evaluate(() => (window as any).touchEvents);
+          const touchEvents = await page.evaluate(
+            () => (window as any).touchEvents
+          );
           expect(touchEvents.length).toBeGreaterThanOrEqual(20); // At least touchstart/touchend for each tap
         }
       }
@@ -587,32 +688,46 @@ test.describe('Touch Events and Mobile Interactions', () => {
         const startY = elementBox.y + 100;
 
         // Clear touch events
-        await page.evaluate(() => { (window as any).touchEvents = []; });
+        await page.evaluate(() => {
+          (window as any).touchEvents = [];
+        });
 
         // Start touch and move out of bounds to trigger cancel
         await page.touchscreen.tap(startX, startY);
-        
+
         // Simulate moving touch way outside element
-        await page.touchscreen.swipe(startX, startY, startX + 1000, startY + 1000, {
-          steps: 5,
-          delay: 10
-        });
+        await page.touchscreen.swipe(
+          startX,
+          startY,
+          startX + 1000,
+          startY + 1000,
+          {
+            steps: 5,
+            delay: 10,
+          }
+        );
 
         // Check for touch events including potential cancellation
-        const touchEvents = await page.evaluate(() => (window as any).touchEvents);
-        
+        const touchEvents = await page.evaluate(
+          () => (window as any).touchEvents
+        );
+
         expect(touchEvents.length).toBeGreaterThan(0);
-        
+
         // Should have various touch event types
         const eventTypes = new Set(touchEvents.map((e: any) => e.type));
         expect(eventTypes.has('touchstart')).toBe(true);
-        expect(eventTypes.has('touchmove') || eventTypes.has('touchend')).toBe(true);
+        expect(eventTypes.has('touchmove') || eventTypes.has('touchend')).toBe(
+          true
+        );
       }
     });
   });
 
   test.describe('Accessibility with Touch', () => {
-    test('should maintain accessibility with touch interactions', async ({ page }) => {
+    test('should maintain accessibility with touch interactions', async ({
+      page,
+    }) => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
@@ -624,54 +739,69 @@ test.describe('Touch Events and Mobile Interactions', () => {
 
       for (let i = 0; i < Math.min(elementCount, 5); i++) {
         const element = focusableElements.nth(i);
-        
+
         if (await element.isVisible()) {
           // Element should be reachable by touch
           const elementBox = await element.boundingBox();
           if (elementBox) {
-            expect(Math.min(elementBox.width, elementBox.height)).toBeGreaterThanOrEqual(24);
+            expect(
+              Math.min(elementBox.width, elementBox.height)
+            ).toBeGreaterThanOrEqual(24);
           }
 
           // Tap should focus the element
           await element.tap();
-          
+
           // Check if element is focused
-          const isFocused = await element.evaluate((el) => document.activeElement === el);
-          
+          const isFocused = await element.evaluate(
+            (el) => document.activeElement === el
+          );
+
           // For interactive elements, focus should work
-          if (['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].includes(await element.evaluate(el => el.tagName))) {
+          if (
+            ['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].includes(
+              await element.evaluate((el) => el.tagName)
+            )
+          ) {
             expect(isFocused).toBe(true);
           }
         }
       }
     });
 
-    test('should provide adequate touch targets for accessibility', async ({ page }) => {
+    test('should provide adequate touch targets for accessibility', async ({
+      page,
+    }) => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
       // Check all interactive elements have adequate touch targets
-      const interactiveElements = page.locator('a, button, input, select, [onclick], [role="button"]');
+      const interactiveElements = page.locator(
+        'a, button, input, select, [onclick], [role="button"]'
+      );
       const elementCount = await interactiveElements.count();
 
       let inadequateTargets = 0;
 
       for (let i = 0; i < elementCount; i++) {
         const element = interactiveElements.nth(i);
-        
+
         if (await element.isVisible()) {
           const elementBox = await element.boundingBox();
-          
+
           if (elementBox) {
             const minDimension = Math.min(elementBox.width, elementBox.height);
-            
+
             // WCAG recommends minimum 44x44px touch targets
-            if (minDimension < 32) { // Allow slightly smaller for basic compliance
+            if (minDimension < 32) {
+              // Allow slightly smaller for basic compliance
               inadequateTargets++;
-              
-              const tagName = await element.evaluate(el => el.tagName);
-              const className = await element.getAttribute('class') || '';
-              console.warn(`Small touch target: ${tagName}.${className} - ${elementBox.width}x${elementBox.height}`);
+
+              const tagName = await element.evaluate((el) => el.tagName);
+              const className = (await element.getAttribute('class')) || '';
+              console.warn(
+                `Small touch target: ${tagName}.${className} - ${elementBox.width}x${elementBox.height}`
+              );
             }
           }
         }

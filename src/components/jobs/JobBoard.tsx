@@ -309,7 +309,9 @@ export const JobBoard: React.FC<JobBoardProps> = ({ lang = 'es', filters }) => {
       }
 
       // Set pagination state
-      setLastDoc(snapshot.docs[snapshot['docs'].length - 1] as DocumentSnapshot ?? null);
+      setLastDoc(
+        (snapshot.docs[snapshot['docs'].length - 1] as DocumentSnapshot) ?? null
+      );
       setHasMore(snapshot.docs.length === JOBS_PER_PAGE);
 
       if (loadMore) {

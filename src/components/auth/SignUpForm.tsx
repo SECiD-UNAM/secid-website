@@ -84,7 +84,8 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<Step>('account');
-  const [registrationType, setRegistrationType] = useState<RegistrationType | null>(null);
+  const [registrationType, setRegistrationType] =
+    useState<RegistrationType | null>(null);
   const [verificationFile, setVerificationFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(false);
 
@@ -107,9 +108,11 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       stepUnam: 'Verificación UNAM',
       stepDone: 'Registro completo',
       memberOption: 'Soy egresado/estudiante de Ciencia de Datos UNAM',
-      memberDesc: 'Solicita membresía completa con acceso a todos los beneficios de SECiD. Requiere verificación.',
+      memberDesc:
+        'Solicita membresía completa con acceso a todos los beneficios de SECiD. Requiere verificación.',
       collaboratorOption: 'Quiero colaborar con SECiD',
-      collaboratorDesc: 'Únete como colaborador externo. Acceso a eventos públicos y bolsa de trabajo.',
+      collaboratorDesc:
+        'Únete como colaborador externo. Acceso a eventos públicos y bolsa de trabajo.',
       numeroCuenta: 'Número de Cuenta UNAM',
       numeroCuentaHelp: 'Tu número de cuenta de la UNAM (ej. 317123456)',
       academicLevel: 'Nivel Académico',
@@ -120,15 +123,18 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       generation: 'Generación',
       graduationYear: 'Año de egreso',
       uploadProof: 'Documento de verificación',
-      uploadProofHelp: 'Sube tu credencial de estudiante, título, tira de materias o credencial de egresado (PDF, JPG o PNG, máx. 10MB)',
+      uploadProofHelp:
+        'Sube tu credencial de estudiante, título, tira de materias o credencial de egresado (PDF, JPG o PNG, máx. 10MB)',
       chooseFile: 'Seleccionar archivo',
       fileSelected: 'Archivo seleccionado',
       submitVerification: 'Enviar solicitud de membresía',
       continueAsCollaborator: 'Continuar como colaborador',
       welcomeCollaborator: '¡Bienvenido, colaborador!',
-      welcomeCollaboratorMsg: 'Tu cuenta ha sido creada. Como colaborador tienes acceso a eventos públicos y la bolsa de trabajo.',
+      welcomeCollaboratorMsg:
+        'Tu cuenta ha sido creada. Como colaborador tienes acceso a eventos públicos y la bolsa de trabajo.',
       welcomeMember: '¡Solicitud enviada!',
-      welcomeMemberMsg: 'Tu solicitud de membresía ha sido enviada. Un administrador la revisará pronto.',
+      welcomeMemberMsg:
+        'Tu solicitud de membresía ha sido enviada. Un administrador la revisará pronto.',
       goToDashboard: 'Ir al panel',
       back: 'Atrás',
       next: 'Siguiente',
@@ -139,9 +145,11 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       stepUnam: 'UNAM Verification',
       stepDone: 'Registration complete',
       memberOption: "I'm a UNAM Data Science graduate/student",
-      memberDesc: 'Apply for full membership with access to all SECiD benefits. Requires verification.',
+      memberDesc:
+        'Apply for full membership with access to all SECiD benefits. Requires verification.',
       collaboratorOption: 'I want to collaborate with SECiD',
-      collaboratorDesc: 'Join as an external collaborator. Access to public events and job board.',
+      collaboratorDesc:
+        'Join as an external collaborator. Access to public events and job board.',
       numeroCuenta: 'UNAM Account Number',
       numeroCuentaHelp: 'Your UNAM account number (e.g. 317123456)',
       academicLevel: 'Academic Level',
@@ -152,15 +160,18 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       generation: 'Cohort / Generation',
       graduationYear: 'Graduation year',
       uploadProof: 'Verification document',
-      uploadProofHelp: 'Upload your student ID, degree, transcript, or alumni credential (PDF, JPG or PNG, max 10MB)',
+      uploadProofHelp:
+        'Upload your student ID, degree, transcript, or alumni credential (PDF, JPG or PNG, max 10MB)',
       chooseFile: 'Choose file',
       fileSelected: 'File selected',
       submitVerification: 'Submit membership request',
       continueAsCollaborator: 'Continue as collaborator',
       welcomeCollaborator: 'Welcome, collaborator!',
-      welcomeCollaboratorMsg: 'Your account has been created. As a collaborator you have access to public events and the job board.',
+      welcomeCollaboratorMsg:
+        'Your account has been created. As a collaborator you have access to public events and the job board.',
       welcomeMember: 'Request submitted!',
-      welcomeMemberMsg: 'Your membership request has been submitted. An administrator will review it soon.',
+      welcomeMemberMsg:
+        'Your membership request has been submitted. An administrator will review it soon.',
       goToDashboard: 'Go to dashboard',
       back: 'Back',
       next: 'Next',
@@ -294,7 +305,10 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       // Upload verification document if provided
       if (verificationFile) {
         setUploadProgress(true);
-        const fileRef = ref(storage, `verification-docs/${user.uid}/${verificationFile.name}`);
+        const fileRef = ref(
+          storage,
+          `verification-docs/${user.uid}/${verificationFile.name}`
+        );
         await uploadBytes(fileRef, verificationFile);
         verificationDocumentUrl = await getDownloadURL(fileRef);
         setUploadProgress(false);
@@ -309,7 +323,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         academicLevel: data.academicLevel,
         campus: data.campus,
         generation: data.generation || null,
-        ...(data.graduationYear && { 'profile.graduationYear': data.graduationYear }),
+        ...(data.graduationYear && {
+          'profile.graduationYear': data.graduationYear,
+        }),
         ...(verificationDocumentUrl && { verificationDocumentUrl }),
         'lifecycle.status': 'pending',
         'lifecycle.statusChangedAt': serverTimestamp(),
@@ -335,11 +351,19 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
     if (file) {
       // Validate file size (10MB max) and type
       if (file.size > 10 * 1024 * 1024) {
-        setError(lang === 'es' ? 'El archivo es demasiado grande (máx. 10MB)' : 'File is too large (max 10MB)');
+        setError(
+          lang === 'es'
+            ? 'El archivo es demasiado grande (máx. 10MB)'
+            : 'File is too large (max 10MB)'
+        );
         return;
       }
       if (!['application/pdf', 'image/jpeg', 'image/png'].includes(file.type)) {
-        setError(lang === 'es' ? 'Formato no válido. Usa PDF, JPG o PNG.' : 'Invalid format. Use PDF, JPG or PNG.');
+        setError(
+          lang === 'es'
+            ? 'Formato no válido. Usa PDF, JPG o PNG.'
+            : 'Invalid format. Use PDF, JPG or PNG.'
+        );
         return;
       }
       setError(null);
@@ -359,14 +383,17 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
   const steps: { key: Step; label: string }[] = [
     { key: 'account', label: l.stepAccount },
     { key: 'type', label: l.stepType },
-    ...(registrationType === 'member' ? [{ key: 'unam' as Step, label: l.stepUnam }] : []),
+    ...(registrationType === 'member'
+      ? [{ key: 'unam' as Step, label: l.stepUnam }]
+      : []),
   ];
 
   const currentStepIndex = steps.findIndex((s) => s.key === step);
 
   const inputClass =
     'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white sm:text-sm';
-  const labelClass = 'block text-sm font-medium text-gray-700 dark:text-gray-300';
+  const labelClass =
+    'block text-sm font-medium text-gray-700 dark:text-gray-300';
 
   return (
     <div className="w-full max-w-md space-y-8">
@@ -378,7 +405,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
               {i > 0 && (
                 <div
                   className={`h-0.5 w-8 ${
-                    i <= currentStepIndex ? 'bg-primary-500' : 'bg-gray-300 dark:bg-gray-600'
+                    i <= currentStepIndex
+                      ? 'bg-primary-500'
+                      : 'bg-gray-300 dark:bg-gray-600'
                   }`}
                 />
               )}
@@ -408,10 +437,15 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
             </p>
           </div>
 
-          <form className="mt-8 space-y-6" onSubmit={accountForm.handleSubmit(onAccountSubmit)}>
+          <form
+            className="mt-8 space-y-6"
+            onSubmit={accountForm.handleSubmit(onAccountSubmit)}
+          >
             {error && (
               <div className="rounded-md bg-red-50 p-4 dark:bg-red-900/20">
-                <p className="text-sm text-red-800 dark:text-red-400">{error}</p>
+                <p className="text-sm text-red-800 dark:text-red-400">
+                  {error}
+                </p>
               </div>
             )}
 
@@ -517,7 +551,10 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                   />
                 </div>
                 <div className="ml-3 text-sm">
-                  <label htmlFor="acceptTerms" className="text-gray-700 dark:text-gray-300">
+                  <label
+                    htmlFor="acceptTerms"
+                    className="text-gray-700 dark:text-gray-300"
+                  >
                     {t.auth?.acceptTerms?.prefix || 'Acepto los'}{' '}
                     <a
                       href={`/${lang}/terms`}
@@ -536,7 +573,13 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
             </div>
 
             <div className="space-y-4">
-              <Button type="submit" variant="primary" size="lg" className="w-full" loading={isLoading}>
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                className="w-full"
+                loading={isLoading}
+              >
                 {t.auth?.signUp?.button || l.next}
               </Button>
 
@@ -560,10 +603,22 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 loading={isLoading}
               >
                 <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                  <path
+                    fill="#4285F4"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  />
                 </svg>
                 {t.auth?.signUp?.google || 'Registrarse con Google'}
               </Button>
@@ -586,9 +641,13 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       {step === 'type' && (
         <div className="space-y-6">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{l.stepType}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {l.stepType}
+            </h2>
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              {lang === 'es' ? '¿Cómo te gustaría participar en SECiD?' : 'How would you like to participate in SECiD?'}
+              {lang === 'es'
+                ? '¿Cómo te gustaría participar en SECiD?'
+                : 'How would you like to participate in SECiD?'}
             </p>
           </div>
 
@@ -602,14 +661,33 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
             >
               <div className="flex items-start space-x-4">
                 <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30">
-                  <svg className="h-6 w-6 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                  <svg
+                    className="h-6 w-6 text-primary-600 dark:text-primary-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 14l9-5-9-5-9 5 9 5z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
+                    />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{l.memberOption}</h3>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{l.memberDesc}</p>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {l.memberOption}
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    {l.memberDesc}
+                  </p>
                 </div>
               </div>
             </button>
@@ -623,13 +701,27 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
             >
               <div className="flex items-start space-x-4">
                 <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-                  <svg className="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <svg
+                    className="h-6 w-6 text-green-600 dark:text-green-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{l.collaboratorOption}</h3>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{l.collaboratorDesc}</p>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {l.collaboratorOption}
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    {l.collaboratorDesc}
+                  </p>
                 </div>
               </div>
             </button>
@@ -641,7 +733,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       {step === 'unam' && (
         <div className="space-y-6">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{l.stepUnam}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {l.stepUnam}
+            </h2>
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
               {lang === 'es'
                 ? 'Proporciona tus datos académicos para verificar tu afiliación con la UNAM.'
@@ -649,10 +743,15 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
             </p>
           </div>
 
-          <form className="space-y-5" onSubmit={unamForm.handleSubmit(onUnamSubmit)}>
+          <form
+            className="space-y-5"
+            onSubmit={unamForm.handleSubmit(onUnamSubmit)}
+          >
             {error && (
               <div className="rounded-md bg-red-50 p-4 dark:bg-red-900/20">
-                <p className="text-sm text-red-800 dark:text-red-400">{error}</p>
+                <p className="text-sm text-red-800 dark:text-red-400">
+                  {error}
+                </p>
               </div>
             )}
 
@@ -668,7 +767,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 {...unamForm.register('numeroCuenta')}
                 className={inputClass}
               />
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{l.numeroCuentaHelp}</p>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                {l.numeroCuentaHelp}
+              </p>
               {unamForm.formState.errors.numeroCuenta && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">
                   {unamForm.formState.errors.numeroCuenta.message}
@@ -681,7 +782,11 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
               <label htmlFor="academicLevel" className={labelClass}>
                 {l.academicLevel} *
               </label>
-              <select id="academicLevel" {...unamForm.register('academicLevel')} className={inputClass}>
+              <select
+                id="academicLevel"
+                {...unamForm.register('academicLevel')}
+                className={inputClass}
+              >
                 <option value="licenciatura">{l.licenciatura}</option>
                 <option value="posgrado">{l.posgrado}</option>
                 <option value="curso">{l.curso}</option>
@@ -693,12 +798,18 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
               <label htmlFor="campus" className={labelClass}>
                 {l.campus} *
               </label>
-              <select id="campus" {...unamForm.register('campus')} className={inputClass}>
+              <select
+                id="campus"
+                {...unamForm.register('campus')}
+                className={inputClass}
+              >
                 <option value="">
                   {lang === 'es' ? 'Selecciona tu sede' : 'Select your campus'}
                 </option>
                 {CAMPUS_OPTIONS.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
                 ))}
               </select>
               {unamForm.formState.errors.campus && (
@@ -713,12 +824,20 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
               <label htmlFor="generation" className={labelClass}>
                 {l.generation}
               </label>
-              <select id="generation" {...unamForm.register('generation')} className={inputClass}>
+              <select
+                id="generation"
+                {...unamForm.register('generation')}
+                className={inputClass}
+              >
                 <option value="">
-                  {lang === 'es' ? 'Selecciona tu generación' : 'Select your cohort'}
+                  {lang === 'es'
+                    ? 'Selecciona tu generación'
+                    : 'Select your cohort'}
                 </option>
                 {GENERATION_OPTIONS.map((g) => (
-                  <option key={g} value={g}>{g}</option>
+                  <option key={g} value={g}>
+                    {g}
+                  </option>
                 ))}
               </select>
             </div>
@@ -742,22 +861,46 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
             {/* Verification document upload */}
             <div>
               <label className={labelClass}>{l.uploadProof}</label>
-              <p className="mb-2 text-xs text-gray-500 dark:text-gray-400">{l.uploadProofHelp}</p>
+              <p className="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                {l.uploadProofHelp}
+              </p>
               <label
                 htmlFor="verificationDoc"
                 className="flex cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 px-6 py-4 transition-colors hover:border-primary-400 dark:border-gray-600 dark:hover:border-primary-500"
               >
                 {verificationFile ? (
                   <div className="flex items-center space-x-2 text-sm text-green-600 dark:text-green-400">
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
-                    <span>{l.fileSelected}: {verificationFile.name}</span>
+                    <span>
+                      {l.fileSelected}: {verificationFile.name}
+                    </span>
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                      />
                     </svg>
                     <span>{l.chooseFile}</span>
                   </div>
@@ -790,7 +933,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 loading={isLoading || uploadProgress}
               >
                 {uploadProgress
-                  ? (lang === 'es' ? 'Subiendo...' : 'Uploading...')
+                  ? lang === 'es'
+                    ? 'Subiendo...'
+                    : 'Uploading...'
                   : l.submitVerification}
               </Button>
             </div>
@@ -802,19 +947,38 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       {step === 'done' && (
         <div className="space-y-6 text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-            <svg className="h-8 w-8 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            <svg
+              className="h-8 w-8 text-green-600 dark:text-green-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
             </svg>
           </div>
 
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {registrationType === 'member' ? l.welcomeMember : l.welcomeCollaborator}
+            {registrationType === 'member'
+              ? l.welcomeMember
+              : l.welcomeCollaborator}
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            {registrationType === 'member' ? l.welcomeMemberMsg : l.welcomeCollaboratorMsg}
+            {registrationType === 'member'
+              ? l.welcomeMemberMsg
+              : l.welcomeCollaboratorMsg}
           </p>
 
-          <Button variant="primary" size="lg" className="w-full" onClick={goToDashboard}>
+          <Button
+            variant="primary"
+            size="lg"
+            className="w-full"
+            onClick={goToDashboard}
+          >
             {l.goToDashboard}
           </Button>
         </div>

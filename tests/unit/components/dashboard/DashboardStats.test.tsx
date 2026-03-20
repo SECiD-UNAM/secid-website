@@ -34,17 +34,24 @@ vi.mock('@/lib/firebase', () => ({
   db: {},
 }));
 
-vi.mock('@heroicons/react/24/outline', () =>
-  new Proxy({}, {
-    get: (_target, prop) => {
-      if (typeof prop === 'string' && prop !== '__esModule') {
-        const Icon = ({ className }: any) => <svg className={className} data-testid={`${prop}-icon`} />;
-        Icon.displayName = String(prop);
-        return Icon;
+vi.mock(
+  '@heroicons/react/24/outline',
+  () =>
+    new Proxy(
+      {},
+      {
+        get: (_target, prop) => {
+          if (typeof prop === 'string' && prop !== '__esModule') {
+            const Icon = ({ className }: any) => (
+              <svg className={className} data-testid={`${prop}-icon`} />
+            );
+            Icon.displayName = String(prop);
+            return Icon;
+          }
+          return undefined;
+        },
       }
-      return undefined;
-    },
-  })
+    )
 );
 
 // Mock Firestore functions
@@ -84,7 +91,7 @@ const mockEventsSnapshot = {
 describe('DashboardStats', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Default auth context mock
     mockUseAuth.mockReturnValue({
       user: mockUser,
@@ -107,7 +114,7 @@ describe('DashboardStats', () => {
   describe('Basic Rendering', () => {
     it('renders stats grid', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Aplicaciones Enviadas')).toBeInTheDocument();
         expect(screen.getByText('Eventos Registrados')).toBeInTheDocument();
@@ -118,7 +125,7 @@ describe('DashboardStats', () => {
 
     it('renders in English when lang prop is en', async () => {
       render(<DashboardStats lang="en" />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Applications Sent')).toBeInTheDocument();
         expect(screen.getByText('Events Registered')).toBeInTheDocument();
@@ -129,10 +136,15 @@ describe('DashboardStats', () => {
 
     it('displays stats in grid layout', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         const grid = screen.getByText('Aplicaciones Enviadas').closest('.grid');
-        expect(grid).toHaveClass('grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-4', 'gap-4');
+        expect(grid).toHaveClass(
+          'grid-cols-1',
+          'sm:grid-cols-2',
+          'lg:grid-cols-4',
+          'gap-4'
+        );
       });
     });
   });
@@ -140,17 +152,21 @@ describe('DashboardStats', () => {
   describe('Data Fetching', () => {
     it('fetches application data correctly', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         expect(mockCollection).toHaveBeenCalledWith({}, 'applications');
-        expect(mockWhere).toHaveBeenCalledWith('applicantId', '==', 'test-user-id');
+        expect(mockWhere).toHaveBeenCalledWith(
+          'applicantId',
+          '==',
+          'test-user-id'
+        );
         expect(mockGetDocs).toHaveBeenCalled();
       });
     });
 
     it('fetches event registration data correctly', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         expect(mockCollection).toHaveBeenCalledWith({}, 'eventRegistrations');
         expect(mockWhere).toHaveBeenCalledWith('userId', '==', 'test-user-id');
@@ -159,7 +175,7 @@ describe('DashboardStats', () => {
 
     it('displays fetched application count', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('5')).toBeInTheDocument(); // Applications count
       });
@@ -169,9 +185,9 @@ describe('DashboardStats', () => {
       mockGetDocs
         .mockResolvedValueOnce(mockApplicationsSnapshot as any) // First call for applications
         .mockResolvedValueOnce(mockEventsSnapshot as any); // Second call for events
-      
+
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('3')).toBeInTheDocument(); // Events count
       });
@@ -179,7 +195,7 @@ describe('DashboardStats', () => {
 
     it('displays profile completeness from user profile', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('75%')).toBeInTheDocument();
       });
@@ -192,9 +208,9 @@ describe('DashboardStats', () => {
         loading: false,
         isVerified: true,
       });
-      
+
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('20%')).toBeInTheDocument();
       });
@@ -204,21 +220,21 @@ describe('DashboardStats', () => {
   describe('Loading States', () => {
     it('shows loading skeleton while fetching data', () => {
       render(<DashboardStats />);
-      
+
       // Should show 4 skeleton items
-      const skeletons = screen.getAllByRole('generic').filter(el => 
-        el.classList.contains('animate-pulse')
-      );
+      const skeletons = screen
+        .getAllByRole('generic')
+        .filter((el) => el.classList.contains('animate-pulse'));
       expect(skeletons.length).toBeGreaterThan(0);
     });
 
     it('hides loading state after data is fetched', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
-        const skeletons = screen.queryAllByRole('generic').filter(el => 
-          el.classList.contains('animate-pulse')
-        );
+        const skeletons = screen
+          .queryAllByRole('generic')
+          .filter((el) => el.classList.contains('animate-pulse'));
         expect(skeletons).toHaveLength(0);
       });
     });
@@ -226,28 +242,33 @@ describe('DashboardStats', () => {
 
   describe('Error Handling', () => {
     it('handles Firestore errors gracefully', async () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
       mockGetDocs.mockRejectedValue(new Error('Firestore error'));
-      
+
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalledWith('Error fetching stats:', expect.any(Error));
+        expect(consoleSpy).toHaveBeenCalledWith(
+          'Error fetching stats:',
+          expect.any(Error)
+        );
       });
-      
+
       // Should show default values
       await waitFor(() => {
         expect(screen.getByText('0')).toBeInTheDocument(); // Default applications count
       });
-      
+
       consoleSpy.mockRestore();
     });
 
     it('shows default stats when fetch fails', async () => {
       mockGetDocs.mockRejectedValue(new Error('Network error'));
-      
+
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         // Should show default values for all stats
         const zeroValues = screen.getAllByText('0');
@@ -265,9 +286,9 @@ describe('DashboardStats', () => {
         loading: false,
         isVerified: false,
       });
-      
+
       render(<DashboardStats />);
-      
+
       // Should not call Firestore functions
       expect(mockGetDocs).not.toHaveBeenCalled();
     });
@@ -279,12 +300,12 @@ describe('DashboardStats', () => {
         loading: false,
         isVerified: false,
       });
-      
+
       render(<DashboardStats />);
-      
-      const skeletons = screen.getAllByRole('generic').filter(el => 
-        el.classList.contains('animate-pulse')
-      );
+
+      const skeletons = screen
+        .getAllByRole('generic')
+        .filter((el) => el.classList.contains('animate-pulse'));
       expect(skeletons.length).toBeGreaterThan(0);
     });
   });
@@ -292,18 +313,22 @@ describe('DashboardStats', () => {
   describe('Stats Display', () => {
     it('displays stat cards with proper structure', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
-        const statCards = screen.getAllByRole('generic').filter(el => 
-          el.classList.contains('bg-white') && el.classList.contains('rounded-lg')
-        );
+        const statCards = screen
+          .getAllByRole('generic')
+          .filter(
+            (el) =>
+              el.classList.contains('bg-white') &&
+              el.classList.contains('rounded-lg')
+          );
         expect(statCards).toHaveLength(4);
       });
     });
 
     it('shows increase change indicators', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('+12%')).toBeInTheDocument();
         expect(screen.getByText('+3')).toBeInTheDocument();
@@ -313,7 +338,7 @@ describe('DashboardStats', () => {
 
     it('shows appropriate change type for profile completeness', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         // Profile is 75% complete, so should show "Completar" (incomplete)
         expect(screen.getByText('Completar')).toBeInTheDocument();
@@ -327,9 +352,9 @@ describe('DashboardStats', () => {
         loading: false,
         isVerified: true,
       });
-      
+
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('100%')).toBeInTheDocument();
         expect(screen.getByText('Completo')).toBeInTheDocument();
@@ -343,9 +368,9 @@ describe('DashboardStats', () => {
         loading: false,
         isVerified: true,
       });
-      
+
       render(<DashboardStats lang="en" />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Complete')).toBeInTheDocument();
       });
@@ -355,19 +380,23 @@ describe('DashboardStats', () => {
   describe('Icons and Styling', () => {
     it('displays appropriate icons for each stat', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         // Icons should be rendered (we can't easily test the actual icons, but we can check their containers)
-        const iconContainers = screen.getAllByRole('generic').filter(el => 
-          el.classList.contains('p-3') && el.classList.contains('rounded-full')
-        );
+        const iconContainers = screen
+          .getAllByRole('generic')
+          .filter(
+            (el) =>
+              el.classList.contains('p-3') &&
+              el.classList.contains('rounded-full')
+          );
         expect(iconContainers).toHaveLength(4);
       });
     });
 
     it('applies correct color classes for increase changes', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         const increaseText = screen.getByText('+12%');
         expect(increaseText).toHaveClass('text-green-600');
@@ -376,7 +405,7 @@ describe('DashboardStats', () => {
 
     it('applies correct color classes for incomplete profile', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         const completeText = screen.getByText('Completar');
         expect(completeText).toHaveClass('text-yellow-600');
@@ -385,11 +414,11 @@ describe('DashboardStats', () => {
 
     it('applies hover effects to stat cards', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
-        const statCards = screen.getAllByRole('generic').filter(el => 
-          el.classList.contains('hover:shadow-lg')
-        );
+        const statCards = screen
+          .getAllByRole('generic')
+          .filter((el) => el.classList.contains('hover:shadow-lg'));
         expect(statCards).toHaveLength(4);
       });
     });
@@ -398,22 +427,22 @@ describe('DashboardStats', () => {
   describe('Dark Mode Support', () => {
     it('includes dark mode classes', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
-        const statCards = screen.getAllByRole('generic').filter(el => 
-          el.classList.contains('dark:bg-gray-800')
-        );
+        const statCards = screen
+          .getAllByRole('generic')
+          .filter((el) => el.classList.contains('dark:bg-gray-800'));
         expect(statCards.length).toBeGreaterThan(0);
       });
     });
 
     it('includes dark mode text classes', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
-        const statTitles = screen.getAllByRole('generic').filter(el => 
-          el.classList.contains('dark:text-gray-400')
-        );
+        const statTitles = screen
+          .getAllByRole('generic')
+          .filter((el) => el.classList.contains('dark:text-gray-400'));
         expect(statTitles.length).toBeGreaterThan(0);
       });
     });
@@ -422,7 +451,7 @@ describe('DashboardStats', () => {
   describe('Accessibility', () => {
     it('has proper structure for screen readers', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         // Each stat should have a clear name and value structure
         expect(screen.getByText('Aplicaciones Enviadas')).toBeInTheDocument();
@@ -432,10 +461,12 @@ describe('DashboardStats', () => {
 
     it('maintains semantic structure', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         // The component should have a grid structure with appropriate hierarchy
-        const mainContainer = screen.getByText('Aplicaciones Enviadas').closest('.grid');
+        const mainContainer = screen
+          .getByText('Aplicaciones Enviadas')
+          .closest('.grid');
         expect(mainContainer).toBeInTheDocument();
       });
     });
@@ -444,11 +475,11 @@ describe('DashboardStats', () => {
   describe('Real-time Updates', () => {
     it('updates when user profile changes', async () => {
       const { rerender } = render(<DashboardStats />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('75%')).toBeInTheDocument();
       });
-      
+
       // Update user profile
       mockUseAuth.mockReturnValue({
         user: mockUser,
@@ -456,9 +487,9 @@ describe('DashboardStats', () => {
         loading: false,
         isVerified: true,
       });
-      
+
       rerender(<DashboardStats />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('90%')).toBeInTheDocument();
       });
@@ -466,13 +497,13 @@ describe('DashboardStats', () => {
 
     it('updates when language changes', async () => {
       const { rerender } = render(<DashboardStats lang="es" />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Aplicaciones Enviadas')).toBeInTheDocument();
       });
-      
+
       rerender(<DashboardStats lang="en" />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Applications Sent')).toBeInTheDocument();
       });
@@ -482,7 +513,7 @@ describe('DashboardStats', () => {
   describe('Static Content', () => {
     it('displays static connection count', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('24')).toBeInTheDocument(); // Static connections count
       });
@@ -490,7 +521,7 @@ describe('DashboardStats', () => {
 
     it('shows connections in correct context', async () => {
       render(<DashboardStats />);
-      
+
       await waitFor(() => {
         // Check that 24 appears in the connections context
         const connectionsCard = screen.getByText('Conexiones').closest('div');

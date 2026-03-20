@@ -1,8 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  verifyRequest,
-  unauthorizedResponse,
-} from '@/lib/auth/verify-request';
+import { verifyRequest, unauthorizedResponse } from '@/lib/auth/verify-request';
 
 describe('verifyRequest', () => {
   it('returns authenticated=true when request has a valid session set by middleware', () => {

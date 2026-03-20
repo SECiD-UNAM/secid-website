@@ -9,7 +9,7 @@ import {
   query,
   where,
   onSnapshot,
-  type Unsubscribe
+  type Unsubscribe,
 } from 'firebase/firestore';
 import type { MemberProfile, ConnectionRequest } from '@/types/member';
 import { mapUserDocToMemberProfile, createMockMemberProfile } from './mapper';
@@ -48,13 +48,20 @@ export function subscribeToConnectionRequests(
   }
 
   const requestsRef = collection(db, COLLECTIONS.CONNECTION_REQUESTS);
-  const q = query(requestsRef, where('to', '==', uid), where('status', '==', 'pending'));
+  const q = query(
+    requestsRef,
+    where('to', '==', uid),
+    where('status', '==', 'pending')
+  );
 
   return onSnapshot(q, (snapshot) => {
-    const requests = snapshot['docs'].map(doc => ({
-      id: doc['id'],
-      ...doc.data()
-    } as ConnectionRequest));
+    const requests = snapshot['docs'].map(
+      (doc) =>
+        ({
+          id: doc['id'],
+          ...doc.data(),
+        }) as ConnectionRequest
+    );
     callback(requests);
   });
 }

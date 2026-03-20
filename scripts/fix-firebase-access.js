@@ -24,12 +24,40 @@ const firebasePatterns = [
 
 // Properties that commonly come from index signatures
 const indexProperties = [
-  'timestamp', 'type', 'userId', 'userEmail', 'metadata', 'description',
-  'customer_rfc', 'billing_address', 'items', 'subtotal', 'iva', 'total',
-  'planId', 'billingCycle', 'commissionType', 'current_period_end',
-  'NODE_ENV', 'status', 'createdAt', 'updatedAt', 'name', 'email',
-  'role', 'permissions', 'settings', 'preferences', 'data', 'error',
-  'message', 'code', 'details', 'result', 'response', 'request'
+  'timestamp',
+  'type',
+  'userId',
+  'userEmail',
+  'metadata',
+  'description',
+  'customer_rfc',
+  'billing_address',
+  'items',
+  'subtotal',
+  'iva',
+  'total',
+  'planId',
+  'billingCycle',
+  'commissionType',
+  'current_period_end',
+  'NODE_ENV',
+  'status',
+  'createdAt',
+  'updatedAt',
+  'name',
+  'email',
+  'role',
+  'permissions',
+  'settings',
+  'preferences',
+  'data',
+  'error',
+  'message',
+  'code',
+  'details',
+  'result',
+  'response',
+  'request',
 ];
 
 function processFile(filePath) {
@@ -38,23 +66,44 @@ function processFile(filePath) {
   const changes = [];
 
   // Fix property access from index signatures
-  indexProperties.forEach(prop => {
+  indexProperties.forEach((prop) => {
     // Pattern: object.property -> object['property']
-    const dotPattern = new RegExp(`([a-zA-Z_$][a-zA-Z0-9_$]*)\\.${prop}\\b`, 'g');
-    
+    const dotPattern = new RegExp(
+      `([a-zA-Z_$][a-zA-Z0-9_$]*)\\.${prop}\\b`,
+      'g'
+    );
+
     content = content.replace(dotPattern, (match, obj) => {
       // Skip if it's a type declaration or import
-      if (obj === 'import' || obj === 'export' || obj === 'type' || obj === 'interface') {
+      if (
+        obj === 'import' ||
+        obj === 'export' ||
+        obj === 'type' ||
+        obj === 'interface'
+      ) {
         return match;
       }
-      
+
       // Skip if it's part of a longer property chain that's already fixed
       if (match.includes("['") || match.includes('["')) {
         return match;
       }
 
       // Skip common non-Firebase objects
-      if (['console', 'process', 'window', 'document', 'Math', 'Date', 'Array', 'Object', 'String', 'Number'].includes(obj)) {
+      if (
+        [
+          'console',
+          'process',
+          'window',
+          'document',
+          'Math',
+          'Date',
+          'Array',
+          'Object',
+          'String',
+          'Number',
+        ].includes(obj)
+      ) {
         return match;
       }
 
@@ -66,15 +115,16 @@ function processFile(filePath) {
   });
 
   // Fix nested property access: data.metadata.something -> data['metadata']['something']
-  const nestedPattern = /([a-zA-Z_$][a-zA-Z0-9_$]*)\.([a-zA-Z_$][a-zA-Z0-9_$]*?)\.([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
-  
+  const nestedPattern =
+    /([a-zA-Z_$][a-zA-Z0-9_$]*)\.([a-zA-Z_$][a-zA-Z0-9_$]*?)\.([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
+
   content = content.replace(nestedPattern, (match, obj, prop1, prop2) => {
     if (indexProperties.includes(prop1) || indexProperties.includes(prop2)) {
       // Skip if already using bracket notation
       if (match.includes("['") || match.includes('["')) {
         return match;
       }
-      
+
       // Skip common non-Firebase objects
       if (['console', 'process', 'window', 'document'].includes(obj)) {
         return match;
@@ -82,19 +132,19 @@ function processFile(filePath) {
 
       modified = true;
       let replacement = obj;
-      
+
       if (indexProperties.includes(prop1)) {
         replacement += `['${prop1}']`;
       } else {
         replacement += `.${prop1}`;
       }
-      
+
       if (indexProperties.includes(prop2)) {
         replacement += `['${prop2}']`;
       } else {
         replacement += `.${prop2}`;
       }
-      
+
       if (replacement !== match) {
         changes.push(`  ${match} → ${replacement}`);
       }
@@ -104,14 +154,15 @@ function processFile(filePath) {
   });
 
   // Fix specific Firebase patterns
-  const firebaseAccessPattern = /\b(data|doc|document|snapshot|invoice|metadata|subscription|payment)\.([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
-  
+  const firebaseAccessPattern =
+    /\b(data|doc|document|snapshot|invoice|metadata|subscription|payment)\.([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
+
   content = content.replace(firebaseAccessPattern, (match, obj, prop) => {
     // Skip if already using bracket notation
     if (match.includes("['") || match.includes('["')) {
       return match;
     }
-    
+
     // Always use bracket notation for Firebase document access
     modified = true;
     const replacement = `${obj}['${prop}']`;
@@ -130,7 +181,7 @@ function processFile(filePath) {
   if (modified) {
     fs.writeFileSync(filePath, content);
     console.log(`✅ Fixed ${filePath}`);
-    changes.forEach(change => console.log(change));
+    changes.forEach((change) => console.log(change));
     return 1;
   }
 
@@ -153,8 +204,8 @@ async function main() {
   let totalFiles = 0;
 
   for (const pattern of filePatterns) {
-    const files = await glob(pattern, { 
-      ignore: ['**/node_modules/**', '**/dist/**', '**/.next/**']
+    const files = await glob(pattern, {
+      ignore: ['**/node_modules/**', '**/dist/**', '**/.next/**'],
     });
 
     for (const file of files) {

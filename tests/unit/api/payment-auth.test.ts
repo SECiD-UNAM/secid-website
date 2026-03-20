@@ -37,9 +37,7 @@ describe('Payment endpoint authentication', () => {
 
   describe('create-payment-intent', () => {
     it('returns 401 when no Authorization header is provided', async () => {
-      const { POST } = await import(
-        '@/pages/api/create-payment-intent'
-      );
+      const { POST } = await import('@/pages/api/create-payment-intent');
 
       const request = new Request(
         'https://secid.mx/api/create-payment-intent',
@@ -61,9 +59,7 @@ describe('Payment endpoint authentication', () => {
     });
 
     it('returns 401 when Authorization header is invalid (not Bearer)', async () => {
-      const { POST } = await import(
-        '@/pages/api/create-payment-intent'
-      );
+      const { POST } = await import('@/pages/api/create-payment-intent');
 
       const request = new Request(
         'https://secid.mx/api/create-payment-intent',
@@ -86,9 +82,7 @@ describe('Payment endpoint authentication', () => {
     });
 
     it('does not return 401 when valid session is present on request', async () => {
-      const { POST } = await import(
-        '@/pages/api/create-payment-intent'
-      );
+      const { POST } = await import('@/pages/api/create-payment-intent');
 
       const request = new Request(
         'https://secid.mx/api/create-payment-intent',
@@ -118,14 +112,11 @@ describe('Payment endpoint authentication', () => {
     it('returns 401 when no Authorization header is provided', async () => {
       const { POST } = await import('@/pages/api/create-subscription');
 
-      const request = new Request(
-        'https://secid.mx/api/create-subscription',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ planId: 'basic', customerId: 'cus_123' }),
-        }
-      );
+      const request = new Request('https://secid.mx/api/create-subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId: 'basic', customerId: 'cus_123' }),
+      });
 
       const response = await POST({
         request,
@@ -140,17 +131,14 @@ describe('Payment endpoint authentication', () => {
     it('returns 401 when Authorization header is invalid', async () => {
       const { POST } = await import('@/pages/api/create-subscription');
 
-      const request = new Request(
-        'https://secid.mx/api/create-subscription',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Token abc',
-          },
-          body: JSON.stringify({ planId: 'basic', customerId: 'cus_123' }),
-        }
-      );
+      const request = new Request('https://secid.mx/api/create-subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Token abc',
+        },
+        body: JSON.stringify({ planId: 'basic', customerId: 'cus_123' }),
+      });
 
       const response = await POST({
         request,
@@ -163,17 +151,14 @@ describe('Payment endpoint authentication', () => {
     it('does not return 401 when valid session is present on request', async () => {
       const { POST } = await import('@/pages/api/create-subscription');
 
-      const request = new Request(
-        'https://secid.mx/api/create-subscription',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer valid-token',
-          },
-          body: JSON.stringify({ planId: 'pro', customerId: 'cus_123' }),
-        }
-      );
+      const request = new Request('https://secid.mx/api/create-subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer valid-token',
+        },
+        body: JSON.stringify({ planId: 'pro', customerId: 'cus_123' }),
+      });
       (request as any).session = { userId: 'user-456' };
 
       const response = await POST({

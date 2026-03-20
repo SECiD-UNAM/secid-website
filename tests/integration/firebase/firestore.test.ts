@@ -78,13 +78,9 @@ function createMockFirestore() {
   const mockCollectionRef = (name: string) => {
     const colRef = {
       doc: vi.fn((id?: string) => mockDocRef(id)),
-      add: vi.fn((data: any) =>
-        Promise.resolve({ id: data?.id || 'auto-id' })
-      ),
+      add: vi.fn((data: any) => Promise.resolve({ id: data?.id || 'auto-id' })),
       where: vi.fn(() => ({
-        get: vi.fn(() =>
-          Promise.resolve({ empty: true, docs: [] })
-        ),
+        get: vi.fn(() => Promise.resolve({ empty: true, docs: [] })),
         where: vi.fn(() => ({
           get: vi.fn(() => Promise.resolve({ empty: true, docs: [] })),
           where: vi.fn(() => ({
@@ -145,7 +141,9 @@ async function createTestJob(firestore: any, job: any) {
 }
 
 async function createTestEvent(firestore: any, event: any) {
-  const eventDoc = firestore.collection('events').doc(event.id || 'mock-event-id');
+  const eventDoc = firestore
+    .collection('events')
+    .doc(event.id || 'mock-event-id');
   await eventDoc.set(event);
 }
 
@@ -187,7 +185,11 @@ describe('Firestore Integration Tests', () => {
   describe('Security Rules', () => {
     describe('User Profile Rules', () => {
       it('allows users to read their own profile', async () => {
-        await createTestUser(adminFirestore, TEST_UID, mockUsers.regularUser.profile);
+        await createTestUser(
+          adminFirestore,
+          TEST_UID,
+          mockUsers.regularUser.profile
+        );
 
         const userDoc = firestore.collection('users').doc(TEST_UID);
         const snapshot = await userDoc.get();
@@ -198,7 +200,11 @@ describe('Firestore Integration Tests', () => {
       });
 
       it('allows users to update their own profile', async () => {
-        await createTestUser(adminFirestore, TEST_UID, mockUsers.regularUser.profile);
+        await createTestUser(
+          adminFirestore,
+          TEST_UID,
+          mockUsers.regularUser.profile
+        );
 
         const userDoc = firestore.collection('users').doc(TEST_UID);
         const updates = { bio: 'Updated bio' };
@@ -233,7 +239,9 @@ describe('Firestore Integration Tests', () => {
           })
         );
 
-        const otherUserDoc = otherFirestore.collection('users').doc(otherUserId);
+        const otherUserDoc = otherFirestore
+          .collection('users')
+          .doc(otherUserId);
         const snapshot = await otherUserDoc.get();
 
         expect(snapshot).toBeDefined();
@@ -241,7 +249,11 @@ describe('Firestore Integration Tests', () => {
 
       it('prevents users from updating other users profiles', async () => {
         const otherUserId = 'other-user-uid';
-        await createTestUser(adminFirestore, otherUserId, mockUsers.regularUser.profile);
+        await createTestUser(
+          adminFirestore,
+          otherUserId,
+          mockUsers.regularUser.profile
+        );
 
         const otherUserDoc = firestore.collection('users').doc(otherUserId);
 
@@ -311,7 +323,9 @@ describe('Firestore Integration Tests', () => {
         });
 
         const companyFirestore = getFirestore(companyApp);
-        const jobDoc = companyFirestore.collection('jobs').doc(mockJobs.dataScientistJob.id);
+        const jobDoc = companyFirestore
+          .collection('jobs')
+          .doc(mockJobs.dataScientistJob.id);
 
         await expect(
           jobDoc.update({ title: 'Updated Title' })
@@ -335,7 +349,9 @@ describe('Firestore Integration Tests', () => {
         });
 
         const companyFirestore = getFirestore(companyApp);
-        const jobDoc = companyFirestore.collection('jobs').doc(mockJobs.dataScientistJob.id);
+        const jobDoc = companyFirestore
+          .collection('jobs')
+          .doc(mockJobs.dataScientistJob.id);
 
         // In a real emulator this would reject
         await expect(
@@ -367,14 +383,19 @@ describe('Firestore Integration Tests', () => {
 
       it('allows users to read their own applications', async () => {
         const applicationId = 'test-application-id';
-        await adminFirestore.collection('job_applications').doc(applicationId).set({
-          jobId: mockJobs.dataScientistJob.id,
-          userId: TEST_UID,
-          status: 'pending',
-          appliedAt: new Date(),
-        });
+        await adminFirestore
+          .collection('job_applications')
+          .doc(applicationId)
+          .set({
+            jobId: mockJobs.dataScientistJob.id,
+            userId: TEST_UID,
+            status: 'pending',
+            appliedAt: new Date(),
+          });
 
-        const applicationDoc = firestore.collection('job_applications').doc(applicationId);
+        const applicationDoc = firestore
+          .collection('job_applications')
+          .doc(applicationId);
         const snapshot = await applicationDoc.get();
 
         expect(snapshot).toBeDefined();
@@ -382,14 +403,19 @@ describe('Firestore Integration Tests', () => {
 
       it('prevents users from reading other users applications', async () => {
         const applicationId = 'other-application-id';
-        await adminFirestore.collection('job_applications').doc(applicationId).set({
-          jobId: mockJobs.dataScientistJob.id,
-          userId: 'other-user-uid',
-          status: 'pending',
-          appliedAt: new Date(),
-        });
+        await adminFirestore
+          .collection('job_applications')
+          .doc(applicationId)
+          .set({
+            jobId: mockJobs.dataScientistJob.id,
+            userId: 'other-user-uid',
+            status: 'pending',
+            appliedAt: new Date(),
+          });
 
-        const applicationDoc = firestore.collection('job_applications').doc(applicationId);
+        const applicationDoc = firestore
+          .collection('job_applications')
+          .doc(applicationId);
 
         // In a real emulator this would reject
         await expect(applicationDoc.get()).resolves.toBeDefined();
@@ -405,12 +431,15 @@ describe('Firestore Integration Tests', () => {
           companyId,
         });
 
-        await adminFirestore.collection('job_applications').doc(applicationId).set({
-          jobId: 'company-job-id',
-          userId: 'applicant-uid',
-          status: 'pending',
-          appliedAt: new Date(),
-        });
+        await adminFirestore
+          .collection('job_applications')
+          .doc(applicationId)
+          .set({
+            jobId: 'company-job-id',
+            userId: 'applicant-uid',
+            status: 'pending',
+            appliedAt: new Date(),
+          });
 
         const companyApp = initializeTestApp({
           projectId: TEST_PROJECT_ID,
@@ -532,9 +561,24 @@ describe('Firestore Integration Tests', () => {
     it('efficiently queries jobs with compound indexes', async () => {
       // Create multiple test jobs
       const testJobs = [
-        { ...mockJobs.dataScientistJob, location: 'Mexico City', type: 'full-time', level: 'senior' },
-        { ...mockJobs.juniorAnalystJob, location: 'Guadalajara', type: 'full-time', level: 'junior' },
-        { ...mockJobs.internshipJob, location: 'Remote', type: 'internship', level: 'entry' },
+        {
+          ...mockJobs.dataScientistJob,
+          location: 'Mexico City',
+          type: 'full-time',
+          level: 'senior',
+        },
+        {
+          ...mockJobs.juniorAnalystJob,
+          location: 'Guadalajara',
+          type: 'full-time',
+          level: 'junior',
+        },
+        {
+          ...mockJobs.internshipJob,
+          location: 'Remote',
+          type: 'internship',
+          level: 'entry',
+        },
       ];
 
       for (const job of testJobs) {

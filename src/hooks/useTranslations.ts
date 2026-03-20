@@ -40,5 +40,8 @@ export function useTranslations(lang: Language = 'es'): TranslationsResult {
 
   // Return object with t, language, AND all translation properties spread at top level
   // This supports both: const { t } = useTranslations() AND const t = useTranslations(); t.common.save
-  return Object.assign({}, translations, { t, language: lang }) as TranslationsResult;
+  return Object.assign({}, translations, {
+    t,
+    language: lang,
+  }) as TranslationsResult;
 }

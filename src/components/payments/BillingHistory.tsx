@@ -7,7 +7,7 @@ import {
   getPaymentSettings,
   updatePaymentSettings,
   downloadInvoice,
-  requestRefund
+  requestRefund,
 } from '../../lib/payments';
 
 interface BillingHistoryProps {
@@ -18,11 +18,18 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
   const { t } = useTranslations();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [paymentSettings, setPaymentSettings] = useState<PaymentSettings | null>(null);
+  const [paymentSettings, setPaymentSettings] =
+    useState<PaymentSettings | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'transactions' | 'invoices' | 'settings'>('transactions');
-  const [dateFilter, setDateFilter] = useState<'all' | '30days' | '6months' | '1year'>('all');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'succeeded' | 'pending' | 'failed'>('all');
+  const [activeTab, setActiveTab] = useState<
+    'transactions' | 'invoices' | 'settings'
+  >('transactions');
+  const [dateFilter, setDateFilter] = useState<
+    'all' | '30days' | '6months' | '1year'
+  >('all');
+  const [statusFilter, setStatusFilter] = useState<
+    'all' | 'succeeded' | 'pending' | 'failed'
+  >('all');
 
   useEffect(() => {
     loadBillingData();
@@ -34,7 +41,7 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
       const [transactionsData, invoicesData, settingsData] = await Promise.all([
         getUserTransactions(currentUser.id),
         getUserInvoices(currentUser.id),
-        getPaymentSettings(currentUser.id)
+        getPaymentSettings(currentUser.id),
       ]);
 
       setTransactions(transactionsData);
@@ -67,9 +74,14 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
     }
   };
 
-  const handleUpdateSettings = async (newSettings: Partial<PaymentSettings>) => {
+  const handleUpdateSettings = async (
+    newSettings: Partial<PaymentSettings>
+  ) => {
     try {
-      const updatedSettings = await updatePaymentSettings(currentUser.id, newSettings);
+      const updatedSettings = await updatePaymentSettings(
+        currentUser.id,
+        newSettings
+      );
       setPaymentSettings(updatedSettings);
     } catch (error) {
       console.error('Error updating payment settings:', error);
@@ -77,7 +89,7 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
   };
 
   const getStatusColor = (status: string) => {
-    switch(status) {
+    switch (status) {
       case 'succeeded':
       case 'paid':
         return 'bg-green-100 text-green-800';
@@ -96,7 +108,7 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
   };
 
   const getTypeIcon = (type: string) => {
-    switch(type) {
+    switch (type) {
       case 'subscription':
         return '🔄';
       case 'course':
@@ -114,56 +126,67 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
     return date.toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
   const formatCurrency = (amount: number, currency: string) => {
     return new Intl.NumberFormat(undefined, {
       style: 'currency',
-      currency: currency.toUpperCase()
+      currency: currency.toUpperCase(),
     }).format(amount);
   };
 
   const getDateFilterFunction = () => {
     const now = new Date();
-    switch(dateFilter) {
+    switch (dateFilter) {
       case '30days':
-        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const thirtyDaysAgo = new Date(
+          now.getTime() - 30 * 24 * 60 * 60 * 1000
+        );
         return (date: Date) => date >= thirtyDaysAgo;
       case '6months':
-        const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
+        const sixMonthsAgo = new Date(
+          now.getFullYear(),
+          now.getMonth() - 6,
+          now.getDate()
+        );
         return (date: Date) => date >= sixMonthsAgo;
       case '1year':
-        const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        const oneYearAgo = new Date(
+          now.getFullYear() - 1,
+          now.getMonth(),
+          now.getDate()
+        );
         return (date: Date) => date >= oneYearAgo;
       default:
         return () => true;
     }
   };
 
-  const filteredTransactions = transactions.filter(transaction => {
+  const filteredTransactions = transactions.filter((transaction) => {
     const dateMatches = getDateFilterFunction()(transaction.createdAt);
-    const statusMatches = statusFilter === 'all' || transaction['status'] === statusFilter;
+    const statusMatches =
+      statusFilter === 'all' || transaction['status'] === statusFilter;
     return dateMatches && statusMatches;
   });
 
-  const filteredInvoices = invoices.filter(invoice => {
+  const filteredInvoices = invoices.filter((invoice) => {
     const dateMatches = getDateFilterFunction()(invoice['createdAt']);
     return dateMatches;
   });
 
-  if(loading) {
+  if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="flex h-96 items-center justify-center">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="bg-white rounded-lg shadow-lg">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="rounded-lg bg-white shadow-lg">
         {/* Header */}
         <div className="border-b border-gray-200 px-6 py-4">
           <h1 className="text-2xl font-bold text-gray-900">
@@ -175,22 +198,30 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
         <div className="border-b border-gray-200">
           <nav className="flex space-x-8 px-6">
             {[
-              { key: 'transactions', label: t('payments.transactions'), count: transactions.length },
-              { key: 'invoices', label: t('payments.invoices'), count: invoices.length },
-              { key: 'settings', label: t('payments.billingSettings') }
+              {
+                key: 'transactions',
+                label: t('payments.transactions'),
+                count: transactions.length,
+              },
+              {
+                key: 'invoices',
+                label: t('payments.invoices'),
+                count: invoices.length,
+              },
+              { key: 'settings', label: t('payments.billingSettings') },
             ].map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key as any)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`border-b-2 px-1 py-4 text-sm font-medium ${
                   activeTab === tab.key
                     ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                 }`}
               >
                 {tab.label}
                 {tab.count !== undefined && (
-                  <span className="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2 rounded-full text-xs">
+                  <span className="ml-2 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-900">
                     {tab.count}
                   </span>
                 )}
@@ -205,13 +236,13 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
           {(activeTab === 'transactions' || activeTab === 'invoices') && (
             <div className="mb-6 flex flex-wrap gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="mb-1 block text-sm font-medium text-gray-700">
                   {t('payments.dateRange')}
                 </label>
                 <select
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value as any)}
-                  className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+                  className="rounded-md border border-gray-300 px-3 py-2 text-sm"
                 >
                   <option value="all">{t('payments.allTime')}</option>
                   <option value="30days">{t('payments.last30Days')}</option>
@@ -222,13 +253,13 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
 
               {activeTab === 'transactions' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="mb-1 block text-sm font-medium text-gray-700">
                     {t('paymentsstatus')}
                   </label>
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as any)}
-                    className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+                    className="rounded-md border border-gray-300 px-3 py-2 text-sm"
                   >
                     <option value="all">{t('payments.allStatuses')}</option>
                     <option value="succeeded">{t('payments.succeeded')}</option>
@@ -248,63 +279,71 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                           {t('payments.transaction')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                           {t('payments.amount')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                           {t('paymentsstatus')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                           {t('payments.date')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                           {t('payments.actions')}
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-200 bg-white">
                       {filteredTransactions.map((transaction) => (
                         <tr key={transaction.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="whitespace-nowrap px-6 py-4">
                             <div className="flex items-center">
-                              <span className="text-2xl mr-3">
+                              <span className="mr-3 text-2xl">
                                 {getTypeIcon(transaction['type'])}
                               </span>
                               <div>
                                 <div className="text-sm font-medium text-gray-900">
                                   {transaction['description']}
                                 </div>
-                                <div className="text-sm text-gray-500 capitalize">
+                                <div className="text-sm capitalize text-gray-500">
                                   {transaction['type']}
                                 </div>
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="whitespace-nowrap px-6 py-4">
                             <div className="text-sm font-medium text-gray-900">
-                              {formatCurrency(transaction.amount, transaction.currency)}
+                              {formatCurrency(
+                                transaction.amount,
+                                transaction.currency
+                              )}
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(transaction['status'])}`}>
+                          <td className="whitespace-nowrap px-6 py-4">
+                            <span
+                              className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold leading-5 ${getStatusColor(transaction['status'])}`}
+                            >
                               {t(`payments.${transaction['status']}`)}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                             {formatDate(transaction['createdAt'])}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            {transaction['status'] === 'succeeded' && transaction['type'] !== 'refund' && (
-                              <button
-                                onClick={() => handleRequestRefund(transaction.id)}
-                                className="text-red-600 hover:text-red-900 mr-3"
-                              >
-                                {t('payments.requestRefund')}
-                              </button>
-                            )}
+                          <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
+                            {transaction['status'] === 'succeeded' &&
+                              transaction['type'] !== 'refund' && (
+                                <button
+                                  onClick={() =>
+                                    handleRequestRefund(transaction.id)
+                                  }
+                                  className="mr-3 text-red-600 hover:text-red-900"
+                                >
+                                  {t('payments.requestRefund')}
+                                </button>
+                              )}
                             <button className="text-blue-600 hover:text-blue-900">
                               {t('payments.viewDetails')}
                             </button>
@@ -315,11 +354,21 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
                   </table>
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                <div className="py-12 text-center">
+                  <svg
+                    className="mx-auto mb-4 h-12 w-12 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
                   </svg>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <h3 className="mb-2 text-lg font-medium text-gray-900">
                     {t('payments.noTransactions')}
                   </h3>
                   <p className="text-gray-600">
@@ -334,10 +383,13 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
           {activeTab === 'invoices' && (
             <div>
               {filteredInvoices.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {filteredInvoices.map((invoice) => (
-                    <div key={invoice.id} className="border border-gray-200 rounded-lg p-6">
-                      <div className="flex items-start justify-between mb-4">
+                    <div
+                      key={invoice.id}
+                      className="rounded-lg border border-gray-200 p-6"
+                    >
+                      <div className="mb-4 flex items-start justify-between">
                         <div>
                           <h3 className="text-lg font-medium text-gray-900">
                             {t('payments.invoice')} #{invoice['number']}
@@ -346,15 +398,22 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
                             {formatDate(invoice['createdAt'])}
                           </p>
                         </div>
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(invoice['status'])}`}>
+                        <span
+                          className={`rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(invoice['status'])}`}
+                        >
                           {t(`payments.${invoice['status']}`)}
                         </span>
                       </div>
 
-                      <div className="space-y-2 mb-4">
+                      <div className="mb-4 space-y-2">
                         {invoice['items'].map((item, index) => (
-                          <div key={index} className="flex justify-between text-sm">
-                            <span className="text-gray-600">{item['description']}</span>
+                          <div
+                            key={index}
+                            className="flex justify-between text-sm"
+                          >
+                            <span className="text-gray-600">
+                              {item['description']}
+                            </span>
                             <span className="font-medium">
                               {formatCurrency(item.amount, invoice.currency)}
                             </span>
@@ -362,15 +421,25 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
                         ))}
                       </div>
 
-                      <div className="border-t pt-2 mb-4">
+                      <div className="mb-4 border-t pt-2">
                         <div className="flex justify-between font-medium">
                           <span>{t('paymentstotal')}</span>
-                          <span>{formatCurrency(invoice['total'], invoice['currency'])}</span>
+                          <span>
+                            {formatCurrency(
+                              invoice['total'],
+                              invoice['currency']
+                            )}
+                          </span>
                         </div>
                         {invoice['tax'] > 0 && (
                           <div className="flex justify-between text-sm text-gray-600">
                             <span>{t('payments.tax')}</span>
-                            <span>{formatCurrency(invoice['tax'], invoice['currency'])}</span>
+                            <span>
+                              {formatCurrency(
+                                invoice['tax'],
+                                invoice['currency']
+                              )}
+                            </span>
                           </div>
                         )}
                       </div>
@@ -378,11 +447,11 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
                       <div className="flex space-x-2">
                         <button
                           onClick={() => handleDownloadInvoice(invoice['id'])}
-                          className="flex-1 bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 text-sm"
+                          className="flex-1 rounded-md bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
                         >
                           {t('payments.download')}
                         </button>
-                        <button className="flex-1 bg-gray-600 text-white px-3 py-2 rounded-md hover:bg-gray-700 text-sm">
+                        <button className="flex-1 rounded-md bg-gray-600 px-3 py-2 text-sm text-white hover:bg-gray-700">
                           {t('payments.viewDetails')}
                         </button>
                       </div>
@@ -390,11 +459,21 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <div className="py-12 text-center">
+                  <svg
+                    className="mx-auto mb-4 h-12 w-12 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
                   </svg>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <h3 className="mb-2 text-lg font-medium text-gray-900">
                     {t('payments.noInvoices')}
                   </h3>
                   <p className="text-gray-600">
@@ -411,86 +490,116 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
               <div className="space-y-6">
                 {/* Billing Address */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  <h3 className="mb-4 text-lg font-medium text-gray-900">
                     {t('payments.billingAddress')}
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
                         {t('payments.addressLine1')}
                       </label>
                       <input
                         type="text"
                         value={paymentSettings.billingAddress.line1}
-                        onChange={(e) => handleUpdateSettings({
-                          billingAddress: { ...paymentSettings.billingAddress, line1: e.target.value }
-                        })}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2"
+                        onChange={(e) =>
+                          handleUpdateSettings({
+                            billingAddress: {
+                              ...paymentSettings.billingAddress,
+                              line1: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full rounded-md border border-gray-300 px-3 py-2"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
                         {t('payments.addressLine2')}
                       </label>
                       <input
                         type="text"
                         value={paymentSettings.billingAddress.line2 || ''}
-                        onChange={(e) => handleUpdateSettings({
-                          billingAddress: { ...paymentSettings.billingAddress, line2: e.target.value }
-                        })}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2"
+                        onChange={(e) =>
+                          handleUpdateSettings({
+                            billingAddress: {
+                              ...paymentSettings.billingAddress,
+                              line2: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full rounded-md border border-gray-300 px-3 py-2"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
                         {t('payments.city')}
                       </label>
                       <input
                         type="text"
                         value={paymentSettings.billingAddress.city}
-                        onChange={(e) => handleUpdateSettings({
-                          billingAddress: { ...paymentSettings.billingAddress, city: e.target.value }
-                        })}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2"
+                        onChange={(e) =>
+                          handleUpdateSettings({
+                            billingAddress: {
+                              ...paymentSettings.billingAddress,
+                              city: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full rounded-md border border-gray-300 px-3 py-2"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
                         {t('payments.state')}
                       </label>
                       <input
                         type="text"
                         value={paymentSettings.billingAddress.state}
-                        onChange={(e) => handleUpdateSettings({
-                          billingAddress: { ...paymentSettings.billingAddress, state: e.target.value }
-                        })}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2"
+                        onChange={(e) =>
+                          handleUpdateSettings({
+                            billingAddress: {
+                              ...paymentSettings.billingAddress,
+                              state: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full rounded-md border border-gray-300 px-3 py-2"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
                         {t('payments.postalCode')}
                       </label>
                       <input
                         type="text"
                         value={paymentSettings.billingAddress.postalCode}
-                        onChange={(e) => handleUpdateSettings({
-                          billingAddress: { ...paymentSettings.billingAddress, postalCode: e.target.value }
-                        })}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2"
+                        onChange={(e) =>
+                          handleUpdateSettings({
+                            billingAddress: {
+                              ...paymentSettings.billingAddress,
+                              postalCode: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full rounded-md border border-gray-300 px-3 py-2"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
                         {t('payments.country')}
                       </label>
                       <input
                         type="text"
                         value={paymentSettings.billingAddress.country}
-                        onChange={(e) => handleUpdateSettings({
-                          billingAddress: { ...paymentSettings.billingAddress, country: e.target.value }
-                        })}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2"
+                        onChange={(e) =>
+                          handleUpdateSettings({
+                            billingAddress: {
+                              ...paymentSettings.billingAddress,
+                              country: e.target.value,
+                            },
+                          })
+                        }
+                        className="w-full rounded-md border border-gray-300 px-3 py-2"
                       />
                     </div>
                   </div>
@@ -498,14 +607,16 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
 
                 {/* Auto-renewal */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  <h3 className="mb-4 text-lg font-medium text-gray-900">
                     {t('payments.subscriptionSettings')}
                   </h3>
                   <div className="flex items-center">
                     <input
                       type="checkbox"
                       checked={paymentSettings.autoRenew}
-                      onChange={(e) => handleUpdateSettings({ autoRenew: e.target.checked })}
+                      onChange={(e) =>
+                        handleUpdateSettings({ autoRenew: e.target.checked })
+                      }
                       className="mr-3"
                     />
                     <label className="text-sm text-gray-700">
@@ -516,7 +627,7 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
 
                 {/* Invoice Emails */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  <h3 className="mb-4 text-lg font-medium text-gray-900">
                     {t('payments.invoiceEmails')}
                   </h3>
                   <div className="space-y-2">
@@ -526,15 +637,20 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
                           type="email"
                           value={email}
                           onChange={(e) => {
-                            const newEmails = [...paymentSettings.invoiceEmails];
+                            const newEmails = [
+                              ...paymentSettings.invoiceEmails,
+                            ];
                             newEmails[index] = e.target.value;
                             handleUpdateSettings({ invoiceEmails: newEmails });
                           }}
-                          className="flex-1 border border-gray-300 rounded-md px-3 py-2"
+                          className="flex-1 rounded-md border border-gray-300 px-3 py-2"
                         />
                         <button
                           onClick={() => {
-                            const newEmails = paymentSettings.invoiceEmails.filter((_, i) => i !== index);
+                            const newEmails =
+                              paymentSettings.invoiceEmails.filter(
+                                (_, i) => i !== index
+                              );
                             handleUpdateSettings({ invoiceEmails: newEmails });
                           }}
                           className="text-red-600 hover:text-red-800"
@@ -545,10 +661,13 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
                     ))}
                     <button
                       onClick={() => {
-                        const newEmails = [...paymentSettings.invoiceEmails, ''];
+                        const newEmails = [
+                          ...paymentSettings.invoiceEmails,
+                          '',
+                        ];
                         handleUpdateSettings({ invoiceEmails: newEmails });
                       }}
-                      className="text-blue-600 hover:text-blue-800 text-sm"
+                      className="text-sm text-blue-600 hover:text-blue-800"
                     >
                       {t('payments.addEmail')}
                     </button>

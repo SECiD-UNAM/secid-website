@@ -14,12 +14,12 @@ export class NavigationComponent extends BasePage {
   private readonly languageToggle: Locator;
   private readonly userMenu: Locator;
   private readonly userMenuDropdown: Locator;
-  
+
   // Mobile navigation selectors
   private readonly mobileMenuButton: Locator;
   private readonly mobileNav: Locator;
   private readonly mobileMenuClose: Locator;
-  
+
   // User menu items
   private readonly dashboardLink: Locator;
   private readonly profileLink: Locator;
@@ -28,7 +28,7 @@ export class NavigationComponent extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    
+
     // Desktop navigation
     this.desktopNav = page.locator('nav[data-testid="desktop-nav"]');
     this.homeLink = page.locator('[data-testid="nav-home"]');
@@ -41,12 +41,12 @@ export class NavigationComponent extends BasePage {
     this.languageToggle = page.locator('[data-testid="language-toggle"]');
     this.userMenu = page.locator('[data-testid="user-menu"]');
     this.userMenuDropdown = page.locator('[data-testid="user-menu-dropdown"]');
-    
+
     // Mobile navigation
     this.mobileMenuButton = page.locator('[data-testid="mobile-menu-button"]');
     this.mobileNav = page.locator('[data-testid="mobile-nav"]');
     this.mobileMenuClose = page.locator('[data-testid="mobile-menu-close"]');
-    
+
     // User menu items
     this.dashboardLink = page.locator('[data-testid="nav-dashboard"]');
     this.profileLink = page.locator('[data-testid="nav-profile"]');
@@ -170,7 +170,7 @@ export class NavigationComponent extends BasePage {
   async toggleLanguage() {
     const currentLang = await this.getCurrentLanguage();
     await this.languageToggle.click();
-    
+
     // Wait for language change
     await this.page.waitForFunction(
       (expectedLang) => {
@@ -214,9 +214,11 @@ export class NavigationComponent extends BasePage {
   /**
    * Navigate on mobile
    */
-  async navigateMobile(destination: 'home' | 'jobs' | 'members' | 'about' | 'events') {
+  async navigateMobile(
+    destination: 'home' | 'jobs' | 'members' | 'about' | 'events'
+  ) {
     await this.openMobileMenu();
-    
+
     switch (destination) {
       case 'home':
         await this.homeLink.click();
@@ -234,7 +236,7 @@ export class NavigationComponent extends BasePage {
         await this.eventsLink.click();
         break;
     }
-    
+
     await this.waitForNavigation();
   }
 
@@ -243,7 +245,7 @@ export class NavigationComponent extends BasePage {
    */
   async isNavigationVisible(): Promise<boolean> {
     const isMobile = await this.page.evaluate(() => window.innerWidth < 768);
-    
+
     if (isMobile) {
       return await this.mobileMenuButton.isVisible();
     } else {
@@ -256,7 +258,7 @@ export class NavigationComponent extends BasePage {
    */
   async getNavigationLinks(): Promise<string[]> {
     const links = await this.page.locator('nav a').allTextContents();
-    return links.filter(link => link.trim() !== '');
+    return links.filter((link) => link.trim() !== '');
   }
 
   /**
@@ -264,8 +266,10 @@ export class NavigationComponent extends BasePage {
    */
   async isNavItemActive(item: string): Promise<boolean> {
     const navItem = this.page.locator(`[data-testid="nav-${item}"]`);
-    return await this.hasClass(navItem.locator('..'), 'active') || 
-           await this.hasClass(navItem.locator('..'), 'current');
+    return (
+      (await this.hasClass(navItem.locator('..'), 'active')) ||
+      (await this.hasClass(navItem.locator('..'), 'current'))
+    );
   }
 
   /**
@@ -289,18 +293,22 @@ export class NavigationComponent extends BasePage {
   async getUserInfo(): Promise<{ name: string; email: string } | null> {
     if (await this.isUserLoggedIn()) {
       await this.openUserMenu();
-      const userName = await this.page.locator('[data-testid="user-menu-name"]').textContent();
-      const userEmail = await this.page.locator('[data-testid="user-menu-email"]').textContent();
-      
+      const userName = await this.page
+        .locator('[data-testid="user-menu-name"]')
+        .textContent();
+      const userEmail = await this.page
+        .locator('[data-testid="user-menu-email"]')
+        .textContent();
+
       // Close menu
       await this.page.keyboard.press('Escape');
-      
+
       return {
         name: userName?.trim() || '',
-        email: userEmail?.trim() || ''
+        email: userEmail?.trim() || '',
       };
     }
-    
+
     return null;
   }
 
@@ -308,7 +316,9 @@ export class NavigationComponent extends BasePage {
    * Check for notification badge
    */
   async hasNotifications(): Promise<boolean> {
-    const notificationBadge = this.page.locator('[data-testid="notification-badge"]');
+    const notificationBadge = this.page.locator(
+      '[data-testid="notification-badge"]'
+    );
     return await notificationBadge.isVisible();
   }
 

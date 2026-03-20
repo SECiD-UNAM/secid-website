@@ -13,7 +13,7 @@ import {
   query,
   where,
   orderBy,
-  serverTimestamp
+  serverTimestamp,
 } from 'firebase/firestore';
 import type { MentorshipGoal, MentorshipResource } from '../../types';
 import { COLLECTIONS, firestoreToDate, dateToFirestore } from './constants';
@@ -27,16 +27,19 @@ export async function createMentorshipResource(
     const resourceData = {
       ...resource,
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
 
-    const docRef = await addDoc(collection(db, COLLECTIONS.RESOURCES), resourceData);
+    const docRef = await addDoc(
+      collection(db, COLLECTIONS.RESOURCES),
+      resourceData
+    );
 
     return {
       ...resource,
       id: docRef['id'],
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
   } catch (error) {
     console.error('Error creating mentorship resource:', error);
@@ -80,7 +83,7 @@ export async function getMentorshipResources(filters?: {
         ...data,
         id: doc['id'],
         createdAt: firestoreToDate(data['createdAt']),
-        updatedAt: firestoreToDate(data['updatedAt'])
+        updatedAt: firestoreToDate(data['updatedAt']),
       } as unknown as MentorshipResource);
     });
 
@@ -102,10 +105,14 @@ export async function createMentorshipGoal(
       targetDate: goal.targetDate ? dateToFirestore(goal.targetDate) : null,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-      milestones: goal.milestones.map((milestone: { completedAt?: Date; [key: string]: any }) => ({
-        ...milestone,
-        completedAt: milestone.completedAt ? dateToFirestore(milestone.completedAt) : null
-      }))
+      milestones: goal.milestones.map(
+        (milestone: { completedAt?: Date; [key: string]: any }) => ({
+          ...milestone,
+          completedAt: milestone.completedAt
+            ? dateToFirestore(milestone.completedAt)
+            : null,
+        })
+      ),
     };
 
     const docRef = await addDoc(collection(db, COLLECTIONS.GOALS), goalData);
@@ -114,7 +121,7 @@ export async function createMentorshipGoal(
       ...goal,
       id: docRef['id'],
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
   } catch (error) {
     console.error('Error creating mentorship goal:', error);
@@ -135,10 +142,14 @@ export async function updateMentorshipGoal(
     }
 
     if (updates.milestones) {
-      updateData.milestones = updates.milestones.map((milestone: { completedAt?: Date; [key: string]: any }) => ({
-        ...milestone,
-        completedAt: milestone.completedAt ? dateToFirestore(milestone.completedAt) : null
-      }));
+      updateData.milestones = updates.milestones.map(
+        (milestone: { completedAt?: Date; [key: string]: any }) => ({
+          ...milestone,
+          completedAt: milestone.completedAt
+            ? dateToFirestore(milestone.completedAt)
+            : null,
+        })
+      );
     }
 
     updateData['updatedAt'] = serverTimestamp();
@@ -151,13 +162,17 @@ export async function updateMentorshipGoal(
       return {
         ...data,
         id: updatedDoc['id'],
-        targetDate: data.targetDate ? firestoreToDate(data['targetDate']) : undefined,
+        targetDate: data.targetDate
+          ? firestoreToDate(data['targetDate'])
+          : undefined,
         createdAt: firestoreToDate(data['createdAt']),
         updatedAt: firestoreToDate(data['updatedAt']),
         milestones: data['milestones'].map((milestone: any) => ({
           ...milestone,
-          completedAt: milestone.completedAt ? firestoreToDate(milestone.completedAt) : undefined
-        }))
+          completedAt: milestone.completedAt
+            ? firestoreToDate(milestone.completedAt)
+            : undefined,
+        })),
       } as unknown as MentorshipGoal;
     }
 
@@ -168,7 +183,9 @@ export async function updateMentorshipGoal(
   }
 }
 
-export async function getMentorshipGoals(matchId: string): Promise<MentorshipGoal[]> {
+export async function getMentorshipGoals(
+  matchId: string
+): Promise<MentorshipGoal[]> {
   try {
     const q = query(
       collection(db, COLLECTIONS.GOALS),
@@ -184,13 +201,17 @@ export async function getMentorshipGoals(matchId: string): Promise<MentorshipGoa
       goals.push({
         ...data,
         id: doc['id'],
-        targetDate: data['targetDate'] ? firestoreToDate(data['targetDate']) : undefined,
+        targetDate: data['targetDate']
+          ? firestoreToDate(data['targetDate'])
+          : undefined,
         createdAt: firestoreToDate(data['createdAt']),
         updatedAt: firestoreToDate(data['updatedAt']),
         milestones: data['milestones'].map((milestone: any) => ({
           ...milestone,
-          completedAt: milestone.completedAt ? firestoreToDate(milestone.completedAt) : undefined
-        }))
+          completedAt: milestone.completedAt
+            ? firestoreToDate(milestone.completedAt)
+            : undefined,
+        })),
       } as unknown as MentorshipGoal);
     });
 

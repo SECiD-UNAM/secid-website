@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-  Briefcase, 
-  Calendar, 
-  MessageSquare, 
-  Users, 
-  GraduationCap, 
+  Briefcase,
+  Calendar,
+  MessageSquare,
+  Users,
+  GraduationCap,
   MessageCircle,
   Trophy,
   Eye,
@@ -17,12 +17,16 @@ import {
   Clock,
   ExternalLink,
   Trash2,
-  Star
+  Star,
 } from 'lucide-react';
-import { useTranslations} from '../../hooks/useTranslations';
-import { formatDistanceToNow} from 'date-fns';
-import { es, enUS} from 'date-fns/locale';
-import type { Notification, NotificationType, NotificationPriority } from '../../types';
+import { useTranslations } from '../../hooks/useTranslations';
+import { formatDistanceToNow } from 'date-fns';
+import { es, enUS } from 'date-fns/locale';
+import type {
+  Notification,
+  NotificationType,
+  NotificationPriority,
+} from '../../types';
 
 interface NotificationItemProps {
   notification: Notification;
@@ -33,7 +37,10 @@ interface NotificationItemProps {
   compact?: boolean;
 }
 
-const typeIcons: Record<NotificationType, React.ComponentType<{ className?: string }>> = {
+const typeIcons: Record<
+  NotificationType,
+  React.ComponentType<{ className?: string }>
+> = {
   job_match: Briefcase,
   job_application: Briefcase,
   job_expiring: Clock,
@@ -59,21 +66,21 @@ const typeIcons: Record<NotificationType, React.ComponentType<{ className?: stri
   security_alert: Shield,
   payment_reminder: CreditCard,
   membership_expiring: CreditCard,
-  data_export_ready: SettingsIcon
+  data_export_ready: SettingsIcon,
 };
 
 const priorityColors: Record<NotificationPriority, string> = {
   low: 'text-gray-500',
   normal: 'text-blue-500',
   high: 'text-orange-500',
-  urgent: 'text-red-500'
+  urgent: 'text-red-500',
 };
 
 const priorityBgColors: Record<NotificationPriority, string> = {
   low: 'bg-gray-100',
   normal: 'bg-blue-100',
   high: 'bg-orange-100',
-  urgent: 'bg-red-100'
+  urgent: 'bg-red-100',
 };
 
 export default function NotificationItem({
@@ -82,18 +89,18 @@ export default function NotificationItem({
   onSelect,
   onClick,
   showSelection,
-  compact = false
+  compact = false,
 }: NotificationItemProps) {
   const { t, language } = useTranslations();
-  
+
   const IconComponent = typeIcons[notification['type']];
   const priorityColor = priorityColors[notification.priority];
   const priorityBgColor = priorityBgColors[notification.priority];
-  
+
   const locale = language === 'es' ? es : enUS;
   const timeAgo = formatDistanceToNow(new Date(notification['createdAt']), {
     addSuffix: true,
-    locale
+    locale,
   });
 
   const handleClick = (e: React.MouseEvent) => {
@@ -118,8 +125,8 @@ export default function NotificationItem({
 
   return (
     <div
-      className={`relative p-3 hover:bg-gray-50 transition-colors cursor-pointer group ${
-        !notification.isRead ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+      className={`group relative cursor-pointer p-3 transition-colors hover:bg-gray-50 ${
+        !notification.isRead ? 'border-l-4 border-blue-500 bg-blue-50' : ''
       } ${compact ? 'py-2' : ''}`}
       onClick={handleClick}
       role="button"
@@ -138,71 +145,91 @@ export default function NotificationItem({
               type="checkbox"
               checked={isSelected}
               onChange={handleSelectChange}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               onClick={(e) => e.stopPropagation()}
             />
           </div>
         )}
 
         {/* Icon */}
-        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${priorityBgColor}`}>
-          <IconComponent className={`w-5 h-5 ${priorityColor}`} />
+        <div
+          className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${priorityBgColor}`}
+        >
+          <IconComponent className={`h-5 w-5 ${priorityColor}`} />
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               {/* Title and Priority */}
               <div className="flex items-center space-x-2">
-                <p className={`text-sm font-medium text-gray-900 truncate ${
-                  !notification.isRead ? 'font-semibold' : ''
-                }`}>
+                <p
+                  className={`truncate text-sm font-medium text-gray-900 ${
+                    !notification.isRead ? 'font-semibold' : ''
+                  }`}
+                >
                   {notification.title}
                 </p>
-                
+
                 {notification.priority === 'urgent' && (
                   <span className="flex-shrink-0">
-                    <AlertTriangle className="w-4 h-4 text-red-500" />
+                    <AlertTriangle className="h-4 w-4 text-red-500" />
                   </span>
                 )}
-                
+
                 {notification.priority === 'high' && (
                   <span className="flex-shrink-0">
-                    <Star className="w-4 h-4 text-orange-500" />
+                    <Star className="h-4 w-4 text-orange-500" />
                   </span>
                 )}
               </div>
 
               {/* Message */}
-              <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+              <p className="mt-1 line-clamp-2 text-sm text-gray-600">
                 {notification['message']}
               </p>
 
               {/* Tags and Metadata */}
               {!compact && (
-                <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                <div className="mt-2 flex items-center space-x-4 text-xs text-gray-500">
                   <span className="flex items-center space-x-1">
-                    <span className={`w-2 h-2 rounded-full ${
-                      notification.category === 'jobs' ? 'bg-green-500' :
-                      notification.category === 'events' ? 'bg-blue-500' :
-                      notification.category === 'messages' ? 'bg-purple-500' :
-                      notification.category === 'connections' ? 'bg-pink-500' :
-                      notification.category === 'mentorship' ? 'bg-indigo-500' :
-                      notification.category === 'forum' ? 'bg-yellow-500' :
-                      notification.category === 'achievements' ? 'bg-orange-500' :
-                      notification.category === 'system' ? 'bg-gray-500' :
-                      notification.category === 'security' ? 'bg-red-500' :
-                      'bg-blue-500'
-                    }`} />
-                    <span>{t(`notifications.category.${notification.category}`)}</span>
+                    <span
+                      className={`h-2 w-2 rounded-full ${
+                        notification.category === 'jobs'
+                          ? 'bg-green-500'
+                          : notification.category === 'events'
+                            ? 'bg-blue-500'
+                            : notification.category === 'messages'
+                              ? 'bg-purple-500'
+                              : notification.category === 'connections'
+                                ? 'bg-pink-500'
+                                : notification.category === 'mentorship'
+                                  ? 'bg-indigo-500'
+                                  : notification.category === 'forum'
+                                    ? 'bg-yellow-500'
+                                    : notification.category === 'achievements'
+                                      ? 'bg-orange-500'
+                                      : notification.category === 'system'
+                                        ? 'bg-gray-500'
+                                        : notification.category === 'security'
+                                          ? 'bg-red-500'
+                                          : 'bg-blue-500'
+                      }`}
+                    />
+                    <span>
+                      {t(`notifications.category.${notification.category}`)}
+                    </span>
                   </span>
-                  
+
                   <span>{timeAgo}</span>
-                  
+
                   {notification.expiresAt && (
                     <span className="text-orange-600">
-                      {t('notifications.expires')} {formatDistanceToNow(new Date(notification.expiresAt), { locale })}
+                      {t('notifications.expires')}{' '}
+                      {formatDistanceToNow(new Date(notification.expiresAt), {
+                        locale,
+                      })}
                     </span>
                   )}
                 </div>
@@ -216,49 +243,49 @@ export default function NotificationItem({
                       e.stopPropagation();
                       window.location.href = notification.actionUrl!;
                     }}
-                    className="inline-flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
+                    className="inline-flex items-center space-x-1 text-xs font-medium text-blue-600 hover:text-blue-800"
                   >
                     <span>{notification.actionText}</span>
-                    <ExternalLink className="w-3 h-3" />
+                    <ExternalLink className="h-3 w-3" />
                   </button>
                 </div>
               )}
             </div>
 
             {/* Time and Actions */}
-            <div className="flex items-center space-x-2 ml-2">
+            <div className="ml-2 flex items-center space-x-2">
               {compact && (
-                <span className="text-xs text-gray-500 whitespace-nowrap">
+                <span className="whitespace-nowrap text-xs text-gray-500">
                   {timeAgo}
                 </span>
               )}
 
               {/* Unread Indicator */}
               {!notification.isRead && (
-                <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0" />
+                <div className="h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />
               )}
 
               {/* Quick Actions (shown on hover) */}
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center space-x-1">
+              <div className="flex items-center space-x-1 opacity-0 transition-opacity group-hover:opacity-100">
                 {!notification.isRead && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       onClick(notification);
                     }}
-                    className="p-1 text-gray-400 hover:text-blue-600 rounded"
+                    className="rounded p-1 text-gray-400 hover:text-blue-600"
                     title={t('notifications.markAsRead')}
                   >
-                    <CheckCircle className="w-4 h-4" />
+                    <CheckCircle className="h-4 w-4" />
                   </button>
                 )}
-                
+
                 <button
                   onClick={handleDelete}
-                  className="p-1 text-gray-400 hover:text-red-600 rounded"
+                  className="rounded p-1 text-gray-400 hover:text-red-600"
                   title={t('notifications.delete')}
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -270,7 +297,7 @@ export default function NotificationItem({
               <img
                 src={notification.imageUrl}
                 alt=""
-                className="w-full h-32 object-cover rounded-lg"
+                className="h-32 w-full rounded-lg object-cover"
                 loading="lazy"
               />
             </div>
@@ -279,17 +306,23 @@ export default function NotificationItem({
           {/* Delivery Status */}
           {notification.deliveryMethods.length > 1 && !compact && (
             <div className="mt-2 flex items-center space-x-2">
-              <span className="text-xs text-gray-500">{t('notifications.sentVia')}:</span>
+              <span className="text-xs text-gray-500">
+                {t('notifications.sentVia')}:
+              </span>
               <div className="flex items-center space-x-1">
                 {notification.deliveryMethods.map((method) => (
                   <span
                     key={method}
-                    className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-600"
+                    className="inline-flex items-center rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
                   >
-                    {method === 'email' && <Mail className="w-3 h-3 mr-1" />}
-                    {method === 'push' && <Settings className="w-3 h-3 mr-1" />}
-                    {method === 'app' && <CheckCircle className="w-3 h-3 mr-1" />}
-                    {method === 'sms' && <MessageSquare className="w-3 h-3 mr-1" />}
+                    {method === 'email' && <Mail className="mr-1 h-3 w-3" />}
+                    {method === 'push' && <Settings className="mr-1 h-3 w-3" />}
+                    {method === 'app' && (
+                      <CheckCircle className="mr-1 h-3 w-3" />
+                    )}
+                    {method === 'sms' && (
+                      <MessageSquare className="mr-1 h-3 w-3" />
+                    )}
                     {t(`notifications.delivery.${method}`)}
                   </span>
                 ))}
@@ -305,11 +338,12 @@ export default function NotificationItem({
       )}
 
       {/* Scheduled Indicator */}
-      {notification.scheduledFor && new Date(notification.scheduledFor) > new Date() && (
-        <div className="absolute top-2 right-2">
-          <Clock className="w-4 h-4 text-orange-500" />
-        </div>
-      )}
+      {notification.scheduledFor &&
+        new Date(notification.scheduledFor) > new Date() && (
+          <div className="absolute right-2 top-2">
+            <Clock className="h-4 w-4 text-orange-500" />
+          </div>
+        )}
     </div>
   );
 }

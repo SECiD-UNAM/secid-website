@@ -129,13 +129,23 @@ const t = getTranslations('es');
                 Suscribirme al Newsletter
               </button>
 
-              <div id="newsletter-success" class="secid-form__message secid-form__message--success" style="display:none;">
+              <div
+                id="newsletter-success"
+                class="secid-form__message secid-form__message--success"
+                style="display:none;"
+              >
                 <i class="fas fa-check-circle"></i>
                 ¡Gracias por suscribirte! Revisa tu correo para confirmar.
               </div>
-              <div id="newsletter-error" class="secid-form__message secid-form__message--error" style="display:none;">
+              <div
+                id="newsletter-error"
+                class="secid-form__message secid-form__message--error"
+                style="display:none;"
+              >
                 <i class="fas fa-exclamation-circle"></i>
-                <span id="newsletter-error-text">Hubo un error. Inténtalo de nuevo.</span>
+                <span id="newsletter-error-text"
+                  >Hubo un error. Inténtalo de nuevo.</span
+                >
               </div>
             </form>
 
@@ -206,10 +216,13 @@ const t = getTranslations('es');
               Ediciones Anteriores
             </h2>
             <p class="secid-newsletter__archive-cta-description">
-              Explora nuestras ediciones pasadas del newsletter con oportunidades,
-              recursos y noticias de la comunidad
+              Explora nuestras ediciones pasadas del newsletter con
+              oportunidades, recursos y noticias de la comunidad
             </p>
-            <a href="/es/newsletter/archive" class="secid-button secid-button--outline secid-button--lg">
+            <a
+              href="/es/newsletter/archive"
+              class="secid-button secid-button--outline secid-button--lg"
+            >
               <i class="fas fa-archive"></i>
               Ver archivo de newsletters
             </a>
@@ -680,7 +693,9 @@ const t = getTranslations('es');
   import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
   const form = document.getElementById('newsletter-form') as HTMLFormElement;
-  const submitBtn = document.getElementById('newsletter-submit') as HTMLButtonElement;
+  const submitBtn = document.getElementById(
+    'newsletter-submit'
+  ) as HTMLButtonElement;
   const successMsg = document.getElementById('newsletter-success')!;
   const errorMsg = document.getElementById('newsletter-error')!;
   const errorText = document.getElementById('newsletter-error-text')!;
@@ -690,10 +705,16 @@ const t = getTranslations('es');
     successMsg.style.display = 'none';
     errorMsg.style.display = 'none';
 
-    const email = (document.getElementById('newsletter-email') as HTMLInputElement).value.trim();
-    const name = (document.getElementById('newsletter-name') as HTMLInputElement).value.trim();
-    const interestCheckboxes = form.querySelectorAll<HTMLInputElement>('input[name="interests"]:checked');
-    const interests = Array.from(interestCheckboxes).map(cb => cb.value);
+    const email = (
+      document.getElementById('newsletter-email') as HTMLInputElement
+    ).value.trim();
+    const name = (
+      document.getElementById('newsletter-name') as HTMLInputElement
+    ).value.trim();
+    const interestCheckboxes = form.querySelectorAll<HTMLInputElement>(
+      'input[name="interests"]:checked'
+    );
+    const interests = Array.from(interestCheckboxes).map((cb) => cb.value);
 
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
@@ -710,10 +731,12 @@ const t = getTranslations('es');
       form.style.display = 'none';
       successMsg.style.display = 'flex';
     } catch (err: any) {
-      errorText.textContent = err?.message || 'Hubo un error. Inténtalo de nuevo.';
+      errorText.textContent =
+        err?.message || 'Hubo un error. Inténtalo de nuevo.';
       errorMsg.style.display = 'flex';
       submitBtn.disabled = false;
-      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Suscribirme al Newsletter';
+      submitBtn.innerHTML =
+        '<i class="fas fa-paper-plane"></i> Suscribirme al Newsletter';
     }
   });
 </script>

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { getNewsletterArchive, type NewsletterIssue } from '@/lib/newsletter-archive';
+import {
+  getNewsletterArchive,
+  type NewsletterIssue,
+} from '@/lib/newsletter-archive';
 
 interface Props {
   lang?: 'es' | 'en';
@@ -54,14 +57,24 @@ export default function NewsletterArchive({ lang = 'es' }: Props) {
   return (
     <div>
       <div style={{ marginBottom: '2rem' }}>
-        <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>{t.title}</h2>
+        <h2
+          style={{
+            fontSize: '1.75rem',
+            fontWeight: 700,
+            marginBottom: '0.5rem',
+          }}
+        >
+          {t.title}
+        </h2>
         <p style={{ color: 'var(--color-text-secondary)' }}>{t.subtitle}</p>
       </div>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-        gap: '1.5rem',
-      }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+          gap: '1.5rem',
+        }}
+      >
         {newsletters.map((newsletter) => (
           <a
             key={newsletter.id}
@@ -77,43 +90,69 @@ export default function NewsletterArchive({ lang = 'es' }: Props) {
               transition: 'all 0.2s ease',
             }}
           >
-            <div style={{
-              height: '160px',
-              background: 'linear-gradient(135deg, var(--secid-primary), var(--secid-gold))',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: '2rem',
-              fontWeight: 700,
-            }}>
+            <div
+              style={{
+                height: '160px',
+                background:
+                  'linear-gradient(135deg, var(--secid-primary), var(--secid-gold))',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                fontSize: '2rem',
+                fontWeight: 700,
+              }}
+            >
               #{newsletter.issueNumber}
             </div>
             <div style={{ padding: '1.5rem' }}>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '0.75rem',
-                fontSize: '0.875rem',
-                color: 'var(--color-text-tertiary)',
-              }}>
-                <span>{t.issue} #{newsletter.issueNumber}</span>
-                <span>{newsletter.publishedAt.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '0.75rem',
+                  fontSize: '0.875rem',
+                  color: 'var(--color-text-tertiary)',
+                }}
+              >
+                <span>
+                  {t.issue} #{newsletter.issueNumber}
+                </span>
+                <span>
+                  {newsletter.publishedAt.toLocaleDateString(
+                    lang === 'es' ? 'es-MX' : 'en-US',
+                    { year: 'numeric', month: 'short', day: 'numeric' }
+                  )}
+                </span>
               </div>
-              <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+              <h3
+                style={{
+                  fontSize: '1.125rem',
+                  fontWeight: 600,
+                  marginBottom: '0.5rem',
+                }}
+              >
                 {newsletter.title}
               </h3>
-              <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.6, fontSize: '0.9rem' }}>
+              <p
+                style={{
+                  color: 'var(--color-text-secondary)',
+                  lineHeight: 1.6,
+                  fontSize: '0.9rem',
+                }}
+              >
                 {newsletter.excerpt}
               </p>
-              <span style={{
-                display: 'inline-block',
-                marginTop: '1rem',
-                color: 'var(--secid-primary)',
-                fontWeight: 500,
-                fontSize: '0.875rem',
-              }}>
+              <span
+                style={{
+                  display: 'inline-block',
+                  marginTop: '1rem',
+                  color: 'var(--secid-primary)',
+                  fontWeight: 500,
+                  fontSize: '0.875rem',
+                }}
+              >
                 {t.readMore} &rarr;
               </span>
             </div>

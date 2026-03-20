@@ -89,19 +89,21 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
       let errorMessage: string;
 
       if (errorCode === 'auth/configuration-not-found') {
-        errorMessage = lang === 'es'
-          ? 'El servicio de autenticación no está configurado. Contacta al administrador.'
-          : 'Authentication service is not configured. Contact the administrator.';
+        errorMessage =
+          lang === 'es'
+            ? 'El servicio de autenticación no está configurado. Contacta al administrador.'
+            : 'Authentication service is not configured. Contact the administrator.';
       } else if (errorCode === 'auth/unauthorized-domain') {
-        errorMessage = lang === 'es'
-          ? 'Este dominio no está autorizado para iniciar sesión. Contacta al administrador.'
-          : 'This domain is not authorized for sign-in. Contact the administrator.';
+        errorMessage =
+          lang === 'es'
+            ? 'Este dominio no está autorizado para iniciar sesión. Contacta al administrador.'
+            : 'This domain is not authorized for sign-in. Contact the administrator.';
       } else if (errorCode === 'auth/popup-closed-by-user') {
-        errorMessage = lang === 'es'
-          ? 'Inicio de sesión cancelado'
-          : 'Sign in cancelled';
+        errorMessage =
+          lang === 'es' ? 'Inicio de sesión cancelado' : 'Sign in cancelled';
       } else {
-        errorMessage = error.message ||
+        errorMessage =
+          error.message ||
           (lang === 'es' ? 'Error al iniciar sesión' : 'Sign in error');
       }
 
@@ -137,7 +139,7 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
             border border-gray-300
             shadow-sm transition-all
             duration-200 hover:shadow-md
-            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500
+            focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
             disabled:cursor-not-allowed disabled:opacity-50
             dark:border-gray-600
           `}
@@ -151,8 +153,19 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
               fill="none"
               viewBox="0 0 24 24"
             >
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
             </svg>
           ) : (
             <span className="mr-3 flex-shrink-0">{provider.icon}</span>

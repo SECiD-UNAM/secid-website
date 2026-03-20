@@ -64,12 +64,12 @@ const schemaOrgJson = JSON.stringify({
 
     <!-- Beta environment detection (synchronous, before any rendering) -->
     <script is:inline>
-    (function(){
-      var h = window.location.hostname;
-      if (h === 'beta.secid.mx' || h === 'beta.localhost') {
-        document.documentElement.dataset.beta = 'true';
-      }
-    })();
+      (function () {
+        var h = window.location.hostname;
+        if (h === 'beta.secid.mx' || h === 'beta.localhost') {
+          document.documentElement.dataset.beta = 'true';
+        }
+      })();
     </script>
 
     <!-- Primary Meta Tags -->
@@ -309,16 +309,19 @@ const schemaOrgJson = JSON.stringify({
       <div class="beta-banner__content">
         <span class="beta-banner__icon" aria-hidden="true">&#9888;</span>
         <span class="beta-banner__text beta-banner__text--es">
-          Entorno Beta &mdash; Las funcionalidades pueden ser inestables o cambiar sin previo aviso.
+          Entorno Beta &mdash; Las funcionalidades pueden ser inestables o
+          cambiar sin previo aviso.
         </span>
         <span class="beta-banner__text beta-banner__text--en">
-          Beta Environment &mdash; Features may be unstable or change without notice.
+          Beta Environment &mdash; Features may be unstable or change without
+          notice.
         </span>
         <button
           class="beta-banner__dismiss"
           aria-label="Dismiss beta notice"
           onclick="this.closest('.beta-banner').style.display='none';document.documentElement.removeAttribute('data-beta')"
-        >&times;</button>
+          >&times;</button
+        >
       </div>
     </div>
 

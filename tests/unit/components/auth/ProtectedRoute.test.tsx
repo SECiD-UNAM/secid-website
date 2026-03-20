@@ -77,7 +77,11 @@ describe('ProtectedRoute: shows loading spinner', () => {
   afterEach(teardown);
   it('renders', () => {
     mockAuthContext.loading = true;
-    render(<ProtectedRoute><div>Protected</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute>
+        <div>Protected</div>
+      </ProtectedRoute>
+    );
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
     expect(screen.queryByText('Protected')).not.toBeInTheDocument();
   });
@@ -88,7 +92,11 @@ describe('ProtectedRoute: shows loading animation', () => {
   afterEach(teardown);
   it('renders', () => {
     mockAuthContext.loading = true;
-    render(<ProtectedRoute><div>Protected</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute>
+        <div>Protected</div>
+      </ProtectedRoute>
+    );
     expect(document.querySelector('.animate-spin')).toBeInTheDocument();
   });
 });
@@ -98,7 +106,11 @@ describe('ProtectedRoute: loading text', () => {
   afterEach(teardown);
   it('renders', () => {
     mockAuthContext.loading = true;
-    render(<ProtectedRoute lang="en"><div>Protected</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute lang="en">
+        <div>Protected</div>
+      </ProtectedRoute>
+    );
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 });
@@ -111,9 +123,16 @@ describe('ProtectedRoute: unauthenticated shows sign-in', () => {
   it('renders', () => {
     mockAuthContext.loading = false;
     mockAuthContext.isAuthenticated = false;
-    render(<ProtectedRoute><div>Protected</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute>
+        <div>Protected</div>
+      </ProtectedRoute>
+    );
     expect(screen.getByText(/authentication required/i)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /sign in/i })).toHaveAttribute('href', '/es/login');
+    expect(screen.getByRole('link', { name: /sign in/i })).toHaveAttribute(
+      'href',
+      '/es/login'
+    );
   });
 });
 
@@ -123,8 +142,15 @@ describe('ProtectedRoute: unauthenticated English link', () => {
   it('renders', () => {
     mockAuthContext.loading = false;
     mockAuthContext.isAuthenticated = false;
-    render(<ProtectedRoute lang="en"><div>Protected</div></ProtectedRoute>);
-    expect(screen.getByRole('link', { name: /sign in/i })).toHaveAttribute('href', '/en/login');
+    render(
+      <ProtectedRoute lang="en">
+        <div>Protected</div>
+      </ProtectedRoute>
+    );
+    expect(screen.getByRole('link', { name: /sign in/i })).toHaveAttribute(
+      'href',
+      '/en/login'
+    );
   });
 });
 
@@ -150,7 +176,11 @@ describe('ProtectedRoute: user=null but isAuthenticated=true', () => {
     mockAuthContext.loading = false;
     mockAuthContext.isAuthenticated = true;
     mockAuthContext.user = null;
-    render(<ProtectedRoute><div>Protected</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute>
+        <div>Protected</div>
+      </ProtectedRoute>
+    );
     expect(screen.getByText(/authentication required/i)).toBeInTheDocument();
   });
 });
@@ -164,7 +194,11 @@ describe('ProtectedRoute: renders children when authenticated', () => {
     mockAuthContext.loading = false;
     mockAuthContext.isAuthenticated = true;
     mockAuthContext.user = mockUser;
-    render(<ProtectedRoute><div>Protected Content</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute>
+        <div>Protected Content</div>
+      </ProtectedRoute>
+    );
     expect(screen.getByText('Protected Content')).toBeInTheDocument();
   });
 });
@@ -177,7 +211,11 @@ describe('ProtectedRoute: no verification required allows access', () => {
     mockAuthContext.isAuthenticated = true;
     mockAuthContext.user = mockUser;
     mockAuthContext.isVerified = false;
-    render(<ProtectedRoute requireVerified={false}><div>Content</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute requireVerified={false}>
+        <div>Content</div>
+      </ProtectedRoute>
+    );
     expect(screen.getByText('Content')).toBeInTheDocument();
   });
 });
@@ -190,7 +228,11 @@ describe('ProtectedRoute: verified user with requireVerified', () => {
     mockAuthContext.isAuthenticated = true;
     mockAuthContext.user = mockUser;
     mockAuthContext.isVerified = true;
-    render(<ProtectedRoute requireVerified={true}><div>Content</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute requireVerified={true}>
+        <div>Content</div>
+      </ProtectedRoute>
+    );
     expect(screen.getByText('Content')).toBeInTheDocument();
   });
 });
@@ -203,7 +245,11 @@ describe('ProtectedRoute: no role requirement allows member', () => {
     mockAuthContext.isAuthenticated = true;
     mockAuthContext.user = mockUser;
     mockAuthContext.userProfile = { ...mockUserProfile, role: 'member' };
-    render(<ProtectedRoute><div>Content</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute>
+        <div>Content</div>
+      </ProtectedRoute>
+    );
     expect(screen.getByText('Content')).toBeInTheDocument();
   });
 });
@@ -216,7 +262,11 @@ describe('ProtectedRoute: admin role allows admin', () => {
     mockAuthContext.isAuthenticated = true;
     mockAuthContext.user = mockUser;
     mockAuthContext.userProfile = { ...mockUserProfile, role: 'admin' };
-    render(<ProtectedRoute requireRole={['admin']}><div>Admin</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute requireRole={['admin']}>
+        <div>Admin</div>
+      </ProtectedRoute>
+    );
     expect(screen.getByText('Admin')).toBeInTheDocument();
   });
 });
@@ -229,7 +279,11 @@ describe('ProtectedRoute: multiple roles allows matching role', () => {
     mockAuthContext.isAuthenticated = true;
     mockAuthContext.user = mockUser;
     mockAuthContext.userProfile = { ...mockUserProfile, role: 'moderator' };
-    render(<ProtectedRoute requireRole={['admin', 'moderator']}><div>Staff</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute requireRole={['admin', 'moderator']}>
+        <div>Staff</div>
+      </ProtectedRoute>
+    );
     expect(screen.getByText('Staff')).toBeInTheDocument();
   });
 });
@@ -242,7 +296,11 @@ describe('ProtectedRoute: null profile skips role check', () => {
     mockAuthContext.isAuthenticated = true;
     mockAuthContext.user = mockUser;
     mockAuthContext.userProfile = null;
-    render(<ProtectedRoute requireRole={['admin']}><div>Content</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute requireRole={['admin']}>
+        <div>Content</div>
+      </ProtectedRoute>
+    );
     expect(screen.getByText('Content')).toBeInTheDocument();
   });
 });
@@ -275,9 +333,15 @@ describe('ProtectedRoute: blocks unverified user', () => {
     mockAuthContext.isAuthenticated = true;
     mockAuthContext.user = mockUser;
     mockAuthContext.isVerified = false;
-    render(<ProtectedRoute requireVerified={true}><div>Content</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute requireVerified={true}>
+        <div>Content</div>
+      </ProtectedRoute>
+    );
     await waitFor(() => {
-      expect(screen.getByText(/unam verification required/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/unam verification required/i)
+      ).toBeInTheDocument();
       expect(screen.queryByText('Content')).not.toBeInTheDocument();
     });
   });
@@ -291,7 +355,11 @@ describe('ProtectedRoute: verification link for unverified', () => {
     mockAuthContext.isAuthenticated = true;
     mockAuthContext.user = mockUser;
     mockAuthContext.isVerified = false;
-    render(<ProtectedRoute requireVerified={true} lang="en"><div>Content</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute requireVerified={true} lang="en">
+        <div>Content</div>
+      </ProtectedRoute>
+    );
     await waitFor(() => {
       const link = screen.getByRole('link', { name: /complete verification/i });
       expect(link).toHaveAttribute('href', '/en/dashboard/settings');
@@ -314,7 +382,9 @@ describe('ProtectedRoute: verification priority over role', () => {
       </ProtectedRoute>
     );
     await waitFor(() => {
-      expect(screen.getByText(/unam verification required/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/unam verification required/i)
+      ).toBeInTheDocument();
       expect(screen.queryByText(/access denied/i)).not.toBeInTheDocument();
     });
   });
@@ -330,7 +400,11 @@ describe('ProtectedRoute: blocks wrong role', () => {
     mockAuthContext.isAuthenticated = true;
     mockAuthContext.user = mockUser;
     mockAuthContext.userProfile = { ...mockUserProfile, role: 'member' };
-    render(<ProtectedRoute requireRole={['admin']}><div>Admin</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute requireRole={['admin']}>
+        <div>Admin</div>
+      </ProtectedRoute>
+    );
     await waitFor(() => {
       expect(screen.getByText(/access denied/i)).toBeInTheDocument();
       expect(screen.queryByText('Admin')).not.toBeInTheDocument();
@@ -346,7 +420,11 @@ describe('ProtectedRoute: dashboard link for wrong role', () => {
     mockAuthContext.isAuthenticated = true;
     mockAuthContext.user = mockUser;
     mockAuthContext.userProfile = { ...mockUserProfile, role: 'member' };
-    render(<ProtectedRoute requireRole={['admin']} lang="en"><div>Admin</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute requireRole={['admin']} lang="en">
+        <div>Admin</div>
+      </ProtectedRoute>
+    );
     await waitFor(() => {
       const link = screen.getByRole('link', { name: /go to dashboard/i });
       expect(link).toHaveAttribute('href', '/en/dashboard');
@@ -361,7 +439,11 @@ describe('ProtectedRoute: loading state accessibility', () => {
   afterEach(teardown);
   it('renders', () => {
     mockAuthContext.loading = true;
-    render(<ProtectedRoute><div>Content</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute>
+        <div>Content</div>
+      </ProtectedRoute>
+    );
     const loadingDiv = screen.getByText(/loading/i).closest('div');
     expect(loadingDiv).toBeInTheDocument();
   });
@@ -375,10 +457,18 @@ describe('ProtectedRoute: access denied semantic structure', () => {
     mockAuthContext.isAuthenticated = true;
     mockAuthContext.user = mockUser;
     mockAuthContext.userProfile = { ...mockUserProfile, role: 'member' };
-    render(<ProtectedRoute requireRole={['admin']}><div>Admin</div></ProtectedRoute>);
+    render(
+      <ProtectedRoute requireRole={['admin']}>
+        <div>Admin</div>
+      </ProtectedRoute>
+    );
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /access denied/i })).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /go to dashboard/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: /access denied/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('link', { name: /go to dashboard/i })
+      ).toBeInTheDocument();
     });
   });
 });

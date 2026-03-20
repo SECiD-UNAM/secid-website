@@ -8,8 +8,8 @@ const admin = require("firebase-admin");
  * Writes an email document to the 'mail' collection.
  * Firebase Trigger Email extension picks these up and sends via configured SMTP/SendGrid.
  */
-async function sendEmail({ to, subject, html }) {
-    const docRef = await admin.firestore().collection("mail").add({
+async function sendEmail({ to, subject, html, }) {
+    const docRef = await admin.firestore().collection('mail').add({
         to,
         message: {
             subject,
@@ -24,7 +24,7 @@ async function sendEmail({ to, subject, html }) {
  */
 async function sendBatchEmails(emails) {
     const batch = admin.firestore().batch();
-    const mailCollection = admin.firestore().collection("mail");
+    const mailCollection = admin.firestore().collection('mail');
     for (const email of emails) {
         const docRef = mailCollection.doc();
         batch.set(docRef, {
@@ -55,7 +55,7 @@ function generateJobMatchEmail(params) {
     .content { padding: 30px; }
     .match-badge {
       display: inline-block; padding: 6px 16px;
-      background: ${params.matchScore >= 80 ? "#22c55e" : "#3b82f6"};
+      background: ${params.matchScore >= 80 ? '#22c55e' : '#3b82f6'};
       color: white; border-radius: 20px; font-weight: 600; margin-bottom: 16px;
     }
     .job-card { background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 16px 0; }

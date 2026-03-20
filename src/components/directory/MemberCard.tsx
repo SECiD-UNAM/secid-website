@@ -23,7 +23,7 @@ import {
   CheckBadgeIcon,
   LinkIcon,
   ArrowDownTrayIcon,
-  AcademicCapIcon
+  AcademicCapIcon,
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 
@@ -44,11 +44,13 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   currentUser,
   showMatchScore = false,
   matchScore,
-  onViewProfile
+  onViewProfile,
 }) => {
   const [showFullBio, setShowFullBio] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<'none' | 'pending' | 'connected'>('none');
+  const [connectionStatus, setConnectionStatus] = useState<
+    'none' | 'pending' | 'connected'
+  >('none');
   const [isFollowing, setIsFollowing] = useState(false);
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [connectLoading, setConnectLoading] = useState(false);
@@ -70,7 +72,9 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       setConnectionStatus('connected');
     } else {
       hasPendingConnectionRequest(currentUser.uid, member.uid)
-        .then((pending: boolean) => { if (pending) setConnectionStatus('pending'); })
+        .then((pending: boolean) => {
+          if (pending) setConnectionStatus('pending');
+        })
         .catch(() => {});
     }
   }, [currentUser?.uid, member.uid]);
@@ -131,20 +135,22 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       mid: { es: 'Semi-Senior', en: 'Mid-level' },
       senior: { es: 'Senior', en: 'Senior' },
       lead: { es: 'Lead', en: 'Lead' },
-      executive: { es: 'Ejecutivo', en: 'Executive' }
+      executive: { es: 'Ejecutivo', en: 'Executive' },
     };
     return labels[level]?.[lang] || level;
   };
 
   const getMatchScoreColor = (score?: number): string => {
     if (!score) return '';
-    if (score >= 80) return 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400';
-    if (score >= 60) return 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400';
+    if (score >= 80)
+      return 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400';
+    if (score >= 60)
+      return 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400';
     return 'bg-gray-100 dark:bg-gray-900/20 text-gray-700 dark:text-gray-400';
   };
 
   const handleViewProfile = () => {
-    if(onViewProfile) {
+    if (onViewProfile) {
       onViewProfile(member.uid);
     } else {
       // Default navigation
@@ -158,7 +164,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       await navigator.share({
         title: `${member.displayName} - SECiD`,
         text: `${lang === 'es' ? 'Conoce a' : 'Meet'} ${member.displayName}, ${member.profile.position} ${lang === 'es' ? 'en' : 'at'} ${member.profile.company}`,
-        url
+        url,
       });
     } else {
       await navigator.clipboard.writeText(url);
@@ -189,33 +195,38 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   // Compact view for mobile or compact mode
   if (viewMode === 'compact') {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 hover:shadow-md transition-all">
-        <div className="flex flex-col items-center text-center space-y-2">
+      <div className="rounded-lg border border-gray-200 bg-white p-3 transition-all hover:shadow-md dark:border-gray-700 dark:bg-gray-800">
+        <div className="flex flex-col items-center space-y-2 text-center">
           {/* Avatar with status */}
           <div className="relative">
-            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-semibold text-sm">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-sm font-semibold text-white">
               {member.initials}
             </div>
             {visibility.showOnlineStatus && (
-              <div className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white dark:border-gray-800 ${
-                member.isOnline ? 'bg-green-500' : 'bg-gray-400'
-              }`}></div>
+              <div
+                className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white dark:border-gray-800 ${
+                  member.isOnline ? 'bg-green-500' : 'bg-gray-400'
+                }`}
+              ></div>
             )}
             {member.isPremium && (
-              <div className="absolute -top-1 -right-1">
-                <StarIcon className="h-4 w-4 text-yellow-500 fill-current" />
+              <div className="absolute -right-1 -top-1">
+                <StarIcon className="h-4 w-4 fill-current text-yellow-500" />
               </div>
             )}
           </div>
-          
+
           {/* Name and title */}
           <div>
-            <h4 className="font-semibold text-sm text-gray-900 dark:text-white truncate">
-              <a href={`/${lang}/members/${member.slug || member.uid}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+            <h4 className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+              <a
+                href={`/${lang}/members/${member.slug || member.uid}`}
+                className="transition-colors hover:text-primary-600 dark:hover:text-primary-400"
+              >
                 {member.displayName}
               </a>
             </h4>
-            <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+            <p className="truncate text-xs text-gray-600 dark:text-gray-400">
               {member.profile.position}
             </p>
           </div>
@@ -223,7 +234,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           {/* Quick action */}
           <a
             href={`/${lang}/members/${member.slug || member.uid}`}
-            className="w-full px-2 py-1 text-xs text-center bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 rounded hover:bg-primary-200 dark:hover:bg-primary-900/40 transition-colors"
+            className="w-full rounded bg-primary-100 px-2 py-1 text-center text-xs text-primary-700 transition-colors hover:bg-primary-200 dark:bg-primary-900/20 dark:text-primary-400 dark:hover:bg-primary-900/40"
           >
             {lang === 'es' ? 'Ver perfil' : 'View profile'}
           </a>
@@ -235,56 +246,66 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   // List view
   if (viewMode === 'list') {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 hover:shadow-md transition-all">
-        <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
+      <div className="rounded-lg border border-gray-200 bg-white p-3 transition-all hover:shadow-md dark:border-gray-700 dark:bg-gray-800 sm:p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
           {/* Avatar + info row */}
-          <div className="flex items-start space-x-3 sm:space-x-4 flex-1 min-w-0">
+          <div className="flex min-w-0 flex-1 items-start space-x-3 sm:space-x-4">
             {/* Avatar with status */}
             <div className="relative flex-shrink-0">
-              <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-semibold text-base sm:text-lg">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-base font-semibold text-white sm:h-16 sm:w-16 sm:text-lg">
                 {member.initials}
               </div>
               {visibility.showOnlineStatus && (
-                <div className={`absolute -bottom-1 -right-1 h-4 w-4 sm:h-5 sm:w-5 rounded-full border-2 border-white dark:border-gray-800 ${
-                  member.isOnline ? 'bg-green-500' : 'bg-gray-400'
-                }`}></div>
+                <div
+                  className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white dark:border-gray-800 sm:h-5 sm:w-5 ${
+                    member.isOnline ? 'bg-green-500' : 'bg-gray-400'
+                  }`}
+                ></div>
               )}
             </div>
 
             {/* Member info */}
-            <div className="flex-1 min-w-0">
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
                   <div className="flex items-center space-x-2">
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
-                      <a href={`/${lang}/members/${member.slug || member.uid}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                    <h3 className="truncate text-base font-semibold text-gray-900 dark:text-white sm:text-lg">
+                      <a
+                        href={`/${lang}/members/${member.slug || member.uid}`}
+                        className="transition-colors hover:text-primary-600 dark:hover:text-primary-400"
+                      >
                         {member.displayName}
                       </a>
                     </h3>
                     {member.isPremium && (
-                      <StarIcon className="h-4 w-4 flex-shrink-0 text-yellow-500 fill-current" />
+                      <StarIcon className="h-4 w-4 flex-shrink-0 fill-current text-yellow-500" />
                     )}
-                    {member?.portfolio?.certifications.some(c => c.verified) && (
+                    {member?.portfolio?.certifications.some(
+                      (c) => c.verified
+                    ) && (
                       <CheckBadgeIcon className="h-4 w-4 flex-shrink-0 text-blue-500" />
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                    {member.profile.position} {visibility.showCompany ? `${lang === 'es' ? ' en ' : ' at '}${member.profile.company}` : ''}
+                  <p className="truncate text-sm text-gray-600 dark:text-gray-400">
+                    {member.profile.position}{' '}
+                    {visibility.showCompany
+                      ? `${lang === 'es' ? ' en ' : ' at '}${member.profile.company}`
+                      : ''}
                   </p>
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
                     {visibility.showLocation && (
                       <div className="flex items-center">
-                        <MapPinIcon className="h-3 w-3 mr-1" />
+                        <MapPinIcon className="mr-1 h-3 w-3" />
                         {member.profile.location}
                       </div>
                     )}
                     <div className="flex items-center">
-                      <ClockIcon className="h-3 w-3 mr-1" />
+                      <ClockIcon className="mr-1 h-3 w-3" />
                       {getExperienceLevelLabel(member.experience.level)}
                     </div>
                     {member.profile.graduationYear && (
                       <div className="flex items-center">
-                        <AcademicCapIcon className="h-3 w-3 mr-1" />
+                        <AcademicCapIcon className="mr-1 h-3 w-3" />
                         Gen. {member.profile.graduationYear}
                       </div>
                     )}
@@ -296,7 +317,9 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
                 {/* Match score */}
                 {showMatchScore && matchScore && (
-                  <span className={`self-start px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap ${getMatchScoreColor(matchScore)}`}>
+                  <span
+                    className={`self-start whitespace-nowrap rounded-full px-2 py-1 text-xs font-semibold ${getMatchScoreColor(matchScore)}`}
+                  >
                     {matchScore}% {lang === 'es' ? 'compatible' : 'match'}
                   </span>
                 )}
@@ -304,17 +327,17 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
               {/* Bio — hidden on very small screens */}
               {member.profile.bio && (
-                <p className="hidden sm:block mt-2 text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
+                <p className="mt-2 line-clamp-2 hidden text-sm text-gray-700 dark:text-gray-300 sm:block">
                   {member.profile.bio}
                 </p>
               )}
 
               {/* Skills */}
-              <div className="flex flex-wrap gap-1 mt-2">
-                {member.featuredSkills.slice(0, 3).map(skill => (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {member.featuredSkills.slice(0, 3).map((skill) => (
                   <span
                     key={skill}
-                    className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
+                    className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300"
                   >
                     {skill}
                   </span>
@@ -332,25 +355,36 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           <div className="flex items-center space-x-2 sm:ml-auto sm:flex-shrink-0">
             {!isOwnProfile && currentUser && (
               <>
-                {visibility.allowConnectionRequests && connectionStatus !== 'connected' && (
-                  <button
-                    onClick={handleConnect}
-                    disabled={connectLoading || connectionStatus === 'pending'}
-                    className={`p-2 rounded-lg transition-colors ${
-                      connectionStatus === 'pending'
-                        ? 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-primary-100 dark:hover:bg-primary-900/20 hover:text-primary-700 dark:hover:text-primary-400'
-                    }`}
-                    title={connectionStatus === 'pending' ? (lang === 'es' ? 'Solicitud enviada' : 'Request sent') : (lang === 'es' ? 'Conectar' : 'Connect')}
-                  >
-                    <UserPlusIcon className="h-4 w-4" />
-                  </button>
-                )}
+                {visibility.allowConnectionRequests &&
+                  connectionStatus !== 'connected' && (
+                    <button
+                      onClick={handleConnect}
+                      disabled={
+                        connectLoading || connectionStatus === 'pending'
+                      }
+                      className={`rounded-lg p-2 transition-colors ${
+                        connectionStatus === 'pending'
+                          ? 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400'
+                          : 'bg-gray-100 text-gray-700 hover:bg-primary-100 hover:text-primary-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-primary-900/20 dark:hover:text-primary-400'
+                      }`}
+                      title={
+                        connectionStatus === 'pending'
+                          ? lang === 'es'
+                            ? 'Solicitud enviada'
+                            : 'Request sent'
+                          : lang === 'es'
+                            ? 'Conectar'
+                            : 'Connect'
+                      }
+                    >
+                      <UserPlusIcon className="h-4 w-4" />
+                    </button>
+                  )}
 
                 {visibility.allowMessages && (
                   <button
                     onClick={() => setShowMessageModal(true)}
-                    className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/20 hover:text-primary-700 dark:hover:text-primary-400 transition-colors"
+                    className="rounded-lg bg-gray-100 p-2 text-gray-700 transition-colors hover:bg-primary-100 hover:text-primary-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-primary-900/20 dark:hover:text-primary-400"
                     title={lang === 'es' ? 'Mensaje' : 'Message'}
                   >
                     <ChatBubbleLeftEllipsisIcon className="h-4 w-4" />
@@ -361,7 +395,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
             <a
               href={`/${lang}/members/${member.slug || member.uid}`}
-              className="flex-1 sm:flex-initial px-3 py-2 text-sm text-center bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors whitespace-nowrap"
+              className="flex-1 whitespace-nowrap rounded-lg bg-primary-600 px-3 py-2 text-center text-sm text-white transition-colors hover:bg-primary-700 sm:flex-initial"
             >
               {lang === 'es' ? 'Ver perfil' : 'View profile'}
             </a>
@@ -373,32 +407,50 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
   // Grid view (default)
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-lg transition-all">
+    <div className="rounded-lg border border-gray-200 bg-white p-4 transition-all hover:shadow-lg dark:border-gray-700 dark:bg-gray-800 sm:p-6">
       {/* Header with match score and premium badge */}
-      <div className="flex justify-between items-start mb-4">
+      <div className="mb-4 flex items-start justify-between">
         {showMatchScore && matchScore && (
-          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getMatchScoreColor(matchScore)}`}>
+          <span
+            className={`rounded-full px-2 py-1 text-xs font-semibold ${getMatchScoreColor(matchScore)}`}
+          >
             {matchScore}% {lang === 'es' ? 'compatible' : 'match'}
           </span>
         )}
-        
-        <div className="flex items-center space-x-1 ml-auto">
+
+        <div className="ml-auto flex items-center space-x-1">
           {member.isPremium && (
-            <StarIcon className="h-4 w-4 text-yellow-500 fill-current" title="Premium member" />
+            <StarIcon
+              className="h-4 w-4 fill-current text-yellow-500"
+              title="Premium member"
+            />
           )}
-          {member?.portfolio?.certifications.some(c => c.verified) && (
-            <CheckBadgeIcon className="h-4 w-4 text-blue-500" title="Verified certifications" />
+          {member?.portfolio?.certifications.some((c) => c.verified) && (
+            <CheckBadgeIcon
+              className="h-4 w-4 text-blue-500"
+              title="Verified certifications"
+            />
           )}
-          
+
           {/* Share button */}
           <div className="relative">
             <button
               onClick={handleShare}
               className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              title={copied ? (lang === 'es' ? 'Copiado!' : 'Copied!') : (lang === 'es' ? 'Compartir perfil' : 'Share profile')}
+              title={
+                copied
+                  ? lang === 'es'
+                    ? 'Copiado!'
+                    : 'Copied!'
+                  : lang === 'es'
+                    ? 'Compartir perfil'
+                    : 'Share profile'
+              }
             >
               {copied ? (
-                <span className="text-xs font-medium text-green-600 dark:text-green-400">{lang === 'es' ? 'Copiado!' : 'Copied!'}</span>
+                <span className="text-xs font-medium text-green-600 dark:text-green-400">
+                  {lang === 'es' ? 'Copiado!' : 'Copied!'}
+                </span>
               ) : (
                 <ShareIcon className="h-4 w-4" />
               )}
@@ -408,52 +460,57 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       </div>
 
       {/* Avatar and basic info */}
-      <div className="flex flex-col items-center text-center mb-4">
+      <div className="mb-4 flex flex-col items-center text-center">
         <div className="relative mb-3">
-          <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-semibold text-lg sm:text-xl">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-lg font-semibold text-white sm:h-20 sm:w-20 sm:text-xl">
             {member.initials}
           </div>
           {visibility.showOnlineStatus && (
-            <div className={`absolute -bottom-1 -right-1 h-5 w-5 sm:h-6 sm:w-6 rounded-full border-2 sm:border-3 border-white dark:border-gray-800 ${
-              member.isOnline ? 'bg-green-500' : 'bg-gray-400'
-            }`}></div>
+            <div
+              className={`sm:border-3 absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-2 border-white dark:border-gray-800 sm:h-6 sm:w-6 ${
+                member.isOnline ? 'bg-green-500' : 'bg-gray-400'
+              }`}
+            ></div>
           )}
         </div>
 
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-1">
-          <a href={`/${lang}/members/${member.slug || member.uid}`} className="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+        <h3 className="mb-1 text-base font-semibold text-gray-900 dark:text-white sm:text-lg">
+          <a
+            href={`/${lang}/members/${member.slug || member.uid}`}
+            className="transition-colors hover:text-primary-600 dark:hover:text-primary-400"
+          >
             {member.displayName}
           </a>
         </h3>
         {member.role === 'collaborator' && (
-          <span className="inline-block bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 text-xs px-2 py-0.5 rounded-full mb-1">
+          <span className="mb-1 inline-block rounded-full bg-purple-100 px-2 py-0.5 text-xs text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
             {lang === 'es' ? 'Colaborador' : 'Collaborator'}
           </span>
         )}
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+        <p className="mb-2 text-sm text-gray-600 dark:text-gray-400">
           {member.profile.position}
         </p>
         {visibility.showCompany && (
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+          <p className="mb-1 text-sm text-gray-600 dark:text-gray-400">
             {member.profile.company}
           </p>
         )}
 
         {/* Location and experience */}
-        <div className="flex items-center justify-center space-x-4 text-xs text-gray-500 dark:text-gray-400 mb-3">
+        <div className="mb-3 flex items-center justify-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
           {visibility.showLocation && (
             <div className="flex items-center">
-              <MapPinIcon className="h-3 w-3 mr-1" />
+              <MapPinIcon className="mr-1 h-3 w-3" />
               {member.profile.location}
             </div>
           )}
           <div className="flex items-center">
-            <BuildingOfficeIcon className="h-3 w-3 mr-1" />
+            <BuildingOfficeIcon className="mr-1 h-3 w-3" />
             {getExperienceLevelLabel(member.experience.level)}
           </div>
           {member.profile.graduationYear && (
             <div className="flex items-center">
-              <AcademicCapIcon className="h-3 w-3 mr-1" />
+              <AcademicCapIcon className="mr-1 h-3 w-3" />
               Gen. {member.profile.graduationYear}
             </div>
           )}
@@ -461,7 +518,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
         {/* Last seen */}
         {visibility.showLastSeen && (
-          <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+          <p className="mb-3 text-xs text-gray-600 dark:text-gray-400">
             {formatLastSeen(member.lastSeen)}
           </p>
         )}
@@ -470,15 +527,23 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       {/* Bio */}
       {member.profile.bio && (
         <div className="mb-4">
-          <p className={`text-sm text-gray-700 dark:text-gray-300 ${!showFullBio ? 'line-clamp-3' : ''}`}>
+          <p
+            className={`text-sm text-gray-700 dark:text-gray-300 ${!showFullBio ? 'line-clamp-3' : ''}`}
+          >
             {member.profile.bio}
           </p>
           {member.profile.bio.length > 150 && (
             <button
               onClick={() => setShowFullBio(!showFullBio)}
-              className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-200 mt-1"
+              className="mt-1 text-xs text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-200"
             >
-              {showFullBio ? (lang === 'es' ? 'Ver menos' : 'Show less') : (lang === 'es' ? 'Ver más' : 'Show more')}
+              {showFullBio
+                ? lang === 'es'
+                  ? 'Ver menos'
+                  : 'Show less'
+                : lang === 'es'
+                  ? 'Ver más'
+                  : 'Show more'}
             </button>
           )}
         </div>
@@ -487,10 +552,10 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       {/* Skills */}
       <div className="mb-4">
         <div className="flex flex-wrap gap-2">
-          {member.featuredSkills.slice(0, 5).map(skill => (
+          {member.featuredSkills.slice(0, 5).map((skill) => (
             <span
               key={skill}
-              className="px-2 py-1 text-xs bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 rounded"
+              className="rounded bg-primary-100 px-2 py-1 text-xs text-primary-700 dark:bg-primary-900/20 dark:text-primary-400"
             >
               {skill}
             </span>
@@ -504,29 +569,31 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       </div>
 
       {/* Stats — only show if any are non-zero */}
-      {(member.activity.totalConnections > 0 || member.activity.profileViews > 0 || member.activity.reputation > 0) && (
-        <div className="flex justify-around text-center py-2 sm:py-3 border-t border-gray-200 dark:border-gray-700 mb-3 sm:mb-4">
+      {(member.activity.totalConnections > 0 ||
+        member.activity.profileViews > 0 ||
+        member.activity.reputation > 0) && (
+        <div className="mb-3 flex justify-around border-t border-gray-200 py-2 text-center dark:border-gray-700 sm:mb-4 sm:py-3">
           <div>
-            <div className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+            <div className="text-base font-semibold text-gray-900 dark:text-white sm:text-lg">
               {member.activity.totalConnections}
             </div>
-            <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
+            <div className="text-[10px] text-gray-500 dark:text-gray-400 sm:text-xs">
               {lang === 'es' ? 'Conexiones' : 'Connections'}
             </div>
           </div>
           <div>
-            <div className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+            <div className="text-base font-semibold text-gray-900 dark:text-white sm:text-lg">
               {member.activity.profileViews}
             </div>
-            <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
+            <div className="text-[10px] text-gray-500 dark:text-gray-400 sm:text-xs">
               {lang === 'es' ? 'Vistas' : 'Views'}
             </div>
           </div>
           <div>
-            <div className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+            <div className="text-base font-semibold text-gray-900 dark:text-white sm:text-lg">
               {member.activity.reputation}
             </div>
-            <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
+            <div className="text-[10px] text-gray-500 dark:text-gray-400 sm:text-xs">
               {lang === 'es' ? 'Reputacion' : 'Reputation'}
             </div>
           </div>
@@ -537,25 +604,30 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       <div className="space-y-2">
         {!isOwnProfile && currentUser && (
           <div className="flex space-x-2">
-            {visibility.allowConnectionRequests && connectionStatus !== 'connected' && (
-              <button
-                onClick={handleConnect}
-                disabled={connectLoading || connectionStatus === 'pending'}
-                className={`flex-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                  connectionStatus === 'pending'
-                    ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-                    : 'bg-primary-600 text-white hover:bg-primary-700'
-                }`}
-              >
-                <UserPlusIcon className="h-4 w-4 mr-1 inline" />
-                {connectionStatus === 'pending'
-                  ? (lang === 'es' ? 'Solicitud enviada' : 'Request sent')
-                  : (lang === 'es' ? 'Conectar' : 'Connect')}
-              </button>
-            )}
+            {visibility.allowConnectionRequests &&
+              connectionStatus !== 'connected' && (
+                <button
+                  onClick={handleConnect}
+                  disabled={connectLoading || connectionStatus === 'pending'}
+                  className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    connectionStatus === 'pending'
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+                      : 'bg-primary-600 text-white hover:bg-primary-700'
+                  }`}
+                >
+                  <UserPlusIcon className="mr-1 inline h-4 w-4" />
+                  {connectionStatus === 'pending'
+                    ? lang === 'es'
+                      ? 'Solicitud enviada'
+                      : 'Request sent'
+                    : lang === 'es'
+                      ? 'Conectar'
+                      : 'Connect'}
+                </button>
+              )}
 
             {connectionStatus === 'connected' && (
-              <span className="flex-1 px-3 py-2 text-sm font-medium rounded-lg bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-center">
+              <span className="flex-1 rounded-lg bg-green-100 px-3 py-2 text-center text-sm font-medium text-green-700 dark:bg-green-900/20 dark:text-green-400">
                 {lang === 'es' ? 'Conectado' : 'Connected'}
               </span>
             )}
@@ -563,7 +635,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
             {visibility.allowMessages && (
               <button
                 onClick={() => setShowMessageModal(true)}
-                className="px-3 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/20 hover:text-primary-700 dark:hover:text-primary-400 transition-colors"
+                className="rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-primary-100 hover:text-primary-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-primary-900/20 dark:hover:text-primary-400"
                 title={lang === 'es' ? 'Mensaje' : 'Message'}
               >
                 <ChatBubbleLeftEllipsisIcon className="h-4 w-4" />
@@ -575,15 +647,15 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         <div className="flex space-x-2">
           <a
             href={`/${lang}/members/${member.slug || member.uid}`}
-            className="flex-1 px-3 py-2 text-sm font-medium text-center bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-center text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
           >
-            <EyeIcon className="h-4 w-4 mr-1 inline" />
+            <EyeIcon className="mr-1 inline h-4 w-4" />
             {lang === 'es' ? 'Ver perfil' : 'View profile'}
           </a>
 
           <button
             onClick={downloadVCard}
-            className="px-3 py-2 text-sm font-medium bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             title={lang === 'es' ? 'Descargar contacto' : 'Download contact'}
           >
             <ArrowDownTrayIcon className="h-4 w-4" />
@@ -594,27 +666,33 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           <button
             onClick={handleFollowToggle}
             disabled={followLoading}
-            className={`w-full px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+            className={`w-full rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
               isFollowing
-                ? 'bg-pink-100 dark:bg-pink-900/20 text-pink-700 dark:text-pink-400 hover:bg-pink-200 dark:hover:bg-pink-900/30'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-pink-50 dark:hover:bg-pink-900/10 hover:text-pink-600 dark:hover:text-pink-400'
+                ? 'bg-pink-100 text-pink-700 hover:bg-pink-200 dark:bg-pink-900/20 dark:text-pink-400 dark:hover:bg-pink-900/30'
+                : 'bg-gray-100 text-gray-700 hover:bg-pink-50 hover:text-pink-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-pink-900/10 dark:hover:text-pink-400'
             }`}
           >
             {isFollowing ? (
-              <HeartSolidIcon className="h-4 w-4 mr-1 inline text-pink-500" />
+              <HeartSolidIcon className="mr-1 inline h-4 w-4 text-pink-500" />
             ) : (
-              <HeartIcon className="h-4 w-4 mr-1 inline" />
+              <HeartIcon className="mr-1 inline h-4 w-4" />
             )}
             {isFollowing
-              ? (lang === 'es' ? 'Dejar de seguir' : 'Unfollow')
-              : (lang === 'es' ? 'Seguir' : 'Follow')}
+              ? lang === 'es'
+                ? 'Dejar de seguir'
+                : 'Unfollow'
+              : lang === 'es'
+                ? 'Seguir'
+                : 'Follow'}
           </button>
         )}
       </div>
 
       {/* Social links */}
-      {(member.social.linkedin || member.social.github || member.social.portfolio) && (
-        <div className="flex justify-center space-x-3 mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+      {(member.social.linkedin ||
+        member.social.github ||
+        member.social.portfolio) && (
+        <div className="mt-4 flex justify-center space-x-3 border-t border-gray-200 pt-3 dark:border-gray-700">
           {member.social.linkedin && (
             <a
               href={member.social.linkedin}

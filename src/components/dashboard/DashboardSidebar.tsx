@@ -31,7 +31,13 @@ interface MenuItem {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   badge?: string | number;
-  requireRole?: ('member' | 'admin' | 'moderator' | 'company' | 'collaborator')[];
+  requireRole?: (
+    | 'member'
+    | 'admin'
+    | 'moderator'
+    | 'company'
+    | 'collaborator'
+  )[];
   requireVerified?: boolean;
   requireBeta?: BetaFeatureId;
 }
@@ -155,7 +161,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           flex items-center justify-between rounded-lg px-4 py-2 text-sm font-medium transition-colors
           ${
             active
-              ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 dark:border-l-2 dark:border-primary-500'
+              ? 'bg-primary-100 text-primary-700 dark:border-l-2 dark:border-primary-500 dark:bg-primary-900/20 dark:text-primary-400'
               : accessible
                 ? 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
                 : 'cursor-not-allowed text-gray-400 opacity-50 dark:text-gray-600'
@@ -239,7 +245,9 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className={`fixed bottom-0 left-0 z-30 hidden w-64 overflow-y-auto border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:block ${isBeta ? 'top-24' : 'top-16'}`}>
+      <aside
+        className={`fixed bottom-0 left-0 z-30 hidden w-64 overflow-y-auto border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:block ${isBeta ? 'top-24' : 'top-16'}`}
+      >
         {sidebarContent}
       </aside>
 
@@ -250,7 +258,9 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             className="fixed inset-0 z-40 bg-black/50 lg:hidden"
             onClick={onClose}
           />
-          <aside className={`fixed bottom-0 left-0 z-50 w-64 overflow-y-auto border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:hidden ${isBeta ? 'top-24' : 'top-16'}`}>
+          <aside
+            className={`fixed bottom-0 left-0 z-50 w-64 overflow-y-auto border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:hidden ${isBeta ? 'top-24' : 'top-16'}`}
+          >
             <div className="flex items-center justify-end px-4 py-2">
               <button
                 onClick={onClose}

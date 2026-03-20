@@ -1,10 +1,24 @@
 // @ts-nocheck
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { JobBoard } from '@/components/jobs/JobBoard';
 import { useAuth } from '@/contexts/AuthContext';
-import { getDocs, query, collection, where, orderBy, limit, startAfter } from 'firebase/firestore';
+import {
+  getDocs,
+  query,
+  collection,
+  where,
+  orderBy,
+  limit,
+  startAfter,
+} from 'firebase/firestore';
 
 // Mock dependencies
 vi.mock('@/contexts/AuthContext', () => ({
@@ -35,17 +49,24 @@ vi.mock('@/components/jobs/JobCard', () => ({
   ),
 }));
 
-vi.mock('@heroicons/react/24/outline', () =>
-  new Proxy({}, {
-    get: (_target, prop) => {
-      if (typeof prop === 'string' && prop !== '__esModule') {
-        const Icon = ({ className }: any) => <svg className={className} data-testid={`${prop}-icon`} />;
-        Icon.displayName = prop;
-        return Icon;
+vi.mock(
+  '@heroicons/react/24/outline',
+  () =>
+    new Proxy(
+      {},
+      {
+        get: (_target, prop) => {
+          if (typeof prop === 'string' && prop !== '__esModule') {
+            const Icon = ({ className }: any) => (
+              <svg className={className} data-testid={`${prop}-icon`} />
+            );
+            Icon.displayName = prop;
+            return Icon;
+          }
+          return undefined;
+        },
       }
-      return undefined;
-    },
-  })
+    )
 );
 
 describe('JobBoard', () => {
@@ -163,7 +184,9 @@ describe('JobBoard', () => {
     it('renders job board with search and sort controls', async () => {
       render(<JobBoard />);
 
-      expect(screen.getByPlaceholderText(/buscar por título, empresa/i)).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText(/buscar por título, empresa/i)
+      ).toBeInTheDocument();
       expect(screen.getByTestId('search-icon')).toBeInTheDocument();
       expect(screen.getByDisplayValue(/más recientes/i)).toBeInTheDocument();
     });
@@ -171,7 +194,9 @@ describe('JobBoard', () => {
     it('renders in English when lang prop is set', async () => {
       render(<JobBoard lang="en" />);
 
-      expect(screen.getByPlaceholderText(/search by title, company/i)).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText(/search by title, company/i)
+      ).toBeInTheDocument();
       expect(screen.getByDisplayValue(/most recent/i)).toBeInTheDocument();
     });
 
@@ -196,8 +221,12 @@ describe('JobBoard', () => {
       render(<JobBoard />);
 
       await waitFor(() => {
-        expect(screen.getByText(/no se encontraron empleos/i)).toBeInTheDocument();
-        expect(screen.getByText(/intenta ajustar tus filtros/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/no se encontraron empleos/i)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/intenta ajustar tus filtros/i)
+        ).toBeInTheDocument();
       });
     });
   });
@@ -221,8 +250,12 @@ describe('JobBoard', () => {
       await waitFor(() => {
         expect(screen.getByTestId('job-card-1')).toBeInTheDocument();
         expect(screen.getByTestId('job-card-2')).toBeInTheDocument();
-        expect(screen.getByText('Senior data scientist', { exact: false })).toBeInTheDocument();
-        expect(screen.getByText('Data analyst junior', { exact: false })).toBeInTheDocument();
+        expect(
+          screen.getByText('Senior data scientist', { exact: false })
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('Data analyst junior', { exact: false })
+        ).toBeInTheDocument();
       });
     });
 
@@ -279,7 +312,11 @@ describe('JobBoard', () => {
       render(<JobBoard filters={singleEmploymentTypeFilter} />);
 
       await waitFor(() => {
-        expect(mockWhere).toHaveBeenCalledWith('employmentType', '==', 'full-time');
+        expect(mockWhere).toHaveBeenCalledWith(
+          'employmentType',
+          '==',
+          'full-time'
+        );
       });
     });
 
@@ -293,7 +330,9 @@ describe('JobBoard', () => {
 
       await waitFor(() => {
         // Should filter out jobs that don't match salary requirement
-        expect(screen.queryByText(/data analyst junior/i)).not.toBeInTheDocument();
+        expect(
+          screen.queryByText(/data analyst junior/i)
+        ).not.toBeInTheDocument();
         expect(screen.getByText(/senior data scientist/i)).toBeInTheDocument();
       });
     });
@@ -307,7 +346,9 @@ describe('JobBoard', () => {
 
       await waitFor(() => {
         expect(screen.getByText(/senior data scientist/i)).toBeInTheDocument();
-        expect(screen.queryByText(/data analyst junior/i)).not.toBeInTheDocument();
+        expect(
+          screen.queryByText(/data analyst junior/i)
+        ).not.toBeInTheDocument();
       });
     });
 
@@ -316,17 +357,17 @@ describe('JobBoard', () => {
         ...mockFilters,
         postedWithin: '3d',
       };
-      
+
       // Mock recent date for first job
       const recentJobs = [...mockJobs];
       recentJobs[0] = {
         ...recentJobs[0],
         postedAt: { toDate: () => new Date() },
       };
-      
+
       mockGetDocs.mockResolvedValue({
         empty: false,
-        docs: recentJobs.map(job => ({ id: job.id, data: () => job })),
+        docs: recentJobs.map((job) => ({ id: job.id, data: () => job })),
       } as any);
 
       render(<JobBoard filters={dateFilter} />);
@@ -469,7 +510,9 @@ describe('JobBoard', () => {
       render(<JobBoard />);
 
       await waitFor(() => {
-        expect(screen.queryByText(/cargar más empleos/i)).not.toBeInTheDocument();
+        expect(
+          screen.queryByText(/cargar más empleos/i)
+        ).not.toBeInTheDocument();
       });
     });
   });
@@ -495,8 +538,12 @@ describe('JobBoard', () => {
       const searchInput = screen.getByPlaceholderText(/buscar por título/i);
       await user.type(searchInput, 'nonexistent');
 
-      expect(screen.getByText(/no se encontraron empleos/i)).toBeInTheDocument();
-      expect(screen.getByText(/intenta ajustar tus filtros/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/no se encontraron empleos/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/intenta ajustar tus filtros/i)
+      ).toBeInTheDocument();
     });
 
     it('handles missing user profile gracefully', async () => {
@@ -554,7 +601,9 @@ describe('JobBoard', () => {
     it('updates search term on input change', async () => {
       render(<JobBoard />);
 
-      const searchInput = screen.getByPlaceholderText(/buscar por título/i) as HTMLInputElement;
+      const searchInput = screen.getByPlaceholderText(
+        /buscar por título/i
+      ) as HTMLInputElement;
       await user.type(searchInput, 'Data Scientist');
 
       expect(searchInput.value).toBe('Data Scientist');
@@ -563,7 +612,9 @@ describe('JobBoard', () => {
     it('updates sort order on select change', async () => {
       render(<JobBoard />);
 
-      const sortSelect = screen.getByDisplayValue(/más recientes/i) as HTMLSelectElement;
+      const sortSelect = screen.getByDisplayValue(
+        /más recientes/i
+      ) as HTMLSelectElement;
       await user.selectOptions(sortSelect, 'salary');
 
       expect(sortSelect.value).toBe('salary');
@@ -579,19 +630,25 @@ describe('JobBoard', () => {
       const searchInput = screen.getByPlaceholderText(/buscar por título/i);
       await user.type(searchInput, 'Senior');
 
-      expect(screen.getByText(/mostrando 1 empleos para "senior"/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/mostrando 1 empleos para "senior"/i)
+      ).toBeInTheDocument();
     });
   });
 
   describe('Props Validation', () => {
     it('handles missing lang prop', () => {
       render(<JobBoard />);
-      expect(screen.getByPlaceholderText(/buscar por título/i)).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText(/buscar por título/i)
+      ).toBeInTheDocument();
     });
 
     it('handles undefined filters prop', () => {
       render(<JobBoard filters={undefined} />);
-      expect(screen.getByPlaceholderText(/buscar por título/i)).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText(/buscar por título/i)
+      ).toBeInTheDocument();
     });
 
     it('applies custom filters when provided', async () => {
@@ -665,7 +722,7 @@ describe('JobBoard', () => {
 
       mockGetDocs.mockResolvedValue({
         empty: false,
-        docs: malformedJobs.map(job => ({ id: job.id, data: () => job })),
+        docs: malformedJobs.map((job) => ({ id: job.id, data: () => job })),
       } as any);
 
       render(<JobBoard />);
@@ -680,7 +737,9 @@ describe('JobBoard', () => {
       render(<JobBoard />);
 
       await waitFor(() => {
-        expect(screen.getByText(/no se encontraron empleos/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/no se encontraron empleos/i)
+        ).toBeInTheDocument();
       });
     });
 

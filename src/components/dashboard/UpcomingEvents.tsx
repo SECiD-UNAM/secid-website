@@ -159,7 +159,7 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="animate-pulse rounded-xl bg-white shadow dark:bg-gray-800 dark:border dark:border-gray-700/30"
+            className="animate-pulse rounded-xl bg-white shadow dark:border dark:border-gray-700/30 dark:bg-gray-800"
           >
             <div className="h-48 rounded-t-xl bg-gray-200 dark:bg-gray-700"></div>
             <div className="p-6">
@@ -174,7 +174,7 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
 
   if (events.length === 0) {
     return (
-      <div className="rounded-xl bg-white p-6 text-center shadow dark:bg-gray-800 dark:border dark:border-gray-700/30">
+      <div className="rounded-xl bg-white p-6 text-center shadow dark:border dark:border-gray-700/30 dark:bg-gray-800">
         <CalendarIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
         <p className="text-gray-500 dark:text-gray-400">
           {lang === 'es' ? 'No hay eventos próximos' : 'No upcoming events'}
@@ -194,7 +194,7 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
       {events.map((event) => (
         <div
           key={event['id']}
-          className="rounded-xl bg-white shadow transition-all hover:shadow-lg hover:-translate-y-1 dark:bg-gray-800 dark:border dark:border-gray-700/30"
+          className="rounded-xl bg-white shadow transition-all hover:-translate-y-1 hover:shadow-lg dark:border dark:border-gray-700/30 dark:bg-gray-800"
         >
           {/* Event Image or Placeholder */}
           <div className="relative h-48 rounded-t-lg bg-gradient-to-br from-primary-500 to-primary-700">

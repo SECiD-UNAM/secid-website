@@ -33,7 +33,16 @@ vi.mock('@/hooks/useTranslations', () => ({
 }));
 
 vi.mock('@/components/ui/Button', () => ({
-  default: ({ children, loading, disabled, onClick, variant, size, className, ...props }: any) => (
+  default: ({
+    children,
+    loading,
+    disabled,
+    onClick,
+    variant,
+    size,
+    className,
+    ...props
+  }: any) => (
     <button
       onClick={onClick}
       disabled={disabled || loading}
@@ -87,9 +96,15 @@ describe.skip('SocialLoginButtons', () => {
     it('renders all social login providers', () => {
       render(<SocialLoginButtons />);
 
-      expect(screen.getByRole('button', { name: /continue with google/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /continue with github/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /continue with linkedin/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continue with google/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continue with github/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continue with linkedin/i })
+      ).toBeInTheDocument();
     });
 
     it('renders divider when providers are available', () => {
@@ -101,33 +116,51 @@ describe.skip('SocialLoginButtons', () => {
     it('renders signup mode text correctly', () => {
       render(<SocialLoginButtons mode="signup" />);
 
-      expect(screen.getByRole('button', { name: /sign up with google/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /crear cuenta con github/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /crear cuenta con linkedin/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /sign up with google/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /crear cuenta con github/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /crear cuenta con linkedin/i })
+      ).toBeInTheDocument();
     });
 
     it('renders signin mode text correctly', () => {
       render(<SocialLoginButtons mode="signin" />);
 
-      expect(screen.getByRole('button', { name: /continue with google/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /continuar con github/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /continuar con linkedin/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continue with google/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continuar con github/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continuar con linkedin/i })
+      ).toBeInTheDocument();
     });
 
     it('uses correct language for Spanish', () => {
       render(<SocialLoginButtons lang="es" mode="signup" />);
 
-      expect(screen.getByRole('button', { name: /crear cuenta con google/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /crear cuenta con google/i })
+      ).toBeInTheDocument();
     });
 
     it('uses correct language for English', () => {
       render(<SocialLoginButtons lang="en" mode="signup" />);
 
-      expect(screen.getByRole('button', { name: /sign up with google/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /sign up with google/i })
+      ).toBeInTheDocument();
     });
 
     it('applies custom className', () => {
-      const { container } = render(<SocialLoginButtons className="custom-class" />);
+      const { container } = render(
+        <SocialLoginButtons className="custom-class" />
+      );
       expect(container.firstChild).toHaveClass('custom-class');
     });
 
@@ -135,7 +168,7 @@ describe.skip('SocialLoginButtons', () => {
       render(<SocialLoginButtons />);
 
       const buttons = screen.getAllByRole('button');
-      buttons.forEach(button => {
+      buttons.forEach((button) => {
         const svgElement = button.querySelector('svg');
         expect(svgElement).toBeInTheDocument();
       });
@@ -146,7 +179,9 @@ describe.skip('SocialLoginButtons', () => {
     it('renders Google button with correct styling', () => {
       render(<SocialLoginButtons />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       expect(googleButton).toHaveClass('bg-white');
       expect(googleButton).toHaveClass('border-gray-300');
       expect(googleButton).toHaveClass('text-gray-700');
@@ -155,7 +190,9 @@ describe.skip('SocialLoginButtons', () => {
     it('renders GitHub button with correct styling', () => {
       render(<SocialLoginButtons />);
 
-      const githubButton = screen.getByRole('button', { name: /continuar con github/i });
+      const githubButton = screen.getByRole('button', {
+        name: /continuar con github/i,
+      });
       expect(githubButton).toHaveClass('bg-gray-900');
       expect(githubButton).toHaveClass('text-white');
     });
@@ -163,7 +200,9 @@ describe.skip('SocialLoginButtons', () => {
     it('renders LinkedIn button with correct styling', () => {
       render(<SocialLoginButtons />);
 
-      const linkedinButton = screen.getByRole('button', { name: /continuar con linkedin/i });
+      const linkedinButton = screen.getByRole('button', {
+        name: /continuar con linkedin/i,
+      });
       expect(linkedinButton).toHaveClass('bg-blue-600');
       expect(linkedinButton).toHaveClass('text-white');
     });
@@ -172,7 +211,7 @@ describe.skip('SocialLoginButtons', () => {
       render(<SocialLoginButtons />);
 
       const buttons = screen.getAllByTestId('button');
-      buttons.forEach(button => {
+      buttons.forEach((button) => {
         expect(button).toHaveAttribute('data-variant', 'outline');
         expect(button).toHaveAttribute('data-size', 'lg');
       });
@@ -186,12 +225,16 @@ describe.skip('SocialLoginButtons', () => {
       const onSuccess = vi.fn();
       render(<SocialLoginButtons onSuccess={onSuccess} />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
         expect(mockSignInWithProvider).toHaveBeenCalledWith('google');
-        expect(mockToast.success).toHaveBeenCalledWith('¡Bienvenido de vuelta!');
+        expect(mockToast.success).toHaveBeenCalledWith(
+          '¡Bienvenido de vuelta!'
+        );
         expect(onSuccess).toHaveBeenCalled();
       });
     });
@@ -202,7 +245,9 @@ describe.skip('SocialLoginButtons', () => {
       const onSuccess = vi.fn();
       render(<SocialLoginButtons onSuccess={onSuccess} />);
 
-      const githubButton = screen.getByRole('button', { name: /continuar con github/i });
+      const githubButton = screen.getByRole('button', {
+        name: /continuar con github/i,
+      });
       await user.click(githubButton);
 
       await waitFor(() => {
@@ -217,7 +262,9 @@ describe.skip('SocialLoginButtons', () => {
       const onSuccess = vi.fn();
       render(<SocialLoginButtons onSuccess={onSuccess} />);
 
-      const linkedinButton = screen.getByRole('button', { name: /continuar con linkedin/i });
+      const linkedinButton = screen.getByRole('button', {
+        name: /continuar con linkedin/i,
+      });
       await user.click(linkedinButton);
 
       await waitFor(() => {
@@ -231,11 +278,15 @@ describe.skip('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(mockToast.success).toHaveBeenCalledWith('¡Bienvenido! Tu cuenta ha sido creada exitosamente.');
+        expect(mockToast.success).toHaveBeenCalledWith(
+          '¡Bienvenido! Tu cuenta ha sido creada exitosamente.'
+        );
       });
     });
 
@@ -244,7 +295,9 @@ describe.skip('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -257,11 +310,15 @@ describe.skip('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(mockToast.success).toHaveBeenCalledWith('Welcome! Your account has been created successfully.');
+        expect(mockToast.success).toHaveBeenCalledWith(
+          'Welcome! Your account has been created successfully.'
+        );
       });
     });
   });
@@ -274,7 +331,9 @@ describe.skip('SocialLoginButtons', () => {
       const onError = vi.fn();
       render(<SocialLoginButtons onError={onError} />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -288,7 +347,9 @@ describe.skip('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -302,7 +363,9 @@ describe.skip('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -315,7 +378,9 @@ describe.skip('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -330,7 +395,9 @@ describe.skip('SocialLoginButtons', () => {
       const onError = vi.fn();
       render(<SocialLoginButtons onError={onError} />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -349,7 +416,9 @@ describe.skip('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -368,12 +437,14 @@ describe.skip('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
         const allButtons = screen.getAllByRole('button');
-        allButtons.forEach(button => {
+        allButtons.forEach((button) => {
           expect(button).toBeDisabled();
         });
       });
@@ -390,8 +461,12 @@ describe.skip('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
-      const githubButton = screen.getByRole('button', { name: /continuar con github/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
+      const githubButton = screen.getByRole('button', {
+        name: /continuar con github/i,
+      });
 
       await user.click(googleButton);
       await user.click(githubButton); // Should not trigger second request
@@ -407,7 +482,9 @@ describe.skip('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -420,17 +497,21 @@ describe.skip('SocialLoginButtons', () => {
       });
 
       const buttons = screen.getAllByRole('button');
-      buttons.forEach(button => {
+      buttons.forEach((button) => {
         expect(button).not.toBeDisabled();
       });
     });
 
     it('resets loading state after error', async () => {
-      mockSignInWithProvider.mockRejectedValue(new Error('Authentication failed'));
+      mockSignInWithProvider.mockRejectedValue(
+        new Error('Authentication failed')
+      );
 
       render(<SocialLoginButtons />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -443,7 +524,7 @@ describe.skip('SocialLoginButtons', () => {
       });
 
       const buttons = screen.getAllByRole('button');
-      buttons.forEach(button => {
+      buttons.forEach((button) => {
         expect(button).not.toBeDisabled();
       });
     });
@@ -454,7 +535,7 @@ describe.skip('SocialLoginButtons', () => {
       render(<SocialLoginButtons disabled={true} />);
 
       const allButtons = screen.getAllByRole('button');
-      allButtons.forEach(button => {
+      allButtons.forEach((button) => {
         expect(button).toBeDisabled();
       });
     });
@@ -462,7 +543,9 @@ describe.skip('SocialLoginButtons', () => {
     it('prevents interactions when disabled', async () => {
       render(<SocialLoginButtons disabled={true} />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       expect(mockSignInWithProvider).not.toHaveBeenCalled();
@@ -472,7 +555,7 @@ describe.skip('SocialLoginButtons', () => {
       render(<SocialLoginButtons disabled={false} />);
 
       const allButtons = screen.getAllByRole('button');
-      allButtons.forEach(button => {
+      allButtons.forEach((button) => {
         expect(button).not.toBeDisabled();
       });
     });
@@ -483,10 +566,10 @@ describe.skip('SocialLoginButtons', () => {
       render(<SocialLoginButtons />);
 
       const buttons = screen.getAllByRole('button');
-      buttons.forEach(button => {
+      buttons.forEach((button) => {
         // Each button should have text content
         expect(button.textContent).toBeTruthy();
-        
+
         // Each button should have an icon
         const svg = button.querySelector('svg');
         expect(svg).toBeInTheDocument();
@@ -502,7 +585,9 @@ describe.skip('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -515,16 +600,22 @@ describe.skip('SocialLoginButtons', () => {
     it('has proper button labeling', () => {
       render(<SocialLoginButtons />);
 
-      expect(screen.getByRole('button', { name: /continue with google/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /continuar con github/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /continuar con linkedin/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continue with google/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continuar con github/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continuar con linkedin/i })
+      ).toBeInTheDocument();
     });
 
     it('provides visual feedback for interactions', () => {
       render(<SocialLoginButtons />);
 
       const buttons = screen.getAllByRole('button');
-      buttons.forEach(button => {
+      buttons.forEach((button) => {
         expect(button).toHaveClass('transition-all');
         expect(button).toHaveClass('duration-200');
       });
@@ -535,7 +626,7 @@ describe.skip('SocialLoginButtons', () => {
     it('applies correct container styling', () => {
       const { container } = render(<SocialLoginButtons />);
       const buttonsContainer = container.firstChild;
-      
+
       expect(buttonsContainer).toHaveClass('space-y-3');
     });
 
@@ -543,7 +634,7 @@ describe.skip('SocialLoginButtons', () => {
       render(<SocialLoginButtons />);
 
       const buttons = screen.getAllByRole('button');
-      buttons.forEach(button => {
+      buttons.forEach((button) => {
         expect(button).toHaveClass('w-full');
         expect(button).toHaveClass('justify-center');
       });
@@ -553,8 +644,10 @@ describe.skip('SocialLoginButtons', () => {
       render(<SocialLoginButtons />);
 
       const buttons = screen.getAllByRole('button');
-      buttons.forEach(button => {
-        const flexContainer = button.querySelector('.flex.items-center.justify-center.space-x-3');
+      buttons.forEach((button) => {
+        const flexContainer = button.querySelector(
+          '.flex.items-center.justify-center.space-x-3'
+        );
         expect(flexContainer).toBeInTheDocument();
       });
     });
@@ -563,7 +656,7 @@ describe.skip('SocialLoginButtons', () => {
       render(<SocialLoginButtons />);
 
       const buttons = screen.getAllByRole('button');
-      buttons.forEach(button => {
+      buttons.forEach((button) => {
         expect(button).toHaveClass('shadow-sm');
         expect(button).toHaveClass('hover:shadow-md');
       });
@@ -576,8 +669,10 @@ describe.skip('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
-      
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
+
       expect(async () => {
         await user.click(googleButton);
       }).not.toThrow();
@@ -592,8 +687,10 @@ describe.skip('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
-      
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
+
       expect(async () => {
         await user.click(googleButton);
       }).not.toThrow();
@@ -608,8 +705,10 @@ describe.skip('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
-      
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
+
       // Rapid clicks
       await user.click(googleButton);
       await user.click(googleButton);
@@ -622,17 +721,22 @@ describe.skip('SocialLoginButtons', () => {
     it('handles provider-specific errors', async () => {
       const providerError = {
         code: 'auth/popup-closed-by-user',
-        message: 'The popup has been closed by the user before finalizing the operation.',
+        message:
+          'The popup has been closed by the user before finalizing the operation.',
       };
       mockSignInWithProvider.mockRejectedValue(providerError);
 
       render(<SocialLoginButtons />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(mockToast.error).toHaveBeenCalledWith('The popup has been closed by the user before finalizing the operation.');
+        expect(mockToast.error).toHaveBeenCalledWith(
+          'The popup has been closed by the user before finalizing the operation.'
+        );
       });
     });
 
@@ -645,7 +749,9 @@ describe.skip('SocialLoginButtons', () => {
 
       const { rerender } = render(<SocialLoginButtons />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {

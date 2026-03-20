@@ -14,16 +14,18 @@ const translations = {
     slugLabel: 'Slug (URL)',
     slugPlaceholder: 'se-genera-automaticamente',
     excerptLabel: 'Resumen',
-    excerptPlaceholder: 'Un breve resumen del artículo (máx. 200 caracteres)...',
+    excerptPlaceholder:
+      'Un breve resumen del artículo (máx. 200 caracteres)...',
     contentLabel: 'Contenido (HTML)',
-    contentPlaceholder: '<h2>Título de sección</h2>\n<p>Escribe tu contenido aquí...</p>',
+    contentPlaceholder:
+      '<h2>Título de sección</h2>\n<p>Escribe tu contenido aquí...</p>',
     categoryLabel: 'Categoría',
     categoryOptions: {
       Tendencias: 'Tendencias',
       Tutorial: 'Tutorial',
       Carrera: 'Carrera',
-      'Investigación': 'Investigación',
-      'Opinión': 'Opinión',
+      Investigación: 'Investigación',
+      Opinión: 'Opinión',
     },
     selectCategory: 'Selecciona una categoría',
     tagsLabel: 'Etiquetas (separadas por coma)',
@@ -60,14 +62,15 @@ const translations = {
     excerptLabel: 'Excerpt',
     excerptPlaceholder: 'A brief summary of the article (max 200 chars)...',
     contentLabel: 'Content (HTML)',
-    contentPlaceholder: '<h2>Section title</h2>\n<p>Write your content here...</p>',
+    contentPlaceholder:
+      '<h2>Section title</h2>\n<p>Write your content here...</p>',
     categoryLabel: 'Category',
     categoryOptions: {
       Tendencias: 'Trends',
       Tutorial: 'Tutorial',
       Carrera: 'Career',
-      'Investigación': 'Research',
-      'Opinión': 'Opinion',
+      Investigación: 'Research',
+      Opinión: 'Opinion',
     },
     selectCategory: 'Select a category',
     tagsLabel: 'Tags (comma-separated)',
@@ -97,7 +100,13 @@ const translations = {
   },
 };
 
-const CATEGORY_KEYS = ['Tendencias', 'Tutorial', 'Carrera', 'Investigación', 'Opinión'] as const;
+const CATEGORY_KEYS = [
+  'Tendencias',
+  'Tutorial',
+  'Carrera',
+  'Investigación',
+  'Opinión',
+] as const;
 
 function slugify(text: string): string {
   return text
@@ -200,9 +209,21 @@ export default function BlogEditor({ lang = 'es' }: Props) {
       <div style={{ textAlign: 'center', padding: '4rem 0' }}>
         <i
           className="fas fa-lock"
-          style={{ fontSize: '3rem', color: 'var(--color-text-tertiary)', marginBottom: '1rem', display: 'block' }}
+          style={{
+            fontSize: '3rem',
+            color: 'var(--color-text-tertiary)',
+            marginBottom: '1rem',
+            display: 'block',
+          }}
         />
-        <h3 style={{ color: 'var(--color-text-primary)', marginBottom: '0.75rem' }}>{t.loginRequired}</h3>
+        <h3
+          style={{
+            color: 'var(--color-text-primary)',
+            marginBottom: '0.75rem',
+          }}
+        >
+          {t.loginRequired}
+        </h3>
         <a href={t.loginHref} className="secid-button secid-button--primary">
           {t.loginLink}
         </a>
@@ -215,14 +236,38 @@ export default function BlogEditor({ lang = 'es' }: Props) {
       <div style={{ textAlign: 'center', padding: '4rem 0' }}>
         <i
           className="fas fa-check-circle"
-          style={{ fontSize: '4rem', color: 'var(--secid-primary)', marginBottom: '1.5rem', display: 'block' }}
+          style={{
+            fontSize: '4rem',
+            color: 'var(--secid-primary)',
+            marginBottom: '1.5rem',
+            display: 'block',
+          }}
         />
-        <h2 style={{ color: 'var(--color-text-primary)', marginBottom: '0.75rem' }}>{t.successTitle}</h2>
-        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '2rem' }}>
+        <h2
+          style={{
+            color: 'var(--color-text-primary)',
+            marginBottom: '0.75rem',
+          }}
+        >
+          {t.successTitle}
+        </h2>
+        <p
+          style={{ color: 'var(--color-text-secondary)', marginBottom: '2rem' }}
+        >
           {t.successDesc}
         </p>
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <a href={`${t.blogLink}${createdSlug}`} className="secid-button secid-button--primary">
+        <div
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+          }}
+        >
+          <a
+            href={`${t.blogLink}${createdSlug}`}
+            className="secid-button secid-button--primary"
+          >
             {t.viewPost}
           </a>
           <a href={t.backHref} className="secid-button secid-button--outline">
@@ -267,12 +312,27 @@ export default function BlogEditor({ lang = 'es' }: Props) {
       {showPreview ? (
         <div className="blog-editor__preview">
           <div className="blog-editor__preview-header">
-            {category && <span className="blog-editor__preview-category">{category}</span>}
-            <h1 style={{ fontSize: '2rem', fontWeight: 700, margin: '1rem 0', color: 'var(--color-text-primary)' }}>
+            {category && (
+              <span className="blog-editor__preview-category">{category}</span>
+            )}
+            <h1
+              style={{
+                fontSize: '2rem',
+                fontWeight: 700,
+                margin: '1rem 0',
+                color: 'var(--color-text-primary)',
+              }}
+            >
               {title || t.titlePlaceholder}
             </h1>
             {excerpt && (
-              <p style={{ fontSize: '1.125rem', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+              <p
+                style={{
+                  fontSize: '1.125rem',
+                  color: 'var(--color-text-secondary)',
+                  lineHeight: 1.6,
+                }}
+              >
                 {excerpt}
               </p>
             )}
@@ -283,12 +343,24 @@ export default function BlogEditor({ lang = 'es' }: Props) {
               dangerouslySetInnerHTML={{ __html: content }}
             />
           ) : (
-            <p style={{ color: 'var(--color-text-tertiary)', fontStyle: 'italic' }}>
+            <p
+              style={{
+                color: 'var(--color-text-tertiary)',
+                fontStyle: 'italic',
+              }}
+            >
               {t.contentPlaceholder}
             </p>
           )}
           {tagsInput && (
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '2rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                gap: '0.5rem',
+                flexWrap: 'wrap',
+                marginTop: '2rem',
+              }}
+            >
               {tagsInput.split(',').map((tag) => (
                 <span
                   key={tag.trim()}
@@ -319,7 +391,9 @@ export default function BlogEditor({ lang = 'es' }: Props) {
               onChange={(e) => handleTitleChange(e.target.value)}
               placeholder={t.titlePlaceholder}
             />
-            {errors.title && <span className="blog-editor__field-error">{errors.title}</span>}
+            {errors.title && (
+              <span className="blog-editor__field-error">{errors.title}</span>
+            )}
           </div>
 
           {/* Slug */}
@@ -345,7 +419,9 @@ export default function BlogEditor({ lang = 'es' }: Props) {
               rows={3}
               maxLength={200}
             />
-            {errors.excerpt && <span className="blog-editor__field-error">{errors.excerpt}</span>}
+            {errors.excerpt && (
+              <span className="blog-editor__field-error">{errors.excerpt}</span>
+            )}
           </div>
 
           {/* Content */}
@@ -358,7 +434,9 @@ export default function BlogEditor({ lang = 'es' }: Props) {
               placeholder={t.contentPlaceholder}
               rows={15}
             />
-            {errors.content && <span className="blog-editor__field-error">{errors.content}</span>}
+            {errors.content && (
+              <span className="blog-editor__field-error">{errors.content}</span>
+            )}
           </div>
 
           {/* Category */}
@@ -376,7 +454,11 @@ export default function BlogEditor({ lang = 'es' }: Props) {
                 </option>
               ))}
             </select>
-            {errors.category && <span className="blog-editor__field-error">{errors.category}</span>}
+            {errors.category && (
+              <span className="blog-editor__field-error">
+                {errors.category}
+              </span>
+            )}
           </div>
 
           {/* Tags */}
@@ -426,8 +508,8 @@ export default function BlogEditor({ lang = 'es' }: Props) {
                 <i className="fas fa-spinner fa-spin" />
               ) : (
                 <i className="fas fa-save" />
-              )}
-              {' '}{t.saveDraft}
+              )}{' '}
+              {t.saveDraft}
             </button>
             <button
               className="secid-button secid-button--primary secid-button--lg"
@@ -438,8 +520,8 @@ export default function BlogEditor({ lang = 'es' }: Props) {
                 <i className="fas fa-spinner fa-spin" />
               ) : (
                 <i className="fas fa-paper-plane" />
-              )}
-              {' '}{t.publish}
+              )}{' '}
+              {t.publish}
             </button>
           </div>
         </div>

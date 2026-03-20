@@ -3,7 +3,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SignUpForm } from '@/components/auth/SignUpForm';
-import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 
 // Mock Firebase
@@ -104,7 +109,9 @@ describe.skip('SignUpForm', () => {
     it('renders signup form with all required elements', () => {
       render(<SignUpForm />);
 
-      expect(screen.getByRole('heading', { name: /create account/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: /create account/i })
+      ).toBeInTheDocument();
       expect(screen.getByText(/join the secid community/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/first name/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/last name/i)).toBeInTheDocument();
@@ -112,20 +119,28 @@ describe.skip('SignUpForm', () => {
       expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/confirm password/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/i accept the/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /create account/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /sign up with google/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /create account/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /sign up with google/i })
+      ).toBeInTheDocument();
     });
 
     it('renders with Spanish language', () => {
       render(<SignUpForm lang="es" />);
 
-      expect(screen.getByRole('heading', { name: /crear cuenta/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: /crear cuenta/i })
+      ).toBeInTheDocument();
     });
 
     it('shows terms and conditions link', () => {
       render(<SignUpForm />);
 
-      const termsLink = screen.getByRole('link', { name: /terms and conditions/i });
+      const termsLink = screen.getByRole('link', {
+        name: /terms and conditions/i,
+      });
       expect(termsLink).toBeInTheDocument();
       expect(termsLink).toHaveAttribute('href', '/es/terms');
     });
@@ -133,7 +148,9 @@ describe.skip('SignUpForm', () => {
     it('uses correct terms link for English', () => {
       render(<SignUpForm lang="en" />);
 
-      const termsLink = screen.getByRole('link', { name: /terms and conditions/i });
+      const termsLink = screen.getByRole('link', {
+        name: /terms and conditions/i,
+      });
       expect(termsLink).toHaveAttribute('href', '/en/terms');
     });
   });
@@ -143,13 +160,17 @@ describe.skip('SignUpForm', () => {
       render(<SignUpForm />);
 
       const firstNameInput = screen.getByLabelText(/first name/i);
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       await user.type(firstNameInput, 'A');
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/first name must be at least 2 characters/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/first name must be at least 2 characters/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -157,13 +178,17 @@ describe.skip('SignUpForm', () => {
       render(<SignUpForm />);
 
       const lastNameInput = screen.getByLabelText(/last name/i);
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       await user.type(lastNameInput, 'B');
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/last name must be at least 2 characters/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/last name must be at least 2 characters/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -171,7 +196,9 @@ describe.skip('SignUpForm', () => {
       render(<SignUpForm />);
 
       const emailInput = screen.getByLabelText(/email address/i);
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       await user.type(emailInput, 'invalid-email');
       await user.click(submitButton);
@@ -185,14 +212,18 @@ describe.skip('SignUpForm', () => {
       render(<SignUpForm />);
 
       const passwordInput = screen.getByLabelText(/^password$/i);
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       // Test minimum length
       await user.type(passwordInput, '123');
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/password must be at least 8 characters/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/password must be at least 8 characters/i)
+        ).toBeInTheDocument();
       });
 
       await user.clear(passwordInput);
@@ -202,7 +233,11 @@ describe.skip('SignUpForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/password must contain at least one uppercase letter/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            /password must contain at least one uppercase letter/i
+          )
+        ).toBeInTheDocument();
       });
 
       await user.clear(passwordInput);
@@ -212,7 +247,9 @@ describe.skip('SignUpForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/password must contain at least one number/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/password must contain at least one number/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -221,7 +258,9 @@ describe.skip('SignUpForm', () => {
 
       const passwordInput = screen.getByLabelText(/^password$/i);
       const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       await user.type(passwordInput, 'Password123');
       await user.type(confirmPasswordInput, 'DifferentPassword123');
@@ -240,7 +279,9 @@ describe.skip('SignUpForm', () => {
       const emailInput = screen.getByLabelText(/email address/i);
       const passwordInput = screen.getByLabelText(/^password$/i);
       const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       await user.type(firstNameInput, 'John');
       await user.type(lastNameInput, 'Doe');
@@ -250,7 +291,9 @@ describe.skip('SignUpForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/you must accept the terms/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/you must accept the terms/i)
+        ).toBeInTheDocument();
       });
     });
   });
@@ -270,7 +313,9 @@ describe.skip('SignUpForm', () => {
       const passwordInput = screen.getByLabelText(/^password$/i);
       const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
       const termsCheckbox = screen.getByLabelText(/i accept the/i);
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       await user.type(firstNameInput, 'John');
       await user.type(lastNameInput, 'Doe');
@@ -308,7 +353,9 @@ describe.skip('SignUpForm', () => {
       const passwordInput = screen.getByLabelText(/^password$/i);
       const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
       const termsCheckbox = screen.getByLabelText(/i accept the/i);
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       await user.type(firstNameInput, 'Jane');
       await user.type(lastNameInput, 'Smith');
@@ -355,7 +402,9 @@ describe.skip('SignUpForm', () => {
       const onSuccess = vi.fn();
       render(<SignUpForm onSuccess={onSuccess} />);
 
-      const googleButton = screen.getByRole('button', { name: /sign up with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /sign up with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -387,7 +436,9 @@ describe.skip('SignUpForm', () => {
 
       render(<SignUpForm />);
 
-      const googleButton = screen.getByRole('button', { name: /sign up with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /sign up with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -402,15 +453,21 @@ describe.skip('SignUpForm', () => {
     });
 
     it('handles Google sign up errors', async () => {
-      mockSignInWithPopup.mockRejectedValue({ code: 'auth/popup-closed-by-user' });
+      mockSignInWithPopup.mockRejectedValue({
+        code: 'auth/popup-closed-by-user',
+      });
 
       render(<SignUpForm />);
 
-      const googleButton = screen.getByRole('button', { name: /sign up with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /sign up with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/an error occurred during sign up/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/an error occurred during sign up/i)
+        ).toBeInTheDocument();
       });
     });
   });
@@ -427,7 +484,9 @@ describe.skip('SignUpForm', () => {
       const passwordInput = screen.getByLabelText(/^password$/i);
       const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
       const termsCheckbox = screen.getByLabelText(/i accept the/i);
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       await user.type(firstNameInput, 'John');
       await user.type(lastNameInput, 'Doe');
@@ -438,7 +497,9 @@ describe.skip('SignUpForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/email address is already in use/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/email address is already in use/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -453,7 +514,9 @@ describe.skip('SignUpForm', () => {
       const passwordInput = screen.getByLabelText(/^password$/i);
       const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
       const termsCheckbox = screen.getByLabelText(/i accept the/i);
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       await user.type(firstNameInput, 'John');
       await user.type(lastNameInput, 'Doe');
@@ -464,7 +527,9 @@ describe.skip('SignUpForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/an error occurred during sign up/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/an error occurred during sign up/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -480,7 +545,9 @@ describe.skip('SignUpForm', () => {
       const passwordInput = screen.getByLabelText(/^password$/i);
       const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
       const termsCheckbox = screen.getByLabelText(/i accept the/i);
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       await user.type(firstNameInput, 'John');
       await user.type(lastNameInput, 'Doe');
@@ -491,7 +558,9 @@ describe.skip('SignUpForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/an error occurred during sign up/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/an error occurred during sign up/i)
+        ).toBeInTheDocument();
       });
     });
   });
@@ -512,7 +581,9 @@ describe.skip('SignUpForm', () => {
       const passwordInput = screen.getByLabelText(/^password$/i);
       const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
       const termsCheckbox = screen.getByLabelText(/i accept the/i);
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       await user.type(firstNameInput, 'John');
       await user.type(lastNameInput, 'Doe');
@@ -538,7 +609,9 @@ describe.skip('SignUpForm', () => {
 
       render(<SignUpForm />);
 
-      const googleButton = screen.getByRole('button', { name: /sign up with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /sign up with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -569,7 +642,9 @@ describe.skip('SignUpForm', () => {
       const passwordInput = screen.getByLabelText(/^password$/i);
       const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
       const termsCheckbox = screen.getByLabelText(/i accept the/i);
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       await user.type(firstNameInput, 'John');
       await user.type(lastNameInput, 'Doe');
@@ -580,7 +655,9 @@ describe.skip('SignUpForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        const googleButton = screen.getByRole('button', { name: /sign up with google/i });
+        const googleButton = screen.getByRole('button', {
+          name: /sign up with google/i,
+        });
         expect(googleButton).toBeDisabled();
       });
 
@@ -607,20 +684,27 @@ describe.skip('SignUpForm', () => {
       expect(passwordInput).toHaveAttribute('type', 'password');
       expect(passwordInput).toHaveAttribute('autoComplete', 'new-password');
       expect(confirmPasswordInput).toHaveAttribute('type', 'password');
-      expect(confirmPasswordInput).toHaveAttribute('autoComplete', 'new-password');
+      expect(confirmPasswordInput).toHaveAttribute(
+        'autoComplete',
+        'new-password'
+      );
     });
 
     it('displays validation errors with proper styling', async () => {
       render(<SignUpForm />);
 
       const firstNameInput = screen.getByLabelText(/first name/i);
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       await user.type(firstNameInput, 'A');
       await user.click(submitButton);
 
       await waitFor(() => {
-        const errorMessage = screen.getByText(/first name must be at least 2 characters/i);
+        const errorMessage = screen.getByText(
+          /first name must be at least 2 characters/i
+        );
         expect(errorMessage).toBeInTheDocument();
         expect(errorMessage).toHaveClass('text-red-600');
       });
@@ -650,7 +734,9 @@ describe.skip('SignUpForm', () => {
 
       render(<SignUpForm />);
 
-      const googleButton = screen.getByRole('button', { name: /sign up with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /sign up with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -667,12 +753,18 @@ describe.skip('SignUpForm', () => {
     it('handles empty form submission', async () => {
       render(<SignUpForm />);
 
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/first name must be at least 2 characters/i)).toBeInTheDocument();
-        expect(screen.getByText(/last name must be at least 2 characters/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/first name must be at least 2 characters/i)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(/last name must be at least 2 characters/i)
+        ).toBeInTheDocument();
         expect(screen.getByText(/invalid email address/i)).toBeInTheDocument();
       });
     });
@@ -690,7 +782,9 @@ describe.skip('SignUpForm', () => {
       const passwordInput = screen.getByLabelText(/^password$/i);
       const confirmPasswordInput = screen.getByLabelText(/confirm password/i);
       const termsCheckbox = screen.getByLabelText(/i accept the/i);
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
 
       await user.type(firstNameInput, 'John');
       await user.type(lastNameInput, 'Doe');
@@ -701,7 +795,9 @@ describe.skip('SignUpForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/an error occurred during sign up/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/an error occurred during sign up/i)
+        ).toBeInTheDocument();
       });
     });
   });
@@ -710,8 +806,12 @@ describe.skip('SignUpForm', () => {
     it('maintains form state during interactions', async () => {
       render(<SignUpForm />);
 
-      const firstNameInput = screen.getByLabelText(/first name/i) as HTMLInputElement;
-      const emailInput = screen.getByLabelText(/email address/i) as HTMLInputElement;
+      const firstNameInput = screen.getByLabelText(
+        /first name/i
+      ) as HTMLInputElement;
+      const emailInput = screen.getByLabelText(
+        /email address/i
+      ) as HTMLInputElement;
 
       await user.type(firstNameInput, 'John');
       await user.type(emailInput, 'john@example.com');
@@ -728,11 +828,15 @@ describe.skip('SignUpForm', () => {
       render(<SignUpForm />);
 
       // First, trigger validation errors
-      const submitButton = screen.getByRole('button', { name: /create account/i });
+      const submitButton = screen.getByRole('button', {
+        name: /create account/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/first name must be at least 2 characters/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/first name must be at least 2 characters/i)
+        ).toBeInTheDocument();
       });
 
       // Then fill the form correctly

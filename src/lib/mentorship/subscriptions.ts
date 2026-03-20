@@ -9,7 +9,7 @@ import {
   where,
   orderBy,
   limit,
-  onSnapshot
+  onSnapshot,
 } from 'firebase/firestore';
 import type { MentorshipRequest, MentorshipSession } from '../../types';
 import { COLLECTIONS, firestoreToDate, dateToFirestore } from './constants';
@@ -25,22 +25,28 @@ export function subscribeMentorshipRequests(
     orderBy('createdAt', 'desc')
   );
 
-  return onSnapshot(q, (querySnapshot) => {
-    const requests: MentorshipRequest[] = [];
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      requests.push({
-        ...data,
-        id: doc['id'],
-        createdAt: firestoreToDate(data['createdAt']),
-        respondedAt: data['respondedAt'] ? firestoreToDate(data['respondedAt']) : undefined
-      } as unknown as MentorshipRequest);
-    });
+  return onSnapshot(
+    q,
+    (querySnapshot) => {
+      const requests: MentorshipRequest[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        requests.push({
+          ...data,
+          id: doc['id'],
+          createdAt: firestoreToDate(data['createdAt']),
+          respondedAt: data['respondedAt']
+            ? firestoreToDate(data['respondedAt'])
+            : undefined,
+        } as unknown as MentorshipRequest);
+      });
 
-    callback(requests);
-  }, (error) => {
-    console.error('Error in requests subscription:', error);
-  });
+      callback(requests);
+    },
+    (error) => {
+      console.error('Error in requests subscription:', error);
+    }
+  );
 }
 
 export function subscribeUpcomingSessions(
@@ -58,21 +64,25 @@ export function subscribeUpcomingSessions(
     limit(5)
   );
 
-  return onSnapshot(q, (querySnapshot) => {
-    const sessions: MentorshipSession[] = [];
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      sessions.push({
-        ...data,
-        id: doc['id'],
-        scheduledAt: firestoreToDate(data['scheduledAt']),
-        createdAt: firestoreToDate(data['createdAt']),
-        updatedAt: firestoreToDate(data['updatedAt'])
-      } as unknown as MentorshipSession);
-    });
+  return onSnapshot(
+    q,
+    (querySnapshot) => {
+      const sessions: MentorshipSession[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        sessions.push({
+          ...data,
+          id: doc['id'],
+          scheduledAt: firestoreToDate(data['scheduledAt']),
+          createdAt: firestoreToDate(data['createdAt']),
+          updatedAt: firestoreToDate(data['updatedAt']),
+        } as unknown as MentorshipSession);
+      });
 
-    callback(sessions);
-  }, (error) => {
-    console.error('Error in sessions subscription:', error);
-  });
+      callback(sessions);
+    },
+    (error) => {
+      console.error('Error in sessions subscription:', error);
+    }
+  );
 }

@@ -1,16 +1,16 @@
 import { db, storage } from './firebase';
 import {
-  collection, 
-  doc, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
   getDoc,
-  getDocs, 
-  query, 
-  where, 
-  orderBy, 
-  limit, 
+  getDocs,
+  query,
+  where,
+  orderBy,
+  limit,
   startAfter,
   onSnapshot,
   serverTimestamp,
@@ -19,20 +19,20 @@ import {
   increment,
   Timestamp,
   DocumentSnapshot,
-  QuerySnapshot
+  QuerySnapshot,
 } from 'firebase/firestore';
 import {
-  ref, 
-  uploadBytes, 
-  getDownloadURL, 
-  deleteObject 
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
 } from 'firebase/storage';
-import type { 
-  Message, 
-  Conversation, 
-  MessageAttachment, 
+import type {
+  Message,
+  Conversation,
+  MessageAttachment,
   MessageSearchFilters,
-  TypingIndicator 
+  TypingIndicator,
 } from '../types';
 
 // Collection references
@@ -55,28 +55,37 @@ export const sendMessage = async (
   try {
     // Upload attachments first
     const uploadedAttachments: MessageAttachment[] = [];
-    
+
     for (const file of attachments) {
       const attachmentId = `${Date.now()}_${Math.random().toString(36).substring(2)}`;
-      const fileRef = ref(storage, `messages/${messageData.conversationId}/${attachmentId}_${file['name']}`);
-      
+      const fileRef = ref(
+        storage,
+        `messages/${messageData.conversationId}/${attachmentId}_${file['name']}`
+      );
+
       const snapshot = await uploadBytes(fileRef, file);
       const downloadURL = await getDownloadURL(snapshot['ref']);
-      
+
       let thumbnailUrl: string | undefined;
-      
+
       // Generate thumbnail for images
       if (file['type'].startsWith('image/')) {
         try {
           const thumbnailFile = await generateThumbnail(file);
-          const thumbnailRef = ref(storage, `messages/${messageData.conversationId}/thumbnails/${attachmentId}_thumb`);
-          const thumbnailSnapshot = await uploadBytes(thumbnailRef, thumbnailFile);
+          const thumbnailRef = ref(
+            storage,
+            `messages/${messageData.conversationId}/thumbnails/${attachmentId}_thumb`
+          );
+          const thumbnailSnapshot = await uploadBytes(
+            thumbnailRef,
+            thumbnailFile
+          );
           thumbnailUrl = await getDownloadURL(thumbnailSnapshot.ref);
         } catch (error) {
           console.warn('Error generating thumbnail:', error);
         }
       }
-      
+
       uploadedAttachments.push({
         id: attachmentId,
         fileName: file['name'],
@@ -84,7 +93,7 @@ export const sendMessage = async (
         fileType: file['type'],
         fileSize: file.size,
         thumbnailUrl,
-        uploadedAt: new Date()
+        uploadedAt: new Date(),
       });
     }
 
@@ -103,26 +112,29 @@ export const sendMessage = async (
         deliveredAt: serverTimestamp(),
         reactions: [],
         mentions: extractMentions(messageData.content),
-        replyTo: messageData.replyTo || null
+        replyTo: messageData.replyTo || null,
       },
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
 
     const docRef = await addDoc(messagesRef, messageDoc);
 
     // Update conversation with last message
-    const conversationDocRef = doc(conversationsRef, messageData.conversationId);
+    const conversationDocRef = doc(
+      conversationsRef,
+      messageData.conversationId
+    );
     await updateDoc(conversationDocRef, {
       lastMessage: {
         id: docRef['id'],
         content: messageData.content,
         senderId: messageData.senderId,
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
       },
       lastActivity: serverTimestamp(),
       [`metadata.unreadCount.${messageData.recipientId}`]: increment(1),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
 
     // Convert Timestamp to Date for return
@@ -137,10 +149,10 @@ export const sendMessage = async (
         deliveredAt: new Date(),
         reactions: [],
         mentions: extractMentions(messageData.content),
-        replyTo: messageData.replyTo || undefined
+        replyTo: messageData.replyTo || undefined,
       },
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     return createdMessage;
@@ -151,12 +163,12 @@ export const sendMessage = async (
 };
 
 export const getMessages = async (
-  conversationId: string, 
+  conversationId: string,
   options: { limit?: number; offset?: number; before?: Date } = {}
 ): Promise<Message[]> => {
   try {
     const { limit: msgLimit = 50, offset = 0, before } = options;
-    
+
     let messagesQuery = query(
       messagesRef,
       where('conversationId', '==', conversationId),
@@ -164,7 +176,7 @@ export const getMessages = async (
       limit(msgLimit + offset)
     );
 
-    if(before) {
+    if (before) {
       messagesQuery = query(
         messagesRef,
         where('conversationId', '==', conversationId),
@@ -175,7 +187,7 @@ export const getMessages = async (
     }
 
     const snapshot = await getDocs(messagesQuery);
-    const messages = snapshot['docs'].slice(offset).map(doc => ({
+    const messages = snapshot['docs'].slice(offset).map((doc) => ({
       id: doc['id'],
       ...doc.data(),
       createdAt: doc['data']().createdAt?.toDate() || new Date(),
@@ -184,8 +196,8 @@ export const getMessages = async (
         ...doc['data']().metadata,
         editedAt: doc.data().metadata?.editedAt?.toDate(),
         readAt: doc['data']().metadata?.readAt?.toDate(),
-        deliveredAt: doc.data().metadata?.deliveredAt?.toDate()
-      }
+        deliveredAt: doc.data().metadata?.deliveredAt?.toDate(),
+      },
     })) as Message[];
 
     return messages;
@@ -195,14 +207,17 @@ export const getMessages = async (
   }
 };
 
-export const editMessage = async (messageId: string, newContent: string): Promise<void> => {
+export const editMessage = async (
+  messageId: string,
+  newContent: string
+): Promise<void> => {
   try {
     const messageDocRef = doc(messagesRef, messageId);
     await updateDoc(messageDocRef, {
       content: newContent,
       'metadata.edited': true,
       'metadata.editedAt': serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error editing message:', error);
@@ -214,20 +229,20 @@ export const deleteMessage = async (messageId: string): Promise<void> => {
   try {
     const messageDocRef = doc(messagesRef, messageId);
     const messageDoc = await getDoc(messageDocRef);
-    
+
     if (!messageDoc.exists()) {
       throw new Error('Message not found');
     }
 
     const messageData = messageDoc['data']();
-    
+
     // Delete attachments from storage
     if (messageData.attachments && messageData.attachments.length > 0) {
       for (const attachment of messageData.attachments) {
         try {
           const fileRef = ref(storage, attachment.fileUrl);
           await deleteObject(fileRef);
-          
+
           if (attachment.thumbnailUrl) {
             const thumbnailRef = ref(storage, attachment.thumbnailUrl);
             await deleteObject(thumbnailRef);
@@ -245,11 +260,14 @@ export const deleteMessage = async (messageId: string): Promise<void> => {
   }
 };
 
-export const markMessageAsRead = async (messageId: string, userId: string): Promise<void> => {
+export const markMessageAsRead = async (
+  messageId: string,
+  userId: string
+): Promise<void> => {
   try {
     const messageDocRef = doc(messagesRef, messageId);
     await updateDoc(messageDocRef, {
-      'metadata.readAt': serverTimestamp()
+      'metadata.readAt': serverTimestamp(),
     });
   } catch (error) {
     console.error('Error marking message as read:', error);
@@ -259,8 +277,8 @@ export const markMessageAsRead = async (messageId: string, userId: string): Prom
 
 // Reaction Functions
 export const addReaction = async (
-  messageId: string, 
-  emoji: string, 
+  messageId: string,
+  emoji: string,
   userId: string
 ): Promise<void> => {
   try {
@@ -269,9 +287,9 @@ export const addReaction = async (
       'metadata.reactions': arrayUnion({
         emoji,
         userId,
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
       }),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error adding reaction:', error);
@@ -280,24 +298,25 @@ export const addReaction = async (
 };
 
 export const removeReaction = async (
-  messageId: string, 
-  emoji: string, 
+  messageId: string,
+  emoji: string,
   userId: string
 ): Promise<void> => {
   try {
     const messageDocRef = doc(messagesRef, messageId);
     const messageDoc = await getDoc(messageDocRef);
-    
+
     if (!messageDoc.exists()) return;
 
     const reactions = messageDoc.data().metadata?.reactions || [];
     const updatedReactions = reactions.filter(
-      (reaction: any) => !(reaction.emoji === emoji && reaction['userId'] === userId)
+      (reaction: any) =>
+        !(reaction.emoji === emoji && reaction['userId'] === userId)
     );
 
     await updateDoc(messageDocRef, {
       'metadata.reactions': updatedReactions,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error removing reaction:', error);
@@ -307,7 +326,7 @@ export const removeReaction = async (
 
 // Conversation Functions
 export const getConversations = async (
-  userId: string, 
+  userId: string,
   includeArchived = false
 ): Promise<Conversation[]> => {
   try {
@@ -318,20 +337,23 @@ export const getConversations = async (
     );
 
     const snapshot = await getDocs(conversationsQuery);
-    let conversations = snapshot['docs'].map(doc => ({
+    let conversations = snapshot['docs'].map((doc) => ({
       id: doc['id'],
       ...doc.data(),
       lastActivity: doc['data']().lastActivity?.toDate() || new Date(),
       createdAt: doc.data().createdAt?.toDate() || new Date(),
       updatedAt: doc['data']().updatedAt?.toDate() || new Date(),
-      lastMessage: doc.data().lastMessage ? {
-        ...doc['data']().lastMessage,
-        createdAt: doc.data().lastMessage['createdAt']?.toDate() || new Date()
-      } : undefined
+      lastMessage: doc.data().lastMessage
+        ? {
+            ...doc['data']().lastMessage,
+            createdAt:
+              doc.data().lastMessage['createdAt']?.toDate() || new Date(),
+          }
+        : undefined,
     })) as Conversation[];
 
     // Filter by archived status
-    conversations = conversations.filter(conv => {
+    conversations = conversations.filter((conv) => {
       const userMetadata = conv.metadata || {};
       const isArchived = userMetadata.isArchived || false;
       return includeArchived ? isArchived : !isArchived;
@@ -344,7 +366,9 @@ export const getConversations = async (
   }
 };
 
-export const createConversation = async (participantIds: string[]): Promise<Conversation> => {
+export const createConversation = async (
+  participantIds: string[]
+): Promise<Conversation> => {
   try {
     // Check if conversation already exists for these participants
     const existingQuery = query(
@@ -352,17 +376,18 @@ export const createConversation = async (participantIds: string[]): Promise<Conv
       where('participants', '==', participantIds),
       where('type', '==', 'direct')
     );
-    
+
     const existingSnapshot = await getDocs(existingQuery);
-    
+
     if (!existingSnapshot.empty) {
       const existingDoc = existingSnapshot.docs?.[0];
       return {
         id: existingDoc['id'],
         ...existingDoc.data(),
-        lastActivity: existingDoc['data']().lastActivity?.toDate() || new Date(),
+        lastActivity:
+          existingDoc['data']().lastActivity?.toDate() || new Date(),
         createdAt: existingDoc.data().createdAt?.toDate() || new Date(),
-        updatedAt: existingDoc['data']().updatedAt?.toDate() || new Date()
+        updatedAt: existingDoc['data']().updatedAt?.toDate() || new Date(),
       } as Conversation;
     }
 
@@ -379,11 +404,14 @@ export const createConversation = async (participantIds: string[]): Promise<Conv
         isArchived: false,
         isMuted: false,
         pinned: false,
-        unreadCount: participantIds.reduce((acc, id) => ({ ...acc, [id]: 0 }), {}),
-        typingUsers: []
+        unreadCount: participantIds.reduce(
+          (acc, id) => ({ ...acc, [id]: 0 }),
+          {}
+        ),
+        typingUsers: [],
       },
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
 
     const docRef = await addDoc(conversationsRef, conversationData);
@@ -393,7 +421,7 @@ export const createConversation = async (participantIds: string[]): Promise<Conv
       ...conversationData,
       lastActivity: new Date(),
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     } as Conversation;
   } catch (error) {
     console.error('Error creating conversation:', error);
@@ -402,14 +430,14 @@ export const createConversation = async (participantIds: string[]): Promise<Conv
 };
 
 export const markConversationAsRead = async (
-  conversationId: string, 
+  conversationId: string,
   userId: string
 ): Promise<void> => {
   try {
     const conversationDocRef = doc(conversationsRef, conversationId);
     await updateDoc(conversationDocRef, {
       [`metadata['unreadCount'].${userId}`]: 0,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error marking conversation as read:', error);
@@ -418,15 +446,15 @@ export const markConversationAsRead = async (
 };
 
 export const archiveConversation = async (
-  conversationId: string, 
-  userId: string, 
+  conversationId: string,
+  userId: string,
   archive = true
 ): Promise<void> => {
   try {
     const conversationDocRef = doc(conversationsRef, conversationId);
     await updateDoc(conversationDocRef, {
       'metadata.isArchived': archive,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error archiving conversation:', error);
@@ -435,7 +463,7 @@ export const archiveConversation = async (
 };
 
 export const deleteConversation = async (
-  conversationId: string, 
+  conversationId: string,
   userId: string
 ): Promise<void> => {
   try {
@@ -444,9 +472,9 @@ export const deleteConversation = async (
       messagesRef,
       where('conversationId', '==', conversationId)
     );
-    
+
     const messagesSnapshot = await getDocs(messagesQuery);
-    
+
     // Delete all messages and their attachments
     for (const messageDoc of messagesSnapshot.docs) {
       await deleteMessage(messageDoc['id']);
@@ -463,24 +491,24 @@ export const deleteConversation = async (
 
 // Typing Indicators
 export const sendTypingIndicator = async (
-  conversationId: string, 
-  userId: string, 
+  conversationId: string,
+  userId: string,
   isTyping = true
 ): Promise<void> => {
   try {
     const typingDocRef = doc(typingRef, `${conversationId}_${userId}`);
-    
-    if(isTyping) {
+
+    if (isTyping) {
       await updateDoc(typingDocRef, {
         conversationId,
         userId,
-        timestamp: serverTimestamp()
+        timestamp: serverTimestamp(),
       }).catch(async () => {
         // Document doesn't exist, create it
         await addDoc(typingRef, {
           conversationId,
           userId,
-          timestamp: serverTimestamp()
+          timestamp: serverTimestamp(),
         });
       });
     } else {
@@ -495,13 +523,13 @@ export const sendTypingIndicator = async (
 
 // Search Functions
 export const searchMessages = async (
-  userId: string, 
+  userId: string,
   filters: MessageSearchFilters
 ): Promise<Message[]> => {
   try {
     // Get user's conversations first
     const userConversations = await getConversations(userId);
-    const conversationIds = userConversations.map(conv => conv['id']);
+    const conversationIds = userConversations.map((conv) => conv['id']);
 
     if (conversationIds.length === 0) return [];
 
@@ -537,7 +565,7 @@ export const searchMessages = async (
     }
 
     const snapshot = await getDocs(messagesQuery);
-    let messages = snapshot.docs.map(doc => ({
+    let messages = snapshot.docs.map((doc) => ({
       id: doc['id'],
       ...doc.data(),
       createdAt: doc['data']().createdAt?.toDate() || new Date(),
@@ -546,30 +574,33 @@ export const searchMessages = async (
         ...doc['data']().metadata,
         editedAt: doc.data().metadata?.editedAt?.toDate(),
         readAt: doc['data']().metadata?.readAt?.toDate(),
-        deliveredAt: doc.data().metadata?.deliveredAt?.toDate()
-      }
+        deliveredAt: doc.data().metadata?.deliveredAt?.toDate(),
+      },
     })) as Message[];
 
     // Client-side filtering for text search
     if (filters.query) {
       const searchTerm = filters.query.toLowerCase();
-      messages = messages.filter(message => 
+      messages = messages.filter((message) =>
         message.content.toLowerCase().includes(searchTerm)
       );
     }
 
     // Date range filtering
     if (filters.dateRange) {
-      messages = messages.filter(message => 
-        message['createdAt'] >= filters.dateRange!.start && 
-        message['createdAt'] <= filters.dateRange!.end
+      messages = messages.filter(
+        (message) =>
+          message['createdAt'] >= filters.dateRange!.start &&
+          message['createdAt'] <= filters.dateRange!.end
       );
     }
 
     // Attachment filtering
     if (filters.hasAttachments !== undefined) {
-      messages = messages.filter(message => 
-        filters.hasAttachments ? message.attachments.length > 0 : message.attachments.length === 0
+      messages = messages.filter((message) =>
+        filters.hasAttachments
+          ? message.attachments.length > 0
+          : message.attachments.length === 0
       );
     }
 
@@ -582,7 +613,7 @@ export const searchMessages = async (
 
 // Real-time Listeners
 export const onMessagesUpdate = (
-  conversationId: string, 
+  conversationId: string,
   callback: (messages: Message[]) => void
 ): (() => void) => {
   const messagesQuery = query(
@@ -593,7 +624,7 @@ export const onMessagesUpdate = (
   );
 
   return onSnapshot(messagesQuery, (snapshot) => {
-    const messages = snapshot['docs'].map(doc => ({
+    const messages = snapshot['docs'].map((doc) => ({
       id: doc['id'],
       ...doc.data(),
       createdAt: doc['data']().createdAt?.toDate() || new Date(),
@@ -602,8 +633,8 @@ export const onMessagesUpdate = (
         ...doc['data']().metadata,
         editedAt: doc.data().metadata?.editedAt?.toDate(),
         readAt: doc['data']().metadata?.readAt?.toDate(),
-        deliveredAt: doc.data().metadata?.deliveredAt?.toDate()
-      }
+        deliveredAt: doc.data().metadata?.deliveredAt?.toDate(),
+      },
     })) as Message[];
 
     callback(messages.reverse());
@@ -611,7 +642,7 @@ export const onMessagesUpdate = (
 };
 
 export const onTypingUpdate = (
-  conversationId: string, 
+  conversationId: string,
   callback: (typingUsers: TypingIndicator[]) => void
 ): (() => void) => {
   const typingQuery = query(
@@ -620,15 +651,15 @@ export const onTypingUpdate = (
   );
 
   return onSnapshot(typingQuery, (snapshot) => {
-    const typingUsers = snapshot['docs'].map(doc => ({
+    const typingUsers = snapshot['docs'].map((doc) => ({
       userId: doc['data']().userId,
-      timestamp: doc.data().timestamp?.toDate() || new Date()
+      timestamp: doc.data().timestamp?.toDate() || new Date(),
     })) as TypingIndicator[];
 
     // Filter out old typing indicators (older than 10 seconds)
     const now = new Date();
     const activeTypingUsers = typingUsers.filter(
-      indicator => (now.getTime() - indicator['timestamp'].getTime()) < 10000
+      (indicator) => now.getTime() - indicator['timestamp'].getTime() < 10000
     );
 
     callback(activeTypingUsers);
@@ -659,7 +690,7 @@ const generateThumbnail = async (file: File): Promise<File> => {
       const maxSize = 200;
       const { width, height } = img;
       const scale = Math.min(maxSize / width, maxSize / height);
-      
+
       canvas.width = width * scale;
       canvas.height = height * scale;
 
@@ -667,17 +698,21 @@ const generateThumbnail = async (file: File): Promise<File> => {
       ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
 
       // Convert to blob
-      canvas.toBlob((blob) => {
-        if(blob) {
-          const thumbnailFile = new File([blob], `thumb_${file['name']}`, {
-            type: 'image/jpeg',
-            lastModified: Date.now()
-          });
-          resolve(thumbnailFile);
-        } else {
-          reject(new Error('Failed to generate thumbnail'));
-        }
-      }, 'image/jpeg', 0.8);
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            const thumbnailFile = new File([blob], `thumb_${file['name']}`, {
+              type: 'image/jpeg',
+              lastModified: Date.now(),
+            });
+            resolve(thumbnailFile);
+          } else {
+            reject(new Error('Failed to generate thumbnail'));
+          }
+        },
+        'image/jpeg',
+        0.8
+      );
     };
 
     img.onerror = () => reject(new Error('Failed to load image'));

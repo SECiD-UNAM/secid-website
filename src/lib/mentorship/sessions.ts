@@ -14,7 +14,7 @@ import {
   where,
   orderBy,
   limit,
-  serverTimestamp
+  serverTimestamp,
 } from 'firebase/firestore';
 import type { MentorshipSession } from '../../types';
 import { COLLECTIONS, firestoreToDate, dateToFirestore } from './constants';
@@ -34,17 +34,19 @@ export async function getMentorshipSessions(filters: {
 
       if (docSnap.exists()) {
         const data = docSnap.data();
-        return [{
-          ...data,
-          id: docSnap['id'],
-          scheduledAt: firestoreToDate(data['scheduledAt']),
-          createdAt: firestoreToDate(data['createdAt']),
-          updatedAt: firestoreToDate(data['updatedAt']),
-          homework: data['homework']?.map((hw: any) => ({
-            ...hw,
-            dueDate: hw.dueDate ? firestoreToDate(hw.dueDate) : undefined
-          }))
-        } as unknown as MentorshipSession];
+        return [
+          {
+            ...data,
+            id: docSnap['id'],
+            scheduledAt: firestoreToDate(data['scheduledAt']),
+            createdAt: firestoreToDate(data['createdAt']),
+            updatedAt: firestoreToDate(data['updatedAt']),
+            homework: data['homework']?.map((hw: any) => ({
+              ...hw,
+              dueDate: hw.dueDate ? firestoreToDate(hw.dueDate) : undefined,
+            })),
+          } as unknown as MentorshipSession,
+        ];
       }
 
       return [];
@@ -78,8 +80,8 @@ export async function getMentorshipSessions(filters: {
         updatedAt: firestoreToDate(data['updatedAt']),
         homework: data['homework']?.map((hw: any) => ({
           ...hw,
-          dueDate: hw.dueDate ? firestoreToDate(hw.dueDate) : undefined
-        }))
+          dueDate: hw.dueDate ? firestoreToDate(hw.dueDate) : undefined,
+        })),
       } as unknown as MentorshipSession);
     });
 
@@ -90,7 +92,9 @@ export async function getMentorshipSessions(filters: {
   }
 }
 
-export async function getUpcomingSessions(userId: string): Promise<MentorshipSession[]> {
+export async function getUpcomingSessions(
+  userId: string
+): Promise<MentorshipSession[]> {
   try {
     const now = new Date();
 
@@ -114,7 +118,7 @@ export async function getUpcomingSessions(userId: string): Promise<MentorshipSes
 
     const [mentorSessions, menteeSessions] = await Promise.all([
       getDocs(mentorQuery),
-      getDocs(menteeQuery)
+      getDocs(menteeQuery),
     ]);
 
     const sessions: MentorshipSession[] = [];
@@ -129,17 +133,20 @@ export async function getUpcomingSessions(userId: string): Promise<MentorshipSes
         updatedAt: firestoreToDate(data['updatedAt']),
         homework: data['homework']?.map((hw: any) => ({
           ...hw,
-          dueDate: hw.dueDate ? firestoreToDate(hw.dueDate) : undefined
-        }))
+          dueDate: hw.dueDate ? firestoreToDate(hw.dueDate) : undefined,
+        })),
       } as unknown as MentorshipSession);
     });
 
     // Remove duplicates and sort by date
-    const uniqueSessions = sessions.filter((session, index, self) =>
-      index === self.findIndex(s => s['id'] === session['id'])
+    const uniqueSessions = sessions.filter(
+      (session, index, self) =>
+        index === self.findIndex((s) => s['id'] === session['id'])
     );
 
-    return uniqueSessions.sort((a, b) => a.scheduledAt.getTime() - b.scheduledAt.getTime());
+    return uniqueSessions.sort(
+      (a, b) => a.scheduledAt.getTime() - b.scheduledAt.getTime()
+    );
   } catch (error) {
     console.error('Error getting upcoming sessions:', error);
     throw new Error('Failed to load upcoming sessions');
@@ -150,7 +157,9 @@ export async function createMentorshipSession(
   session: Omit<MentorshipSession, 'id'>
 ): Promise<MentorshipSession> {
   try {
-    const matchDoc = await getDoc(doc(db, COLLECTIONS.MATCHES, session.matchId));
+    const matchDoc = await getDoc(
+      doc(db, COLLECTIONS.MATCHES, session.matchId)
+    );
     if (!matchDoc.exists()) {
       throw new Error('Match not found');
     }
@@ -164,13 +173,18 @@ export async function createMentorshipSession(
       scheduledAt: dateToFirestore(session.scheduledAt),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-      homework: session?.homework?.map((hw: { dueDate?: Date; [key: string]: any }) => ({
-        ...hw,
-        dueDate: hw.dueDate ? dateToFirestore(hw.dueDate) : null
-      }))
+      homework: session?.homework?.map(
+        (hw: { dueDate?: Date; [key: string]: any }) => ({
+          ...hw,
+          dueDate: hw.dueDate ? dateToFirestore(hw.dueDate) : null,
+        })
+      ),
     };
 
-    const docRef = await addDoc(collection(db, COLLECTIONS.SESSIONS), sessionData);
+    const docRef = await addDoc(
+      collection(db, COLLECTIONS.SESSIONS),
+      sessionData
+    );
 
     return {
       ...session,
@@ -178,7 +192,7 @@ export async function createMentorshipSession(
       mentorId: matchData.mentorId,
       menteeId: matchData.menteeId,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
   } catch (error) {
     console.error('Error creating mentorship session:', error);
@@ -199,10 +213,12 @@ export async function updateMentorshipSession(
     }
 
     if (updates.homework) {
-      updateData.homework = updates.homework.map((hw: { dueDate?: Date; [key: string]: any }) => ({
-        ...hw,
-        dueDate: hw.dueDate ? dateToFirestore(hw.dueDate) : null
-      }));
+      updateData.homework = updates.homework.map(
+        (hw: { dueDate?: Date; [key: string]: any }) => ({
+          ...hw,
+          dueDate: hw.dueDate ? dateToFirestore(hw.dueDate) : null,
+        })
+      );
     }
 
     updateData['updatedAt'] = serverTimestamp();

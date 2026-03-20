@@ -16,20 +16,20 @@ export class OnboardingPage extends BasePage {
   private readonly currentStepIndicator: Locator;
   private readonly stepTitle: Locator;
   private readonly stepDescription: Locator;
-  
+
   // Navigation controls
   private readonly nextButton: Locator;
   private readonly previousButton: Locator;
   private readonly skipButton: Locator;
   private readonly finishButton: Locator;
-  
+
   // Step 1: Welcome & Profile Photo
   private readonly welcomeStep: Locator;
   private readonly profilePhotoUpload: Locator;
   private readonly photoPreview: Locator;
   private readonly removePhotoButton: Locator;
   private readonly skipPhotoButton: Locator;
-  
+
   // Step 2: Professional Information
   private readonly professionalStep: Locator;
   private readonly currentCompanyInput: Locator;
@@ -38,7 +38,7 @@ export class OnboardingPage extends BasePage {
   private readonly industrySelect: Locator;
   private readonly salaryRangeSelect: Locator;
   private readonly remotePreferenceSelect: Locator;
-  
+
   // Step 3: Skills & Expertise
   private readonly skillsStep: Locator;
   private readonly skillsSearchInput: Locator;
@@ -47,7 +47,7 @@ export class OnboardingPage extends BasePage {
   private readonly addSkillButton: Locator;
   private readonly removeSkillButtons: Locator;
   private readonly skillCategories: Locator;
-  
+
   // Step 4: Career Goals
   private readonly careerGoalsStep: Locator;
   private readonly careerGoalsTextarea: Locator;
@@ -57,7 +57,7 @@ export class OnboardingPage extends BasePage {
   private readonly wantToMentorCheckbox: Locator;
   private readonly jobTypesSelect: Locator;
   private readonly preferredLocationsInput: Locator;
-  
+
   // Step 5: Networking Preferences
   private readonly networkingStep: Locator;
   private readonly linkedinProfileInput: Locator;
@@ -68,7 +68,7 @@ export class OnboardingPage extends BasePage {
   private readonly profileVisibilitySelect: Locator;
   private readonly showContactInfoCheckbox: Locator;
   private readonly showCareerInfoCheckbox: Locator;
-  
+
   // Step 6: Notification Preferences
   private readonly notificationsStep: Locator;
   private readonly emailNotificationsCheckbox: Locator;
@@ -78,7 +78,7 @@ export class OnboardingPage extends BasePage {
   private readonly mentorshipNotificationsCheckbox: Locator;
   private readonly marketingEmailsCheckbox: Locator;
   private readonly notificationFrequencySelect: Locator;
-  
+
   // Completion step
   private readonly completionStep: Locator;
   private readonly completionMessage: Locator;
@@ -86,45 +86,53 @@ export class OnboardingPage extends BasePage {
   private readonly goToDashboardButton: Locator;
   private readonly exploreJobsButton: Locator;
   private readonly joinNetworkingButton: Locator;
-  
+
   // Messages and feedback
   private readonly errorMessage: Locator;
   private readonly successMessage: Locator;
   private readonly loadingSpinner: Locator;
   private readonly validationMessages: Locator;
-  
+
   constructor(page: Page) {
     super(page);
-    
+
     // Progress indicators
     this.progressBar = page.locator('[data-testid="onboarding-progress-bar"]');
     this.progressSteps = page.locator('[data-testid="progress-steps"]');
     this.currentStepIndicator = page.locator('[data-testid="current-step"]');
     this.stepTitle = page.locator('[data-testid="step-title"]');
     this.stepDescription = page.locator('[data-testid="step-description"]');
-    
+
     // Navigation
     this.nextButton = page.locator('[data-testid="onboarding-next"]');
     this.previousButton = page.locator('[data-testid="onboarding-previous"]');
     this.skipButton = page.locator('[data-testid="onboarding-skip"]');
     this.finishButton = page.locator('[data-testid="onboarding-finish"]');
-    
+
     // Step 1: Welcome
     this.welcomeStep = page.locator('[data-testid="welcome-step"]');
-    this.profilePhotoUpload = page.locator('[data-testid="profile-photo-upload"]');
+    this.profilePhotoUpload = page.locator(
+      '[data-testid="profile-photo-upload"]'
+    );
     this.photoPreview = page.locator('[data-testid="photo-preview"]');
     this.removePhotoButton = page.locator('[data-testid="remove-photo"]');
     this.skipPhotoButton = page.locator('[data-testid="skip-photo"]');
-    
+
     // Step 2: Professional Info
     this.professionalStep = page.locator('[data-testid="professional-step"]');
     this.currentCompanyInput = page.locator('[data-testid="current-company"]');
-    this.currentPositionInput = page.locator('[data-testid="current-position"]');
-    this.experienceYearsSelect = page.locator('[data-testid="experience-years"]');
+    this.currentPositionInput = page.locator(
+      '[data-testid="current-position"]'
+    );
+    this.experienceYearsSelect = page.locator(
+      '[data-testid="experience-years"]'
+    );
     this.industrySelect = page.locator('[data-testid="industry"]');
     this.salaryRangeSelect = page.locator('[data-testid="salary-range"]');
-    this.remotePreferenceSelect = page.locator('[data-testid="remote-preference"]');
-    
+    this.remotePreferenceSelect = page.locator(
+      '[data-testid="remote-preference"]'
+    );
+
     // Step 3: Skills
     this.skillsStep = page.locator('[data-testid="skills-step"]');
     this.skillsSearchInput = page.locator('[data-testid="skills-search"]');
@@ -133,51 +141,87 @@ export class OnboardingPage extends BasePage {
     this.addSkillButton = page.locator('[data-testid="add-skill"]');
     this.removeSkillButtons = page.locator('[data-testid="remove-skill"]');
     this.skillCategories = page.locator('[data-testid="skill-categories"]');
-    
+
     // Step 4: Career Goals
     this.careerGoalsStep = page.locator('[data-testid="career-goals-step"]');
     this.careerGoalsTextarea = page.locator('[data-testid="career-goals"]');
-    this.lookingForJobCheckbox = page.locator('[data-testid="looking-for-job"]');
-    this.openToOpportunitiesCheckbox = page.locator('[data-testid="open-to-opportunities"]');
-    this.interestedInMentorshipCheckbox = page.locator('[data-testid="interested-in-mentorship"]');
+    this.lookingForJobCheckbox = page.locator(
+      '[data-testid="looking-for-job"]'
+    );
+    this.openToOpportunitiesCheckbox = page.locator(
+      '[data-testid="open-to-opportunities"]'
+    );
+    this.interestedInMentorshipCheckbox = page.locator(
+      '[data-testid="interested-in-mentorship"]'
+    );
     this.wantToMentorCheckbox = page.locator('[data-testid="want-to-mentor"]');
     this.jobTypesSelect = page.locator('[data-testid="job-types"]');
-    this.preferredLocationsInput = page.locator('[data-testid="preferred-locations"]');
-    
+    this.preferredLocationsInput = page.locator(
+      '[data-testid="preferred-locations"]'
+    );
+
     // Step 5: Networking
     this.networkingStep = page.locator('[data-testid="networking-step"]');
-    this.linkedinProfileInput = page.locator('[data-testid="linkedin-profile"]');
+    this.linkedinProfileInput = page.locator(
+      '[data-testid="linkedin-profile"]'
+    );
     this.githubProfileInput = page.locator('[data-testid="github-profile"]');
-    this.personalWebsiteInput = page.locator('[data-testid="personal-website"]');
+    this.personalWebsiteInput = page.locator(
+      '[data-testid="personal-website"]'
+    );
     this.bioTextarea = page.locator('[data-testid="bio"]');
-    this.visibilitySettings = page.locator('[data-testid="visibility-settings"]');
-    this.profileVisibilitySelect = page.locator('[data-testid="profile-visibility"]');
-    this.showContactInfoCheckbox = page.locator('[data-testid="show-contact-info"]');
-    this.showCareerInfoCheckbox = page.locator('[data-testid="show-career-info"]');
-    
+    this.visibilitySettings = page.locator(
+      '[data-testid="visibility-settings"]'
+    );
+    this.profileVisibilitySelect = page.locator(
+      '[data-testid="profile-visibility"]'
+    );
+    this.showContactInfoCheckbox = page.locator(
+      '[data-testid="show-contact-info"]'
+    );
+    this.showCareerInfoCheckbox = page.locator(
+      '[data-testid="show-career-info"]'
+    );
+
     // Step 6: Notifications
     this.notificationsStep = page.locator('[data-testid="notifications-step"]');
-    this.emailNotificationsCheckbox = page.locator('[data-testid="email-notifications"]');
-    this.smsNotificationsCheckbox = page.locator('[data-testid="sms-notifications"]');
+    this.emailNotificationsCheckbox = page.locator(
+      '[data-testid="email-notifications"]'
+    );
+    this.smsNotificationsCheckbox = page.locator(
+      '[data-testid="sms-notifications"]'
+    );
     this.jobAlertsCheckbox = page.locator('[data-testid="job-alerts"]');
-    this.eventNotificationsCheckbox = page.locator('[data-testid="event-notifications"]');
-    this.mentorshipNotificationsCheckbox = page.locator('[data-testid="mentorship-notifications"]');
-    this.marketingEmailsCheckbox = page.locator('[data-testid="marketing-emails"]');
-    this.notificationFrequencySelect = page.locator('[data-testid="notification-frequency"]');
-    
+    this.eventNotificationsCheckbox = page.locator(
+      '[data-testid="event-notifications"]'
+    );
+    this.mentorshipNotificationsCheckbox = page.locator(
+      '[data-testid="mentorship-notifications"]'
+    );
+    this.marketingEmailsCheckbox = page.locator(
+      '[data-testid="marketing-emails"]'
+    );
+    this.notificationFrequencySelect = page.locator(
+      '[data-testid="notification-frequency"]'
+    );
+
     // Completion
     this.completionStep = page.locator('[data-testid="completion-step"]');
     this.completionMessage = page.locator('[data-testid="completion-message"]');
-    this.profileCompleteness = page.locator('[data-testid="profile-completeness"]');
+    this.profileCompleteness = page.locator(
+      '[data-testid="profile-completeness"]'
+    );
     this.goToDashboardButton = page.locator('[data-testid="go-to-dashboard"]');
     this.exploreJobsButton = page.locator('[data-testid="explore-jobs"]');
     this.joinNetworkingButton = page.locator('[data-testid="join-networking"]');
-    
+
     // Messages
     this.errorMessage = page.locator('[data-testid="onboarding-error"]');
     this.successMessage = page.locator('[data-testid="onboarding-success"]');
     this.loadingSpinner = page.locator('[data-testid="loading-spinner"]');
-    this.validationMessages = page.locator('[data-testid="validation-message"]');
+    this.validationMessages = page.locator(
+      '[data-testid="validation-message"]'
+    );
   }
 
   /**
@@ -194,12 +238,12 @@ export class OnboardingPage extends BasePage {
   async getCurrentStep(): Promise<OnboardingStepData> {
     const stepNumber = await this.currentStepIndicator.textContent();
     const stepName = await this.stepTitle.textContent();
-    
+
     return {
       stepNumber: parseInt(stepNumber || '1', 10),
       stepName: stepName || '',
       isComplete: false,
-      isActive: true
+      isActive: true,
     };
   }
 
@@ -216,11 +260,11 @@ export class OnboardingPage extends BasePage {
    */
   async completeWelcomeStep(photoPath?: string) {
     await this.waitForElement('[data-testid="welcome-step"]');
-    
+
     if (photoPath) {
       await this.uploadProfilePhoto(photoPath);
     }
-    
+
     await this.nextButton.click();
     await this.waitForElement('[data-testid="professional-step"]');
   }
@@ -261,31 +305,35 @@ export class OnboardingPage extends BasePage {
     remotePreference?: string;
   }) {
     await this.waitForElement('[data-testid="professional-step"]');
-    
+
     if (professionalInfo.company) {
       await this.currentCompanyInput.fill(professionalInfo.company);
     }
-    
+
     if (professionalInfo.position) {
       await this.currentPositionInput.fill(professionalInfo.position);
     }
-    
+
     if (professionalInfo.experienceYears) {
-      await this.experienceYearsSelect.selectOption(professionalInfo.experienceYears);
+      await this.experienceYearsSelect.selectOption(
+        professionalInfo.experienceYears
+      );
     }
-    
+
     if (professionalInfo.industry) {
       await this.industrySelect.selectOption(professionalInfo.industry);
     }
-    
+
     if (professionalInfo.salaryRange) {
       await this.salaryRangeSelect.selectOption(professionalInfo.salaryRange);
     }
-    
+
     if (professionalInfo.remotePreference) {
-      await this.remotePreferenceSelect.selectOption(professionalInfo.remotePreference);
+      await this.remotePreferenceSelect.selectOption(
+        professionalInfo.remotePreference
+      );
     }
-    
+
     await this.nextButton.click();
     await this.waitForElement('[data-testid="skills-step"]');
   }
@@ -295,11 +343,11 @@ export class OnboardingPage extends BasePage {
    */
   async completeSkillsStep(skills: string[]) {
     await this.waitForElement('[data-testid="skills-step"]');
-    
+
     for (const skill of skills) {
       await this.addSkill(skill);
     }
-    
+
     await this.nextButton.click();
     await this.waitForElement('[data-testid="career-goals-step"]');
   }
@@ -309,18 +357,20 @@ export class OnboardingPage extends BasePage {
    */
   async addSkill(skillName: string) {
     await this.skillsSearchInput.fill(skillName);
-    
+
     // Wait for suggestions and click the first one
     await this.skillsSuggestions.waitFor({ state: 'visible' });
-    const firstSuggestion = this.skillsSuggestions.locator('.suggestion-item').first();
-    
+    const firstSuggestion = this.skillsSuggestions
+      .locator('.suggestion-item')
+      .first();
+
     if (await firstSuggestion.isVisible()) {
       await firstSuggestion.click();
     } else {
       // If no suggestion, add as custom skill
       await this.addSkillButton.click();
     }
-    
+
     await this.skillsSearchInput.clear();
   }
 
@@ -328,7 +378,9 @@ export class OnboardingPage extends BasePage {
    * Remove a skill
    */
   async removeSkill(skillName: string) {
-    const skillElement = this.selectedSkills.locator(`[data-skill="${skillName}"]`);
+    const skillElement = this.selectedSkills.locator(
+      `[data-skill="${skillName}"]`
+    );
     const removeButton = skillElement.locator('[data-testid="remove-skill"]');
     await removeButton.click();
   }
@@ -339,14 +391,14 @@ export class OnboardingPage extends BasePage {
   async getSelectedSkills(): Promise<string[]> {
     const skillElements = await this.selectedSkills.locator('.skill-tag').all();
     const skills: string[] = [];
-    
+
     for (const element of skillElements) {
       const skillText = await element.textContent();
       if (skillText) {
         skills.push(skillText.trim());
       }
     }
-    
+
     return skills;
   }
 
@@ -363,37 +415,39 @@ export class OnboardingPage extends BasePage {
     preferredLocations?: string[];
   }) {
     await this.waitForElement('[data-testid="career-goals-step"]');
-    
+
     if (careerData.goals) {
       await this.careerGoalsTextarea.fill(careerData.goals);
     }
-    
+
     if (careerData.lookingForJob) {
       await this.lookingForJobCheckbox.check();
     }
-    
+
     if (careerData.openToOpportunities) {
       await this.openToOpportunitiesCheckbox.check();
     }
-    
+
     if (careerData.interestedInMentorship) {
       await this.interestedInMentorshipCheckbox.check();
     }
-    
+
     if (careerData.wantToMentor) {
       await this.wantToMentorCheckbox.check();
     }
-    
+
     if (careerData.jobTypes) {
       for (const jobType of careerData.jobTypes) {
         await this.jobTypesSelect.selectOption(jobType);
       }
     }
-    
+
     if (careerData.preferredLocations) {
-      await this.preferredLocationsInput.fill(careerData.preferredLocations.join(', '));
+      await this.preferredLocationsInput.fill(
+        careerData.preferredLocations.join(', ')
+      );
     }
-    
+
     await this.nextButton.click();
     await this.waitForElement('[data-testid="networking-step"]');
   }
@@ -411,35 +465,37 @@ export class OnboardingPage extends BasePage {
     showCareerInfo?: boolean;
   }) {
     await this.waitForElement('[data-testid="networking-step"]');
-    
+
     if (networkingData.linkedinProfile) {
       await this.linkedinProfileInput.fill(networkingData.linkedinProfile);
     }
-    
+
     if (networkingData.githubProfile) {
       await this.githubProfileInput.fill(networkingData.githubProfile);
     }
-    
+
     if (networkingData.personalWebsite) {
       await this.personalWebsiteInput.fill(networkingData.personalWebsite);
     }
-    
+
     if (networkingData.bio) {
       await this.bioTextarea.fill(networkingData.bio);
     }
-    
+
     if (networkingData.profileVisibility) {
-      await this.profileVisibilitySelect.selectOption(networkingData.profileVisibility);
+      await this.profileVisibilitySelect.selectOption(
+        networkingData.profileVisibility
+      );
     }
-    
+
     if (networkingData.showContactInfo) {
       await this.showContactInfoCheckbox.check();
     }
-    
+
     if (networkingData.showCareerInfo) {
       await this.showCareerInfoCheckbox.check();
     }
-    
+
     await this.nextButton.click();
     await this.waitForElement('[data-testid="notifications-step"]');
   }
@@ -457,27 +513,27 @@ export class OnboardingPage extends BasePage {
     frequency?: string;
   }) {
     await this.waitForElement('[data-testid="notifications-step"]');
-    
+
     if (notificationData.emailNotifications) {
       await this.emailNotificationsCheckbox.check();
     }
-    
+
     if (notificationData.smsNotifications) {
       await this.smsNotificationsCheckbox.check();
     }
-    
+
     if (notificationData.jobAlerts) {
       await this.jobAlertsCheckbox.check();
     }
-    
+
     if (notificationData.eventNotifications) {
       await this.eventNotificationsCheckbox.check();
     }
-    
+
     if (notificationData.mentorshipNotifications) {
       await this.mentorshipNotificationsCheckbox.check();
     }
-    
+
     if (notificationData.marketingEmails !== undefined) {
       if (notificationData.marketingEmails) {
         await this.marketingEmailsCheckbox.check();
@@ -485,11 +541,13 @@ export class OnboardingPage extends BasePage {
         await this.marketingEmailsCheckbox.uncheck();
       }
     }
-    
+
     if (notificationData.frequency) {
-      await this.notificationFrequencySelect.selectOption(notificationData.frequency);
+      await this.notificationFrequencySelect.selectOption(
+        notificationData.frequency
+      );
     }
-    
+
     await this.finishButton.click();
     await this.waitForElement('[data-testid="completion-step"]');
   }
@@ -511,29 +569,35 @@ export class OnboardingPage extends BasePage {
     } else {
       await this.skipWelcomeStep();
     }
-    
+
     // Step 2: Professional Info
     await this.completeProfessionalStep(userData.professionalInfo || {});
-    
+
     // Step 3: Skills
-    await this.completeSkillsStep(userData.skills || ['Python', 'Machine Learning', 'SQL']);
-    
+    await this.completeSkillsStep(
+      userData.skills || ['Python', 'Machine Learning', 'SQL']
+    );
+
     // Step 4: Career Goals
-    await this.completeCareerGoalsStep(userData.careerData || {
-      goals: 'Looking to advance my career in data science',
-      lookingForJob: true,
-      openToOpportunities: true
-    });
-    
+    await this.completeCareerGoalsStep(
+      userData.careerData || {
+        goals: 'Looking to advance my career in data science',
+        lookingForJob: true,
+        openToOpportunities: true,
+      }
+    );
+
     // Step 5: Networking
     await this.completeNetworkingStep(userData.networkingData || {});
-    
+
     // Step 6: Notifications
-    await this.completeNotificationsStep(userData.notificationData || {
-      emailNotifications: true,
-      jobAlerts: true,
-      eventNotifications: true
-    });
+    await this.completeNotificationsStep(
+      userData.notificationData || {
+        emailNotifications: true,
+        jobAlerts: true,
+        eventNotifications: true,
+      }
+    );
   }
 
   /**
@@ -542,7 +606,7 @@ export class OnboardingPage extends BasePage {
   async skipOnboarding() {
     // Look for skip all button or navigate through quickly
     const skipAllButton = this.page.locator('[data-testid="skip-onboarding"]');
-    
+
     if (await skipAllButton.isVisible()) {
       await skipAllButton.click();
     } else {
@@ -556,7 +620,7 @@ export class OnboardingPage extends BasePage {
         await this.page.waitForTimeout(500);
       }
     }
-    
+
     await this.waitForElement('[data-testid="completion-step"]');
   }
 
@@ -618,14 +682,14 @@ export class OnboardingPage extends BasePage {
   async getValidationErrors(): Promise<string[]> {
     const errorElements = await this.validationMessages.all();
     const errors: string[] = [];
-    
+
     for (const element of errorElements) {
       const errorText = await element.textContent();
       if (errorText) {
         errors.push(errorText.trim());
       }
     }
-    
+
     return errors;
   }
 
@@ -634,14 +698,14 @@ export class OnboardingPage extends BasePage {
    */
   async testMobileOnboarding() {
     await this.page.setViewportSize({ width: 375, height: 667 });
-    
+
     // Check if progress bar adapts
     const progressBarBox = await this.progressBar.boundingBox();
     expect(progressBarBox?.width).toBeLessThanOrEqual(375);
-    
+
     // Check if navigation buttons are accessible
     await expect(this.nextButton).toBeVisible();
-    
+
     return true;
   }
 

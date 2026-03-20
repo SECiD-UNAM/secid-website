@@ -35,7 +35,8 @@ const t = getTranslations('es');
           <h2>Envíanos un mensaje</h2>
           <form class="secid-form" id="contact-form">
             <div class="secid-form__group">
-              <label class="secid-form__label" for="contact-name">Nombre completo</label
+              <label class="secid-form__label" for="contact-name"
+                >Nombre completo</label
               >
               <input
                 type="text"
@@ -60,7 +61,9 @@ const t = getTranslations('es');
             </div>
 
             <div class="secid-form__group">
-              <label class="secid-form__label" for="contact-subject">Asunto</label>
+              <label class="secid-form__label" for="contact-subject"
+                >Asunto</label
+              >
               <input
                 type="text"
                 id="contact-subject"
@@ -71,7 +74,9 @@ const t = getTranslations('es');
             </div>
 
             <div class="secid-form__group">
-              <label class="secid-form__label" for="contact-message">Mensaje</label>
+              <label class="secid-form__label" for="contact-message"
+                >Mensaje</label
+              >
               <textarea
                 id="contact-message"
                 class="secid-form__textarea"
@@ -89,13 +94,23 @@ const t = getTranslations('es');
               Enviar Mensaje
             </button>
 
-            <div id="contact-success" class="secid-form__message secid-form__message--success" style="display:none;">
+            <div
+              id="contact-success"
+              class="secid-form__message secid-form__message--success"
+              style="display:none;"
+            >
               <i class="fas fa-check-circle"></i>
               ¡Mensaje enviado! Te responderemos pronto.
             </div>
-            <div id="contact-error" class="secid-form__message secid-form__message--error" style="display:none;">
+            <div
+              id="contact-error"
+              class="secid-form__message secid-form__message--error"
+              style="display:none;"
+            >
               <i class="fas fa-exclamation-circle"></i>
-              <span id="contact-error-text">Hubo un error. Inténtalo de nuevo.</span>
+              <span id="contact-error-text"
+                >Hubo un error. Inténtalo de nuevo.</span
+              >
             </div>
           </form>
         </div>
@@ -124,7 +139,8 @@ const t = getTranslations('es');
                 <a
                   href="https://www.linkedin.com/company/sociedad-de-egresados-en-ciencia-de-datos-secid"
                   target="_blank"
-                  rel="noopener noreferrer">Síguenos en LinkedIn</a>
+                  rel="noopener noreferrer">Síguenos en LinkedIn</a
+                >
               </p>
             </div>
           </div>
@@ -150,14 +166,16 @@ const t = getTranslations('es');
                   href="https://www.iimas.unam.mx/ciencia-de-datos/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  >Licenciatura en Ciencia de Datos UNAM</a>
+                  >Licenciatura en Ciencia de Datos UNAM</a
+                >
               </li>
               <li>
                 <a
                   href="https://docencia.tic.unam.mx/diplomado-en-ciencia-de-datos"
                   target="_blank"
                   rel="noopener noreferrer"
-                  >Diplomado en Ciencia de Datos UNAM</a>
+                  >Diplomado en Ciencia de Datos UNAM</a
+                >
               </li>
               <li>
                 <a
@@ -165,7 +183,8 @@ const t = getTranslations('es');
                   target="_blank"
                   rel="noopener noreferrer"
                   >Instituto de Investigaciones en Matemáticas Aplicadas y en
-                  Sistemas (IIMAS)</a>
+                  Sistemas (IIMAS)</a
+                >
               </li>
             </ul>
           </div>
@@ -413,7 +432,9 @@ const t = getTranslations('es');
   import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
   const form = document.getElementById('contact-form') as HTMLFormElement;
-  const submitBtn = document.getElementById('contact-submit') as HTMLButtonElement;
+  const submitBtn = document.getElementById(
+    'contact-submit'
+  ) as HTMLButtonElement;
   const successMsg = document.getElementById('contact-success')!;
   const errorMsg = document.getElementById('contact-error')!;
   const errorText = document.getElementById('contact-error-text')!;
@@ -423,10 +444,18 @@ const t = getTranslations('es');
     successMsg.style.display = 'none';
     errorMsg.style.display = 'none';
 
-    const name = (document.getElementById('contact-name') as HTMLInputElement).value.trim();
-    const email = (document.getElementById('contact-email') as HTMLInputElement).value.trim();
-    const subject = (document.getElementById('contact-subject') as HTMLInputElement).value.trim();
-    const message = (document.getElementById('contact-message') as HTMLTextAreaElement).value.trim();
+    const name = (
+      document.getElementById('contact-name') as HTMLInputElement
+    ).value.trim();
+    const email = (
+      document.getElementById('contact-email') as HTMLInputElement
+    ).value.trim();
+    const subject = (
+      document.getElementById('contact-subject') as HTMLInputElement
+    ).value.trim();
+    const message = (
+      document.getElementById('contact-message') as HTMLTextAreaElement
+    ).value.trim();
 
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
@@ -445,11 +474,13 @@ const t = getTranslations('es');
       form.reset();
       successMsg.style.display = 'flex';
     } catch (err: any) {
-      errorText.textContent = err?.message || 'Hubo un error. Inténtalo de nuevo.';
+      errorText.textContent =
+        err?.message || 'Hubo un error. Inténtalo de nuevo.';
       errorMsg.style.display = 'flex';
     } finally {
       submitBtn.disabled = false;
-      submitBtn.innerHTML = '<i class="fas fa-paper-plane secid-button__icon"></i> Enviar Mensaje';
+      submitBtn.innerHTML =
+        '<i class="fas fa-paper-plane secid-button__icon"></i> Enviar Mensaje';
     }
   });
 </script>

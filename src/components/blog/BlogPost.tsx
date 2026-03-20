@@ -22,7 +22,8 @@ const translations = {
     backToList: 'Back to blog',
     loading: 'Loading article...',
     notFoundTitle: 'Article not found',
-    notFoundDesc: 'The article you are looking for does not exist or has been removed.',
+    notFoundDesc:
+      'The article you are looking for does not exist or has been removed.',
     backLink: '/en/blog',
     publishedOn: 'Published on',
     category: 'Category',
@@ -86,7 +87,9 @@ export default function BlogPost({ slug, lang = 'es' }: Props) {
           className="fas fa-spinner fa-spin"
           style={{ fontSize: '2rem', color: 'var(--secid-primary)' }}
         />
-        <p style={{ marginTop: '1rem', color: 'var(--color-text-secondary)' }}>{t.loading}</p>
+        <p style={{ marginTop: '1rem', color: 'var(--color-text-secondary)' }}>
+          {t.loading}
+        </p>
       </div>
     );
   }
@@ -103,10 +106,17 @@ export default function BlogPost({ slug, lang = 'es' }: Props) {
             display: 'block',
           }}
         />
-        <h2 style={{ color: 'var(--color-text-primary)', marginBottom: '0.75rem' }}>
+        <h2
+          style={{
+            color: 'var(--color-text-primary)',
+            marginBottom: '0.75rem',
+          }}
+        >
           {t.notFoundTitle}
         </h2>
-        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '2rem' }}>
+        <p
+          style={{ color: 'var(--color-text-secondary)', marginBottom: '2rem' }}
+        >
           {t.notFoundDesc}
         </p>
         <a href={t.backLink} className="secid-button secid-button--primary">
@@ -138,7 +148,9 @@ export default function BlogPost({ slug, lang = 'es' }: Props) {
 
         {/* Author */}
         <div className="blog-post__author">
-          <div className="blog-post__author-avatar">{getInitials(post.authorName)}</div>
+          <div className="blog-post__author-avatar">
+            {getInitials(post.authorName)}
+          </div>
           <div>
             <div className="blog-post__author-name">{post.authorName}</div>
             <div className="blog-post__author-date">

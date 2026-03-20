@@ -12,7 +12,13 @@
  * TD-013 tracking: ~34 tests (30 failing, 4 passing)
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { signIn, resetPassword, updateLastLogin } from '@/lib/auth';
@@ -157,21 +163,33 @@ describe.skip('LoginForm', () => {
     it('renders login form with all required elements', () => {
       render(<LoginForm />);
 
-      expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument();
-      expect(screen.getByText(/access your secid account/i)).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: /sign in/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/access your secid account/i)
+      ).toBeInTheDocument();
       expect(screen.getByLabelText(/email address/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/remember me/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /forgot your password/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /forgot your password/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /sign in/i })
+      ).toBeInTheDocument();
       expect(screen.getByTestId('social-login-buttons')).toBeInTheDocument();
     });
 
     it('renders with Spanish language', () => {
       render(<LoginForm lang="es" />);
 
-      expect(screen.getByRole('heading', { name: /iniciar sesión/i })).toBeInTheDocument();
-      expect(screen.getByText(/accede a tu cuenta de secid/i)).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: /iniciar sesión/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/accede a tu cuenta de secid/i)
+      ).toBeInTheDocument();
     });
 
     it('applies custom className', () => {
@@ -181,8 +199,9 @@ describe.skip('LoginForm', () => {
 
     it('shows password toggle button', () => {
       render(<LoginForm />);
-      const toggleButton = screen.getByRole('button', { name: /toggle password visibility/i }) || 
-                           document.querySelector('button[type="button"]');
+      const toggleButton =
+        screen.getByRole('button', { name: /toggle password visibility/i }) ||
+        document.querySelector('button[type="button"]');
       expect(toggleButton).toBeInTheDocument();
     });
   });
@@ -212,7 +231,9 @@ describe.skip('LoginForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/password must be at least 6 characters/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/password must be at least 6 characters/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -244,10 +265,15 @@ describe.skip('LoginForm', () => {
     it('toggles password visibility', async () => {
       render(<LoginForm />);
 
-      const passwordInput = screen.getByLabelText(/password/i) as HTMLInputElement;
+      const passwordInput = screen.getByLabelText(
+        /password/i
+      ) as HTMLInputElement;
       const toggleButtons = document.querySelectorAll('button[type="button"]');
-      const toggleButton = Array.from(toggleButtons).find(btn => 
-        btn.querySelector('svg') || btn.textContent?.includes('Show') || btn.textContent?.includes('Hide')
+      const toggleButton = Array.from(toggleButtons).find(
+        (btn) =>
+          btn.querySelector('svg') ||
+          btn.textContent?.includes('Show') ||
+          btn.textContent?.includes('Hide')
       );
 
       expect(passwordInput.type).toBe('password');
@@ -261,7 +287,9 @@ describe.skip('LoginForm', () => {
     it('handles remember me checkbox', async () => {
       render(<LoginForm />);
 
-      const rememberCheckbox = screen.getByLabelText(/remember me/i) as HTMLInputElement;
+      const rememberCheckbox = screen.getByLabelText(
+        /remember me/i
+      ) as HTMLInputElement;
       expect(rememberCheckbox.checked).toBe(false);
 
       await user.click(rememberCheckbox);
@@ -271,7 +299,9 @@ describe.skip('LoginForm', () => {
     it('opens forgot password modal', async () => {
       render(<LoginForm />);
 
-      const forgotPasswordButton = screen.getByRole('button', { name: /forgot your password/i });
+      const forgotPasswordButton = screen.getByRole('button', {
+        name: /forgot your password/i,
+      });
       await user.click(forgotPasswordButton);
 
       await waitFor(() => {
@@ -295,7 +325,10 @@ describe.skip('LoginForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(mockSignIn).toHaveBeenCalledWith('test@example.com', 'password123');
+        expect(mockSignIn).toHaveBeenCalledWith(
+          'test@example.com',
+          'password123'
+        );
         expect(onSuccess).toHaveBeenCalled();
       });
     });
@@ -335,7 +368,9 @@ describe.skip('LoginForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/sign in error. please try again/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/sign in error. please try again/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -419,7 +454,9 @@ describe.skip('LoginForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByTestId('two-factor-verification')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('two-factor-verification')
+        ).toBeInTheDocument();
       });
     });
 
@@ -439,14 +476,19 @@ describe.skip('LoginForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByTestId('two-factor-verification')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('two-factor-verification')
+        ).toBeInTheDocument();
       });
 
       const twoFactorSuccessButton = screen.getByTestId('2fa-success');
       await user.click(twoFactorSuccessButton);
 
       await waitFor(() => {
-        expect(mockUpdateLastLogin).toHaveBeenCalledWith('user123', 'email-2fa');
+        expect(mockUpdateLastLogin).toHaveBeenCalledWith(
+          'user123',
+          'email-2fa'
+        );
         expect(onSuccess).toHaveBeenCalled();
       });
     });
@@ -466,14 +508,18 @@ describe.skip('LoginForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByTestId('two-factor-verification')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('two-factor-verification')
+        ).toBeInTheDocument();
       });
 
       const twoFactorCancelButton = screen.getByTestId('2fa-cancel');
       await user.click(twoFactorCancelButton);
 
       await waitFor(() => {
-        expect(screen.queryByTestId('two-factor-verification')).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId('two-factor-verification')
+        ).not.toBeInTheDocument();
       });
     });
   });
@@ -485,7 +531,9 @@ describe.skip('LoginForm', () => {
       const emailInput = screen.getByLabelText(/email address/i);
       await user.type(emailInput, 'test@example.com');
 
-      const forgotPasswordButton = screen.getByRole('button', { name: /forgot your password/i });
+      const forgotPasswordButton = screen.getByRole('button', {
+        name: /forgot your password/i,
+      });
       await user.click(forgotPasswordButton);
 
       await waitFor(() => {
@@ -499,7 +547,9 @@ describe.skip('LoginForm', () => {
 
       render(<LoginForm />);
 
-      const forgotPasswordButton = screen.getByRole('button', { name: /forgot your password/i });
+      const forgotPasswordButton = screen.getByRole('button', {
+        name: /forgot your password/i,
+      });
       await user.click(forgotPasswordButton);
 
       await waitFor(() => {
@@ -523,7 +573,9 @@ describe.skip('LoginForm', () => {
 
       render(<LoginForm />);
 
-      const forgotPasswordButton = screen.getByRole('button', { name: /forgot your password/i });
+      const forgotPasswordButton = screen.getByRole('button', {
+        name: /forgot your password/i,
+      });
       await user.click(forgotPasswordButton);
 
       await waitFor(() => {
@@ -537,7 +589,9 @@ describe.skip('LoginForm', () => {
       await user.click(sendButton);
 
       await waitFor(() => {
-        expect(mockToast.error).toHaveBeenCalledWith('Error sending recovery email');
+        expect(mockToast.error).toHaveBeenCalledWith(
+          'Error sending recovery email'
+        );
       });
     });
   });
@@ -582,7 +636,9 @@ describe.skip('LoginForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('secid_remember_user');
+        expect(mockLocalStorage.removeItem).toHaveBeenCalledWith(
+          'secid_remember_user'
+        );
       });
     });
 
@@ -595,8 +651,12 @@ describe.skip('LoginForm', () => {
 
       render(<LoginForm />);
 
-      const emailInput = screen.getByLabelText(/email address/i) as HTMLInputElement;
-      const rememberCheckbox = screen.getByLabelText(/remember me/i) as HTMLInputElement;
+      const emailInput = screen.getByLabelText(
+        /email address/i
+      ) as HTMLInputElement;
+      const rememberCheckbox = screen.getByLabelText(
+        /remember me/i
+      ) as HTMLInputElement;
 
       expect(emailInput.value).toBe('remembered@example.com');
       expect(rememberCheckbox.checked).toBe(true);
@@ -605,13 +665,15 @@ describe.skip('LoginForm', () => {
     it('clears expired remembered data', () => {
       const expiredData = JSON.stringify({
         email: 'expired@example.com',
-        timestamp: Date.now() - (31 * 24 * 60 * 60 * 1000), // 31 days ago
+        timestamp: Date.now() - 31 * 24 * 60 * 60 * 1000, // 31 days ago
       });
       mockLocalStorage.getItem.mockReturnValue(expiredData);
 
       render(<LoginForm />);
 
-      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('secid_remember_user');
+      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith(
+        'secid_remember_user'
+      );
     });
   });
 
@@ -662,11 +724,15 @@ describe.skip('LoginForm', () => {
     it('maintains focus management during interactions', async () => {
       render(<LoginForm />);
 
-      const forgotPasswordButton = screen.getByRole('button', { name: /forgot your password/i });
+      const forgotPasswordButton = screen.getByRole('button', {
+        name: /forgot your password/i,
+      });
       await user.click(forgotPasswordButton);
 
       await waitFor(() => {
-        const modal = screen.getByRole('dialog') || screen.getByText(/recover password/i).closest('div');
+        const modal =
+          screen.getByRole('dialog') ||
+          screen.getByText(/recover password/i).closest('div');
         expect(modal).toBeInTheDocument();
       });
     });
@@ -687,7 +753,9 @@ describe.skip('LoginForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/connection error. check your internet/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/connection error. check your internet/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -696,7 +764,9 @@ describe.skip('LoginForm', () => {
 
       render(<LoginForm />);
 
-      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('secid_remember_user');
+      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith(
+        'secid_remember_user'
+      );
     });
 
     it('handles empty form submission', async () => {

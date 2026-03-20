@@ -3,10 +3,10 @@ import { Tab } from '@headlessui/react';
 import { clsx } from 'clsx';
 import MetricCard, { MetricCardTemplates } from './MetricCard';
 import ChartWidget, { ChartTemplates } from './ChartWidget';
-import { analyticsService} from '../../lib/analytics';
+import { analyticsService } from '../../lib/analytics';
 import { useTranslation } from 'react-i18next';
 import {
-  CalendarDaysIcon, 
+  CalendarDaysIcon,
   ChartBarIcon,
   UserGroupIcon,
   CurrencyDollarIcon,
@@ -19,13 +19,13 @@ import {
   DevicePhoneMobileIcon,
   ArrowDownTrayIcon,
   Cog6ToothIcon,
-  ArrowPathIcon
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline';
-import type { 
+import type {
   AnalyticsDashboardData,
   AnalyticsFilter,
   AnalyticsDateRange,
-  ReportConfig
+  ReportConfig,
 } from '../../types/analytics';
 
 interface AnalyticsDashboardProps {
@@ -41,7 +41,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   defaultFilters,
   showExportOptions = true,
   showRealTime = true,
-  refreshInterval = 300 // 5 minutes
+  refreshInterval = 300, // 5 minutes
 }) => {
   const { t } = useTranslation();
   const [data, setData] = useState<AnalyticsDashboardData | null>(null);
@@ -52,69 +52,69 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
     dateRange: {
       start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // Last 30 days
       end: new Date(),
-      preset: 'last30days'
+      preset: 'last30days',
     },
-    ...defaultFilters
+    ...defaultFilters,
   });
   const [autoRefresh, setAutoRefresh] = useState(true);
 
   // Dashboard tabs configuration
   const tabs = [
-    { 
-      id: 'overview', 
-      name: t('analytics.tabs.overview', 'Overview'), 
-      icon: ChartBarIcon 
+    {
+      id: 'overview',
+      name: t('analytics.tabs.overview', 'Overview'),
+      icon: ChartBarIcon,
     },
-    { 
-      id: 'users', 
-      name: t('analytics.tabs.users', 'Users'), 
-      icon: UserGroupIcon 
+    {
+      id: 'users',
+      name: t('analytics.tabs.users', 'Users'),
+      icon: UserGroupIcon,
     },
-    { 
-      id: 'content', 
-      name: t('analytics.tabs.content', 'Content'), 
-      icon: EyeIcon 
+    {
+      id: 'content',
+      name: t('analytics.tabs.content', 'Content'),
+      icon: EyeIcon,
     },
-    { 
-      id: 'engagement', 
-      name: t('analytics.tabs.engagement', 'Engagement'), 
-      icon: ChartBarIcon 
+    {
+      id: 'engagement',
+      name: t('analytics.tabs.engagement', 'Engagement'),
+      icon: ChartBarIcon,
     },
-    { 
-      id: 'revenue', 
-      name: t('analytics.tabs.revenue', 'Revenue'), 
-      icon: CurrencyDollarIcon 
+    {
+      id: 'revenue',
+      name: t('analytics.tabs.revenue', 'Revenue'),
+      icon: CurrencyDollarIcon,
     },
-    { 
-      id: 'geographic', 
-      name: t('analytics.tabs.geographic', 'Geographic'), 
-      icon: GlobeAltIcon 
+    {
+      id: 'geographic',
+      name: t('analytics.tabs.geographic', 'Geographic'),
+      icon: GlobeAltIcon,
     },
-    { 
-      id: 'performance', 
-      name: t('analytics.tabs.performance', 'Performance'), 
-      icon: BoltIcon 
+    {
+      id: 'performance',
+      name: t('analytics.tabs.performance', 'Performance'),
+      icon: BoltIcon,
     },
-    { 
-      id: 'errors', 
-      name: t('analytics.tabs.errors', 'Errors'), 
-      icon: ExclamationTriangleIcon 
+    {
+      id: 'errors',
+      name: t('analytics.tabs.errors', 'Errors'),
+      icon: ExclamationTriangleIcon,
     },
-    { 
-      id: 'funnels', 
-      name: t('analytics.tabs.funnels', 'Funnels'), 
-      icon: FunnelIcon 
+    {
+      id: 'funnels',
+      name: t('analytics.tabs.funnels', 'Funnels'),
+      icon: FunnelIcon,
     },
-    { 
-      id: 'search', 
-      name: t('analytics.tabs.search', 'Search'), 
-      icon: MagnifyingGlassIcon 
+    {
+      id: 'search',
+      name: t('analytics.tabs.search', 'Search'),
+      icon: MagnifyingGlassIcon,
     },
-    { 
-      id: 'technology', 
-      name: t('analytics.tabs.technology', 'Technology'), 
-      icon: DevicePhoneMobileIcon 
-    }
+    {
+      id: 'technology',
+      name: t('analytics.tabs.technology', 'Technology'),
+      icon: DevicePhoneMobileIcon,
+    },
   ];
 
   // Load dashboard data
@@ -125,7 +125,9 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       const dashboardData = await analyticsService.getDashboardData(filters);
       setData(dashboardData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load analytics data');
+      setError(
+        err instanceof Error ? err.message : 'Failed to load analytics data'
+      );
       console.error('Analytics data loading error:', err);
     } finally {
       setLoading(false);
@@ -151,23 +153,44 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   // Date range presets
   const dateRangePresets = [
     { key: 'today', label: t('analytics.dateRange.today', 'Today'), days: 1 },
-    { key: 'yesterday', label: t('analytics.dateRange.yesterday', 'Yesterday'), days: 1, offset: 1 },
-    { key: 'last7days', label: t('analytics.dateRange.last7days', 'Last 7 days'), days: 7 },
-    { key: 'last30days', label: t('analytics.dateRange.last30days', 'Last 30 days'), days: 30 },
-    { key: 'last90days', label: t('analytics.dateRange.last90days', 'Last 90 days'), days: 90 },
-    { key: 'last12months', label: t('analytics.dateRange.last12months', 'Last 12 months'), days: 365 }
+    {
+      key: 'yesterday',
+      label: t('analytics.dateRange.yesterday', 'Yesterday'),
+      days: 1,
+      offset: 1,
+    },
+    {
+      key: 'last7days',
+      label: t('analytics.dateRange.last7days', 'Last 7 days'),
+      days: 7,
+    },
+    {
+      key: 'last30days',
+      label: t('analytics.dateRange.last30days', 'Last 30 days'),
+      days: 30,
+    },
+    {
+      key: 'last90days',
+      label: t('analytics.dateRange.last90days', 'Last 90 days'),
+      days: 90,
+    },
+    {
+      key: 'last12months',
+      label: t('analytics.dateRange.last12months', 'Last 12 months'),
+      days: 365,
+    },
   ];
 
   // Handle date range change
   const handleDateRangeChange = (preset: string) => {
-    const presetConfig = dateRangePresets.find(p => p.key === preset);
+    const presetConfig = dateRangePresets.find((p) => p.key === preset);
     if (!presetConfig) return;
 
     const end = new Date();
     if (presetConfig.offset) {
       end.setDate(end.getDate() - presetConfig.offset);
     }
-    
+
     const start = new Date(end);
     start.setDate(start.getDate() - presetConfig.days + 1);
 
@@ -176,8 +199,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       dateRange: {
         start,
         end,
-        preset: preset as any
-      }
+        preset: preset as any,
+      },
     });
   };
 
@@ -194,11 +217,11 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         format,
         sections: ['overview', 'users', 'content', 'engagement', 'revenue'],
         filters,
-        isActive: true
+        isActive: true,
       };
 
       const blob = await analyticsService.exportReport(reportConfig, format);
-      
+
       // Download file
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -216,10 +239,12 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   // Render loading state
   if (loading && !data) {
     return (
-      <div className={clsx('bg-white rounded-lg shadow p-8', className)}>
+      <div className={clsx('rounded-lg bg-white p-8 shadow', className)}>
         <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
-          <span className="ml-3 text-gray-600">{t('analytics.loading', 'Loading analytics data...')}</span>
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500" />
+          <span className="ml-3 text-gray-600">
+            {t('analytics.loading', 'Loading analytics data...')}
+          </span>
         </div>
       </div>
     );
@@ -228,7 +253,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   // Render error state
   if (error && !data) {
     return (
-      <div className={clsx('bg-white rounded-lg shadow p-8', className)}>
+      <div className={clsx('rounded-lg bg-white p-8 shadow', className)}>
         <div className="text-center">
           <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-red-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">
@@ -237,9 +262,9 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           <p className="mt-1 text-sm text-gray-500">{error}</p>
           <button
             onClick={loadData}
-            className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            className="mt-4 inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
           >
-            <ArrowPathIcon className="h-4 w-4 mr-2" />
+            <ArrowPathIcon className="mr-2 h-4 w-4" />
             {t('analytics.retry', 'Retry')}
           </button>
         </div>
@@ -252,8 +277,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   return (
     <div className={clsx('space-y-6', className)}>
       {/* Header */}
-      <div className="bg-white shadow rounded-lg">
-        <div className="px-6 py-4 border-b border-gray-200">
+      <div className="rounded-lg bg-white shadow">
+        <div className="border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
@@ -261,45 +286,52 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               </h1>
               <p className="text-sm text-gray-500">
                 {t('analytics.lastUpdated', 'Last updated: {{date}}', {
-                  date: data['lastUpdated'].toLocaleString()
+                  date: data['lastUpdated'].toLocaleString(),
                 })}
               </p>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               {/* Date Range Selector */}
               <select
                 value={filters.dateRange.preset || 'custom'}
                 onChange={(e) => handleDateRangeChange(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+                className="rounded-md border border-gray-300 px-3 py-2 text-sm"
               >
-                {dateRangePresets.map(preset => (
+                {dateRangePresets.map((preset) => (
                   <option key={preset.key} value={preset.key}>
                     {preset.label}
                   </option>
                 ))}
-                <option value="custom">{t('analytics.dateRange.custom', 'Custom')}</option>
+                <option value="custom">
+                  {t('analytics.dateRange.custom', 'Custom')}
+                </option>
               </select>
 
               {/* Auto Refresh Toggle */}
               <button
                 onClick={() => setAutoRefresh(!autoRefresh)}
                 className={clsx(
-                  'inline-flex items-center px-3 py-2 border text-sm font-medium rounded-md',
+                  'inline-flex items-center rounded-md border px-3 py-2 text-sm font-medium',
                   autoRefresh
-                    ? 'border-green-300 text-green-700 bg-green-50 hover:bg-green-100'
-                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                    ? 'border-green-300 bg-green-50 text-green-700 hover:bg-green-100'
+                    : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
                 )}
               >
-                <ArrowPathIcon className={clsx('h-4 w-4 mr-2', autoRefresh && 'animate-spin')} />
+                <ArrowPathIcon
+                  className={clsx(
+                    'mr-2 h-4 w-4',
+                    autoRefresh && 'animate-spin'
+                  )}
+                />
                 {t('analytics.autoRefresh', 'Auto Refresh')}
               </button>
 
               {/* Export Options */}
               {showExportOptions && (
                 <div className="relative">
-                  <button className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                    <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
+                  <button className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                    <ArrowDownTrayIcon className="mr-2 h-4 w-4" />
                     {t('analytics.export', 'Export')}
                   </button>
                   {/* Export dropdown would be implemented here */}
@@ -310,9 +342,11 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               <button
                 onClick={loadData}
                 disabled={loading}
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+                className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:opacity-50"
               >
-                <ArrowPathIcon className={clsx('h-4 w-4 mr-2', loading && 'animate-spin')} />
+                <ArrowPathIcon
+                  className={clsx('mr-2 h-4 w-4', loading && 'animate-spin')}
+                />
                 {t('analytics.refresh', 'Refresh')}
               </button>
             </div>
@@ -321,37 +355,56 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
         {/* Real-time Stats Bar */}
         {showRealTime && data['realTimeAnalytics'] && (
-          <div className="px-6 py-3 bg-gray-50 border-b border-gray-200">
+          <div className="border-b border-gray-200 bg-gray-50 px-6 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-6">
                 <div className="flex items-center">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-2" />
+                  <div className="mr-2 h-2 w-2 animate-pulse rounded-full bg-green-400" />
                   <span className="text-sm text-gray-600">
-                    {t('analytics.realTime.activeUsers', '{{count}} active users', {
-                      count: data['realTimeAnalytics'].activeUsers
-                    })}
+                    {t(
+                      'analytics.realTime.activeUsers',
+                      '{{count}} active users',
+                      {
+                        count: data['realTimeAnalytics'].activeUsers,
+                      }
+                    )}
                   </span>
                 </div>
                 <div className="text-sm text-gray-600">
-                  {t('analytics.realTime.currentSessions', '{{count}} sessions', {
-                    count: data['realTimeAnalytics'].currentSessions
-                  })}
+                  {t(
+                    'analytics.realTime.currentSessions',
+                    '{{count}} sessions',
+                    {
+                      count: data['realTimeAnalytics'].currentSessions,
+                    }
+                  )}
                 </div>
                 <div className="text-sm text-gray-600">
-                  {t('analytics.realTime.pageViewsPerMinute', '{{count}} views/min', {
-                    count: data['realTimeAnalytics'].pageViewsPerMinute
-                  })}
+                  {t(
+                    'analytics.realTime.pageViewsPerMinute',
+                    '{{count}} views/min',
+                    {
+                      count: data['realTimeAnalytics'].pageViewsPerMinute,
+                    }
+                  )}
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <div className={clsx(
-                  'w-2 h-2 rounded-full',
-                  data['realTimeAnalytics'].systemStatus.apiStatus === 'healthy' ? 'bg-green-400' :
-                  data['realTimeAnalytics'].systemStatus.apiStatus === 'degraded' ? 'bg-yellow-400' : 'bg-red-400'
-                )} />
+                <div
+                  className={clsx(
+                    'h-2 w-2 rounded-full',
+                    data['realTimeAnalytics'].systemStatus.apiStatus ===
+                      'healthy'
+                      ? 'bg-green-400'
+                      : data['realTimeAnalytics'].systemStatus.apiStatus ===
+                          'degraded'
+                        ? 'bg-yellow-400'
+                        : 'bg-red-400'
+                  )}
+                />
                 <span className="text-xs text-gray-500">
                   {t('analytics.systemStatus', 'System: {{status}}', {
-                    status: data['realTimeAnalytics'].systemStatus.apiStatus
+                    status: data['realTimeAnalytics'].systemStatus.apiStatus,
                   })}
                 </span>
               </div>
@@ -446,51 +499,56 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 };
 
 // Overview Panel Component
-const OverviewPanel: React.FC<{ data: AnalyticsDashboardData }> = ({ data }) => {
+const OverviewPanel: React.FC<{ data: AnalyticsDashboardData }> = ({
+  data,
+}) => {
   const { t } = useTranslation();
 
   return (
     <div className="space-y-6">
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           config={MetricCardTemplates.activeUsers({
             current: data['userAnalytics'].activeUsers,
-            previous: data?.userAnalytics?.totalUsers - data['userAnalytics'].newUsers
+            previous:
+              data?.userAnalytics?.totalUsers - data['userAnalytics'].newUsers,
           })}
         />
         <MetricCard
           config={MetricCardTemplates.jobApplications({
-            current: data?.contentAnalytics?.jobAnalytics.applications
+            current: data?.contentAnalytics?.jobAnalytics.applications,
           })}
         />
         <MetricCard
           config={MetricCardTemplates.revenue({
-            current: data['revenueAnalytics'].totalRevenue
+            current: data['revenueAnalytics'].totalRevenue,
           })}
         />
         <MetricCard
           config={MetricCardTemplates.averageLoadTime({
-            current: data['performanceAnalytics'].pageLoadMetrics.averageLoadTime / 1000
+            current:
+              data['performanceAnalytics'].pageLoadMetrics.averageLoadTime /
+              1000,
           })}
         />
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <ChartWidget
           config={ChartTemplates.userRegistrationsOverTime(
-            data['userAnalytics'].registrationTrend.map(item => ({
+            data['userAnalytics'].registrationTrend.map((item) => ({
               date: item.timestamp.toISOString().split('T')[0],
-              registrations: item.value
+              registrations: item.value,
             }))
           )}
         />
         <ChartWidget
           config={ChartTemplates.revenueGrowth(
-            data['revenueAnalytics'].revenueBySource.map(item => ({
+            data['revenueAnalytics'].revenueBySource.map((item) => ({
               month: item.source,
-              revenue: item.revenue
+              revenue: item.revenue,
             }))
           )}
         />
@@ -503,16 +561,16 @@ const OverviewPanel: React.FC<{ data: AnalyticsDashboardData }> = ({ data }) => 
 const UsersPanel: React.FC<{ data: any }> = ({ data }) => {
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           config={MetricCardTemplates.userRegistrations({
             current: data['newUsers'],
-            trend: data['registrationTrend']
+            trend: data['registrationTrend'],
           })}
         />
         <MetricCard
           config={MetricCardTemplates.activeUsers({
-            current: data['activeUsers']
+            current: data['activeUsers'],
           })}
         />
         {/* Add more user-specific metrics */}
@@ -524,21 +582,33 @@ const UsersPanel: React.FC<{ data: any }> = ({ data }) => {
 
 // Content Panel Component
 const ContentPanel: React.FC<{ data: any }> = (_props) => {
-  return (
-    <div className="space-y-6">
-      {/* Content metrics and charts */}
-    </div>
-  );
+  return <div className="space-y-6">{/* Content metrics and charts */}</div>;
 };
 
 // Additional panel components would be implemented similarly...
-const EngagementPanel: React.FC<{ data: any }> = (_props) => <div>Engagement Panel</div>;
-const RevenuePanel: React.FC<{ data: any }> = (_props) => <div>Revenue Panel</div>;
-const GeographicPanel: React.FC<{ data: any }> = (_props) => <div>Geographic Panel</div>;
-const PerformancePanel: React.FC<{ data: any }> = (_props) => <div>Performance Panel</div>;
-const ErrorsPanel: React.FC<{ data: any }> = (_props) => <div>Errors Panel</div>;
-const FunnelsPanel: React.FC<{ data: any }> = (_props) => <div>Funnels Panel</div>;
-const SearchPanel: React.FC<{ data: any }> = (_props) => <div>Search Panel</div>;
-const TechnologyPanel: React.FC<{ data: any }> = (_props) => <div>Technology Panel</div>;
+const EngagementPanel: React.FC<{ data: any }> = (_props) => (
+  <div>Engagement Panel</div>
+);
+const RevenuePanel: React.FC<{ data: any }> = (_props) => (
+  <div>Revenue Panel</div>
+);
+const GeographicPanel: React.FC<{ data: any }> = (_props) => (
+  <div>Geographic Panel</div>
+);
+const PerformancePanel: React.FC<{ data: any }> = (_props) => (
+  <div>Performance Panel</div>
+);
+const ErrorsPanel: React.FC<{ data: any }> = (_props) => (
+  <div>Errors Panel</div>
+);
+const FunnelsPanel: React.FC<{ data: any }> = (_props) => (
+  <div>Funnels Panel</div>
+);
+const SearchPanel: React.FC<{ data: any }> = (_props) => (
+  <div>Search Panel</div>
+);
+const TechnologyPanel: React.FC<{ data: any }> = (_props) => (
+  <div>Technology Panel</div>
+);
 
 export default AnalyticsDashboard;

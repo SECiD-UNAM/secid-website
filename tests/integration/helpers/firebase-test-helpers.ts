@@ -3,7 +3,14 @@
  * Utility functions for Firebase integration testing
  */
 
-import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs } from 'firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  deleteDoc,
+  getDocs,
+} from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { mockUsers, mockJobs, mockEvents } from '../../fixtures';
 
@@ -60,17 +67,25 @@ export async function createTestEvent(
  * Clean up all test data from Firestore
  */
 export async function cleanupTestData(firestore: any): Promise<void> {
-  const collections = ['users', 'jobs', 'events', 'job_applications', 'event_registrations'];
-  
+  const collections = [
+    'users',
+    'jobs',
+    'events',
+    'job_applications',
+    'event_registrations',
+  ];
+
   for (const collectionName of collections) {
     try {
       const collectionRef = collection(firestore, collectionName);
       const snapshot = await getDocs(collectionRef);
-      
-      const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+
+      const deletePromises = snapshot.docs.map((doc) => deleteDoc(doc.ref));
       await Promise.all(deletePromises);
-      
-      console.log(`Cleaned up ${snapshot.docs.length} documents from ${collectionName}`);
+
+      console.log(
+        `Cleaned up ${snapshot.docs.length} documents from ${collectionName}`
+      );
     } catch (error) {
       console.warn(`Failed to cleanup collection ${collectionName}:`, error);
     }
@@ -87,17 +102,17 @@ export async function seedTestData(firestore: any): Promise<void> {
       await createTestUser(firestore, user.uid, user.profile);
     }
   }
-  
+
   // Create test jobs
   for (const job of Object.values(mockJobs)) {
     await createTestJob(firestore, job);
   }
-  
+
   // Create test events
   for (const event of Object.values(mockEvents)) {
     await createTestEvent(firestore, event);
   }
-  
+
   console.log('Test data seeded successfully');
 }
 
@@ -106,15 +121,15 @@ export async function seedTestData(firestore: any): Promise<void> {
  */
 export async function waitForEmulators(timeout: number = 30000): Promise<void> {
   const start = Date.now();
-  
+
   while (Date.now() - start < timeout) {
     try {
       // Check Auth emulator
       const authResponse = await fetch('http://localhost:9099/');
-      
+
       // Check Firestore emulator
       const firestoreResponse = await fetch('http://localhost:8080/');
-      
+
       if (authResponse.ok && firestoreResponse.ok) {
         console.log('Firebase emulators are ready');
         return;
@@ -122,10 +137,10 @@ export async function waitForEmulators(timeout: number = 30000): Promise<void> {
     } catch (error) {
       // Emulators not ready yet
     }
-    
-    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
-  
+
   throw new Error('Firebase emulators did not start within timeout');
 }
 
@@ -168,15 +183,17 @@ export async function batchCreateDocuments(
   firestore: any,
   operations: Array<{ collection: string; id: string; data: any }>
 ): Promise<void> {
-  const promises = operations.map(({ collection: collectionName, id, data }) => {
-    const docRef = doc(firestore, collectionName, id);
-    return setDoc(docRef, {
-      ...data,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-  });
-  
+  const promises = operations.map(
+    ({ collection: collectionName, id, data }) => {
+      const docRef = doc(firestore, collectionName, id);
+      return setDoc(docRef, {
+        ...data,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+  );
+
   await Promise.all(promises);
 }
 
@@ -190,17 +207,22 @@ export async function testSecurityRule(
 ): Promise<void> {
   try {
     await operation();
-    
+
     if (shouldFail) {
       throw new Error('Operation should have failed but succeeded');
     }
   } catch (error) {
     if (!shouldFail) {
-      throw new Error(`Operation should have succeeded but failed: ${error.message}`);
+      throw new Error(
+        `Operation should have succeeded but failed: ${error.message}`
+      );
     }
-    
+
     // Expected failure for security rule violation
-    if (!error.message.includes('permission') && !error.message.includes('denied')) {
+    if (
+      !error.message.includes('permission') &&
+      !error.message.includes('denied')
+    ) {
       throw error;
     }
   }
@@ -209,7 +231,10 @@ export async function testSecurityRule(
 /**
  * Generate test data with realistic values
  */
-export function generateTestData(type: 'user' | 'job' | 'event', overrides: any = {}) {
+export function generateTestData(
+  type: 'user' | 'job' | 'event',
+  overrides: any = {}
+) {
   const baseData = {
     user: {
       firstName: 'Test',
@@ -247,7 +272,7 @@ export function generateTestData(type: 'user' | 'job' | 'event', overrides: any 
       category: 'workshop',
     },
   };
-  
+
   return {
     ...baseData[type],
     ...overrides,
@@ -266,13 +291,13 @@ export async function assertCollectionContains(
 ): Promise<void> {
   const collectionRef = collection(firestore, collectionName);
   const snapshot = await getDocs(collectionRef);
-  
-  let docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  
+
+  let docs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
   if (filter) {
     docs = docs.filter(filter);
   }
-  
+
   if (docs.length !== expectedCount) {
     throw new Error(
       `Expected ${expectedCount} documents in ${collectionName}, but found ${docs.length}`
@@ -290,13 +315,13 @@ export async function measurePerformance<T>(
   const start = Date.now();
   const result = await operation();
   const duration = Date.now() - start;
-  
+
   if (duration > maxDuration) {
     console.warn(
       `Operation took ${duration}ms, which exceeds the maximum expected duration of ${maxDuration}ms`
     );
   }
-  
+
   return { result, duration };
 }
 
@@ -309,19 +334,19 @@ export async function retryOperation<T>(
   baseDelay: number = 1000
 ): Promise<T> {
   let lastError: Error;
-  
+
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await operation();
     } catch (error) {
       lastError = error as Error;
-      
+
       if (i < maxRetries - 1) {
         const delay = baseDelay * Math.pow(2, i);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
   }
-  
+
   throw lastError!;
 }

@@ -1,26 +1,26 @@
 import { db } from './firebase';
 import {
-  collection, 
-  doc, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
   getDoc,
-  getDocs, 
-  query, 
-  where, 
-  orderBy, 
+  getDocs,
+  query,
+  where,
+  orderBy,
   limit,
   serverTimestamp,
-  Timestamp
+  Timestamp,
 } from 'firebase/firestore';
-import type { 
-  SubscriptionTier, 
-  UserSubscription, 
-  PaymentMethod, 
-  Transaction, 
-  Invoice, 
-  PaymentSettings 
+import type {
+  SubscriptionTier,
+  UserSubscription,
+  PaymentMethod,
+  Transaction,
+  Invoice,
+  PaymentSettings,
 } from '../types';
 
 // Collection references
@@ -45,11 +45,11 @@ export const getSubscriptionTiers = async (): Promise<SubscriptionTier[]> => {
     );
 
     const snapshot = await getDocs(tiersQuery);
-    return snapshot['docs'].map(doc => ({
+    return snapshot['docs'].map((doc) => ({
       id: doc['id'],
       ...doc.data(),
       createdAt: doc['data']().createdAt?.toDate() || new Date(),
-      updatedAt: doc.data().updatedAt?.toDate() || new Date()
+      updatedAt: doc.data().updatedAt?.toDate() || new Date(),
     })) as SubscriptionTier[];
   } catch (error) {
     console.error('Error getting subscription tiers:', error);
@@ -57,10 +57,12 @@ export const getSubscriptionTiers = async (): Promise<SubscriptionTier[]> => {
   }
 };
 
-export const getSubscriptionTier = async (tierId: string): Promise<SubscriptionTier> => {
+export const getSubscriptionTier = async (
+  tierId: string
+): Promise<SubscriptionTier> => {
   try {
     const tierDoc = await getDoc(doc(subscriptionTiersRef, tierId));
-    
+
     if (!tierDoc.exists()) {
       throw new Error('Subscription tier not found');
     }
@@ -69,7 +71,7 @@ export const getSubscriptionTier = async (tierId: string): Promise<SubscriptionT
       id: tierDoc['id'],
       ...tierDoc.data(),
       createdAt: tierDoc['data']().createdAt?.toDate() || new Date(),
-      updatedAt: tierDoc.data().updatedAt?.toDate() || new Date()
+      updatedAt: tierDoc.data().updatedAt?.toDate() || new Date(),
     } as SubscriptionTier;
   } catch (error) {
     console.error('Error getting subscription tier:', error);
@@ -78,7 +80,9 @@ export const getSubscriptionTier = async (tierId: string): Promise<SubscriptionT
 };
 
 // User Subscription Functions
-export const getUserSubscription = async (userId: string): Promise<UserSubscription | null> => {
+export const getUserSubscription = async (
+  userId: string
+): Promise<UserSubscription | null> => {
   try {
     const subscriptionQuery = query(
       userSubscriptionsRef,
@@ -88,7 +92,7 @@ export const getUserSubscription = async (userId: string): Promise<UserSubscript
     );
 
     const snapshot = await getDocs(subscriptionQuery);
-    
+
     if (snapshot['empty']) {
       return null;
     }
@@ -97,11 +101,12 @@ export const getUserSubscription = async (userId: string): Promise<UserSubscript
     return {
       id: doc['id'],
       ...doc['data'](),
-      currentPeriodStart: doc['data']().currentPeriodStart?.toDate() || new Date(),
+      currentPeriodStart:
+        doc['data']().currentPeriodStart?.toDate() || new Date(),
       currentPeriodEnd: doc['data']().currentPeriodEnd?.toDate() || new Date(),
       trialEnd: doc.data().trialEnd?.toDate(),
       createdAt: doc['data']().createdAt?.toDate() || new Date(),
-      updatedAt: doc.data().updatedAt?.toDate() || new Date()
+      updatedAt: doc.data().updatedAt?.toDate() || new Date(),
     } as UserSubscription;
   } catch (error) {
     console.error('Error getting user subscription:', error);
@@ -123,11 +128,15 @@ export const createSubscription = async (subscriptionData: {
     const subscription = {
       ...subscriptionData,
       cancelAtPeriodEnd: false,
-      currentPeriodStart: Timestamp.fromDate(subscriptionData.currentPeriodStart),
+      currentPeriodStart: Timestamp.fromDate(
+        subscriptionData.currentPeriodStart
+      ),
       currentPeriodEnd: Timestamp.fromDate(subscriptionData.currentPeriodEnd),
-      trialEnd: subscriptionData.trialEnd ? Timestamp.fromDate(subscriptionData.trialEnd) : null,
+      trialEnd: subscriptionData.trialEnd
+        ? Timestamp.fromDate(subscriptionData.trialEnd)
+        : null,
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
 
     const docRef = await addDoc(userSubscriptionsRef, subscription);
@@ -137,7 +146,7 @@ export const createSubscription = async (subscriptionData: {
       ...subscriptionData,
       cancelAtPeriodEnd: false,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
   } catch (error) {
     console.error('Error creating subscription:', error);
@@ -145,7 +154,10 @@ export const createSubscription = async (subscriptionData: {
   }
 };
 
-export const updateSubscription = async (subscriptionId: string, newTierId: string): Promise<void> => {
+export const updateSubscription = async (
+  subscriptionId: string,
+  newTierId: string
+): Promise<void> => {
   try {
     // In a real implementation, this would call Stripe API to modify the subscription
     const response = await fetch('/api/stripe/update-subscription', {
@@ -155,8 +167,8 @@ export const updateSubscription = async (subscriptionId: string, newTierId: stri
       },
       body: JSON.stringify({
         subscriptionId,
-        newTierId
-      })
+        newTierId,
+      }),
     });
 
     if (!response.ok) {
@@ -167,7 +179,7 @@ export const updateSubscription = async (subscriptionId: string, newTierId: stri
     const subscriptionDocRef = doc(userSubscriptionsRef, subscriptionId);
     await updateDoc(subscriptionDocRef, {
       tierId: newTierId,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error updating subscription:', error);
@@ -175,11 +187,13 @@ export const updateSubscription = async (subscriptionId: string, newTierId: stri
   }
 };
 
-export const cancelSubscription = async (subscriptionId: string): Promise<void> => {
+export const cancelSubscription = async (
+  subscriptionId: string
+): Promise<void> => {
   try {
     const subscriptionDocRef = doc(userSubscriptionsRef, subscriptionId);
     const subscriptionDoc = await getDoc(subscriptionDocRef);
-    
+
     if (!subscriptionDoc.exists()) {
       throw new Error('Subscription not found');
     }
@@ -193,8 +207,8 @@ export const cancelSubscription = async (subscriptionId: string): Promise<void> 
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        stripeSubscriptionId: subscriptionData.stripeSubscriptionId
-      })
+        stripeSubscriptionId: subscriptionData.stripeSubscriptionId,
+      }),
     });
 
     if (!response.ok) {
@@ -204,7 +218,7 @@ export const cancelSubscription = async (subscriptionId: string): Promise<void> 
     // Update local record
     await updateDoc(subscriptionDocRef, {
       cancelAtPeriodEnd: true,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error canceling subscription:', error);
@@ -212,11 +226,13 @@ export const cancelSubscription = async (subscriptionId: string): Promise<void> 
   }
 };
 
-export const resumeSubscription = async (subscriptionId: string): Promise<void> => {
+export const resumeSubscription = async (
+  subscriptionId: string
+): Promise<void> => {
   try {
     const subscriptionDocRef = doc(userSubscriptionsRef, subscriptionId);
     const subscriptionDoc = await getDoc(subscriptionDocRef);
-    
+
     if (!subscriptionDoc.exists()) {
       throw new Error('Subscription not found');
     }
@@ -230,8 +246,8 @@ export const resumeSubscription = async (subscriptionId: string): Promise<void> 
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        stripeSubscriptionId: subscriptionData.stripeSubscriptionId
-      })
+        stripeSubscriptionId: subscriptionData.stripeSubscriptionId,
+      }),
     });
 
     if (!response.ok) {
@@ -241,7 +257,7 @@ export const resumeSubscription = async (subscriptionId: string): Promise<void> 
     // Update local record
     await updateDoc(subscriptionDocRef, {
       cancelAtPeriodEnd: false,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error resuming subscription:', error);
@@ -250,7 +266,9 @@ export const resumeSubscription = async (subscriptionId: string): Promise<void> 
 };
 
 // Payment Method Functions
-export const getPaymentMethods = async (userId: string): Promise<PaymentMethod[]> => {
+export const getPaymentMethods = async (
+  userId: string
+): Promise<PaymentMethod[]> => {
   try {
     const methodsQuery = query(
       paymentMethodsRef,
@@ -259,11 +277,11 @@ export const getPaymentMethods = async (userId: string): Promise<PaymentMethod[]
     );
 
     const snapshot = await getDocs(methodsQuery);
-    return snapshot['docs'].map(doc => ({
+    return snapshot['docs'].map((doc) => ({
       id: doc['id'],
       ...doc.data(),
       createdAt: doc['data']().createdAt?.toDate() || new Date(),
-      updatedAt: doc.data().updatedAt?.toDate() || new Date()
+      updatedAt: doc.data().updatedAt?.toDate() || new Date(),
     })) as PaymentMethod[];
   } catch (error) {
     console.error('Error getting payment methods:', error);
@@ -272,7 +290,7 @@ export const getPaymentMethods = async (userId: string): Promise<PaymentMethod[]
 };
 
 export const createPaymentMethod = async (
-  userId: string, 
+  userId: string,
   stripePaymentMethod: any
 ): Promise<PaymentMethod> => {
   try {
@@ -286,7 +304,7 @@ export const createPaymentMethod = async (
       expiryYear: stripePaymentMethod?.card?.exp_year,
       isDefault: false,
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
 
     const docRef = await addDoc(paymentMethodsRef, paymentMethodData);
@@ -302,7 +320,7 @@ export const createPaymentMethod = async (
       expiryYear: stripePaymentMethod?.card?.exp_year,
       isDefault: false,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
   } catch (error) {
     console.error('Error creating payment method:', error);
@@ -311,7 +329,7 @@ export const createPaymentMethod = async (
 };
 
 export const setDefaultPaymentMethod = async (
-  userId: string, 
+  userId: string,
   paymentMethodId: string
 ): Promise<void> => {
   try {
@@ -322,12 +340,12 @@ export const setDefaultPaymentMethod = async (
     );
 
     const snapshot = await getDocs(methodsQuery);
-    
+
     // Update all methods to not be default, then set the selected one as default
     const batch = snapshot['docs'].map(async (methodDoc) => {
       return updateDoc(methodDoc.ref, {
         isDefault: methodDoc['id'] === paymentMethodId,
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
     });
 
@@ -338,11 +356,13 @@ export const setDefaultPaymentMethod = async (
   }
 };
 
-export const deletePaymentMethod = async (paymentMethodId: string): Promise<void> => {
+export const deletePaymentMethod = async (
+  paymentMethodId: string
+): Promise<void> => {
   try {
     const paymentMethodDocRef = doc(paymentMethodsRef, paymentMethodId);
     const paymentMethodDoc = await getDoc(paymentMethodDocRef);
-    
+
     if (!paymentMethodDoc.exists()) {
       throw new Error('Payment method not found');
     }
@@ -356,8 +376,8 @@ export const deletePaymentMethod = async (paymentMethodId: string): Promise<void
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        paymentMethodId: paymentMethodData.stripePaymentMethodId
-      })
+        paymentMethodId: paymentMethodData.stripePaymentMethodId,
+      }),
     });
 
     if (!response.ok) {
@@ -386,7 +406,7 @@ export const createStripeCheckoutSession = async (data: {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
 
     if (!response.ok) {
@@ -401,10 +421,14 @@ export const createStripeCheckoutSession = async (data: {
   }
 };
 
-export const getUpcomingInvoice = async (stripeSubscriptionId: string): Promise<any> => {
+export const getUpcomingInvoice = async (
+  stripeSubscriptionId: string
+): Promise<any> => {
   try {
-    const response = await fetch(`/api/stripe/upcoming-invoice?subscription=${stripeSubscriptionId}`);
-    
+    const response = await fetch(
+      `/api/stripe/upcoming-invoice?subscription=${stripeSubscriptionId}`
+    );
+
     if (!response.ok) {
       throw new Error('Failed to get upcoming invoice');
     }
@@ -417,7 +441,9 @@ export const getUpcomingInvoice = async (stripeSubscriptionId: string): Promise<
 };
 
 // Transaction Functions
-export const getUserTransactions = async (userId: string): Promise<Transaction[]> => {
+export const getUserTransactions = async (
+  userId: string
+): Promise<Transaction[]> => {
   try {
     const transactionsQuery = query(
       transactionsRef,
@@ -427,11 +453,11 @@ export const getUserTransactions = async (userId: string): Promise<Transaction[]
     );
 
     const snapshot = await getDocs(transactionsQuery);
-    return snapshot['docs'].map(doc => ({
+    return snapshot['docs'].map((doc) => ({
       id: doc['id'],
       ...doc.data(),
       createdAt: doc['data']().createdAt?.toDate() || new Date(),
-      updatedAt: doc.data().updatedAt?.toDate() || new Date()
+      updatedAt: doc.data().updatedAt?.toDate() || new Date(),
     })) as Transaction[];
   } catch (error) {
     console.error('Error getting user transactions:', error);
@@ -456,7 +482,7 @@ export const createTransaction = async (transactionData: {
     const transaction = {
       ...transactionData,
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
 
     const docRef = await addDoc(transactionsRef, transaction);
@@ -465,7 +491,7 @@ export const createTransaction = async (transactionData: {
       id: docRef['id'],
       ...transactionData,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
   } catch (error) {
     console.error('Error creating transaction:', error);
@@ -473,10 +499,13 @@ export const createTransaction = async (transactionData: {
   }
 };
 
-export const requestRefund = async (transactionId: string, userId: string): Promise<void> => {
+export const requestRefund = async (
+  transactionId: string,
+  userId: string
+): Promise<void> => {
   try {
     const transactionDoc = await getDoc(doc(transactionsRef, transactionId));
-    
+
     if (!transactionDoc.exists()) {
       throw new Error('Transaction not found');
     }
@@ -496,8 +525,8 @@ export const requestRefund = async (transactionId: string, userId: string): Prom
       },
       body: JSON.stringify({
         paymentIntentId: transactionData.stripeTransactionId,
-        amount: transactionData.amount
-      })
+        amount: transactionData.amount,
+      }),
     });
 
     if (!response.ok) {
@@ -516,8 +545,8 @@ export const requestRefund = async (transactionId: string, userId: string): Prom
       description: `Refund for ${transactionData.description}`,
       stripeTransactionId: refundData['id'],
       metadata: {
-        originalTransactionId: transactionId
-      }
+        originalTransactionId: transactionId,
+      },
     });
   } catch (error) {
     console.error('Error requesting refund:', error);
@@ -536,13 +565,13 @@ export const getUserInvoices = async (userId: string): Promise<Invoice[]> => {
     );
 
     const snapshot = await getDocs(invoicesQuery);
-    return snapshot['docs'].map(doc => ({
+    return snapshot['docs'].map((doc) => ({
       id: doc['id'],
       ...doc.data(),
       dueDate: doc['data']().dueDate?.toDate() || new Date(),
       paidAt: doc.data().paidAt?.toDate(),
       createdAt: doc['data']().createdAt?.toDate() || new Date(),
-      updatedAt: doc.data().updatedAt?.toDate() || new Date()
+      updatedAt: doc.data().updatedAt?.toDate() || new Date(),
     })) as Invoice[];
   } catch (error) {
     console.error('Error getting user invoices:', error);
@@ -552,8 +581,10 @@ export const getUserInvoices = async (userId: string): Promise<Invoice[]> => {
 
 export const downloadInvoice = async (invoiceId: string): Promise<string> => {
   try {
-    const response = await fetch(`/api/stripe/download-invoice?invoiceId=${invoiceId}`);
-    
+    const response = await fetch(
+      `/api/stripe/download-invoice?invoiceId=${invoiceId}`
+    );
+
     if (!response.ok) {
       throw new Error('Failed to get invoice download URL');
     }
@@ -567,7 +598,9 @@ export const downloadInvoice = async (invoiceId: string): Promise<string> => {
 };
 
 // Payment Settings Functions
-export const getPaymentSettings = async (userId: string): Promise<PaymentSettings | null> => {
+export const getPaymentSettings = async (
+  userId: string
+): Promise<PaymentSettings | null> => {
   try {
     const settingsQuery = query(
       paymentSettingsRef,
@@ -576,7 +609,7 @@ export const getPaymentSettings = async (userId: string): Promise<PaymentSetting
     );
 
     const snapshot = await getDocs(settingsQuery);
-    
+
     if (snapshot['empty']) {
       // Create default settings
       return await createDefaultPaymentSettings(userId);
@@ -586,7 +619,7 @@ export const getPaymentSettings = async (userId: string): Promise<PaymentSetting
     return {
       userId,
       ...doc.data(),
-      updatedAt: doc['data']().updatedAt?.toDate() || new Date()
+      updatedAt: doc['data']().updatedAt?.toDate() || new Date(),
     } as PaymentSettings;
   } catch (error) {
     console.error('Error getting payment settings:', error);
@@ -595,7 +628,7 @@ export const getPaymentSettings = async (userId: string): Promise<PaymentSetting
 };
 
 export const updatePaymentSettings = async (
-  userId: string, 
+  userId: string,
   updates: Partial<PaymentSettings>
 ): Promise<PaymentSettings> => {
   try {
@@ -606,7 +639,7 @@ export const updatePaymentSettings = async (
     );
 
     const snapshot = await getDocs(settingsQuery);
-    
+
     if (snapshot['empty']) {
       throw new Error('Payment settings not found');
     }
@@ -614,14 +647,14 @@ export const updatePaymentSettings = async (
     const settingsDoc = snapshot['docs'][0];
     await updateDoc(settingsDoc.ref, {
       ...updates,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
 
     return {
       userId,
       ...settingsDoc['data'](),
       ...updates,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     } as PaymentSettings;
   } catch (error) {
     console.error('Error updating payment settings:', error);
@@ -629,7 +662,9 @@ export const updatePaymentSettings = async (
   }
 };
 
-const createDefaultPaymentSettings = async (userId: string): Promise<PaymentSettings> => {
+const createDefaultPaymentSettings = async (
+  userId: string
+): Promise<PaymentSettings> => {
   try {
     const defaultSettings: Omit<PaymentSettings, 'userId'> = {
       defaultPaymentMethodId: undefined,
@@ -639,25 +674,25 @@ const createDefaultPaymentSettings = async (userId: string): Promise<PaymentSett
         city: '',
         state: '',
         postalCode: '',
-        country: ''
+        country: '',
       },
       taxId: undefined,
       invoiceEmails: [],
       autoRenew: true,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     const settingsData = {
       userId,
       ...defaultSettings,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
 
     await addDoc(paymentSettingsRef, settingsData);
 
     return {
       userId,
-      ...defaultSettings
+      ...defaultSettings,
     };
   } catch (error) {
     console.error('Error creating default payment settings:', error);
@@ -673,23 +708,23 @@ export const handleStripeWebhook = async (event: any): Promise<void> => {
       case 'customer.subscription.updated':
         await handleSubscriptionUpdate(event['data'].object);
         break;
-      
+
       case 'customer.subscription.deleted':
         await handleSubscriptionCancellation(event['data'].object);
         break;
-      
+
       case 'invoice.payment_succeeded':
         await handleInvoicePaymentSucceeded(event['data'].object);
         break;
-      
+
       case 'invoice.payment_failed':
         await handleInvoicePaymentFailed(event['data'].object);
         break;
-      
+
       case 'payment_intent.succeeded':
         await handlePaymentSucceeded(event['data'].object);
         break;
-      
+
       default:
         console.log(`Unhandled Stripe event type: ${event['type']}`);
     }
@@ -704,7 +739,9 @@ const handleSubscriptionUpdate = async (subscription: any): Promise<void> => {
   console.log('Handling subscription update:', subscription['id']);
 };
 
-const handleSubscriptionCancellation = async (subscription: any): Promise<void> => {
+const handleSubscriptionCancellation = async (
+  subscription: any
+): Promise<void> => {
   // Implementation would mark subscription as canceled in Firebase
   console.log('Handling subscription cancellation:', subscription['id']);
 };

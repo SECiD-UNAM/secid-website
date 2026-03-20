@@ -34,10 +34,18 @@ export const eventFormSchema = z
     endDate: z.string().min(1, 'End date is required'),
     venue: z.string().max(100).optional().or(z.literal('')),
     address: z.string().max(200).optional().or(z.literal('')),
-    meetingUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+    meetingUrl: z
+      .string()
+      .url('Must be a valid URL')
+      .optional()
+      .or(z.literal('')),
     maxAttendees: z.coerce.number().min(0).max(10000).optional(),
     registrationDeadline: z.string().optional().or(z.literal('')),
-    imageUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+    imageUrl: z
+      .string()
+      .url('Must be a valid URL')
+      .optional()
+      .or(z.literal('')),
     tags: z.string().optional(),
     isFree: z.boolean(),
     price: z.coerce.number().min(0).max(100000).optional(),
@@ -60,7 +68,10 @@ export const eventFormSchema = z
       }
       return true;
     },
-    { message: 'Venue is required for in-person/hybrid events', path: ['venue'] }
+    {
+      message: 'Venue is required for in-person/hybrid events',
+      path: ['venue'],
+    }
   )
   .refine(
     (data) => {
@@ -69,7 +80,10 @@ export const eventFormSchema = z
       }
       return true;
     },
-    { message: 'Meeting URL is required for virtual/hybrid events', path: ['meetingUrl'] }
+    {
+      message: 'Meeting URL is required for virtual/hybrid events',
+      path: ['meetingUrl'],
+    }
   );
 
 export type EventFormData = z.infer<typeof eventFormSchema>;
@@ -128,7 +142,10 @@ const labels: Record<string, Record<string, string>> = {
   address: { en: 'Address', es: 'Direccion' },
   meetingUrl: { en: 'Meeting URL', es: 'URL de reunion' },
   maxAttendees: { en: 'Max Attendees', es: 'Capacidad maxima' },
-  registrationDeadline: { en: 'Registration Deadline', es: 'Fecha limite de registro' },
+  registrationDeadline: {
+    en: 'Registration Deadline',
+    es: 'Fecha limite de registro',
+  },
   imageUrl: { en: 'Banner Image URL', es: 'URL de imagen del banner' },
   tags: { en: 'Tags (comma separated)', es: 'Etiquetas (separadas por coma)' },
   isFree: { en: 'Free Event', es: 'Evento gratuito' },
@@ -140,8 +157,14 @@ const labels: Record<string, Record<string, string>> = {
   submit: { en: 'Create Event', es: 'Crear evento' },
   update: { en: 'Update Event', es: 'Actualizar evento' },
   saving: { en: 'Saving...', es: 'Guardando...' },
-  successCreate: { en: 'Event created successfully!', es: 'Evento creado exitosamente!' },
-  successUpdate: { en: 'Event updated successfully!', es: 'Evento actualizado exitosamente!' },
+  successCreate: {
+    en: 'Event created successfully!',
+    es: 'Evento creado exitosamente!',
+  },
+  successUpdate: {
+    en: 'Event updated successfully!',
+    es: 'Evento actualizado exitosamente!',
+  },
   errorAuth: {
     en: 'You must be logged in to manage events.',
     es: 'Debes iniciar sesion para gestionar eventos.',
@@ -167,18 +190,26 @@ export function t(key: string, lang: string): string {
 // Helpers
 // ---------------------------------------------------------------------------
 
-export function toDatetimeLocal(d: Date | { toDate: () => Date } | undefined): string {
+export function toDatetimeLocal(
+  d: Date | { toDate: () => Date } | undefined
+): string {
   if (!d) return '';
-  const date = typeof (d as { toDate?: () => Date }).toDate === 'function'
-    ? (d as { toDate: () => Date }).toDate()
-    : (d as Date);
+  const date =
+    typeof (d as { toDate?: () => Date }).toDate === 'function'
+      ? (d as { toDate: () => Date }).toDate()
+      : (d as Date);
   const offset = date.getTimezoneOffset();
   const local = new Date(date.getTime() - offset * 60000);
   return local.toISOString().slice(0, 16);
 }
 
-export function resolveFormat(event: EventFormEvent): 'in-person' | 'virtual' | 'hybrid' {
-  if (event.format && (EVENT_FORMATS as readonly string[]).includes(event.format)) {
+export function resolveFormat(
+  event: EventFormEvent
+): 'in-person' | 'virtual' | 'hybrid' {
+  if (
+    event.format &&
+    (EVENT_FORMATS as readonly string[]).includes(event.format)
+  ) {
     return event.format as 'in-person' | 'virtual' | 'hybrid';
   }
   if (event.location?.type) {
@@ -196,7 +227,9 @@ export function eventToFormDefaults(ev: EventFormEvent): EventFormData {
   return {
     title: ev.title,
     description: ev.description,
-    type: ((EVENT_TYPES as readonly string[]).includes(ev.type) ? ev.type : 'workshop') as EventFormData['type'],
+    type: ((EVENT_TYPES as readonly string[]).includes(ev.type)
+      ? ev.type
+      : 'workshop') as EventFormData['type'],
     format: resolveFormat(ev),
     startDate: toDatetimeLocal(ev.startDate),
     endDate: toDatetimeLocal(ev.endDate),
@@ -209,9 +242,13 @@ export function eventToFormDefaults(ev: EventFormEvent): EventFormData {
     tags: ev.tags?.join(', ') ?? '',
     isFree: ev.isFree ?? true,
     price: ev.price ?? 0,
-    currency: (['USD', 'MXN', 'EUR'].includes(ev.currency ?? '') ? ev.currency : 'MXN') as EventFormData['currency'],
+    currency: (['USD', 'MXN', 'EUR'].includes(ev.currency ?? '')
+      ? ev.currency
+      : 'MXN') as EventFormData['currency'],
     contactEmail: ev.contactEmail ?? '',
     isFeatured: ev.isFeatured ?? false,
-    status: (ev.status === 'published' ? 'published' : 'draft') as EventFormData['status'],
+    status: (ev.status === 'published'
+      ? 'published'
+      : 'draft') as EventFormData['status'],
   };
 }

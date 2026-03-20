@@ -3,10 +3,10 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TwoFactorVerification } from '@/components/auth/TwoFactorVerification';
-import { 
-  verifyTwoFactorLogin, 
+import {
+  verifyTwoFactorLogin,
   useBackupCode,
-  verifyTwoFactorSession
+  verifyTwoFactorSession,
 } from '@/lib/auth/two-factor';
 import toast from 'react-hot-toast';
 
@@ -64,7 +64,15 @@ vi.mock('@/hooks/useTranslations', () => ({
 }));
 
 vi.mock('@/components/ui/Button', () => ({
-  default: ({ children, loading, disabled, onClick, type, variant, ...props }: any) => (
+  default: ({
+    children,
+    loading,
+    disabled,
+    onClick,
+    type,
+    variant,
+    ...props
+  }: any) => (
     <button
       type={type}
       onClick={onClick}
@@ -103,10 +111,16 @@ describe.skip('TwoFactorVerification', () => {
       render(<TwoFactorVerification uid="user123" mode="login" />);
 
       expect(screen.getByText(/two-factor verification/i)).toBeInTheDocument();
-      expect(screen.getByText(/enter the code from your authenticator app/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/enter the code from your authenticator app/i)
+      ).toBeInTheDocument();
       expect(screen.getByLabelText(/authentication code/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /verify/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /verify/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /cancel/i })
+      ).toBeInTheDocument();
     });
 
     it('renders verification form for session mode', () => {
@@ -138,7 +152,9 @@ describe.skip('TwoFactorVerification', () => {
     it('shows lost device link', () => {
       render(<TwoFactorVerification uid="user123" />);
 
-      expect(screen.getByRole('button', { name: /lost your device/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /lost your device/i })
+      ).toBeInTheDocument();
     });
   });
 
@@ -171,7 +187,13 @@ describe.skip('TwoFactorVerification', () => {
       mockVerifyTwoFactorLogin.mockResolvedValue(true);
 
       const onSuccess = vi.fn();
-      render(<TwoFactorVerification uid="user123" mode="login" onSuccess={onSuccess} />);
+      render(
+        <TwoFactorVerification
+          uid="user123"
+          mode="login"
+          onSuccess={onSuccess}
+        />
+      );
 
       const codeInput = screen.getByLabelText(/authentication code/i);
       const verifyButton = screen.getByRole('button', { name: /verify/i });
@@ -180,8 +202,13 @@ describe.skip('TwoFactorVerification', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        expect(mockVerifyTwoFactorLogin).toHaveBeenCalledWith('user123', '123456');
-        expect(mockToast.success).toHaveBeenCalledWith('Verification successful');
+        expect(mockVerifyTwoFactorLogin).toHaveBeenCalledWith(
+          'user123',
+          '123456'
+        );
+        expect(mockToast.success).toHaveBeenCalledWith(
+          'Verification successful'
+        );
         expect(onSuccess).toHaveBeenCalled();
       });
     });
@@ -190,7 +217,13 @@ describe.skip('TwoFactorVerification', () => {
       mockVerifyTwoFactorSession.mockResolvedValue(true);
 
       const onSuccess = vi.fn();
-      render(<TwoFactorVerification sessionId="session123" mode="session" onSuccess={onSuccess} />);
+      render(
+        <TwoFactorVerification
+          sessionId="session123"
+          mode="session"
+          onSuccess={onSuccess}
+        />
+      );
 
       const codeInput = screen.getByLabelText(/authentication code/i);
       const verifyButton = screen.getByRole('button', { name: /verify/i });
@@ -199,8 +232,13 @@ describe.skip('TwoFactorVerification', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        expect(mockVerifyTwoFactorSession).toHaveBeenCalledWith('session123', '123456');
-        expect(mockToast.success).toHaveBeenCalledWith('Verification successful');
+        expect(mockVerifyTwoFactorSession).toHaveBeenCalledWith(
+          'session123',
+          '123456'
+        );
+        expect(mockToast.success).toHaveBeenCalledWith(
+          'Verification successful'
+        );
         expect(onSuccess).toHaveBeenCalled();
       });
     });
@@ -217,8 +255,12 @@ describe.skip('TwoFactorVerification', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        expect(mockToast.error).toHaveBeenCalledWith('Incorrect code. 2 attempts remaining');
-        expect(screen.getByText(/warning: 2 attempts remaining/i)).toBeInTheDocument();
+        expect(mockToast.error).toHaveBeenCalledWith(
+          'Incorrect code. 2 attempts remaining'
+        );
+        expect(
+          screen.getByText(/warning: 2 attempts remaining/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -236,14 +278,16 @@ describe.skip('TwoFactorVerification', () => {
         await user.clear(codeInput);
         await user.type(codeInput, '123456');
         await user.click(verifyButton);
-        
+
         await waitFor(() => {
           expect(mockVerifyTwoFactorLogin).toHaveBeenCalled();
         });
       }
 
       await waitFor(() => {
-        expect(mockToast.error).toHaveBeenCalledWith('Too many failed attempts');
+        expect(mockToast.error).toHaveBeenCalledWith(
+          'Too many failed attempts'
+        );
         expect(onCancel).toHaveBeenCalled();
       });
     });
@@ -269,7 +313,9 @@ describe.skip('TwoFactorVerification', () => {
 
       render(<TwoFactorVerification uid="user123" />);
 
-      const codeInput = screen.getByLabelText(/authentication code/i) as HTMLInputElement;
+      const codeInput = screen.getByLabelText(
+        /authentication code/i
+      ) as HTMLInputElement;
       const verifyButton = screen.getByRole('button', { name: /verify/i });
 
       await user.type(codeInput, '123456');
@@ -285,21 +331,29 @@ describe.skip('TwoFactorVerification', () => {
     it('switches to backup code form', async () => {
       render(<TwoFactorVerification uid="user123" />);
 
-      const lostDeviceButton = screen.getByRole('button', { name: /lost your device/i });
+      const lostDeviceButton = screen.getByRole('button', {
+        name: /lost your device/i,
+      });
       await user.click(lostDeviceButton);
 
       await waitFor(() => {
         expect(screen.getByText(/use backup code/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/backup code/i)).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /use code/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /back/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /use code/i })
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /back/i })
+        ).toBeInTheDocument();
       });
     });
 
     it('validates backup code format', async () => {
       render(<TwoFactorVerification uid="user123" />);
 
-      const lostDeviceButton = screen.getByRole('button', { name: /lost your device/i });
+      const lostDeviceButton = screen.getByRole('button', {
+        name: /lost your device/i,
+      });
       await user.click(lostDeviceButton);
 
       await waitFor(() => {
@@ -333,7 +387,9 @@ describe.skip('TwoFactorVerification', () => {
       const onSuccess = vi.fn();
       render(<TwoFactorVerification uid="user123" onSuccess={onSuccess} />);
 
-      const lostDeviceButton = screen.getByRole('button', { name: /lost your device/i });
+      const lostDeviceButton = screen.getByRole('button', {
+        name: /lost your device/i,
+      });
       await user.click(lostDeviceButton);
 
       await waitFor(() => {
@@ -358,7 +414,9 @@ describe.skip('TwoFactorVerification', () => {
 
       render(<TwoFactorVerification uid="user123" />);
 
-      const lostDeviceButton = screen.getByRole('button', { name: /lost your device/i });
+      const lostDeviceButton = screen.getByRole('button', {
+        name: /lost your device/i,
+      });
       await user.click(lostDeviceButton);
 
       await waitFor(() => {
@@ -372,14 +430,18 @@ describe.skip('TwoFactorVerification', () => {
       await user.click(useCodeButton);
 
       await waitFor(() => {
-        expect(mockToast.error).toHaveBeenCalledWith('Invalid or already used backup code');
+        expect(mockToast.error).toHaveBeenCalledWith(
+          'Invalid or already used backup code'
+        );
       });
     });
 
     it('switches back to TOTP form', async () => {
       render(<TwoFactorVerification uid="user123" />);
 
-      const lostDeviceButton = screen.getByRole('button', { name: /lost your device/i });
+      const lostDeviceButton = screen.getByRole('button', {
+        name: /lost your device/i,
+      });
       await user.click(lostDeviceButton);
 
       await waitFor(() => {
@@ -390,7 +452,9 @@ describe.skip('TwoFactorVerification', () => {
       await user.click(backButton);
 
       await waitFor(() => {
-        expect(screen.getByLabelText(/authentication code/i)).toBeInTheDocument();
+        expect(
+          screen.getByLabelText(/authentication code/i)
+        ).toBeInTheDocument();
         expect(screen.queryByText(/use backup code/i)).not.toBeInTheDocument();
       });
     });
@@ -400,14 +464,18 @@ describe.skip('TwoFactorVerification', () => {
 
       render(<TwoFactorVerification uid="user123" />);
 
-      const lostDeviceButton = screen.getByRole('button', { name: /lost your device/i });
+      const lostDeviceButton = screen.getByRole('button', {
+        name: /lost your device/i,
+      });
       await user.click(lostDeviceButton);
 
       await waitFor(() => {
         expect(screen.getByLabelText(/backup code/i)).toBeInTheDocument();
       });
 
-      const backupCodeInput = screen.getByLabelText(/backup code/i) as HTMLInputElement;
+      const backupCodeInput = screen.getByLabelText(
+        /backup code/i
+      ) as HTMLInputElement;
       const useCodeButton = screen.getByRole('button', { name: /use code/i });
 
       await user.type(backupCodeInput, '12345678');
@@ -446,7 +514,13 @@ describe.skip('TwoFactorVerification', () => {
 
     it('handles session expiration', async () => {
       const onCancel = vi.fn();
-      render(<TwoFactorVerification sessionId="session123" mode="session" onCancel={onCancel} />);
+      render(
+        <TwoFactorVerification
+          sessionId="session123"
+          mode="session"
+          onCancel={onCancel}
+        />
+      );
 
       // Advance time to expiration
       vi.advanceTimersByTime(5 * 60 * 1000);
@@ -496,7 +570,9 @@ describe.skip('TwoFactorVerification', () => {
 
       render(<TwoFactorVerification uid="user123" />);
 
-      const lostDeviceButton = screen.getByRole('button', { name: /lost your device/i });
+      const lostDeviceButton = screen.getByRole('button', {
+        name: /lost your device/i,
+      });
       await user.click(lostDeviceButton);
 
       await waitFor(() => {
@@ -551,14 +627,18 @@ describe.skip('TwoFactorVerification', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        expect(mockToast.error).toHaveBeenCalledWith('Missing session information');
+        expect(mockToast.error).toHaveBeenCalledWith(
+          'Missing session information'
+        );
       });
     });
 
     it('handles missing user ID for backup codes', async () => {
       render(<TwoFactorVerification mode="login" />);
 
-      const lostDeviceButton = screen.getByRole('button', { name: /lost your device/i });
+      const lostDeviceButton = screen.getByRole('button', {
+        name: /lost your device/i,
+      });
       await user.click(lostDeviceButton);
 
       await waitFor(() => {
@@ -577,7 +657,9 @@ describe.skip('TwoFactorVerification', () => {
     });
 
     it('handles verification errors gracefully', async () => {
-      mockVerifyTwoFactorLogin.mockRejectedValue(new Error('Verification service unavailable'));
+      mockVerifyTwoFactorLogin.mockRejectedValue(
+        new Error('Verification service unavailable')
+      );
 
       render(<TwoFactorVerification uid="user123" />);
 
@@ -588,7 +670,9 @@ describe.skip('TwoFactorVerification', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        expect(mockToast.error).toHaveBeenCalledWith('Verification service unavailable');
+        expect(mockToast.error).toHaveBeenCalledWith(
+          'Verification service unavailable'
+        );
       });
     });
 
@@ -602,7 +686,9 @@ describe.skip('TwoFactorVerification', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        expect(mockToast.error).toHaveBeenCalledWith('Missing session information');
+        expect(mockToast.error).toHaveBeenCalledWith(
+          'Missing session information'
+        );
       });
     });
   });
@@ -650,7 +736,9 @@ describe.skip('TwoFactorVerification', () => {
     it('limits backup code input length', async () => {
       render(<TwoFactorVerification uid="user123" />);
 
-      const lostDeviceButton = screen.getByRole('button', { name: /lost your device/i });
+      const lostDeviceButton = screen.getByRole('button', {
+        name: /lost your device/i,
+      });
       await user.click(lostDeviceButton);
 
       await waitFor(() => {
@@ -672,20 +760,28 @@ describe.skip('TwoFactorVerification', () => {
     it('has proper button labeling', () => {
       render(<TwoFactorVerification uid="user123" />);
 
-      expect(screen.getByRole('button', { name: /verify/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /verify/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /cancel/i })
+      ).toBeInTheDocument();
     });
 
     it('shows help text for support', () => {
       render(<TwoFactorVerification uid="user123" />);
 
-      expect(screen.getByText(/can't access\? contact technical support/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/can't access\? contact technical support/i)
+      ).toBeInTheDocument();
     });
 
     it('has proper heading structure', () => {
       render(<TwoFactorVerification uid="user123" />);
 
-      expect(screen.getByRole('heading', { name: /two-factor verification/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: /two-factor verification/i })
+      ).toBeInTheDocument();
     });
 
     it('maintains focus during state changes', async () => {
@@ -695,7 +791,9 @@ describe.skip('TwoFactorVerification', () => {
       await user.click(codeInput);
       expect(codeInput).toHaveFocus();
 
-      const lostDeviceButton = screen.getByRole('button', { name: /lost your device/i });
+      const lostDeviceButton = screen.getByRole('button', {
+        name: /lost your device/i,
+      });
       await user.click(lostDeviceButton);
 
       await waitFor(() => {
@@ -719,7 +817,9 @@ describe.skip('TwoFactorVerification', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/warning: 2 attempts remaining/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/warning: 2 attempts remaining/i)
+        ).toBeInTheDocument();
       });
 
       // Second failed attempt
@@ -728,7 +828,9 @@ describe.skip('TwoFactorVerification', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/warning: 1 attempts remaining/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/warning: 1 attempts remaining/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -743,7 +845,9 @@ describe.skip('TwoFactorVerification', () => {
     it('uses correct language for Spanish', () => {
       render(<TwoFactorVerification uid="user123" lang="es" />);
 
-      expect(screen.getByText(/verificación de dos factores/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/verificación de dos factores/i)
+      ).toBeInTheDocument();
     });
 
     it('uses correct language for English', () => {
@@ -764,7 +868,9 @@ describe.skip('TwoFactorVerification', () => {
       await user.click(verifyButton);
 
       await waitFor(() => {
-        expect(mockToast.error).toHaveBeenCalledWith('Incorrect code. 2 attempts remaining');
+        expect(mockToast.error).toHaveBeenCalledWith(
+          'Incorrect code. 2 attempts remaining'
+        );
       });
     });
   });
@@ -779,7 +885,7 @@ describe.skip('TwoFactorVerification', () => {
       const verifyButton = screen.getByRole('button', { name: /verify/i });
 
       await user.type(codeInput, '123456');
-      
+
       expect(async () => {
         await user.click(verifyButton);
       }).not.toThrow();
@@ -794,7 +900,7 @@ describe.skip('TwoFactorVerification', () => {
       const verifyButton = screen.getByRole('button', { name: /verify/i });
 
       await user.type(codeInput, '123456');
-      
+
       // Rapid clicks
       await user.click(verifyButton);
       await user.click(verifyButton);
@@ -815,7 +921,9 @@ describe.skip('TwoFactorVerification', () => {
     });
 
     it('cleans up timer on unmount', () => {
-      const { unmount } = render(<TwoFactorVerification sessionId="session123" mode="session" />);
+      const { unmount } = render(
+        <TwoFactorVerification sessionId="session123" mode="session" />
+      );
 
       expect(screen.getByText('5:00')).toBeInTheDocument();
 

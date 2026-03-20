@@ -104,9 +104,7 @@ async function logWebhookEvent(
 async function findFirebaseUidByCustomerId(
   stripeCustomerId: string
 ): Promise<string | null> {
-  const customerDoc = await getDoc(
-    doc(stripeCustomersRef, stripeCustomerId)
-  );
+  const customerDoc = await getDoc(doc(stripeCustomersRef, stripeCustomerId));
   if (customerDoc.exists()) {
     return (customerDoc.data().firebaseUid as string) ?? null;
   }
@@ -182,8 +180,7 @@ export async function processWebhookEvent(event: Stripe.Event): Promise<void> {
       await logWebhookEvent(event as WebhookEvent, 'processed');
       console.log(`Successfully processed ${event.type} event`);
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Unknown error';
+      const message = error instanceof Error ? error.message : 'Unknown error';
       await logWebhookEvent(event as WebhookEvent, 'failed', message);
       console.error(`Error processing ${event.type} event:`, error);
       throw error;
@@ -431,7 +428,7 @@ async function handleInvoicePaymentSucceeded(
       stripePaymentIntentId:
         typeof invoice.payment_intent === 'string'
           ? invoice.payment_intent
-          : invoice.payment_intent?.id ?? null,
+          : (invoice.payment_intent?.id ?? null),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -676,8 +673,7 @@ async function handlePaymentIntentSucceeded(
       status: 'succeeded',
       amount: paymentIntent.amount / 100,
       currency: paymentIntent.currency,
-      description:
-        metadata.description ?? `Payment ${paymentIntent.id}`,
+      description: metadata.description ?? `Payment ${paymentIntent.id}`,
       stripePaymentIntentId: paymentIntent.id,
       metadata: {
         paymentType,
@@ -776,15 +772,13 @@ async function handleCheckoutSessionCompleted(
         }
       }
 
-      console.log(
-        `Subscription checkout completed for session ${session.id}`
-      );
+      console.log(`Subscription checkout completed for session ${session.id}`);
     } else if (session.mode === 'payment') {
       // One-time payment -- the payment_intent.succeeded handler records the transaction.
       // Store checkout metadata for reference.
       const firebaseUid = customerId
         ? await findFirebaseUidByCustomerId(customerId)
-        : session.metadata?.firebaseUid ?? null;
+        : (session.metadata?.firebaseUid ?? null);
 
       await addDoc(transactionsRef, {
         userId: firebaseUid,

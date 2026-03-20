@@ -3,7 +3,7 @@ import { PERFORMANCE_BUDGETS } from '../../../playwright.config';
 
 export class BasePage {
   protected readonly page: Page;
-  
+
   constructor(page: Page) {
     this.page = page;
   }
@@ -23,7 +23,7 @@ export class BasePage {
     await this.page.waitForLoadState('networkidle');
     // Wait for any loading indicators to disappear
     const loadingIndicator = this.page.locator('[data-testid="loading"]');
-    if (await loadingIndicator.count() > 0) {
+    if ((await loadingIndicator.count()) > 0) {
       await loadingIndicator.waitFor({ state: 'hidden', timeout: 30000 });
     }
   }
@@ -79,9 +79,9 @@ export class BasePage {
    * Take screenshot for debugging
    */
   async takeScreenshot(name: string) {
-    await this.page.screenshot({ 
+    await this.page.screenshot({
       path: `test-results/screenshots/${name}.png`,
-      fullPage: true 
+      fullPage: true,
     });
   }
 
@@ -99,29 +99,40 @@ export class BasePage {
    */
   async measurePerformance() {
     const performanceMetrics = await this.page.evaluate(() => {
-      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      const navigation = performance.getEntriesByType(
+        'navigation'
+      )[0] as PerformanceNavigationTiming;
       const paint = performance.getEntriesByType('paint');
-      
+
       return {
         // Navigation timing
-        domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
+        domContentLoaded:
+          navigation.domContentLoadedEventEnd -
+          navigation.domContentLoadedEventStart,
         loadComplete: navigation.loadEventEnd - navigation.loadEventStart,
-        
+
         // Paint timing
-        firstPaint: paint.find(entry => entry.name === 'first-paint')?.startTime || 0,
-        firstContentfulPaint: paint.find(entry => entry.name === 'first-contentful-paint')?.startTime || 0,
-        
+        firstPaint:
+          paint.find((entry) => entry.name === 'first-paint')?.startTime || 0,
+        firstContentfulPaint:
+          paint.find((entry) => entry.name === 'first-contentful-paint')
+            ?.startTime || 0,
+
         // Resource timing
         resourceCount: performance.getEntriesByType('resource').length,
-        totalResourceSize: performance.getEntriesByType('resource').reduce((acc, resource: any) => {
-          return acc + (resource.transferSize || 0);
-        }, 0),
+        totalResourceSize: performance
+          .getEntriesByType('resource')
+          .reduce((acc, resource: any) => {
+            return acc + (resource.transferSize || 0);
+          }, 0),
       };
     });
 
     // Validate against performance budgets
-    expect(performanceMetrics.firstContentfulPaint).toBeLessThan(PERFORMANCE_BUDGETS.FCP);
-    
+    expect(performanceMetrics.firstContentfulPaint).toBeLessThan(
+      PERFORMANCE_BUDGETS.FCP
+    );
+
     return performanceMetrics;
   }
 
@@ -129,9 +140,9 @@ export class BasePage {
    * Wait for element to be visible
    */
   async waitForElement(selector: string, options?: { timeout?: number }) {
-    await this.page.locator(selector).waitFor({ 
-      state: 'visible', 
-      timeout: options?.timeout || 10000 
+    await this.page.locator(selector).waitFor({
+      state: 'visible',
+      timeout: options?.timeout || 10000,
     });
   }
 
@@ -141,7 +152,7 @@ export class BasePage {
   async getElementText(selector: string): Promise<string> {
     const element = this.page.locator(selector);
     await element.waitFor({ state: 'visible' });
-    return await element.textContent() || '';
+    return (await element.textContent()) || '';
   }
 
   /**
@@ -149,7 +160,7 @@ export class BasePage {
    */
   async hasClass(selector: string, className: string): Promise<boolean> {
     const element = this.page.locator(selector);
-    const classes = await element.getAttribute('class') || '';
+    const classes = (await element.getAttribute('class')) || '';
     return classes.includes(className);
   }
 
@@ -165,7 +176,7 @@ export class BasePage {
    * Handle dialog/alert
    */
   async handleDialog(accept: boolean = true, promptText?: string) {
-    this.page.on('dialog', async dialog => {
+    this.page.on('dialog', async (dialog) => {
       if (promptText && dialog.type() === 'prompt') {
         await dialog.accept(promptText);
       } else if (accept) {
@@ -198,12 +209,14 @@ export class BasePage {
    * Set browser cookies
    */
   async setCookie(name: string, value: string) {
-    await this.page.context().addCookies([{
-      name,
-      value,
-      domain: new URL(this.page.url()).hostname,
-      path: '/',
-    }]);
+    await this.page.context().addCookies([
+      {
+        name,
+        value,
+        domain: new URL(this.page.url()).hostname,
+        path: '/',
+      },
+    ]);
   }
 
   /**
@@ -217,8 +230,8 @@ export class BasePage {
    * Wait for API response
    */
   async waitForAPIResponse(urlPattern: string | RegExp) {
-    return await this.page.waitForResponse(response => 
-      urlPattern instanceof RegExp 
+    return await this.page.waitForResponse((response) =>
+      urlPattern instanceof RegExp
         ? urlPattern.test(response.url())
         : response.url().includes(urlPattern)
     );
@@ -228,11 +241,11 @@ export class BasePage {
    * Mock API response
    */
   async mockAPIResponse(url: string | RegExp, response: any) {
-    await this.page.route(url, route => {
+    await this.page.route(url, (route) => {
       route.fulfill({
         status: response.status || 200,
         contentType: 'application/json',
-        body: JSON.stringify(response.body || {})
+        body: JSON.stringify(response.body || {}),
       });
     });
   }
@@ -242,20 +255,22 @@ export class BasePage {
    */
   async getNetworkRequests(urlPattern?: string | RegExp) {
     const requests: any[] = [];
-    
-    this.page.on('request', request => {
-      if (!urlPattern || 
-          (urlPattern instanceof RegExp && urlPattern.test(request.url())) ||
-          (typeof urlPattern === 'string' && request.url().includes(urlPattern))) {
+
+    this.page.on('request', (request) => {
+      if (
+        !urlPattern ||
+        (urlPattern instanceof RegExp && urlPattern.test(request.url())) ||
+        (typeof urlPattern === 'string' && request.url().includes(urlPattern))
+      ) {
         requests.push({
           url: request.url(),
           method: request.method(),
           headers: request.headers(),
-          postData: request.postData()
+          postData: request.postData(),
         });
       }
     });
-    
+
     return requests;
   }
 
@@ -264,13 +279,13 @@ export class BasePage {
    */
   async checkForConsoleErrors() {
     const errors: string[] = [];
-    
-    this.page.on('console', msg => {
+
+    this.page.on('console', (msg) => {
       if (msg.type() === 'error') {
         errors.push(msg.text());
       }
     });
-    
+
     return errors;
   }
 

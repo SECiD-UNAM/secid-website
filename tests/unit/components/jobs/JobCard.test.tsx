@@ -1,6 +1,12 @@
 // @ts-nocheck
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { JobCard } from '@/components/jobs/JobCard';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,30 +16,44 @@ vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn(),
 }));
 
-vi.mock('@heroicons/react/24/outline', () =>
-  new Proxy({}, {
-    get: (_target, prop) => {
-      if (typeof prop === 'string' && prop !== '__esModule') {
-        const Icon = ({ className }: any) => <svg className={className} data-testid={`${prop}-icon`} />;
-        Icon.displayName = prop;
-        return Icon;
+vi.mock(
+  '@heroicons/react/24/outline',
+  () =>
+    new Proxy(
+      {},
+      {
+        get: (_target, prop) => {
+          if (typeof prop === 'string' && prop !== '__esModule') {
+            const Icon = ({ className }: any) => (
+              <svg className={className} data-testid={`${prop}-icon`} />
+            );
+            Icon.displayName = prop;
+            return Icon;
+          }
+          return undefined;
+        },
       }
-      return undefined;
-    },
-  })
+    )
 );
 
-vi.mock('@heroicons/react/24/solid', () =>
-  new Proxy({}, {
-    get: (_target, prop) => {
-      if (typeof prop === 'string' && prop !== '__esModule') {
-        const Icon = ({ className }: any) => <svg className={className} data-testid={`${prop}-solid-icon`} />;
-        Icon.displayName = prop;
-        return Icon;
+vi.mock(
+  '@heroicons/react/24/solid',
+  () =>
+    new Proxy(
+      {},
+      {
+        get: (_target, prop) => {
+          if (typeof prop === 'string' && prop !== '__esModule') {
+            const Icon = ({ className }: any) => (
+              <svg className={className} data-testid={`${prop}-solid-icon`} />
+            );
+            Icon.displayName = prop;
+            return Icon;
+          }
+          return undefined;
+        },
       }
-      return undefined;
-    },
-  })
+    )
 );
 
 describe('JobCard', () => {
@@ -57,7 +77,8 @@ describe('JobCard', () => {
       currency: 'MXN',
       period: 'monthly',
     },
-    description: 'We are looking for an experienced Data Scientist to join our team and help drive data-driven decisions across the organization.',
+    description:
+      'We are looking for an experienced Data Scientist to join our team and help drive data-driven decisions across the organization.',
     requirements: ['Python', 'Machine Learning', 'SQL', 'Statistics'],
     benefits: ['Seguro de gastos médicos', 'Home office', 'Capacitación'],
     tags: ['python', 'machine-learning', 'sql', 'senior'],
@@ -229,7 +250,10 @@ describe('JobCard', () => {
 
     it('displays employment type labels correctly', () => {
       const contractJob = { ...mockJob, employmentType: 'contract' as const };
-      const internshipJob = { ...mockJob, employmentType: 'internship' as const };
+      const internshipJob = {
+        ...mockJob,
+        employmentType: 'internship' as const,
+      };
 
       const { rerender } = render(<JobCard job={contractJob} />);
       expect(screen.getByText('Por proyecto')).toBeInTheDocument();
@@ -253,7 +277,15 @@ describe('JobCard', () => {
     it('shows "more" indicator when requirements exceed display limit', () => {
       const jobWithManyRequirements = {
         ...mockJob,
-        requirements: ['Python', 'R', 'SQL', 'Machine Learning', 'Deep Learning', 'Statistics', 'Tableau'],
+        requirements: [
+          'Python',
+          'R',
+          'SQL',
+          'Machine Learning',
+          'Deep Learning',
+          'Statistics',
+          'Tableau',
+        ],
       };
       render(<JobCard job={jobWithManyRequirements} />);
 
@@ -298,7 +330,9 @@ describe('JobCard', () => {
     it('navigates to job details when title is clicked', () => {
       render(<JobCard job={mockJob} />);
 
-      const titleLink = screen.getByRole('link', { name: 'Senior Data Scientist' });
+      const titleLink = screen.getByRole('link', {
+        name: 'Senior Data Scientist',
+      });
       expect(titleLink).toHaveAttribute('href', '/es/dashboard/jobs/1');
     });
 
@@ -312,7 +346,9 @@ describe('JobCard', () => {
     it('uses correct language in URLs', () => {
       render(<JobCard job={mockJob} lang="en" />);
 
-      const titleLink = screen.getByRole('link', { name: 'Senior Data Scientist' });
+      const titleLink = screen.getByRole('link', {
+        name: 'Senior Data Scientist',
+      });
       expect(titleLink).toHaveAttribute('href', '/en/dashboard/jobs/1');
     });
   });
@@ -376,7 +412,9 @@ describe('JobCard', () => {
     });
 
     it('does not apply featured styling for non-featured jobs', () => {
-      const { container } = render(<JobCard job={mockJobWithoutOptionalFields} />);
+      const { container } = render(
+        <JobCard job={mockJobWithoutOptionalFields} />
+      );
 
       const cardElement = container.firstChild as HTMLElement;
       expect(cardElement).not.toHaveClass('border-2', 'border-primary-500');
@@ -392,11 +430,14 @@ describe('JobCard', () => {
     it('truncates long descriptions', () => {
       const jobWithLongDescription = {
         ...mockJob,
-        description: 'This is a very long description that should be truncated because it exceeds the reasonable length for a job card display and we want to keep the layout clean and consistent across all job cards.',
+        description:
+          'This is a very long description that should be truncated because it exceeds the reasonable length for a job card display and we want to keep the layout clean and consistent across all job cards.',
       };
       render(<JobCard job={jobWithLongDescription} />);
 
-      const descriptionElement = screen.getByText(/this is a very long description/i);
+      const descriptionElement = screen.getByText(
+        /this is a very long description/i
+      );
       expect(descriptionElement).toHaveClass('line-clamp-2');
     });
   });
@@ -405,7 +446,9 @@ describe('JobCard', () => {
     it('has proper link labels and ARIA attributes', () => {
       render(<JobCard job={mockJob} />);
 
-      const titleLink = screen.getByRole('link', { name: 'Senior Data Scientist' });
+      const titleLink = screen.getByRole('link', {
+        name: 'Senior Data Scientist',
+      });
       const detailsLink = screen.getByRole('link', { name: /ver detalles/i });
       const bookmarkButton = screen.getByRole('button', { name: /guardar/i });
 
@@ -424,7 +467,9 @@ describe('JobCard', () => {
     it('has proper semantic structure', () => {
       render(<JobCard job={mockJob} />);
 
-      expect(screen.getByRole('heading', { level: 3 })).toHaveTextContent('Senior Data Scientist');
+      expect(screen.getByRole('heading', { level: 3 })).toHaveTextContent(
+        'Senior Data Scientist'
+      );
       expect(screen.getAllByRole('link')).toHaveLength(2); // Title link and details link
       expect(screen.getByRole('button')).toBeInTheDocument(); // Bookmark button
     });
@@ -493,7 +538,8 @@ describe('JobCard', () => {
     it('handles very long job titles', () => {
       const jobWithLongTitle = {
         ...mockJob,
-        title: 'Senior Principal Lead Data Scientist Machine Learning Engineer AI Specialist Position',
+        title:
+          'Senior Principal Lead Data Scientist Machine Learning Engineer AI Specialist Position',
       };
       render(<JobCard job={jobWithLongTitle} />);
 

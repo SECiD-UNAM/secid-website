@@ -24,14 +24,14 @@ import {
   arrayRemove,
   Timestamp,
   writeBatch,
-  runTransaction
+  runTransaction,
 } from 'firebase/firestore';
 import {
-  ref, 
-  uploadBytes, 
-  getDownloadURL, 
+  ref,
+  uploadBytes,
+  getDownloadURL,
   deleteObject,
-  getMetadata 
+  getMetadata,
 } from 'firebase/storage';
 import type {
   Resource,
@@ -48,7 +48,7 @@ import type {
   ResourceActivity,
   ResourceContributorProfile,
   ResourceAnalytics,
-  AccessLevel
+  AccessLevel,
 } from '@/types/resource';
 
 const RESOURCES_COLLECTION = 'resources';
@@ -77,31 +77,49 @@ export async function searchResources(
 
     // Apply filters
     if (filters?.categories?.length) {
-      resourceQuery = query(resourceQuery, where('category', 'in', filters.categories));
+      resourceQuery = query(
+        resourceQuery,
+        where('category', 'in', filters.categories)
+      );
     }
-    
+
     if (filters?.types?.length) {
       resourceQuery = query(resourceQuery, where('type', 'in', filters.types));
     }
-    
+
     if (filters?.accessLevels?.length) {
-      resourceQuery = query(resourceQuery, where('accessLevel', 'in', filters.accessLevels));
+      resourceQuery = query(
+        resourceQuery,
+        where('accessLevel', 'in', filters.accessLevels)
+      );
     }
-    
+
     if (filters?.difficulties?.length) {
-      resourceQuery = query(resourceQuery, where('difficulty', 'in', filters.difficulties));
+      resourceQuery = query(
+        resourceQuery,
+        where('difficulty', 'in', filters.difficulties)
+      );
     }
-    
+
     if (filters?.languages?.length) {
-      resourceQuery = query(resourceQuery, where('language', 'in', filters.languages));
+      resourceQuery = query(
+        resourceQuery,
+        where('language', 'in', filters.languages)
+      );
     }
-    
+
     if (filters.ratingMin) {
-      resourceQuery = query(resourceQuery, where('rating', '>=', filters.ratingMin));
+      resourceQuery = query(
+        resourceQuery,
+        where('rating', '>=', filters.ratingMin)
+      );
     }
-    
+
     if (filters.hasPreview !== undefined) {
-      resourceQuery = query(resourceQuery, where('hasPreview', '==', filters.hasPreview));
+      resourceQuery = query(
+        resourceQuery,
+        where('hasPreview', '==', filters.hasPreview)
+      );
     }
 
     // Apply status filter (only approved resources)
@@ -110,7 +128,7 @@ export async function searchResources(
     // Apply sorting
     const sortField = sort.field === 'relevance' ? 'downloadCount' : sort.field;
     resourceQuery = query(resourceQuery, orderBy(sortField, sort.direction));
-    
+
     // Apply pagination
     resourceQuery = query(resourceQuery, limit(pageSize));
     if (page > 1) {
@@ -120,24 +138,24 @@ export async function searchResources(
     }
 
     const snapshot = await getDocs(resourceQuery);
-    const resources = snapshot['docs'].map(doc => ({
+    const resources = snapshot['docs'].map((doc) => ({
       id: doc['id'],
       ...doc.data(),
       createdAt: doc['data']().createdAt?.toDate(),
       updatedAt: doc.data().updatedAt?.toDate(),
-      publishedAt: doc['data']().publishedAt?.toDate()
+      publishedAt: doc['data']().publishedAt?.toDate(),
     })) as Resource[];
 
     // Calculate facets (simplified version)
     const facets = await calculateSearchFacets(filters);
-    
+
     return {
       resources,
       total: resources.length, // This should be calculated properly
       page,
       pageSize,
       totalPages: Math.ceil(resources.length / pageSize),
-      facets
+      facets,
     };
   } catch (error) {
     console.error('Error searching resources:', error);
@@ -156,7 +174,7 @@ export async function getResource(id: string): Promise<Resource | null> {
   try {
     const docRef = doc(db, RESOURCES_COLLECTION, id);
     const docSnap = await getDoc(docRef);
-    
+
     if (!docSnap.exists()) {
       return null;
     }
@@ -167,7 +185,7 @@ export async function getResource(id: string): Promise<Resource | null> {
       ...data,
       createdAt: data['createdAt']?.toDate(),
       updatedAt: data['updatedAt']?.toDate(),
-      publishedAt: data['publishedAt']?.toDate()
+      publishedAt: data['publishedAt']?.toDate(),
     } as Resource;
   } catch (error) {
     console.error('Error getting resource:', error);
@@ -178,7 +196,9 @@ export async function getResource(id: string): Promise<Resource | null> {
 /**
  * Upload a new resource
  */
-export async function uploadResource(request: ResourceUploadRequest): Promise<string> {
+export async function uploadResource(
+  request: ResourceUploadRequest
+): Promise<string> {
   if (isUsingMockAPI()) {
     return mockUploadResource(request);
   }
@@ -191,24 +211,39 @@ export async function uploadResource(request: ResourceUploadRequest): Promise<st
   try {
     return await runTransaction(db, async (transaction) => {
       // Upload main file
-      const fileRef = ref(storage, `resources/${Date.now()}_${request.file['name']}`);
+      const fileRef = ref(
+        storage,
+        `resources/${Date.now()}_${request.file['name']}`
+      );
       const fileSnapshot = await uploadBytes(fileRef, request.file);
       const fileUrl = await getDownloadURL(fileSnapshot.ref);
       const fileMetadata = await getMetadata(fileSnapshot.ref);
-      
+
       // Upload preview file if provided
       let previewUrl: string | undefined;
       if (request.previewFile) {
-        const previewRef = ref(storage, `resources/previews/${Date.now()}_${request.previewFile['name']}`);
-        const previewSnapshot = await uploadBytes(previewRef, request.previewFile);
+        const previewRef = ref(
+          storage,
+          `resources/previews/${Date.now()}_${request.previewFile['name']}`
+        );
+        const previewSnapshot = await uploadBytes(
+          previewRef,
+          request.previewFile
+        );
         previewUrl = await getDownloadURL(previewSnapshot.ref);
       }
-      
+
       // Upload thumbnail if provided
       let thumbnailUrl: string | undefined;
       if (request.thumbnailFile) {
-        const thumbnailRef = ref(storage, `resources/thumbnails/${Date.now()}_${request.thumbnailFile['name']}`);
-        const thumbnailSnapshot = await uploadBytes(thumbnailRef, request.thumbnailFile);
+        const thumbnailRef = ref(
+          storage,
+          `resources/thumbnails/${Date.now()}_${request.thumbnailFile['name']}`
+        );
+        const thumbnailSnapshot = await uploadBytes(
+          thumbnailRef,
+          request.thumbnailFile
+        );
         thumbnailUrl = await getDownloadURL(thumbnailSnapshot.ref);
       }
 
@@ -231,22 +266,24 @@ export async function uploadResource(request: ResourceUploadRequest): Promise<st
           email: user['email'] || '',
           avatar: user.photoURL ?? undefined,
           verified: false,
-          contributionCount: 0
+          contributionCount: 0,
         },
         contributors: [],
         createdAt: new Date(),
         updatedAt: new Date(),
         currentVersion: '1.0.0',
-        versions: [{
-          id: 'v1',
-          version: '1.0.0',
-          releaseDate: new Date(),
-          changelog: 'Initial release',
-          downloadUrl: fileUrl,
-          fileSize: request.file.size,
-          fileName: request.file['name'],
-          uploadedBy: user.uid
-        }],
+        versions: [
+          {
+            id: 'v1',
+            version: '1.0.0',
+            releaseDate: new Date(),
+            changelog: 'Initial release',
+            downloadUrl: fileUrl,
+            fileSize: request.file.size,
+            fileName: request.file['name'],
+            uploadedBy: user.uid,
+          },
+        ],
         accessLevel: request.accessLevel,
         status: 'pending', // Requires moderation
         downloadCount: 0,
@@ -263,11 +300,14 @@ export async function uploadResource(request: ResourceUploadRequest): Promise<st
         hasPreview: request.hasPreview,
         previewUrl,
         thumbnailUrl,
-        searchKeywords: [...request.tags, request.title.toLowerCase().split(' ')].flat()
+        searchKeywords: [
+          ...request.tags,
+          request.title.toLowerCase().split(' '),
+        ].flat(),
       };
 
       transaction.set(resourceRef, resource);
-      
+
       // Log activity
       const activityRef = doc(collection(db, ACTIVITIES_COLLECTION));
       transaction.set(activityRef, {
@@ -277,7 +317,7 @@ export async function uploadResource(request: ResourceUploadRequest): Promise<st
         resourceId: resourceRef['id'],
         resourceTitle: request.title,
         description: `Uploaded new resource: ${request.title}`,
-        createdAt: new Date()
+        createdAt: new Date(),
       });
 
       return resourceRef['id'];
@@ -291,7 +331,10 @@ export async function uploadResource(request: ResourceUploadRequest): Promise<st
 /**
  * Update a resource
  */
-export async function updateResource(id: string, updates: Partial<Resource>): Promise<void> {
+export async function updateResource(
+  id: string,
+  updates: Partial<Resource>
+): Promise<void> {
   if (isUsingMockAPI()) {
     return mockUpdateResource(id, updates);
   }
@@ -305,7 +348,7 @@ export async function updateResource(id: string, updates: Partial<Resource>): Pr
     const docRef = doc(db, RESOURCES_COLLECTION, id);
     await updateDoc(docRef, {
       ...updates,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     });
 
     // Log activity
@@ -315,7 +358,7 @@ export async function updateResource(id: string, updates: Partial<Resource>): Pr
       userName: user.displayName || 'Unknown',
       resourceId: id,
       resourceTitle: updates.title || 'Unknown',
-      description: `Updated resource: ${updates.title || id}`
+      description: `Updated resource: ${updates.title || id}`,
     });
   } catch (error) {
     console.error('Error updating resource:', error);
@@ -340,13 +383,13 @@ export async function deleteResource(id: string): Promise<void> {
     await runTransaction(db, async (transaction) => {
       const resourceRef = doc(db, RESOURCES_COLLECTION, id);
       const resourceDoc = await transaction.get(resourceRef);
-      
+
       if (!resourceDoc.exists()) {
         throw new Error('Resource not found');
       }
 
       const resource = resourceDoc['data']() as Resource;
-      
+
       // Check permissions
       if (resource.author.uid !== user.uid) {
         // Check if user is admin/moderator
@@ -356,17 +399,17 @@ export async function deleteResource(id: string): Promise<void> {
 
       // Delete resource document
       transaction.delete(resourceRef);
-      
+
       // Delete associated files from storage
       try {
         const fileRef = ref(storage, resource.fileUrl);
         await deleteObject(fileRef);
-        
+
         if (resource.previewUrl) {
           const previewRef = ref(storage, resource.previewUrl);
           await deleteObject(previewRef);
         }
-        
+
         if (resource.thumbnailUrl) {
           const thumbnailRef = ref(storage, resource.thumbnailUrl);
           await deleteObject(thumbnailRef);
@@ -398,20 +441,20 @@ export async function trackDownload(resourceId: string): Promise<void> {
     await runTransaction(db, async (transaction) => {
       const resourceRef = doc(db, RESOURCES_COLLECTION, resourceId);
       const downloadRef = doc(collection(db, DOWNLOADS_COLLECTION));
-      
+
       // Increment download count
       transaction.update(resourceRef, {
-        downloadCount: increment(1)
+        downloadCount: increment(1),
       });
-      
+
       // Log download
       transaction.set(downloadRef, {
         userId: user.uid,
         resourceId,
         downloadedAt: new Date(),
-        version: 'current' // This could be more specific
+        version: 'current', // This could be more specific
       });
-      
+
       // Log activity
       const activityRef = doc(collection(db, ACTIVITIES_COLLECTION));
       transaction.set(activityRef, {
@@ -421,7 +464,7 @@ export async function trackDownload(resourceId: string): Promise<void> {
         resourceId,
         resourceTitle: 'Resource', // This should be fetched
         description: `Downloaded resource`,
-        createdAt: new Date()
+        createdAt: new Date(),
       });
     });
   } catch (error) {
@@ -441,7 +484,7 @@ export async function trackView(resourceId: string): Promise<void> {
   try {
     const resourceRef = doc(db, RESOURCES_COLLECTION, resourceId);
     await updateDoc(resourceRef, {
-      viewCount: increment(1)
+      viewCount: increment(1),
     });
   } catch (error) {
     console.error('Error tracking view:', error);
@@ -452,7 +495,11 @@ export async function trackView(resourceId: string): Promise<void> {
 /**
  * Add a review to a resource
  */
-export async function addReview(resourceId: string, rating: number, comment: string): Promise<void> {
+export async function addReview(
+  resourceId: string,
+  rating: number,
+  comment: string
+): Promise<void> {
   if (isUsingMockAPI()) {
     return mockAddReview(resourceId, rating, comment);
   }
@@ -466,7 +513,7 @@ export async function addReview(resourceId: string, rating: number, comment: str
     await runTransaction(db, async (transaction) => {
       const resourceRef = doc(db, RESOURCES_COLLECTION, resourceId);
       const reviewRef = doc(collection(db, REVIEWS_COLLECTION));
-      
+
       const review: Omit<ResourceReview, 'id'> = {
         userId: user.uid,
         userName: user.displayName || 'Anonymous',
@@ -475,16 +522,16 @@ export async function addReview(resourceId: string, rating: number, comment: str
         comment,
         createdAt: new Date(),
         helpful: 0,
-        helpfulUsers: []
+        helpfulUsers: [],
       };
-      
+
       transaction.set(reviewRef, review);
-      
+
       // Update resource review count and rating
       // This is simplified - in production, you'd calculate the new average rating
       transaction.update(resourceRef, {
         reviewCount: increment(1),
-        reviews: arrayUnion(reviewRef['id'])
+        reviews: arrayUnion(reviewRef['id']),
       });
     });
   } catch (error) {
@@ -496,7 +543,10 @@ export async function addReview(resourceId: string, rating: number, comment: str
 /**
  * Bookmark a resource
  */
-export async function bookmarkResource(resourceId: string, notes?: string): Promise<void> {
+export async function bookmarkResource(
+  resourceId: string,
+  notes?: string
+): Promise<void> {
   if (isUsingMockAPI()) {
     return mockBookmarkResource(resourceId, notes);
   }
@@ -512,13 +562,13 @@ export async function bookmarkResource(resourceId: string, notes?: string): Prom
       userId: user.uid,
       resourceId,
       createdAt: new Date(),
-      notes: notes || ''
+      notes: notes || '',
     });
 
     // Update bookmark count
     const resourceRef = doc(db, RESOURCES_COLLECTION, resourceId);
     await updateDoc(resourceRef, {
-      bookmarkCount: increment(1)
+      bookmarkCount: increment(1),
     });
   } catch (error) {
     console.error('Error bookmarking resource:', error);
@@ -546,20 +596,20 @@ export async function removeBookmark(resourceId: string): Promise<void> {
       where('userId', '==', user.uid),
       where('resourceId', '==', resourceId)
     );
-    
+
     const snapshot = await getDocs(q);
     const batch = writeBatch(db);
-    
-    snapshot['docs'].forEach(doc => {
+
+    snapshot['docs'].forEach((doc) => {
       batch.delete(doc['ref']);
     });
-    
+
     await batch.commit();
 
     // Update bookmark count
     const resourceRef = doc(db, RESOURCES_COLLECTION, resourceId);
     await updateDoc(resourceRef, {
-      bookmarkCount: increment(-1)
+      bookmarkCount: increment(-1),
     });
   } catch (error) {
     console.error('Error removing bookmark:', error);
@@ -579,23 +629,26 @@ export async function getUserBookmarks(userId: string): Promise<Resource[]> {
     const bookmarksRef = collection(db, BOOKMARKS_COLLECTION);
     const q = query(bookmarksRef, where('userId', '==', userId));
     const snapshot = await getDocs(q);
-    
-    const resourceIds = snapshot['docs'].map(doc => doc['data']().resourceId);
-    
+
+    const resourceIds = snapshot['docs'].map((doc) => doc['data']().resourceId);
+
     if (resourceIds.length === 0) {
       return [];
     }
-    
+
     const resourcesRef = collection(db, RESOURCES_COLLECTION);
-    const resourcesQuery = query(resourcesRef, where('__name__', 'in', resourceIds));
+    const resourcesQuery = query(
+      resourcesRef,
+      where('__name__', 'in', resourceIds)
+    );
     const resourcesSnapshot = await getDocs(resourcesQuery);
-    
-    return resourcesSnapshot.docs.map(doc => ({
+
+    return resourcesSnapshot.docs.map((doc) => ({
       id: doc['id'],
       ...doc['data'](),
       createdAt: doc['data']().createdAt?.toDate(),
       updatedAt: doc['data']().updatedAt?.toDate(),
-      publishedAt: doc.data().publishedAt?.toDate()
+      publishedAt: doc.data().publishedAt?.toDate(),
     })) as Resource[];
   } catch (error) {
     console.error('Error getting user bookmarks:', error);
@@ -616,15 +669,22 @@ export async function getResourceStats(): Promise<ResourceStats> {
     // In production, you'd use aggregation queries or maintain these stats separately
     const resourcesRef = collection(db, RESOURCES_COLLECTION);
     const snapshot = await getDocs(resourcesRef);
-    
-    const resources = snapshot['docs'].map(doc => doc['data']()) as Resource[];
-    
+
+    const resources = snapshot['docs'].map((doc) =>
+      doc['data']()
+    ) as Resource[];
+
     const stats: ResourceStats = {
       totalResources: resources.length,
-      totalDownloads: resources.reduce((sum, r) => sum + (r.downloadCount || 0), 0),
+      totalDownloads: resources.reduce(
+        (sum, r) => sum + (r.downloadCount || 0),
+        0
+      ),
       totalViews: resources.reduce((sum, r) => sum + (r.viewCount || 0), 0),
-      totalAuthors: new Set(resources.map(r => r.author.uid)).size,
-      averageRating: resources.reduce((sum, r) => sum + (r.rating || 0), 0) / resources.length,
+      totalAuthors: new Set(resources.map((r) => r.author.uid)).size,
+      averageRating:
+        resources.reduce((sum, r) => sum + (r.rating || 0), 0) /
+        resources.length,
       categoryCounts: {} as any,
       typeCounts: {} as any,
       recentUploads: resources
@@ -636,15 +696,17 @@ export async function getResourceStats(): Promise<ResourceStats> {
       topRated: resources
         .sort((a, b) => (b.rating || 0) - (a.rating || 0))
         .slice(0, 5),
-      trendingTags: []
+      trendingTags: [],
     };
-    
+
     // Calculate category and type counts
-    resources.forEach(resource => {
-      stats.categoryCounts[resource.category] = (stats.categoryCounts[resource.category] || 0) + 1;
-      stats.typeCounts[resource['type']] = (stats.typeCounts[resource['type']] || 0) + 1;
+    resources.forEach((resource) => {
+      stats.categoryCounts[resource.category] =
+        (stats.categoryCounts[resource.category] || 0) + 1;
+      stats.typeCounts[resource['type']] =
+        (stats.typeCounts[resource['type']] || 0) + 1;
     });
-    
+
     return stats;
   } catch (error) {
     console.error('Error getting resource stats:', error);
@@ -655,12 +717,14 @@ export async function getResourceStats(): Promise<ResourceStats> {
 /**
  * Helper function to log activities
  */
-async function logActivity(activity: Omit<ResourceActivity, 'id' | 'createdAt'>): Promise<void> {
+async function logActivity(
+  activity: Omit<ResourceActivity, 'id' | 'createdAt'>
+): Promise<void> {
   try {
     const activityRef = doc(collection(db, ACTIVITIES_COLLECTION));
     await setDoc(activityRef, {
       ...activity,
-      createdAt: new Date()
+      createdAt: new Date(),
     });
   } catch (error) {
     console.error('Error logging activity:', error);
@@ -670,7 +734,9 @@ async function logActivity(activity: Omit<ResourceActivity, 'id' | 'createdAt'>)
 /**
  * Helper function to calculate search facets
  */
-async function calculateSearchFacets(filters: ResourceSearchFilters): Promise<any> {
+async function calculateSearchFacets(
+  filters: ResourceSearchFilters
+): Promise<any> {
   // This is a simplified implementation
   // In production, you'd use more sophisticated aggregation
   return {
@@ -678,12 +744,17 @@ async function calculateSearchFacets(filters: ResourceSearchFilters): Promise<an
     types: {},
     tags: {},
     authors: {},
-    difficulties: {}
+    difficulties: {},
   };
 }
 
 // Mock implementations for development/testing
-function mockSearchResources(filters: ResourceSearchFilters, sort: ResourceSearchSort, page: number, pageSize: number): Promise<ResourceSearchResult> {
+function mockSearchResources(
+  filters: ResourceSearchFilters,
+  sort: ResourceSearchSort,
+  page: number,
+  pageSize: number
+): Promise<ResourceSearchResult> {
   return Promise.resolve({
     resources: [],
     total: 0,
@@ -695,8 +766,8 @@ function mockSearchResources(filters: ResourceSearchFilters, sort: ResourceSearc
       types: {} as any,
       tags: {},
       authors: {},
-      difficulties: {}
-    }
+      difficulties: {},
+    },
   });
 }
 
@@ -708,7 +779,10 @@ function mockUploadResource(request: ResourceUploadRequest): Promise<string> {
   return Promise.resolve('mock-resource-id');
 }
 
-function mockUpdateResource(id: string, updates: Partial<Resource>): Promise<void> {
+function mockUpdateResource(
+  id: string,
+  updates: Partial<Resource>
+): Promise<void> {
   return Promise.resolve();
 }
 
@@ -724,11 +798,18 @@ function mockTrackView(resourceId: string): Promise<void> {
   return Promise.resolve();
 }
 
-function mockAddReview(resourceId: string, rating: number, comment: string): Promise<void> {
+function mockAddReview(
+  resourceId: string,
+  rating: number,
+  comment: string
+): Promise<void> {
   return Promise.resolve();
 }
 
-function mockBookmarkResource(resourceId: string, notes?: string): Promise<void> {
+function mockBookmarkResource(
+  resourceId: string,
+  notes?: string
+): Promise<void> {
   return Promise.resolve();
 }
 
@@ -752,6 +833,6 @@ function mockGetResourceStats(): Promise<ResourceStats> {
     recentUploads: [],
     topDownloaded: [],
     topRated: [],
-    trendingTags: []
+    trendingTags: [],
   });
 }

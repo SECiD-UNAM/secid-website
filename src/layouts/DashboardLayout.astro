@@ -8,7 +8,13 @@ export interface Props {
   description?: string;
   lang?: 'es' | 'en';
   requireVerified?: boolean;
-  requireRole?: ('member' | 'admin' | 'moderator' | 'company' | 'collaborator')[];
+  requireRole?: (
+    | 'member'
+    | 'admin'
+    | 'moderator'
+    | 'company'
+    | 'collaborator'
+  )[];
 }
 
 const {

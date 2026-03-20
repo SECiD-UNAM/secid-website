@@ -52,7 +52,7 @@ const CACHE_STRATEGIES = {
 // Install event - precache static assets
 self.addEventListener('install', (event) => {
   console.log('[SW] Installing service worker...');
-  
+
   event.waitUntil(
     Promise.all([
       // Cache static assets
@@ -60,9 +60,9 @@ self.addEventListener('install', (event) => {
         console.log('[SW] Precaching static assets');
         return cache.addAll(PRECACHE_ASSETS);
       }),
-      
+
       // Skip waiting to activate immediately
-      self.skipWaiting()
+      self.skipWaiting(),
     ])
   );
 });
@@ -70,25 +70,27 @@ self.addEventListener('install', (event) => {
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
   console.log('[SW] Activating service worker...');
-  
+
   event.waitUntil(
     Promise.all([
       // Clean up old caches
       caches.keys().then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
-            if (cacheName !== STATIC_CACHE && 
-                cacheName !== DYNAMIC_CACHE && 
-                cacheName !== API_CACHE) {
+            if (
+              cacheName !== STATIC_CACHE &&
+              cacheName !== DYNAMIC_CACHE &&
+              cacheName !== API_CACHE
+            ) {
               console.log('[SW] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
         );
       }),
-      
+
       // Take control of all clients
-      self.clients.claim()
+      self.clients.claim(),
     ])
   );
 });
@@ -97,12 +99,12 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
-  
+
   // Skip cross-origin requests
   if (url.origin !== location.origin) {
     return;
   }
-  
+
   // Handle different types of requests
   if (request.method === 'GET') {
     event.respondWith(handleGetRequest(request));
@@ -114,22 +116,22 @@ self.addEventListener('fetch', (event) => {
 // Handle GET requests with appropriate caching strategy
 async function handleGetRequest(request) {
   const url = new URL(request.url);
-  
+
   // Static assets - Cache First
   if (isStaticAsset(url.pathname)) {
     return handleCacheFirst(request, STATIC_CACHE);
   }
-  
+
   // API requests - Network First with fallback
   if (isApiRequest(url.pathname)) {
     return handleApiRequest(request);
   }
-  
+
   // HTML pages - Network First with offline fallback
   if (isHtmlPage(request)) {
     return handlePageRequest(request);
   }
-  
+
   // Default strategy - Network First
   return handleNetworkFirst(request, DYNAMIC_CACHE);
 }
@@ -139,39 +141,38 @@ async function handlePostRequest(request) {
   try {
     // Try to send request immediately
     const response = await fetch(request.clone());
-    
+
     if (response.ok) {
       return response;
     }
-    
+
     // If request fails, queue for background sync
     await queueBackgroundSync(request);
-    
+
     return new Response(
-      JSON.stringify({ 
-        success: false, 
+      JSON.stringify({
+        success: false,
         message: 'Request queued for retry when online',
-        queued: true 
+        queued: true,
       }),
-      { 
+      {
         status: 202,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       }
     );
-    
   } catch (error) {
     // Network error - queue for background sync
     await queueBackgroundSync(request);
-    
+
     return new Response(
-      JSON.stringify({ 
-        success: false, 
+      JSON.stringify({
+        success: false,
         message: 'Offline - request will be retried when online',
-        queued: true 
+        queued: true,
       }),
-      { 
+      {
         status: 202,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       }
     );
   }
@@ -182,35 +183,36 @@ async function handleCacheFirst(request, cacheName) {
   try {
     const cache = await caches.open(cacheName);
     const cachedResponse = await cache.match(request);
-    
+
     if (cachedResponse) {
       // Update cache in background
-      fetch(request).then((response) => {
-        if (response.ok) {
-          cache.put(request, response.clone());
-        }
-      }).catch(() => {});
-      
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            cache.put(request, response.clone());
+          }
+        })
+        .catch(() => {});
+
       return cachedResponse;
     }
-    
+
     // Not in cache - fetch and cache
     const response = await fetch(request);
     if (response.ok) {
       cache.put(request, response.clone());
     }
-    
+
     return response;
-    
   } catch (error) {
     // Return cached version or fallback
     const cache = await caches.open(cacheName);
     const cachedResponse = await cache.match(request);
-    
+
     if (cachedResponse) {
       return cachedResponse;
     }
-    
+
     return getOfflineFallback(request);
   }
 }
@@ -219,23 +221,22 @@ async function handleCacheFirst(request, cacheName) {
 async function handleNetworkFirst(request, cacheName) {
   try {
     const response = await fetch(request);
-    
+
     if (response.ok) {
       const cache = await caches.open(cacheName);
       cache.put(request, response.clone());
     }
-    
+
     return response;
-    
   } catch (error) {
     // Network failed - try cache
     const cache = await caches.open(cacheName);
     const cachedResponse = await cache.match(request);
-    
+
     if (cachedResponse) {
       return cachedResponse;
     }
-    
+
     return getOfflineFallback(request);
   }
 }
@@ -243,28 +244,27 @@ async function handleNetworkFirst(request, cacheName) {
 // Handle API requests with specific caching strategy
 async function handleApiRequest(request) {
   const url = new URL(request.url);
-  
+
   try {
     // Always try network first for API requests
     const response = await fetch(request);
-    
+
     if (response.ok) {
       // Cache successful API responses
       const cache = await caches.open(API_CACHE);
-      
+
       // Only cache GET requests for certain endpoints
       if (shouldCacheApiResponse(url.pathname)) {
         cache.put(request, response.clone());
       }
     }
-    
+
     return response;
-    
   } catch (error) {
     // Network failed - try cached API response
     const cache = await caches.open(API_CACHE);
     const cachedResponse = await cache.match(request);
-    
+
     if (cachedResponse) {
       // Add offline indicator to cached response
       const data = await cachedResponse.json();
@@ -273,23 +273,23 @@ async function handleApiRequest(request) {
         {
           status: cachedResponse.status,
           statusText: cachedResponse.statusText,
-          headers: cachedResponse.headers
+          headers: cachedResponse.headers,
         }
       );
-      
+
       return offlineResponse;
     }
-    
+
     // Return offline API response
     return new Response(
-      JSON.stringify({ 
-        success: false, 
+      JSON.stringify({
+        success: false,
         message: 'Offline - no cached data available',
-        offline: true 
+        offline: true,
       }),
-      { 
+      {
         status: 503,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       }
     );
   }
@@ -299,24 +299,23 @@ async function handleApiRequest(request) {
 async function handlePageRequest(request) {
   try {
     const response = await fetch(request);
-    
+
     if (response.ok) {
       // Cache successful page responses
       const cache = await caches.open(DYNAMIC_CACHE);
       cache.put(request, response.clone());
     }
-    
+
     return response;
-    
   } catch (error) {
     // Try cached version
     const cache = await caches.open(DYNAMIC_CACHE);
     const cachedResponse = await cache.match(request);
-    
+
     if (cachedResponse) {
       return cachedResponse;
     }
-    
+
     // Return offline page
     return getOfflinePage();
   }
@@ -339,21 +338,23 @@ async function queueBackgroundSync(request) {
       method: request.method,
       headers: Object.fromEntries(request.headers.entries()),
       body: request.method !== 'GET' ? await request.text() : null,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
-    
+
     // Open IndexedDB to store queued requests
     const db = await openDB();
     const transaction = db.transaction(['requests'], 'readwrite');
     const store = transaction.objectStore('requests');
-    
+
     await store.add(requestData);
-    
+
     // Register for background sync
-    if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
+    if (
+      'serviceWorker' in navigator &&
+      'sync' in window.ServiceWorkerRegistration.prototype
+    ) {
       self.registration.sync.register('background-sync');
     }
-    
   } catch (error) {
     console.error('[SW] Failed to queue request for background sync:', error);
   }
@@ -365,31 +366,32 @@ async function processQueuedRequests() {
     const db = await openDB();
     const transaction = db.transaction(['requests'], 'readwrite');
     const store = transaction.objectStore('requests');
-    
+
     const requests = await store.getAll();
-    
+
     for (const requestData of requests) {
       try {
         const request = new Request(requestData.url, {
           method: requestData.method,
           headers: requestData.headers,
-          body: requestData.body
+          body: requestData.body,
         });
-        
+
         const response = await fetch(request);
-        
+
         if (response.ok) {
           // Request succeeded - remove from queue
           await store.delete(requestData.id);
-          console.log('[SW] Successfully synced queued request:', requestData.url);
+          console.log(
+            '[SW] Successfully synced queued request:',
+            requestData.url
+          );
         }
-        
       } catch (error) {
         console.warn('[SW] Failed to sync request:', requestData.url, error);
         // Keep request in queue for next sync attempt
       }
     }
-    
   } catch (error) {
     console.error('[SW] Failed to process queued requests:', error);
   }
@@ -398,9 +400,9 @@ async function processQueuedRequests() {
 // Push notification handling
 self.addEventListener('push', (event) => {
   if (!event.data) return;
-  
+
   const data = event.data.json();
-  
+
   const options = {
     body: data.body,
     icon: '/images/icon.png',
@@ -408,27 +410,26 @@ self.addEventListener('push', (event) => {
     data: data.data,
     actions: data.actions,
     requireInteraction: data.requireInteraction || false,
-    tag: data.tag || 'default'
+    tag: data.tag || 'default',
   };
-  
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
+
+  event.waitUntil(self.registration.showNotification(data.title, options));
 });
 
 // Notification click handling
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  
+
   const data = event.notification.data;
   const action = event.action;
-  
+
   if (action === 'view' || !action) {
     // Open the app to specific page
     const urlToOpen = data?.url || '/';
-    
+
     event.waitUntil(
-      clients.matchAll({ type: 'window', includeUncontrolled: true })
+      clients
+        .matchAll({ type: 'window', includeUncontrolled: true })
         .then((clientList) => {
           // Check if app is already open
           for (const client of clientList) {
@@ -437,7 +438,7 @@ self.addEventListener('notificationclick', (event) => {
               return client.focus();
             }
           }
-          
+
           // Open new window
           if (clients.openWindow) {
             return clients.openWindow(urlToOpen);
@@ -449,7 +450,9 @@ self.addEventListener('notificationclick', (event) => {
 
 // Utility functions
 function isStaticAsset(pathname) {
-  return pathname.match(/\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/);
+  return pathname.match(
+    /\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/
+  );
 }
 
 function isApiRequest(pathname) {
@@ -465,20 +468,20 @@ function shouldCacheApiResponse(pathname) {
     '/api/jobs',
     '/api/events',
     '/api/members',
-    '/api/user/profile'
+    '/api/user/profile',
   ];
-  
-  return cacheableEndpoints.some(endpoint => pathname.startsWith(endpoint));
+
+  return cacheableEndpoints.some((endpoint) => pathname.startsWith(endpoint));
 }
 
 async function getOfflinePage() {
   const cache = await caches.open(STATIC_CACHE);
   const offlinePage = await cache.match('/offline.html');
-  
+
   if (offlinePage) {
     return offlinePage;
   }
-  
+
   return new Response(
     `<!DOCTYPE html>
     <html>
@@ -515,25 +518,28 @@ async function getOfflineFallback(request) {
   if (isHtmlPage(request)) {
     return getOfflinePage();
   }
-  
-  return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
+
+  return new Response('Offline', {
+    status: 503,
+    statusText: 'Service Unavailable',
+  });
 }
 
 // IndexedDB helper for storing queued requests
 async function openDB() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('secid-sw-db', 1);
-    
+
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve(request.result);
-    
+
     request.onupgradeneeded = () => {
       const db = request.result;
-      
+
       if (!db.objectStoreNames.contains('requests')) {
-        const store = db.createObjectStore('requests', { 
-          keyPath: 'id', 
-          autoIncrement: true 
+        const store = db.createObjectStore('requests', {
+          keyPath: 'id',
+          autoIncrement: true,
         });
         store.createIndex('timestamp', 'timestamp');
       }
@@ -555,21 +561,21 @@ self.addEventListener('periodicsync', (event) => {
 async function cleanupOldCaches() {
   const now = Date.now();
   const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
-  
+
   try {
     const cacheNames = await caches.keys();
-    
+
     for (const cacheName of cacheNames) {
       const cache = await caches.open(cacheName);
       const keys = await cache.keys();
-      
+
       for (const request of keys) {
         const response = await cache.match(request);
         const dateHeader = response.headers.get('date');
-        
+
         if (dateHeader) {
           const cacheDate = new Date(dateHeader).getTime();
-          
+
           if (now - cacheDate > maxAge) {
             await cache.delete(request);
             console.log('[SW] Cleaned up old cache entry:', request.url);
@@ -577,7 +583,6 @@ async function cleanupOldCaches() {
         }
       }
     }
-    
   } catch (error) {
     console.error('[SW] Cache cleanup failed:', error);
   }

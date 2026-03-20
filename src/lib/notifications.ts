@@ -2,42 +2,45 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import { db } from './firebase';
 import {
-  collection, 
-  doc, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  where, 
-  orderBy, 
-  limit, 
-  startAfter, 
-  getDocs, 
-  getDoc, 
-  onSnapshot, 
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter,
+  getDocs,
+  getDoc,
+  onSnapshot,
   writeBatch,
   serverTimestamp,
   DocumentData,
   QueryDocumentSnapshot,
-  Unsubscribe
+  Unsubscribe,
 } from 'firebase/firestore';
-import type { 
-  Notification, 
-  NotificationSettings, 
-  NotificationHistory, 
+import type {
+  Notification,
+  NotificationSettings,
+  NotificationHistory,
   NotificationGroup,
   NotificationType,
   NotificationPriority,
   NotificationCategory,
   NotificationDeliveryMethod,
   PushSubscription,
-  NotificationQueue
+  NotificationQueue,
 } from '../types';
 
 // Firebase Cloud Functions
 const functions = getFunctions();
 const sendNotificationFn = httpsCallable(functions, 'sendNotification');
-const sendBulkNotificationsFn = httpsCallable(functions, 'sendBulkNotifications');
+const sendBulkNotificationsFn = httpsCallable(
+  functions,
+  'sendBulkNotifications'
+);
 const scheduleNotificationFn = httpsCallable(functions, 'scheduleNotification');
 
 // Firebase Cloud Messaging
@@ -55,140 +58,142 @@ const PUSH_SUBSCRIPTIONS_COLLECTION = 'pushSubscriptions';
 const NOTIFICATION_QUEUE_COLLECTION = 'notificationQueue';
 
 // Default notification settings
-const getDefaultNotificationSettings = (userId: string): NotificationSettings => ({
+const getDefaultNotificationSettings = (
+  userId: string
+): NotificationSettings => ({
   id: '',
   userId,
   preferences: {
     job_match: {
       enabled: true,
       deliveryMethods: ['app', 'email'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     job_application: {
       enabled: true,
       deliveryMethods: ['app', 'email'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     job_expiring: {
       enabled: true,
       deliveryMethods: ['app', 'email'],
-      frequency: 'daily'
+      frequency: 'daily',
     },
     event_reminder: {
       enabled: true,
       deliveryMethods: ['app', 'email', 'push'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     event_update: {
       enabled: true,
       deliveryMethods: ['app', 'email'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     event_cancelled: {
       enabled: true,
       deliveryMethods: ['app', 'email', 'push'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     message_received: {
       enabled: true,
       deliveryMethods: ['app', 'push'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     message_reply: {
       enabled: true,
       deliveryMethods: ['app', 'push'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     connection_request: {
       enabled: true,
       deliveryMethods: ['app', 'email'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     connection_accepted: {
       enabled: true,
       deliveryMethods: ['app'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     mentorship_request: {
       enabled: true,
       deliveryMethods: ['app', 'email'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     mentorship_accepted: {
       enabled: true,
       deliveryMethods: ['app', 'email'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     mentorship_session: {
       enabled: true,
       deliveryMethods: ['app', 'email'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     forum_mention: {
       enabled: true,
       deliveryMethods: ['app', 'email'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     forum_reply: {
       enabled: true,
       deliveryMethods: ['app'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     forum_topic_update: {
       enabled: false,
       deliveryMethods: ['app'],
-      frequency: 'daily'
+      frequency: 'daily',
     },
     badge_earned: {
       enabled: true,
       deliveryMethods: ['app'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     achievement_unlocked: {
       enabled: true,
       deliveryMethods: ['app'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     profile_view: {
       enabled: false,
       deliveryMethods: ['app'],
-      frequency: 'daily'
+      frequency: 'daily',
     },
     newsletter: {
       enabled: true,
       deliveryMethods: ['email'],
-      frequency: 'weekly'
+      frequency: 'weekly',
     },
     system_announcement: {
       enabled: true,
       deliveryMethods: ['app', 'email'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     maintenance: {
       enabled: true,
       deliveryMethods: ['app', 'email'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     security_alert: {
       enabled: true,
       deliveryMethods: ['app', 'email', 'push'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     payment_reminder: {
       enabled: true,
       deliveryMethods: ['app', 'email'],
-      frequency: 'immediate'
+      frequency: 'immediate',
     },
     membership_expiring: {
       enabled: true,
       deliveryMethods: ['app', 'email'],
-      frequency: 'weekly'
+      frequency: 'weekly',
     },
     data_export_ready: {
       enabled: true,
       deliveryMethods: ['app', 'email'],
-      frequency: 'immediate'
-    }
+      frequency: 'immediate',
+    },
   },
   globalSettings: {
     doNotDisturb: false,
@@ -196,19 +201,19 @@ const getDefaultNotificationSettings = (userId: string): NotificationSettings =>
     vibrationEnabled: true,
     showPreview: true,
     groupSimilar: true,
-    maxDailyNotifications: 50
+    maxDailyNotifications: 50,
   },
   emailSettings: {
     digestEnabled: false,
     digestFrequency: 'daily',
     digestTime: '09:00',
-    unsubscribeToken: generateUnsubscribeToken()
+    unsubscribeToken: generateUnsubscribeToken(),
   },
   pushSettings: {
     browserEnabled: false,
-    deviceTokens: []
+    deviceTokens: [],
   },
-  updatedAt: new Date()
+  updatedAt: new Date(),
 });
 
 // Helper Functions
@@ -218,16 +223,20 @@ function generateUnsubscribeToken(): string {
 
 function convertFirestoreTimestamp(data: DocumentData): any {
   if (!data) return data;
-  
+
   const converted = { ...data };
-  Object.keys(converted).forEach(key => {
-    if (converted[key] && typeof converted[key] === 'object' && converted[key].toDate) {
+  Object.keys(converted).forEach((key) => {
+    if (
+      converted[key] &&
+      typeof converted[key] === 'object' &&
+      converted[key].toDate
+    ) {
       converted[key] = converted[key].toDate();
     } else if (converted[key] && typeof converted[key] === 'object') {
       converted[key] = convertFirestoreTimestamp(converted[key]);
     }
   });
-  
+
   return converted;
 }
 
@@ -251,19 +260,19 @@ export async function createNotification(
       isClicked: false,
       deliveryMethods: options.deliveryMethods || ['app'],
       createdAt: new Date(),
-      ...options
+      ...options,
     };
 
     const docRef = await addDoc(collection(db, NOTIFICATIONS_COLLECTION), {
       ...notification,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
     });
 
     // Trigger delivery through cloud function
     await sendNotificationFn({
       notificationId: docRef['id'],
       userId,
-      notification
+      notification,
     });
 
     return docRef['id'];
@@ -311,9 +320,9 @@ export async function getNotifications(
     }
 
     const querySnapshot = await getDocs(q);
-    const notifications = querySnapshot.docs.map(doc => ({
+    const notifications = querySnapshot.docs.map((doc) => ({
       id: doc['id'],
-      ...convertFirestoreTimestamp(doc['data']())
+      ...convertFirestoreTimestamp(doc['data']()),
     })) as Notification[];
 
     // Get unread count
@@ -351,9 +360,9 @@ export async function getNotificationHistory(
     // For pagination, we'd need to implement cursor-based pagination
     // This is a simplified version
     const querySnapshot = await getDocs(q);
-    const notifications = querySnapshot.docs.map(doc => ({
+    const notifications = querySnapshot.docs.map((doc) => ({
       id: doc['id'],
-      ...convertFirestoreTimestamp(doc['data']())
+      ...convertFirestoreTimestamp(doc['data']()),
     })) as Notification[];
 
     // Get total count
@@ -381,8 +390,9 @@ export async function getNotificationHistory(
       unreadCount,
       page: pageNumber,
       limit: pageSize,
-      hasMore: notifications.length === pageSize && (pageNumber * pageSize) < totalCount,
-      lastFetched: new Date()
+      hasMore:
+        notifications.length === pageSize && pageNumber * pageSize < totalCount,
+      lastFetched: new Date(),
     };
   } catch (error) {
     console.error('Error getting notification history:', error);
@@ -390,12 +400,14 @@ export async function getNotificationHistory(
   }
 }
 
-export async function markNotificationAsRead(notificationId: string): Promise<void> {
+export async function markNotificationAsRead(
+  notificationId: string
+): Promise<void> {
   try {
     const notificationRef = doc(db, NOTIFICATIONS_COLLECTION, notificationId);
     await updateDoc(notificationRef, {
       isRead: true,
-      readAt: serverTimestamp()
+      readAt: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error marking notification as read:', error);
@@ -414,10 +426,10 @@ export async function markAllAsRead(userId: string): Promise<void> {
     const querySnapshot = await getDocs(q);
     const batch = writeBatch(db);
 
-    querySnapshot.docs.forEach(doc => {
+    querySnapshot.docs.forEach((doc) => {
       batch.update(doc.ref, {
         isRead: true,
-        readAt: serverTimestamp()
+        readAt: serverTimestamp(),
       });
     });
 
@@ -428,7 +440,9 @@ export async function markAllAsRead(userId: string): Promise<void> {
   }
 }
 
-export async function deleteNotification(notificationId: string): Promise<void> {
+export async function deleteNotification(
+  notificationId: string
+): Promise<void> {
   try {
     const notificationRef = doc(db, NOTIFICATIONS_COLLECTION, notificationId);
     await deleteDoc(notificationRef);
@@ -439,7 +453,9 @@ export async function deleteNotification(notificationId: string): Promise<void> 
 }
 
 // Notification Settings
-export async function getNotificationSettings(userId: string): Promise<NotificationSettings> {
+export async function getNotificationSettings(
+  userId: string
+): Promise<NotificationSettings> {
   try {
     const settingsRef = doc(db, NOTIFICATION_SETTINGS_COLLECTION, userId);
     const settingsSnap = await getDoc(settingsRef);
@@ -447,14 +463,14 @@ export async function getNotificationSettings(userId: string): Promise<Notificat
     if (settingsSnap.exists()) {
       return {
         id: settingsSnap['id'],
-        ...convertFirestoreTimestamp(settingsSnap.data())
+        ...convertFirestoreTimestamp(settingsSnap.data()),
       } as NotificationSettings;
     } else {
       // Create default settings
       const defaultSettings = getDefaultNotificationSettings(userId);
       await updateDoc(settingsRef, {
         ...defaultSettings,
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
       return { ...defaultSettings, id: userId };
     }
@@ -472,7 +488,7 @@ export async function updateNotificationSettings(
     const settingsRef = doc(db, NOTIFICATION_SETTINGS_COLLECTION, userId);
     await updateDoc(settingsRef, {
       ...settings,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error updating notification settings:', error);
@@ -488,18 +504,18 @@ export async function requestPushPermission(): Promise<NotificationPermission> {
 
   try {
     const permission = await Notification.requestPermission();
-    
+
     if (permission === 'granted') {
       const token = await getToken(messaging, {
-        vapidKey: process.env.FIREBASE_VAPID_KEY as string
+        vapidKey: process.env.FIREBASE_VAPID_KEY as string,
       });
-      
+
       // Store token in Firestore
-      if(token) {
+      if (token) {
         await storePushToken(token);
       }
     }
-    
+
     return permission;
   } catch (error) {
     console.error('Error requesting push permission:', error);
@@ -507,7 +523,10 @@ export async function requestPushPermission(): Promise<NotificationPermission> {
   }
 }
 
-export async function storePushToken(token: string, userId?: string): Promise<void> {
+export async function storePushToken(
+  token: string,
+  userId?: string
+): Promise<void> {
   if (!userId) {
     // Get from auth context or current user
     return;
@@ -519,18 +538,18 @@ export async function storePushToken(token: string, userId?: string): Promise<vo
       endpoint: token,
       keys: {
         p256dh: '',
-        auth: ''
+        auth: '',
       },
       userAgent: navigator.userAgent,
       isActive: true,
       createdAt: new Date(),
-      lastUsed: new Date()
+      lastUsed: new Date(),
     };
 
     await addDoc(collection(db, PUSH_SUBSCRIPTIONS_COLLECTION), {
       ...subscription,
       createdAt: serverTimestamp(),
-      lastUsed: serverTimestamp()
+      lastUsed: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error storing push token:', error);
@@ -538,7 +557,9 @@ export async function storePushToken(token: string, userId?: string): Promise<vo
   }
 }
 
-export function setupPushListener(onNotification: (notification: any) => void): () => void {
+export function setupPushListener(
+  onNotification: (notification: any) => void
+): () => void {
   if (!messaging) {
     return () => {};
   }
@@ -547,7 +568,7 @@ export function setupPushListener(onNotification: (notification: any) => void): 
     const unsubscribe = onMessage(messaging, (payload) => {
       console.log('Message received:', payload);
       onNotification(payload);
-      
+
       // Show browser notification if page is not focused
       if (document['hidden'] && payload.notification) {
         new Notification(payload.notification.title || '', {
@@ -556,7 +577,7 @@ export function setupPushListener(onNotification: (notification: any) => void): 
           badge: '/icons/badge-72x72.png',
           tag: payload['data']?.notificationId || 'secid-notification',
           requireInteraction: payload['data']?.priority === 'urgent',
-          silent: payload['data']?.silent === 'true'
+          silent: payload['data']?.silent === 'true',
         });
       }
     });
@@ -589,16 +610,20 @@ export function subscribeToNotifications(
       q = query(q, limit(options.limit));
     }
 
-    return onSnapshot(q, (querySnapshot) => {
-      const notifications = querySnapshot.docs.map(doc => ({
-        id: doc['id'],
-        ...convertFirestoreTimestamp(doc['data']())
-      })) as Notification[];
+    return onSnapshot(
+      q,
+      (querySnapshot) => {
+        const notifications = querySnapshot.docs.map((doc) => ({
+          id: doc['id'],
+          ...convertFirestoreTimestamp(doc['data']()),
+        })) as Notification[];
 
-      onNotification(notifications);
-    }, (error) => {
-      console.error('Error in notification subscription:', error);
-    });
+        onNotification(notifications);
+      },
+      (error) => {
+        console.error('Error in notification subscription:', error);
+      }
+    );
   } catch (error) {
     console.error('Error subscribing to notifications:', error);
     return () => {};
@@ -639,7 +664,7 @@ export async function scheduleNotification(
       title,
       message,
       scheduledFor: scheduledFor.toISOString(),
-      options
+      options,
     });
 
     return result?.data?.notificationId;
@@ -667,10 +692,12 @@ function getCategoryFromType(type: NotificationType): NotificationCategory {
     security_: 'security',
     payment_: 'billing',
     membership_: 'billing',
-    data_: 'system'
+    data_: 'system',
   };
 
-  const prefix = Object.keys(categoryMap).find(prefix => type.startsWith(prefix));
+  const prefix = Object.keys(categoryMap).find((prefix) =>
+    type.startsWith(prefix)
+  );
   return prefix ? categoryMap[prefix] : 'system';
 }
 
@@ -678,35 +705,42 @@ function getCategoryFromType(type: NotificationType): NotificationCategory {
 export function getNotificationTemplate(
   type: NotificationType,
   data: Record<string, any> = {}
-): { title: string; message: string; category: NotificationCategory; priority: NotificationPriority } {
+): {
+  title: string;
+  message: string;
+  category: NotificationCategory;
+  priority: NotificationPriority;
+} {
   const templates = {
     job_match: {
       title: `New job match: ${data['jobTitle'] || 'Job'}`,
       message: `A new job at ${data['company'] || 'Company'} matches your profile and preferences.`,
       category: 'jobs' as NotificationCategory,
-      priority: 'normal' as NotificationPriority
+      priority: 'normal' as NotificationPriority,
     },
     event_reminder: {
       title: `Event reminder: ${data['eventTitle'] || 'Event'}`,
       message: `Your event "${data['eventTitle'] || 'Event'}" starts ${data['timeUntil'] || 'soon'}.`,
       category: 'events' as NotificationCategory,
-      priority: 'high' as NotificationPriority
+      priority: 'high' as NotificationPriority,
     },
     mentorship_request: {
       title: 'New mentorship request',
       message: `${data['menteeName'] || 'Someone'} has requested you as their mentor.`,
       category: 'mentorship' as NotificationCategory,
-      priority: 'normal' as NotificationPriority
+      priority: 'normal' as NotificationPriority,
     },
     // Add more templates as needed
   };
 
-  return templates[type] || {
-    title: 'New notification',
-    message: 'You have a new notification.',
-    category: 'system',
-    priority: 'normal'
-  };
+  return (
+    templates[type] || {
+      title: 'New notification',
+      message: 'You have a new notification.',
+      category: 'system',
+      priority: 'normal',
+    }
+  );
 }
 
 // Analytics
@@ -716,14 +750,14 @@ export async function trackNotificationInteraction(
 ): Promise<void> {
   try {
     const notificationRef = doc(db, NOTIFICATIONS_COLLECTION, notificationId);
-    
+
     if (action === 'click') {
       await updateDoc(notificationRef, {
         isClicked: true,
-        clickedAt: serverTimestamp()
+        clickedAt: serverTimestamp(),
       });
     }
-    
+
     // You could also send analytics events here
     // analytics.track('notification_interaction', { notificationId, action });
   } catch (error) {

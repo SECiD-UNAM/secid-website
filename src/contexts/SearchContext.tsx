@@ -1,6 +1,12 @@
-import React, { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react';
-import { searchEngine} from '@/lib/search/search-engine';
-import { searchIndexer} from '@/lib/search/search-indexer';
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  type ReactNode,
+} from 'react';
+import { searchEngine } from '@/lib/search/search-engine';
+import { searchIndexer } from '@/lib/search/search-indexer';
 /**
  * Search Context Provider - Global search state management
  * Integrates search engine, analytics, history, and preferences
@@ -16,13 +22,13 @@ import type {
   PopularSearch,
   SearchFacets,
   SearchExportConfig,
-  SearchAnalyticsEvent
- } from '@/types/search';
+  SearchAnalyticsEvent,
+} from '@/types/search';
 import {
-  searchAnalytics, 
-  searchHistory, 
-  popularSearches, 
-  searchPreferences 
+  searchAnalytics,
+  searchHistory,
+  popularSearches,
+  searchPreferences,
 } from '@/lib/search/search-analytics';
 
 // Action types
@@ -47,7 +53,7 @@ const initialState: SearchContextState = {
   query: '',
   filters: {
     contentTypes: ['all'],
-    language: 'es'
+    language: 'es',
   } as SearchFilters,
   results: [],
   suggestions: [],
@@ -57,45 +63,48 @@ const initialState: SearchContextState = {
   error: null,
   facets: null,
   total: 0,
-  hasMore: false
+  hasMore: false,
 };
 
 // Reducer function
-function searchReducer(state: SearchContextState, action: SearchAction): SearchContextState {
+function searchReducer(
+  state: SearchContextState,
+  action: SearchAction
+): SearchContextState {
   switch (action['type']) {
     case 'SET_QUERY':
       return { ...state, query: action.payload };
-    
+
     case 'SET_FILTERS':
       return { ...state, filters: action.payload };
-    
+
     case 'SET_RESULTS':
       return { ...state, results: action.payload };
-    
+
     case 'SET_SUGGESTIONS':
       return { ...state, suggestions: action.payload };
-    
+
     case 'SET_HISTORY':
       return { ...state, history: action.payload };
-    
+
     case 'SET_POPULAR':
       return { ...state, popular: action.payload };
-    
+
     case 'SET_FACETS':
       return { ...state, facets: action.payload };
-    
+
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
-    
+
     case 'SET_ERROR':
       return { ...state, error: action.payload };
-    
+
     case 'SET_TOTAL':
       return { ...state, total: action.payload };
-    
+
     case 'SET_HAS_MORE':
       return { ...state, hasMore: action.payload };
-    
+
     case 'CLEAR_SEARCH':
       return {
         ...state,
@@ -105,18 +114,18 @@ function searchReducer(state: SearchContextState, action: SearchAction): SearchC
         error: null,
         facets: null,
         total: 0,
-        hasMore: false
+        hasMore: false,
       };
-    
+
     case 'ADD_TO_HISTORY':
       return {
         ...state,
-        history: [action.payload, ...state.history.slice(0, 19)] // Keep last 20
+        history: [action.payload, ...state.history.slice(0, 19)], // Keep last 20
       };
-    
+
     case 'CLEAR_HISTORY':
       return { ...state, history: [] };
-    
+
     default:
       return state;
   }
@@ -151,7 +160,10 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         // Load user preferences
         const preferences = searchPreferences.getPreferences();
         if (preferences.defaultFilters) {
-          dispatch({ type: 'SET_FILTERS', payload: preferences.defaultFilters });
+          dispatch({
+            type: 'SET_FILTERS',
+            payload: preferences.defaultFilters,
+          });
         }
 
         // Ensure search index is ready
@@ -160,7 +172,6 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
           console.log('Search index not ready, initializing...');
           await searchIndexer.indexAllContent();
         }
-
       } catch (error) {
         console.error('Error initializing search:', error);
         dispatch({ type: 'SET_ERROR', payload: 'Failed to initialize search' });
@@ -199,8 +210,8 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
             highlightResults: true,
             includeContent: false,
             minScore: 0.1,
-            maxResults: 1000
-          }
+            maxResults: 1000,
+          },
         });
 
         const searchTime = Date.now() - startTime;
@@ -211,7 +222,12 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         dispatch({ type: 'SET_HAS_MORE', payload: response.hasMore });
 
         // Track analytics
-        await searchAnalytics.trackSearch(query, searchFilters, response.total, searchTime);
+        await searchAnalytics.trackSearch(
+          query,
+          searchFilters,
+          response.total,
+          searchTime
+        );
 
         // Add to history
         const historyItem: SearchHistoryItem = {
@@ -221,7 +237,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
           timestamp: new Date(),
           resultCount: response['total'],
           clickedResults: [],
-          sessionId: searchAnalytics.getSessionAnalytics().sessionId
+          sessionId: searchAnalytics.getSessionAnalytics().sessionId,
         };
 
         await searchHistory.addToHistory(
@@ -232,10 +248,12 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         );
 
         dispatch({ type: 'ADD_TO_HISTORY', payload: historyItem });
-
       } catch (error) {
         console.error('Search error:', error);
-        dispatch({ type: 'SET_ERROR', payload: 'Search failed. Please try again.' });
+        dispatch({
+          type: 'SET_ERROR',
+          payload: 'Search failed. Please try again.',
+        });
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false });
       }
@@ -279,23 +297,22 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
             highlightResults: false,
             includeContent: false,
             minScore: 0.2,
-            maxResults: 5
-          }
+            maxResults: 5,
+          },
         });
 
         const suggestions: SearchSuggestion[] = [
           ...response.suggestions,
-          ...response?.results?.slice(0, 3).map(result => ({
+          ...response?.results?.slice(0, 3).map((result) => ({
             text: result.title,
             type: 'query' as const,
             score: result.score,
-            category: result.type
-          }))
+            category: result.type,
+          })),
         ];
 
         dispatch({ type: 'SET_SUGGESTIONS', payload: suggestions });
         return suggestions;
-
       } catch (error) {
         console.error('Error getting suggestions:', error);
         return [];
@@ -315,7 +332,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
               '' // Would need result type
             );
             break;
-          
+
           case 'filter_apply':
             await searchAnalytics.trackFilterApply(
               state.query,
@@ -324,7 +341,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
               0 // Would need new result count
             );
             break;
-          
+
           case 'suggestion_click':
             await searchAnalytics.trackSuggestionClick(
               event.query || state.query,
@@ -332,7 +349,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
               '' // Would need suggestion type
             );
             break;
-          
+
           case 'voice_search':
             await searchAnalytics.trackVoiceSearch(
               event.query || '',
@@ -349,14 +366,14 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     // Export results
     exportResults: async (config: SearchExportConfig): Promise<Blob> => {
       try {
-        const dataToExport = state.results.map(result => ({
+        const dataToExport = state.results.map((result) => ({
           title: result.title,
           description: result.description,
           type: result['type'],
           url: result.url,
           tags: result?.tags?.join(', '),
           createdAt: result['metadata'].createdAt.toISOString(),
-          score: result.score
+          score: result.score,
         }));
 
         let content: string;
@@ -367,11 +384,11 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
             const headers = Object.keys(dataToExport?.[0] || {});
             const csvRows = [
               headers['join'](','),
-              ...dataToExport.map(row => 
-                headers['map'](header => 
+              ...dataToExport.map((row) =>
+                headers['map']((header) =>
                   JSON.stringify(row[header as keyof typeof row] || '')
                 ).join(',')
-              )
+              ),
             ];
             content = csvRows.join('\n');
             mimeType = 'text/csv';
@@ -387,7 +404,6 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         }
 
         return new Blob([content], { type: mimeType });
-
       } catch (error) {
         console.error('Error exporting results:', error);
         throw error;
@@ -398,12 +414,12 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     updateFilters: (filters: Partial<SearchFilters>) => {
       const newFilters = { ...state.filters, ...filters };
       dispatch({ type: 'SET_FILTERS', payload: newFilters });
-      
+
       // Save preferences
       searchPreferences.savePreferences({
-        defaultFilters: newFilters
+        defaultFilters: newFilters,
       });
-    }
+    },
   };
 
   return (

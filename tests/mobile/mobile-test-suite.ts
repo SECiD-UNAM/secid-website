@@ -2,7 +2,7 @@ import { test, expect, Page, BrowserContext } from '@playwright/test';
 
 /**
  * Comprehensive Mobile Responsiveness Test Suite
- * Tests various aspects of mobile user experience including layout, navigation, 
+ * Tests various aspects of mobile user experience including layout, navigation,
  * performance, and accessibility across different devices and network conditions.
  */
 
@@ -26,7 +26,6 @@ const PERFORMANCE_THRESHOLDS = {
 };
 
 test.describe('Mobile Responsiveness Suite', () => {
-  
   test.beforeEach(async ({ page }) => {
     // Enable JavaScript
     await page.addInitScript(() => {
@@ -49,9 +48,14 @@ test.describe('Mobile Responsiveness Suite', () => {
   });
 
   test.describe('Layout Responsiveness', () => {
-    MOBILE_DEVICES.forEach(device => {
-      test(`should render correctly on ${device.name} (${device.width}x${device.height})`, async ({ page }) => {
-        await page.setViewportSize({ width: device.width, height: device.height });
+    MOBILE_DEVICES.forEach((device) => {
+      test(`should render correctly on ${device.name} (${device.width}x${device.height})`, async ({
+        page,
+      }) => {
+        await page.setViewportSize({
+          width: device.width,
+          height: device.height,
+        });
         await page.goto('/');
 
         // Wait for page to be fully loaded
@@ -66,21 +70,27 @@ test.describe('Mobile Responsiveness Suite', () => {
 
         // Check navigation is accessible
         const nav = page.locator('nav, .navigation, .navbar');
-        if (await nav.count() > 0) {
+        if ((await nav.count()) > 0) {
           await expect(nav.first()).toBeVisible();
         }
 
         // Take screenshot for visual comparison
-        await page.screenshot({ 
+        await page.screenshot({
           path: `test-results/screenshots/${device.name.replace(/\s+/g, '-').toLowerCase()}-layout.png`,
-          fullPage: true 
+          fullPage: true,
         });
       });
     });
 
-    test('should handle orientation changes correctly', async ({ page, browserName }) => {
-      test.skip(browserName === 'webkit', 'Orientation testing not fully supported on WebKit');
-      
+    test('should handle orientation changes correctly', async ({
+      page,
+      browserName,
+    }) => {
+      test.skip(
+        browserName === 'webkit',
+        'Orientation testing not fully supported on WebKit'
+      );
+
       // Start in portrait mode
       await page.setViewportSize({ width: 375, height: 667 });
       await page.goto('/');
@@ -110,11 +120,13 @@ test.describe('Mobile Responsiveness Suite', () => {
       await page.waitForLoadState('networkidle');
 
       // Look for mobile menu button (hamburger menu)
-      const menuButton = page.locator(
-        'button[aria-label*="menu"], .menu-toggle, .hamburger, [aria-expanded]'
-      ).first();
+      const menuButton = page
+        .locator(
+          'button[aria-label*="menu"], .menu-toggle, .hamburger, [aria-expanded]'
+        )
+        .first();
 
-      if (await menuButton.count() > 0) {
+      if ((await menuButton.count()) > 0) {
         // Test menu toggle
         await menuButton.click();
         await page.waitForTimeout(300); // Wait for animation
@@ -126,7 +138,9 @@ test.describe('Mobile Responsiveness Suite', () => {
         }
 
         // Look for navigation links
-        const navLinks = page.locator('nav a, .menu a').filter({ hasText: /.+/ });
+        const navLinks = page
+          .locator('nav a, .menu a')
+          .filter({ hasText: /.+/ });
         const linkCount = await navLinks.count();
         expect(linkCount).toBeGreaterThan(0);
 
@@ -147,17 +161,17 @@ test.describe('Mobile Responsiveness Suite', () => {
       await page.waitForLoadState('networkidle');
 
       const navigation = page.locator('nav, .navbar, header nav').first();
-      if (await navigation.count() > 0) {
+      if ((await navigation.count()) > 0) {
         // Get initial position
         const initialBox = await navigation.boundingBox();
-        
+
         // Scroll down
         await page.evaluate(() => window.scrollTo(0, 500));
         await page.waitForTimeout(300);
 
         // Check if navigation is still visible (sticky)
         const afterScrollBox = await navigation.boundingBox();
-        
+
         // If sticky, navigation should still be visible at the top
         if (afterScrollBox) {
           expect(afterScrollBox.y).toBeLessThanOrEqual(10);
@@ -169,10 +183,10 @@ test.describe('Mobile Responsiveness Suite', () => {
   test.describe('Form Interactions', () => {
     test('should handle form inputs on mobile keyboards', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 });
-      
+
       // Test different form pages
       const formPages = ['/', '/job-submission.html', '/registro.html'];
-      
+
       for (const formPage of formPages) {
         try {
           await page.goto(formPage);
@@ -184,37 +198,41 @@ test.describe('Mobile Responsiveness Suite', () => {
 
           if (inputCount > 0) {
             // Test text input
-            const textInputs = page.locator('input[type="text"], input[type="email"], textarea');
-            if (await textInputs.count() > 0) {
+            const textInputs = page.locator(
+              'input[type="text"], input[type="email"], textarea'
+            );
+            if ((await textInputs.count()) > 0) {
               const firstTextInput = textInputs.first();
               await firstTextInput.click();
               await firstTextInput.fill('Test input on mobile');
-              
+
               // Verify input accepts text
               const inputValue = await firstTextInput.inputValue();
               expect(inputValue).toBe('Test input on mobile');
             }
 
             // Test number input
-            const numberInputs = page.locator('input[type="number"], input[type="tel"]');
-            if (await numberInputs.count() > 0) {
+            const numberInputs = page.locator(
+              'input[type="number"], input[type="tel"]'
+            );
+            if ((await numberInputs.count()) > 0) {
               const firstNumberInput = numberInputs.first();
               await firstNumberInput.click();
               await firstNumberInput.fill('1234567890');
-              
+
               const numberValue = await firstNumberInput.inputValue();
               expect(numberValue).toMatch(/\d+/);
             }
 
             // Test select dropdown
             const selects = page.locator('select');
-            if (await selects.count() > 0) {
+            if ((await selects.count()) > 0) {
               const firstSelect = selects.first();
               await firstSelect.click();
-              
+
               // Try to select an option
               const options = firstSelect.locator('option');
-              if (await options.count() > 1) {
+              if ((await options.count()) > 1) {
                 await options.nth(1).click();
               }
             }
@@ -231,17 +249,26 @@ test.describe('Mobile Responsiveness Suite', () => {
       await page.waitForLoadState('networkidle');
 
       // Look for forms with required fields
-      const requiredInputs = page.locator('input[required], textarea[required]');
-      const submitButtons = page.locator('button[type="submit"], input[type="submit"]');
+      const requiredInputs = page.locator(
+        'input[required], textarea[required]'
+      );
+      const submitButtons = page.locator(
+        'button[type="submit"], input[type="submit"]'
+      );
 
-      if (await requiredInputs.count() > 0 && await submitButtons.count() > 0) {
+      if (
+        (await requiredInputs.count()) > 0 &&
+        (await submitButtons.count()) > 0
+      ) {
         // Try to submit form without filling required fields
         await submitButtons.first().click();
         await page.waitForTimeout(500);
 
         // Check for validation messages
-        const validationMessages = page.locator(':invalid, .error, .validation-error');
-        if (await validationMessages.count() > 0) {
+        const validationMessages = page.locator(
+          ':invalid, .error, .validation-error'
+        );
+        if ((await validationMessages.count()) > 0) {
           await expect(validationMessages.first()).toBeVisible();
         }
       }
@@ -258,17 +285,18 @@ test.describe('Mobile Responsiveness Suite', () => {
       const images = page.locator('img');
       const imageCount = await images.count();
 
-      for (let i = 0; i < Math.min(imageCount, 10); i++) { // Test first 10 images
+      for (let i = 0; i < Math.min(imageCount, 10); i++) {
+        // Test first 10 images
         const img = images.nth(i);
-        
+
         // Wait for image to load
         await img.waitFor({ state: 'visible' });
-        
+
         // Check if image fits within viewport
         const box = await img.boundingBox();
         if (box) {
           expect(box.width).toBeLessThanOrEqual(375);
-          
+
           // Check if image has proper alt text for accessibility
           const altText = await img.getAttribute('alt');
           if (altText === null || altText === '') {
@@ -283,17 +311,19 @@ test.describe('Mobile Responsiveness Suite', () => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
-      const videos = page.locator('video, iframe[src*="youtube"], iframe[src*="vimeo"]');
+      const videos = page.locator(
+        'video, iframe[src*="youtube"], iframe[src*="vimeo"]'
+      );
       const videoCount = await videos.count();
 
       for (let i = 0; i < videoCount; i++) {
         const video = videos.nth(i);
         const box = await video.boundingBox();
-        
+
         if (box) {
           // Video should not exceed viewport width
           expect(box.width).toBeLessThanOrEqual(375);
-          
+
           // Video should maintain aspect ratio
           const aspectRatio = box.width / box.height;
           expect(aspectRatio).toBeGreaterThan(0.5);
@@ -306,7 +336,7 @@ test.describe('Mobile Responsiveness Suite', () => {
   test.describe('Performance on Mobile', () => {
     test('should meet mobile performance thresholds', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 });
-      
+
       // Navigate with performance timing
       const startTime = Date.now();
       await page.goto('/', { waitUntil: 'load' });
@@ -317,12 +347,18 @@ test.describe('Mobile Responsiveness Suite', () => {
 
       // Get performance metrics
       const performanceMetrics = await page.evaluate(() => {
-        const perfData = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+        const perfData = performance.getEntriesByType(
+          'navigation'
+        )[0] as PerformanceNavigationTiming;
         const paintMetrics = (window as any).paintTiming || {};
-        
+
         return {
-          domContentLoaded: perfData ? perfData.domContentLoadedEventEnd - perfData.fetchStart : null,
-          loadComplete: perfData ? perfData.loadEventEnd - perfData.fetchStart : null,
+          domContentLoaded: perfData
+            ? perfData.domContentLoadedEventEnd - perfData.fetchStart
+            : null,
+          loadComplete: perfData
+            ? perfData.loadEventEnd - perfData.fetchStart
+            : null,
           firstContentfulPaint: paintMetrics['first-contentful-paint'] || null,
           transferSize: perfData ? perfData.transferSize : null,
         };
@@ -332,7 +368,9 @@ test.describe('Mobile Responsiveness Suite', () => {
 
       // Validate performance thresholds
       if (performanceMetrics.firstContentfulPaint) {
-        expect(performanceMetrics.firstContentfulPaint).toBeLessThan(PERFORMANCE_THRESHOLDS.firstContentfulPaint);
+        expect(performanceMetrics.firstContentfulPaint).toBeLessThan(
+          PERFORMANCE_THRESHOLDS.firstContentfulPaint
+        );
       }
 
       if (performanceMetrics.domContentLoaded) {
@@ -343,12 +381,12 @@ test.describe('Mobile Responsiveness Suite', () => {
     test('should handle slow network conditions', async ({ page, context }) => {
       // Simulate slow 3G
       await context.route('**/*', async (route) => {
-        await new Promise(resolve => setTimeout(resolve, 100)); // Add 100ms delay
+        await new Promise((resolve) => setTimeout(resolve, 100)); // Add 100ms delay
         await route.continue();
       });
 
       await page.setViewportSize({ width: 375, height: 667 });
-      
+
       const startTime = Date.now();
       await page.goto('/', { timeout: 30000 });
       const loadTime = Date.now() - startTime;
@@ -362,7 +400,9 @@ test.describe('Mobile Responsiveness Suite', () => {
   });
 
   test.describe('Accessibility on Mobile', () => {
-    test('should be accessible with screen readers on mobile', async ({ page }) => {
+    test('should be accessible with screen readers on mobile', async ({
+      page,
+    }) => {
       await page.setViewportSize({ width: 375, height: 667 });
       await page.goto('/');
       await page.waitForLoadState('networkidle');
@@ -373,8 +413,10 @@ test.describe('Mobile Responsiveness Suite', () => {
       expect(headingCount).toBeGreaterThan(0);
 
       // Check for skip links
-      const skipLinks = page.locator('a[href="#main"], a[href="#content"], .skip-link');
-      if (await skipLinks.count() > 0) {
+      const skipLinks = page.locator(
+        'a[href="#main"], a[href="#content"], .skip-link'
+      );
+      if ((await skipLinks.count()) > 0) {
         await expect(skipLinks.first()).toBeTruthy();
       }
 
@@ -386,12 +428,12 @@ test.describe('Mobile Responsiveness Suite', () => {
       // Check for ARIA labels on interactive elements
       const buttons = page.locator('button');
       const buttonCount = await buttons.count();
-      
+
       for (let i = 0; i < Math.min(buttonCount, 5); i++) {
         const button = buttons.nth(i);
         const ariaLabel = await button.getAttribute('aria-label');
         const text = await button.textContent();
-        
+
         // Button should have either text content or aria-label
         expect(ariaLabel || text?.trim()).toBeTruthy();
       }
@@ -403,7 +445,9 @@ test.describe('Mobile Responsiveness Suite', () => {
       await page.waitForLoadState('networkidle');
 
       // Check color contrast (basic check)
-      const textElements = page.locator('p, span, div, a, button, h1, h2, h3, h4, h5, h6');
+      const textElements = page.locator(
+        'p, span, div, a, button, h1, h2, h3, h4, h5, h6'
+      );
       const elementCount = await textElements.count();
 
       for (let i = 0; i < Math.min(elementCount, 10); i++) {
@@ -426,23 +470,26 @@ test.describe('Mobile Responsiveness Suite', () => {
   test.describe('PWA Features', () => {
     test('should have basic PWA manifest', async ({ page }) => {
       await page.goto('/');
-      
+
       // Check for manifest link
       const manifestLink = page.locator('link[rel="manifest"]');
-      if (await manifestLink.count() > 0) {
+      if ((await manifestLink.count()) > 0) {
         const manifestHref = await manifestLink.getAttribute('href');
         expect(manifestHref).toBeTruthy();
 
         // Try to fetch manifest
         const manifestResponse = await page.request.get(manifestHref!);
         expect(manifestResponse.status()).toBe(200);
-        
+
         const manifestContent = await manifestResponse.json();
         expect(manifestContent.name || manifestContent.short_name).toBeTruthy();
       }
     });
 
-    test('should work offline for cached content', async ({ page, context }) => {
+    test('should work offline for cached content', async ({
+      page,
+      context,
+    }) => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
@@ -465,12 +512,18 @@ test.describe('Mobile Responsiveness Suite', () => {
 });
 
 test.describe('Cross-Device Consistency', () => {
-  test('should maintain consistent functionality across devices', async ({ page }) => {
+  test('should maintain consistent functionality across devices', async ({
+    page,
+  }) => {
     const testUrls = ['/', '/aboutus.html'];
-    
+
     for (const url of testUrls) {
-      for (const device of MOBILE_DEVICES.slice(0, 3)) { // Test first 3 devices
-        await page.setViewportSize({ width: device.width, height: device.height });
+      for (const device of MOBILE_DEVICES.slice(0, 3)) {
+        // Test first 3 devices
+        await page.setViewportSize({
+          width: device.width,
+          height: device.height,
+        });
         await page.goto(url);
         await page.waitForLoadState('networkidle');
 
@@ -481,7 +534,7 @@ test.describe('Cross-Device Consistency', () => {
 
         // Navigation should be accessible
         const nav = page.locator('nav, .navigation, .navbar');
-        if (await nav.count() > 0) {
+        if ((await nav.count()) > 0) {
           await expect(nav.first()).toBeVisible();
         }
 

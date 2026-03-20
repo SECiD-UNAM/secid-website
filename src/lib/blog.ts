@@ -183,9 +183,7 @@ export async function getBlogPosts(filters?: BlogFilters): Promise<BlogPost[]> {
 
 export async function getBlogPost(slug: string): Promise<BlogPost | null> {
   if (isUsingMockAPI()) {
-    return (
-      mockBlogPosts.find((p) => p.slug === slug || p.id === slug) || null
-    );
+    return mockBlogPosts.find((p) => p.slug === slug || p.id === slug) || null;
   }
 
   try {
@@ -214,14 +212,10 @@ export async function getBlogPost(slug: string): Promise<BlogPost | null> {
         publishedAt: docSnap.data().publishedAt?.toDate() || new Date(),
       } as BlogPost;
     }
-    return (
-      mockBlogPosts.find((p) => p.slug === slug || p.id === slug) || null
-    );
+    return mockBlogPosts.find((p) => p.slug === slug || p.id === slug) || null;
   } catch (error) {
     console.error('Error fetching blog post:', error);
-    return (
-      mockBlogPosts.find((p) => p.slug === slug || p.id === slug) || null
-    );
+    return mockBlogPosts.find((p) => p.slug === slug || p.id === slug) || null;
   }
 }
 

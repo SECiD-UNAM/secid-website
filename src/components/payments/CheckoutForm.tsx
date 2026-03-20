@@ -6,11 +6,16 @@ import {
   useElements,
   PaymentElement,
 } from '@stripe/react-stripe-js';
-import { stripePromise, SUBSCRIPTION_PLANS, validateRFC, calculateMexicanTaxes} from '../../lib/stripe/stripe-client';
-import { useTranslations} from '../../hooks/useTranslations';
-import { Button} from '../ui/Button';
-import { toast} from 'react-hot-toast';
-import { CreditCardIcon, LockClosedIcon} from '@heroicons/react/24/outline';
+import {
+  stripePromise,
+  SUBSCRIPTION_PLANS,
+  validateRFC,
+  calculateMexicanTaxes,
+} from '../../lib/stripe/stripe-client';
+import { useTranslations } from '../../hooks/useTranslations';
+import { Button } from '../ui/Button';
+import { toast } from 'react-hot-toast';
+import { CreditCardIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 
 interface CheckoutFormProps {
   planId: keyof typeof SUBSCRIPTION_PLANS;
@@ -89,7 +94,7 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
         });
 
         const data = await response.json();
-        
+
         if (data['clientSecret']) {
           setClientSecret(data['clientSecret']);
         } else {
@@ -97,12 +102,22 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
         }
       } catch (error) {
         console.error('Error initializing payment:', error);
-        onError?.(error instanceof Error ? error.message : 'Payment initialization failed');
+        onError?.(
+          error instanceof Error
+            ? error.message
+            : 'Payment initialization failed'
+        );
       }
     };
 
     initializePayment();
-  }, [planId, billingCycle, commissionType, customerId, taxCalculation['total']]);
+  }, [
+    planId,
+    billingCycle,
+    commissionType,
+    customerId,
+    taxCalculation['total'],
+  ]);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -158,7 +173,7 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
     try {
       let result;
 
-      if(useExistingCard) {
+      if (useExistingCard) {
         // Use Payment Element for new payment method
         result = await stripe.confirmPayment({
           elements,
@@ -216,7 +231,8 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
         onSuccess?.(result.paymentIntent);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('paymentgenericError');
+      const errorMessage =
+        error instanceof Error ? error.message : t('paymentgenericError');
       toast['error'](errorMessage);
       onError?.(errorMessage);
     } finally {
@@ -227,7 +243,7 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
   const handleInputChange = (field: string, value: string) => {
     if (field.includes('.')) {
       const [parent, child] = field.split('');
-      setCustomerInfo(prev => ({
+      setCustomerInfo((prev) => ({
         ...prev,
         [parent]: {
           ...prev[parent as keyof CustomerInfo],
@@ -235,7 +251,7 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
         },
       }));
     } else {
-      setCustomerInfo(prev => ({
+      setCustomerInfo((prev) => ({
         ...prev,
         [field]: value,
       }));
@@ -243,7 +259,7 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
 
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
 
@@ -266,160 +282,199 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Plan Summary */}
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+      <div className="rounded-lg bg-gray-50 p-4">
+        <h3 className="mb-2 text-lg font-semibold text-gray-900">
           {t('paymentplanSummary')}
         </h3>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span>{plan['name']} - {billingCycle === 'yearly' ? t('paymentyearly') : t('paymentmonthly')}</span>
-            <span>${plan.price.toFixed(2)} {plan.currency.toUpperCase()}</span>
+            <span>
+              {plan['name']} -{' '}
+              {billingCycle === 'yearly'
+                ? t('paymentyearly')
+                : t('paymentmonthly')}
+            </span>
+            <span>
+              ${plan.price.toFixed(2)} {plan.currency.toUpperCase()}
+            </span>
           </div>
           <div className="flex justify-between">
             <span>Subtotal</span>
-            <span>${taxCalculation['subtotal'].toFixed(2)} {plan.currency.toUpperCase()}</span>
+            <span>
+              ${taxCalculation['subtotal'].toFixed(2)}{' '}
+              {plan.currency.toUpperCase()}
+            </span>
           </div>
           <div className="flex justify-between">
             <span>IVA (16%)</span>
-            <span>${taxCalculation['iva'].toFixed(2)} {plan.currency.toUpperCase()}</span>
+            <span>
+              ${taxCalculation['iva'].toFixed(2)} {plan.currency.toUpperCase()}
+            </span>
           </div>
-          <div className="flex justify-between font-semibold text-lg border-t pt-2">
+          <div className="flex justify-between border-t pt-2 text-lg font-semibold">
             <span>{t('paymenttotal')}</span>
-            <span>${taxCalculation['total'].toFixed(2)} {plan.currency.toUpperCase()}</span>
+            <span>
+              ${taxCalculation['total'].toFixed(2)}{' '}
+              {plan.currency.toUpperCase()}
+            </span>
           </div>
         </div>
       </div>
 
       {/* Customer Information */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">
           {t('paymentbillingInformation')}
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700">
               {t('paymentfullName')} *
             </label>
             <input
               type="text"
               value={customerInfo['name']}
               onChange={(e) => handleInputChange('name', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.name ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('paymentfullNamePlaceholder')}
             />
-            {errors['name'] && <p className="text-red-500 text-xs mt-1">{errors['name']}</p>}
+            {errors['name'] && (
+              <p className="mt-1 text-xs text-red-500">{errors['name']}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700">
               {t('paymentemail')} *
             </label>
             <input
               type="email"
               value={customerInfo['email']}
               onChange={(e) => handleInputChange('email', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('paymentemailPlaceholder')}
             />
-            {errors['email'] && <p className="text-red-500 text-xs mt-1">{errors['email']}</p>}
+            {errors['email'] && (
+              <p className="mt-1 text-xs text-red-500">{errors['email']}</p>
+            )}
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700">
               RFC ({t('paymentoptional')})
             </label>
             <input
               type="text"
               value={customerInfo.rfc}
-              onChange={(e) => handleInputChange('rfc', e.target.value.toUpperCase())}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              onChange={(e) =>
+                handleInputChange('rfc', e.target.value.toUpperCase())
+              }
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.rfc ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="XAXX010101000"
               maxLength={13}
             />
-            {errors.rfc && <p className="text-red-500 text-xs mt-1">{errors.rfc}</p>}
+            {errors.rfc && (
+              <p className="mt-1 text-xs text-red-500">{errors.rfc}</p>
+            )}
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700">
               {t('paymentaddress')} *
             </label>
             <input
               type="text"
               value={customerInfo.address.line1}
-              onChange={(e) => handleInputChange('address.line1', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              onChange={(e) =>
+                handleInputChange('address.line1', e.target.value)
+              }
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.address ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('paymentaddressPlaceholder')}
             />
-            {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
+            {errors.address && (
+              <p className="mt-1 text-xs text-red-500">{errors.address}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700">
               {t('paymentcity')} *
             </label>
             <input
               type="text"
               value={customerInfo.address.city}
-              onChange={(e) => handleInputChange('address.city', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              onChange={(e) =>
+                handleInputChange('address.city', e.target.value)
+              }
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.city ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('paymentcityPlaceholder')}
             />
-            {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
+            {errors.city && (
+              <p className="mt-1 text-xs text-red-500">{errors.city}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700">
               {t('paymentstate')} *
             </label>
             <input
               type="text"
               value={customerInfo.address.state}
-              onChange={(e) => handleInputChange('address.state', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              onChange={(e) =>
+                handleInputChange('address.state', e.target.value)
+              }
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.state ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('paymentstatePlaceholder')}
             />
-            {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state}</p>}
+            {errors.state && (
+              <p className="mt-1 text-xs text-red-500">{errors.state}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700">
               {t('paymentpostalCode')} *
             </label>
             <input
               type="text"
               value={customerInfo.address.postal_code}
-              onChange={(e) => handleInputChange('address.postal_code', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              onChange={(e) =>
+                handleInputChange('address.postal_code', e.target.value)
+              }
+              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.postalCode ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="12345"
             />
-            {errors.postalCode && <p className="text-red-500 text-xs mt-1">{errors.postalCode}</p>}
+            {errors.postalCode && (
+              <p className="mt-1 text-xs text-red-500">{errors.postalCode}</p>
+            )}
           </div>
         </div>
       </div>
 
       {/* Payment Method */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">
           {t('paymentpaymentMethod')}
         </h3>
-        
+
         {clientSecret && (
           <div className="space-y-4">
-            <div className="flex space-x-4 mb-4">
+            <div className="mb-4 flex space-x-4">
               <label className="flex items-center">
                 <input
                   type="radio"
@@ -427,7 +482,7 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
                   onChange={() => setUseExistingCard(false)}
                   className="mr-2"
                 />
-                <CreditCardIcon className="w-5 h-5 mr-2" />
+                <CreditCardIcon className="mr-2 h-5 w-5" />
                 {t('paymentnewCard')}
               </label>
               <label className="flex items-center">
@@ -442,11 +497,11 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
             </div>
 
             {useExistingCard ? (
-              <div className="border rounded-md p-4">
+              <div className="rounded-md border p-4">
                 <PaymentElement />
               </div>
             ) : (
-              <div className="border rounded-md p-4">
+              <div className="rounded-md border p-4">
                 <CardElement options={cardElementOptions} />
               </div>
             )}
@@ -456,7 +511,7 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
 
       {/* Security Notice */}
       <div className="flex items-center space-x-2 text-sm text-gray-600">
-        <LockClosedIcon className="w-4 h-4" />
+        <LockClosedIcon className="h-4 w-4" />
         <span>{t('paymentsecurityNotice')}</span>
       </div>
 
@@ -464,11 +519,11 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
       <Button
         type="submit"
         disabled={!stripe || isProcessing || !clientSecret}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full rounded-md bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isProcessing ? (
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+            <div className="mr-2 h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
             {t('paymentprocessing')}
           </div>
         ) : (

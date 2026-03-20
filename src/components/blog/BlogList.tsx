@@ -12,8 +12,8 @@ const translations = {
       Tendencias: 'Tendencias',
       Tutorial: 'Tutorial',
       Carrera: 'Carrera',
-      'Investigación': 'Investigación',
-      'Opinión': 'Opinión',
+      Investigación: 'Investigación',
+      Opinión: 'Opinión',
     },
     searchPlaceholder: 'Buscar artículos...',
     featuredBadge: 'Artículo Destacado',
@@ -36,8 +36,8 @@ const translations = {
       Tendencias: 'Trends',
       Tutorial: 'Tutorial',
       Carrera: 'Career',
-      'Investigación': 'Research',
-      'Opinión': 'Opinion',
+      Investigación: 'Research',
+      Opinión: 'Opinion',
     },
     searchPlaceholder: 'Search articles...',
     featuredBadge: 'Featured Article',
@@ -56,7 +56,14 @@ const translations = {
   },
 };
 
-const CATEGORY_KEYS = ['all', 'Tendencias', 'Tutorial', 'Carrera', 'Investigación', 'Opinión'] as const;
+const CATEGORY_KEYS = [
+  'all',
+  'Tendencias',
+  'Tutorial',
+  'Carrera',
+  'Investigación',
+  'Opinión',
+] as const;
 const POSTS_PER_PAGE = 6;
 
 function formatDate(date: Date, lang: string): string {
@@ -119,8 +126,13 @@ export default function BlogList({ lang = 'es' }: Props) {
   if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-        <i className="fas fa-spinner fa-spin" style={{ fontSize: '2rem', color: 'var(--secid-primary)' }} />
-        <p style={{ marginTop: '1rem', color: 'var(--color-text-secondary)' }}>{t.loading}</p>
+        <i
+          className="fas fa-spinner fa-spin"
+          style={{ fontSize: '2rem', color: 'var(--secid-primary)' }}
+        />
+        <p style={{ marginTop: '1rem', color: 'var(--color-text-secondary)' }}>
+          {t.loading}
+        </p>
       </div>
     );
   }
@@ -157,21 +169,33 @@ export default function BlogList({ lang = 'es' }: Props) {
         <div style={{ marginBottom: 'var(--space-3xl)' }}>
           <div className="secid-blog__featured">
             <div className="secid-blog__featured-image">
-              <span className="secid-blog__featured-badge">{t.featuredBadge}</span>
+              <span className="secid-blog__featured-badge">
+                {t.featuredBadge}
+              </span>
             </div>
             <div className="secid-blog__featured-content">
               <div className="secid-blog__meta">
-                <span className="secid-blog__category-tag">{featuredPost.category}</span>
+                <span className="secid-blog__category-tag">
+                  {featuredPost.category}
+                </span>
                 <span>{formatDate(featuredPost.publishedAt, lang)}</span>
               </div>
               <h2 className="secid-blog__featured-title">
-                <a href={`${t.blogLink}${featuredPost.slug}`}>{featuredPost.title}</a>
+                <a href={`${t.blogLink}${featuredPost.slug}`}>
+                  {featuredPost.title}
+                </a>
               </h2>
-              <p className="secid-blog__featured-excerpt">{featuredPost.excerpt}</p>
+              <p className="secid-blog__featured-excerpt">
+                {featuredPost.excerpt}
+              </p>
               <div className="secid-blog__author">
-                <div className="secid-blog__author-avatar">{getInitials(featuredPost.authorName)}</div>
+                <div className="secid-blog__author-avatar">
+                  {getInitials(featuredPost.authorName)}
+                </div>
                 <div>
-                  <div className="secid-blog__author-name">{featuredPost.authorName}</div>
+                  <div className="secid-blog__author-name">
+                    {featuredPost.authorName}
+                  </div>
                 </div>
               </div>
             </div>
@@ -184,10 +208,24 @@ export default function BlogList({ lang = 'es' }: Props) {
         <div style={{ textAlign: 'center', padding: '4rem 0' }}>
           <i
             className="fas fa-search"
-            style={{ fontSize: '3rem', color: 'var(--color-text-tertiary)', marginBottom: '1rem', display: 'block' }}
+            style={{
+              fontSize: '3rem',
+              color: 'var(--color-text-tertiary)',
+              marginBottom: '1rem',
+              display: 'block',
+            }}
           />
-          <h3 style={{ color: 'var(--color-text-primary)', marginBottom: '0.5rem' }}>{t.noResults}</h3>
-          <p style={{ color: 'var(--color-text-secondary)' }}>{t.noResultsSub}</p>
+          <h3
+            style={{
+              color: 'var(--color-text-primary)',
+              marginBottom: '0.5rem',
+            }}
+          >
+            {t.noResults}
+          </h3>
+          <p style={{ color: 'var(--color-text-secondary)' }}>
+            {t.noResultsSub}
+          </p>
         </div>
       )}
 
@@ -197,7 +235,9 @@ export default function BlogList({ lang = 'es' }: Props) {
           {visiblePosts.map((post) => (
             <article key={post.id} className="secid-blog__card">
               <div className="secid-blog__card-image">
-                <span className="secid-blog__category-badge">{post.category}</span>
+                <span className="secid-blog__category-badge">
+                  {post.category}
+                </span>
               </div>
               <div className="secid-blog__card-content">
                 <div className="secid-blog__meta">
@@ -219,7 +259,9 @@ export default function BlogList({ lang = 'es' }: Props) {
                     {getInitials(post.authorName)}
                   </div>
                   <div>
-                    <div className="secid-blog__author-name">{post.authorName}</div>
+                    <div className="secid-blog__author-name">
+                      {post.authorName}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -235,20 +277,24 @@ export default function BlogList({ lang = 'es' }: Props) {
             className="secid-button secid-button--outline secid-button--lg"
             onClick={() => setVisibleCount((prev) => prev + POSTS_PER_PAGE)}
           >
-            <i className="fas fa-plus" />
-            {' '}{t.loadMore}
+            <i className="fas fa-plus" /> {t.loadMore}
           </button>
         </div>
       )}
 
       {/* Newsletter CTA */}
-      <div className="secid-blog__newsletter" style={{ marginTop: 'var(--space-3xl)' }}>
+      <div
+        className="secid-blog__newsletter"
+        style={{ marginTop: 'var(--space-3xl)' }}
+      >
         <i className="fas fa-envelope-open-text secid-blog__newsletter-icon" />
         <h2 className="secid-blog__newsletter-title">{t.newsletterTitle}</h2>
         <p className="secid-blog__newsletter-desc">{t.newsletterDesc}</p>
-        <a href={t.newsletterLink} className="secid-button secid-button--primary secid-button--lg">
-          <i className="fas fa-paper-plane" />
-          {' '}{t.newsletterBtn}
+        <a
+          href={t.newsletterLink}
+          className="secid-button secid-button--primary secid-button--lg"
+        >
+          <i className="fas fa-paper-plane" /> {t.newsletterBtn}
         </a>
       </div>
 

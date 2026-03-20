@@ -1,6 +1,6 @@
 /**
  * Firebase Firestore Integration Tests
- * 
+ *
  * Tests for Firestore database operations including:
  * - Document CRUD operations
  * - Collection queries and filtering
@@ -199,7 +199,8 @@ const mockEvent = {
 const mockForumPost = {
   id: 'post-1',
   title: 'Career transition advice needed',
-  content: 'I am looking for advice on transitioning from academia to industry...',
+  content:
+    'I am looking for advice on transitioning from academia to industry...',
   category: 'career',
   tags: ['career', 'transition', 'advice'],
   author: 'user-3',
@@ -216,12 +217,19 @@ const mockForumPost = {
 describe('Firebase Firestore Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Default mocks
-    mockServerTimestamp.mockReturnValue({ seconds: 1672531200, nanoseconds: 0 } as any);
+    mockServerTimestamp.mockReturnValue({
+      seconds: 1672531200,
+      nanoseconds: 0,
+    } as any);
     mockIncrement.mockImplementation((value) => ({ increment: value }) as any);
-    mockArrayUnion.mockImplementation((...elements) => ({ arrayUnion: elements }) as any);
-    mockArrayRemove.mockImplementation((...elements) => ({ arrayRemove: elements }) as any);
+    mockArrayUnion.mockImplementation(
+      (...elements) => ({ arrayUnion: elements }) as any
+    );
+    mockArrayRemove.mockImplementation(
+      (...elements) => ({ arrayRemove: elements }) as any
+    );
     mockDoc.mockReturnValue({} as any);
     mockCollection.mockReturnValue({} as any);
     mockQuery.mockReturnValue({} as any);
@@ -318,8 +326,14 @@ describe('Firebase Firestore Integration', () => {
         size: 3,
         docs: [
           { id: 'job-1', data: () => ({ ...mockJob, id: 'job-1' }) },
-          { id: 'job-2', data: () => ({ ...mockJob, id: 'job-2', title: 'ML Engineer' }) },
-          { id: 'job-3', data: () => ({ ...mockJob, id: 'job-3', title: 'Data Analyst' }) },
+          {
+            id: 'job-2',
+            data: () => ({ ...mockJob, id: 'job-2', title: 'ML Engineer' }),
+          },
+          {
+            id: 'job-3',
+            data: () => ({ ...mockJob, id: 'job-3', title: 'Data Analyst' }),
+          },
         ],
         forEach: vi.fn(),
       };
@@ -339,7 +353,10 @@ describe('Firebase Firestore Integration', () => {
         size: 2,
         docs: [
           { id: 'job-1', data: () => ({ ...mockJob, remote: true }) },
-          { id: 'job-2', data: () => ({ ...mockJob, id: 'job-2', remote: true }) },
+          {
+            id: 'job-2',
+            data: () => ({ ...mockJob, id: 'job-2', remote: true }),
+          },
         ],
       };
       mockGetDocs.mockResolvedValue(mockQuerySnapshot as any);
@@ -357,9 +374,18 @@ describe('Firebase Firestore Integration', () => {
       const mockQuerySnapshot = {
         size: 3,
         docs: [
-          { id: 'job-3', data: () => ({ ...mockJob, createdAt: new Date('2023-01-17') }) },
-          { id: 'job-2', data: () => ({ ...mockJob, createdAt: new Date('2023-01-16') }) },
-          { id: 'job-1', data: () => ({ ...mockJob, createdAt: new Date('2023-01-15') }) },
+          {
+            id: 'job-3',
+            data: () => ({ ...mockJob, createdAt: new Date('2023-01-17') }),
+          },
+          {
+            id: 'job-2',
+            data: () => ({ ...mockJob, createdAt: new Date('2023-01-16') }),
+          },
+          {
+            id: 'job-1',
+            data: () => ({ ...mockJob, createdAt: new Date('2023-01-15') }),
+          },
         ],
       };
       mockGetDocs.mockResolvedValue(mockQuerySnapshot as any);
@@ -418,7 +444,10 @@ describe('Firebase Firestore Integration', () => {
       const mockQuerySnapshot = {
         size: 1,
         docs: [
-          { id: 'job-1', data: () => ({ ...mockJob, location: 'Mexico City', remote: true }) },
+          {
+            id: 'job-1',
+            data: () => ({ ...mockJob, location: 'Mexico City', remote: true }),
+          },
         ],
       };
       mockGetDocs.mockResolvedValue(mockQuerySnapshot as any);
@@ -479,7 +508,11 @@ describe('Firebase Firestore Integration', () => {
       const jobsRef = collection(db, 'jobs');
       const unsubscribe = onSnapshot(jobsRef, mockCallback, mockErrorCallback);
 
-      expect(mockOnSnapshot).toHaveBeenCalledWith(jobsRef, mockCallback, mockErrorCallback);
+      expect(mockOnSnapshot).toHaveBeenCalledWith(
+        jobsRef,
+        mockCallback,
+        mockErrorCallback
+      );
 
       // Simulate error
       const error = new Error('Permission denied');
@@ -545,7 +578,9 @@ describe('Firebase Firestore Integration', () => {
       await batch.commit();
 
       expect(mockBatch.set).toHaveBeenCalledWith(job1Ref, mockJob);
-      expect(mockBatch.update).toHaveBeenCalledWith(job2Ref, { status: 'closed' });
+      expect(mockBatch.update).toHaveBeenCalledWith(job2Ref, {
+        status: 'closed',
+      });
       expect(mockBatch.delete).toHaveBeenCalledWith(job3Ref);
       expect(mockBatch.commit).toHaveBeenCalled();
     });
@@ -760,11 +795,13 @@ describe('Firebase Firestore Integration', () => {
 
       // This would typically be validated before sending to Firestore
       const isValid = (job: any) => {
-        return job.title && 
-               job.title.length > 0 && 
-               job.company && 
-               job.description && 
-               job.location;
+        return (
+          job.title &&
+          job.title.length > 0 &&
+          job.company &&
+          job.description &&
+          job.location
+        );
       };
 
       expect(isValid(invalidJob)).toBeFalsy();
@@ -774,9 +811,11 @@ describe('Firebase Firestore Integration', () => {
     it('validates user profile data', async () => {
       const validateUserProfile = (user: any) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(user.email) && 
-               user.displayName && 
-               user.displayName.length >= 2;
+        return (
+          emailRegex.test(user.email) &&
+          user.displayName &&
+          user.displayName.length >= 2
+        );
       };
 
       const invalidUser = { email: 'invalid-email', displayName: 'A' };
@@ -786,11 +825,13 @@ describe('Firebase Firestore Integration', () => {
 
     it('validates event data before creation', async () => {
       const validateEvent = (event: any) => {
-        return event.title &&
-               event.startDate &&
-               event.endDate &&
-               new Date(event.startDate) <= new Date(event.endDate) &&
-               event.maxAttendees > 0;
+        return (
+          event.title &&
+          event.startDate &&
+          event.endDate &&
+          new Date(event.startDate) <= new Date(event.endDate) &&
+          event.maxAttendees > 0
+        );
       };
 
       const invalidEvent = {
@@ -809,17 +850,30 @@ describe('Firebase Firestore Integration', () => {
       const mockQuerySnapshot = {
         size: 2,
         docs: [
-          { id: 'job-1', data: () => ({ ...mockJob, requirements: ['Python', 'SQL'] }) },
-          { id: 'job-2', data: () => ({ ...mockJob, requirements: ['Python', 'R'] }) },
+          {
+            id: 'job-1',
+            data: () => ({ ...mockJob, requirements: ['Python', 'SQL'] }),
+          },
+          {
+            id: 'job-2',
+            data: () => ({ ...mockJob, requirements: ['Python', 'R'] }),
+          },
         ],
       };
       mockGetDocs.mockResolvedValue(mockQuerySnapshot as any);
 
       const jobsRef = collection(db, 'jobs');
-      const pythonJobsQuery = query(jobsRef, where('requirements', 'array-contains', 'Python'));
+      const pythonJobsQuery = query(
+        jobsRef,
+        where('requirements', 'array-contains', 'Python')
+      );
       const pythonJobsSnapshot = await getDocs(pythonJobsQuery);
 
-      expect(mockWhere).toHaveBeenCalledWith('requirements', 'array-contains', 'Python');
+      expect(mockWhere).toHaveBeenCalledWith(
+        'requirements',
+        'array-contains',
+        'Python'
+      );
       expect(pythonJobsSnapshot.size).toBe(2);
     });
 
@@ -827,7 +881,10 @@ describe('Firebase Firestore Integration', () => {
       const mockQuerySnapshot = {
         size: 3,
         docs: [
-          { id: 'job-1', data: () => ({ ...mockJob, requirements: ['Python'] }) },
+          {
+            id: 'job-1',
+            data: () => ({ ...mockJob, requirements: ['Python'] }),
+          },
           { id: 'job-2', data: () => ({ ...mockJob, requirements: ['R'] }) },
           { id: 'job-3', data: () => ({ ...mockJob, requirements: ['SQL'] }) },
         ],
@@ -836,12 +893,16 @@ describe('Firebase Firestore Integration', () => {
 
       const jobsRef = collection(db, 'jobs');
       const skillJobsQuery = query(
-        jobsRef, 
+        jobsRef,
         where('requirements', 'array-contains-any', ['Python', 'R', 'SQL'])
       );
       const skillJobsSnapshot = await getDocs(skillJobsQuery);
 
-      expect(mockWhere).toHaveBeenCalledWith('requirements', 'array-contains-any', ['Python', 'R', 'SQL']);
+      expect(mockWhere).toHaveBeenCalledWith(
+        'requirements',
+        'array-contains-any',
+        ['Python', 'R', 'SQL']
+      );
       expect(skillJobsSnapshot.size).toBe(3);
     });
 
@@ -849,8 +910,14 @@ describe('Firebase Firestore Integration', () => {
       const mockQuerySnapshot = {
         size: 2,
         docs: [
-          { id: 'job-1', data: () => ({ ...mockJob, location: 'Mexico City' }) },
-          { id: 'job-2', data: () => ({ ...mockJob, location: 'Guadalajara' }) },
+          {
+            id: 'job-1',
+            data: () => ({ ...mockJob, location: 'Mexico City' }),
+          },
+          {
+            id: 'job-2',
+            data: () => ({ ...mockJob, location: 'Guadalajara' }),
+          },
         ],
       };
       mockGetDocs.mockResolvedValue(mockQuerySnapshot as any);
@@ -862,7 +929,11 @@ describe('Firebase Firestore Integration', () => {
       );
       const locationJobsSnapshot = await getDocs(locationJobsQuery);
 
-      expect(mockWhere).toHaveBeenCalledWith('location', 'in', ['Mexico City', 'Guadalajara', 'Monterrey']);
+      expect(mockWhere).toHaveBeenCalledWith('location', 'in', [
+        'Mexico City',
+        'Guadalajara',
+        'Monterrey',
+      ]);
       expect(locationJobsSnapshot.size).toBe(2);
     });
 
@@ -870,8 +941,14 @@ describe('Firebase Firestore Integration', () => {
       const mockQuerySnapshot = {
         size: 2,
         docs: [
-          { id: 'job-1', data: () => ({ ...mockJob, salary: { min: 90000, max: 120000 } }) },
-          { id: 'job-2', data: () => ({ ...mockJob, salary: { min: 100000, max: 140000 } }) },
+          {
+            id: 'job-1',
+            data: () => ({ ...mockJob, salary: { min: 90000, max: 120000 } }),
+          },
+          {
+            id: 'job-2',
+            data: () => ({ ...mockJob, salary: { min: 100000, max: 140000 } }),
+          },
         ],
       };
       mockGetDocs.mockResolvedValue(mockQuerySnapshot as any);
@@ -896,17 +973,23 @@ describe('Firebase Firestore Integration', () => {
       mockGetDoc.mockRejectedValue(permissionError);
 
       const jobRef = doc(db, 'jobs', 'restricted-job');
-      
-      await expect(getDoc(jobRef)).rejects.toThrow('Missing or insufficient permissions');
+
+      await expect(getDoc(jobRef)).rejects.toThrow(
+        'Missing or insufficient permissions'
+      );
     });
 
     it('handles network errors', async () => {
-      const networkError = new Error('Failed to get document because the client is offline');
+      const networkError = new Error(
+        'Failed to get document because the client is offline'
+      );
       mockGetDocs.mockRejectedValue(networkError);
 
       const jobsRef = collection(db, 'jobs');
-      
-      await expect(getDocs(jobsRef)).rejects.toThrow('Failed to get document because the client is offline');
+
+      await expect(getDocs(jobsRef)).rejects.toThrow(
+        'Failed to get document because the client is offline'
+      );
     });
 
     it('handles quota exceeded errors', async () => {
@@ -914,7 +997,7 @@ describe('Firebase Firestore Integration', () => {
       mockSetDoc.mockRejectedValue(quotaError);
 
       const jobRef = doc(db, 'jobs', 'job-1');
-      
+
       await expect(setDoc(jobRef, mockJob)).rejects.toThrow('Quota exceeded');
     });
 
@@ -923,8 +1006,10 @@ describe('Firebase Firestore Integration', () => {
       mockGetDoc.mockRejectedValue(invalidError);
 
       const invalidRef = doc(db, 'invalid/collection/structure');
-      
-      await expect(getDoc(invalidRef)).rejects.toThrow('Invalid document reference');
+
+      await expect(getDoc(invalidRef)).rejects.toThrow(
+        'Invalid document reference'
+      );
     });
   });
 
@@ -939,7 +1024,7 @@ describe('Firebase Firestore Integration', () => {
       mockGetDocs.mockResolvedValue(mockQuerySnapshot as any);
 
       const jobsRef = collection(db, 'jobs');
-      
+
       // This query would require a compound index on (location, remote, createdAt)
       const optimizedQuery = query(
         jobsRef,
@@ -962,8 +1047,16 @@ describe('Firebase Firestore Integration', () => {
       const firstPageSnapshot = {
         size: 2,
         docs: [
-          { id: 'job-1', data: () => mockJob, get: (field: string) => mockJob.createdAt },
-          { id: 'job-2', data: () => mockJob, get: (field: string) => mockJob.createdAt },
+          {
+            id: 'job-1',
+            data: () => mockJob,
+            get: (field: string) => mockJob.createdAt,
+          },
+          {
+            id: 'job-2',
+            data: () => mockJob,
+            get: (field: string) => mockJob.createdAt,
+          },
         ],
       };
       mockGetDocs.mockResolvedValueOnce(firstPageSnapshot as any);

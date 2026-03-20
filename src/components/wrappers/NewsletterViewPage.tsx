@@ -7,7 +7,10 @@ interface Props {
   lang?: 'es' | 'en';
 }
 
-export default function NewsletterViewPage({ newsletterId, lang = 'es' }: Props) {
+export default function NewsletterViewPage({
+  newsletterId,
+  lang = 'es',
+}: Props) {
   return (
     <AuthProvider>
       <NewsletterView newsletterId={newsletterId || ''} lang={lang} />

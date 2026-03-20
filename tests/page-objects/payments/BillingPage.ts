@@ -161,14 +161,18 @@ export class BillingPage extends BasePage {
     this.billingTabs = page.locator('[data-testid="billing-tabs"]');
     this.overviewTab = page.locator('[data-testid="overview-tab"]');
     this.invoicesTab = page.locator('[data-testid="invoices-tab"]');
-    this.paymentHistoryTab = page.locator('[data-testid="payment-history-tab"]');
+    this.paymentHistoryTab = page.locator(
+      '[data-testid="payment-history-tab"]'
+    );
     this.billingInfoTab = page.locator('[data-testid="billing-info-tab"]');
     this.taxSettingsTab = page.locator('[data-testid="tax-settings-tab"]');
 
     // Overview section
     this.currentBalance = page.locator('[data-testid="current-balance"]');
     this.nextPaymentDate = page.locator('[data-testid="next-payment-date"]');
-    this.nextPaymentAmount = page.locator('[data-testid="next-payment-amount"]');
+    this.nextPaymentAmount = page.locator(
+      '[data-testid="next-payment-amount"]'
+    );
     this.billingCycleInfo = page.locator('[data-testid="billing-cycle-info"]');
     this.upcomingInvoice = page.locator('[data-testid="upcoming-invoice"]');
     this.paymentStatus = page.locator('[data-testid="payment-status"]');
@@ -180,13 +184,17 @@ export class BillingPage extends BasePage {
     this.invoiceDate = page.locator('[data-testid="invoice-date"]');
     this.invoiceAmount = page.locator('[data-testid="invoice-amount"]');
     this.invoiceStatus = page.locator('[data-testid="invoice-status"]');
-    this.downloadInvoiceButton = page.locator('[data-testid="download-invoice"]');
+    this.downloadInvoiceButton = page.locator(
+      '[data-testid="download-invoice"]'
+    );
     this.viewInvoiceButton = page.locator('[data-testid="view-invoice"]');
     this.invoiceModal = page.locator('[data-testid="invoice-modal"]');
     this.invoiceDetails = page.locator('[data-testid="invoice-details"]');
 
     // Payment history section
-    this.paymentHistoryTable = page.locator('[data-testid="payment-history-table"]');
+    this.paymentHistoryTable = page.locator(
+      '[data-testid="payment-history-table"]'
+    );
     this.paymentRows = page.locator('[data-testid="payment-row"]');
     this.paymentDate = page.locator('[data-testid="payment-date"]');
     this.paymentAmount = page.locator('[data-testid="payment-amount"]');
@@ -196,8 +204,12 @@ export class BillingPage extends BasePage {
     this.refundModal = page.locator('[data-testid="refund-modal"]');
 
     // Billing information section
-    this.billingAddressCard = page.locator('[data-testid="billing-address-card"]');
-    this.editBillingButton = page.locator('[data-testid="edit-billing-button"]');
+    this.billingAddressCard = page.locator(
+      '[data-testid="billing-address-card"]'
+    );
+    this.editBillingButton = page.locator(
+      '[data-testid="edit-billing-button"]'
+    );
     this.billingForm = page.locator('[data-testid="billing-form"]');
     this.firstNameInput = page.locator('[data-testid="first-name"]');
     this.lastNameInput = page.locator('[data-testid="last-name"]');
@@ -218,16 +230,30 @@ export class BillingPage extends BasePage {
     this.cfdiUseSelect = page.locator('[data-testid="cfdi-use"]');
     this.businessNameInput = page.locator('[data-testid="business-name"]');
     this.taxAddressInput = page.locator('[data-testid="tax-address"]');
-    this.saveTaxSettingsButton = page.locator('[data-testid="save-tax-settings"]');
+    this.saveTaxSettingsButton = page.locator(
+      '[data-testid="save-tax-settings"]'
+    );
 
     // Payment methods management
-    this.paymentMethodsSection = page.locator('[data-testid="payment-methods-section"]');
-    this.paymentMethodsList = page.locator('[data-testid="payment-methods-list"]');
-    this.addPaymentMethodButton = page.locator('[data-testid="add-payment-method"]');
-    this.paymentMethodCard = page.locator('[data-testid="payment-method-card"]');
+    this.paymentMethodsSection = page.locator(
+      '[data-testid="payment-methods-section"]'
+    );
+    this.paymentMethodsList = page.locator(
+      '[data-testid="payment-methods-list"]'
+    );
+    this.addPaymentMethodButton = page.locator(
+      '[data-testid="add-payment-method"]'
+    );
+    this.paymentMethodCard = page.locator(
+      '[data-testid="payment-method-card"]'
+    );
     this.setDefaultButton = page.locator('[data-testid="set-default"]');
-    this.deletePaymentMethodButton = page.locator('[data-testid="delete-payment-method"]');
-    this.confirmDeleteModal = page.locator('[data-testid="confirm-delete-modal"]');
+    this.deletePaymentMethodButton = page.locator(
+      '[data-testid="delete-payment-method"]'
+    );
+    this.confirmDeleteModal = page.locator(
+      '[data-testid="confirm-delete-modal"]'
+    );
 
     // Filters and search
     this.dateRangeFilter = page.locator('[data-testid="date-range-filter"]');
@@ -247,8 +273,12 @@ export class BillingPage extends BasePage {
     this.successMessage = page.locator('[data-testid="success-message"]');
     this.errorMessage = page.locator('[data-testid="error-message"]');
     this.warningMessage = page.locator('[data-testid="warning-message"]');
-    this.paymentFailureAlert = page.locator('[data-testid="payment-failure-alert"]');
-    this.subscriptionExpiryAlert = page.locator('[data-testid="subscription-expiry-alert"]');
+    this.paymentFailureAlert = page.locator(
+      '[data-testid="payment-failure-alert"]'
+    );
+    this.subscriptionExpiryAlert = page.locator(
+      '[data-testid="subscription-expiry-alert"]'
+    );
 
     // Loading states
     this.loadingSpinner = page.locator('[data-testid="loading-spinner"]');
@@ -257,7 +287,9 @@ export class BillingPage extends BasePage {
     // Mobile-specific elements
     this.mobileMenu = page.locator('[data-testid="mobile-menu"]');
     this.mobileTabToggle = page.locator('[data-testid="mobile-tab-toggle"]');
-    this.mobileInvoiceCard = page.locator('[data-testid="mobile-invoice-card"]');
+    this.mobileInvoiceCard = page.locator(
+      '[data-testid="mobile-invoice-card"]'
+    );
   }
 
   /**
@@ -274,7 +306,7 @@ export class BillingPage extends BasePage {
   async waitForLoad(): Promise<void> {
     await this.pageHeader.waitFor({ state: 'visible' });
     await this.page.waitForLoadState('networkidle');
-    
+
     // Wait for skeleton loaders to disappear
     if (await this.skeletonLoader.isVisible()) {
       await this.skeletonLoader.waitFor({ state: 'hidden', timeout: 10000 });
@@ -284,7 +316,14 @@ export class BillingPage extends BasePage {
   /**
    * Switch between billing tabs
    */
-  async switchTab(tab: 'overview' | 'invoices' | 'payment-history' | 'billing-info' | 'tax-settings'): Promise<void> {
+  async switchTab(
+    tab:
+      | 'overview'
+      | 'invoices'
+      | 'payment-history'
+      | 'billing-info'
+      | 'tax-settings'
+  ): Promise<void> {
     switch (tab) {
       case 'overview':
         await this.overviewTab.click();
@@ -302,7 +341,7 @@ export class BillingPage extends BasePage {
         await this.taxSettingsTab.click();
         break;
     }
-    
+
     // Wait for tab content to load
     await this.page.waitForTimeout(500);
   }
@@ -319,7 +358,7 @@ export class BillingPage extends BasePage {
     paymentStatus: string;
   }> {
     await this.switchTab('overview');
-    
+
     const balanceText = await this.currentBalance.textContent();
     const nextDateText = await this.nextPaymentDate.textContent();
     const nextAmountText = await this.nextPaymentAmount.textContent();
@@ -327,16 +366,24 @@ export class BillingPage extends BasePage {
     const statusText = await this.paymentStatus.textContent();
 
     // Extract currency and amount
-    const balanceMatch = balanceText?.match(/([A-Z]{3})\s*([\d,]+(?:\.\d{2})?)/);
-    const amountMatch = nextAmountText?.match(/([A-Z]{3})\s*([\d,]+(?:\.\d{2})?)/);
+    const balanceMatch = balanceText?.match(
+      /([A-Z]{3})\s*([\d,]+(?:\.\d{2})?)/
+    );
+    const amountMatch = nextAmountText?.match(
+      /([A-Z]{3})\s*([\d,]+(?:\.\d{2})?)/
+    );
 
     return {
-      currentBalance: balanceMatch ? parseFloat(balanceMatch[2].replace(/,/g, '')) : 0,
+      currentBalance: balanceMatch
+        ? parseFloat(balanceMatch[2].replace(/,/g, ''))
+        : 0,
       currency: balanceMatch?.[1] || 'MXN',
       nextPaymentDate: nextDateText?.trim() || null,
-      nextPaymentAmount: amountMatch ? parseFloat(amountMatch[2].replace(/,/g, '')) : 0,
+      nextPaymentAmount: amountMatch
+        ? parseFloat(amountMatch[2].replace(/,/g, ''))
+        : 0,
       billingCycle: cycleText?.trim() || '',
-      paymentStatus: statusText?.trim() || ''
+      paymentStatus: statusText?.trim() || '',
     };
   }
 
@@ -345,12 +392,12 @@ export class BillingPage extends BasePage {
    */
   async getInvoices(page: number = 1, limit: number = 10): Promise<Invoice[]> {
     await this.switchTab('invoices');
-    
+
     // Navigate to specific page if needed
     if (page > 1) {
       await this.goToPage(page);
     }
-    
+
     // Set items per page if needed
     if (limit !== 10) {
       await this.itemsPerPageSelect.selectOption(limit.toString());
@@ -361,15 +408,29 @@ export class BillingPage extends BasePage {
     const invoices: Invoice[] = [];
 
     for (const row of invoiceElements) {
-      const number = await row.locator('[data-testid="invoice-number"]').textContent();
-      const date = await row.locator('[data-testid="invoice-date"]').textContent();
-      const amountText = await row.locator('[data-testid="invoice-amount"]').textContent();
-      const status = await row.locator('[data-testid="invoice-status"]').textContent();
-      const description = await row.locator('[data-testid="invoice-description"]').textContent();
+      const number = await row
+        .locator('[data-testid="invoice-number"]')
+        .textContent();
+      const date = await row
+        .locator('[data-testid="invoice-date"]')
+        .textContent();
+      const amountText = await row
+        .locator('[data-testid="invoice-amount"]')
+        .textContent();
+      const status = await row
+        .locator('[data-testid="invoice-status"]')
+        .textContent();
+      const description = await row
+        .locator('[data-testid="invoice-description"]')
+        .textContent();
 
       if (number && date && amountText && status) {
-        const amountMatch = amountText.match(/([A-Z]{3})\s*([\d,]+(?:\.\d{2})?)/);
-        const amount = amountMatch ? parseFloat(amountMatch[2].replace(/,/g, '')) : 0;
+        const amountMatch = amountText.match(
+          /([A-Z]{3})\s*([\d,]+(?:\.\d{2})?)/
+        );
+        const amount = amountMatch
+          ? parseFloat(amountMatch[2].replace(/,/g, ''))
+          : 0;
         const currency = amountMatch?.[1] || 'MXN';
 
         invoices.push({
@@ -378,8 +439,12 @@ export class BillingPage extends BasePage {
           date: date.trim(),
           amount,
           currency,
-          status: status.toLowerCase().trim() as 'paid' | 'pending' | 'overdue' | 'cancelled',
-          description: description?.trim() || ''
+          status: status.toLowerCase().trim() as
+            | 'paid'
+            | 'pending'
+            | 'overdue'
+            | 'cancelled',
+          description: description?.trim() || '',
         });
       }
     }
@@ -396,34 +461,36 @@ export class BillingPage extends BasePage {
     downloadPath?: string;
   }> {
     const invoiceRow = this.page.locator(`[data-testid="invoice-row"]`).filter({
-      has: this.page.locator(`[data-testid="invoice-number"]:has-text("${invoiceNumber}")`)
+      has: this.page.locator(
+        `[data-testid="invoice-number"]:has-text("${invoiceNumber}")`
+      ),
     });
 
     if (!(await invoiceRow.isVisible())) {
       return {
         success: false,
-        message: `Invoice ${invoiceNumber} not found`
+        message: `Invoice ${invoiceNumber} not found`,
       };
     }
 
     try {
       // Set up download handling
       const downloadPromise = this.page.waitForEvent('download');
-      
+
       await invoiceRow.locator('[data-testid="download-invoice"]').click();
-      
+
       const download = await downloadPromise;
       const downloadPath = await download.path();
-      
+
       return {
         success: true,
         message: 'Invoice downloaded successfully',
-        downloadPath
+        downloadPath,
       };
     } catch (error) {
       return {
         success: false,
-        message: `Download failed: ${error}`
+        message: `Download failed: ${error}`,
       };
     }
   }
@@ -433,7 +500,9 @@ export class BillingPage extends BasePage {
    */
   async viewInvoiceDetails(invoiceNumber: string): Promise<Invoice | null> {
     const invoiceRow = this.page.locator(`[data-testid="invoice-row"]`).filter({
-      has: this.page.locator(`[data-testid="invoice-number"]:has-text("${invoiceNumber}")`)
+      has: this.page.locator(
+        `[data-testid="invoice-number"]:has-text("${invoiceNumber}")`
+      ),
     });
 
     if (!(await invoiceRow.isVisible())) {
@@ -445,23 +514,37 @@ export class BillingPage extends BasePage {
 
     // Extract invoice details from modal
     const details = this.invoiceDetails;
-    const number = await details.locator('[data-testid="modal-invoice-number"]').textContent();
-    const date = await details.locator('[data-testid="modal-invoice-date"]').textContent();
-    const dueDate = await details.locator('[data-testid="modal-due-date"]').textContent();
-    const amountText = await details.locator('[data-testid="modal-invoice-amount"]').textContent();
-    const status = await details.locator('[data-testid="modal-invoice-status"]').textContent();
-    const description = await details.locator('[data-testid="modal-invoice-description"]').textContent();
+    const number = await details
+      .locator('[data-testid="modal-invoice-number"]')
+      .textContent();
+    const date = await details
+      .locator('[data-testid="modal-invoice-date"]')
+      .textContent();
+    const dueDate = await details
+      .locator('[data-testid="modal-due-date"]')
+      .textContent();
+    const amountText = await details
+      .locator('[data-testid="modal-invoice-amount"]')
+      .textContent();
+    const status = await details
+      .locator('[data-testid="modal-invoice-status"]')
+      .textContent();
+    const description = await details
+      .locator('[data-testid="modal-invoice-description"]')
+      .textContent();
 
     // Get tax information if available
     let taxes = undefined;
     const ivaElement = details.locator('[data-testid="modal-iva-amount"]');
     if (await ivaElement.isVisible()) {
       const ivaText = await ivaElement.textContent();
-      const totalTaxText = await details.locator('[data-testid="modal-total-tax"]').textContent();
-      
+      const totalTaxText = await details
+        .locator('[data-testid="modal-total-tax"]')
+        .textContent();
+
       taxes = {
         iva: parseFloat(ivaText?.replace(/[^\d.]/g, '') || '0'),
-        total: parseFloat(totalTaxText?.replace(/[^\d.]/g, '') || '0')
+        total: parseFloat(totalTaxText?.replace(/[^\d.]/g, '') || '0'),
       };
     }
 
@@ -474,7 +557,9 @@ export class BillingPage extends BasePage {
     }
 
     const amountMatch = amountText.match(/([A-Z]{3})\s*([\d,]+(?:\.\d{2})?)/);
-    const amount = amountMatch ? parseFloat(amountMatch[2].replace(/,/g, '')) : 0;
+    const amount = amountMatch
+      ? parseFloat(amountMatch[2].replace(/,/g, ''))
+      : 0;
     const currency = amountMatch?.[1] || 'MXN';
 
     return {
@@ -484,22 +569,29 @@ export class BillingPage extends BasePage {
       dueDate: dueDate?.trim(),
       amount,
       currency,
-      status: status.toLowerCase().trim() as 'paid' | 'pending' | 'overdue' | 'cancelled',
+      status: status.toLowerCase().trim() as
+        | 'paid'
+        | 'pending'
+        | 'overdue'
+        | 'cancelled',
       description: description?.trim() || '',
-      taxes
+      taxes,
     };
   }
 
   /**
    * Get payment history
    */
-  async getPaymentHistory(page: number = 1, limit: number = 10): Promise<PaymentHistory[]> {
+  async getPaymentHistory(
+    page: number = 1,
+    limit: number = 10
+  ): Promise<PaymentHistory[]> {
     await this.switchTab('payment-history');
-    
+
     if (page > 1) {
       await this.goToPage(page);
     }
-    
+
     if (limit !== 10) {
       await this.itemsPerPageSelect.selectOption(limit.toString());
       await this.page.waitForTimeout(1000);
@@ -509,15 +601,29 @@ export class BillingPage extends BasePage {
     const payments: PaymentHistory[] = [];
 
     for (const row of paymentElements) {
-      const date = await row.locator('[data-testid="payment-date"]').textContent();
-      const amountText = await row.locator('[data-testid="payment-amount"]').textContent();
-      const method = await row.locator('[data-testid="payment-method"]').textContent();
-      const status = await row.locator('[data-testid="payment-status"]').textContent();
-      const description = await row.locator('[data-testid="payment-description"]').textContent();
+      const date = await row
+        .locator('[data-testid="payment-date"]')
+        .textContent();
+      const amountText = await row
+        .locator('[data-testid="payment-amount"]')
+        .textContent();
+      const method = await row
+        .locator('[data-testid="payment-method"]')
+        .textContent();
+      const status = await row
+        .locator('[data-testid="payment-status"]')
+        .textContent();
+      const description = await row
+        .locator('[data-testid="payment-description"]')
+        .textContent();
 
       if (date && amountText && method && status) {
-        const amountMatch = amountText.match(/([A-Z]{3})\s*([\d,]+(?:\.\d{2})?)/);
-        const amount = amountMatch ? parseFloat(amountMatch[2].replace(/,/g, '')) : 0;
+        const amountMatch = amountText.match(
+          /([A-Z]{3})\s*([\d,]+(?:\.\d{2})?)/
+        );
+        const amount = amountMatch
+          ? parseFloat(amountMatch[2].replace(/,/g, ''))
+          : 0;
         const currency = amountMatch?.[1] || 'MXN';
 
         payments.push({
@@ -526,8 +632,12 @@ export class BillingPage extends BasePage {
           amount,
           currency,
           method: method.trim(),
-          status: status.toLowerCase().trim() as 'completed' | 'failed' | 'pending' | 'refunded',
-          description: description?.trim() || ''
+          status: status.toLowerCase().trim() as
+            | 'completed'
+            | 'failed'
+            | 'pending'
+            | 'refunded',
+          description: description?.trim() || '',
         });
       }
     }
@@ -538,18 +648,23 @@ export class BillingPage extends BasePage {
   /**
    * Request refund for a payment
    */
-  async requestRefund(paymentId: string, reason: string): Promise<{
+  async requestRefund(
+    paymentId: string,
+    reason: string
+  ): Promise<{
     success: boolean;
     message: string;
   }> {
     const paymentRow = this.page.locator(`[data-testid="payment-row"]`).filter({
-      has: this.page.locator(`[data-testid="payment-id"]:has-text("${paymentId}")`)
+      has: this.page.locator(
+        `[data-testid="payment-id"]:has-text("${paymentId}")`
+      ),
     });
 
     if (!(await paymentRow.isVisible())) {
       return {
         success: false,
-        message: `Payment ${paymentId} not found`
+        message: `Payment ${paymentId} not found`,
       };
     }
 
@@ -558,30 +673,30 @@ export class BillingPage extends BasePage {
 
     // Fill refund reason
     await this.page.locator('[data-testid="refund-reason"]').fill(reason);
-    
+
     // Submit refund request
     await this.page.locator('[data-testid="submit-refund"]').click();
-    
+
     // Wait for response
     await this.page.waitForTimeout(2000);
-    
+
     if (await this.successMessage.isVisible()) {
       const message = await this.successMessage.textContent();
       return {
         success: true,
-        message: message || 'Refund request submitted successfully'
+        message: message || 'Refund request submitted successfully',
       };
     } else if (await this.errorMessage.isVisible()) {
       const message = await this.errorMessage.textContent();
       return {
         success: false,
-        message: message || 'Refund request failed'
+        message: message || 'Refund request failed',
       };
     }
 
     return {
       success: false,
-      message: 'Unknown error processing refund request'
+      message: 'Unknown error processing refund request',
     };
   }
 
@@ -590,21 +705,41 @@ export class BillingPage extends BasePage {
    */
   async getBillingAddress(): Promise<BillingAddress | null> {
     await this.switchTab('billing-info');
-    
+
     if (!(await this.billingAddressCard.isVisible())) {
       return null;
     }
 
-    const firstName = await this.billingAddressCard.locator('[data-testid="display-first-name"]').textContent();
-    const lastName = await this.billingAddressCard.locator('[data-testid="display-last-name"]').textContent();
-    const company = await this.billingAddressCard.locator('[data-testid="display-company"]').textContent();
-    const email = await this.billingAddressCard.locator('[data-testid="display-email"]').textContent();
-    const address = await this.billingAddressCard.locator('[data-testid="display-address"]').textContent();
-    const city = await this.billingAddressCard.locator('[data-testid="display-city"]').textContent();
-    const state = await this.billingAddressCard.locator('[data-testid="display-state"]').textContent();
-    const postalCode = await this.billingAddressCard.locator('[data-testid="display-postal-code"]').textContent();
-    const country = await this.billingAddressCard.locator('[data-testid="display-country"]').textContent();
-    const taxId = await this.billingAddressCard.locator('[data-testid="display-tax-id"]').textContent();
+    const firstName = await this.billingAddressCard
+      .locator('[data-testid="display-first-name"]')
+      .textContent();
+    const lastName = await this.billingAddressCard
+      .locator('[data-testid="display-last-name"]')
+      .textContent();
+    const company = await this.billingAddressCard
+      .locator('[data-testid="display-company"]')
+      .textContent();
+    const email = await this.billingAddressCard
+      .locator('[data-testid="display-email"]')
+      .textContent();
+    const address = await this.billingAddressCard
+      .locator('[data-testid="display-address"]')
+      .textContent();
+    const city = await this.billingAddressCard
+      .locator('[data-testid="display-city"]')
+      .textContent();
+    const state = await this.billingAddressCard
+      .locator('[data-testid="display-state"]')
+      .textContent();
+    const postalCode = await this.billingAddressCard
+      .locator('[data-testid="display-postal-code"]')
+      .textContent();
+    const country = await this.billingAddressCard
+      .locator('[data-testid="display-country"]')
+      .textContent();
+    const taxId = await this.billingAddressCard
+      .locator('[data-testid="display-tax-id"]')
+      .textContent();
 
     return {
       firstName: firstName?.trim() || '',
@@ -616,7 +751,7 @@ export class BillingPage extends BasePage {
       state: state?.trim() || '',
       postalCode: postalCode?.trim() || '',
       country: country?.trim() || '',
-      taxId: taxId?.trim() || undefined
+      taxId: taxId?.trim() || undefined,
     };
   }
 
@@ -629,7 +764,7 @@ export class BillingPage extends BasePage {
   }> {
     await this.switchTab('billing-info');
     await this.editBillingButton.click();
-    
+
     // Wait for form to appear
     await this.billingForm.waitFor({ state: 'visible' });
 
@@ -637,44 +772,44 @@ export class BillingPage extends BasePage {
     await this.firstNameInput.fill(address.firstName);
     await this.lastNameInput.fill(address.lastName);
     await this.emailInput.fill(address.email);
-    
+
     if (address.company) {
       await this.companyInput.fill(address.company);
     }
-    
+
     await this.addressInput.fill(address.address);
     await this.cityInput.fill(address.city);
     await this.stateSelect.selectOption(address.state);
     await this.postalCodeInput.fill(address.postalCode);
     await this.countrySelect.selectOption(address.country);
-    
+
     if (address.taxId) {
       await this.page.locator('[data-testid="tax-id"]').fill(address.taxId);
     }
 
     // Save changes
     await this.saveBillingButton.click();
-    
+
     // Wait for response
     await this.page.waitForTimeout(2000);
-    
+
     if (await this.successMessage.isVisible()) {
       const message = await this.successMessage.textContent();
       return {
         success: true,
-        message: message || 'Billing address updated successfully'
+        message: message || 'Billing address updated successfully',
       };
     } else if (await this.errorMessage.isVisible()) {
       const message = await this.errorMessage.textContent();
       return {
         success: false,
-        message: message || 'Failed to update billing address'
+        message: message || 'Failed to update billing address',
       };
     }
 
     return {
       success: false,
-      message: 'Unknown error updating billing address'
+      message: 'Unknown error updating billing address',
     };
   }
 
@@ -693,67 +828,70 @@ export class BillingPage extends BasePage {
     message: string;
   }> {
     await this.switchTab('tax-settings');
-    
+
     // Fill tax form
     await this.rfcInput.fill(taxData.rfc);
-    
+
     if (taxData.curp) {
       await this.curpInput.fill(taxData.curp);
     }
-    
+
     await this.fiscalRegimeSelect.selectOption(taxData.fiscalRegime);
     await this.cfdiUseSelect.selectOption(taxData.cfdiUse);
-    
+
     if (taxData.businessName) {
       await this.businessNameInput.fill(taxData.businessName);
     }
-    
+
     if (taxData.taxAddress) {
       await this.taxAddressInput.fill(taxData.taxAddress);
     }
 
     // Save tax settings
     await this.saveTaxSettingsButton.click();
-    
+
     // Wait for response
     await this.page.waitForTimeout(2000);
-    
+
     if (await this.successMessage.isVisible()) {
       const message = await this.successMessage.textContent();
       return {
         success: true,
-        message: message || 'Tax settings updated successfully'
+        message: message || 'Tax settings updated successfully',
       };
     } else if (await this.errorMessage.isVisible()) {
       const message = await this.errorMessage.textContent();
       return {
         success: false,
-        message: message || 'Failed to update tax settings'
+        message: message || 'Failed to update tax settings',
       };
     }
 
     return {
       success: false,
-      message: 'Unknown error updating tax settings'
+      message: 'Unknown error updating tax settings',
     };
   }
 
   /**
    * Filter invoices by date range
    */
-  async filterInvoicesByDateRange(startDate: string, endDate: string): Promise<void> {
+  async filterInvoicesByDateRange(
+    startDate: string,
+    endDate: string
+  ): Promise<void> {
     await this.switchTab('invoices');
-    
+
     const dateFilter = this.dateRangeFilter;
     await dateFilter.click();
-    
+
     // Fill date inputs (assuming date picker)
     await this.page.locator('[data-testid="start-date"]').fill(startDate);
     await this.page.locator('[data-testid="end-date"]').fill(endDate);
-    
+
     // Apply filter
     await this.page.locator('[data-testid="apply-date-filter"]').click();
-    
+
     // Wait for results
     await this.page.waitForTimeout(1000);
   }
@@ -761,7 +899,9 @@ export class BillingPage extends BasePage {
   /**
    * Filter by status
    */
-  async filterByStatus(status: 'paid' | 'pending' | 'overdue' | 'cancelled'): Promise<void> {
+  async filterByStatus(
+    status: 'paid' | 'pending' | 'overdue' | 'cancelled'
+  ): Promise<void> {
     await this.statusFilter.selectOption(status);
     await this.page.waitForTimeout(1000);
   }
@@ -793,27 +933,29 @@ export class BillingPage extends BasePage {
   }> {
     try {
       const downloadPromise = this.page.waitForEvent('download');
-      
+
       await this.exportButton.click();
-      
+
       // Select format if options are available
-      const formatOption = this.page.locator(`[data-testid="export-${format}"]`);
+      const formatOption = this.page.locator(
+        `[data-testid="export-${format}"]`
+      );
       if (await formatOption.isVisible()) {
         await formatOption.click();
       }
-      
+
       const download = await downloadPromise;
       const downloadPath = await download.path();
-      
+
       return {
         success: true,
         message: 'Data exported successfully',
-        downloadPath
+        downloadPath,
       };
     } catch (error) {
       return {
         success: false,
-        message: `Export failed: ${error}`
+        message: `Export failed: ${error}`,
       };
     }
   }
@@ -822,14 +964,18 @@ export class BillingPage extends BasePage {
    * Navigate to specific page
    */
   async goToPage(pageNumber: number): Promise<void> {
-    const pageButton = this.pageNumbers.filter({ hasText: pageNumber.toString() });
+    const pageButton = this.pageNumbers.filter({
+      hasText: pageNumber.toString(),
+    });
     if (await pageButton.isVisible()) {
       await pageButton.click();
     } else {
       // If page number not visible, use navigation buttons
-      const currentPageText = await this.page.locator('[data-testid="current-page"]').textContent();
+      const currentPageText = await this.page
+        .locator('[data-testid="current-page"]')
+        .textContent();
       const currentPage = parseInt(currentPageText || '1');
-      
+
       if (pageNumber > currentPage) {
         for (let i = currentPage; i < pageNumber; i++) {
           await this.nextPageButton.click();
@@ -842,7 +988,7 @@ export class BillingPage extends BasePage {
         }
       }
     }
-    
+
     await this.page.waitForTimeout(1000);
   }
 
@@ -850,7 +996,10 @@ export class BillingPage extends BasePage {
    * Check if page is loading
    */
   async isLoading(): Promise<boolean> {
-    return await this.loadingSpinner.isVisible() || await this.skeletonLoader.isVisible();
+    return (
+      (await this.loadingSpinner.isVisible()) ||
+      (await this.skeletonLoader.isVisible())
+    );
   }
 
   /**
@@ -893,7 +1042,7 @@ export class BillingPage extends BasePage {
     return {
       hasFailureAlert,
       hasExpiryAlert,
-      messages
+      messages,
     };
   }
 
@@ -914,12 +1063,14 @@ export class BillingPage extends BasePage {
     // Check for proper labels
     const inputs = await this.page.locator('input, select').all();
     let hasProperLabels = true;
-    
+
     for (const input of inputs) {
       const id = await input.getAttribute('id');
       const ariaLabel = await input.getAttribute('aria-label');
-      const label = id ? await this.page.locator(`label[for="${id}"]`).count() : 0;
-      
+      const label = id
+        ? await this.page.locator(`label[for="${id}"]`).count()
+        : 0;
+
       if (!label && !ariaLabel) {
         hasProperLabels = false;
         break;
@@ -929,7 +1080,7 @@ export class BillingPage extends BasePage {
     // Check for table headers
     const tables = await this.page.locator('table').all();
     let hasTableHeaders = true;
-    
+
     for (const table of tables) {
       const headers = await table.locator('th').count();
       if (headers === 0) {
@@ -945,7 +1096,7 @@ export class BillingPage extends BasePage {
       keyboardNavigable,
       hasProperLabels,
       hasTableHeaders,
-      colorContrastOk
+      colorContrastOk,
     };
   }
 }

@@ -3,10 +3,10 @@ import path from 'path';
 
 // Performance budgets for Core Web Vitals
 export const PERFORMANCE_BUDGETS = {
-  FCP: 2000,  // First Contentful Paint
-  LCP: 4000,  // Largest Contentful Paint
-  CLS: 0.1,   // Cumulative Layout Shift
-  FID: 100,   // First Input Delay
+  FCP: 2000, // First Contentful Paint
+  LCP: 4000, // Largest Contentful Paint
+  CLS: 0.1, // Cumulative Layout Shift
+  FID: 100, // First Input Delay
 };
 
 export default defineConfig({
@@ -15,32 +15,34 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 4 : undefined,
-  reporter: process.env.CI ? [
-    ['html', { outputFolder: 'playwright-report' }],
-    ['junit', { outputFile: 'test-results/junit.xml' }],
-    ['json', { outputFile: 'test-results/report.json' }],
-  ] : 'html',
-  
+  reporter: process.env.CI
+    ? [
+        ['html', { outputFolder: 'playwright-report' }],
+        ['junit', { outputFile: 'test-results/junit.xml' }],
+        ['json', { outputFile: 'test-results/report.json' }],
+      ]
+    : 'html',
+
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:4321',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    
+
     // Test timeout
     actionTimeout: 10000,
     navigationTimeout: 30000,
-    
+
     // Viewport for desktop tests
     viewport: { width: 1280, height: 720 },
-    
+
     // Browser context options
     contextOptions: {
       ignoreHTTPSErrors: true,
       locale: 'es-MX',
       timezoneId: 'America/Mexico_City',
     },
-    
+
     // Custom test attributes
     testIdAttribute: 'data-testid',
   },
@@ -59,7 +61,7 @@ export default defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
-    
+
     // Mobile devices
     {
       name: 'mobile-chrome',
@@ -69,27 +71,27 @@ export default defineConfig({
       name: 'mobile-safari',
       use: { ...devices['iPhone 12'] },
     },
-    
+
     // Tablet devices
     {
       name: 'tablet-landscape',
       use: { ...devices['iPad Pro'], viewport: { width: 1024, height: 768 } },
     },
-    
+
     // Accessibility testing
     {
       name: 'chromium-accessibility',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         // Force high contrast mode
         colorScheme: 'dark',
       },
     },
-    
+
     // Performance testing
     {
       name: 'chromium-performance',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         // CPU throttling
         launchOptions: {

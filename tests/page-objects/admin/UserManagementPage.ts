@@ -6,7 +6,13 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'member' | 'premium' | 'company' | 'admin' | 'moderator' | 'super_admin';
+  role:
+    | 'member'
+    | 'premium'
+    | 'company'
+    | 'admin'
+    | 'moderator'
+    | 'super_admin';
   status: 'active' | 'inactive' | 'suspended' | 'pending';
   registrationDate: string;
   lastLogin: string;
@@ -26,7 +32,13 @@ export interface UserSearchFilters {
 }
 
 export interface BulkAction {
-  action: 'activate' | 'suspend' | 'delete' | 'export' | 'send_email' | 'assign_role';
+  action:
+    | 'activate'
+    | 'suspend'
+    | 'delete'
+    | 'export'
+    | 'send_email'
+    | 'assign_role';
   userIds: string[];
   parameters?: Record<string, any>;
 }
@@ -84,7 +96,7 @@ export class UserManagementPage extends BasePage {
   private readonly userActivityTab: Locator;
   private readonly userSubscriptionsTab: Locator;
   private readonly userAuditLogTab: Locator;
-  
+
   // User info fields
   private readonly userIdField: Locator;
   private readonly userEmailField: Locator;
@@ -141,15 +153,25 @@ export class UserManagementPage extends BasePage {
 
     // Search and filtering
     this.searchInput = page.locator('[data-testid="user-search-input"]');
-    this.advancedSearchToggle = page.locator('[data-testid="advanced-search-toggle"]');
-    this.advancedSearchPanel = page.locator('[data-testid="advanced-search-panel"]');
+    this.advancedSearchToggle = page.locator(
+      '[data-testid="advanced-search-toggle"]'
+    );
+    this.advancedSearchPanel = page.locator(
+      '[data-testid="advanced-search-panel"]'
+    );
     this.emailFilter = page.locator('[data-testid="filter-email"]');
     this.roleFilter = page.locator('[data-testid="filter-role"]');
     this.statusFilter = page.locator('[data-testid="filter-status"]');
-    this.registrationDateFromFilter = page.locator('[data-testid="filter-registration-from"]');
-    this.registrationDateToFilter = page.locator('[data-testid="filter-registration-to"]');
+    this.registrationDateFromFilter = page.locator(
+      '[data-testid="filter-registration-from"]'
+    );
+    this.registrationDateToFilter = page.locator(
+      '[data-testid="filter-registration-to"]'
+    );
     this.commissionFilter = page.locator('[data-testid="filter-commission"]');
-    this.subscriptionTypeFilter = page.locator('[data-testid="filter-subscription-type"]');
+    this.subscriptionTypeFilter = page.locator(
+      '[data-testid="filter-subscription-type"]'
+    );
     this.clearFiltersBtn = page.locator('[data-testid="clear-filters"]');
     this.applyFiltersBtn = page.locator('[data-testid="apply-filters"]');
 
@@ -161,11 +183,15 @@ export class UserManagementPage extends BasePage {
     this.userCheckboxes = page.locator('[data-testid="user-checkbox"]');
     this.sortByName = page.locator('[data-testid="sort-by-name"]');
     this.sortByEmail = page.locator('[data-testid="sort-by-email"]');
-    this.sortByRegistration = page.locator('[data-testid="sort-by-registration"]');
+    this.sortByRegistration = page.locator(
+      '[data-testid="sort-by-registration"]'
+    );
     this.sortByLastLogin = page.locator('[data-testid="sort-by-last-login"]');
 
     // Pagination
-    this.paginationContainer = page.locator('[data-testid="pagination-container"]');
+    this.paginationContainer = page.locator(
+      '[data-testid="pagination-container"]'
+    );
     this.prevPageBtn = page.locator('[data-testid="prev-page"]');
     this.nextPageBtn = page.locator('[data-testid="next-page"]');
     this.pageNumbers = page.locator('[data-testid="page-number"]');
@@ -176,28 +202,42 @@ export class UserManagementPage extends BasePage {
     this.addUserBtn = page.locator('[data-testid="add-user"]');
     this.importUsersBtn = page.locator('[data-testid="import-users"]');
     this.exportUsersBtn = page.locator('[data-testid="export-users"]');
-    this.bulkActionsDropdown = page.locator('[data-testid="bulk-actions-dropdown"]');
-    this.bulkActionConfirmModal = page.locator('[data-testid="bulk-action-confirm-modal"]');
+    this.bulkActionsDropdown = page.locator(
+      '[data-testid="bulk-actions-dropdown"]'
+    );
+    this.bulkActionConfirmModal = page.locator(
+      '[data-testid="bulk-action-confirm-modal"]'
+    );
 
     // User detail modal
     this.userDetailModal = page.locator('[data-testid="user-detail-modal"]');
     this.userDetailTabs = page.locator('[data-testid="user-detail-tabs"]');
     this.userInfoTab = page.locator('[data-testid="user-info-tab"]');
     this.userActivityTab = page.locator('[data-testid="user-activity-tab"]');
-    this.userSubscriptionsTab = page.locator('[data-testid="user-subscriptions-tab"]');
+    this.userSubscriptionsTab = page.locator(
+      '[data-testid="user-subscriptions-tab"]'
+    );
     this.userAuditLogTab = page.locator('[data-testid="user-audit-log-tab"]');
 
     // User info fields
     this.userIdField = page.locator('[data-testid="user-id-field"]');
     this.userEmailField = page.locator('[data-testid="user-email-field"]');
-    this.userFirstNameField = page.locator('[data-testid="user-firstname-field"]');
-    this.userLastNameField = page.locator('[data-testid="user-lastname-field"]');
+    this.userFirstNameField = page.locator(
+      '[data-testid="user-firstname-field"]'
+    );
+    this.userLastNameField = page.locator(
+      '[data-testid="user-lastname-field"]'
+    );
     this.userRoleSelect = page.locator('[data-testid="user-role-select"]');
     this.userStatusSelect = page.locator('[data-testid="user-status-select"]');
-    this.userVerificationStatus = page.locator('[data-testid="user-verification-status"]');
-    this.userCommissionsList = page.locator('[data-testid="user-commissions-list"]');
+    this.userVerificationStatus = page.locator(
+      '[data-testid="user-verification-status"]'
+    );
+    this.userCommissionsList = page.locator(
+      '[data-testid="user-commissions-list"]'
+    );
 
-    // User actions in modal  
+    // User actions in modal
     this.editUserBtn = page.locator('[data-testid="edit-user"]');
     this.suspendUserBtn = page.locator('[data-testid="suspend-user"]');
     this.activateUserBtn = page.locator('[data-testid="activate-user"]');
@@ -206,32 +246,54 @@ export class UserManagementPage extends BasePage {
     this.sendEmailBtn = page.locator('[data-testid="send-email-to-user"]');
     this.resetPasswordBtn = page.locator('[data-testid="reset-password"]');
     this.saveUserChangesBtn = page.locator('[data-testid="save-user-changes"]');
-    this.cancelUserChangesBtn = page.locator('[data-testid="cancel-user-changes"]');
+    this.cancelUserChangesBtn = page.locator(
+      '[data-testid="cancel-user-changes"]'
+    );
 
     // Add/Edit user form
     this.addUserModal = page.locator('[data-testid="add-user-modal"]');
     this.newUserEmailInput = page.locator('[data-testid="new-user-email"]');
-    this.newUserFirstNameInput = page.locator('[data-testid="new-user-firstname"]');
-    this.newUserLastNameInput = page.locator('[data-testid="new-user-lastname"]');
+    this.newUserFirstNameInput = page.locator(
+      '[data-testid="new-user-firstname"]'
+    );
+    this.newUserLastNameInput = page.locator(
+      '[data-testid="new-user-lastname"]'
+    );
     this.newUserRoleSelect = page.locator('[data-testid="new-user-role"]');
-    this.newUserPasswordInput = page.locator('[data-testid="new-user-password"]');
-    this.newUserSendInviteCheckbox = page.locator('[data-testid="new-user-send-invite"]');
+    this.newUserPasswordInput = page.locator(
+      '[data-testid="new-user-password"]'
+    );
+    this.newUserSendInviteCheckbox = page.locator(
+      '[data-testid="new-user-send-invite"]'
+    );
     this.createUserBtn = page.locator('[data-testid="create-user"]');
 
     // Import/Export
     this.importModal = page.locator('[data-testid="import-modal"]');
     this.importFileInput = page.locator('[data-testid="import-file-input"]');
-    this.importTemplateLink = page.locator('[data-testid="import-template-link"]');
-    this.importProgressBar = page.locator('[data-testid="import-progress-bar"]');
+    this.importTemplateLink = page.locator(
+      '[data-testid="import-template-link"]'
+    );
+    this.importProgressBar = page.locator(
+      '[data-testid="import-progress-bar"]'
+    );
     this.importResults = page.locator('[data-testid="import-results"]');
     this.exportModal = page.locator('[data-testid="export-modal"]');
-    this.exportFormatSelect = page.locator('[data-testid="export-format-select"]');
-    this.exportFieldsSelector = page.locator('[data-testid="export-fields-selector"]');
+    this.exportFormatSelect = page.locator(
+      '[data-testid="export-format-select"]'
+    );
+    this.exportFieldsSelector = page.locator(
+      '[data-testid="export-fields-selector"]'
+    );
 
     // Notifications
-    this.successNotification = page.locator('[data-testid="success-notification"]');
+    this.successNotification = page.locator(
+      '[data-testid="success-notification"]'
+    );
     this.errorNotification = page.locator('[data-testid="error-notification"]');
-    this.confirmationDialog = page.locator('[data-testid="confirmation-dialog"]');
+    this.confirmationDialog = page.locator(
+      '[data-testid="confirmation-dialog"]'
+    );
   }
 
   /**
@@ -301,7 +363,7 @@ export class UserManagementPage extends BasePage {
    * Get user count from display
    */
   async getUserCount(): Promise<number> {
-    const countText = await this.userCountDisplay.textContent() || '0';
+    const countText = (await this.userCountDisplay.textContent()) || '0';
     const match = countText.match(/(\d+)/);
     return match ? parseInt(match[1], 10) : 0;
   }
@@ -312,23 +374,43 @@ export class UserManagementPage extends BasePage {
   async getUsers(): Promise<User[]> {
     await this.usersTable.waitFor({ state: 'visible' });
     const rows = await this.userRows.all();
-    
+
     const users: User[] = [];
     for (const row of rows) {
       const user: User = {
-        id: await row.getAttribute('data-user-id') || '',
-        email: await row.locator('[data-testid="user-email"]').textContent() || '',
-        firstName: await row.locator('[data-testid="user-firstname"]').textContent() || '',
-        lastName: await row.locator('[data-testid="user-lastname"]').textContent() || '',
-        role: await row.locator('[data-testid="user-role"]').textContent() as any || 'member',
-        status: await row.locator('[data-testid="user-status"]').textContent() as any || 'active',
-        registrationDate: await row.locator('[data-testid="user-registration"]').textContent() || '',
-        lastLogin: await row.locator('[data-testid="user-last-login"]').textContent() || '',
-        verificationStatus: await row.locator('[data-testid="user-verification"]').textContent() as any || 'verified'
+        id: (await row.getAttribute('data-user-id')) || '',
+        email:
+          (await row.locator('[data-testid="user-email"]').textContent()) || '',
+        firstName:
+          (await row.locator('[data-testid="user-firstname"]').textContent()) ||
+          '',
+        lastName:
+          (await row.locator('[data-testid="user-lastname"]').textContent()) ||
+          '',
+        role:
+          ((await row
+            .locator('[data-testid="user-role"]')
+            .textContent()) as any) || 'member',
+        status:
+          ((await row
+            .locator('[data-testid="user-status"]')
+            .textContent()) as any) || 'active',
+        registrationDate:
+          (await row
+            .locator('[data-testid="user-registration"]')
+            .textContent()) || '',
+        lastLogin:
+          (await row
+            .locator('[data-testid="user-last-login"]')
+            .textContent()) || '',
+        verificationStatus:
+          ((await row
+            .locator('[data-testid="user-verification"]')
+            .textContent()) as any) || 'verified',
       };
       users.push(user);
     }
-    
+
     return users;
   }
 
@@ -376,13 +458,13 @@ export class UserManagementPage extends BasePage {
   async suspendUser(userId: string, reason?: string) {
     await this.viewUserDetails(userId);
     await this.suspendUserBtn.click();
-    
+
     // Handle confirmation dialog
     if (reason) {
       await this.fillField('[data-testid="suspension-reason"]', reason);
     }
     await this.clickElement('[data-testid="confirm-suspension"]');
-    
+
     await this.waitForAPIResponse('/api/admin/users/suspend');
     await this.successNotification.waitFor({ state: 'visible' });
   }
@@ -394,7 +476,7 @@ export class UserManagementPage extends BasePage {
     await this.viewUserDetails(userId);
     await this.activateUserBtn.click();
     await this.clickElement('[data-testid="confirm-activation"]');
-    
+
     await this.waitForAPIResponse('/api/admin/users/activate');
     await this.successNotification.waitFor({ state: 'visible' });
   }
@@ -405,11 +487,11 @@ export class UserManagementPage extends BasePage {
   async deleteUser(userId: string) {
     await this.viewUserDetails(userId);
     await this.deleteUserBtn.click();
-    
+
     // Handle confirmation dialog
     await this.fillField('[data-testid="delete-confirmation-input"]', 'DELETE');
     await this.clickElement('[data-testid="confirm-deletion"]');
-    
+
     await this.waitForAPIResponse('/api/admin/users/delete');
     await this.successNotification.waitFor({ state: 'visible' });
   }
@@ -417,7 +499,12 @@ export class UserManagementPage extends BasePage {
   /**
    * Add new user
    */
-  async addUser(userData: Omit<User, 'id' | 'registrationDate' | 'lastLogin' | 'verificationStatus'>) {
+  async addUser(
+    userData: Omit<
+      User,
+      'id' | 'registrationDate' | 'lastLogin' | 'verificationStatus'
+    >
+  ) {
     await this.addUserBtn.click();
     await this.addUserModal.waitFor({ state: 'visible' });
 
@@ -445,7 +532,9 @@ export class UserManagementPage extends BasePage {
    */
   async selectUsers(userIds: string[]) {
     for (const userId of userIds) {
-      const checkbox = this.page.locator(`[data-user-id="${userId}"] [data-testid="user-checkbox"]`);
+      const checkbox = this.page.locator(
+        `[data-user-id="${userId}"] [data-testid="user-checkbox"]`
+      );
       await checkbox.check();
     }
   }
@@ -484,12 +573,15 @@ export class UserManagementPage extends BasePage {
   /**
    * Sort users by column
    */
-  async sortBy(column: 'name' | 'email' | 'registration' | 'lastLogin', direction: 'asc' | 'desc' = 'asc') {
+  async sortBy(
+    column: 'name' | 'email' | 'registration' | 'lastLogin',
+    direction: 'asc' | 'desc' = 'asc'
+  ) {
     const sortLocators = {
       name: this.sortByName,
       email: this.sortByEmail,
       registration: this.sortByRegistration,
-      lastLogin: this.sortByLastLogin
+      lastLogin: this.sortByLastLogin,
     };
 
     const sortButton = sortLocators[column];
@@ -507,7 +599,9 @@ export class UserManagementPage extends BasePage {
    * Navigate to specific page
    */
   async goToPage(pageNumber: number) {
-    const pageBtn = this.page.locator(`[data-testid="page-number"][data-page="${pageNumber}"]`);
+    const pageBtn = this.page.locator(
+      `[data-testid="page-number"][data-page="${pageNumber}"]`
+    );
     await pageBtn.click();
     await this.waitForAPIResponse('/api/admin/users');
   }
@@ -532,8 +626,10 @@ export class UserManagementPage extends BasePage {
     await this.clickElement('[data-testid="start-import"]');
 
     // Wait for import to complete
-    await this.waitForElement('[data-testid="import-complete"]', { timeout: 60000 });
-    
+    await this.waitForElement('[data-testid="import-complete"]', {
+      timeout: 60000,
+    });
+
     // Get import results
     const resultsText = await this.importResults.textContent();
     return resultsText;
@@ -542,7 +638,10 @@ export class UserManagementPage extends BasePage {
   /**
    * Export users
    */
-  async exportUsers(format: 'csv' | 'xlsx' | 'json' = 'csv', fields?: string[]) {
+  async exportUsers(
+    format: 'csv' | 'xlsx' | 'json' = 'csv',
+    fields?: string[]
+  ) {
     await this.exportUsersBtn.click();
     await this.exportModal.waitFor({ state: 'visible' });
 
@@ -560,7 +659,7 @@ export class UserManagementPage extends BasePage {
     const downloadPromise = this.page.waitForEvent('download');
     await this.clickElement('[data-testid="start-export"]');
     const download = await downloadPromise;
-    
+
     return download;
   }
 
@@ -571,7 +670,7 @@ export class UserManagementPage extends BasePage {
     await this.viewUserDetails(userId);
     await this.impersonateUserBtn.click();
     await this.clickElement('[data-testid="confirm-impersonation"]');
-    
+
     // Wait for redirect to user view
     await this.waitForNavigation(/\/dashboard/);
   }
@@ -610,15 +709,17 @@ export class UserManagementPage extends BasePage {
   async getUserActivityLog(userId: string): Promise<string[]> {
     await this.viewUserDetails(userId);
     await this.userActivityTab.click();
-    
-    const activityItems = await this.page.locator('[data-testid="activity-item"]').all();
+
+    const activityItems = await this.page
+      .locator('[data-testid="activity-item"]')
+      .all();
     const activities: string[] = [];
-    
+
     for (const item of activityItems) {
       const text = await item.textContent();
       if (text) activities.push(text.trim());
     }
-    
+
     return activities;
   }
 
@@ -628,20 +729,30 @@ export class UserManagementPage extends BasePage {
   async getUserSubscriptions(userId: string): Promise<any[]> {
     await this.viewUserDetails(userId);
     await this.userSubscriptionsTab.click();
-    
-    const subscriptionItems = await this.page.locator('[data-testid="subscription-item"]').all();
+
+    const subscriptionItems = await this.page
+      .locator('[data-testid="subscription-item"]')
+      .all();
     const subscriptions: any[] = [];
-    
+
     for (const item of subscriptionItems) {
       const subscription = {
-        type: await item.locator('[data-testid="subscription-type"]').textContent(),
-        status: await item.locator('[data-testid="subscription-status"]').textContent(),
-        startDate: await item.locator('[data-testid="subscription-start"]').textContent(),
-        endDate: await item.locator('[data-testid="subscription-end"]').textContent()
+        type: await item
+          .locator('[data-testid="subscription-type"]')
+          .textContent(),
+        status: await item
+          .locator('[data-testid="subscription-status"]')
+          .textContent(),
+        startDate: await item
+          .locator('[data-testid="subscription-start"]')
+          .textContent(),
+        endDate: await item
+          .locator('[data-testid="subscription-end"]')
+          .textContent(),
       };
       subscriptions.push(subscription);
     }
-    
+
     return subscriptions;
   }
 
@@ -651,15 +762,17 @@ export class UserManagementPage extends BasePage {
   async getUserAuditLog(userId: string): Promise<string[]> {
     await this.viewUserDetails(userId);
     await this.userAuditLogTab.click();
-    
-    const auditItems = await this.page.locator('[data-testid="audit-item"]').all();
+
+    const auditItems = await this.page
+      .locator('[data-testid="audit-item"]')
+      .all();
     const auditEntries: string[] = [];
-    
+
     for (const item of auditItems) {
       const text = await item.textContent();
       if (text) auditEntries.push(text.trim());
     }
-    
+
     return auditEntries;
   }
 
@@ -696,8 +809,12 @@ export class UserManagementPage extends BasePage {
     await this.createUserBtn.click();
 
     // Check for validation errors
-    const emailError = await this.page.locator('[data-testid="email-error"]').isVisible();
-    const nameError = await this.page.locator('[data-testid="name-error"]').isVisible();
+    const emailError = await this.page
+      .locator('[data-testid="email-error"]')
+      .isVisible();
+    const nameError = await this.page
+      .locator('[data-testid="name-error"]')
+      .isVisible();
 
     return { emailError, nameError };
   }
@@ -705,14 +822,17 @@ export class UserManagementPage extends BasePage {
   /**
    * Test role assignment permissions
    */
-  async testRoleAssignmentPermissions(currentUserRole: string, targetRole: string): Promise<boolean> {
+  async testRoleAssignmentPermissions(
+    currentUserRole: string,
+    targetRole: string
+  ): Promise<boolean> {
     await this.addUserBtn.click();
     await this.addUserModal.waitFor({ state: 'visible' });
 
     // Check if target role is available in dropdown
     const roleOptions = await this.newUserRoleSelect.locator('option').all();
     const availableRoles: string[] = [];
-    
+
     for (const option of roleOptions) {
       const value = await option.getAttribute('value');
       if (value) availableRoles.push(value);

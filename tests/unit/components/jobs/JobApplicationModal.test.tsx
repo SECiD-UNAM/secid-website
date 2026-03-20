@@ -1,6 +1,12 @@
 // @ts-nocheck
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { JobApplicationModal } from '@/components/jobs/JobApplicationModal';
 import { useAuth } from '@/contexts/AuthContext';
@@ -31,17 +37,24 @@ vi.mock('@/lib/firebase', () => ({
 }));
 
 // Mock all heroicons with Proxy to auto-handle any icon import
-vi.mock('@heroicons/react/24/outline', () =>
-  new Proxy({}, {
-    get: (_target, prop) => {
-      if (typeof prop === 'string' && prop !== '__esModule') {
-        const Icon = ({ className }: any) => <svg className={className} data-testid={`${prop}-icon`} />;
-        Icon.displayName = String(prop);
-        return Icon;
+vi.mock(
+  '@heroicons/react/24/outline',
+  () =>
+    new Proxy(
+      {},
+      {
+        get: (_target, prop) => {
+          if (typeof prop === 'string' && prop !== '__esModule') {
+            const Icon = ({ className }: any) => (
+              <svg className={className} data-testid={`${prop}-icon`} />
+            );
+            Icon.displayName = String(prop);
+            return Icon;
+          }
+          return undefined;
+        },
       }
-      return undefined;
-    },
-  })
+    )
 );
 
 // Mock file upload
@@ -127,9 +140,13 @@ describe('JobApplicationModal', () => {
         />
       );
 
-      expect(screen.getByText('Aplicar a Senior Data Scientist')).toBeInTheDocument();
+      expect(
+        screen.getByText('Aplicar a Senior Data Scientist')
+      ).toBeInTheDocument();
       expect(screen.getByText('TechCorp México')).toBeInTheDocument();
-      expect(screen.getByLabelText(/carta de presentación/i)).toBeInTheDocument();
+      expect(
+        screen.getByLabelText(/carta de presentación/i)
+      ).toBeInTheDocument();
       expect(screen.getByLabelText(/currículum/i)).toBeInTheDocument();
     });
 
@@ -144,7 +161,9 @@ describe('JobApplicationModal', () => {
         />
       );
 
-      expect(screen.getByText('Apply to Senior Data Scientist')).toBeInTheDocument();
+      expect(
+        screen.getByText('Apply to Senior Data Scientist')
+      ).toBeInTheDocument();
       expect(screen.getByLabelText(/cover letter/i)).toBeInTheDocument();
     });
 
@@ -158,7 +177,9 @@ describe('JobApplicationModal', () => {
         />
       );
 
-      expect(screen.queryByText('Aplicar a Senior Data Scientist')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Aplicar a Senior Data Scientist')
+      ).not.toBeInTheDocument();
     });
 
     it('pre-fills user information from profile', () => {
@@ -171,10 +192,18 @@ describe('JobApplicationModal', () => {
         />
       );
 
-      expect((screen.getByLabelText(/nombre/i) as HTMLInputElement).value).toBe('John');
-      expect((screen.getByLabelText(/apellido/i) as HTMLInputElement).value).toBe('Doe');
-      expect((screen.getByLabelText(/email/i) as HTMLInputElement).value).toBe('john.doe@example.com');
-      expect((screen.getByLabelText(/teléfono/i) as HTMLInputElement).value).toBe('+52 55 1234 5678');
+      expect((screen.getByLabelText(/nombre/i) as HTMLInputElement).value).toBe(
+        'John'
+      );
+      expect(
+        (screen.getByLabelText(/apellido/i) as HTMLInputElement).value
+      ).toBe('Doe');
+      expect((screen.getByLabelText(/email/i) as HTMLInputElement).value).toBe(
+        'john.doe@example.com'
+      );
+      expect(
+        (screen.getByLabelText(/teléfono/i) as HTMLInputElement).value
+      ).toBe('+52 55 1234 5678');
     });
 
     it('shows existing resume when available', () => {
@@ -188,10 +217,9 @@ describe('JobApplicationModal', () => {
       );
 
       expect(screen.getByText(/currículum actual/i)).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /ver currículum/i })).toHaveAttribute(
-        'href',
-        'https://example.com/resume.pdf'
-      );
+      expect(
+        screen.getByRole('link', { name: /ver currículum/i })
+      ).toHaveAttribute('href', 'https://example.com/resume.pdf');
     });
   });
 
@@ -210,7 +238,9 @@ describe('JobApplicationModal', () => {
       const nameInput = screen.getByLabelText(/nombre/i);
       await user.clear(nameInput);
 
-      const submitButton = screen.getByRole('button', { name: /enviar aplicación/i });
+      const submitButton = screen.getByRole('button', {
+        name: /enviar aplicación/i,
+      });
       await user.click(submitButton);
 
       expect(screen.getByText(/nombre es requerido/i)).toBeInTheDocument();
@@ -230,7 +260,9 @@ describe('JobApplicationModal', () => {
       await user.clear(emailInput);
       await user.type(emailInput, 'invalid-email');
 
-      const submitButton = screen.getByRole('button', { name: /enviar aplicación/i });
+      const submitButton = screen.getByRole('button', {
+        name: /enviar aplicación/i,
+      });
       await user.click(submitButton);
 
       expect(screen.getByText(/email válido/i)).toBeInTheDocument();
@@ -250,7 +282,9 @@ describe('JobApplicationModal', () => {
       await user.clear(phoneInput);
       await user.type(phoneInput, '123');
 
-      const submitButton = screen.getByRole('button', { name: /enviar aplicación/i });
+      const submitButton = screen.getByRole('button', {
+        name: /enviar aplicación/i,
+      });
       await user.click(submitButton);
 
       expect(screen.getByText(/teléfono válido/i)).toBeInTheDocument();
@@ -269,10 +303,16 @@ describe('JobApplicationModal', () => {
       const coverLetterInput = screen.getByLabelText(/carta de presentación/i);
       await user.type(coverLetterInput, 'Short');
 
-      const submitButton = screen.getByRole('button', { name: /enviar aplicación/i });
+      const submitButton = screen.getByRole('button', {
+        name: /enviar aplicación/i,
+      });
       await user.click(submitButton);
 
-      expect(screen.getByText(/carta de presentación debe tener al menos 50 caracteres/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /carta de presentación debe tener al menos 50 caracteres/i
+        )
+      ).toBeInTheDocument();
     });
 
     it('validates LinkedIn URL format', async () => {
@@ -289,7 +329,9 @@ describe('JobApplicationModal', () => {
       await user.clear(linkedinInput);
       await user.type(linkedinInput, 'invalid-url');
 
-      const submitButton = screen.getByRole('button', { name: /enviar aplicación/i });
+      const submitButton = screen.getByRole('button', {
+        name: /enviar aplicación/i,
+      });
       await user.click(submitButton);
 
       expect(screen.getByText(/url de linkedin válida/i)).toBeInTheDocument();
@@ -314,7 +356,9 @@ describe('JobApplicationModal', () => {
         />
       );
 
-      const submitButton = screen.getByRole('button', { name: /enviar aplicación/i });
+      const submitButton = screen.getByRole('button', {
+        name: /enviar aplicación/i,
+      });
       await user.click(submitButton);
 
       expect(screen.getByText(/currículum es requerido/i)).toBeInTheDocument();
@@ -332,7 +376,9 @@ describe('JobApplicationModal', () => {
         />
       );
 
-      const file = new File(['resume content'], 'resume.pdf', { type: 'application/pdf' });
+      const file = new File(['resume content'], 'resume.pdf', {
+        type: 'application/pdf',
+      });
       const fileInput = screen.getByLabelText(/subir nuevo currículum/i);
 
       await user.upload(fileInput, file);
@@ -358,7 +404,9 @@ describe('JobApplicationModal', () => {
 
       await user.upload(fileInput, file);
 
-      expect(screen.getByText(/tipo de archivo no válido/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/tipo de archivo no válido/i)
+      ).toBeInTheDocument();
     });
 
     it('validates file size for resume', async () => {
@@ -372,9 +420,13 @@ describe('JobApplicationModal', () => {
       );
 
       // Create a file larger than 5MB
-      const largeFile = new File(['x'.repeat(6 * 1024 * 1024)], 'large-resume.pdf', {
-        type: 'application/pdf',
-      });
+      const largeFile = new File(
+        ['x'.repeat(6 * 1024 * 1024)],
+        'large-resume.pdf',
+        {
+          type: 'application/pdf',
+        }
+      );
       const fileInput = screen.getByLabelText(/subir nuevo currículum/i);
 
       await user.upload(fileInput, largeFile);
@@ -398,7 +450,9 @@ describe('JobApplicationModal', () => {
         />
       );
 
-      const file = new File(['resume content'], 'resume.pdf', { type: 'application/pdf' });
+      const file = new File(['resume content'], 'resume.pdf', {
+        type: 'application/pdf',
+      });
       const fileInput = screen.getByLabelText(/subir nuevo currículum/i);
 
       await user.upload(fileInput, file);
@@ -420,7 +474,9 @@ describe('JobApplicationModal', () => {
         />
       );
 
-      const file = new File(['resume content'], 'resume.pdf', { type: 'application/pdf' });
+      const file = new File(['resume content'], 'resume.pdf', {
+        type: 'application/pdf',
+      });
       const fileInput = screen.getByLabelText(/subir nuevo currículum/i);
 
       await user.upload(fileInput, file);
@@ -440,7 +496,9 @@ describe('JobApplicationModal', () => {
         />
       );
 
-      const file = new File(['resume content'], 'resume.pdf', { type: 'application/pdf' });
+      const file = new File(['resume content'], 'resume.pdf', {
+        type: 'application/pdf',
+      });
       const fileInput = screen.getByLabelText(/subir nuevo currículum/i);
 
       await user.upload(fileInput, file);
@@ -473,7 +531,9 @@ describe('JobApplicationModal', () => {
         'I am very interested in this position and believe my skills in Python and Machine Learning make me a great fit.'
       );
 
-      const submitButton = screen.getByRole('button', { name: /enviar aplicación/i });
+      const submitButton = screen.getByRole('button', {
+        name: /enviar aplicación/i,
+      });
       await user.click(submitButton);
 
       expect(mockAddDoc).toHaveBeenCalledWith(
@@ -512,9 +572,14 @@ describe('JobApplicationModal', () => {
       );
 
       const coverLetterInput = screen.getByLabelText(/carta de presentación/i);
-      await user.type(coverLetterInput, 'This is my cover letter with more than 50 characters.');
+      await user.type(
+        coverLetterInput,
+        'This is my cover letter with more than 50 characters.'
+      );
 
-      const submitButton = screen.getByRole('button', { name: /enviar aplicación/i });
+      const submitButton = screen.getByRole('button', {
+        name: /enviar aplicación/i,
+      });
       await user.click(submitButton);
 
       expect(screen.getByText(/enviando aplicación/i)).toBeInTheDocument();
@@ -534,13 +599,20 @@ describe('JobApplicationModal', () => {
       );
 
       const coverLetterInput = screen.getByLabelText(/carta de presentación/i);
-      await user.type(coverLetterInput, 'This is my cover letter with more than 50 characters.');
+      await user.type(
+        coverLetterInput,
+        'This is my cover letter with more than 50 characters.'
+      );
 
-      const submitButton = screen.getByRole('button', { name: /enviar aplicación/i });
+      const submitButton = screen.getByRole('button', {
+        name: /enviar aplicación/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/aplicación enviada exitosamente/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/aplicación enviada exitosamente/i)
+        ).toBeInTheDocument();
         expect(screen.getByTestId('check-circle-icon')).toBeInTheDocument();
       });
 
@@ -560,14 +632,23 @@ describe('JobApplicationModal', () => {
       );
 
       const coverLetterInput = screen.getByLabelText(/carta de presentación/i);
-      await user.type(coverLetterInput, 'This is my cover letter with more than 50 characters.');
+      await user.type(
+        coverLetterInput,
+        'This is my cover letter with more than 50 characters.'
+      );
 
-      const submitButton = screen.getByRole('button', { name: /enviar aplicación/i });
+      const submitButton = screen.getByRole('button', {
+        name: /enviar aplicación/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/error al enviar aplicación/i)).toBeInTheDocument();
-        expect(screen.getByTestId('exclamation-triangle-icon')).toBeInTheDocument();
+        expect(
+          screen.getByText(/error al enviar aplicación/i)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByTestId('exclamation-triangle-icon')
+        ).toBeInTheDocument();
       });
     });
 
@@ -591,15 +672,22 @@ describe('JobApplicationModal', () => {
       );
 
       // Upload new resume
-      const file = new File(['resume content'], 'new-resume.pdf', { type: 'application/pdf' });
+      const file = new File(['resume content'], 'new-resume.pdf', {
+        type: 'application/pdf',
+      });
       const fileInput = screen.getByLabelText(/subir currículum/i);
       await user.upload(fileInput, file);
 
       // Fill cover letter
       const coverLetterInput = screen.getByLabelText(/carta de presentación/i);
-      await user.type(coverLetterInput, 'This is my cover letter with more than 50 characters.');
+      await user.type(
+        coverLetterInput,
+        'This is my cover letter with more than 50 characters.'
+      );
 
-      const submitButton = screen.getByRole('button', { name: /enviar aplicación/i });
+      const submitButton = screen.getByRole('button', {
+        name: /enviar aplicación/i,
+      });
       await user.click(submitButton);
 
       expect(mockAddDoc).toHaveBeenCalledWith(
@@ -638,8 +726,9 @@ describe('JobApplicationModal', () => {
         />
       );
 
-      const overlay = document.querySelector('[data-testid="modal-overlay"]') || 
-                     document.querySelector('.fixed.inset-0');
+      const overlay =
+        document.querySelector('[data-testid="modal-overlay"]') ||
+        document.querySelector('.fixed.inset-0');
       if (overlay) {
         fireEvent.click(overlay);
       }
@@ -664,9 +753,14 @@ describe('JobApplicationModal', () => {
       );
 
       const coverLetterInput = screen.getByLabelText(/carta de presentación/i);
-      await user.type(coverLetterInput, 'This is my cover letter with more than 50 characters.');
+      await user.type(
+        coverLetterInput,
+        'This is my cover letter with more than 50 characters.'
+      );
 
-      const submitButton = screen.getByRole('button', { name: /enviar aplicación/i });
+      const submitButton = screen.getByRole('button', {
+        name: /enviar aplicación/i,
+      });
       await user.click(submitButton);
 
       // Try to close modal during submission
@@ -694,7 +788,9 @@ describe('JobApplicationModal', () => {
       await user.click(closeButton);
 
       expect(screen.getByText(/cambios no guardados/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /descartar cambios/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /descartar cambios/i })
+      ).toBeInTheDocument();
     });
   });
 
@@ -725,7 +821,9 @@ describe('JobApplicationModal', () => {
         />
       );
 
-      expect(screen.getByText('MXN 60,000 - 90,000 por mes')).toBeInTheDocument();
+      expect(
+        screen.getByText('MXN 60,000 - 90,000 por mes')
+      ).toBeInTheDocument();
     });
 
     it('shows job requirements', () => {
@@ -785,7 +883,9 @@ describe('JobApplicationModal', () => {
         />
       );
 
-      expect(screen.getByText(/menciona tu experiencia con/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/menciona tu experiencia con/i)
+      ).toBeInTheDocument();
       expect(screen.getByText(/python/i)).toBeInTheDocument();
       expect(screen.getByText(/machine learning/i)).toBeInTheDocument();
     });
@@ -800,7 +900,9 @@ describe('JobApplicationModal', () => {
         />
       );
 
-      expect(screen.getByText(/consejos para tu aplicación/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/consejos para tu aplicación/i)
+      ).toBeInTheDocument();
       expect(screen.getByText(/personaliza tu carta/i)).toBeInTheDocument();
     });
 
@@ -814,7 +916,9 @@ describe('JobApplicationModal', () => {
         />
       );
 
-      expect(screen.getByText(/tiempo estimado de respuesta/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/tiempo estimado de respuesta/i)
+      ).toBeInTheDocument();
     });
   });
 
@@ -876,14 +980,21 @@ describe('JobApplicationModal', () => {
       );
 
       const coverLetterInput = screen.getByLabelText(/carta de presentación/i);
-      await user.type(coverLetterInput, 'This is my cover letter with more than 50 characters.');
+      await user.type(
+        coverLetterInput,
+        'This is my cover letter with more than 50 characters.'
+      );
 
-      const submitButton = screen.getByRole('button', { name: /enviar aplicación/i });
+      const submitButton = screen.getByRole('button', {
+        name: /enviar aplicación/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
         expect(screen.getByText(/error de conexión/i)).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /reintentar/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /reintentar/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -900,13 +1011,20 @@ describe('JobApplicationModal', () => {
       );
 
       const coverLetterInput = screen.getByLabelText(/carta de presentación/i);
-      await user.type(coverLetterInput, 'This is my cover letter with more than 50 characters.');
+      await user.type(
+        coverLetterInput,
+        'This is my cover letter with more than 50 characters.'
+      );
 
-      const submitButton = screen.getByRole('button', { name: /enviar aplicación/i });
+      const submitButton = screen.getByRole('button', {
+        name: /enviar aplicación/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/ya aplicaste a este empleo/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/ya aplicaste a este empleo/i)
+        ).toBeInTheDocument();
       });
     });
   });
@@ -976,7 +1094,8 @@ describe('JobApplicationModal', () => {
       expect(document.activeElement).toBeInTheDocument();
 
       // Should not focus elements outside modal
-      const outsideElement = document.body.querySelector('button') || document.body;
+      const outsideElement =
+        document.body.querySelector('button') || document.body;
       expect(document.activeElement).not.toBe(outsideElement);
     });
 
@@ -1011,7 +1130,9 @@ describe('JobApplicationModal', () => {
       const coverLetterInput = screen.getByLabelText(/carta de presentación/i);
       await user.type(coverLetterInput, longCoverLetter);
 
-      expect((coverLetterInput as HTMLTextAreaElement).value).toBe(longCoverLetter);
+      expect((coverLetterInput as HTMLTextAreaElement).value).toBe(
+        longCoverLetter
+      );
     });
 
     it('handles special characters in form fields', async () => {
@@ -1079,7 +1200,9 @@ describe('JobApplicationModal', () => {
         />
       );
 
-      expect(screen.getByText('Aplicar a Senior Data Scientist')).toBeInTheDocument();
+      expect(
+        screen.getByText('Aplicar a Senior Data Scientist')
+      ).toBeInTheDocument();
     });
 
     it('handles missing onSuccess callback', async () => {
@@ -1093,9 +1216,14 @@ describe('JobApplicationModal', () => {
       );
 
       const coverLetterInput = screen.getByLabelText(/carta de presentación/i);
-      await user.type(coverLetterInput, 'This is my cover letter with more than 50 characters.');
+      await user.type(
+        coverLetterInput,
+        'This is my cover letter with more than 50 characters.'
+      );
 
-      const submitButton = screen.getByRole('button', { name: /enviar aplicación/i });
+      const submitButton = screen.getByRole('button', {
+        name: /enviar aplicación/i,
+      });
       expect(() => user.click(submitButton)).not.toThrow();
     });
   });

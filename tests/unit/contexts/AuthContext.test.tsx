@@ -51,7 +51,9 @@ function TestConsumer() {
     <div>
       <span data-testid="loading">{String(ctx.loading)}</span>
       <span data-testid="error">{ctx.error ?? 'none'}</span>
-      <span data-testid="profile">{ctx.userProfile?.displayName ?? 'null'}</span>
+      <span data-testid="profile">
+        {ctx.userProfile?.displayName ?? 'null'}
+      </span>
       <span data-testid="verified">{String(ctx.isVerified)}</span>
     </div>
   );
@@ -71,19 +73,34 @@ const PROFILE = {
 
 async function setup() {
   const utils = render(
-    <AuthProvider><TestConsumer /></AuthProvider>
+    <AuthProvider>
+      <TestConsumer />
+    </AuthProvider>
   );
   // Let authStateReady().then() run
-  await act(async () => { /* microtask flush */ });
+  await act(async () => {
+    /* microtask flush */
+  });
 
   // Simulate authenticated user
-  const fakeUser = { uid: 'u1', email: 'a@b.com', displayName: 'A B', getIdToken: mockGetIdToken };
+  const fakeUser = {
+    uid: 'u1',
+    email: 'a@b.com',
+    displayName: 'A B',
+    getIdToken: mockGetIdToken,
+  };
   authState.currentUser = fakeUser;
-  await act(async () => { capturedAuthCallback?.(fakeUser); });
+  await act(async () => {
+    capturedAuthCallback?.(fakeUser);
+  });
 
   // Deliver profile snapshot
   await act(async () => {
-    capturedSnapshotNext?.({ exists: () => true, data: () => PROFILE, id: 'u1' });
+    capturedSnapshotNext?.({
+      exists: () => true,
+      data: () => PROFILE,
+      id: 'u1',
+    });
   });
 
   return utils;
@@ -118,7 +135,9 @@ describe.sequential('AuthContext session resilience', () => {
       // Profile must survive the error
       expect(screen.getByTestId('profile')).toHaveTextContent('A B');
       expect(screen.getByTestId('verified')).toHaveTextContent('true');
-      expect(screen.getByTestId('error')).toHaveTextContent('Failed to load user profile');
+      expect(screen.getByTestId('error')).toHaveTextContent(
+        'Failed to load user profile'
+      );
     });
   });
 
@@ -143,7 +162,10 @@ describe.sequential('AuthContext session resilience', () => {
       const callsBefore = vi.mocked(onSnapshot).mock.calls.length;
 
       await act(async () => {
-        capturedSnapshotError?.({ code: 'permission-denied', message: 'denied' });
+        capturedSnapshotError?.({
+          code: 'permission-denied',
+          message: 'denied',
+        });
       });
 
       // Profile should survive
@@ -156,7 +178,9 @@ describe.sequential('AuthContext session resilience', () => {
       });
 
       expect(mockGetIdToken).toHaveBeenCalledWith(true);
-      expect(vi.mocked(onSnapshot).mock.calls.length).toBeGreaterThan(callsBefore);
+      expect(vi.mocked(onSnapshot).mock.calls.length).toBeGreaterThan(
+        callsBefore
+      );
     });
   });
 
@@ -178,7 +202,9 @@ describe.sequential('AuthContext session resilience', () => {
       mockGetIdToken.mockClear();
 
       Object.defineProperty(document, 'visibilityState', {
-        value: 'visible', writable: true, configurable: true,
+        value: 'visible',
+        writable: true,
+        configurable: true,
       });
 
       await act(async () => {
@@ -189,14 +215,22 @@ describe.sequential('AuthContext session resilience', () => {
     });
 
     it('skips refresh when no current user', async () => {
-      render(<AuthProvider><TestConsumer /></AuthProvider>);
-      await act(async () => { /* flush authStateReady */ });
+      render(
+        <AuthProvider>
+          <TestConsumer />
+        </AuthProvider>
+      );
+      await act(async () => {
+        /* flush authStateReady */
+      });
 
       authState.currentUser = null;
       mockGetIdToken.mockClear();
 
       Object.defineProperty(document, 'visibilityState', {
-        value: 'visible', writable: true, configurable: true,
+        value: 'visible',
+        writable: true,
+        configurable: true,
       });
 
       await act(async () => {

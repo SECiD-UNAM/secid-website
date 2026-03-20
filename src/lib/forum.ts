@@ -23,8 +23,13 @@ import {
   or,
   and,
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject} from 'firebase/storage';
-import { db, storage} from './firebase';
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from 'firebase/storage';
+import { db, storage } from './firebase';
 import type {
   ForumCategory,
   ForumTopic,
@@ -61,14 +66,16 @@ const timestampToDate = (timestamp: any): Date => {
 };
 
 // Utility function to convert document data
-const convertDoc = <T>(doc: DocumentSnapshot | QueryDocumentSnapshot): T | null => {
+const convertDoc = <T>(
+  doc: DocumentSnapshot | QueryDocumentSnapshot
+): T | null => {
   if (!doc.exists()) return null;
-  
+
   const data = doc['data']();
   const converted = { ...data, id: doc['id'] } as any;
-  
+
   // Convert all timestamp fields to Date objects
-  Object.keys(converted).forEach(key => {
+  Object.keys(converted).forEach((key) => {
     if (converted[key] && typeof converted[key] === 'object') {
       if (converted[key].toDate) {
         converted[key] = converted[key].toDate();
@@ -82,7 +89,7 @@ const convertDoc = <T>(doc: DocumentSnapshot | QueryDocumentSnapshot): T | null 
         });
       } else if (typeof converted[key] === 'object') {
         // Handle nested objects with timestamps
-        Object.keys(converted[key]).forEach(nestedKey => {
+        Object.keys(converted[key]).forEach((nestedKey) => {
           if (converted[key][nestedKey] && converted[key][nestedKey].toDate) {
             converted[key][nestedKey] = converted[key][nestedKey].toDate();
           }
@@ -90,7 +97,7 @@ const convertDoc = <T>(doc: DocumentSnapshot | QueryDocumentSnapshot): T | null 
       }
     }
   });
-  
+
   return converted as T;
 };
 
@@ -98,9 +105,13 @@ const convertDoc = <T>(doc: DocumentSnapshot | QueryDocumentSnapshot): T | null 
 export const forumCategories = {
   // Get all active categories
   async getAll(): Promise<ForumCategory[]> {
-    const q = query(categoriesRef, where('isActive', '==', true), orderBy('displayOrder'));
+    const q = query(
+      categoriesRef,
+      where('isActive', '==', true),
+      orderBy('displayOrder')
+    );
     const snapshot = await getDocs(q);
-    return snapshot['docs'].map(doc => convertDoc<ForumCategory>(doc)!);
+    return snapshot['docs'].map((doc) => convertDoc<ForumCategory>(doc)!);
   },
 
   // Get category by ID
@@ -113,11 +124,15 @@ export const forumCategories = {
   async getBySlug(slug: string): Promise<ForumCategory | null> {
     const q = query(categoriesRef, where('slug', '==', slug), limit(1));
     const snapshot = await getDocs(q);
-    return snapshot['empty'] ? null : convertDoc<ForumCategory>(snapshot['docs'][0])!;
+    return snapshot['empty']
+      ? null
+      : convertDoc<ForumCategory>(snapshot['docs'][0])!;
   },
 
   // Create new category
-  async create(data: Omit<ForumCategory, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  async create(
+    data: Omit<ForumCategory, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<string> {
     const docRef = await addDoc(categoriesRef, {
       ...data,
       createdAt: serverTimestamp(),
@@ -135,18 +150,22 @@ export const forumCategories = {
   },
 
   // Update category stats
-  async updateStats(categoryId: string, topicDelta: number = 0, postDelta: number = 0): Promise<void> {
+  async updateStats(
+    categoryId: string,
+    topicDelta: number = 0,
+    postDelta: number = 0
+  ): Promise<void> {
     const updates: any = {
       updatedAt: serverTimestamp(),
     };
-    
+
     if (topicDelta !== 0) {
       updates.topicCount = increment(topicDelta);
     }
     if (postDelta !== 0) {
       updates.postCount = increment(postDelta);
     }
-    
+
     await updateDoc(doc(categoriesRef, categoryId), updates);
   },
 };
@@ -167,13 +186,16 @@ export const forumTopics = {
       limit(limitCount)
     );
 
-    if(lastDoc) {
+    if (lastDoc) {
       q = query(q, startAfter(lastDoc));
     }
 
     const snapshot = await getDocs(q);
-    const topics = snapshot['docs'].map(doc => convertDoc<ForumTopic>(doc)!);
-    const newLastDoc = snapshot['docs'].length > 0 ? snapshot.docs[snapshot['docs'].length - 1] : null;
+    const topics = snapshot['docs'].map((doc) => convertDoc<ForumTopic>(doc)!);
+    const newLastDoc =
+      snapshot['docs'].length > 0
+        ? snapshot.docs[snapshot['docs'].length - 1]
+        : null;
 
     return { topics, lastDoc: newLastDoc };
   },
@@ -182,12 +204,12 @@ export const forumTopics = {
   async getById(id: string): Promise<ForumTopic | null> {
     const docSnap = await getDoc(doc(topicsRef, id));
     if (!docSnap.exists()) return null;
-    
+
     // Increment view count
     await updateDoc(doc(topicsRef, id), {
       views: increment(1),
     });
-    
+
     return convertDoc<ForumTopic>(docSnap);
   },
 
@@ -196,21 +218,23 @@ export const forumTopics = {
     const q = query(topicsRef, where('slug', '==', slug), limit(1));
     const snapshot = await getDocs(q);
     if (snapshot['empty']) return null;
-    
+
     const topic = convertDoc<ForumTopic>(snapshot['docs'][0])!;
-    
+
     // Increment view count
     await updateDoc(doc(topicsRef, topic['id']), {
       views: increment(1),
     });
-    
+
     return topic;
   },
 
   // Create new topic
-  async create(data: Omit<ForumTopic, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  async create(
+    data: Omit<ForumTopic, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<string> {
     const batch = writeBatch(db);
-    
+
     // Create topic
     const topicRef = doc(topicsRef);
     batch.set(topicRef, {
@@ -223,7 +247,7 @@ export const forumTopics = {
         timestamp: serverTimestamp(),
       },
     });
-    
+
     // Update category stats
     const categoryRef = doc(categoriesRef, data['categoryId']);
     batch.update(categoryRef, {
@@ -237,7 +261,7 @@ export const forumTopics = {
       },
       updatedAt: serverTimestamp(),
     });
-    
+
     await batch.commit();
     return topicRef['id'];
   },
@@ -251,19 +275,23 @@ export const forumTopics = {
   },
 
   // Update topic stats
-  async updateStats(topicId: string, postDelta: number = 0, lastActivity?: any): Promise<void> {
+  async updateStats(
+    topicId: string,
+    postDelta: number = 0,
+    lastActivity?: any
+  ): Promise<void> {
     const updates: any = {
       updatedAt: serverTimestamp(),
     };
-    
+
     if (postDelta !== 0) {
       updates.postCount = increment(postDelta);
     }
-    
-    if(lastActivity) {
+
+    if (lastActivity) {
       updates.lastActivity = lastActivity;
     }
-    
+
     await updateDoc(doc(topicsRef, topicId), updates);
   },
 
@@ -309,9 +337,9 @@ export const forumTopics = {
       orderBy('upvotes', 'desc'),
       limit(limitCount)
     );
-    
+
     const snapshot = await getDocs(q);
-    return snapshot['docs'].map(doc => convertDoc<ForumTopic>(doc)!);
+    return snapshot['docs'].map((doc) => convertDoc<ForumTopic>(doc)!);
   },
 };
 
@@ -330,13 +358,16 @@ export const forumPosts = {
       limit(limitCount)
     );
 
-    if(lastDoc) {
+    if (lastDoc) {
       q = query(q, startAfter(lastDoc));
     }
 
     const snapshot = await getDocs(q);
-    const posts = snapshot['docs'].map(doc => convertDoc<ForumPost>(doc)!);
-    const newLastDoc = snapshot['docs'].length > 0 ? snapshot.docs[snapshot['docs'].length - 1] : null;
+    const posts = snapshot['docs'].map((doc) => convertDoc<ForumPost>(doc)!);
+    const newLastDoc =
+      snapshot['docs'].length > 0
+        ? snapshot.docs[snapshot['docs'].length - 1]
+        : null;
 
     return { posts, lastDoc: newLastDoc };
   },
@@ -348,9 +379,11 @@ export const forumPosts = {
   },
 
   // Create new post
-  async create(data: Omit<ForumPost, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  async create(
+    data: Omit<ForumPost, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<string> {
     const batch = writeBatch(db);
-    
+
     // Create post
     const postRef = doc(postsRef);
     batch.set(postRef, {
@@ -358,7 +391,7 @@ export const forumPosts = {
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
-    
+
     // Update topic stats
     const topicRef = doc(topicsRef, data.topicId);
     batch.update(topicRef, {
@@ -370,7 +403,7 @@ export const forumPosts = {
       },
       updatedAt: serverTimestamp(),
     });
-    
+
     // Update category stats
     const topicSnap = await getDoc(topicRef);
     if (topicSnap.exists()) {
@@ -388,7 +421,7 @@ export const forumPosts = {
         updatedAt: serverTimestamp(),
       });
     }
-    
+
     await batch.commit();
     return postRef['id'];
   },
@@ -435,7 +468,7 @@ export const forumPosts = {
       updatedAt: serverTimestamp(),
     });
 
-    // Update category stats  
+    // Update category stats
     const topicSnap = await getDoc(topicRef);
     if (topicSnap.exists()) {
       const topic = topicSnap['data']() as ForumTopic;
@@ -475,30 +508,38 @@ export const forumPosts = {
       where('parentPostId', '==', parentPostId),
       orderBy('createdAt', 'asc')
     );
-    
+
     const snapshot = await getDocs(q);
-    return snapshot['docs'].map(doc => convertDoc<ForumPost>(doc)!);
+    return snapshot['docs'].map((doc) => convertDoc<ForumPost>(doc)!);
   },
 };
 
 // Voting System
 export const forumVoting = {
   // Cast vote
-  async vote(userId: string, targetType: 'topic' | 'post', targetId: string, voteType: 'upvote' | 'downvote'): Promise<void> {
+  async vote(
+    userId: string,
+    targetType: 'topic' | 'post',
+    targetId: string,
+    voteType: 'upvote' | 'downvote'
+  ): Promise<void> {
     const voteId = `${userId}_${targetType}_${targetId}`;
     const batch = writeBatch(db);
 
     // Check if user already voted
     const existingVoteSnap = await getDoc(doc(votesRef, voteId));
-    const targetRef = targetType === 'topic' ? doc(topicsRef, targetId) : doc(postsRef, targetId);
+    const targetRef =
+      targetType === 'topic'
+        ? doc(topicsRef, targetId)
+        : doc(postsRef, targetId);
 
     if (existingVoteSnap.exists()) {
       const existingVote = existingVoteSnap.data() as ForumVote;
-      
+
       if (existingVote.voteType === voteType) {
         // Remove vote
         batch.delete(doc(votesRef, voteId));
-        
+
         // Update target vote count
         const decrementField = voteType === 'upvote' ? 'upvotes' : 'downvotes';
         batch.update(targetRef, {
@@ -511,11 +552,12 @@ export const forumVoting = {
           voteType,
           createdAt: serverTimestamp(),
         });
-        
+
         // Update target vote counts
-        const decrementField = existingVote.voteType === 'upvote' ? 'upvotes' : 'downvotes';
+        const decrementField =
+          existingVote.voteType === 'upvote' ? 'upvotes' : 'downvotes';
         const incrementField = voteType === 'upvote' ? 'upvotes' : 'downvotes';
-        
+
         batch.update(targetRef, {
           [decrementField]: increment(-1),
           [incrementField]: increment(1),
@@ -532,7 +574,7 @@ export const forumVoting = {
         voteType,
         createdAt: serverTimestamp(),
       });
-      
+
       // Update target vote count
       const incrementField = voteType === 'upvote' ? 'upvotes' : 'downvotes';
       batch.update(targetRef, {
@@ -545,7 +587,11 @@ export const forumVoting = {
   },
 
   // Get user's vote for target
-  async getUserVote(userId: string, targetType: 'topic' | 'post', targetId: string): Promise<ForumVote | null> {
+  async getUserVote(
+    userId: string,
+    targetType: 'topic' | 'post',
+    targetId: string
+  ): Promise<ForumVote | null> {
     const voteId = `${userId}_${targetType}_${targetId}`;
     const docSnap = await getDoc(doc(votesRef, voteId));
     return convertDoc<ForumVote>(docSnap);
@@ -555,7 +601,11 @@ export const forumVoting = {
 // Reactions System
 export const forumReactions = {
   // Add/remove reaction
-  async toggleReaction(userId: string, postId: string, emoji: string): Promise<void> {
+  async toggleReaction(
+    userId: string,
+    postId: string,
+    emoji: string
+  ): Promise<void> {
     const reactionId = `${userId}_${postId}_${emoji}`;
     const batch = writeBatch(db);
 
@@ -591,18 +641,21 @@ export const forumReactions = {
   async getByPost(postId: string): Promise<ForumReaction[]> {
     const q = query(reactionsRef, where('postId', '==', postId));
     const snapshot = await getDocs(q);
-    return snapshot['docs'].map(doc => convertDoc<ForumReaction>(doc)!);
+    return snapshot['docs'].map((doc) => convertDoc<ForumReaction>(doc)!);
   },
 };
 
 // Search functionality
 export const forumSearch = {
   // Search topics and posts
-  async search(filters: ForumSearchFilters): Promise<{ topics: ForumSearchResult[]; posts: ForumSearchResult[] }> {
-    const results: { topics: ForumSearchResult[]; posts: ForumSearchResult[] } = {
-      topics: [],
-      posts: []
-    };
+  async search(
+    filters: ForumSearchFilters
+  ): Promise<{ topics: ForumSearchResult[]; posts: ForumSearchResult[] }> {
+    const results: { topics: ForumSearchResult[]; posts: ForumSearchResult[] } =
+      {
+        topics: [],
+        posts: [],
+      };
 
     // Basic search implementation (in production, use Algolia or similar)
     if (filters.query) {
@@ -611,21 +664,25 @@ export const forumSearch = {
       // Search topics
       let topicsQuery = query(topicsRef);
       if (filters.categoryIds && filters.categoryIds.length > 0) {
-        topicsQuery = query(topicsQuery, where('categoryId', 'in', filters.categoryIds));
+        topicsQuery = query(
+          topicsQuery,
+          where('categoryId', 'in', filters.categoryIds)
+        );
       }
 
       const topicsSnapshot = await getDocs(topicsQuery);
       const topicResults = topicsSnapshot.docs
-        .map(doc => convertDoc<ForumTopic>(doc)!)
-        .filter(topic => 
-          topic.title.toLowerCase().includes(searchTerm) ||
-          topic.content.toLowerCase().includes(searchTerm) ||
-          topic.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+        .map((doc) => convertDoc<ForumTopic>(doc)!)
+        .filter(
+          (topic) =>
+            topic.title.toLowerCase().includes(searchTerm) ||
+            topic.content.toLowerCase().includes(searchTerm) ||
+            topic.tags.some((tag) => tag.toLowerCase().includes(searchTerm))
         )
         .slice(0, 50);
 
       // Convert to search results
-      results.topics = topicResults.map(topic => ({
+      results.topics = topicResults.map((topic) => ({
         type: 'topic' as const,
         id: topic['id'],
         title: topic.title,
@@ -635,7 +692,10 @@ export const forumSearch = {
         categoryName: '', // Would need to fetch category name
         authorId: topic.authorId,
         authorName: topic.authorName,
-        score: calculateRelevanceScore(topic.title + ' ' + topic.content, searchTerm),
+        score: calculateRelevanceScore(
+          topic.title + ' ' + topic.content,
+          searchTerm
+        ),
         highlights: extractHighlights(topic.content, searchTerm),
         createdAt: topic['createdAt'],
       }));
@@ -644,13 +704,11 @@ export const forumSearch = {
       let postsQuery = query(postsRef);
       const postsSnapshot = await getDocs(postsQuery);
       const postResults = postsSnapshot.docs
-        .map(doc => convertDoc<ForumPost>(doc)!)
-        .filter(post => 
-          post.content.toLowerCase().includes(searchTerm)
-        )
+        .map((doc) => convertDoc<ForumPost>(doc)!)
+        .filter((post) => post.content.toLowerCase().includes(searchTerm))
         .slice(0, 50);
 
-      results.posts = postResults.map(post => ({
+      results.posts = postResults.map((post) => ({
         type: 'post' as const,
         id: post['id'],
         title: '',
@@ -679,45 +737,55 @@ export const forumSearch = {
 function calculateRelevanceScore(content: string, searchTerm: string): number {
   const contentLower = content.toLowerCase();
   const termLower = searchTerm.toLowerCase();
-  
+
   let score = 0;
   const words = termLower.split(' ');
-  
-  words.forEach(word => {
+
+  words.forEach((word) => {
     const matches = (contentLower.match(new RegExp(word, 'g')) || []).length;
     score += matches;
   });
-  
+
   return score;
 }
 
 function extractHighlights(content: string, searchTerm: string): string[] {
   const highlights: string[] = [];
   const words = searchTerm.toLowerCase().split(' ');
-  
-  words.forEach(word => {
+
+  words.forEach((word) => {
     const regex = new RegExp(`.{0,50}${word}.{0,50}`, 'gi');
     const matches = content.match(regex);
-    if(matches) {
+    if (matches) {
       highlights.push(...matches.slice(0, 3));
     }
   });
-  
+
   return highlights;
 }
 
 // File upload for attachments
 export const forumFiles = {
   // Upload file
-  async uploadFile(file: File, userId: string, topicId: string): Promise<{ id: string; fileName: string; fileUrl: string; fileType: string; fileSize: number }> {
+  async uploadFile(
+    file: File,
+    userId: string,
+    topicId: string
+  ): Promise<{
+    id: string;
+    fileName: string;
+    fileUrl: string;
+    fileType: string;
+    fileSize: number;
+  }> {
     const fileId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const fileName = `${fileId}_${file['name']}`;
     const filePath = `forum/attachments/${userId}/${topicId}/${fileName}`;
-    
+
     const fileRef = ref(storage, filePath);
     const snapshot = await uploadBytes(fileRef, file);
     const downloadURL = await getDownloadURL(snapshot['ref']);
-    
+
     return {
       id: fileId,
       fileName: file['name'],
@@ -737,7 +805,10 @@ export const forumFiles = {
 // Real-time subscriptions
 export const forumSubscriptions = {
   // Subscribe to category topics
-  subscribeToTopics(categoryId: string, callback: (topics: ForumTopic[]) => void) {
+  subscribeToTopics(
+    categoryId: string,
+    callback: (topics: ForumTopic[]) => void
+  ) {
     const q = query(
       topicsRef,
       where('categoryId', '==', categoryId),
@@ -747,7 +818,9 @@ export const forumSubscriptions = {
     );
 
     return onSnapshot(q, (snapshot) => {
-      const topics = snapshot['docs'].map(doc => convertDoc<ForumTopic>(doc)!);
+      const topics = snapshot['docs'].map(
+        (doc) => convertDoc<ForumTopic>(doc)!
+      );
       callback(topics);
     });
   },
@@ -761,13 +834,16 @@ export const forumSubscriptions = {
     );
 
     return onSnapshot(q, (snapshot) => {
-      const posts = snapshot['docs'].map(doc => convertDoc<ForumPost>(doc)!);
+      const posts = snapshot['docs'].map((doc) => convertDoc<ForumPost>(doc)!);
       callback(posts);
     });
   },
 
   // Subscribe to user notifications
-  subscribeToNotifications(userId: string, callback: (notifications: ForumNotification[]) => void) {
+  subscribeToNotifications(
+    userId: string,
+    callback: (notifications: ForumNotification[]) => void
+  ) {
     const q = query(
       notificationsRef,
       where('userId', '==', userId),
@@ -777,7 +853,9 @@ export const forumSubscriptions = {
     );
 
     return onSnapshot(q, (snapshot) => {
-      const notifications = snapshot['docs'].map(doc => convertDoc<ForumNotification>(doc)!);
+      const notifications = snapshot['docs'].map(
+        (doc) => convertDoc<ForumNotification>(doc)!
+      );
       callback(notifications);
     });
   },

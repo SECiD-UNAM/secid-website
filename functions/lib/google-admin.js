@@ -25,9 +25,9 @@ function getAdminEmail() {
     var _a;
     const config = admin.app().options;
     // Try environment variable first, then fall back
-    return process.env.ADMIN_EMAIL ||
+    return (process.env.ADMIN_EMAIL ||
         ((_a = config === null || config === void 0 ? void 0 : config.admin) === null || _a === void 0 ? void 0 : _a.email) ||
-        "contacto@secid.mx";
+        'contacto@secid.mx');
 }
 /**
  * Get authenticated Google Admin SDK client using domain-wide delegation
@@ -35,20 +35,20 @@ function getAdminEmail() {
 async function getAdminClient() {
     const auth = new googleapis_1.google.auth.GoogleAuth({
         scopes: [
-            "https://www.googleapis.com/auth/admin.directory.group",
-            "https://www.googleapis.com/auth/admin.directory.group.member",
-            "https://www.googleapis.com/auth/spreadsheets",
+            'https://www.googleapis.com/auth/admin.directory.group',
+            'https://www.googleapis.com/auth/admin.directory.group.member',
+            'https://www.googleapis.com/auth/spreadsheets',
         ],
         clientOptions: {
             subject: getAdminEmail(),
         },
     });
-    return googleapis_1.google.admin({ version: "directory_v1", auth });
+    return googleapis_1.google.admin({ version: 'directory_v1', auth });
 }
 /**
  * Add a member to a Google Group
  */
-async function addMemberToGroup(groupEmail, memberEmail, role = "MEMBER") {
+async function addMemberToGroup(groupEmail, memberEmail, role = 'MEMBER') {
     try {
         const client = await getAdminClient();
         await client.members.insert({
@@ -117,10 +117,10 @@ async function listGroupMembers(groupEmail) {
             if (response.data.members) {
                 for (const member of response.data.members) {
                     members.push({
-                        email: member.email || "",
-                        role: member.role || "MEMBER",
-                        status: member.status || "ACTIVE",
-                        type: member.type || "USER",
+                        email: member.email || '',
+                        role: member.role || 'MEMBER',
+                        status: member.status || 'ACTIVE',
+                        type: member.type || 'USER',
                     });
                 }
             }
@@ -140,20 +140,20 @@ async function listAllGroups() {
     try {
         const client = await getAdminClient();
         const response = await client.groups.list({
-            domain: "secid.mx",
+            domain: 'secid.mx',
             maxResults: 100,
         });
         if (!response.data.groups)
             return [];
         return response.data.groups.map((group) => ({
-            email: group.email || "",
-            name: group.name || "",
-            description: group.description || "",
-            directMembersCount: group.directMembersCount || "0",
+            email: group.email || '',
+            name: group.name || '',
+            description: group.description || '',
+            directMembersCount: group.directMembersCount || '0',
         }));
     }
     catch (error) {
-        console.error("Error listing groups:", error === null || error === void 0 ? void 0 : error.message);
+        console.error('Error listing groups:', error === null || error === void 0 ? void 0 : error.message);
         return [];
     }
 }
@@ -182,25 +182,25 @@ async function getMemberGroups(memberEmail, allGroupEmails) {
  */
 async function exportToGoogleSheets(data, headers, title) {
     const auth = new googleapis_1.google.auth.GoogleAuth({
-        scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+        scopes: ['https://www.googleapis.com/auth/spreadsheets'],
         clientOptions: {
             subject: getAdminEmail(),
         },
     });
-    const sheets = googleapis_1.google.sheets({ version: "v4", auth });
+    const sheets = googleapis_1.google.sheets({ version: 'v4', auth });
     // Create new spreadsheet
     const spreadsheet = await sheets.spreadsheets.create({
         requestBody: {
             properties: { title },
-            sheets: [{ properties: { title: "Directorio" } }],
+            sheets: [{ properties: { title: 'Directorio' } }],
         },
     });
     const spreadsheetId = spreadsheet.data.spreadsheetId;
     // Write data
     await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: "Directorio!A1",
-        valueInputOption: "USER_ENTERED",
+        range: 'Directorio!A1',
+        valueInputOption: 'USER_ENTERED',
         requestBody: {
             values: [headers, ...data],
         },

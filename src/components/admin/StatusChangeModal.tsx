@@ -61,18 +61,23 @@ export const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
           <div className="flex items-center space-x-2">
-            {isDestructive && <AlertTriangle className="h-5 w-5 text-red-500" />}
+            {isDestructive && (
+              <AlertTriangle className="h-5 w-5 text-red-500" />
+            )}
             <h3 className="text-lg font-semibold text-gray-900">
               {language === 'es' ? 'Cambiar Estado' : 'Change Status'}
             </h3>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Body */}
-        <div className="px-6 py-4 space-y-4">
+        <div className="space-y-4 px-6 py-4">
           <div>
             <p className="text-sm text-gray-600">
               {language === 'es'
@@ -83,19 +88,28 @@ export const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
 
           {/* Status transition */}
           <div className="flex items-center justify-center space-x-3">
-            <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${STATUS_COLORS[currentStatus]}`}>
-              {STATUS_LABELS[currentStatus]?.[language === 'es' ? 'es' : 'en'] || currentStatus}
+            <span
+              className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${STATUS_COLORS[currentStatus]}`}
+            >
+              {STATUS_LABELS[currentStatus]?.[
+                language === 'es' ? 'es' : 'en'
+              ] || currentStatus}
             </span>
             <span className="text-gray-400">→</span>
-            <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${STATUS_COLORS[targetStatus]}`}>
-              {STATUS_LABELS[targetStatus]?.[language === 'es' ? 'es' : 'en'] || targetStatus}
+            <span
+              className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${STATUS_COLORS[targetStatus]}`}
+            >
+              {STATUS_LABELS[targetStatus]?.[language === 'es' ? 'es' : 'en'] ||
+                targetStatus}
             </span>
           </div>
 
           {/* Google Groups impact */}
           <div className="rounded-md bg-gray-50 p-3">
-            <p className="text-xs font-medium text-gray-500 mb-1">
-              {language === 'es' ? 'Impacto en Google Groups:' : 'Google Groups impact:'}
+            <p className="mb-1 text-xs font-medium text-gray-500">
+              {language === 'es'
+                ? 'Impacto en Google Groups:'
+                : 'Google Groups impact:'}
             </p>
             <p className="text-sm text-gray-700">
               {getGroupImpactMessage(currentStatus, targetStatus, language)}
@@ -104,15 +118,19 @@ export const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
 
           {/* Reason */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700">
               {language === 'es' ? 'Razón (opcional)' : 'Reason (optional)'}
             </label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               rows={3}
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
-              placeholder={language === 'es' ? 'Motivo del cambio...' : 'Reason for the change...'}
+              className="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              placeholder={
+                language === 'es'
+                  ? 'Motivo del cambio...'
+                  : 'Reason for the change...'
+              }
             />
           </div>
         </div>
@@ -141,7 +159,11 @@ export const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
   );
 };
 
-function getGroupImpactMessage(from: MemberStatus, to: MemberStatus, language: string): string {
+function getGroupImpactMessage(
+  from: MemberStatus,
+  to: MemberStatus,
+  language: string
+): string {
   const es = language === 'es';
   switch (to) {
     case 'active':

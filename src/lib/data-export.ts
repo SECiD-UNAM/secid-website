@@ -1,24 +1,20 @@
-import { 
-  collection, 
-  doc, 
-  addDoc, 
-  updateDoc, 
-  getDoc,
-  getDocs, 
-  query, 
-  where, 
-  orderBy,
-  serverTimestamp
-} from 'firebase/firestore';
 import {
-  ref, 
-  uploadBytes, 
-  getDownloadURL 
-} from 'firebase/storage';
-import { db, storage} from './firebase';
-import type { 
-  DataExportRequest, 
-  DataExportSettings, 
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  serverTimestamp,
+} from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from './firebase';
+import type {
+  DataExportRequest,
+  DataExportSettings,
   ExportableData,
   User,
   JobApplicationForm,
@@ -33,7 +29,7 @@ import type {
   QuizAttempt,
   Conversation,
   Message,
-  Notification
+  Notification,
 } from '../types';
 
 // Collection references
@@ -55,7 +51,7 @@ export const createExportRequest = async (
       filters: filters || {},
       status: 'pending' as const,
       progress: 0,
-      requestedAt: serverTimestamp()
+      requestedAt: serverTimestamp(),
     };
 
     const docRef = await addDoc(exportRequestsRef, requestData);
@@ -66,7 +62,7 @@ export const createExportRequest = async (
     return {
       id: docRef['id'],
       ...requestData,
-      requestedAt: new Date()
+      requestedAt: new Date(),
     } as DataExportRequest;
   } catch (error) {
     console.error('Error creating export request:', error);
@@ -74,7 +70,9 @@ export const createExportRequest = async (
   }
 };
 
-export const getExportRequests = async (userId: string): Promise<DataExportRequest[]> => {
+export const getExportRequests = async (
+  userId: string
+): Promise<DataExportRequest[]> => {
   try {
     const requestsQuery = query(
       exportRequestsRef,
@@ -83,12 +81,12 @@ export const getExportRequests = async (userId: string): Promise<DataExportReque
     );
 
     const snapshot = await getDocs(requestsQuery);
-    return snapshot['docs'].map(doc => ({
+    return snapshot['docs'].map((doc) => ({
       id: doc['id'],
       ...doc.data(),
       requestedAt: doc['data']().requestedAt?.toDate() || new Date(),
       completedAt: doc.data().completedAt?.toDate(),
-      expiresAt: doc['data']().expiresAt?.toDate()
+      expiresAt: doc['data']().expiresAt?.toDate(),
     })) as DataExportRequest[];
   } catch (error) {
     console.error('Error getting export requests:', error);
@@ -96,10 +94,12 @@ export const getExportRequests = async (userId: string): Promise<DataExportReque
   }
 };
 
-export const getExportRequest = async (requestId: string): Promise<DataExportRequest | null> => {
+export const getExportRequest = async (
+  requestId: string
+): Promise<DataExportRequest | null> => {
   try {
     const requestDoc = await getDoc(doc(exportRequestsRef, requestId));
-    
+
     if (!requestDoc.exists()) {
       return null;
     }
@@ -109,7 +109,7 @@ export const getExportRequest = async (requestId: string): Promise<DataExportReq
       ...requestDoc.data(),
       requestedAt: requestDoc['data']().requestedAt?.toDate() || new Date(),
       completedAt: requestDoc.data().completedAt?.toDate(),
-      expiresAt: requestDoc['data']().expiresAt?.toDate()
+      expiresAt: requestDoc['data']().expiresAt?.toDate(),
     } as DataExportRequest;
   } catch (error) {
     console.error('Error getting export request:', error);
@@ -118,7 +118,9 @@ export const getExportRequest = async (requestId: string): Promise<DataExportReq
 };
 
 // Export settings functions
-export const getExportSettings = async (userId: string): Promise<DataExportSettings | null> => {
+export const getExportSettings = async (
+  userId: string
+): Promise<DataExportSettings | null> => {
   try {
     const settingsQuery = query(
       exportSettingsRef,
@@ -126,7 +128,7 @@ export const getExportSettings = async (userId: string): Promise<DataExportSetti
     );
 
     const snapshot = await getDocs(settingsQuery);
-    
+
     if (snapshot['empty']) {
       return await createDefaultExportSettings(userId);
     }
@@ -138,9 +140,9 @@ export const getExportSettings = async (userId: string): Promise<DataExportSetti
       autoExport: {
         ...doc['data']().autoExport,
         lastExport: doc.data().autoExport?.lastExport?.toDate(),
-        nextExport: doc['data']().autoExport?.nextExport?.toDate()
+        nextExport: doc['data']().autoExport?.nextExport?.toDate(),
       },
-      updatedAt: doc.data().updatedAt?.toDate() || new Date()
+      updatedAt: doc.data().updatedAt?.toDate() || new Date(),
     } as DataExportSettings;
   } catch (error) {
     console.error('Error getting export settings:', error);
@@ -159,7 +161,7 @@ export const updateExportSettings = async (
     );
 
     const snapshot = await getDocs(settingsQuery);
-    
+
     if (snapshot['empty']) {
       throw new Error('Export settings not found');
     }
@@ -167,7 +169,7 @@ export const updateExportSettings = async (
     const settingsDoc = snapshot['docs'][0];
     const updateData: any = {
       ...updates,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
 
     // Convert dates to Timestamps for Firebase
@@ -175,7 +177,7 @@ export const updateExportSettings = async (
       updateData.autoExport = {
         ...updates.autoExport,
         lastExport: updates.autoExport.lastExport ? serverTimestamp() : null,
-        nextExport: updates.autoExport.nextExport ? serverTimestamp() : null
+        nextExport: updates.autoExport.nextExport ? serverTimestamp() : null,
       };
     }
 
@@ -185,7 +187,7 @@ export const updateExportSettings = async (
       userId,
       ...settingsDoc['data'](),
       ...updates,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     } as DataExportSettings;
   } catch (error) {
     console.error('Error updating export settings:', error);
@@ -194,11 +196,13 @@ export const updateExportSettings = async (
 };
 
 // Data collection functions
-const collectUserData = async (userId: string): Promise<ExportableData['userData']> => {
+const collectUserData = async (
+  userId: string
+): Promise<ExportableData['userData']> => {
   try {
     // Get user profile
     const userDoc = await getDoc(doc(db, 'users', userId));
-    const profile = userDoc.exists() ? userDoc.data() as User : null;
+    const profile = userDoc.exists() ? (userDoc.data() as User) : null;
 
     // Get user preferences
     const preferencesDoc = await getDoc(doc(db, 'userPreferences', userId));
@@ -210,7 +214,7 @@ const collectUserData = async (userId: string): Promise<ExportableData['userData
       where('userId', '==', userId)
     );
     const subscriptionsSnapshot = await getDocs(subscriptionsQuery);
-    const subscriptions = subscriptionsSnapshot.docs.map(doc => doc.data());
+    const subscriptions = subscriptionsSnapshot.docs.map((doc) => doc.data());
 
     // Get payment methods
     const paymentMethodsQuery = query(
@@ -218,13 +222,13 @@ const collectUserData = async (userId: string): Promise<ExportableData['userData
       where('userId', '==', userId)
     );
     const paymentMethodsSnapshot = await getDocs(paymentMethodsQuery);
-    const paymentMethods = paymentMethodsSnapshot.docs.map(doc => doc.data());
+    const paymentMethods = paymentMethodsSnapshot.docs.map((doc) => doc.data());
 
     return {
       profile: profile!,
       preferences,
       subscriptions: subscriptions as any[],
-      paymentMethods: paymentMethods as any[]
+      paymentMethods: paymentMethods as any[],
     };
   } catch (error) {
     console.error('Error collecting user data:', error);
@@ -232,7 +236,9 @@ const collectUserData = async (userId: string): Promise<ExportableData['userData
   }
 };
 
-const collectJobApplications = async (userId: string): Promise<JobApplicationForm[]> => {
+const collectJobApplications = async (
+  userId: string
+): Promise<JobApplicationForm[]> => {
   try {
     const applicationsQuery = query(
       collection(db, 'jobApplications'),
@@ -241,9 +247,9 @@ const collectJobApplications = async (userId: string): Promise<JobApplicationFor
     );
 
     const snapshot = await getDocs(applicationsQuery);
-    return snapshot['docs'].map(doc => ({
+    return snapshot['docs'].map((doc) => ({
       ...doc['data'](),
-      timestamp: doc['data']().timestamp?.toDate() || new Date()
+      timestamp: doc['data']().timestamp?.toDate() || new Date(),
     })) as JobApplicationForm[];
   } catch (error) {
     console.error('Error collecting job applications:', error);
@@ -251,7 +257,9 @@ const collectJobApplications = async (userId: string): Promise<JobApplicationFor
   }
 };
 
-const collectEventRegistrations = async (userId: string): Promise<EventRegistration[]> => {
+const collectEventRegistrations = async (
+  userId: string
+): Promise<EventRegistration[]> => {
   try {
     const registrationsQuery = query(
       collection(db, 'eventRegistrations'),
@@ -260,10 +268,10 @@ const collectEventRegistrations = async (userId: string): Promise<EventRegistrat
     );
 
     const snapshot = await getDocs(registrationsQuery);
-    return snapshot['docs'].map(doc => ({
+    return snapshot['docs'].map((doc) => ({
       ...doc['data'](),
       eventDate: doc['data']().eventDate?.toDate() || new Date(),
-      registeredAt: doc['data']().registeredAt?.toDate() || new Date()
+      registeredAt: doc['data']().registeredAt?.toDate() || new Date(),
     })) as EventRegistration[];
   } catch (error) {
     console.error('Error collecting event registrations:', error);
@@ -271,7 +279,9 @@ const collectEventRegistrations = async (userId: string): Promise<EventRegistrat
   }
 };
 
-const collectForumActivity = async (userId: string): Promise<ExportableData['forumActivity']> => {
+const collectForumActivity = async (
+  userId: string
+): Promise<ExportableData['forumActivity']> => {
   try {
     // Get user's forum topics
     const topicsQuery = query(
@@ -280,10 +290,10 @@ const collectForumActivity = async (userId: string): Promise<ExportableData['for
       orderBy('createdAt', 'desc')
     );
     const topicsSnapshot = await getDocs(topicsQuery);
-    const topics = topicsSnapshot.docs.map(doc => ({
+    const topics = topicsSnapshot.docs.map((doc) => ({
       ...doc.data(),
       createdAt: doc['data']().createdAt?.toDate() || new Date(),
-      updatedAt: doc.data().updatedAt?.toDate() || new Date()
+      updatedAt: doc.data().updatedAt?.toDate() || new Date(),
     })) as ForumTopic[];
 
     // Get user's forum posts
@@ -293,10 +303,10 @@ const collectForumActivity = async (userId: string): Promise<ExportableData['for
       orderBy('createdAt', 'desc')
     );
     const postsSnapshot = await getDocs(postsQuery);
-    const posts = postsSnapshot.docs.map(doc => ({
+    const posts = postsSnapshot.docs.map((doc) => ({
       ...doc.data(),
       createdAt: doc['data']().createdAt?.toDate() || new Date(),
-      updatedAt: doc.data().updatedAt?.toDate() || new Date()
+      updatedAt: doc.data().updatedAt?.toDate() || new Date(),
     })) as ForumPost[];
 
     // Get user's votes
@@ -306,23 +316,25 @@ const collectForumActivity = async (userId: string): Promise<ExportableData['for
       orderBy('createdAt', 'desc')
     );
     const votesSnapshot = await getDocs(votesQuery);
-    const votes = votesSnapshot.docs.map(doc => ({
+    const votes = votesSnapshot.docs.map((doc) => ({
       ...doc.data(),
-      createdAt: doc['data']().createdAt?.toDate() || new Date()
+      createdAt: doc['data']().createdAt?.toDate() || new Date(),
     })) as ForumVote[];
 
     // Get user reputation
     const reputationDoc = await getDoc(doc(db, 'userReputation', userId));
-    const reputation = reputationDoc.exists() ? {
-      ...reputationDoc.data(),
-      updatedAt: reputationDoc['data']().updatedAt?.toDate() || new Date()
-    } as UserReputation : null;
+    const reputation = reputationDoc.exists()
+      ? ({
+          ...reputationDoc.data(),
+          updatedAt: reputationDoc['data']().updatedAt?.toDate() || new Date(),
+        } as UserReputation)
+      : null;
 
     return {
       topics,
       posts,
       votes,
-      reputation: reputation!
+      reputation: reputation!,
     };
   } catch (error) {
     console.error('Error collecting forum activity:', error);
@@ -330,7 +342,9 @@ const collectForumActivity = async (userId: string): Promise<ExportableData['for
   }
 };
 
-const collectLearningActivity = async (userId: string): Promise<ExportableData['learningActivity']> => {
+const collectLearningActivity = async (
+  userId: string
+): Promise<ExportableData['learningActivity']> => {
   try {
     // Get course enrollments
     const enrollmentsQuery = query(
@@ -339,15 +353,15 @@ const collectLearningActivity = async (userId: string): Promise<ExportableData['
       orderBy('enrolledAt', 'desc')
     );
     const enrollmentsSnapshot = await getDocs(enrollmentsQuery);
-    const enrollments = enrollmentsSnapshot.docs.map(doc => ({
+    const enrollments = enrollmentsSnapshot.docs.map((doc) => ({
       ...doc.data(),
       enrolledAt: doc['data']().enrolledAt?.toDate() || new Date(),
       completedAt: doc.data().completedAt?.toDate(),
-      lastAccessedAt: doc['data']().lastAccessedAt?.toDate() || new Date()
+      lastAccessedAt: doc['data']().lastAccessedAt?.toDate() || new Date(),
     })) as CourseEnrollment[];
 
     // Get course progress
-    const progress = enrollments.map(enrollment => enrollment.progress);
+    const progress = enrollments.map((enrollment) => enrollment.progress);
 
     // Get certificates
     const certificatesQuery = query(
@@ -356,10 +370,10 @@ const collectLearningActivity = async (userId: string): Promise<ExportableData['
       orderBy('issuedAt', 'desc')
     );
     const certificatesSnapshot = await getDocs(certificatesQuery);
-    const certificates = certificatesSnapshot.docs.map(doc => ({
+    const certificates = certificatesSnapshot.docs.map((doc) => ({
       ...doc.data(),
       issuedAt: doc['data']().issuedAt?.toDate() || new Date(),
-      expiresAt: doc.data().expiresAt?.toDate()
+      expiresAt: doc.data().expiresAt?.toDate(),
     })) as Certificate[];
 
     // Get quiz attempts
@@ -369,16 +383,16 @@ const collectLearningActivity = async (userId: string): Promise<ExportableData['
       orderBy('completedAt', 'desc')
     );
     const quizAttemptsSnapshot = await getDocs(quizAttemptsQuery);
-    const quizAttempts = quizAttemptsSnapshot.docs.map(doc => ({
+    const quizAttempts = quizAttemptsSnapshot.docs.map((doc) => ({
       ...doc.data(),
-      completedAt: doc['data']().completedAt?.toDate() || new Date()
+      completedAt: doc['data']().completedAt?.toDate() || new Date(),
     })) as QuizAttempt[];
 
     return {
       enrollments,
       progress,
       certificates,
-      quizAttempts
+      quizAttempts,
     };
   } catch (error) {
     console.error('Error collecting learning activity:', error);
@@ -386,7 +400,9 @@ const collectLearningActivity = async (userId: string): Promise<ExportableData['
   }
 };
 
-const collectMessages = async (userId: string): Promise<ExportableData['messages']> => {
+const collectMessages = async (
+  userId: string
+): Promise<ExportableData['messages']> => {
   try {
     // Get user's conversations
     const conversationsQuery = query(
@@ -395,15 +411,15 @@ const collectMessages = async (userId: string): Promise<ExportableData['messages
       orderBy('lastActivity', 'desc')
     );
     const conversationsSnapshot = await getDocs(conversationsQuery);
-    const conversations = conversationsSnapshot.docs.map(doc => ({
+    const conversations = conversationsSnapshot.docs.map((doc) => ({
       ...doc.data(),
       lastActivity: doc['data']().lastActivity?.toDate() || new Date(),
       createdAt: doc.data().createdAt?.toDate() || new Date(),
-      updatedAt: doc['data']().updatedAt?.toDate() || new Date()
+      updatedAt: doc['data']().updatedAt?.toDate() || new Date(),
     })) as Conversation[];
 
     // Get all messages from user's conversations
-    const conversationIds = conversations.map(conv => conv['id']);
+    const conversationIds = conversations.map((conv) => conv['id']);
     const allMessages: Message[] = [];
 
     for (const conversationId of conversationIds) {
@@ -413,18 +429,18 @@ const collectMessages = async (userId: string): Promise<ExportableData['messages
         orderBy('createdAt', 'desc')
       );
       const messagesSnapshot = await getDocs(messagesQuery);
-      const messages = messagesSnapshot.docs.map(doc => ({
+      const messages = messagesSnapshot.docs.map((doc) => ({
         ...doc.data(),
         createdAt: doc['data']().createdAt?.toDate() || new Date(),
-        updatedAt: doc.data().updatedAt?.toDate() || new Date()
+        updatedAt: doc.data().updatedAt?.toDate() || new Date(),
       })) as Message[];
-      
+
       allMessages.push(...messages);
     }
 
     return {
       conversations,
-      messages: allMessages
+      messages: allMessages,
     };
   } catch (error) {
     console.error('Error collecting messages:', error);
@@ -432,7 +448,9 @@ const collectMessages = async (userId: string): Promise<ExportableData['messages
   }
 };
 
-const collectNotifications = async (userId: string): Promise<Notification[]> => {
+const collectNotifications = async (
+  userId: string
+): Promise<Notification[]> => {
   try {
     const notificationsQuery = query(
       collection(db, 'notifications'),
@@ -441,12 +459,12 @@ const collectNotifications = async (userId: string): Promise<Notification[]> => 
     );
 
     const snapshot = await getDocs(notificationsQuery);
-    return snapshot['docs'].map(doc => ({
+    return snapshot['docs'].map((doc) => ({
       ...doc['data'](),
       createdAt: doc['data']().createdAt?.toDate() || new Date(),
       readAt: doc['data']().readAt?.toDate(),
       clickedAt: doc.data().clickedAt?.toDate(),
-      expiresAt: doc['data']().expiresAt?.toDate()
+      expiresAt: doc['data']().expiresAt?.toDate(),
     })) as Notification[];
   } catch (error) {
     console.error('Error collecting notifications:', error);
@@ -455,15 +473,18 @@ const collectNotifications = async (userId: string): Promise<Notification[]> => 
 };
 
 // Export processing function
-const processExportRequest = async (requestId: string, requestData: any): Promise<void> => {
+const processExportRequest = async (
+  requestId: string,
+  requestData: any
+): Promise<void> => {
   try {
     const requestDocRef = doc(exportRequestsRef, requestId);
-    
+
     // Update status to processing
     await updateDoc(requestDocRef, {
       status: 'processing',
       progress: 10,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
 
     let exportData: any;
@@ -483,7 +504,9 @@ const processExportRequest = async (requestId: string, requestData: any): Promis
         exportData = await collectForumActivity(requestData['userId']);
         break;
       case 'certificates':
-        const learningData = await collectLearningActivity(requestData['userId']);
+        const learningData = await collectLearningActivity(
+          requestData['userId']
+        );
         exportData = learningData.certificates;
         break;
       case 'learning_progress':
@@ -497,7 +520,7 @@ const processExportRequest = async (requestId: string, requestData: any): Promis
     // Update progress
     await updateDoc(requestDocRef, {
       progress: 50,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
 
     // Generate file based on format
@@ -528,15 +551,19 @@ const processExportRequest = async (requestId: string, requestData: any): Promis
     // Update progress
     await updateDoc(requestDocRef, {
       progress: 80,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
 
     // Upload file to storage
-    const fileRef = ref(storage, `data-exports/${requestData['userId']}/${fileName}`);
-    const fileBlob = typeof fileContent === 'string' 
-      ? new Blob([fileContent], { type: contentType })
-      : fileContent;
-    
+    const fileRef = ref(
+      storage,
+      `data-exports/${requestData['userId']}/${fileName}`
+    );
+    const fileBlob =
+      typeof fileContent === 'string'
+        ? new Blob([fileContent], { type: contentType })
+        : fileContent;
+
     await uploadBytes(fileRef, fileBlob);
     const downloadUrl = await getDownloadURL(fileRef);
 
@@ -552,17 +579,16 @@ const processExportRequest = async (requestId: string, requestData: any): Promis
       fileSize: fileBlob.size,
       expiresAt: serverTimestamp(),
       completedAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
-
   } catch (error) {
     console.error('Error processing export request:', error);
-    
+
     // Update request as failed
     await updateDoc(doc(exportRequestsRef, requestId), {
       status: 'failed',
       errorMessage: error instanceof Error ? error['message'] : 'Unknown error',
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
   }
 };
@@ -576,7 +602,7 @@ const collectAllUserData = async (userId: string): Promise<ExportableData> => {
       forumActivity,
       learningActivity,
       messages,
-      notifications
+      notifications,
     ] = await Promise.all([
       collectUserData(userId),
       collectJobApplications(userId),
@@ -584,7 +610,7 @@ const collectAllUserData = async (userId: string): Promise<ExportableData> => {
       collectForumActivity(userId),
       collectLearningActivity(userId),
       collectMessages(userId),
-      collectNotifications(userId)
+      collectNotifications(userId),
     ]);
 
     return {
@@ -597,8 +623,8 @@ const collectAllUserData = async (userId: string): Promise<ExportableData> => {
       notifications,
       analyticsData: {
         sessionData: [], // Would be collected from analytics service
-        interactionEvents: []
-      }
+        interactionEvents: [],
+      },
     };
   } catch (error) {
     console.error('Error collecting all user data:', error);
@@ -627,20 +653,21 @@ const convertToCSV = (data: any, type: string): string => {
 
     // Get headers from first object
     const headers = Object.keys(flattenObject(data?.[0]));
-    
+
     // Create CSV content
     const csvContent = [
       headers['join'](','),
-      ...data.map(item => {
+      ...data.map((item) => {
         const flatItem = flattenObject(item);
-        return headers['map'](header => {
+        return headers['map']((header) => {
           const value = flatItem[header];
           // Escape commas and quotes
-          return typeof value === 'string' && (value.includes(',') || value.includes('"'))
+          return typeof value === 'string' &&
+            (value.includes(',') || value.includes('"'))
             ? `"${value.replace(/"/g, '""')}"`
             : value;
         }).join(',');
-      })
+      }),
     ].join('\n');
 
     return csvContent;
@@ -652,11 +679,11 @@ const convertToCSV = (data: any, type: string): string => {
 
 const flattenObject = (obj: any, prefix: string = ''): Record<string, any> => {
   const flattened: Record<string, any> = {};
-  
+
   for (const key in obj) {
     if (obj.hasOwnProperty(key)) {
       const newKey = prefix ? `${prefix}.${key}` : key;
-      
+
       if (obj[key] === null || obj[key] === undefined) {
         flattened[newKey] = '';
       } else if (obj[key] instanceof Date) {
@@ -670,7 +697,7 @@ const flattenObject = (obj: any, prefix: string = ''): Record<string, any> => {
       }
     }
   }
-  
+
   return flattened;
 };
 
@@ -686,7 +713,9 @@ const generatePDF = async (data: any, type: string): Promise<Blob> => {
   }
 };
 
-const createDefaultExportSettings = async (userId: string): Promise<DataExportSettings> => {
+const createDefaultExportSettings = async (
+  userId: string
+): Promise<DataExportSettings> => {
   try {
     const defaultSettings: Omit<DataExportSettings, 'userId'> = {
       autoExport: {
@@ -695,25 +724,25 @@ const createDefaultExportSettings = async (userId: string): Promise<DataExportSe
         types: [],
         format: 'json',
         lastExport: undefined,
-        nextExport: undefined
+        nextExport: undefined,
       },
       retentionDays: 30,
       encryptionEnabled: true,
       notificationEmail: '',
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     const settingsData = {
       userId,
       ...defaultSettings,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
 
     await addDoc(exportSettingsRef, settingsData);
 
     return {
       userId,
-      ...defaultSettings
+      ...defaultSettings,
     };
   } catch (error) {
     console.error('Error creating default export settings:', error);
@@ -729,9 +758,9 @@ export const createBulkExport = async (
 ): Promise<DataExportRequest[]> => {
   try {
     const requests = await Promise.all(
-      types.map(type => createExportRequest(userId, type, format))
+      types.map((type) => createExportRequest(userId, type, format))
     );
-    
+
     return requests;
   } catch (error) {
     console.error('Error creating bulk export:', error);
@@ -743,7 +772,7 @@ export const createBulkExport = async (
 export const processScheduledExports = async (): Promise<void> => {
   try {
     const now = new Date();
-    
+
     // Get all users with auto-export enabled
     const settingsQuery = query(
       exportSettingsRef,
@@ -752,10 +781,10 @@ export const processScheduledExports = async (): Promise<void> => {
     );
 
     const snapshot = await getDocs(settingsQuery);
-    
+
     for (const settingsDoc of snapshot['docs']) {
       const settings = settingsDoc['data']() as DataExportSettings;
-      
+
       try {
         // Create export requests for each enabled type
         for (const type of settings?.autoExport?.types) {
@@ -783,11 +812,13 @@ export const processScheduledExports = async (): Promise<void> => {
         await updateDoc(settingsDoc.ref, {
           'autoExport.lastExport': serverTimestamp(),
           'autoExport.nextExport': nextExport,
-          updatedAt: serverTimestamp()
+          updatedAt: serverTimestamp(),
         });
-
       } catch (error) {
-        console.error(`Error processing scheduled export for user ${settings['userId']}:`, error);
+        console.error(
+          `Error processing scheduled export for user ${settings['userId']}:`,
+          error
+        );
       }
     }
   } catch (error) {
@@ -799,7 +830,7 @@ export const processScheduledExports = async (): Promise<void> => {
 export const cleanupExpiredExports = async (): Promise<void> => {
   try {
     const now = new Date();
-    
+
     const expiredQuery = query(
       exportRequestsRef,
       where('status', '==', 'completed'),
@@ -807,10 +838,10 @@ export const cleanupExpiredExports = async (): Promise<void> => {
     );
 
     const snapshot = await getDocs(expiredQuery);
-    
+
     for (const requestDoc of snapshot['docs']) {
       const requestData = requestDoc['data']();
-      
+
       try {
         // Delete file from storage
         if (requestData.downloadUrl) {
@@ -822,11 +853,13 @@ export const cleanupExpiredExports = async (): Promise<void> => {
         await updateDoc(requestDoc.ref, {
           status: 'expired',
           downloadUrl: null,
-          updatedAt: serverTimestamp()
+          updatedAt: serverTimestamp(),
         });
-
       } catch (error) {
-        console.error(`Error cleaning up expired export ${requestDoc['id']}:`, error);
+        console.error(
+          `Error cleaning up expired export ${requestDoc['id']}:`,
+          error
+        );
       }
     }
   } catch (error) {

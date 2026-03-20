@@ -18,7 +18,9 @@ test.describe('Homepage User Journey', () => {
     // Check hero subtitle
     const heroSubtitle = page.locator('.secid-hero__subtitle');
     await expect(heroSubtitle).toBeVisible();
-    await expect(heroSubtitle).toContainText('Sociedad de Egresados en Ciencia de Datos UNAM');
+    await expect(heroSubtitle).toContainText(
+      'Sociedad de Egresados en Ciencia de Datos UNAM'
+    );
 
     // Verify logo is visible
     const logo = page.locator('.secid-hero__image img');
@@ -31,19 +33,19 @@ test.describe('Homepage User Journey', () => {
     const joinButton = page.locator('text=Únete a SECiD').first();
     await expect(joinButton).toBeVisible();
     await expect(joinButton).toHaveClass(/secid-button--primary/);
-    
+
     // Click and verify navigation
     await joinButton.click();
     await expect(page).toHaveURL(/.*signup/);
-    
+
     // Go back to test second button
     await page.goBack();
-    
+
     // Test "Ver Empleos" button
     const jobsButton = page.locator('text=Ver Empleos').first();
     await expect(jobsButton).toBeVisible();
     await expect(jobsButton).toHaveClass(/secid-button--secondary/);
-    
+
     await jobsButton.click();
     await expect(page).toHaveURL(/.*empleos/);
   });
@@ -65,13 +67,15 @@ test.describe('Homepage User Journey', () => {
       { icon: 'fa-gem', title: 'Networking Profesional' },
       { icon: 'fa-paper-plane', title: 'Oportunidades Laborales' },
       { icon: 'fa-rocket', title: 'Crecimiento Profesional' },
-      { icon: 'fa-signal', title: 'Comunidad Sólida' }
+      { icon: 'fa-signal', title: 'Comunidad Sólida' },
     ];
 
     for (const feature of features) {
       const card = page.locator(`.secid-feature-card:has(.${feature.icon})`);
       await expect(card).toBeVisible();
-      await expect(card.locator('.secid-feature-card__title')).toContainText(feature.title);
+      await expect(card.locator('.secid-feature-card__title')).toContainText(
+        feature.title
+      );
     }
   });
 
@@ -88,7 +92,7 @@ test.describe('Homepage User Journey', () => {
       { text: 'Inicio', href: '/es/' },
       { text: 'Empleos', href: '/es/empleos' },
       { text: 'Miembros', href: '/es/miembros' },
-      { text: 'Nosotros', href: '/es/sobre-nosotros' }
+      { text: 'Nosotros', href: '/es/sobre-nosotros' },
     ];
 
     for (const link of navLinks) {
@@ -105,7 +109,7 @@ test.describe('Homepage User Journey', () => {
 
     // Click to open dropdown
     await langButton.click();
-    
+
     const langDropdown = page.locator('.secid-navbar__lang-dropdown');
     await expect(langDropdown).toBeVisible();
 
@@ -115,9 +119,11 @@ test.describe('Homepage User Journey', () => {
 
     // Verify URL changed to English
     await expect(page).toHaveURL(/.*\/en\//);
-    
+
     // Verify content is in English
-    await expect(page.locator('.secid-hero__title')).toContainText('Connecting the future of data');
+    await expect(page.locator('.secid-hero__title')).toContainText(
+      'Connecting the future of data'
+    );
   });
 
   test('should display CTA section', async ({ page }) => {
@@ -135,7 +141,7 @@ test.describe('Homepage User Journey', () => {
     // Check job CTA
     const jobCta = ctaCards.nth(0);
     await expect(jobCta).toContainText('Encuentra tu próximo empleo');
-    
+
     // Check register CTA
     const registerCta = ctaCards.nth(1);
     await expect(registerCta).toContainText('Únete a nuestra comunidad');
@@ -150,15 +156,15 @@ test.describe('Homepage User Journey', () => {
     const footerBrand = footer.locator('.secid-footer__brand');
     await expect(footerBrand).toBeVisible();
     await expect(footerBrand).toContainText('SECiD');
-    
+
     // Check social links
     const linkedinLink = footer.locator('a[href*="linkedin.com"]');
     await expect(linkedinLink).toBeVisible();
-    
+
     // Check footer navigation
     const footerNav = footer.locator('.secid-footer__nav');
     await expect(footerNav).toBeVisible();
-    
+
     // Verify copyright - check entire footer for copyright text
     await expect(footer).toContainText('© 2024 SECiD');
   });

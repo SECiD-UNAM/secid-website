@@ -66,39 +66,55 @@ const navLinks = [
 const communityLinks = [
   { href: `/${lang}/members`, label: t.nav.members, icon: 'fas fa-users' },
   { href: `/${lang}/events`, label: t.nav.events, icon: 'fas fa-calendar-alt' },
-  { href: `/${lang}/mentorship`, label: t.nav.mentorship, icon: 'fas fa-chalkboard-teacher' },
-  { href: `/${lang}/resources`, label: t.nav.resources, icon: 'fas fa-book-open' },
+  {
+    href: `/${lang}/mentorship`,
+    label: t.nav.mentorship,
+    icon: 'fas fa-chalkboard-teacher',
+  },
+  {
+    href: `/${lang}/resources`,
+    label: t.nav.resources,
+    icon: 'fas fa-book-open',
+  },
   { href: `/${lang}/blog`, label: t.nav.blog, icon: 'fas fa-newspaper' },
-  { href: `/${lang}/commissions`, label: t.nav.commissions, icon: 'fas fa-project-diagram' },
+  {
+    href: `/${lang}/commissions`,
+    label: t.nav.commissions,
+    icon: 'fas fa-project-diagram',
+  },
   { href: `/${lang}/spotlights`, label: t.nav.spotlights, icon: 'fas fa-star' },
-  { href: `/${lang}/journal-club`, label: t.nav.journalClub, icon: 'fas fa-flask' },
+  {
+    href: `/${lang}/journal-club`,
+    label: t.nav.journalClub,
+    icon: 'fas fa-flask',
+  },
 ];
 
 // All links for mobile menu
-const allMobileLinks = [
-  ...navLinks,
-  ...communityLinks,
-];
+const allMobileLinks = [...navLinks, ...communityLinks];
 
 // Get current path to highlight active link
 const currentPath = Astro.url.pathname;
 
 // Check if current path is within community section
-const isCommunityActive = communityLinks.some((link) => currentPath.startsWith(link.href));
+const isCommunityActive = communityLinks.some((link) =>
+  currentPath.startsWith(link.href)
+);
 
 // Regex pattern for language paths
 const langPathRegex = /^\/(es|en)/;
 ---
 
 <!-- Skip to main content link for accessibility -->
-<a
-  href="#main"
-  class="secid-skip-link"
->
+<a href="#main" class="secid-skip-link">
   {lang === 'es' ? 'Saltar al contenido principal' : 'Skip to main content'}
 </a>
 
-<nav class="secid-navbar" role="navigation" aria-label={lang === 'es' ? 'Navegación principal' : 'Main navigation'}>
+<nav
+  class="secid-navbar"
+  role="navigation"
+  aria-label={lang === 'es' ? 'Navegación principal' : 'Main navigation'}
+>
   <div class="secid-navbar__container">
     <a href={`/${lang}/`} class="secid-navbar__logo">
       <img
@@ -131,7 +147,9 @@ const langPathRegex = /^\/(es|en)/;
           aria-haspopup="true"
         >
           {t.nav.community}
-          <i class="fas fa-chevron-down secid-navbar__dropdown-icon" aria-hidden="true"></i>
+          <i
+            class="fas fa-chevron-down secid-navbar__dropdown-icon"
+            aria-hidden="true"></i>
         </button>
         <div class="secid-navbar__dropdown-menu" role="menu">
           {
@@ -141,7 +159,10 @@ const langPathRegex = /^\/(es|en)/;
                 class={`secid-navbar__dropdown-item ${currentPath.startsWith(link.href) ? 'secid-navbar__dropdown-item--active' : ''}`}
                 role="menuitem"
               >
-                <i class={`${link.icon} secid-navbar__dropdown-item-icon`} aria-hidden="true"></i>
+                <i
+                  class={`${link.icon} secid-navbar__dropdown-item-icon`}
+                  aria-hidden="true"
+                />
                 {link.label}
               </a>
             ))
@@ -186,7 +207,13 @@ const langPathRegex = /^\/(es|en)/;
             aria-selected={lang === 'es' ? 'true' : 'false'}
             hreflang="es"
           >
-            <span class="sr-only">{lang === 'es' ? 'Cambiar a español (actual)' : 'Switch to Spanish'}</span>
+            <span class="sr-only"
+              >{
+                lang === 'es'
+                  ? 'Cambiar a español (actual)'
+                  : 'Switch to Spanish'
+              }</span
+            >
             ES - Español
           </a>
           <a
@@ -196,7 +223,13 @@ const langPathRegex = /^\/(es|en)/;
             aria-selected={lang === 'en' ? 'true' : 'false'}
             hreflang="en"
           >
-            <span class="sr-only">{lang === 'en' ? 'Cambiar a inglés' : 'Switch to English (current)'}</span>
+            <span class="sr-only"
+              >{
+                lang === 'en'
+                  ? 'Cambiar a inglés'
+                  : 'Switch to English (current)'
+              }</span
+            >
             EN - English
           </a>
         </div>
@@ -212,7 +245,12 @@ const langPathRegex = /^\/(es|en)/;
         <i class="fas fa-moon" data-theme-icon="dark" aria-hidden="true"></i>
       </button>
 
-      <AuthNavButtons client:only="react" lang={lang} loginLabel={t.nav.login} registerLabel={t.nav.register} />
+      <AuthNavButtons
+        client:only="react"
+        lang={lang}
+        loginLabel={t.nav.login}
+        registerLabel={t.nav.register}
+      />
     </div>
 
     <!-- Mobile Menu Toggle -->
@@ -261,7 +299,11 @@ const langPathRegex = /^\/(es|en)/;
             href={link.href}
             class={`secid-navbar__link secid-navbar__link--sub ${currentPath.startsWith(link.href) ? 'secid-navbar__link--active' : ''}`}
           >
-            <i class={link.icon} aria-hidden="true" style="width: 1.25rem; text-align: center;"></i>
+            <i
+              class={link.icon}
+              aria-hidden="true"
+              style="width: 1.25rem; text-align: center;"
+            />
             {link.label}
           </a>
         ))
@@ -285,17 +327,19 @@ const langPathRegex = /^\/(es|en)/;
         <a
           href={`/es${Astro.url.pathname.replace(langPathRegex, '')}`}
           class={`secid-navbar__mobile-lang ${lang === 'es' ? 'active' : ''}`}
-          aria-label={lang === 'es' ? 'Español (idioma actual)' : 'Cambiar a español'}
-          hreflang="es"
-          >ES</a
+          aria-label={lang === 'es'
+            ? 'Español (idioma actual)'
+            : 'Cambiar a español'}
+          hreflang="es">ES</a
         >
         <span class="secid-navbar__mobile-divider" aria-hidden="true">|</span>
         <a
           href={`/en${Astro.url.pathname.replace(langPathRegex, '')}`}
           class={`secid-navbar__mobile-lang ${lang === 'en' ? 'active' : ''}`}
-          aria-label={lang === 'en' ? 'English (current language)' : 'Switch to English'}
-          hreflang="en"
-          >EN</a
+          aria-label={lang === 'en'
+            ? 'English (current language)'
+            : 'Switch to English'}
+          hreflang="en">EN</a
         >
         <button
           class="secid-navbar__theme-toggle secid-navbar__theme-toggle--mobile"
@@ -305,7 +349,12 @@ const langPathRegex = /^\/(es|en)/;
           <i class="fas fa-moon" data-theme-icon="dark"></i>
         </button>
       </div>
-      <AuthNavButtons client:only="react" lang={lang} loginLabel={t.nav.login} registerLabel={t.nav.register} />
+      <AuthNavButtons
+        client:only="react"
+        lang={lang}
+        loginLabel={t.nav.login}
+        registerLabel={t.nav.register}
+      />
     </div>
   </div>
 </nav>
@@ -351,12 +400,19 @@ const langPathRegex = /^\/(es|en)/;
       data-bottom-nav-more
     >
       <i class="secid-bottom-nav__icon fas fa-ellipsis-h"></i>
-      <span class="secid-bottom-nav__label">{lang === 'es' ? 'Más' : 'More'}</span>
+      <span class="secid-bottom-nav__label"
+        >{lang === 'es' ? 'Más' : 'More'}</span
+      >
     </button>
   </div>
 
   <!-- Community drawer for mobile -->
-  <div class="secid-bottom-nav__drawer" data-community-drawer aria-hidden="true" inert>
+  <div
+    class="secid-bottom-nav__drawer"
+    data-community-drawer
+    aria-hidden="true"
+    inert
+  >
     <div class="secid-bottom-nav__drawer-header">
       <span>{t.nav.community}</span>
       <button data-close-drawer aria-label={lang === 'es' ? 'Cerrar' : 'Close'}>
@@ -367,7 +423,7 @@ const langPathRegex = /^\/(es|en)/;
       {
         communityLinks.map((link) => (
           <a href={link.href} class="secid-bottom-nav__drawer-link">
-            <i class={link.icon} aria-hidden="true"></i>
+            <i class={link.icon} aria-hidden="true" />
             <span>{link.label}</span>
           </a>
         ))
@@ -413,7 +469,7 @@ const langPathRegex = /^\/(es|en)/;
     background: var(--card-bg, white);
     border: 1px solid var(--color-border, #e5e7eb);
     border-radius: var(--radius-xl, 12px);
-    box-shadow: var(--shadow-lg, 0 10px 25px rgba(0,0,0,0.1));
+    box-shadow: var(--shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.1));
     padding: 0.5rem;
     opacity: 0;
     visibility: hidden;
@@ -444,7 +500,7 @@ const langPathRegex = /^\/(es|en)/;
   }
 
   .secid-navbar__dropdown-item--active {
-    color: var(--secid-primary, #003B5C);
+    color: var(--secid-primary, #003b5c);
     font-weight: 600;
     background: rgba(0, 59, 92, 0.05);
   }
@@ -458,7 +514,7 @@ const langPathRegex = /^\/(es|en)/;
 
   .secid-navbar__dropdown-item:hover .secid-navbar__dropdown-item-icon,
   .secid-navbar__dropdown-item--active .secid-navbar__dropdown-item-icon {
-    color: var(--secid-primary, #003B5C);
+    color: var(--secid-primary, #003b5c);
   }
 
   /* Mobile section header */
@@ -493,7 +549,7 @@ const langPathRegex = /^\/(es|en)/;
     background: var(--card-bg, white);
     border-top: 1px solid var(--color-border, #e5e7eb);
     border-radius: var(--radius-xl, 12px) var(--radius-xl, 12px) 0 0;
-    box-shadow: 0 -10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.1);
     transform: translateY(100%);
     transition: transform 0.3s ease;
     z-index: 999;
@@ -547,7 +603,7 @@ const langPathRegex = /^\/(es|en)/;
   .secid-bottom-nav__drawer-link i {
     width: 1.5rem;
     text-align: center;
-    color: var(--secid-primary, #003B5C);
+    color: var(--secid-primary, #003b5c);
   }
 </style>
 
@@ -561,7 +617,9 @@ const langPathRegex = /^\/(es|en)/;
       e.stopPropagation();
       const isOpen = dropdown.hasAttribute('data-open');
       // Close all dropdowns
-      document.querySelectorAll('[data-dropdown]').forEach(d => d.removeAttribute('data-open'));
+      document
+        .querySelectorAll('[data-dropdown]')
+        .forEach((d) => d.removeAttribute('data-open'));
       if (!isOpen) {
         dropdown.setAttribute('data-open', '');
         toggle.setAttribute('aria-expanded', 'true');
@@ -573,7 +631,7 @@ const langPathRegex = /^\/(es|en)/;
 
   // Close dropdown on outside click
   document.addEventListener('click', () => {
-    document.querySelectorAll('[data-dropdown]').forEach(d => {
+    document.querySelectorAll('[data-dropdown]').forEach((d) => {
       d.removeAttribute('data-open');
       const toggle = d.querySelector('.secid-navbar__dropdown-toggle');
       if (toggle) toggle.setAttribute('aria-expanded', 'false');

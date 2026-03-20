@@ -7,7 +7,10 @@ interface Props {
   lang?: 'es' | 'en';
 }
 
-export default function CommissionDetailPage({ commissionId, lang = 'es' }: Props) {
+export default function CommissionDetailPage({
+  commissionId,
+  lang = 'es',
+}: Props) {
   return (
     <AuthProvider>
       <CommissionPublicPage commissionId={commissionId || ''} lang={lang} />

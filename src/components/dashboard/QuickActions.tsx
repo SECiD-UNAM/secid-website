@@ -108,8 +108,8 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ lang = 'es' }) => {
             key={action.title}
             href={isDisabled ? '#' : action.href}
             className={`
-              group relative block overflow-hidden rounded-xl bg-white p-6 shadow transition-all hover:shadow-lg dark:bg-gray-800 dark:border dark:border-gray-700/30
-              ${isDisabled ? 'cursor-not-allowed opacity-50' : 'hover:scale-105 hover:-translate-y-1'}
+              group relative block overflow-hidden rounded-xl bg-white p-6 shadow transition-all hover:shadow-lg dark:border dark:border-gray-700/30 dark:bg-gray-800
+              ${isDisabled ? 'cursor-not-allowed opacity-50' : 'hover:-translate-y-1 hover:scale-105'}
             `}
             onClick={isDisabled ? (e) => e.preventDefault() : undefined}
           >

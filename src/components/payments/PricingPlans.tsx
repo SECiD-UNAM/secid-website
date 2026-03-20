@@ -480,25 +480,33 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
             <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
               {t('pricing.faq1Question')}
             </h3>
-            <p className="text-gray-600 dark:text-gray-300">{t('pricing.faq1Answer')}</p>
+            <p className="text-gray-600 dark:text-gray-300">
+              {t('pricing.faq1Answer')}
+            </p>
           </div>
           <div>
             <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
               {t('pricing.faq2Question')}
             </h3>
-            <p className="text-gray-600 dark:text-gray-300">{t('pricing.faq2Answer')}</p>
+            <p className="text-gray-600 dark:text-gray-300">
+              {t('pricing.faq2Answer')}
+            </p>
           </div>
           <div>
             <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
               {t('pricing.faq3Question')}
             </h3>
-            <p className="text-gray-600 dark:text-gray-300">{t('pricing.faq3Answer')}</p>
+            <p className="text-gray-600 dark:text-gray-300">
+              {t('pricing.faq3Answer')}
+            </p>
           </div>
           <div>
             <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
               {t('pricing.faq4Question')}
             </h3>
-            <p className="text-gray-600 dark:text-gray-300">{t('pricing.faq4Answer')}</p>
+            <p className="text-gray-600 dark:text-gray-300">
+              {t('pricing.faq4Answer')}
+            </p>
           </div>
         </div>
       </div>

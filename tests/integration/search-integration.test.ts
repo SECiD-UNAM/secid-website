@@ -17,14 +17,14 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { searchEngine } from '@/lib/search/search-engine';
-import type { 
-  SearchQuery, 
-  SearchResponse, 
-  SearchResultItem, 
+import type {
+  SearchQuery,
+  SearchResponse,
+  SearchResultItem,
   SearchFilters,
   IndexedContent,
   SearchAnalyticsEvent,
-  SearchFacets
+  SearchFacets,
 } from '@/types/search';
 
 // Mock Firebase
@@ -72,7 +72,8 @@ const mockJobContent: IndexedContent = {
   type: 'jobs',
   title: 'Senior Data Scientist',
   content: 'Join our data science team to build ML models and analyze big data',
-  description: 'We are looking for a senior data scientist with Python and ML experience',
+  description:
+    'We are looking for a senior data scientist with Python and ML experience',
   url: '/jobs/job-1',
   tags: ['python', 'machine-learning', 'data-science', 'tensorflow'],
   metadata: {
@@ -83,7 +84,8 @@ const mockJobContent: IndexedContent = {
     level: 'senior',
     type: 'full-time',
   },
-  searchableText: 'Senior Data Scientist TechCorp Mexico City Python Machine Learning',
+  searchableText:
+    'Senior Data Scientist TechCorp Mexico City Python Machine Learning',
   keywords: ['data scientist', 'python', 'ml', 'tensorflow', 'remote'],
   language: 'es',
   boost: 1.0,
@@ -96,7 +98,8 @@ const mockEventContent: IndexedContent = {
   id: 'event-1',
   type: 'events',
   title: 'Machine Learning Workshop',
-  content: 'Learn the fundamentals of machine learning in this hands-on workshop',
+  content:
+    'Learn the fundamentals of machine learning in this hands-on workshop',
   description: 'A beginner-friendly workshop covering ML basics with Python',
   url: '/events/event-1',
   tags: ['machine-learning', 'workshop', 'python', 'beginner'],
@@ -120,7 +123,8 @@ const mockForumContent: IndexedContent = {
   id: 'forum-1',
   type: 'forums',
   title: 'Career transition from academia to industry',
-  content: 'I am looking for advice on transitioning from a PhD in statistics to a data science role in industry',
+  content:
+    'I am looking for advice on transitioning from a PhD in statistics to a data science role in industry',
   description: 'Discussion about career transitions in data science',
   url: '/forums/forum-1',
   tags: ['career', 'transition', 'advice', 'data-science'],
@@ -130,7 +134,8 @@ const mockForumContent: IndexedContent = {
     replies: 15,
     upvotes: 23,
   },
-  searchableText: 'Career transition academia industry PhD statistics data science',
+  searchableText:
+    'Career transition academia industry PhD statistics data science',
   keywords: ['career transition', 'academia', 'industry', 'phd', 'statistics'],
   language: 'es',
   boost: 0.6,
@@ -144,8 +149,10 @@ const mockSearchResults: SearchResultItem[] = [
     id: 'job-1',
     type: 'jobs',
     title: 'Senior Data Scientist',
-    description: 'We are looking for a senior data scientist with Python and ML experience',
-    content: 'Join our data science team to build ML models and analyze big data',
+    description:
+      'We are looking for a senior data scientist with Python and ML experience',
+    content:
+      'Join our data science team to build ML models and analyze big data',
     url: '/jobs/job-1',
     tags: ['python', 'machine-learning', 'data-science'],
     score: 0.95,
@@ -167,7 +174,8 @@ const mockSearchResults: SearchResultItem[] = [
     type: 'events',
     title: 'Machine Learning Workshop',
     description: 'A beginner-friendly workshop covering ML basics with Python',
-    content: 'Learn the fundamentals of machine learning in this hands-on workshop',
+    content:
+      'Learn the fundamentals of machine learning in this hands-on workshop',
     url: '/events/event-1',
     tags: ['machine-learning', 'workshop', 'python'],
     score: 0.87,
@@ -399,9 +407,24 @@ describe('Search Integration', () => {
   describe('Search Suggestions', () => {
     it('provides real-time search suggestions', async () => {
       const mockSuggestions = [
-        { text: 'data scientist', type: 'query' as const, score: 0.95, count: 15 },
-        { text: 'data analysis', type: 'query' as const, score: 0.87, count: 12 },
-        { text: 'data engineer', type: 'query' as const, score: 0.78, count: 8 },
+        {
+          text: 'data scientist',
+          type: 'query' as const,
+          score: 0.95,
+          count: 15,
+        },
+        {
+          text: 'data analysis',
+          type: 'query' as const,
+          score: 0.87,
+          count: 12,
+        },
+        {
+          text: 'data engineer',
+          type: 'query' as const,
+          score: 0.78,
+          count: 8,
+        },
       ];
 
       mockSearchEngine.getSuggestions.mockResolvedValue(mockSuggestions);
@@ -416,32 +439,58 @@ describe('Search Integration', () => {
 
     it('returns category-specific suggestions', async () => {
       const mockCategorySuggestions = [
-        { text: 'python developer', type: 'query' as const, score: 0.9, category: 'jobs' },
-        { text: 'python workshop', type: 'query' as const, score: 0.8, category: 'events' },
+        {
+          text: 'python developer',
+          type: 'query' as const,
+          score: 0.9,
+          category: 'jobs',
+        },
+        {
+          text: 'python workshop',
+          type: 'query' as const,
+          score: 0.8,
+          category: 'events',
+        },
       ];
 
-      mockSearchEngine.getSuggestions.mockResolvedValue(mockCategorySuggestions);
+      mockSearchEngine.getSuggestions.mockResolvedValue(
+        mockCategorySuggestions
+      );
 
       const suggestions = await searchEngine.getSuggestions('python');
 
       expect(suggestions).toEqual(
-        expect.arrayContaining([expect.objectContaining({
-          text: 'python developer',
-          category: 'jobs',
-        })])
+        expect.arrayContaining([
+          expect.objectContaining({
+            text: 'python developer',
+            category: 'jobs',
+          }),
+        ])
       );
       expect(suggestions).toEqual(
-        expect.arrayContaining([expect.objectContaining({
-          text: 'python workshop',
-          category: 'events',
-        })])
+        expect.arrayContaining([
+          expect.objectContaining({
+            text: 'python workshop',
+            category: 'events',
+          }),
+        ])
       );
     });
 
     it('includes popular searches in suggestions', async () => {
       const mockPopularSuggestions = [
-        { text: 'remote data science jobs', type: 'popular' as const, score: 0.95, count: 145 },
-        { text: 'machine learning course', type: 'popular' as const, score: 0.85, count: 89 },
+        {
+          text: 'remote data science jobs',
+          type: 'popular' as const,
+          score: 0.95,
+          count: 145,
+        },
+        {
+          text: 'machine learning course',
+          type: 'popular' as const,
+          score: 0.85,
+          count: 89,
+        },
       ];
 
       mockSearchEngine.getSuggestions.mockResolvedValue(mockPopularSuggestions);
@@ -449,10 +498,12 @@ describe('Search Integration', () => {
       const suggestions = await searchEngine.getSuggestions('');
 
       expect(suggestions).toEqual(
-        expect.arrayContaining([expect.objectContaining({
-          type: 'popular',
-          text: 'remote data science jobs',
-        })])
+        expect.arrayContaining([
+          expect.objectContaining({
+            type: 'popular',
+            text: 'remote data science jobs',
+          }),
+        ])
       );
     });
   });
@@ -477,7 +528,9 @@ describe('Search Integration', () => {
 
       await searchEngine.trackAnalytics(analyticsEvent);
 
-      expect(mockSearchEngine.trackAnalytics).toHaveBeenCalledWith(analyticsEvent);
+      expect(mockSearchEngine.trackAnalytics).toHaveBeenCalledWith(
+        analyticsEvent
+      );
     });
 
     it('tracks result clicks', async () => {
@@ -510,9 +563,7 @@ describe('Search Integration', () => {
           { query: 'python developer', count: 98 },
         ],
         clickThroughRate: 0.68,
-        zeroResultQueries: [
-          { query: 'quantum computing', count: 12 },
-        ],
+        zeroResultQueries: [{ query: 'quantum computing', count: 12 }],
       };
 
       mockSearchEngine.getSearchAnalytics.mockResolvedValue(mockAnalytics);
@@ -534,7 +585,9 @@ describe('Search Integration', () => {
 
       await searchEngine.indexContent(mockJobContent);
 
-      expect(mockSearchEngine.indexContent).toHaveBeenCalledWith(mockJobContent);
+      expect(mockSearchEngine.indexContent).toHaveBeenCalledWith(
+        mockJobContent
+      );
     });
 
     it('updates existing content in index', async () => {
@@ -581,12 +634,14 @@ describe('Search Integration', () => {
 
       // Should validate content structure
       const isValidContent = (content: IndexedContent): boolean => {
-        return !!(content.title &&
-               content.title.length > 0 &&
-               content.searchableText &&
-               content.searchableText.length > 0 &&
-               content.type &&
-               content.language);
+        return !!(
+          content.title &&
+          content.title.length > 0 &&
+          content.searchableText &&
+          content.searchableText.length > 0 &&
+          content.type &&
+          content.language
+        );
       };
 
       expect(isValidContent(invalidContent)).toBe(false);
@@ -769,8 +824,12 @@ describe('Search Integration', () => {
       const result = await searchEngine.search(query);
 
       // Verify that results are sorted by date (newer first)
-      expect(result.results[0].metadata.createdAt).toEqual(new Date('2023-02-10'));
-      expect(result.results[1].metadata.createdAt).toEqual(new Date('2023-02-01'));
+      expect(result.results[0].metadata.createdAt).toEqual(
+        new Date('2023-02-10')
+      );
+      expect(result.results[1].metadata.createdAt).toEqual(
+        new Date('2023-02-01')
+      );
     });
   });
 
@@ -816,10 +875,12 @@ describe('Search Integration', () => {
 
     it('handles large result sets efficiently', async () => {
       const largeResponse: SearchResponse = {
-        results: Array(10).fill(null).map((_, i) => ({
-          ...mockSearchResults[0],
-          id: `job-${i + 1}`,
-        })),
+        results: Array(10)
+          .fill(null)
+          .map((_, i) => ({
+            ...mockSearchResults[0],
+            id: `job-${i + 1}`,
+          })),
         total: 1000,
         page: 0,
         totalPages: 100,
@@ -875,13 +936,19 @@ describe('Search Integration', () => {
         },
       };
 
-      await expect(searchEngine.search(query)).rejects.toThrow('Search service unavailable');
+      await expect(searchEngine.search(query)).rejects.toThrow(
+        'Search service unavailable'
+      );
     });
 
     it('provides fallback for failed suggestions', async () => {
-      mockSearchEngine.getSuggestions.mockRejectedValue(new Error('Suggestions service down'));
+      mockSearchEngine.getSuggestions.mockRejectedValue(
+        new Error('Suggestions service down')
+      );
 
-      await expect(searchEngine.getSuggestions('test')).rejects.toThrow('Suggestions service down');
+      await expect(searchEngine.getSuggestions('test')).rejects.toThrow(
+        'Suggestions service down'
+      );
     });
 
     it('handles index corruption gracefully', async () => {
@@ -905,7 +972,9 @@ describe('Search Integration', () => {
       };
 
       // Search fails with index corruption
-      await expect(searchEngine.search(query)).rejects.toThrow('Index corrupted');
+      await expect(searchEngine.search(query)).rejects.toThrow(
+        'Index corrupted'
+      );
 
       // Application should trigger index rebuild on corruption error
       await searchEngine.buildIndex([]);
@@ -959,8 +1028,8 @@ describe('Search Integration', () => {
       const result = await searchEngine.search(query);
 
       expect(result.results).toHaveLength(2);
-      expect(result.results.some(r => r.language === 'es')).toBe(true);
-      expect(result.results.some(r => r.language === 'en')).toBe(true);
+      expect(result.results.some((r) => r.language === 'es')).toBe(true);
+      expect(result.results.some((r) => r.language === 'en')).toBe(true);
     });
 
     it('filters results by language', async () => {
@@ -1008,7 +1077,7 @@ describe('Search Integration', () => {
   describe('Real-time Search', () => {
     it('provides instant search results as user types', async () => {
       const queries = ['d', 'da', 'dat', 'data'];
-      
+
       for (const searchQuery of queries) {
         const instantResponse: SearchResponse = {
           results: mockSearchResults.slice(0, Math.min(searchQuery.length, 2)),

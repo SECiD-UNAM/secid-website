@@ -21,7 +21,7 @@ export const mockUsers = {
       premiumMember: true,
     },
   },
-  
+
   regularUser: {
     uid: 'user-test-uid',
     email: 'user@example.com',
@@ -44,7 +44,7 @@ export const mockUsers = {
       premiumMember: false,
     },
   },
-  
+
   unverifiedUser: {
     uid: 'unverified-test-uid',
     email: 'unverified@example.com',
@@ -67,7 +67,7 @@ export const mockUsers = {
       premiumMember: false,
     },
   },
-  
+
   companyUser: {
     uid: 'company-test-uid',
     email: 'company@example.com',

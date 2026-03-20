@@ -1,6 +1,6 @@
 /**
  * Firebase Authentication Integration Tests
- * 
+ *
  * Tests for Firebase authentication flows including:
  * - User registration and login
  * - Email verification
@@ -29,7 +29,13 @@ import {
   User,
   Auth,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import {
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
 // Mock Firebase Auth
@@ -110,13 +116,17 @@ vi.mock('@/lib/firebase', () => ({
 
 // Type the mocked functions
 const mockSignInWithEmailAndPassword = vi.mocked(signInWithEmailAndPassword);
-const mockCreateUserWithEmailAndPassword = vi.mocked(createUserWithEmailAndPassword);
+const mockCreateUserWithEmailAndPassword = vi.mocked(
+  createUserWithEmailAndPassword
+);
 const mockSignOut = vi.mocked(signOut);
 const mockSendEmailVerification = vi.mocked(sendEmailVerification);
 const mockSendPasswordResetEmail = vi.mocked(sendPasswordResetEmail);
 const mockUpdateProfile = vi.mocked(updateProfile);
 const mockUpdatePassword = vi.mocked(updatePassword);
-const mockReauthenticateWithCredential = vi.mocked(reauthenticateWithCredential);
+const mockReauthenticateWithCredential = vi.mocked(
+  reauthenticateWithCredential
+);
 const mockSignInWithPopup = vi.mocked(signInWithPopup);
 const mockDoc = vi.mocked(doc);
 const mockSetDoc = vi.mocked(setDoc);
@@ -160,9 +170,12 @@ const mockDocSnapshot = {
 describe('Firebase Authentication Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Default successful mocks
-    mockServerTimestamp.mockReturnValue({ seconds: 1672531200, nanoseconds: 0 } as any);
+    mockServerTimestamp.mockReturnValue({
+      seconds: 1672531200,
+      nanoseconds: 0,
+    } as any);
     mockDoc.mockReturnValue({} as any);
     mockGetDoc.mockResolvedValue(mockDocSnapshot as any);
     mockSetDoc.mockResolvedValue(undefined);
@@ -181,9 +194,17 @@ describe('Firebase Authentication Integration', () => {
       const email = 'newuser@example.com';
       const password = 'SecurePassword123!';
 
-      const result = await createUserWithEmailAndPassword(auth, email, password);
+      const result = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
-      expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalledWith(auth, email, password);
+      expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalledWith(
+        auth,
+        email,
+        password
+      );
       expect(result.user.email).toBe('test@example.com');
       expect(result.user.uid).toBe('test-user-id');
     });
@@ -195,8 +216,12 @@ describe('Firebase Authentication Integration', () => {
       const password = 'SecurePassword123!';
       const displayName = 'New User';
 
-      const result = await createUserWithEmailAndPassword(auth, email, password);
-      
+      const result = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
       // Simulate profile creation
       await setDoc(doc(db, 'users', result.user.uid), {
         email: result.user.email,
@@ -225,15 +250,20 @@ describe('Firebase Authentication Integration', () => {
       const email = 'existing@example.com';
       const password = 'password123';
 
-      await expect(createUserWithEmailAndPassword(auth, email, password))
-        .rejects.toThrow('auth/email-already-in-use');
+      await expect(
+        createUserWithEmailAndPassword(auth, email, password)
+      ).rejects.toThrow('auth/email-already-in-use');
     });
 
     it('sends email verification after registration', async () => {
       mockCreateUserWithEmailAndPassword.mockResolvedValue(mockUserCredential);
       mockSendEmailVerification.mockResolvedValue();
 
-      const result = await createUserWithEmailAndPassword(auth, 'test@example.com', 'password123');
+      const result = await createUserWithEmailAndPassword(
+        auth,
+        'test@example.com',
+        'password123'
+      );
       await sendEmailVerification(result.user);
 
       expect(mockSendEmailVerification).toHaveBeenCalledWith(result.user);
@@ -243,16 +273,18 @@ describe('Firebase Authentication Integration', () => {
       const error = new Error('auth/weak-password');
       mockCreateUserWithEmailAndPassword.mockRejectedValue(error);
 
-      await expect(createUserWithEmailAndPassword(auth, 'test@example.com', '123'))
-        .rejects.toThrow('auth/weak-password');
+      await expect(
+        createUserWithEmailAndPassword(auth, 'test@example.com', '123')
+      ).rejects.toThrow('auth/weak-password');
     });
 
     it('handles invalid email errors', async () => {
       const error = new Error('auth/invalid-email');
       mockCreateUserWithEmailAndPassword.mockRejectedValue(error);
 
-      await expect(createUserWithEmailAndPassword(auth, 'invalid-email', 'password123'))
-        .rejects.toThrow('auth/invalid-email');
+      await expect(
+        createUserWithEmailAndPassword(auth, 'invalid-email', 'password123')
+      ).rejects.toThrow('auth/invalid-email');
     });
   });
 
@@ -265,7 +297,11 @@ describe('Firebase Authentication Integration', () => {
 
       const result = await signInWithEmailAndPassword(auth, email, password);
 
-      expect(mockSignInWithEmailAndPassword).toHaveBeenCalledWith(auth, email, password);
+      expect(mockSignInWithEmailAndPassword).toHaveBeenCalledWith(
+        auth,
+        email,
+        password
+      );
       expect(result.user.email).toBe('test@example.com');
       expect(result.user.uid).toBe('test-user-id');
     });
@@ -273,8 +309,12 @@ describe('Firebase Authentication Integration', () => {
     it('updates last login timestamp in user profile', async () => {
       mockSignInWithEmailAndPassword.mockResolvedValue(mockUserCredential);
 
-      const result = await signInWithEmailAndPassword(auth, 'test@example.com', 'password123');
-      
+      const result = await signInWithEmailAndPassword(
+        auth,
+        'test@example.com',
+        'password123'
+      );
+
       // Simulate updating last login
       await updateDoc(doc(db, 'users', result.user.uid), {
         lastLoginAt: serverTimestamp(),
@@ -294,24 +334,31 @@ describe('Firebase Authentication Integration', () => {
       const error = new Error('auth/invalid-credential');
       mockSignInWithEmailAndPassword.mockRejectedValue(error);
 
-      await expect(signInWithEmailAndPassword(auth, 'test@example.com', 'wrongpassword'))
-        .rejects.toThrow('auth/invalid-credential');
+      await expect(
+        signInWithEmailAndPassword(auth, 'test@example.com', 'wrongpassword')
+      ).rejects.toThrow('auth/invalid-credential');
     });
 
     it('handles user not found errors', async () => {
       const error = new Error('auth/user-not-found');
       mockSignInWithEmailAndPassword.mockRejectedValue(error);
 
-      await expect(signInWithEmailAndPassword(auth, 'nonexistent@example.com', 'password123'))
-        .rejects.toThrow('auth/user-not-found');
+      await expect(
+        signInWithEmailAndPassword(
+          auth,
+          'nonexistent@example.com',
+          'password123'
+        )
+      ).rejects.toThrow('auth/user-not-found');
     });
 
     it('handles too many requests errors', async () => {
       const error = new Error('auth/too-many-requests');
       mockSignInWithEmailAndPassword.mockRejectedValue(error);
 
-      await expect(signInWithEmailAndPassword(auth, 'test@example.com', 'password123'))
-        .rejects.toThrow('auth/too-many-requests');
+      await expect(
+        signInWithEmailAndPassword(auth, 'test@example.com', 'password123')
+      ).rejects.toThrow('auth/too-many-requests');
     });
   });
 
@@ -346,16 +393,18 @@ describe('Firebase Authentication Integration', () => {
       const error = new Error('auth/user-not-found');
       mockSendPasswordResetEmail.mockRejectedValue(error);
 
-      await expect(sendPasswordResetEmail(auth, 'nonexistent@example.com'))
-        .rejects.toThrow('auth/user-not-found');
+      await expect(
+        sendPasswordResetEmail(auth, 'nonexistent@example.com')
+      ).rejects.toThrow('auth/user-not-found');
     });
 
     it('handles password reset for disabled users', async () => {
       const error = new Error('auth/user-disabled');
       mockSendPasswordResetEmail.mockRejectedValue(error);
 
-      await expect(sendPasswordResetEmail(auth, 'disabled@example.com'))
-        .rejects.toThrow('auth/user-disabled');
+      await expect(
+        sendPasswordResetEmail(auth, 'disabled@example.com')
+      ).rejects.toThrow('auth/user-disabled');
     });
   });
 
@@ -368,7 +417,9 @@ describe('Firebase Authentication Integration', () => {
 
       await updateProfile(user, { displayName: newDisplayName });
 
-      expect(mockUpdateProfile).toHaveBeenCalledWith(user, { displayName: newDisplayName });
+      expect(mockUpdateProfile).toHaveBeenCalledWith(user, {
+        displayName: newDisplayName,
+      });
     });
 
     it('updates user photo URL', async () => {
@@ -401,8 +452,9 @@ describe('Firebase Authentication Integration', () => {
       mockUpdateProfile.mockRejectedValue(error);
 
       const user = mockUser as User;
-      await expect(updateProfile(user, { displayName: 'New Name' }))
-        .rejects.toThrow('Profile update failed');
+      await expect(
+        updateProfile(user, { displayName: 'New Name' })
+      ).rejects.toThrow('Profile update failed');
     });
   });
 
@@ -430,7 +482,10 @@ describe('Firebase Authentication Integration', () => {
       const credential = EmailAuthProvider.credential(email, currentPassword);
       await reauthenticateWithCredential(user, credential);
 
-      expect(mockReauthenticateWithCredential).toHaveBeenCalledWith(user, credential);
+      expect(mockReauthenticateWithCredential).toHaveBeenCalledWith(
+        user,
+        credential
+      );
     });
 
     it('handles reauthentication failures', async () => {
@@ -438,10 +493,14 @@ describe('Firebase Authentication Integration', () => {
       mockReauthenticateWithCredential.mockRejectedValue(error);
 
       const user = mockUser as User;
-      const credential = EmailAuthProvider.credential('test@example.com', 'wrongpassword');
+      const credential = EmailAuthProvider.credential(
+        'test@example.com',
+        'wrongpassword'
+      );
 
-      await expect(reauthenticateWithCredential(user, credential))
-        .rejects.toThrow('auth/wrong-password');
+      await expect(
+        reauthenticateWithCredential(user, credential)
+      ).rejects.toThrow('auth/wrong-password');
     });
   });
 
@@ -496,8 +555,9 @@ describe('Firebase Authentication Integration', () => {
 
       const provider = new GoogleAuthProvider();
 
-      await expect(signInWithPopup(auth, provider))
-        .rejects.toThrow('auth/cancelled-popup-request');
+      await expect(signInWithPopup(auth, provider)).rejects.toThrow(
+        'auth/cancelled-popup-request'
+      );
     });
 
     it('handles popup blocked errors', async () => {
@@ -506,8 +566,9 @@ describe('Firebase Authentication Integration', () => {
 
       const provider = new GoogleAuthProvider();
 
-      await expect(signInWithPopup(auth, provider))
-        .rejects.toThrow('auth/popup-blocked');
+      await expect(signInWithPopup(auth, provider)).rejects.toThrow(
+        'auth/popup-blocked'
+      );
     });
 
     it('creates user profile for new social users', async () => {
@@ -524,7 +585,7 @@ describe('Firebase Authentication Integration', () => {
       };
 
       mockSignInWithPopup.mockResolvedValue(mockGoogleCredential);
-      
+
       // Simulate new user (document doesn't exist)
       mockGetDoc.mockResolvedValue({ exists: () => false } as any);
 
@@ -578,7 +639,10 @@ describe('Firebase Authentication Integration', () => {
 
       await sendEmailVerification(user, actionCodeSettings);
 
-      expect(mockSendEmailVerification).toHaveBeenCalledWith(user, actionCodeSettings);
+      expect(mockSendEmailVerification).toHaveBeenCalledWith(
+        user,
+        actionCodeSettings
+      );
     });
 
     it('handles email verification errors', async () => {
@@ -586,8 +650,9 @@ describe('Firebase Authentication Integration', () => {
       mockSendEmailVerification.mockRejectedValue(error);
 
       const user = mockUser as User;
-      await expect(sendEmailVerification(user))
-        .rejects.toThrow('auth/too-many-requests');
+      await expect(sendEmailVerification(user)).rejects.toThrow(
+        'auth/too-many-requests'
+      );
     });
   });
 
@@ -599,11 +664,13 @@ describe('Firebase Authentication Integration', () => {
 
       expect(mockGetDoc).toHaveBeenCalledWith(expect.anything());
       expect(profileDoc.exists()).toBe(true);
-      expect(profileDoc.data()).toEqual(expect.objectContaining({
-        email: 'test@example.com',
-        displayName: 'Test User',
-        profileCompleteness: 50,
-      }));
+      expect(profileDoc.data()).toEqual(
+        expect.objectContaining({
+          email: 'test@example.com',
+          displayName: 'Test User',
+          profileCompleteness: 50,
+        })
+      );
     });
 
     it('handles non-existent user profiles', async () => {
@@ -629,9 +696,10 @@ describe('Firebase Authentication Integration', () => {
       };
 
       // Calculate completeness (8 fields filled out of 10 possible = 80%)
-      const completeness = Object.values(profileData).filter(value => 
-        value && (Array.isArray(value) ? value.length > 0 : true)
-      ).length * 10;
+      const completeness =
+        Object.values(profileData).filter(
+          (value) => value && (Array.isArray(value) ? value.length > 0 : true)
+        ).length * 10;
 
       await updateDoc(doc(db, 'users', userId), {
         ...profileData,
@@ -652,7 +720,7 @@ describe('Firebase Authentication Integration', () => {
     it('maintains user session across page reloads', async () => {
       // This would typically be tested with onAuthStateChanged
       const mockOnAuthStateChanged = vi.fn();
-      
+
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
         // Simulate user being restored from session
         callback(mockUser);
@@ -671,7 +739,7 @@ describe('Firebase Authentication Integration', () => {
 
     it('handles session expiration', async () => {
       const mockOnAuthStateChanged = vi.fn();
-      
+
       mockOnAuthStateChanged.mockImplementation((auth, callback) => {
         // Simulate session expiration
         callback(null);
@@ -692,31 +760,34 @@ describe('Firebase Authentication Integration', () => {
       const networkError = new Error('auth/network-request-failed');
       mockSignInWithEmailAndPassword.mockRejectedValue(networkError);
 
-      await expect(signInWithEmailAndPassword(auth, 'test@example.com', 'password123'))
-        .rejects.toThrow('auth/network-request-failed');
+      await expect(
+        signInWithEmailAndPassword(auth, 'test@example.com', 'password123')
+      ).rejects.toThrow('auth/network-request-failed');
     });
 
     it('handles quota exceeded errors', async () => {
       const quotaError = new Error('auth/quota-exceeded');
       mockCreateUserWithEmailAndPassword.mockRejectedValue(quotaError);
 
-      await expect(createUserWithEmailAndPassword(auth, 'test@example.com', 'password123'))
-        .rejects.toThrow('auth/quota-exceeded');
+      await expect(
+        createUserWithEmailAndPassword(auth, 'test@example.com', 'password123')
+      ).rejects.toThrow('auth/quota-exceeded');
     });
 
     it('handles app deleted errors', async () => {
       const appDeletedError = new Error('auth/app-deleted');
       mockSignInWithEmailAndPassword.mockRejectedValue(appDeletedError);
 
-      await expect(signInWithEmailAndPassword(auth, 'test@example.com', 'password123'))
-        .rejects.toThrow('auth/app-deleted');
+      await expect(
+        signInWithEmailAndPassword(auth, 'test@example.com', 'password123')
+      ).rejects.toThrow('auth/app-deleted');
     });
   });
 
   describe('User Verification Status', () => {
     it('updates verification status in user profile', async () => {
       const userId = 'test-user-id';
-      
+
       // Simulate email verification completion
       await updateDoc(doc(db, 'users', userId), {
         isVerified: true,
@@ -740,8 +811,9 @@ describe('Firebase Authentication Integration', () => {
       };
 
       // Check if email is from UNAM domain
-      const isUnamEmail = unamUser.email?.includes('@comunidad.unam.mx') || 
-                         unamUser.email?.includes('@unam.mx');
+      const isUnamEmail =
+        unamUser.email?.includes('@comunidad.unam.mx') ||
+        unamUser.email?.includes('@unam.mx');
 
       expect(isUnamEmail).toBe(true);
 

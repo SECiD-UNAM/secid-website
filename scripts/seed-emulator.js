@@ -6,20 +6,20 @@
  */
 
 import { initializeApp } from 'firebase/app';
-import { 
-  getAuth, 
-  connectAuthEmulator, 
+import {
+  getAuth,
+  connectAuthEmulator,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
 } from 'firebase/auth';
-import { 
-  getFirestore, 
+import {
+  getFirestore,
   connectFirestoreEmulator,
   collection,
   doc,
   setDoc,
   addDoc,
-  serverTimestamp
+  serverTimestamp,
 } from 'firebase/firestore';
 
 // Emulator configuration
@@ -58,7 +58,7 @@ const testUsers = [
       skills: ['Python', 'Machine Learning', 'SQL', 'Data Visualization'],
       currentPosition: 'Platform Administrator',
       currentCompany: 'SECiD',
-    }
+    },
   },
   {
     email: 'member1@alumno.unam.mx',
@@ -80,8 +80,8 @@ const testUsers = [
         contactVisible: true,
         jobSearching: true,
         mentorshipAvailable: true,
-      }
-    }
+      },
+    },
   },
   {
     email: 'member2@alumno.unam.mx',
@@ -103,8 +103,8 @@ const testUsers = [
         contactVisible: false,
         jobSearching: false,
         mentorshipAvailable: true,
-      }
-    }
+      },
+    },
   },
   {
     email: 'company@example.com',
@@ -117,16 +117,23 @@ const testUsers = [
       isVerified: true,
       currentCompany: 'TechCorp México',
       companyDescription: 'Leading technology company in Mexico',
-    }
-  }
+    },
+  },
 ];
 
 const testJobs = [
   {
     title: 'Senior Data Scientist',
     company: 'TechCorp México',
-    description: 'We are looking for an experienced Data Scientist to join our team and lead ML projects.',
-    requirements: ['3+ years experience', 'Python', 'Machine Learning', 'SQL', 'Cloud platforms'],
+    description:
+      'We are looking for an experienced Data Scientist to join our team and lead ML projects.',
+    requirements: [
+      '3+ years experience',
+      'Python',
+      'Machine Learning',
+      'SQL',
+      'Cloud platforms',
+    ],
     location: 'Ciudad de México, CDMX',
     locationType: 'hybrid',
     employmentType: 'full-time',
@@ -134,9 +141,14 @@ const testJobs = [
       min: 60000,
       max: 90000,
       currency: 'MXN',
-      period: 'monthly'
+      period: 'monthly',
     },
-    benefits: ['Seguro de gastos médicos mayores', 'Vales de despensa', 'Home office', 'Capacitación continua'],
+    benefits: [
+      'Seguro de gastos médicos mayores',
+      'Vales de despensa',
+      'Home office',
+      'Capacitación continua',
+    ],
     applicationMethod: 'platform',
     status: 'active',
     isApproved: true,
@@ -148,8 +160,15 @@ const testJobs = [
   {
     title: 'Data Analyst Junior',
     company: 'Startup Fintech',
-    description: 'Join our growing fintech startup as a Junior Data Analyst. Great opportunity to learn and grow.',
-    requirements: ['0-2 years experience', 'SQL', 'Excel', 'Basic Python', 'Statistics'],
+    description:
+      'Join our growing fintech startup as a Junior Data Analyst. Great opportunity to learn and grow.',
+    requirements: [
+      '0-2 years experience',
+      'SQL',
+      'Excel',
+      'Basic Python',
+      'Statistics',
+    ],
     location: 'Guadalajara, Jalisco',
     locationType: 'onsite',
     employmentType: 'full-time',
@@ -157,9 +176,13 @@ const testJobs = [
       min: 20000,
       max: 30000,
       currency: 'MXN',
-      period: 'monthly'
+      period: 'monthly',
     },
-    benefits: ['Seguro de gastos médicos', 'Vacaciones superiores a la ley', 'Horario flexible'],
+    benefits: [
+      'Seguro de gastos médicos',
+      'Vacaciones superiores a la ley',
+      'Horario flexible',
+    ],
     applicationMethod: 'platform',
     status: 'active',
     isApproved: true,
@@ -172,7 +195,13 @@ const testJobs = [
     title: 'Machine Learning Engineer',
     company: 'AI Solutions México',
     description: 'Build and deploy ML models at scale for enterprise clients.',
-    requirements: ['2+ years ML experience', 'Python', 'TensorFlow/PyTorch', 'MLOps', 'Docker'],
+    requirements: [
+      '2+ years ML experience',
+      'Python',
+      'TensorFlow/PyTorch',
+      'MLOps',
+      'Docker',
+    ],
     location: 'Remote',
     locationType: 'remote',
     employmentType: 'full-time',
@@ -180,9 +209,14 @@ const testJobs = [
       min: 50000,
       max: 70000,
       currency: 'MXN',
-      period: 'monthly'
+      period: 'monthly',
     },
-    benefits: ['100% remote', 'Equipment provided', 'Learning budget', 'Stock options'],
+    benefits: [
+      '100% remote',
+      'Equipment provided',
+      'Learning budget',
+      'Stock options',
+    ],
     applicationMethod: 'platform',
     status: 'active',
     isApproved: true,
@@ -190,13 +224,14 @@ const testJobs = [
     viewCount: 312,
     applicationCount: 67,
     featured: true,
-  }
+  },
 ];
 
 const testEvents = [
   {
     title: 'Data Science Career Fair 2024',
-    description: 'Annual career fair connecting UNAM data science alumni with top companies in Mexico.',
+    description:
+      'Annual career fair connecting UNAM data science alumni with top companies in Mexico.',
     type: 'career-fair',
     startDate: new Date('2024-03-15T10:00:00'),
     endDate: new Date('2024-03-15T18:00:00'),
@@ -219,7 +254,8 @@ const testEvents = [
   },
   {
     title: 'Introduction to MLOps Workshop',
-    description: 'Learn the fundamentals of MLOps and how to deploy ML models in production.',
+    description:
+      'Learn the fundamentals of MLOps and how to deploy ML models in production.',
     type: 'workshop',
     startDate: new Date('2024-02-20T18:00:00'),
     endDate: new Date('2024-02-20T20:00:00'),
@@ -239,7 +275,7 @@ const testEvents = [
     tags: ['workshop', 'mlops', 'technical', 'online'],
     viewCount: 234,
     registrationCount: 67,
-  }
+  },
 ];
 
 const testForums = [
@@ -253,14 +289,15 @@ const testForums = [
     rules: [
       'Keep discussions professional and respectful',
       'No spam or self-promotion without context',
-      'Search before posting to avoid duplicates'
+      'Search before posting to avoid duplicates',
     ],
     isActive: true,
     subscriberCount: 89,
   },
   {
     title: 'Technical Discussions',
-    description: 'Deep dive into technical topics, algorithms, and best practices',
+    description:
+      'Deep dive into technical topics, algorithms, and best practices',
     category: 'technical',
     visibility: 'members',
     allowedRoles: ['member', 'admin', 'moderator'],
@@ -268,11 +305,11 @@ const testForums = [
     rules: [
       'Provide context and code examples when asking questions',
       'Credit sources and respect intellectual property',
-      'Be constructive in code reviews'
+      'Be constructive in code reviews',
     ],
     isActive: true,
     subscriberCount: 124,
-  }
+  },
 ];
 
 // Seed function
@@ -290,7 +327,7 @@ async function seedEmulator() {
           userData.email,
           userData.password
         );
-        
+
         // Create user profile in Firestore
         await setDoc(doc(db, 'users', userCredential.user.uid), {
           ...userData.profile,
@@ -308,7 +345,7 @@ async function seedEmulator() {
           updatedAt: serverTimestamp(),
           profileCompleteness: 80,
         });
-        
+
         console.log(`✅ Created user: ${userData.email}`);
       } catch (error) {
         if (error.code === 'auth/email-already-in-use') {
@@ -385,12 +422,13 @@ async function seedEmulator() {
     console.log(`  - ${testJobs.length} jobs created`);
     console.log(`  - ${testEvents.length} events created`);
     console.log(`  - ${testForums.length} forums created`);
-    console.log('\n🎉 You can now access the emulator UI at http://localhost:4000');
+    console.log(
+      '\n🎉 You can now access the emulator UI at http://localhost:4000'
+    );
     console.log('📧 Test credentials:');
     console.log('  Admin: admin@secid.mx / admin123456');
     console.log('  Member: member1@alumno.unam.mx / member123456');
     console.log('  Company: company@example.com / company123456');
-
   } catch (error) {
     console.error('❌ Error during seeding:', error);
     process.exit(1);

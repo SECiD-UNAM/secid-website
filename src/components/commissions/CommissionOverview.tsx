@@ -10,11 +10,11 @@ const iconMap: Record<string, string> = {
   'chat-bubble-left-right': 'fas fa-comments',
   'cpu-chip': 'fas fa-microchip',
   'server-stack': 'fas fa-server',
-  'sparkles': 'fas fa-brain',
-  'eye': 'fas fa-eye',
-  'beaker': 'fas fa-flask',
+  sparkles: 'fas fa-brain',
+  eye: 'fas fa-eye',
+  beaker: 'fas fa-flask',
   'cog-6-tooth': 'fas fa-cogs',
-  'brain': 'fas fa-brain',
+  brain: 'fas fa-brain',
   'presentation-chart-line': 'fas fa-chart-line',
 };
 
@@ -22,7 +22,8 @@ export default function CommissionOverview({ lang = 'es' }: Props) {
   const t = {
     es: {
       title: 'Comisiones Técnicas',
-      subtitle: 'Únete a una comisión y colabora con expertos en tu área de interés',
+      subtitle:
+        'Únete a una comisión y colabora con expertos en tu área de interés',
       features: 'características',
       tools: 'herramientas',
       skills: 'áreas de habilidad',
@@ -30,7 +31,8 @@ export default function CommissionOverview({ lang = 'es' }: Props) {
     },
     en: {
       title: 'Technical Commissions',
-      subtitle: 'Join a commission and collaborate with experts in your area of interest',
+      subtitle:
+        'Join a commission and collaborate with experts in your area of interest',
       features: 'features',
       tools: 'tools',
       skills: 'skill areas',
@@ -38,20 +40,40 @@ export default function CommissionOverview({ lang = 'es' }: Props) {
     },
   }[lang];
 
-  const commissions = Object.values(COMMISSION_CONFIGS).filter(c => c.isActive);
+  const commissions = Object.values(COMMISSION_CONFIGS).filter(
+    (c) => c.isActive
+  );
 
   return (
     <div>
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-        <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>{t.title}</h2>
-        <p style={{ color: 'var(--color-text-secondary)', maxWidth: '600px', margin: '0 auto' }}>{t.subtitle}</p>
+        <h2
+          style={{
+            fontSize: '1.75rem',
+            fontWeight: 700,
+            marginBottom: '0.5rem',
+          }}
+        >
+          {t.title}
+        </h2>
+        <p
+          style={{
+            color: 'var(--color-text-secondary)',
+            maxWidth: '600px',
+            margin: '0 auto',
+          }}
+        >
+          {t.subtitle}
+        </p>
       </div>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-        gap: '1.5rem',
-      }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+          gap: '1.5rem',
+        }}
+      >
         {commissions.map((commission) => (
           <a
             key={commission.id}
@@ -67,56 +89,93 @@ export default function CommissionOverview({ lang = 'es' }: Props) {
               transition: 'all 0.2s ease',
             }}
           >
-            <div style={{
-              height: '8px',
-              background: commission.color,
-            }} />
+            <div
+              style={{
+                height: '8px',
+                background: commission.color,
+              }}
+            />
             <div style={{ padding: '1.5rem' }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '1rem',
-                marginBottom: '1rem',
-              }}>
-                <div style={{
-                  width: '3rem',
-                  height: '3rem',
-                  background: `${commission.color}20`,
-                  borderRadius: 'var(--radius-lg)',
+              <div
+                style={{
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  color: commission.color,
-                  fontSize: '1.25rem',
-                }}>
+                  gap: '1rem',
+                  marginBottom: '1rem',
+                }}
+              >
+                <div
+                  style={{
+                    width: '3rem',
+                    height: '3rem',
+                    background: `${commission.color}20`,
+                    borderRadius: 'var(--radius-lg)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: commission.color,
+                    fontSize: '1.25rem',
+                  }}
+                >
                   <i className={iconMap[commission.icon] || 'fas fa-cog'} />
                 </div>
-                <h3 style={{ fontSize: '1.125rem', fontWeight: 600, margin: 0 }}>
+                <h3
+                  style={{ fontSize: '1.125rem', fontWeight: 600, margin: 0 }}
+                >
                   {commission.name}
                 </h3>
               </div>
 
-              <p style={{
-                color: 'var(--color-text-secondary)',
-                lineHeight: 1.6,
-                fontSize: '0.9rem',
-                marginBottom: '1rem',
-              }}>
+              <p
+                style={{
+                  color: 'var(--color-text-secondary)',
+                  lineHeight: 1.6,
+                  fontSize: '0.9rem',
+                  marginBottom: '1rem',
+                }}
+              >
                 {commission.description}
               </p>
 
-              <div style={{
-                display: 'flex',
-                gap: '1rem',
-                fontSize: '0.8rem',
-                color: 'var(--color-text-tertiary)',
-              }}>
-                <span><i className="fas fa-list" style={{ marginRight: '0.25rem' }} />{commission.features.length} {t.features}</span>
-                <span><i className="fas fa-wrench" style={{ marginRight: '0.25rem' }} />{commission.tools.length} {t.tools}</span>
-                <span><i className="fas fa-graduation-cap" style={{ marginRight: '0.25rem' }} />{commission.skillAreas.length} {t.skills}</span>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '1rem',
+                  fontSize: '0.8rem',
+                  color: 'var(--color-text-tertiary)',
+                }}
+              >
+                <span>
+                  <i
+                    className="fas fa-list"
+                    style={{ marginRight: '0.25rem' }}
+                  />
+                  {commission.features.length} {t.features}
+                </span>
+                <span>
+                  <i
+                    className="fas fa-wrench"
+                    style={{ marginRight: '0.25rem' }}
+                  />
+                  {commission.tools.length} {t.tools}
+                </span>
+                <span>
+                  <i
+                    className="fas fa-graduation-cap"
+                    style={{ marginRight: '0.25rem' }}
+                  />
+                  {commission.skillAreas.length} {t.skills}
+                </span>
               </div>
 
-              <div style={{ marginTop: '1rem', color: 'var(--secid-primary)', fontWeight: 500, fontSize: '0.875rem' }}>
+              <div
+                style={{
+                  marginTop: '1rem',
+                  color: 'var(--secid-primary)',
+                  fontWeight: 500,
+                  fontSize: '0.875rem',
+                }}
+              >
                 {t.viewDetails} →
               </div>
             </div>

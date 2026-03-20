@@ -56,18 +56,23 @@ function processFile(filePath) {
     }
 
     // Check if all imports are type-like names
-    const importNames = imports.split(',').map(i => i.trim());
-    const allTypeLike = importNames.every(name => {
+    const importNames = imports.split(',').map((i) => i.trim());
+    const allTypeLike = importNames.every((name) => {
       // Remove 'as' aliases
       const baseName = name.split(/\s+as\s+/)[0].trim();
-      return /^[A-Z]/.test(baseName) && // Starts with capital
-             !['React', 'Component', 'Fragment'].includes(baseName); // Not React exports
+      return (
+        /^[A-Z]/.test(baseName) && // Starts with capital
+        !['React', 'Component', 'Fragment'].includes(baseName)
+      ); // Not React exports
     });
 
     if (allTypeLike && source.startsWith('.')) {
       // Check if the source file exists and contains only type exports
       const sourcePath = path.resolve(path.dirname(filePath), source);
-      if (sourcePath.includes('/types/') || sourcePath.includes('/interfaces/')) {
+      if (
+        sourcePath.includes('/types/') ||
+        sourcePath.includes('/interfaces/')
+      ) {
         isTypeOnly = true;
       }
     }
@@ -86,21 +91,25 @@ function processFile(filePath) {
   content = content.replace(mixedImportRegex, (match, imports, source) => {
     if (match.includes('import type')) return match;
 
-    const importList = imports.split(',').map(i => i.trim());
+    const importList = imports.split(',').map((i) => i.trim());
     const types = [];
     const values = [];
 
-    importList.forEach(imp => {
+    importList.forEach((imp) => {
       const baseName = imp.split(/\s+as\s+/)[0].trim();
-      
+
       // Heuristic: uppercase first letter and certain patterns indicate types
-      if (/^[A-Z]/.test(baseName) && 
-          !['React', 'Component', 'Fragment', 'useState', 'useEffect'].includes(baseName) &&
-          (baseName.endsWith('Type') || 
-           baseName.endsWith('Interface') || 
-           baseName.endsWith('Props') ||
-           baseName.includes('Config') ||
-           source.includes('/types/'))) {
+      if (
+        /^[A-Z]/.test(baseName) &&
+        !['React', 'Component', 'Fragment', 'useState', 'useEffect'].includes(
+          baseName
+        ) &&
+        (baseName.endsWith('Type') ||
+          baseName.endsWith('Interface') ||
+          baseName.endsWith('Props') ||
+          baseName.includes('Config') ||
+          source.includes('/types/'))
+      ) {
         types.push(imp);
       } else {
         values.push(imp);
@@ -129,7 +138,7 @@ function processFile(filePath) {
   if (modified) {
     fs.writeFileSync(filePath, content);
     console.log(`✅ Fixed ${filePath}`);
-    changes.forEach(change => console.log(change));
+    changes.forEach((change) => console.log(change));
     return 1;
   }
 
@@ -143,8 +152,8 @@ async function main() {
   let totalFiles = 0;
 
   for (const pattern of filePatterns) {
-    const files = await glob(pattern, { 
-      ignore: ['**/node_modules/**', '**/dist/**', '**/.next/**']
+    const files = await glob(pattern, {
+      ignore: ['**/node_modules/**', '**/dist/**', '**/.next/**'],
     });
 
     for (const file of files) {

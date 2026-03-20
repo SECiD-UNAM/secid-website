@@ -4,7 +4,11 @@ import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
 const sessions = [
   { date: 'March 11, 2026', topic: 'NLP Foundations', presenter: 'Fer' },
-  { date: 'April 8, 2026', topic: 'Attention Is All You Need', presenter: 'Fer' },
+  {
+    date: 'April 8, 2026',
+    topic: 'Attention Is All You Need',
+    presenter: 'Fer',
+  },
   { date: 'May 6, 2026', topic: 'BERT', presenter: 'Artemio' },
   { date: 'June 10, 2026', topic: 'GPTs', presenter: 'Bondi' },
   { date: 'August 12, 2026', topic: 'LLaMA', presenter: 'Lalo' },
@@ -26,7 +30,8 @@ const sessions = [
         <div class="secid-hero__content">
           <h1 class="secid-hero__title">Journal Club</h1>
           <p class="secid-hero__subtitle">
-            Explore the foundations and frontier of Natural Language Processing and Large Language Models
+            Explore the foundations and frontier of Natural Language Processing
+            and Large Language Models
           </p>
         </div>
       </div>
@@ -36,13 +41,18 @@ const sessions = [
     <section class="secid-section">
       <div class="secid-container">
         <div class="secid-jc-intro">
-          <img src="/images/logo.png" alt="SECiD Logo" class="secid-jc-intro__logo" />
+          <img
+            src="/images/logo.png"
+            alt="SECiD Logo"
+            class="secid-jc-intro__logo"
+          />
 
           <p class="secid-jc-intro__text">
-            The SECiD Journal Club is a reading group where we explore foundational
-            and cutting-edge topics in Natural Language Processing (NLP) and Large
-            Language Models (LLMs). Each session is led by a community member who
-            presents a key paper or topic, followed by open discussion.
+            The SECiD Journal Club is a reading group where we explore
+            foundational and cutting-edge topics in Natural Language Processing
+            (NLP) and Large Language Models (LLMs). Each session is led by a
+            community member who presents a key paper or topic, followed by open
+            discussion.
           </p>
           <p class="secid-jc-schedule-highlight">
             <i class="fas fa-calendar-alt"></i>
@@ -61,22 +71,24 @@ const sessions = [
         </h2>
 
         <div class="secid-jc-sessions">
-          {sessions.map((session, i) => (
-            <div class="secid-jc-session">
-              <div class="secid-jc-session__number">{i + 1}</div>
-              <div class="secid-jc-session__info">
-                <h3 class="secid-jc-session__topic">{session.topic}</h3>
-                <div class="secid-jc-session__meta">
-                  <span class="secid-jc-session__date">
-                    <i class="fas fa-calendar"></i> {session.date}
-                  </span>
-                  <span class="secid-jc-session__presenter">
-                    <i class="fas fa-user"></i> {session.presenter}
-                  </span>
+          {
+            sessions.map((session, i) => (
+              <div class="secid-jc-session">
+                <div class="secid-jc-session__number">{i + 1}</div>
+                <div class="secid-jc-session__info">
+                  <h3 class="secid-jc-session__topic">{session.topic}</h3>
+                  <div class="secid-jc-session__meta">
+                    <span class="secid-jc-session__date">
+                      <i class="fas fa-calendar" /> {session.date}
+                    </span>
+                    <span class="secid-jc-session__presenter">
+                      <i class="fas fa-user" /> {session.presenter}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          }
         </div>
       </div>
     </section>
@@ -87,15 +99,21 @@ const sessions = [
         <div class="secid-jc-cta">
           <h2 class="secid-jc-cta__title">Join Us</h2>
           <p class="secid-jc-cta__description">
-            Did you study Data Science at UNAM? Register as a member to participate
-            in the Journal Club and other SECiD initiatives.
+            Did you study Data Science at UNAM? Register as a member to
+            participate in the Journal Club and other SECiD initiatives.
           </p>
           <div class="secid-jc-cta__actions">
-            <a href="/registro" class="secid-button secid-button--primary secid-button--lg">
+            <a
+              href="/registro"
+              class="secid-button secid-button--primary secid-button--lg"
+            >
               <i class="fas fa-rocket"></i>
               Register Now
             </a>
-            <a href="/en/contact" class="secid-button secid-button--outline secid-button--lg">
+            <a
+              href="/en/contact"
+              class="secid-button secid-button--outline secid-button--lg"
+            >
               <i class="fas fa-envelope"></i>
               Contact Us
             </a>
@@ -167,7 +185,11 @@ const sessions = [
     width: 3rem;
     height: 3rem;
     min-width: 3rem;
-    background: linear-gradient(135deg, var(--secid-primary), var(--secid-gold));
+    background: linear-gradient(
+      135deg,
+      var(--secid-primary),
+      var(--secid-gold)
+    );
     border-radius: var(--radius-xl);
     display: flex;
     align-items: center;

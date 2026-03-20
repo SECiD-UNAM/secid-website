@@ -1,7 +1,12 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
-import { getMemberGroupList, updateMemberGroups, GROUP_MAP, GROUP_LABELS } from '@/lib/gcp-services';
+import {
+  getMemberGroupList,
+  updateMemberGroups,
+  GROUP_MAP,
+  GROUP_LABELS,
+} from '@/lib/gcp-services';
 
 interface GroupManagementModalProps {
   isOpen: boolean;
@@ -68,8 +73,12 @@ export const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
     setSaving(true);
     setError(null);
 
-    const addToGroups = [...selectedGroups].filter((g) => !currentGroups.has(g));
-    const removeFromGroups = [...currentGroups].filter((g) => !selectedGroups.has(g));
+    const addToGroups = [...selectedGroups].filter(
+      (g) => !currentGroups.has(g)
+    );
+    const removeFromGroups = [...currentGroups].filter(
+      (g) => !selectedGroups.has(g)
+    );
 
     if (addToGroups.length === 0 && removeFromGroups.length === 0) {
       onClose();
@@ -77,7 +86,11 @@ export const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
     }
 
     try {
-      const result = await updateMemberGroups(memberEmail, addToGroups, removeFromGroups);
+      const result = await updateMemberGroups(
+        memberEmail,
+        addToGroups,
+        removeFromGroups
+      );
       if (result.success) {
         onSuccess?.();
         onClose();
@@ -111,9 +124,14 @@ export const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
             <h3 className="text-lg font-semibold text-gray-900">
               {language === 'es' ? 'Gestionar Grupos' : 'Manage Groups'}
             </h3>
-            <p className="text-sm text-gray-500">{memberName} ({memberEmail})</p>
+            <p className="text-sm text-gray-500">
+              {memberName} ({memberEmail})
+            </p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -163,8 +181,12 @@ export const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
                         }`}
                       >
                         {isSelected
-                          ? language === 'es' ? '+ Agregar' : '+ Add'
-                          : language === 'es' ? '- Quitar' : '- Remove'}
+                          ? language === 'es'
+                            ? '+ Agregar'
+                            : '+ Add'
+                          : language === 'es'
+                            ? '- Quitar'
+                            : '- Remove'}
                       </span>
                     )}
                   </label>
@@ -191,7 +213,7 @@ export const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
           <button
             onClick={handleSave}
             disabled={!hasChanges || saving}
-            className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {language === 'es' ? 'Guardar' : 'Save'}

@@ -24,7 +24,10 @@ const log = {
   success: (msg) => console.log(`${colors.green}✓${colors.reset}  ${msg}`),
   warn: (msg) => console.log(`${colors.yellow}⚠${colors.reset}  ${msg}`),
   error: (msg) => console.log(`${colors.red}✗${colors.reset}  ${msg}`),
-  section: (msg) => console.log(`\n${colors.blue}${msg}${colors.reset}\n${'='.repeat(msg.length)}`),
+  section: (msg) =>
+    console.log(
+      `\n${colors.blue}${msg}${colors.reset}\n${'='.repeat(msg.length)}`
+    ),
 };
 
 let hasErrors = false;
@@ -33,13 +36,13 @@ let hasWarnings = false;
 // Check Node.js version
 function checkNodeVersion() {
   log.section('Checking Node.js Version');
-  
+
   try {
     const nodeVersion = process.version;
     const majorVersion = parseInt(nodeVersion.split('.')[0].substring(1));
-    
+
     log.info(`Node.js version: ${nodeVersion}`);
-    
+
     if (majorVersion < 20) {
       log.error(`Node.js 20.17.0 or higher is required (found ${nodeVersion})`);
       hasErrors = true;
@@ -55,11 +58,11 @@ function checkNodeVersion() {
 // Check npm version
 function checkNpmVersion() {
   log.section('Checking npm Version');
-  
+
   try {
     const npmVersion = execSync('npm --version', { encoding: 'utf8' }).trim();
     log.info(`npm version: ${npmVersion}`);
-    
+
     const majorVersion = parseInt(npmVersion.split('.')[0]);
     if (majorVersion < 8) {
       log.warn(`npm 8.0.0 or higher is recommended (found ${npmVersion})`);
@@ -76,7 +79,7 @@ function checkNpmVersion() {
 // Check required files
 function checkRequiredFiles() {
   log.section('Checking Required Files');
-  
+
   const requiredFiles = [
     { path: 'package.json', type: 'file' },
     { path: 'astro.config.mjs', type: 'file' },
@@ -85,7 +88,7 @@ function checkRequiredFiles() {
     { path: 'src', type: 'directory' },
     { path: 'public', type: 'directory' },
   ];
-  
+
   requiredFiles.forEach(({ path: filePath, type }) => {
     const fullPath = path.join(process.cwd(), filePath);
     if (fs.existsSync(fullPath)) {
@@ -100,13 +103,15 @@ function checkRequiredFiles() {
 // Check environment configuration
 function checkEnvironment() {
   log.section('Checking Environment Configuration');
-  
+
   const envPath = path.join(process.cwd(), '.env');
   const envExamplePath = path.join(process.cwd(), '.env.example');
-  
+
   if (!fs.existsSync(envPath)) {
     if (fs.existsSync(envExamplePath)) {
-      log.warn('.env file not found - copy .env.example to .env and update values');
+      log.warn(
+        '.env file not found - copy .env.example to .env and update values'
+      );
       hasWarnings = true;
     } else {
       log.error('Neither .env nor .env.example found');
@@ -114,7 +119,7 @@ function checkEnvironment() {
     }
   } else {
     log.success('.env file exists');
-    
+
     // Check for required environment variables
     const envContent = fs.readFileSync(envPath, 'utf8');
     const requiredVars = [
@@ -122,9 +127,12 @@ function checkEnvironment() {
       'PUBLIC_FIREBASE_AUTH_DOMAIN',
       'PUBLIC_FIREBASE_PROJECT_ID',
     ];
-    
+
     requiredVars.forEach((varName) => {
-      if (envContent.includes(`${varName}=`) && !envContent.includes(`${varName}=your-`)) {
+      if (
+        envContent.includes(`${varName}=`) &&
+        !envContent.includes(`${varName}=your-`)
+      ) {
         log.success(`${varName} is configured`);
       } else {
         log.warn(`${varName} needs to be configured in .env`);
@@ -137,17 +145,17 @@ function checkEnvironment() {
 // Check dependencies
 function checkDependencies() {
   log.section('Checking Dependencies');
-  
+
   const nodeModulesPath = path.join(process.cwd(), 'node_modules');
-  
+
   if (!fs.existsSync(nodeModulesPath)) {
     log.error('node_modules not found - run "npm install"');
     hasErrors = true;
     return;
   }
-  
+
   log.success('node_modules directory exists');
-  
+
   // Check for key dependencies
   const keyDeps = ['astro', 'react', 'typescript', 'tailwindcss'];
   keyDeps.forEach((dep) => {
@@ -164,11 +172,11 @@ function checkDependencies() {
 // Check Git configuration
 function checkGitConfig() {
   log.section('Checking Git Configuration');
-  
+
   try {
     const gitStatus = execSync('git status --porcelain', { encoding: 'utf8' });
     log.success('Git repository initialized');
-    
+
     if (gitStatus.trim()) {
       const changes = gitStatus.trim().split('\n').length;
       log.warn(`${changes} uncommitted changes found`);
@@ -185,33 +193,33 @@ function checkGitConfig() {
 // Check ports
 function checkPorts() {
   log.section('Checking Port Availability');
-  
+
   const net = require('net');
   const port = 4321;
-  
+
   const server = net.createServer();
-  
+
   server.once('error', (err) => {
     if (err.code === 'EADDRINUSE') {
       log.warn(`Port ${port} is in use - dev server may fail to start`);
       hasWarnings = true;
     }
   });
-  
+
   server.once('listening', () => {
     log.success(`Port ${port} is available`);
     server.close();
   });
-  
+
   server.listen(port);
 }
 
 // Check VS Code settings
 function checkVSCodeSettings() {
   log.section('Checking VS Code Configuration');
-  
+
   const vscodePath = path.join(process.cwd(), '.vscode', 'settings.json');
-  
+
   if (fs.existsSync(vscodePath)) {
     log.success('VS Code settings configured');
   } else {
@@ -235,27 +243,35 @@ ${colors.blue}╔═════════════════════
   checkDependencies();
   checkGitConfig();
   checkVSCodeSettings();
-  
+
   // Wait for async port check
   setTimeout(() => {
     checkPorts();
-    
+
     // Final summary
     setTimeout(() => {
       console.log('\n' + '='.repeat(40));
-      
+
       if (hasErrors) {
         console.log(`\n${colors.red}✗ Setup validation failed${colors.reset}`);
         console.log('Please fix the errors above before proceeding.\n');
         process.exit(1);
       } else if (hasWarnings) {
-        console.log(`\n${colors.yellow}⚠ Setup validation passed with warnings${colors.reset}`);
+        console.log(
+          `\n${colors.yellow}⚠ Setup validation passed with warnings${colors.reset}`
+        );
         console.log('Your setup is functional but could be improved.\n');
-        console.log(`Run ${colors.green}make setup${colors.reset} to fix most issues automatically.\n`);
+        console.log(
+          `Run ${colors.green}make setup${colors.reset} to fix most issues automatically.\n`
+        );
       } else {
-        console.log(`\n${colors.green}✓ Setup validation passed!${colors.reset}`);
+        console.log(
+          `\n${colors.green}✓ Setup validation passed!${colors.reset}`
+        );
         console.log('Your development environment is ready.\n');
-        console.log(`Run ${colors.green}make dev${colors.reset} to start developing.\n`);
+        console.log(
+          `Run ${colors.green}make dev${colors.reset} to start developing.\n`
+        );
       }
     }, 100);
   }, 100);

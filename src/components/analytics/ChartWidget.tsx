@@ -20,7 +20,7 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from 'recharts';
 import type { ChartConfig } from '../../types/analytics';
 
@@ -35,7 +35,7 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
   config,
   className,
   loading = false,
-  error
+  error,
 }) => {
   const {
     type,
@@ -50,17 +50,20 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
     showGrid = true,
     responsive = true,
     height = 300,
-    width
+    width,
   } = config;
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3">
+        <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-lg">
           <p className="text-sm font-medium text-gray-900">{label}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
-              {entry['name']}: {typeof entry.value === 'number' ? entry.value.toLocaleString() : entry.value}
+              {entry['name']}:{' '}
+              {typeof entry.value === 'number'
+                ? entry.value.toLocaleString()
+                : entry.value}
             </p>
           ))}
         </div>
@@ -72,11 +75,11 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
   const CustomLegend = (props: any) => {
     const { payload } = props;
     return (
-      <div className="flex flex-wrap justify-center gap-4 mt-4">
+      <div className="mt-4 flex flex-wrap justify-center gap-4">
         {payload.map((entry: any, index: number) => (
           <div key={index} className="flex items-center gap-2">
             <div
-              className="w-3 h-3 rounded-full"
+              className="h-3 w-3 rounded-full"
               style={{ backgroundColor: entry.color }}
             />
             <span className="text-sm text-gray-600">{entry.value}</span>
@@ -87,20 +90,22 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
   };
 
   const renderChart = () => {
-    if(loading) {
+    if (loading) {
       return (
-        <div className="flex items-center justify-center h-full">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />
+        <div className="flex h-full items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500" />
         </div>
       );
     }
 
-    if(error) {
+    if (error) {
       return (
-        <div className="flex items-center justify-center h-full">
+        <div className="flex h-full items-center justify-center">
           <div className="text-center">
-            <p className="text-red-500 text-sm font-medium">Error loading chart</p>
-            <p className="text-gray-500 text-xs mt-1">{error}</p>
+            <p className="text-sm font-medium text-red-500">
+              Error loading chart
+            </p>
+            <p className="mt-1 text-xs text-gray-500">{error}</p>
           </div>
         </div>
       );
@@ -108,23 +113,25 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
 
     if (!data || data['length'] === 0) {
       return (
-        <div className="flex items-center justify-center h-full">
-          <p className="text-gray-500 text-sm">No data available</p>
+        <div className="flex h-full items-center justify-center">
+          <p className="text-sm text-gray-500">No data available</p>
         </div>
       );
     }
 
     const containerProps = {
       width: responsive ? '100%' : width,
-      height: height
+      height: height,
     };
 
-    switch(type) {
+    switch (type) {
       case 'line':
         return (
           <ResponsiveContainer {...containerProps}>
             <LineChart data={data}>
-              {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />}
+              {showGrid && (
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              )}
               <XAxis
                 dataKey={xAxis?.dataKey || 'timestamp'}
                 tick={{ fontSize: 12, fill: '#6b7280' }}
@@ -150,7 +157,7 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
                 />
               ) : (
                 Object.keys(data?.[0] || {})
-                  .filter(key => key !== (xAxis?.dataKey || 'timestamp'))
+                  .filter((key) => key !== (xAxis?.dataKey || 'timestamp'))
                   .map((key, index) => (
                     <Line
                       key={key}
@@ -171,12 +178,17 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
         return (
           <ResponsiveContainer {...containerProps}>
             <AreaChart data={data}>
-              {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />}
+              {showGrid && (
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              )}
               <XAxis
                 dataKey={xAxis?.dataKey || 'timestamp'}
                 tick={{ fontSize: 12, fill: '#6b7280' }}
               />
-              <YAxis tick={{ fontSize: 12, fill: '#6b7280' }} domain={yAxis?.domain} />
+              <YAxis
+                tick={{ fontSize: 12, fill: '#6b7280' }}
+                domain={yAxis?.domain}
+              />
               {showTooltip && <Tooltip content={<CustomTooltip />} />}
               {showLegend && <Legend content={<CustomLegend />} />}
               {yAxis?.dataKey ? (
@@ -190,7 +202,7 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
                 />
               ) : (
                 Object.keys(data?.[0] || {})
-                  .filter(key => key !== (xAxis?.dataKey || 'timestamp'))
+                  .filter((key) => key !== (xAxis?.dataKey || 'timestamp'))
                   .map((key, index) => (
                     <Area
                       key={key}
@@ -212,19 +224,28 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
         return (
           <ResponsiveContainer {...containerProps}>
             <BarChart data={data}>
-              {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />}
+              {showGrid && (
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              )}
               <XAxis
                 dataKey={xAxis?.dataKey || 'name'}
                 tick={{ fontSize: 12, fill: '#6b7280' }}
               />
-              <YAxis tick={{ fontSize: 12, fill: '#6b7280' }} domain={yAxis?.domain} />
+              <YAxis
+                tick={{ fontSize: 12, fill: '#6b7280' }}
+                domain={yAxis?.domain}
+              />
               {showTooltip && <Tooltip content={<CustomTooltip />} />}
               {showLegend && <Legend content={<CustomLegend />} />}
               {yAxis?.dataKey ? (
-                <Bar dataKey={yAxis.dataKey} fill={colors?.[0]} radius={[4, 4, 0, 0]} />
+                <Bar
+                  dataKey={yAxis.dataKey}
+                  fill={colors?.[0]}
+                  radius={[4, 4, 0, 0]}
+                />
               ) : (
                 Object.keys(data?.[0] || {})
-                  .filter(key => key !== (xAxis?.dataKey || 'name'))
+                  .filter((key) => key !== (xAxis?.dataKey || 'name'))
                   .map((key, index) => (
                     <Bar
                       key={key}
@@ -252,10 +273,15 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
                 innerRadius={type === 'donut' ? 60 : 0}
                 outerRadius={100}
                 paddingAngle={2}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) =>
+                  `${name} ${(percent * 100).toFixed(0)}%`
+                }
               >
                 {data.map((entry: any, index: number) => (
-                  <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={colors[index % colors.length]}
+                  />
                 ))}
               </Pie>
               {showTooltip && <Tooltip content={<CustomTooltip />} />}
@@ -268,7 +294,9 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
         return (
           <ResponsiveContainer {...containerProps}>
             <ScatterChart data={data}>
-              {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />}
+              {showGrid && (
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              )}
               <XAxis
                 dataKey={xAxis?.dataKey || 'x'}
                 type="number"
@@ -291,14 +319,13 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
         return (
           <ResponsiveContainer {...containerProps}>
             <FunnelChart>
-              <Funnel
-                dataKey="value"
-                data={data}
-                isAnimationActive
-              >
+              <Funnel dataKey="value" data={data} isAnimationActive>
                 <LabelList position="center" fill="#fff" stroke="none" />
                 {data['map']((entry: any, index: number) => (
-                  <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={colors[index % colors.length]}
+                  />
                 ))}
               </Funnel>
               {showTooltip && <Tooltip content={<CustomTooltip />} />}
@@ -311,7 +338,7 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
         // Custom gauge implementation using pie chart
         const gaugeData = [
           { name: 'Value', value: data[0]?.value || 0 },
-          { name: 'Remaining', value: 100 - (data[0]?.value || 0) }
+          { name: 'Remaining', value: 100 - (data[0]?.value || 0) },
         ];
         return (
           <ResponsiveContainer {...containerProps}>
@@ -333,7 +360,7 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
                 y="50%"
                 textAnchor="middle"
                 dominantBaseline="middle"
-                className="text-2xl font-bold fill-gray-900"
+                className="fill-gray-900 text-2xl font-bold"
               >
                 {data[0]?.value || 0}%
               </text>
@@ -343,19 +370,28 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
 
       default:
         return (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500 text-sm">Unsupported chart type: {type}</p>
+          <div className="flex h-full items-center justify-center">
+            <p className="text-sm text-gray-500">
+              Unsupported chart type: {type}
+            </p>
           </div>
         );
     }
   };
 
   return (
-    <div className={clsx('bg-white rounded-lg border border-gray-200 shadow-sm', className)}>
+    <div
+      className={clsx(
+        'rounded-lg border border-gray-200 bg-white shadow-sm',
+        className
+      )}
+    >
       {(title || subtitle) && (
         <div className="p-6 pb-0">
-          {title && <h3 className="text-lg font-medium text-gray-900">{title}</h3>}
-          {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
+          {title && (
+            <h3 className="text-lg font-medium text-gray-900">{title}</h3>
+          )}
+          {subtitle && <p className="mt-1 text-sm text-gray-500">{subtitle}</p>}
         </div>
       )}
       <div className="p-6" style={{ height: height + 'px' }}>
@@ -375,7 +411,7 @@ export const ChartTemplates = {
     yAxis: { dataKey: 'registrations', label: 'Registrations' },
     showGrid: true,
     showTooltip: true,
-    showLegend: false
+    showLegend: false,
   }),
 
   jobApplicationsByCategory: (data: any[]): ChartConfig => ({
@@ -386,7 +422,7 @@ export const ChartTemplates = {
     yAxis: { dataKey: 'applications', label: 'Applications' },
     showGrid: true,
     showTooltip: true,
-    showLegend: false
+    showLegend: false,
   }),
 
   userDeviceDistribution: (data: any[]): ChartConfig => ({
@@ -394,7 +430,7 @@ export const ChartTemplates = {
     title: 'User Device Distribution',
     data,
     showTooltip: true,
-    showLegend: true
+    showLegend: true,
   }),
 
   revenueGrowth: (data: any[]): ChartConfig => ({
@@ -407,7 +443,7 @@ export const ChartTemplates = {
     colors: ['#10b981'],
     showGrid: true,
     showTooltip: true,
-    showLegend: false
+    showLegend: false,
   }),
 
   conversionFunnel: (data: any[]): ChartConfig => ({
@@ -415,7 +451,7 @@ export const ChartTemplates = {
     title: 'User Conversion Funnel',
     data,
     showTooltip: true,
-    showLegend: true
+    showLegend: true,
   }),
 
   performanceMetrics: (data: any[]): ChartConfig => ({
@@ -428,7 +464,7 @@ export const ChartTemplates = {
     colors: ['#ef4444'],
     showGrid: true,
     showTooltip: true,
-    showLegend: false
+    showLegend: false,
   }),
 
   engagementHeatmap: (data: any[]): ChartConfig => ({
@@ -439,7 +475,7 @@ export const ChartTemplates = {
     yAxis: { dataKey: 'dayOfWeek', label: 'Day of Week' },
     showGrid: true,
     showTooltip: true,
-    showLegend: false
+    showLegend: false,
   }),
 
   goalProgress: (value: number): ChartConfig => ({
@@ -447,8 +483,8 @@ export const ChartTemplates = {
     title: 'Goal Progress',
     data: [{ value }],
     showTooltip: false,
-    showLegend: false
-  })
+    showLegend: false,
+  }),
 };
 
 export default ChartWidget;

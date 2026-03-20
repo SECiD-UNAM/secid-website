@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth} from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase';
 import { useTranslations } from '@/hooks/useTranslations';
 import {
-
   collection,
   query,
   orderBy,
@@ -15,7 +14,7 @@ import {
   deleteDoc,
   getDocs,
   DocumentSnapshot,
-  Timestamp
+  Timestamp,
 } from 'firebase/firestore';
 import {
   Users,
@@ -31,7 +30,7 @@ import {
   UserCheck,
   UserX,
   Crown,
-  Shield
+  Shield,
 } from 'lucide-react';
 
 interface User {
@@ -86,7 +85,7 @@ export const UserManagement: React.FC = () => {
   const [, setShowUserModal] = useState(false);
   const [, setSelectedUser] = useState<User | null>(null);
   const [bulkAction, setBulkAction] = useState('');
-  
+
   const [filters, setFilters] = useState<UserFilters>({
     role: 'all',
     membershipTier: 'all',
@@ -94,7 +93,7 @@ export const UserManagement: React.FC = () => {
     isActive: null,
     graduationYear: 'all',
     program: 'all',
-    searchTerm: ''
+    searchTerm: '',
   });
 
   const USERS_PER_PAGE = 20;
@@ -120,16 +119,25 @@ export const UserManagement: React.FC = () => {
         userQuery = query(userQuery, where('role', '==', filters['role']));
       }
       if (filters.membershipTier !== 'all') {
-        userQuery = query(userQuery, where('membershipTier', '==', filters.membershipTier));
+        userQuery = query(
+          userQuery,
+          where('membershipTier', '==', filters.membershipTier)
+        );
       }
       if (filters.isVerified !== null) {
-        userQuery = query(userQuery, where('isVerified', '==', filters.isVerified));
+        userQuery = query(
+          userQuery,
+          where('isVerified', '==', filters.isVerified)
+        );
       }
       if (filters.isActive !== null) {
         userQuery = query(userQuery, where('isActive', '==', filters.isActive));
       }
       if (filters.graduationYear !== 'all') {
-        userQuery = query(userQuery, where('graduationYear', '==', parseInt(filters.graduationYear)));
+        userQuery = query(
+          userQuery,
+          where('graduationYear', '==', parseInt(filters.graduationYear))
+        );
       }
       if (filters.program !== 'all') {
         userQuery = query(userQuery, where('program', '==', filters.program));
@@ -169,12 +177,12 @@ export const UserManagement: React.FC = () => {
           photoURL: data['photoURL'],
           createdAt: data['createdAt']?.toDate() || new Date(),
           updatedAt: data['updatedAt']?.toDate() || new Date(),
-          lastLoginAt: data?.['lastLoginAt']?.toDate()
+          lastLoginAt: data?.['lastLoginAt']?.toDate(),
         });
       });
 
-      if(isLoadMore) {
-        setUsers(prev => [...prev, ...loadedUsers]);
+      if (isLoadMore) {
+        setUsers((prev) => [...prev, ...loadedUsers]);
       } else {
         setUsers(loadedUsers);
       }
@@ -186,10 +194,11 @@ export const UserManagement: React.FC = () => {
       if (!isLoadMore) {
         setTotalUsers(loadedUsers.length + (hasMore ? 100 : 0)); // Approximate
       }
-
     } catch (err) {
       console.error('Error loading users:', err);
-      setError(language === 'es' ? 'Error al cargar usuarios' : 'Error loading users');
+      setError(
+        language === 'es' ? 'Error al cargar usuarios' : 'Error loading users'
+      );
     } finally {
       setLoading(false);
       setIsLoadingMore(false);
@@ -209,31 +218,58 @@ export const UserManagement: React.FC = () => {
   const handleUserAction = async (action: string, userId: string) => {
     try {
       const userRef = doc(db, 'users', userId);
-      
-      switch(action) {
+
+      switch (action) {
         case 'verify':
-          await updateDoc(userRef, { isVerified: true, updatedAt: Timestamp.now() });
+          await updateDoc(userRef, {
+            isVerified: true,
+            updatedAt: Timestamp.now(),
+          });
           break;
         case 'unverify':
-          await updateDoc(userRef, { isVerified: false, updatedAt: Timestamp.now() });
+          await updateDoc(userRef, {
+            isVerified: false,
+            updatedAt: Timestamp.now(),
+          });
           break;
         case 'activate':
-          await updateDoc(userRef, { isActive: true, updatedAt: Timestamp.now() });
+          await updateDoc(userRef, {
+            isActive: true,
+            updatedAt: Timestamp.now(),
+          });
           break;
         case 'deactivate':
-          await updateDoc(userRef, { isActive: false, updatedAt: Timestamp.now() });
+          await updateDoc(userRef, {
+            isActive: false,
+            updatedAt: Timestamp.now(),
+          });
           break;
         case 'make_admin':
-          await updateDoc(userRef, { role: 'admin', updatedAt: Timestamp.now() });
+          await updateDoc(userRef, {
+            role: 'admin',
+            updatedAt: Timestamp.now(),
+          });
           break;
         case 'make_moderator':
-          await updateDoc(userRef, { role: 'moderator', updatedAt: Timestamp.now() });
+          await updateDoc(userRef, {
+            role: 'moderator',
+            updatedAt: Timestamp.now(),
+          });
           break;
         case 'make_member':
-          await updateDoc(userRef, { role: 'member', updatedAt: Timestamp.now() });
+          await updateDoc(userRef, {
+            role: 'member',
+            updatedAt: Timestamp.now(),
+          });
           break;
         case 'delete':
-          if (confirm(language === 'es' ? '¿Estás seguro de eliminar este usuario?' : 'Are you sure you want to delete this user?')) {
+          if (
+            confirm(
+              language === 'es'
+                ? '¿Estás seguro de eliminar este usuario?'
+                : 'Are you sure you want to delete this user?'
+            )
+          ) {
             await deleteDoc(userRef);
           }
           break;
@@ -255,7 +291,11 @@ export const UserManagement: React.FC = () => {
       loadUsers();
     } catch (err) {
       console.error('Error performing user action:', err);
-      setError(language === 'es' ? 'Error al realizar la acción' : 'Error performing action');
+      setError(
+        language === 'es'
+          ? 'Error al realizar la acción'
+          : 'Error performing action'
+      );
     }
   };
 
@@ -263,21 +303,23 @@ export const UserManagement: React.FC = () => {
     if (!bulkAction || selectedUsers.size === 0) return;
 
     try {
-      const promises = Array.from(selectedUsers).map(userId => 
+      const promises = Array.from(selectedUsers).map((userId) =>
         handleUserAction(bulkAction, userId)
       );
-      
+
       await Promise.all(promises);
       setSelectedUsers(new Set());
       setBulkAction('');
     } catch (err) {
       console.error('Error performing bulk action:', err);
-      setError(language === 'es' ? 'Error en acción masiva' : 'Error in bulk action');
+      setError(
+        language === 'es' ? 'Error en acción masiva' : 'Error in bulk action'
+      );
     }
   };
 
   const exportUsers = () => {
-    const csvData = users.map(user => ({
+    const csvData = users.map((user) => ({
       Email: user['email'],
       'First Name': user.firstName,
       'Last Name': user.lastName,
@@ -290,30 +332,39 @@ export const UserManagement: React.FC = () => {
       'Current Company': user.currentCompany || '',
       'Current Position': user.currentPosition || '',
       'Created At': user['createdAt'].toISOString(),
-      'Profile Completeness': user.profileCompleteness || 0
+      'Profile Completeness': user.profileCompleteness || 0,
     }));
 
     if (csvData.length === 0) return;
 
-    const csvContent = "data:text/csv;charset=utf-8," +
-      Object.keys(csvData[0] as Record<string, unknown>).join(",") + "\n" +
-      csvData.map(row => Object.values(row).join(",")).join("\n");
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      Object.keys(csvData[0] as Record<string, unknown>).join(',') +
+      '\n' +
+      csvData.map((row) => Object.values(row).join(',')).join('\n');
 
     const encodedUri = encodeURI(csvContent);
-    const link = document['createElement']("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `users-export-${new Date().toISOString().split('T')[0]}.csv`);
+    const link = document['createElement']('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute(
+      'download',
+      `users-export-${new Date().toISOString().split('T')[0]}.csv`
+    );
     document.body.appendChild(link);
     link.click();
     document['body'].removeChild(link);
   };
 
   const getRoleIcon = (role: string) => {
-    switch(role) {
-      case 'admin': return <Crown className="w-4 h-4 text-purple-600" />;
-      case 'moderator': return <Shield className="w-4 h-4 text-blue-600" />;
-      case 'company': return <Briefcase className="w-4 h-4 text-green-600" />;
-      default: return <Users className="w-4 h-4 text-gray-600" />;
+    switch (role) {
+      case 'admin':
+        return <Crown className="h-4 w-4 text-purple-600" />;
+      case 'moderator':
+        return <Shield className="h-4 w-4 text-blue-600" />;
+      case 'company':
+        return <Briefcase className="h-4 w-4 text-green-600" />;
+      default:
+        return <Users className="h-4 w-4 text-gray-600" />;
     }
   };
 
@@ -321,23 +372,22 @@ export const UserManagement: React.FC = () => {
     return new Intl.DateTimeFormat(language === 'es' ? 'es-MX' : 'en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     }).format(date);
   };
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <Users className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <Users className="mx-auto mb-4 h-16 w-16 text-red-500" />
+          <h1 className="mb-2 text-2xl font-bold text-gray-900">
             {language === 'es' ? 'Acceso Denegado' : 'Access Denied'}
           </h1>
           <p className="text-gray-600">
-            {language === 'es' 
+            {language === 'es'
               ? 'Se requieren privilegios de administrador para gestionar usuarios.'
-              : 'Administrator privileges are required to manage users.'
-            }
+              : 'Administrator privileges are required to manage users.'}
           </p>
         </div>
       </div>
@@ -353,121 +403,171 @@ export const UserManagement: React.FC = () => {
             {language === 'es' ? 'Gestión de Usuarios' : 'User Management'}
           </h1>
           <p className="mt-2 text-gray-600">
-            {language === 'es' ? 'Administrar y moderar usuarios de la plataforma' : 'Manage and moderate platform users'}
+            {language === 'es'
+              ? 'Administrar y moderar usuarios de la plataforma'
+              : 'Manage and moderate platform users'}
           </p>
         </div>
-        <div className="mt-4 sm:mt-0 flex space-x-3">
+        <div className="mt-4 flex space-x-3 sm:mt-0">
           <button
             onClick={exportUsers}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            <Download className="w-4 h-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             {language === 'es' ? 'Exportar' : 'Export'}
           </button>
           <button
             onClick={() => setShowUserModal(true)}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             {language === 'es' ? 'Nuevo Usuario' : 'New User'}
           </button>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700">
               {language === 'es' ? 'Buscar' : 'Search'}
             </label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
               <input
                 type="text"
                 value={filters.searchTerm}
-                onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
-                placeholder={language === 'es' ? 'Buscar usuarios...' : 'Search users...'}
-                className="pl-10 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                onChange={(e) =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    searchTerm: e.target.value,
+                  }))
+                }
+                placeholder={
+                  language === 'es' ? 'Buscar usuarios...' : 'Search users...'
+                }
+                className="w-full rounded-md border-gray-300 pl-10 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700">
               {language === 'es' ? 'Rol' : 'Role'}
             </label>
             <select
               value={filters['role']}
-              onChange={(e) => setFilters(prev => ({ ...prev, role: e.target.value }))}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, role: e.target.value }))
+              }
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="all">{language === 'es' ? 'Todos' : 'All'}</option>
-              <option value="member">{language === 'es' ? 'Miembro' : 'Member'}</option>
-              <option value="admin">{language === 'es' ? 'Administrador' : 'Admin'}</option>
-              <option value="moderator">{language === 'es' ? 'Moderador' : 'Moderator'}</option>
-              <option value="company">{language === 'es' ? 'Empresa' : 'Company'}</option>
+              <option value="member">
+                {language === 'es' ? 'Miembro' : 'Member'}
+              </option>
+              <option value="admin">
+                {language === 'es' ? 'Administrador' : 'Admin'}
+              </option>
+              <option value="moderator">
+                {language === 'es' ? 'Moderador' : 'Moderator'}
+              </option>
+              <option value="company">
+                {language === 'es' ? 'Empresa' : 'Company'}
+              </option>
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700">
               {language === 'es' ? 'Membresía' : 'Membership'}
             </label>
             <select
               value={filters.membershipTier}
-              onChange={(e) => setFilters(prev => ({ ...prev, membershipTier: e.target.value }))}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  membershipTier: e.target.value,
+                }))
+              }
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="all">{language === 'es' ? 'Todas' : 'All'}</option>
-              <option value="free">{language === 'es' ? 'Gratuita' : 'Free'}</option>
-              <option value="premium">{language === 'es' ? 'Premium' : 'Premium'}</option>
-              <option value="corporate">{language === 'es' ? 'Corporativa' : 'Corporate'}</option>
+              <option value="free">
+                {language === 'es' ? 'Gratuita' : 'Free'}
+              </option>
+              <option value="premium">
+                {language === 'es' ? 'Premium' : 'Premium'}
+              </option>
+              <option value="corporate">
+                {language === 'es' ? 'Corporativa' : 'Corporate'}
+              </option>
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700">
               {language === 'es' ? 'Verificado' : 'Verified'}
             </label>
             <select
-              value={filters.isVerified === null ? 'all' : filters.isVerified.toString()}
-              onChange={(e) => setFilters(prev => ({ 
-                ...prev, 
-                isVerified: e.target.value === 'all' ? null : e.target.value === 'true' 
-              }))}
+              value={
+                filters.isVerified === null
+                  ? 'all'
+                  : filters.isVerified.toString()
+              }
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  isVerified:
+                    e.target.value === 'all' ? null : e.target.value === 'true',
+                }))
+              }
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="all">{language === 'es' ? 'Todos' : 'All'}</option>
-              <option value="true">{language === 'es' ? 'Verificados' : 'Verified'}</option>
-              <option value="false">{language === 'es' ? 'No verificados' : 'Not verified'}</option>
+              <option value="true">
+                {language === 'es' ? 'Verificados' : 'Verified'}
+              </option>
+              <option value="false">
+                {language === 'es' ? 'No verificados' : 'Not verified'}
+              </option>
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700">
               {language === 'es' ? 'Estado' : 'Status'}
             </label>
             <select
-              value={filters.isActive === null ? 'all' : filters.isActive.toString()}
-              onChange={(e) => setFilters(prev => ({ 
-                ...prev, 
-                isActive: e.target.value === 'all' ? null : e.target.value === 'true' 
-              }))}
+              value={
+                filters.isActive === null ? 'all' : filters.isActive.toString()
+              }
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  isActive:
+                    e.target.value === 'all' ? null : e.target.value === 'true',
+                }))
+              }
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="all">{language === 'es' ? 'Todos' : 'All'}</option>
-              <option value="true">{language === 'es' ? 'Activos' : 'Active'}</option>
-              <option value="false">{language === 'es' ? 'Inactivos' : 'Inactive'}</option>
+              <option value="true">
+                {language === 'es' ? 'Activos' : 'Active'}
+              </option>
+              <option value="false">
+                {language === 'es' ? 'Inactivos' : 'Inactive'}
+              </option>
             </select>
           </div>
 
           <div className="flex items-end">
             <button
               onClick={() => loadUsers()}
-              className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
-              <Filter className="w-4 h-4 mr-2" />
+              <Filter className="mr-2 h-4 w-4" />
               {language === 'es' ? 'Filtrar' : 'Filter'}
             </button>
           </div>
@@ -476,36 +576,51 @@ export const UserManagement: React.FC = () => {
 
       {/* Bulk Actions */}
       {selectedUsers.size > 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <span className="text-sm text-blue-700">
-                {selectedUsers.size} {language === 'es' ? 'usuarios seleccionados' : 'users selected'}
+                {selectedUsers.size}{' '}
+                {language === 'es'
+                  ? 'usuarios seleccionados'
+                  : 'users selected'}
               </span>
               <select
                 value={bulkAction}
                 onChange={(e) => setBulkAction(e.target.value)}
                 className="rounded-md border-blue-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
-                <option value="">{language === 'es' ? 'Seleccionar acción' : 'Select action'}</option>
-                <option value="verify">{language === 'es' ? 'Verificar' : 'Verify'}</option>
-                <option value="unverify">{language === 'es' ? 'No verificar' : 'Unverify'}</option>
-                <option value="activate">{language === 'es' ? 'Activar' : 'Activate'}</option>
-                <option value="deactivate">{language === 'es' ? 'Desactivar' : 'Deactivate'}</option>
-                <option value="delete">{language === 'es' ? 'Eliminar' : 'Delete'}</option>
+                <option value="">
+                  {language === 'es' ? 'Seleccionar acción' : 'Select action'}
+                </option>
+                <option value="verify">
+                  {language === 'es' ? 'Verificar' : 'Verify'}
+                </option>
+                <option value="unverify">
+                  {language === 'es' ? 'No verificar' : 'Unverify'}
+                </option>
+                <option value="activate">
+                  {language === 'es' ? 'Activar' : 'Activate'}
+                </option>
+                <option value="deactivate">
+                  {language === 'es' ? 'Desactivar' : 'Deactivate'}
+                </option>
+                <option value="delete">
+                  {language === 'es' ? 'Eliminar' : 'Delete'}
+                </option>
               </select>
             </div>
             <div className="flex items-center space-x-2">
               <button
                 onClick={handleBulkAction}
                 disabled={!bulkAction}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {language === 'es' ? 'Aplicar' : 'Apply'}
               </button>
               <button
                 onClick={() => setSelectedUsers(new Set())}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
                 {language === 'es' ? 'Cancelar' : 'Cancel'}
               </button>
@@ -515,18 +630,23 @@ export const UserManagement: React.FC = () => {
       )}
 
       {/* Users Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                >
                   <input
                     type="checkbox"
-                    checked={users.length > 0 && selectedUsers.size === users.length}
+                    checked={
+                      users.length > 0 && selectedUsers.size === users.length
+                    }
                     onChange={(e) => {
                       if (e.target.checked) {
-                        setSelectedUsers(new Set(users.map(u => u.uid)));
+                        setSelectedUsers(new Set(users.map((u) => u.uid)));
                       } else {
                         setSelectedUsers(new Set());
                       }
@@ -534,30 +654,50 @@ export const UserManagement: React.FC = () => {
                     className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                >
                   {language === 'es' ? 'Usuario' : 'User'}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                >
                   {language === 'es' ? 'Rol' : 'Role'}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                >
                   {language === 'es' ? 'Estado' : 'Status'}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                >
                   {language === 'es' ? 'Membresía' : 'Membership'}
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                >
                   {language === 'es' ? 'Registro' : 'Joined'}
                 </th>
                 <th scope="col" className="relative px-6 py-3">
-                  <span className="sr-only">{language === 'es' ? 'Acciones' : 'Actions'}</span>
+                  <span className="sr-only">
+                    {language === 'es' ? 'Acciones' : 'Actions'}
+                  </span>
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 bg-white">
               {users.map((user) => (
-                <tr key={user.uid} className={selectedUsers.has(user.uid) ? 'bg-blue-50' : ''}>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                <tr
+                  key={user.uid}
+                  className={selectedUsers.has(user.uid) ? 'bg-blue-50' : ''}
+                >
+                  <td className="whitespace-nowrap px-6 py-4">
                     <input
                       type="checkbox"
                       checked={selectedUsers.has(user.uid)}
@@ -573,14 +713,18 @@ export const UserManagement: React.FC = () => {
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="whitespace-nowrap px-6 py-4">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
+                      <div className="h-10 w-10 flex-shrink-0">
                         {user.photoURL ? (
-                          <img className="h-10 w-10 rounded-full" src={user.photoURL} alt="" />
+                          <img
+                            className="h-10 w-10 rounded-full"
+                            src={user.photoURL}
+                            alt=""
+                          />
                         ) : (
-                          <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                            <Users className="w-5 h-5 text-gray-500" />
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
+                            <Users className="h-5 w-5 text-gray-500" />
                           </div>
                         )}
                       </div>
@@ -588,43 +732,61 @@ export const UserManagement: React.FC = () => {
                         <div className="text-sm font-medium text-gray-900">
                           {user.firstName} {user.lastName}
                         </div>
-                        <div className="text-sm text-gray-500">{user['email']}</div>
+                        <div className="text-sm text-gray-500">
+                          {user['email']}
+                        </div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="whitespace-nowrap px-6 py-4">
                     <div className="flex items-center">
                       {getRoleIcon(user['role'])}
-                      <span className="ml-2 text-sm text-gray-900 capitalize">{user['role']}</span>
+                      <span className="ml-2 text-sm capitalize text-gray-900">
+                        {user['role']}
+                      </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="whitespace-nowrap px-6 py-4">
                     <div className="flex space-x-2">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        user.isVerified ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {user.isVerified 
-                          ? (language === 'es' ? 'Verificado' : 'Verified')
-                          : (language === 'es' ? 'No verificado' : 'Unverified')
-                        }
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                          user.isVerified
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {user.isVerified
+                          ? language === 'es'
+                            ? 'Verificado'
+                            : 'Verified'
+                          : language === 'es'
+                            ? 'No verificado'
+                            : 'Unverified'}
                       </span>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}>
-                        {user.isActive 
-                          ? (language === 'es' ? 'Activo' : 'Active')
-                          : (language === 'es' ? 'Inactivo' : 'Inactive')
-                        }
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                          user.isActive
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {user.isActive
+                          ? language === 'es'
+                            ? 'Activo'
+                            : 'Active'
+                          : language === 'es'
+                            ? 'Inactivo'
+                            : 'Inactive'}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capitalize">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm capitalize text-gray-900">
                     {user.membershipTier}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                     {formatDate(user['createdAt'])}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => {
@@ -632,36 +794,74 @@ export const UserManagement: React.FC = () => {
                           setShowUserModal(true);
                         }}
                         className="text-blue-600 hover:text-blue-900"
-                        title={language === 'es' ? 'Ver detalles' : 'View details'}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleUserAction(user.isVerified ? 'unverify' : 'verify', user.uid)}
-                        className={user.isVerified ? 'text-gray-600 hover:text-gray-900' : 'text-green-600 hover:text-green-900'}
-                        title={user.isVerified 
-                          ? (language === 'es' ? 'Quitar verificación' : 'Unverify')
-                          : (language === 'es' ? 'Verificar' : 'Verify')
+                        title={
+                          language === 'es' ? 'Ver detalles' : 'View details'
                         }
                       >
-                        {user.isVerified ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                        <Eye className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={() => handleUserAction(user.isActive ? 'deactivate' : 'activate', user.uid)}
-                        className={user.isActive ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}
-                        title={user.isActive 
-                          ? (language === 'es' ? 'Desactivar' : 'Deactivate')
-                          : (language === 'es' ? 'Activar' : 'Activate')
+                        onClick={() =>
+                          handleUserAction(
+                            user.isVerified ? 'unverify' : 'verify',
+                            user.uid
+                          )
+                        }
+                        className={
+                          user.isVerified
+                            ? 'text-gray-600 hover:text-gray-900'
+                            : 'text-green-600 hover:text-green-900'
+                        }
+                        title={
+                          user.isVerified
+                            ? language === 'es'
+                              ? 'Quitar verificación'
+                              : 'Unverify'
+                            : language === 'es'
+                              ? 'Verificar'
+                              : 'Verify'
                         }
                       >
-                        {user.isActive ? <Ban className="w-4 h-4" /> : <UnlockKeyhole className="w-4 h-4" />}
+                        {user.isVerified ? (
+                          <UserX className="h-4 w-4" />
+                        ) : (
+                          <UserCheck className="h-4 w-4" />
+                        )}
+                      </button>
+                      <button
+                        onClick={() =>
+                          handleUserAction(
+                            user.isActive ? 'deactivate' : 'activate',
+                            user.uid
+                          )
+                        }
+                        className={
+                          user.isActive
+                            ? 'text-red-600 hover:text-red-900'
+                            : 'text-green-600 hover:text-green-900'
+                        }
+                        title={
+                          user.isActive
+                            ? language === 'es'
+                              ? 'Desactivar'
+                              : 'Deactivate'
+                            : language === 'es'
+                              ? 'Activar'
+                              : 'Activate'
+                        }
+                      >
+                        {user.isActive ? (
+                          <Ban className="h-4 w-4" />
+                        ) : (
+                          <UnlockKeyhole className="h-4 w-4" />
+                        )}
                       </button>
                       <button
                         onClick={() => handleUserAction('delete', user.uid)}
                         className="text-red-600 hover:text-red-900"
                         title={language === 'es' ? 'Eliminar' : 'Delete'}
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </td>
@@ -673,48 +873,61 @@ export const UserManagement: React.FC = () => {
 
         {/* Load More */}
         {hasMore && (
-          <div className="px-6 py-4 border-t border-gray-200">
+          <div className="border-t border-gray-200 px-6 py-4">
             <button
               onClick={() => loadUsers(true)}
               disabled={isLoadingMore}
-              className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              className="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-blue-50 px-4 py-2 text-sm font-medium text-blue-600 shadow-sm hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
             >
-              {isLoadingMore 
-                ? (language === 'es' ? 'Cargando...' : 'Loading...')
-                : (language === 'es' ? 'Cargar más' : 'Load more')
-              }
+              {isLoadingMore
+                ? language === 'es'
+                  ? 'Cargando...'
+                  : 'Loading...'
+                : language === 'es'
+                  ? 'Cargar más'
+                  : 'Load more'}
             </button>
           </div>
         )}
       </div>
 
       {/* Stats */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="mb-4 text-lg font-medium text-gray-900">
           {language === 'es' ? 'Resumen' : 'Summary'}
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-blue-600">{totalUsers.toLocaleString()}</p>
-            <p className="text-sm text-gray-500">{language === 'es' ? 'Total de usuarios' : 'Total users'}</p>
+            <p className="text-2xl font-bold text-blue-600">
+              {totalUsers.toLocaleString()}
+            </p>
+            <p className="text-sm text-gray-500">
+              {language === 'es' ? 'Total de usuarios' : 'Total users'}
+            </p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-green-600">
-              {users.filter(u => u.isVerified).length}
+              {users.filter((u) => u.isVerified).length}
             </p>
-            <p className="text-sm text-gray-500">{language === 'es' ? 'Verificados' : 'Verified'}</p>
+            <p className="text-sm text-gray-500">
+              {language === 'es' ? 'Verificados' : 'Verified'}
+            </p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-yellow-600">
-              {users.filter(u => u.isActive).length}
+              {users.filter((u) => u.isActive).length}
             </p>
-            <p className="text-sm text-gray-500">{language === 'es' ? 'Activos' : 'Active'}</p>
+            <p className="text-sm text-gray-500">
+              {language === 'es' ? 'Activos' : 'Active'}
+            </p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-bold text-purple-600">
-              {users.filter(u => u.membershipTier === 'premium').length}
+              {users.filter((u) => u.membershipTier === 'premium').length}
             </p>
-            <p className="text-sm text-gray-500">{language === 'es' ? 'Premium' : 'Premium'}</p>
+            <p className="text-sm text-gray-500">
+              {language === 'es' ? 'Premium' : 'Premium'}
+            </p>
           </div>
         </div>
       </div>
@@ -722,7 +935,7 @@ export const UserManagement: React.FC = () => {
       {/* Loading State */}
       {loading && (
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
           <span className="ml-3 text-gray-600">
             {language === 'es' ? 'Cargando usuarios...' : 'Loading users...'}
           </span>
@@ -731,11 +944,19 @@ export const UserManagement: React.FC = () => {
 
       {/* Error State */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
           <div className="flex">
             <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              <svg
+                className="h-5 w-5 text-red-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
             <div className="ml-3">

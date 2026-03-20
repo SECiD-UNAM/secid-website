@@ -9,13 +9,17 @@ test.describe('Job Search User Journey', () => {
     // Verify hero section
     const heroSection = page.locator('.secid-hero--jobs');
     await expect(heroSection).toBeVisible();
-    await expect(page.locator('.secid-hero__title')).toContainText('Bolsa de Trabajo');
+    await expect(page.locator('.secid-hero__title')).toContainText(
+      'Bolsa de Trabajo'
+    );
 
     // Check CTA for companies
     const companyCta = page.locator('.secid-cta-box');
     await expect(companyCta).toBeVisible();
-    await expect(companyCta).toContainText('¿Buscas talento en ciencia de datos?');
-    
+    await expect(companyCta).toContainText(
+      '¿Buscas talento en ciencia de datos?'
+    );
+
     const publishButton = companyCta.locator('text=Publicar Empleo');
     await expect(publishButton).toBeVisible();
   });
@@ -24,36 +28,57 @@ test.describe('Job Search User Journey', () => {
     // Check search input
     const searchBox = page.locator('.secid-search-input');
     await expect(searchBox).toBeVisible();
-    await expect(searchBox).toHaveAttribute('placeholder', 'Buscar por título, empresa o ubicación...');
+    await expect(searchBox).toHaveAttribute(
+      'placeholder',
+      'Buscar por título, empresa o ubicación...'
+    );
 
     // Verify filter dropdowns
     const filters = [
-      { label: 'Ubicación', options: ['Ciudad de México', 'Guadalajara', 'Monterrey', 'Remoto'] },
-      { label: 'Tipo de Empleo', options: ['Tiempo Completo', 'Medio Tiempo', 'Por Proyecto', 'Prácticas'] },
-      { label: 'Experiencia', options: ['Principiante', 'Intermedio', 'Senior', 'Líder'] }
+      {
+        label: 'Ubicación',
+        options: ['Ciudad de México', 'Guadalajara', 'Monterrey', 'Remoto'],
+      },
+      {
+        label: 'Tipo de Empleo',
+        options: [
+          'Tiempo Completo',
+          'Medio Tiempo',
+          'Por Proyecto',
+          'Prácticas',
+        ],
+      },
+      {
+        label: 'Experiencia',
+        options: ['Principiante', 'Intermedio', 'Senior', 'Líder'],
+      },
     ];
 
     for (const filter of filters) {
-      const select = page.locator('.secid-filter-select', { hasText: filter.label });
+      const select = page.locator('.secid-filter-select', {
+        hasText: filter.label,
+      });
       await expect(select).toBeVisible();
     }
   });
 
-  test('should display job cards with correct information', async ({ page }) => {
+  test('should display job cards with correct information', async ({
+    page,
+  }) => {
     // Wait for job cards to load
     const jobCards = page.locator('.secid-job-card');
     await expect(jobCards.first()).toBeVisible();
 
     // Check first job card details
     const firstJob = jobCards.first();
-    
+
     // Company info
     const companyLogo = firstJob.locator('.secid-job-card__logo');
     await expect(companyLogo).toBeVisible();
-    
+
     const jobTitle = firstJob.locator('h3');
     await expect(jobTitle).toBeVisible();
-    
+
     const companyName = firstJob.locator('.secid-job-card__company-name');
     await expect(companyName).toBeVisible();
 
@@ -85,7 +110,9 @@ test.describe('Job Search User Journey', () => {
 
     // Verify navigation to job submission page
     await expect(page).toHaveURL(/.*publicar-empleo/);
-    await expect(page.locator('.secid-hero__title')).toContainText('Encuentra Talento SECiD');
+    await expect(page.locator('.secid-hero__title')).toContainText(
+      'Encuentra Talento SECiD'
+    );
   });
 
   test('should display member CTA section', async ({ page }) => {
@@ -96,12 +123,14 @@ test.describe('Job Search User Journey', () => {
 
     // Check content
     await expect(memberCta).toContainText('¿Eres miembro de SECiD?');
-    await expect(memberCta).toContainText('Inicia sesión para acceder a más oportunidades exclusivas');
+    await expect(memberCta).toContainText(
+      'Inicia sesión para acceder a más oportunidades exclusivas'
+    );
 
     // Verify buttons
     const loginButton = memberCta.locator('text=Iniciar Sesión');
     await expect(loginButton).toBeVisible();
-    
+
     const registerButton = memberCta.locator('text=Registrarse');
     await expect(registerButton).toBeVisible();
   });
@@ -119,7 +148,7 @@ test.describe('Job Search User Journey', () => {
   test('should search for jobs', async ({ page }) => {
     const searchInput = page.locator('.secid-search-input');
     await searchInput.fill('Python');
-    
+
     const searchButton = page.locator('button:has-text("Buscar")');
     await searchButton.click();
 

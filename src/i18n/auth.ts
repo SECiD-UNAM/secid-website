@@ -7,7 +7,8 @@ export const authTranslations = {
     auth: {
       signUp: {
         title: 'Crear Cuenta',
-        subtitle: 'Únete a la comunidad de egresados en ciencia de datos de la UNAM',
+        subtitle:
+          'Únete a la comunidad de egresados en ciencia de datos de la UNAM',
         firstName: 'Nombre',
         lastName: 'Apellido',
         email: 'Correo Electrónico',
@@ -52,8 +53,10 @@ export const authTranslations = {
         'auth/weak-password': 'La contraseña es muy débil',
         'auth/invalid-email': 'Correo electrónico inválido',
         'auth/operation-not-allowed': 'Operación no permitida',
-        'auth/configuration-not-found': 'El servicio de autenticación no está configurado. Contacta al administrador.',
-        'auth/unauthorized-domain': 'Este dominio no está autorizado para iniciar sesión. Contacta al administrador.',
+        'auth/configuration-not-found':
+          'El servicio de autenticación no está configurado. Contacta al administrador.',
+        'auth/unauthorized-domain':
+          'Este dominio no está autorizado para iniciar sesión. Contacta al administrador.',
         default: 'Ha ocurrido un error',
       },
     },
@@ -107,8 +110,10 @@ export const authTranslations = {
         'auth/weak-password': 'Password is too weak',
         'auth/invalid-email': 'Invalid email address',
         'auth/operation-not-allowed': 'Operation not allowed',
-        'auth/configuration-not-found': 'Authentication service is not configured. Contact the administrator.',
-        'auth/unauthorized-domain': 'This domain is not authorized for sign-in. Contact the administrator.',
+        'auth/configuration-not-found':
+          'Authentication service is not configured. Contact the administrator.',
+        'auth/unauthorized-domain':
+          'This domain is not authorized for sign-in. Contact the administrator.',
         default: 'An error occurred',
       },
     },

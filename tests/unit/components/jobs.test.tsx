@@ -46,7 +46,7 @@ describe.skip('Job Components', () => {
 
     it('renders job information correctly', () => {
       render(<JobCard job={mockJob} />);
-      
+
       expect(screen.getByText(mockJob.title)).toBeInTheDocument();
       expect(screen.getByText(mockJob.company)).toBeInTheDocument();
       expect(screen.getByText(mockJob.location)).toBeInTheDocument();
@@ -56,34 +56,34 @@ describe.skip('Job Components', () => {
 
     it('displays salary range when available', () => {
       render(<JobCard job={mockJob} />);
-      
+
       expect(screen.getByText(/\$80,000 - \$120,000/)).toBeInTheDocument();
       expect(screen.getByText(/monthly/i)).toBeInTheDocument();
     });
 
     it('shows featured badge for featured jobs', () => {
       render(<JobCard job={mockJob} />);
-      
+
       expect(screen.getByText(/featured/i)).toBeInTheDocument();
     });
 
     it('shows remote badge for remote jobs', () => {
       render(<JobCard job={mockJob} />);
-      
+
       expect(screen.getByText(/remote/i)).toBeInTheDocument();
     });
 
     it('shows urgent badge for urgent jobs', () => {
       const urgentJob = mockJobs.juniorAnalystJob;
       render(<JobCard job={urgentJob} />);
-      
+
       expect(screen.getByText(/urgent/i)).toBeInTheDocument();
     });
 
     it('displays skill tags', () => {
       render(<JobCard job={mockJob} />);
-      
-      mockJob.skills.forEach(skill => {
+
+      mockJob.skills.forEach((skill) => {
         expect(screen.getByText(skill)).toBeInTheDocument();
       });
     });
@@ -91,10 +91,10 @@ describe.skip('Job Components', () => {
     it('calls onApply when apply button is clicked', () => {
       const onApply = vi.fn();
       render(<JobCard job={mockJob} onApply={onApply} />);
-      
+
       const applyButton = screen.getByRole('button', { name: /apply/i });
       fireEvent.click(applyButton);
-      
+
       expect(onApply).toHaveBeenCalledWith(mockJob.id);
     });
   });
@@ -113,8 +113,13 @@ describe.skip('Job Components', () => {
     const mockOnFiltersChange = vi.fn();
 
     it('renders all filter options', () => {
-      render(<JobFilters filters={mockFilters} onFiltersChange={mockOnFiltersChange} />);
-      
+      render(
+        <JobFilters
+          filters={mockFilters}
+          onFiltersChange={mockOnFiltersChange}
+        />
+      );
+
       expect(screen.getByLabelText(/location/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/job type/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/experience level/i)).toBeInTheDocument();
@@ -123,11 +128,16 @@ describe.skip('Job Components', () => {
     });
 
     it('calls onFiltersChange when location filter changes', () => {
-      render(<JobFilters filters={mockFilters} onFiltersChange={mockOnFiltersChange} />);
-      
+      render(
+        <JobFilters
+          filters={mockFilters}
+          onFiltersChange={mockOnFiltersChange}
+        />
+      );
+
       const locationInput = screen.getByLabelText(/location/i);
       fireEvent.change(locationInput, { target: { value: 'Mexico City' } });
-      
+
       expect(mockOnFiltersChange).toHaveBeenCalledWith({
         ...mockFilters,
         location: 'Mexico City',
@@ -135,11 +145,16 @@ describe.skip('Job Components', () => {
     });
 
     it('calls onFiltersChange when job type filter changes', () => {
-      render(<JobFilters filters={mockFilters} onFiltersChange={mockOnFiltersChange} />);
-      
+      render(
+        <JobFilters
+          filters={mockFilters}
+          onFiltersChange={mockOnFiltersChange}
+        />
+      );
+
       const typeSelect = screen.getByLabelText(/job type/i);
       fireEvent.change(typeSelect, { target: { value: 'full-time' } });
-      
+
       expect(mockOnFiltersChange).toHaveBeenCalledWith({
         ...mockFilters,
         type: 'full-time',
@@ -147,11 +162,16 @@ describe.skip('Job Components', () => {
     });
 
     it('calls onFiltersChange when remote checkbox is toggled', () => {
-      render(<JobFilters filters={mockFilters} onFiltersChange={mockOnFiltersChange} />);
-      
+      render(
+        <JobFilters
+          filters={mockFilters}
+          onFiltersChange={mockOnFiltersChange}
+        />
+      );
+
       const remoteCheckbox = screen.getByLabelText(/remote work/i);
       fireEvent.click(remoteCheckbox);
-      
+
       expect(mockOnFiltersChange).toHaveBeenCalledWith({
         ...mockFilters,
         remote: true,
@@ -170,16 +190,20 @@ describe.skip('Job Components', () => {
 
     it('renders job list correctly', async () => {
       render(<JobBoard />);
-      
+
       await waitFor(() => {
-        expect(screen.getByText(mockJobs.dataScientistJob.title)).toBeInTheDocument();
-        expect(screen.getByText(mockJobs.juniorAnalystJob.title)).toBeInTheDocument();
+        expect(
+          screen.getByText(mockJobs.dataScientistJob.title)
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(mockJobs.juniorAnalystJob.title)
+        ).toBeInTheDocument();
       });
     });
 
     it('shows loading state initially', () => {
       render(<JobBoard />);
-      
+
       expect(screen.getByTestId('jobs-loading')).toBeInTheDocument();
     });
 
@@ -189,9 +213,9 @@ describe.skip('Job Components', () => {
         total: 0,
         hasMore: false,
       });
-      
+
       render(<JobBoard />);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/no jobs found/i)).toBeInTheDocument();
       });
@@ -199,14 +223,14 @@ describe.skip('Job Components', () => {
 
     it('applies filters when changed', async () => {
       render(<JobBoard />);
-      
+
       await waitFor(() => {
         expect(screen.getByLabelText(/location/i)).toBeInTheDocument();
       });
-      
+
       const locationInput = screen.getByLabelText(/location/i);
       fireEvent.change(locationInput, { target: { value: 'Mexico City' } });
-      
+
       await waitFor(() => {
         expect(mockJobService.getJobs).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -222,16 +246,18 @@ describe.skip('Job Components', () => {
         total: Object.keys(mockJobs).length,
         hasMore: true,
       });
-      
+
       render(<JobBoard />);
-      
+
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /load more/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /load more/i })
+        ).toBeInTheDocument();
       });
-      
+
       const loadMoreButton = screen.getByRole('button', { name: /load more/i });
       fireEvent.click(loadMoreButton);
-      
+
       expect(mockJobService.getJobs).toHaveBeenCalledWith(
         expect.objectContaining({
           offset: 2,
@@ -247,7 +273,7 @@ describe.skip('Job Components', () => {
 
     it('renders all form fields', () => {
       render(<JobPostingForm />);
-      
+
       expect(screen.getByLabelText(/job title/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/company/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/location/i)).toBeInTheDocument();
@@ -258,29 +284,35 @@ describe.skip('Job Components', () => {
 
     it('validates required fields', async () => {
       render(<JobPostingForm />);
-      
+
       const submitButton = screen.getByRole('button', { name: /post job/i });
       fireEvent.click(submitButton);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/job title is required/i)).toBeInTheDocument();
-        expect(screen.getByText(/description is required/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/description is required/i)
+        ).toBeInTheDocument();
       });
     });
 
     it('submits form with valid data', async () => {
       mockJobService.createJob.mockResolvedValue({ id: 'new-job-id' });
-      
+
       render(<JobPostingForm />);
-      
+
       const titleInput = screen.getByLabelText(/job title/i);
       const descriptionInput = screen.getByLabelText(/description/i);
       const submitButton = screen.getByRole('button', { name: /post job/i });
-      
-      fireEvent.change(titleInput, { target: { value: 'New Data Scientist Position' } });
-      fireEvent.change(descriptionInput, { target: { value: 'Great opportunity for a data scientist...' } });
+
+      fireEvent.change(titleInput, {
+        target: { value: 'New Data Scientist Position' },
+      });
+      fireEvent.change(descriptionInput, {
+        target: { value: 'Great opportunity for a data scientist...' },
+      });
       fireEvent.click(submitButton);
-      
+
       await waitFor(() => {
         expect(mockJobService.createJob).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -293,19 +325,23 @@ describe.skip('Job Components', () => {
 
     it('shows success message on successful submission', async () => {
       mockJobService.createJob.mockResolvedValue({ id: 'new-job-id' });
-      
+
       render(<JobPostingForm />);
-      
+
       const titleInput = screen.getByLabelText(/job title/i);
       const descriptionInput = screen.getByLabelText(/description/i);
       const submitButton = screen.getByRole('button', { name: /post job/i });
-      
+
       fireEvent.change(titleInput, { target: { value: 'New Position' } });
-      fireEvent.change(descriptionInput, { target: { value: 'Description...' } });
+      fireEvent.change(descriptionInput, {
+        target: { value: 'Description...' },
+      });
       fireEvent.click(submitButton);
-      
+
       await waitFor(() => {
-        expect(screen.getByText(/job posted successfully/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/job posted successfully/i)
+        ).toBeInTheDocument();
       });
     });
   });

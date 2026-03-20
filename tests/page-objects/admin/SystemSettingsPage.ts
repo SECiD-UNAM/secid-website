@@ -169,11 +169,19 @@ export class SystemSettingsPage extends BasePage {
     this.auditTab = page.locator('[data-testid="audit-tab"]');
 
     // General settings
-    this.generalSettingsContainer = page.locator('[data-testid="general-settings"]');
+    this.generalSettingsContainer = page.locator(
+      '[data-testid="general-settings"]'
+    );
     this.siteNameInput = page.locator('[data-testid="site-name"]');
-    this.siteDescriptionInput = page.locator('[data-testid="site-description"]');
-    this.maintenanceModeToggle = page.locator('[data-testid="maintenance-mode"]');
-    this.registrationEnabledToggle = page.locator('[data-testid="registration-enabled"]');
+    this.siteDescriptionInput = page.locator(
+      '[data-testid="site-description"]'
+    );
+    this.maintenanceModeToggle = page.locator(
+      '[data-testid="maintenance-mode"]'
+    );
+    this.registrationEnabledToggle = page.locator(
+      '[data-testid="registration-enabled"]'
+    );
     this.maxUsersInput = page.locator('[data-testid="max-users"]');
     this.timeZoneSelect = page.locator('[data-testid="time-zone"]');
     this.languageSelect = page.locator('[data-testid="default-language"]');
@@ -181,19 +189,29 @@ export class SystemSettingsPage extends BasePage {
     this.faviconUpload = page.locator('[data-testid="favicon-upload"]');
 
     // Security settings
-    this.securitySettingsContainer = page.locator('[data-testid="security-settings"]');
+    this.securitySettingsContainer = page.locator(
+      '[data-testid="security-settings"]'
+    );
     this.twoFactorRequiredToggle = page.locator('[data-testid="require-2fa"]');
     this.sessionTimeoutInput = page.locator('[data-testid="session-timeout"]');
-    this.maxLoginAttemptsInput = page.locator('[data-testid="max-login-attempts"]');
-    this.passwordPolicySettings = page.locator('[data-testid="password-policy"]');
+    this.maxLoginAttemptsInput = page.locator(
+      '[data-testid="max-login-attempts"]'
+    );
+    this.passwordPolicySettings = page.locator(
+      '[data-testid="password-policy"]'
+    );
     this.ipWhitelistInput = page.locator('[data-testid="ip-whitelist"]');
     this.sslEnforcedToggle = page.locator('[data-testid="enforce-ssl"]');
     this.apiRateLimitInput = page.locator('[data-testid="api-rate-limit"]');
     this.corsOriginsInput = page.locator('[data-testid="cors-origins"]');
-    this.securityHeadersToggle = page.locator('[data-testid="security-headers"]');
+    this.securityHeadersToggle = page.locator(
+      '[data-testid="security-headers"]'
+    );
 
     // Email settings
-    this.emailSettingsContainer = page.locator('[data-testid="email-settings"]');
+    this.emailSettingsContainer = page.locator(
+      '[data-testid="email-settings"]'
+    );
     this.smtpServerInput = page.locator('[data-testid="smtp-server"]');
     this.smtpPortInput = page.locator('[data-testid="smtp-port"]');
     this.smtpUsernameInput = page.locator('[data-testid="smtp-username"]');
@@ -202,16 +220,24 @@ export class SystemSettingsPage extends BasePage {
     this.fromEmailInput = page.locator('[data-testid="from-email"]');
     this.fromNameInput = page.locator('[data-testid="from-name"]');
     this.testEmailBtn = page.locator('[data-testid="test-email"]');
-    this.emailTemplatesContainer = page.locator('[data-testid="email-templates"]');
+    this.emailTemplatesContainer = page.locator(
+      '[data-testid="email-templates"]'
+    );
 
     // Email templates
     this.templatesTable = page.locator('[data-testid="templates-table"]');
     this.addTemplateBtn = page.locator('[data-testid="add-template"]');
     this.templateModal = page.locator('[data-testid="template-modal"]');
     this.templateNameInput = page.locator('[data-testid="template-name"]');
-    this.templateSubjectInput = page.locator('[data-testid="template-subject"]');
-    this.templateHtmlEditor = page.locator('[data-testid="template-html-editor"]');
-    this.templateTextEditor = page.locator('[data-testid="template-text-editor"]');
+    this.templateSubjectInput = page.locator(
+      '[data-testid="template-subject"]'
+    );
+    this.templateHtmlEditor = page.locator(
+      '[data-testid="template-html-editor"]'
+    );
+    this.templateTextEditor = page.locator(
+      '[data-testid="template-text-editor"]'
+    );
     this.templateVariables = page.locator('[data-testid="template-variables"]');
     this.templatePreviewBtn = page.locator('[data-testid="template-preview"]');
     this.saveTemplateBtn = page.locator('[data-testid="save-template"]');
@@ -222,19 +248,33 @@ export class SystemSettingsPage extends BasePage {
     this.featureFlagsList = page.locator('[data-testid="feature-flags-list"]');
     this.featureFlagModal = page.locator('[data-testid="feature-flag-modal"]');
     this.flagNameInput = page.locator('[data-testid="flag-name"]');
-    this.flagDescriptionInput = page.locator('[data-testid="flag-description"]');
+    this.flagDescriptionInput = page.locator(
+      '[data-testid="flag-description"]'
+    );
     this.flagEnabledToggle = page.locator('[data-testid="flag-enabled"]');
-    this.rolloutPercentageSlider = page.locator('[data-testid="rollout-percentage"]');
+    this.rolloutPercentageSlider = page.locator(
+      '[data-testid="rollout-percentage"]'
+    );
     this.targetGroupsSelect = page.locator('[data-testid="target-groups"]');
     this.environmentSelect = page.locator('[data-testid="environment"]');
 
     // Integrations
     this.integrationsContainer = page.locator('[data-testid="integrations"]');
-    this.googleAnalyticsInput = page.locator('[data-testid="google-analytics-id"]');
-    this.amplitudeApiKeyInput = page.locator('[data-testid="amplitude-api-key"]');
-    this.stripePublishableKeyInput = page.locator('[data-testid="stripe-publishable-key"]');
-    this.stripeSecretKeyInput = page.locator('[data-testid="stripe-secret-key"]');
-    this.firebaseConfigTextarea = page.locator('[data-testid="firebase-config"]');
+    this.googleAnalyticsInput = page.locator(
+      '[data-testid="google-analytics-id"]'
+    );
+    this.amplitudeApiKeyInput = page.locator(
+      '[data-testid="amplitude-api-key"]'
+    );
+    this.stripePublishableKeyInput = page.locator(
+      '[data-testid="stripe-publishable-key"]'
+    );
+    this.stripeSecretKeyInput = page.locator(
+      '[data-testid="stripe-secret-key"]'
+    );
+    this.firebaseConfigTextarea = page.locator(
+      '[data-testid="firebase-config"]'
+    );
     this.slackWebhookInput = page.locator('[data-testid="slack-webhook"]');
     this.discordWebhookInput = page.locator('[data-testid="discord-webhook"]');
     this.linkedinApiKeyInput = page.locator('[data-testid="linkedin-api-key"]');
@@ -242,15 +282,23 @@ export class SystemSettingsPage extends BasePage {
     // Maintenance
     this.maintenanceContainer = page.locator('[data-testid="maintenance"]');
     this.backupSettingsPanel = page.locator('[data-testid="backup-settings"]');
-    this.automaticBackupsToggle = page.locator('[data-testid="automatic-backups"]');
-    this.backupFrequencySelect = page.locator('[data-testid="backup-frequency"]');
-    this.backupRetentionInput = page.locator('[data-testid="backup-retention"]');
+    this.automaticBackupsToggle = page.locator(
+      '[data-testid="automatic-backups"]'
+    );
+    this.backupFrequencySelect = page.locator(
+      '[data-testid="backup-frequency"]'
+    );
+    this.backupRetentionInput = page.locator(
+      '[data-testid="backup-retention"]'
+    );
     this.manualBackupBtn = page.locator('[data-testid="manual-backup"]');
     this.restoreBackupBtn = page.locator('[data-testid="restore-backup"]');
     this.systemHealthPanel = page.locator('[data-testid="system-health"]');
     this.databaseHealthCheck = page.locator('[data-testid="database-health"]');
     this.storageHealthCheck = page.locator('[data-testid="storage-health"]');
-    this.externalServicesCheck = page.locator('[data-testid="external-services-health"]');
+    this.externalServicesCheck = page.locator(
+      '[data-testid="external-services-health"]'
+    );
 
     // Action buttons
     this.saveSettingsBtn = page.locator('[data-testid="save-settings"]');
@@ -262,14 +310,20 @@ export class SystemSettingsPage extends BasePage {
 
     // Modals and notifications
     this.confirmationModal = page.locator('[data-testid="confirmation-modal"]');
-    this.successNotification = page.locator('[data-testid="success-notification"]');
+    this.successNotification = page.locator(
+      '[data-testid="success-notification"]'
+    );
     this.errorNotification = page.locator('[data-testid="error-notification"]');
-    this.warningNotification = page.locator('[data-testid="warning-notification"]');
+    this.warningNotification = page.locator(
+      '[data-testid="warning-notification"]'
+    );
 
     // Search and filtering
     this.settingsSearchInput = page.locator('[data-testid="settings-search"]');
     this.categoryFilter = page.locator('[data-testid="category-filter"]');
-    this.onlyEditableFilter = page.locator('[data-testid="only-editable-filter"]');
+    this.onlyEditableFilter = page.locator(
+      '[data-testid="only-editable-filter"]'
+    );
   }
 
   /**
@@ -284,7 +338,16 @@ export class SystemSettingsPage extends BasePage {
   /**
    * Switch to settings tab
    */
-  async switchToTab(tab: 'general' | 'security' | 'email' | 'feature-flags' | 'integrations' | 'maintenance' | 'audit') {
+  async switchToTab(
+    tab:
+      | 'general'
+      | 'security'
+      | 'email'
+      | 'feature-flags'
+      | 'integrations'
+      | 'maintenance'
+      | 'audit'
+  ) {
     const tabMap = {
       general: this.generalTab,
       security: this.securityTab,
@@ -292,7 +355,7 @@ export class SystemSettingsPage extends BasePage {
       'feature-flags': this.featureFlagsTab,
       integrations: this.integrationsTab,
       maintenance: this.maintenanceTab,
-      audit: this.auditTab
+      audit: this.auditTab,
     };
 
     await tabMap[tab].click();
@@ -377,7 +440,9 @@ export class SystemSettingsPage extends BasePage {
     }
     if (settings.maxLoginAttempts !== undefined) {
       await this.maxLoginAttempentsInput.clear();
-      await this.maxLoginAttemptsInput.fill(settings.maxLoginAttempts.toString());
+      await this.maxLoginAttemptsInput.fill(
+        settings.maxLoginAttempts.toString()
+      );
     }
     if (settings.ipWhitelist !== undefined) {
       await this.ipWhitelistInput.clear();
@@ -461,13 +526,16 @@ export class SystemSettingsPage extends BasePage {
     await this.switchToTab('email');
     await this.fillField('[data-testid="test-email-address"]', testEmail);
     await this.testEmailBtn.click();
-    
+
     // Wait for test result
     await this.waitForAPIResponse('/api/admin/settings/test-email');
-    
+
     // Check for success notification
     try {
-      await this.successNotification.waitFor({ state: 'visible', timeout: 10000 });
+      await this.successNotification.waitFor({
+        state: 'visible',
+        timeout: 10000,
+      });
       return true;
     } catch {
       return false;
@@ -489,7 +557,10 @@ export class SystemSettingsPage extends BasePage {
     await this.templateTextEditor.fill(template.textContent);
 
     // Select category
-    await this.selectOption('[data-testid="template-category"]', template.category);
+    await this.selectOption(
+      '[data-testid="template-category"]',
+      template.category
+    );
 
     // Save template
     await this.saveTemplateBtn.click();
@@ -502,24 +573,34 @@ export class SystemSettingsPage extends BasePage {
   async getEmailTemplates(): Promise<EmailTemplate[]> {
     await this.switchToTab('email');
     await this.templatesTable.waitFor({ state: 'visible' });
-    
-    const templateRows = await this.page.locator('[data-testid="template-row"]').all();
+
+    const templateRows = await this.page
+      .locator('[data-testid="template-row"]')
+      .all();
     const templates: EmailTemplate[] = [];
-    
+
     for (const row of templateRows) {
       const template: EmailTemplate = {
-        id: await row.getAttribute('data-template-id') || '',
-        name: await row.locator('[data-testid="template-name"]').textContent() || '',
-        subject: await row.locator('[data-testid="template-subject"]').textContent() || '',
+        id: (await row.getAttribute('data-template-id')) || '',
+        name:
+          (await row.locator('[data-testid="template-name"]').textContent()) ||
+          '',
+        subject:
+          (await row
+            .locator('[data-testid="template-subject"]')
+            .textContent()) || '',
         htmlContent: '', // Would need to expand to get full content
         textContent: '',
-        category: await row.getAttribute('data-category') as any || 'system',
+        category:
+          ((await row.getAttribute('data-category')) as any) || 'system',
         variables: [], // Would need to fetch from template details
-        isActive: await row.locator('[data-testid="template-active"]').isChecked()
+        isActive: await row
+          .locator('[data-testid="template-active"]')
+          .isChecked(),
       };
       templates.push(template);
     }
-    
+
     return templates;
   }
 
@@ -534,7 +615,7 @@ export class SystemSettingsPage extends BasePage {
     // Fill flag details
     await this.flagNameInput.fill(flag.name);
     await this.flagDescriptionInput.fill(flag.description);
-    
+
     if (flag.isEnabled) {
       await this.flagEnabledToggle.check();
     }
@@ -561,23 +642,38 @@ export class SystemSettingsPage extends BasePage {
   async getFeatureFlags(): Promise<FeatureFlag[]> {
     await this.switchToTab('feature-flags');
     await this.featureFlagsList.waitFor({ state: 'visible' });
-    
-    const flagElements = await this.page.locator('[data-testid="feature-flag-item"]').all();
+
+    const flagElements = await this.page
+      .locator('[data-testid="feature-flag-item"]')
+      .all();
     const flags: FeatureFlag[] = [];
-    
+
     for (const element of flagElements) {
       const flag: FeatureFlag = {
-        id: await element.getAttribute('data-flag-id') || '',
-        name: await element.locator('[data-testid="flag-name"]').textContent() || '',
-        description: await element.locator('[data-testid="flag-description"]').textContent() || '',
-        isEnabled: await element.locator('[data-testid="flag-enabled"]').isChecked(),
-        rolloutPercentage: parseInt(await element.locator('[data-testid="rollout-percentage"]').textContent() || '0'),
+        id: (await element.getAttribute('data-flag-id')) || '',
+        name:
+          (await element.locator('[data-testid="flag-name"]').textContent()) ||
+          '',
+        description:
+          (await element
+            .locator('[data-testid="flag-description"]')
+            .textContent()) || '',
+        isEnabled: await element
+          .locator('[data-testid="flag-enabled"]')
+          .isChecked(),
+        rolloutPercentage: parseInt(
+          (await element
+            .locator('[data-testid="rollout-percentage"]')
+            .textContent()) || '0'
+        ),
         targetGroups: [], // Would need to expand to get full details
-        environment: await element.getAttribute('data-environment') as any || 'production'
+        environment:
+          ((await element.getAttribute('data-environment')) as any) ||
+          'production',
       };
       flags.push(flag);
     }
-    
+
     return flags;
   }
 
@@ -587,11 +683,11 @@ export class SystemSettingsPage extends BasePage {
   async toggleFeatureFlag(flagId: string): Promise<boolean> {
     const flag = this.page.locator(`[data-flag-id="${flagId}"]`);
     const toggle = flag.locator('[data-testid="flag-enabled"]');
-    
+
     const wasEnabled = await toggle.isChecked();
     await toggle.click();
     await this.waitForAPIResponse('/api/admin/settings/feature-flags/toggle');
-    
+
     return !wasEnabled;
   }
 
@@ -618,7 +714,7 @@ export class SystemSettingsPage extends BasePage {
       firebaseConfig: this.firebaseConfigTextarea,
       slackWebhook: this.slackWebhookInput,
       discordWebhook: this.discordWebhookInput,
-      linkedinApiKey: this.linkedinApiKeyInput
+      linkedinApiKey: this.linkedinApiKeyInput,
     };
 
     for (const [key, value] of Object.entries(integrations)) {
@@ -668,12 +764,15 @@ export class SystemSettingsPage extends BasePage {
   async performManualBackup(): Promise<boolean> {
     await this.switchToTab('maintenance');
     await this.manualBackupBtn.click();
-    
+
     // Wait for backup to complete
     await this.waitForAPIResponse('/api/admin/settings/backup', 60000);
-    
+
     try {
-      await this.successNotification.waitFor({ state: 'visible', timeout: 30000 });
+      await this.successNotification.waitFor({
+        state: 'visible',
+        timeout: 30000,
+      });
       return true;
     } catch {
       return false;
@@ -690,7 +789,7 @@ export class SystemSettingsPage extends BasePage {
     return {
       database: await this.getHealthStatus(this.databaseHealthCheck),
       storage: await this.getHealthStatus(this.storageHealthCheck),
-      externalServices: await this.getHealthStatus(this.externalServicesCheck)
+      externalServices: await this.getHealthStatus(this.externalServicesCheck),
     };
   }
 
@@ -698,7 +797,7 @@ export class SystemSettingsPage extends BasePage {
    * Get health status from indicator
    */
   private async getHealthStatus(indicator: Locator): Promise<string> {
-    const classes = await indicator.getAttribute('class') || '';
+    const classes = (await indicator.getAttribute('class')) || '';
     if (classes.includes('healthy')) return 'healthy';
     if (classes.includes('warning')) return 'warning';
     if (classes.includes('error')) return 'error';
@@ -739,11 +838,11 @@ export class SystemSettingsPage extends BasePage {
    */
   async importSettings(filePath: string) {
     await this.importSettingsBtn.click();
-    
+
     const fileInput = this.page.locator('[data-testid="import-file-input"]');
     await fileInput.setInputFiles(filePath);
     await this.clickElement('[data-testid="confirm-import"]');
-    
+
     await this.waitForAPIResponse('/api/admin/settings/import');
     await this.successNotification.waitFor({ state: 'visible' });
   }
@@ -755,7 +854,7 @@ export class SystemSettingsPage extends BasePage {
     await this.restartSystemBtn.click();
     await this.confirmationModal.waitFor({ state: 'visible' });
     await this.clickElement('[data-testid="confirm-restart"]');
-    
+
     // Wait for system to restart (this would typically redirect or show a loading state)
     await this.waitForAPIResponse('/api/admin/settings/restart', 120000);
   }
@@ -775,7 +874,7 @@ export class SystemSettingsPage extends BasePage {
   async searchSettings(query: string) {
     await this.settingsSearchInput.fill(query);
     await this.settingsSearchInput.press('Enter');
-    
+
     // Wait for search results to filter
     await this.page.waitForTimeout(1000);
   }
@@ -804,7 +903,9 @@ export class SystemSettingsPage extends BasePage {
    * Get current setting value
    */
   async getSettingValue(settingKey: string): Promise<string | null> {
-    const settingElement = this.page.locator(`[data-setting-key="${settingKey}"]`);
+    const settingElement = this.page.locator(
+      `[data-setting-key="${settingKey}"]`
+    );
     if (await settingElement.isVisible()) {
       return await settingElement.inputValue();
     }
@@ -815,8 +916,10 @@ export class SystemSettingsPage extends BasePage {
    * Update specific setting
    */
   async updateSetting(settingKey: string, value: string | number | boolean) {
-    const settingElement = this.page.locator(`[data-setting-key="${settingKey}"]`);
-    
+    const settingElement = this.page.locator(
+      `[data-setting-key="${settingKey}"]`
+    );
+
     if (typeof value === 'boolean') {
       if (value) {
         await settingElement.check();
@@ -834,16 +937,18 @@ export class SystemSettingsPage extends BasePage {
    */
   async validateSettingsForm(): Promise<string[]> {
     const errors: string[] = [];
-    
+
     // Check for validation error messages
-    const errorElements = await this.page.locator('[data-testid*="error"]').all();
+    const errorElements = await this.page
+      .locator('[data-testid*="error"]')
+      .all();
     for (const element of errorElements) {
       if (await element.isVisible()) {
         const errorText = await element.textContent();
         if (errorText) errors.push(errorText);
       }
     }
-    
+
     return errors;
   }
 
@@ -851,8 +956,12 @@ export class SystemSettingsPage extends BasePage {
    * Check if setting requires restart
    */
   async requiresRestart(settingKey: string): Promise<boolean> {
-    const settingElement = this.page.locator(`[data-setting-key="${settingKey}"]`);
-    const restartRequired = await settingElement.getAttribute('data-requires-restart');
+    const settingElement = this.page.locator(
+      `[data-setting-key="${settingKey}"]`
+    );
+    const restartRequired = await settingElement.getAttribute(
+      'data-requires-restart'
+    );
     return restartRequired === 'true';
   }
 
@@ -860,14 +969,16 @@ export class SystemSettingsPage extends BasePage {
    * Get settings requiring restart
    */
   async getSettingsRequiringRestart(): Promise<string[]> {
-    const restartElements = await this.page.locator('[data-requires-restart="true"]').all();
+    const restartElements = await this.page
+      .locator('[data-requires-restart="true"]')
+      .all();
     const settings: string[] = [];
-    
+
     for (const element of restartElements) {
       const settingKey = await element.getAttribute('data-setting-key');
       if (settingKey) settings.push(settingKey);
     }
-    
+
     return settings;
   }
 }

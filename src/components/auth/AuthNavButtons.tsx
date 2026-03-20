@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { onAuthStateChanged, signOut as firebaseSignOut, type User, type Unsubscribe } from 'firebase/auth';
+import {
+  onAuthStateChanged,
+  signOut as firebaseSignOut,
+  type User,
+  type Unsubscribe,
+} from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
 interface AuthNavButtonsProps {
@@ -51,7 +56,10 @@ export default function AuthNavButtons({
   // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
       }
     }
@@ -98,7 +106,10 @@ export default function AuthNavButtons({
               href={`/${lang}/dashboard`}
               className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
             >
-              <i className="fas fa-columns mr-2 w-4 text-center text-xs" aria-hidden="true"></i>
+              <i
+                className="fas fa-columns mr-2 w-4 text-center text-xs"
+                aria-hidden="true"
+              ></i>
               Dashboard
             </a>
             <hr className="my-1 border-gray-200 dark:border-gray-700" />
@@ -106,7 +117,10 @@ export default function AuthNavButtons({
               onClick={handleSignOut}
               className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
             >
-              <i className="fas fa-sign-out-alt mr-2 w-4 text-center text-xs" aria-hidden="true"></i>
+              <i
+                className="fas fa-sign-out-alt mr-2 w-4 text-center text-xs"
+                aria-hidden="true"
+              ></i>
               {lang === 'es' ? 'Cerrar Sesión' : 'Sign Out'}
             </button>
           </div>

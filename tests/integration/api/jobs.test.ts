@@ -2,12 +2,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   createJob,
-  getJobs, 
-  getJobById, 
-  updateJob, 
+  getJobs,
+  getJobById,
+  updateJob,
   deleteJob,
   applyToJob,
-  getJobApplications 
+  getJobApplications,
 } from '@/lib/jobs';
 import { firestore } from '@/lib/firebase';
 import { mockJobs, mockJobApplications, mockUsers } from '../../fixtures';
@@ -71,9 +71,9 @@ describe.skip('Jobs API Integration Tests', () => {
       const mockJobId = 'new-job-id';
       vi.mocked(firestore.setDoc).mockResolvedValue(undefined);
       vi.mocked(firestore.doc).mockReturnValue({ id: mockJobId } as any);
-      
+
       const result = await createJob(jobData);
-      
+
       expect(firestore.setDoc).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
@@ -84,7 +84,7 @@ describe.skip('Jobs API Integration Tests', () => {
           updatedAt: expect.any(Date),
         })
       );
-      
+
       expect(result.id).toBe(mockJobId);
     });
 
@@ -93,7 +93,7 @@ describe.skip('Jobs API Integration Tests', () => {
         title: 'Data Scientist',
         // Missing required fields
       };
-      
+
       await expect(createJob(incompleteJobData)).rejects.toThrow(
         /required fields missing/i
       );
@@ -101,8 +101,10 @@ describe.skip('Jobs API Integration Tests', () => {
 
     it('enforces company authentication', async () => {
       vi.mocked(require('@/lib/auth').getCurrentUser).mockReturnValue(null);
-      
-      await expect(createJob(jobData)).rejects.toThrow(/authentication required/i);
+
+      await expect(createJob(jobData)).rejects.toThrow(
+        /authentication required/i
+      );
     });
 
     it('validates salary range', async () => {
@@ -115,7 +117,7 @@ describe.skip('Jobs API Integration Tests', () => {
           period: 'monthly',
         },
       };
-      
+
       await expect(createJob(invalidSalaryData)).rejects.toThrow(
         /invalid salary range/i
       );
@@ -124,51 +126,57 @@ describe.skip('Jobs API Integration Tests', () => {
 
   describe('Job Retrieval', () => {
     it('retrieves jobs with filters', async () => {
-      const mockJobDocs = Object.values(mockJobs).map(job => ({
+      const mockJobDocs = Object.values(mockJobs).map((job) => ({
         id: job.id,
         data: () => job,
         exists: () => true,
       }));
-      
+
       vi.mocked(firestore.getDocs).mockResolvedValue({
         docs: mockJobDocs,
         empty: false,
         size: mockJobDocs.length,
       } as any);
-      
+
       const filters = {
         location: 'Mexico City',
         type: 'full-time',
         level: 'senior',
         remote: true,
       };
-      
+
       const result = await getJobs(filters);
-      
+
       expect(firestore.query).toHaveBeenCalled();
-      expect(firestore.where).toHaveBeenCalledWith('location', '==', 'Mexico City');
+      expect(firestore.where).toHaveBeenCalledWith(
+        'location',
+        '==',
+        'Mexico City'
+      );
       expect(firestore.where).toHaveBeenCalledWith('type', '==', 'full-time');
       expect(firestore.where).toHaveBeenCalledWith('level', '==', 'senior');
       expect(firestore.where).toHaveBeenCalledWith('remote', '==', true);
-      
+
       expect(result.jobs).toHaveLength(mockJobDocs.length);
     });
 
     it('supports pagination', async () => {
-      const mockJobDocs = Object.values(mockJobs).slice(0, 2).map(job => ({
-        id: job.id,
-        data: () => job,
-        exists: () => true,
-      }));
-      
+      const mockJobDocs = Object.values(mockJobs)
+        .slice(0, 2)
+        .map((job) => ({
+          id: job.id,
+          data: () => job,
+          exists: () => true,
+        }));
+
       vi.mocked(firestore.getDocs).mockResolvedValue({
         docs: mockJobDocs,
         empty: false,
         size: mockJobDocs.length,
       } as any);
-      
+
       const result = await getJobs({}, { limit: 2, offset: 0 });
-      
+
       expect(firestore.limit).toHaveBeenCalledWith(2);
       expect(result.jobs).toHaveLength(2);
       expect(result.hasMore).toBe(true);
@@ -181,9 +189,9 @@ describe.skip('Jobs API Integration Tests', () => {
         data: () => mockJob,
         id: mockJob.id,
       } as any);
-      
+
       const result = await getJobById(mockJob.id);
-      
+
       expect(firestore.getDoc).toHaveBeenCalled();
       expect(result).toEqual(mockJob);
     });
@@ -192,30 +200,32 @@ describe.skip('Jobs API Integration Tests', () => {
       vi.mocked(firestore.getDoc).mockResolvedValue({
         exists: () => false,
       } as any);
-      
+
       const result = await getJobById('non-existent-job');
-      
+
       expect(result).toBeNull();
     });
 
     it('filters out expired jobs by default', async () => {
-      const activeJobs = Object.values(mockJobs).filter(job => job.status === 'active');
-      const mockJobDocs = activeJobs.map(job => ({
+      const activeJobs = Object.values(mockJobs).filter(
+        (job) => job.status === 'active'
+      );
+      const mockJobDocs = activeJobs.map((job) => ({
         id: job.id,
         data: () => job,
         exists: () => true,
       }));
-      
+
       vi.mocked(firestore.getDocs).mockResolvedValue({
         docs: mockJobDocs,
         empty: false,
         size: mockJobDocs.length,
       } as any);
-      
+
       const result = await getJobs();
-      
+
       expect(firestore.where).toHaveBeenCalledWith('status', '==', 'active');
-      expect(result.jobs.every(job => job.status === 'active')).toBe(true);
+      expect(result.jobs.every((job) => job.status === 'active')).toBe(true);
     });
   });
 
@@ -226,11 +236,11 @@ describe.skip('Jobs API Integration Tests', () => {
         title: 'Updated Data Scientist Position',
         description: 'Updated description...',
       };
-      
+
       vi.mocked(firestore.updateDoc).mockResolvedValue(undefined);
-      
+
       await updateJob(jobId, updates);
-      
+
       expect(firestore.updateDoc).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
@@ -243,13 +253,13 @@ describe.skip('Jobs API Integration Tests', () => {
     it('validates job ownership before update', async () => {
       const jobId = mockJobs.dataScientistJob.id;
       const updates = { title: 'Updated Title' };
-      
+
       // Mock different company user
       vi.mocked(require('@/lib/auth').getCurrentUser).mockReturnValue({
         uid: 'different-company-uid',
         customClaims: { role: 'company' },
       });
-      
+
       await expect(updateJob(jobId, updates)).rejects.toThrow(
         /not authorized to update this job/i
       );
@@ -262,7 +272,7 @@ describe.skip('Jobs API Integration Tests', () => {
         companyId: 'different-company', // Should not be allowed
         createdAt: new Date(), // Should not be allowed
       };
-      
+
       await expect(updateJob(jobId, updates)).rejects.toThrow(
         /cannot update protected fields/i
       );
@@ -273,21 +283,21 @@ describe.skip('Jobs API Integration Tests', () => {
     it('successfully deletes job posting', async () => {
       const jobId = mockJobs.dataScientistJob.id;
       vi.mocked(firestore.deleteDoc).mockResolvedValue(undefined);
-      
+
       await deleteJob(jobId);
-      
+
       expect(firestore.deleteDoc).toHaveBeenCalled();
     });
 
     it('validates job ownership before deletion', async () => {
       const jobId = mockJobs.dataScientistJob.id;
-      
+
       // Mock different company user
       vi.mocked(require('@/lib/auth').getCurrentUser).mockReturnValue({
         uid: 'different-company-uid',
         customClaims: { role: 'company' },
       });
-      
+
       await expect(deleteJob(jobId)).rejects.toThrow(
         /not authorized to delete this job/i
       );
@@ -295,18 +305,18 @@ describe.skip('Jobs API Integration Tests', () => {
 
     it('soft deletes job when applications exist', async () => {
       const jobId = mockJobs.dataScientistJob.id;
-      
+
       // Mock existing applications
       vi.mocked(firestore.getDocs).mockResolvedValue({
         docs: [{ id: 'app-1' }, { id: 'app-2' }],
         empty: false,
         size: 2,
       } as any);
-      
+
       vi.mocked(firestore.updateDoc).mockResolvedValue(undefined);
-      
+
       await deleteJob(jobId);
-      
+
       expect(firestore.updateDoc).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
@@ -331,12 +341,14 @@ describe.skip('Jobs API Integration Tests', () => {
     it('successfully submits job application', async () => {
       vi.mocked(firestore.setDoc).mockResolvedValue(undefined);
       vi.mocked(firestore.doc).mockReturnValue({ id: 'app-1' } as any);
-      
+
       // Mock user authentication
-      vi.mocked(require('@/lib/auth').getCurrentUser).mockReturnValue(mockUsers.regularUser);
-      
+      vi.mocked(require('@/lib/auth').getCurrentUser).mockReturnValue(
+        mockUsers.regularUser
+      );
+
       const result = await applyToJob(applicationData);
-      
+
       expect(firestore.setDoc).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
@@ -346,7 +358,7 @@ describe.skip('Jobs API Integration Tests', () => {
           appliedAt: expect.any(Date),
         })
       );
-      
+
       expect(result.id).toBe('app-1');
     });
 
@@ -357,7 +369,7 @@ describe.skip('Jobs API Integration Tests', () => {
         empty: false,
         size: 1,
       } as any);
-      
+
       await expect(applyToJob(applicationData)).rejects.toThrow(
         /already applied to this job/i
       );
@@ -368,29 +380,35 @@ describe.skip('Jobs API Integration Tests', () => {
         ...applicationData,
         jobId: mockJobs.expiredJob.id,
       };
-      
+
       await expect(applyToJob(expiredJobApplication)).rejects.toThrow(
         /application deadline has passed/i
       );
     });
 
     it('retrieves job applications for company', async () => {
-      const mockApplicationDocs = Object.values(mockJobApplications).map(app => ({
-        id: app.id,
-        data: () => app,
-        exists: () => true,
-      }));
-      
+      const mockApplicationDocs = Object.values(mockJobApplications).map(
+        (app) => ({
+          id: app.id,
+          data: () => app,
+          exists: () => true,
+        })
+      );
+
       vi.mocked(firestore.getDocs).mockResolvedValue({
         docs: mockApplicationDocs,
         empty: false,
         size: mockApplicationDocs.length,
       } as any);
-      
+
       const result = await getJobApplications(mockJobs.dataScientistJob.id);
-      
+
       expect(firestore.query).toHaveBeenCalled();
-      expect(firestore.where).toHaveBeenCalledWith('jobId', '==', mockJobs.dataScientistJob.id);
+      expect(firestore.where).toHaveBeenCalledWith(
+        'jobId',
+        '==',
+        mockJobs.dataScientistJob.id
+      );
       expect(result).toHaveLength(mockApplicationDocs.length);
     });
   });
@@ -398,29 +416,33 @@ describe.skip('Jobs API Integration Tests', () => {
   describe('Search and Filtering', () => {
     it('performs text search across job fields', async () => {
       const searchTerm = 'data scientist';
-      const matchingJobs = Object.values(mockJobs).filter(job => 
-        job.title.toLowerCase().includes(searchTerm) ||
-        job.description.toLowerCase().includes(searchTerm)
+      const matchingJobs = Object.values(mockJobs).filter(
+        (job) =>
+          job.title.toLowerCase().includes(searchTerm) ||
+          job.description.toLowerCase().includes(searchTerm)
       );
-      
-      const mockJobDocs = matchingJobs.map(job => ({
+
+      const mockJobDocs = matchingJobs.map((job) => ({
         id: job.id,
         data: () => job,
         exists: () => true,
       }));
-      
+
       vi.mocked(firestore.getDocs).mockResolvedValue({
         docs: mockJobDocs,
         empty: false,
         size: mockJobDocs.length,
       } as any);
-      
+
       const result = await getJobs({ search: searchTerm });
-      
-      expect(result.jobs.every(job => 
-        job.title.toLowerCase().includes(searchTerm) ||
-        job.description.toLowerCase().includes(searchTerm)
-      )).toBe(true);
+
+      expect(
+        result.jobs.every(
+          (job) =>
+            job.title.toLowerCase().includes(searchTerm) ||
+            job.description.toLowerCase().includes(searchTerm)
+        )
+      ).toBe(true);
     });
 
     it('filters by salary range', async () => {
@@ -428,9 +450,9 @@ describe.skip('Jobs API Integration Tests', () => {
         salaryMin: 50000,
         salaryMax: 100000,
       };
-      
+
       const result = await getJobs(filters);
-      
+
       expect(firestore.where).toHaveBeenCalledWith('salary.min', '>=', 50000);
       expect(firestore.where).toHaveBeenCalledWith('salary.max', '<=', 100000);
     });
@@ -439,10 +461,14 @@ describe.skip('Jobs API Integration Tests', () => {
       const filters = {
         skills: ['Python', 'Machine Learning'],
       };
-      
+
       const result = await getJobs(filters);
-      
-      expect(firestore.where).toHaveBeenCalledWith('skills', 'array-contains-any', ['Python', 'Machine Learning']);
+
+      expect(firestore.where).toHaveBeenCalledWith(
+        'skills',
+        'array-contains-any',
+        ['Python', 'Machine Learning']
+      );
     });
   });
 });

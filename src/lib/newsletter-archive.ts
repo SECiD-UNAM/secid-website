@@ -1,5 +1,14 @@
 import { db, isUsingMockAPI } from './firebase';
-import { collection, doc, getDocs, getDoc, query, orderBy, limit, where } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDocs,
+  getDoc,
+  query,
+  orderBy,
+  limit,
+  where,
+} from 'firebase/firestore';
 
 export interface NewsletterIssue {
   id: string;
@@ -18,7 +27,8 @@ const mockNewsletters: NewsletterIssue[] = [
     title: 'SECiD Monthly - Enero 2025',
     issueNumber: 12,
     publishedAt: new Date('2025-01-15'),
-    content: '<h2>Bienvenidos al Newsletter de Enero</h2><p>Este mes destacamos los logros de nuestra comunidad...</p>',
+    content:
+      '<h2>Bienvenidos al Newsletter de Enero</h2><p>Este mes destacamos los logros de nuestra comunidad...</p>',
     excerpt: 'Resumen de los logros de nuestra comunidad en el inicio de 2025.',
     coverImage: '/images/newsletter-jan.jpg',
   },
@@ -27,7 +37,8 @@ const mockNewsletters: NewsletterIssue[] = [
     title: 'SECiD Monthly - Diciembre 2024',
     issueNumber: 11,
     publishedAt: new Date('2024-12-15'),
-    content: '<h2>Cierre de Año 2024</h2><p>Un año increíble para SECiD con más de 500 nuevos miembros...</p>',
+    content:
+      '<h2>Cierre de Año 2024</h2><p>Un año increíble para SECiD con más de 500 nuevos miembros...</p>',
     excerpt: 'Un año increíble para SECiD con más de 500 nuevos miembros.',
     coverImage: '/images/newsletter-dec.jpg',
   },
@@ -36,7 +47,8 @@ const mockNewsletters: NewsletterIssue[] = [
     title: 'SECiD Monthly - Noviembre 2024',
     issueNumber: 10,
     publishedAt: new Date('2024-11-15'),
-    content: '<h2>Especial Hackathon</h2><p>Resultados del primer hackathon de ciencia de datos...</p>',
+    content:
+      '<h2>Especial Hackathon</h2><p>Resultados del primer hackathon de ciencia de datos...</p>',
     excerpt: 'Resultados del primer hackathon de ciencia de datos de SECiD.',
     coverImage: '/images/newsletter-nov.jpg',
   },
@@ -45,7 +57,8 @@ const mockNewsletters: NewsletterIssue[] = [
     title: 'SECiD Monthly - Octubre 2024',
     issueNumber: 9,
     publishedAt: new Date('2024-10-15'),
-    content: '<h2>Conferencia Anual</h2><p>Todo sobre nuestra conferencia anual de ciencia de datos...</p>',
+    content:
+      '<h2>Conferencia Anual</h2><p>Todo sobre nuestra conferencia anual de ciencia de datos...</p>',
     excerpt: 'Todo sobre nuestra conferencia anual de ciencia de datos.',
     coverImage: '/images/newsletter-oct.jpg',
   },
@@ -54,7 +67,8 @@ const mockNewsletters: NewsletterIssue[] = [
     title: 'SECiD Monthly - Septiembre 2024',
     issueNumber: 8,
     publishedAt: new Date('2024-09-15'),
-    content: '<h2>Nuevas Comisiones</h2><p>Lanzamos tres nuevas comisiones técnicas...</p>',
+    content:
+      '<h2>Nuevas Comisiones</h2><p>Lanzamos tres nuevas comisiones técnicas...</p>',
     excerpt: 'Lanzamos tres nuevas comisiones técnicas para nuestros miembros.',
     coverImage: '/images/newsletter-sep.jpg',
   },
@@ -83,7 +97,9 @@ export async function getNewsletterArchive(): Promise<NewsletterIssue[]> {
   }
 }
 
-export async function getNewsletter(id: string): Promise<NewsletterIssue | null> {
+export async function getNewsletter(
+  id: string
+): Promise<NewsletterIssue | null> {
   if (isUsingMockAPI()) {
     return mockNewsletters.find((n) => n.id === id) || null;
   }
@@ -91,7 +107,8 @@ export async function getNewsletter(id: string): Promise<NewsletterIssue | null>
   try {
     const docRef = doc(db, 'newsletter_archive', id);
     const snapshot = await getDoc(docRef);
-    if (!snapshot.exists()) return mockNewsletters.find((n) => n.id === id) || null;
+    if (!snapshot.exists())
+      return mockNewsletters.find((n) => n.id === id) || null;
     return {
       id: snapshot.id,
       ...snapshot.data(),

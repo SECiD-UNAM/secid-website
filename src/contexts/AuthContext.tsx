@@ -1,16 +1,17 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   type User,
   onAuthStateChanged,
-  signOut as firebaseSignOut
+  signOut as firebaseSignOut,
 } from 'firebase/auth';
-import { auth, db, isEmulatorMode} from '@/lib/firebase';
-import {
-  doc,
-  onSnapshot,
-  getDoc,
-  type Unsubscribe
-} from 'firebase/firestore';
+import { auth, db, isEmulatorMode } from '@/lib/firebase';
+import { doc, onSnapshot, getDoc, type Unsubscribe } from 'firebase/firestore';
 
 export interface UserProfile {
   uid: string;
@@ -91,7 +92,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Subscribe to user profile changes
   const subscribeToProfile = (uid: string): Unsubscribe => {
     const userRef = doc(db, 'users', uid);
-    
+
     return onSnapshot(
       userRef,
       (snapshot) => {
@@ -117,14 +118,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (firebaseErr.code === 'permission-denied') {
           // Firebase terminates the listener on permission-denied; attempt recovery
           setTimeout(() => {
-            auth.currentUser?.getIdToken(true).then(() => {
-              if (profileUnsubRef.current) {
-                profileUnsubRef.current();
-              }
-              profileUnsubRef.current = subscribeToProfile(uid);
-            }).catch((refreshErr) => {
-              console.error('Token refresh failed during recovery:', refreshErr);
-            });
+            auth.currentUser
+              ?.getIdToken(true)
+              .then(() => {
+                if (profileUnsubRef.current) {
+                  profileUnsubRef.current();
+                }
+                profileUnsubRef.current = subscribeToProfile(uid);
+              })
+              .catch((refreshErr) => {
+                console.error(
+                  'Token refresh failed during recovery:',
+                  refreshErr
+                );
+              });
           }, 2000);
         }
       }
@@ -138,7 +145,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const userRef = doc(db, 'users', user.uid);
       const snapshot = await getDoc(userRef);
-      
+
       if (snapshot.exists()) {
         const data = snapshot['data']() as UserProfile;
         setUserProfile({
@@ -226,7 +233,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    return () =>
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
   // Compute derived state
@@ -250,11 +258,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     refreshProfile,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuthContext = () => {

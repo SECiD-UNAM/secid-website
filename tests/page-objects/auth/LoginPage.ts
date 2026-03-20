@@ -17,22 +17,24 @@ export class LoginPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    
+
     // Form elements
     this.emailInput = page.locator('[data-testid="login-email"]');
     this.passwordInput = page.locator('[data-testid="login-password"]');
     this.rememberMeCheckbox = page.locator('[data-testid="login-remember-me"]');
     this.submitButton = page.locator('[data-testid="login-submit"]');
-    
+
     // Links
-    this.forgotPasswordLink = page.locator('[data-testid="forgot-password-link"]');
+    this.forgotPasswordLink = page.locator(
+      '[data-testid="forgot-password-link"]'
+    );
     this.signUpLink = page.locator('[data-testid="signup-link"]');
-    
+
     // Social login buttons
     this.googleLoginButton = page.locator('[data-testid="login-google"]');
     this.githubLoginButton = page.locator('[data-testid="login-github"]');
     this.linkedinLoginButton = page.locator('[data-testid="login-linkedin"]');
-    
+
     // Messages
     this.errorMessage = page.locator('[data-testid="login-error"]');
     this.successMessage = page.locator('[data-testid="login-success"]');
@@ -50,10 +52,14 @@ export class LoginPage extends BasePage {
   /**
    * Fill login form
    */
-  async fillLoginForm(email: string, password: string, rememberMe: boolean = false) {
+  async fillLoginForm(
+    email: string,
+    password: string,
+    rememberMe: boolean = false
+  ) {
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
-    
+
     if (rememberMe) {
       await this.rememberMeCheckbox.check();
     }
@@ -64,11 +70,15 @@ export class LoginPage extends BasePage {
    */
   async submitLogin() {
     await this.submitButton.click();
-    
+
     // Wait for either success (navigation) or error message
     await Promise.race([
-      this.page.waitForURL(/\/(dashboard|home)/, { timeout: 10000 }).catch(() => {}),
-      this.errorMessage.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {})
+      this.page
+        .waitForURL(/\/(dashboard|home)/, { timeout: 10000 })
+        .catch(() => {}),
+      this.errorMessage
+        .waitFor({ state: 'visible', timeout: 10000 })
+        .catch(() => {}),
     ]);
   }
 
@@ -83,14 +93,19 @@ export class LoginPage extends BasePage {
   /**
    * Quick login helper
    */
-  async quickLogin(userType: 'user' | 'admin' | 'premium' | 'company' = 'user') {
+  async quickLogin(
+    userType: 'user' | 'admin' | 'premium' | 'company' = 'user'
+  ) {
     const credentials = {
       user: { email: 'test@secid.mx', password: 'TestPassword123!' },
       admin: { email: 'admin@secid.mx', password: 'AdminPassword123!' },
       premium: { email: 'premium@secid.mx', password: 'PremiumPassword123!' },
-      company: { email: 'company@techcorp.mx', password: 'CompanyPassword123!' }
+      company: {
+        email: 'company@techcorp.mx',
+        password: 'CompanyPassword123!',
+      },
     };
-    
+
     const { email, password } = credentials[userType];
     await this.login(email, password);
   }
@@ -117,18 +132,18 @@ export class LoginPage extends BasePage {
   async loginWithGoogle() {
     // Store the current page context
     const pagePromise = this.page.context().waitForEvent('page');
-    
+
     await this.googleLoginButton.click();
-    
+
     // Wait for Google OAuth page
     const googlePage = await pagePromise;
     await googlePage.waitForLoadState();
-    
+
     // Handle Google OAuth flow (mock for testing)
     // In real tests, you would interact with Google's login page
     // For now, we'll close it and assume success
     await googlePage.close();
-    
+
     // Wait for redirect back to app
     await this.page.waitForURL(/\/(dashboard|home|oauth-callback)/);
   }
@@ -138,15 +153,15 @@ export class LoginPage extends BasePage {
    */
   async loginWithGitHub() {
     const pagePromise = this.page.context().waitForEvent('page');
-    
+
     await this.githubLoginButton.click();
-    
+
     const githubPage = await pagePromise;
     await githubPage.waitForLoadState();
-    
+
     // Handle GitHub OAuth flow (mock)
     await githubPage.close();
-    
+
     await this.page.waitForURL(/\/(dashboard|home|oauth-callback)/);
   }
 
@@ -155,15 +170,15 @@ export class LoginPage extends BasePage {
    */
   async loginWithLinkedIn() {
     const pagePromise = this.page.context().waitForEvent('page');
-    
+
     await this.linkedinLoginButton.click();
-    
+
     const linkedinPage = await pagePromise;
     await linkedinPage.waitForLoadState();
-    
+
     // Handle LinkedIn OAuth flow (mock)
     await linkedinPage.close();
-    
+
     await this.page.waitForURL(/\/(dashboard|home|oauth-callback)/);
   }
 
@@ -172,7 +187,7 @@ export class LoginPage extends BasePage {
    */
   async getErrorMessage(): Promise<string> {
     await this.errorMessage.waitFor({ state: 'visible' });
-    return await this.errorMessage.textContent() || '';
+    return (await this.errorMessage.textContent()) || '';
   }
 
   /**
@@ -187,7 +202,7 @@ export class LoginPage extends BasePage {
    */
   async getSuccessMessage(): Promise<string> {
     await this.successMessage.waitFor({ state: 'visible' });
-    return await this.successMessage.textContent() || '';
+    return (await this.successMessage.textContent()) || '';
   }
 
   /**
@@ -212,19 +227,19 @@ export class LoginPage extends BasePage {
   async validateFormErrors() {
     // Submit empty form
     await this.submitButton.click();
-    
+
     // Check for validation errors
     const emailError = await this.emailInput.evaluate((el) => {
       return (el as HTMLInputElement).validationMessage;
     });
-    
+
     const passwordError = await this.passwordInput.evaluate((el) => {
       return (el as HTMLInputElement).validationMessage;
     });
-    
+
     return {
       email: emailError,
-      password: passwordError
+      password: passwordError,
     };
   }
 
@@ -259,7 +274,7 @@ export class LoginPage extends BasePage {
     return {
       email: await this.emailInput.inputValue(),
       password: await this.passwordInput.inputValue(),
-      rememberMe: await this.isRememberMeChecked()
+      rememberMe: await this.isRememberMeChecked(),
     };
   }
 
@@ -275,11 +290,15 @@ export class LoginPage extends BasePage {
    */
   async submitWithEnter() {
     await this.passwordInput.press('Enter');
-    
+
     // Wait for navigation or error
     await Promise.race([
-      this.page.waitForURL(/\/(dashboard|home)/, { timeout: 10000 }).catch(() => {}),
-      this.errorMessage.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {})
+      this.page
+        .waitForURL(/\/(dashboard|home)/, { timeout: 10000 })
+        .catch(() => {}),
+      this.errorMessage
+        .waitFor({ state: 'visible', timeout: 10000 })
+        .catch(() => {}),
     ]);
   }
 
@@ -287,7 +306,9 @@ export class LoginPage extends BasePage {
    * Check password visibility toggle
    */
   async togglePasswordVisibility() {
-    const toggleButton = this.page.locator('[data-testid="toggle-password-visibility"]');
+    const toggleButton = this.page.locator(
+      '[data-testid="toggle-password-visibility"]'
+    );
     if (await toggleButton.isVisible()) {
       await toggleButton.click();
     }
@@ -297,6 +318,6 @@ export class LoginPage extends BasePage {
    * Get password field type
    */
   async getPasswordFieldType(): Promise<string> {
-    return await this.passwordInput.getAttribute('type') || 'password';
+    return (await this.passwordInput.getAttribute('type')) || 'password';
   }
 }

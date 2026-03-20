@@ -75,14 +75,52 @@ interface DirectoryStats {
   newThisMonth: number;
 }
 
-const STATUS_CONFIG: Record<MemberStatus, { color: string; icon: any; esLabel: string; enLabel: string }> = {
-  collaborator: { color: 'bg-blue-100 text-blue-800', icon: Users, esLabel: 'Colaborador', enLabel: 'Collaborator' },
-  pending: { color: 'bg-yellow-100 text-yellow-800', icon: Clock, esLabel: 'Pendiente', enLabel: 'Pending' },
-  active: { color: 'bg-green-100 text-green-800', icon: CheckCircle, esLabel: 'Activo', enLabel: 'Active' },
-  inactive: { color: 'bg-gray-100 text-gray-800', icon: XCircle, esLabel: 'Inactivo', enLabel: 'Inactive' },
-  suspended: { color: 'bg-red-100 text-red-800', icon: AlertTriangle, esLabel: 'Suspendido', enLabel: 'Suspended' },
-  alumni: { color: 'bg-purple-100 text-purple-800', icon: Crown, esLabel: 'Alumni', enLabel: 'Alumni' },
-  deactivated: { color: 'bg-gray-100 text-gray-600', icon: XCircle, esLabel: 'Desactivado', enLabel: 'Deactivated' },
+const STATUS_CONFIG: Record<
+  MemberStatus,
+  { color: string; icon: any; esLabel: string; enLabel: string }
+> = {
+  collaborator: {
+    color: 'bg-blue-100 text-blue-800',
+    icon: Users,
+    esLabel: 'Colaborador',
+    enLabel: 'Collaborator',
+  },
+  pending: {
+    color: 'bg-yellow-100 text-yellow-800',
+    icon: Clock,
+    esLabel: 'Pendiente',
+    enLabel: 'Pending',
+  },
+  active: {
+    color: 'bg-green-100 text-green-800',
+    icon: CheckCircle,
+    esLabel: 'Activo',
+    enLabel: 'Active',
+  },
+  inactive: {
+    color: 'bg-gray-100 text-gray-800',
+    icon: XCircle,
+    esLabel: 'Inactivo',
+    enLabel: 'Inactive',
+  },
+  suspended: {
+    color: 'bg-red-100 text-red-800',
+    icon: AlertTriangle,
+    esLabel: 'Suspendido',
+    enLabel: 'Suspended',
+  },
+  alumni: {
+    color: 'bg-purple-100 text-purple-800',
+    icon: Crown,
+    esLabel: 'Alumni',
+    enLabel: 'Alumni',
+  },
+  deactivated: {
+    color: 'bg-gray-100 text-gray-600',
+    icon: XCircle,
+    esLabel: 'Desactivado',
+    enLabel: 'Deactivated',
+  },
 };
 
 export const DirectoryManagement: React.FC = () => {
@@ -102,7 +140,9 @@ export const DirectoryManagement: React.FC = () => {
   // UI state
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [bulkAction, setBulkAction] = useState('');
-  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'groups'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'groups'>(
+    'all'
+  );
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
 
   // Filters
@@ -146,7 +186,10 @@ export const DirectoryManagement: React.FC = () => {
 
       // Apply status filter
       if (statusFilter !== 'all') {
-        userQuery = query(userQuery, where('lifecycle.status', '==', statusFilter));
+        userQuery = query(
+          userQuery,
+          where('lifecycle.status', '==', statusFilter)
+        );
       }
 
       // Pending tab shortcut
@@ -207,7 +250,9 @@ export const DirectoryManagement: React.FC = () => {
       setHasMore(snapshot.docs.length === USERS_PER_PAGE);
     } catch (err) {
       console.error('Error loading directory:', err);
-      setError(es ? 'Error al cargar el directorio' : 'Error loading directory');
+      setError(
+        es ? 'Error al cargar el directorio' : 'Error loading directory'
+      );
     } finally {
       setLoading(false);
       setIsLoadingMore(false);
@@ -255,16 +300,27 @@ export const DirectoryManagement: React.FC = () => {
   }, [isAdmin, statusFilter, activeTab]);
 
   // Handle status change
-  const handleStatusChange = async (user: DirectoryUser, newStatus: MemberStatus) => {
+  const handleStatusChange = async (
+    user: DirectoryUser,
+    newStatus: MemberStatus
+  ) => {
     setStatusModal({ isOpen: true, user, targetStatus: newStatus });
   };
 
-  const confirmStatusChange = async (newStatus: MemberStatus, reason: string) => {
+  const confirmStatusChange = async (
+    newStatus: MemberStatus,
+    reason: string
+  ) => {
     const user = statusModal.user;
     if (!user || !userProfile) return;
 
     try {
-      await updateMemberStatus(user.uid, newStatus, userProfile.uid || userProfile.email, reason);
+      await updateMemberStatus(
+        user.uid,
+        newStatus,
+        userProfile.uid || userProfile.email,
+        reason
+      );
       setStatusModal({ isOpen: false, user: null, targetStatus: 'active' });
       loadUsers();
       loadStats();
@@ -290,7 +346,12 @@ export const DirectoryManagement: React.FC = () => {
       const promises = Array.from(selectedUsers).map((uid) => {
         const user = users.find((u) => u.uid === uid);
         if (!user) return Promise.resolve();
-        return updateMemberStatus(uid, bulkAction as MemberStatus, userProfile.uid || userProfile.email, 'Bulk action');
+        return updateMemberStatus(
+          uid,
+          bulkAction as MemberStatus,
+          userProfile.uid || userProfile.email,
+          'Bulk action'
+        );
       });
       await Promise.all(promises);
       setSelectedUsers(new Set());
@@ -329,7 +390,10 @@ export const DirectoryManagement: React.FC = () => {
 
     const link = document.createElement('a');
     link.setAttribute('href', encodeURI(csvContent));
-    link.setAttribute('download', `directorio-secid-${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute(
+      'download',
+      `directorio-secid-${new Date().toISOString().split('T')[0]}.csv`
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -344,7 +408,10 @@ export const DirectoryManagement: React.FC = () => {
   };
 
   const getStatus = (user: DirectoryUser): MemberStatus => {
-    return user.lifecycle?.status || (user.role === 'member' ? 'active' : 'collaborator');
+    return (
+      user.lifecycle?.status ||
+      (user.role === 'member' ? 'active' : 'collaborator')
+    );
   };
 
   // Filter users client-side for search
@@ -445,7 +512,11 @@ export const DirectoryManagement: React.FC = () => {
         <nav className="-mb-px flex space-x-8">
           {[
             { key: 'all', label: es ? 'Todos' : 'All' },
-            { key: 'pending', label: es ? 'Pendientes de Aprobación' : 'Pending Approval', badge: stats?.pendingApproval },
+            {
+              key: 'pending',
+              label: es ? 'Pendientes de Aprobación' : 'Pending Approval',
+              badge: stats?.pendingApproval,
+            },
             { key: 'groups', label: 'Google Groups' },
           ].map((tab) => (
             <button
@@ -498,7 +569,9 @@ export const DirectoryManagement: React.FC = () => {
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
                 <span className="ml-2 text-sm text-gray-600">
-                  {es ? 'Cargando grupos de Google...' : 'Loading Google Groups...'}
+                  {es
+                    ? 'Cargando grupos de Google...'
+                    : 'Loading Google Groups...'}
                 </span>
               </div>
             ) : groupData ? (
@@ -511,7 +584,9 @@ export const DirectoryManagement: React.FC = () => {
                       </h4>
                       <p className="text-sm text-gray-500">{email}</p>
                       {data.description && (
-                        <p className="mt-1 text-xs text-gray-400">{data.description}</p>
+                        <p className="mt-1 text-xs text-gray-400">
+                          {data.description}
+                        </p>
                       )}
                     </div>
                     <div className="text-right">
@@ -582,10 +657,14 @@ export const DirectoryManagement: React.FC = () => {
                 <div>
                   <select
                     value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value as MemberStatus | 'all')}
+                    onChange={(e) =>
+                      setStatusFilter(e.target.value as MemberStatus | 'all')
+                    }
                     className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
-                    <option value="all">{es ? 'Todos los estados' : 'All statuses'}</option>
+                    <option value="all">
+                      {es ? 'Todos los estados' : 'All statuses'}
+                    </option>
                     {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
                       <option key={key} value={key}>
                         {es ? cfg.esLabel : cfg.enLabel}
@@ -620,11 +699,21 @@ export const DirectoryManagement: React.FC = () => {
                     onChange={(e) => setBulkAction(e.target.value)}
                     className="rounded-md border-blue-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
-                    <option value="">{es ? 'Seleccionar acción' : 'Select action'}</option>
-                    <option value="active">{es ? 'Aprobar como Miembro' : 'Approve as Member'}</option>
-                    <option value="suspended">{es ? 'Suspender' : 'Suspend'}</option>
-                    <option value="deactivated">{es ? 'Desactivar' : 'Deactivate'}</option>
-                    <option value="alumni">{es ? 'Marcar Alumni' : 'Mark Alumni'}</option>
+                    <option value="">
+                      {es ? 'Seleccionar acción' : 'Select action'}
+                    </option>
+                    <option value="active">
+                      {es ? 'Aprobar como Miembro' : 'Approve as Member'}
+                    </option>
+                    <option value="suspended">
+                      {es ? 'Suspender' : 'Suspend'}
+                    </option>
+                    <option value="deactivated">
+                      {es ? 'Desactivar' : 'Deactivate'}
+                    </option>
+                    <option value="alumni">
+                      {es ? 'Marcar Alumni' : 'Mark Alumni'}
+                    </option>
                   </select>
                 </div>
                 <div className="flex space-x-2">
@@ -655,10 +744,15 @@ export const DirectoryManagement: React.FC = () => {
                     <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
                       <input
                         type="checkbox"
-                        checked={filteredUsers.length > 0 && selectedUsers.size === filteredUsers.length}
+                        checked={
+                          filteredUsers.length > 0 &&
+                          selectedUsers.size === filteredUsers.length
+                        }
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setSelectedUsers(new Set(filteredUsers.map((u) => u.uid)));
+                            setSelectedUsers(
+                              new Set(filteredUsers.map((u) => u.uid))
+                            );
                           } else {
                             setSelectedUsers(new Set());
                           }
@@ -689,12 +783,19 @@ export const DirectoryManagement: React.FC = () => {
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {filteredUsers.map((user) => {
                     const status = getStatus(user);
-                    const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.collaborator;
+                    const cfg =
+                      STATUS_CONFIG[status] || STATUS_CONFIG.collaborator;
                     const isExpanded = expandedUser === user.uid;
 
                     return (
                       <React.Fragment key={user.uid}>
-                        <tr className={selectedUsers.has(user.uid) ? 'bg-blue-50' : 'hover:bg-gray-50'}>
+                        <tr
+                          className={
+                            selectedUsers.has(user.uid)
+                              ? 'bg-blue-50'
+                              : 'hover:bg-gray-50'
+                          }
+                        >
                           <td className="px-4 py-3">
                             <input
                               type="checkbox"
@@ -712,7 +813,11 @@ export const DirectoryManagement: React.FC = () => {
                             <div className="flex items-center">
                               <div className="h-9 w-9 flex-shrink-0">
                                 {user.photoURL ? (
-                                  <img className="h-9 w-9 rounded-full" src={user.photoURL} alt="" />
+                                  <img
+                                    className="h-9 w-9 rounded-full"
+                                    src={user.photoURL}
+                                    alt=""
+                                  />
                                 ) : (
                                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200">
                                     <Users className="h-4 w-4 text-gray-500" />
@@ -723,7 +828,9 @@ export const DirectoryManagement: React.FC = () => {
                                 <p className="text-sm font-medium text-gray-900">
                                   {user.firstName} {user.lastName}
                                 </p>
-                                <p className="text-xs text-gray-500">{user.email}</p>
+                                <p className="text-xs text-gray-500">
+                                  {user.email}
+                                </p>
                               </div>
                             </div>
                           </td>
@@ -736,12 +843,18 @@ export const DirectoryManagement: React.FC = () => {
                               }`}
                             >
                               {user.registrationType === 'member'
-                                ? es ? 'Miembro' : 'Member'
-                                : es ? 'Colaborador' : 'Collaborator'}
+                                ? es
+                                  ? 'Miembro'
+                                  : 'Member'
+                                : es
+                                  ? 'Colaborador'
+                                  : 'Collaborator'}
                             </span>
                           </td>
                           <td className="px-4 py-3">
-                            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${cfg.color}`}>
+                            <span
+                              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${cfg.color}`}
+                            >
                               {es ? cfg.esLabel : cfg.enLabel}
                             </span>
                           </td>
@@ -754,7 +867,8 @@ export const DirectoryManagement: React.FC = () => {
                           <td className="px-4 py-3 text-right">
                             <div className="flex items-center justify-end space-x-1">
                               {/* Quick approve for pending users */}
-                              {(status === 'pending' || user.verificationStatus === 'pending') && (
+                              {(status === 'pending' ||
+                                user.verificationStatus === 'pending') && (
                                 <>
                                   <button
                                     onClick={() => handleApprove(user)}
@@ -774,11 +888,15 @@ export const DirectoryManagement: React.FC = () => {
                               )}
                               {/* Expand details */}
                               <button
-                                onClick={() => setExpandedUser(isExpanded ? null : user.uid)}
+                                onClick={() =>
+                                  setExpandedUser(isExpanded ? null : user.uid)
+                                }
                                 className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
                                 title={es ? 'Ver detalles' : 'View details'}
                               >
-                                <ChevronRight className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                                <ChevronRight
+                                  className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                                />
                               </button>
                               {/* More actions */}
                               <div className="relative">
@@ -787,7 +905,9 @@ export const DirectoryManagement: React.FC = () => {
                                   status={status}
                                   language={language}
                                   onStatusChange={handleStatusChange}
-                                  onManageGroups={() => setGroupModal({ isOpen: true, user })}
+                                  onManageGroups={() =>
+                                    setGroupModal({ isOpen: true, user })
+                                  }
                                 />
                               </div>
                             </div>
@@ -803,11 +923,28 @@ export const DirectoryManagement: React.FC = () => {
                                     {es ? 'Datos Académicos' : 'Academic Data'}
                                   </h4>
                                   <dl className="mt-2 space-y-1 text-sm">
-                                    <DetailRow label={es ? 'No. Cuenta' : 'Student ID'} value={user.numeroCuenta} />
-                                    <DetailRow label={es ? 'Nivel' : 'Level'} value={user.academicLevel} />
-                                    <DetailRow label="Campus" value={user.campus} />
-                                    <DetailRow label={es ? 'Generación' : 'Generation'} value={user.generation} />
-                                    <DetailRow label={es ? 'Año de Graduación' : 'Grad Year'} value={user.graduationYear?.toString()} />
+                                    <DetailRow
+                                      label={es ? 'No. Cuenta' : 'Student ID'}
+                                      value={user.numeroCuenta}
+                                    />
+                                    <DetailRow
+                                      label={es ? 'Nivel' : 'Level'}
+                                      value={user.academicLevel}
+                                    />
+                                    <DetailRow
+                                      label="Campus"
+                                      value={user.campus}
+                                    />
+                                    <DetailRow
+                                      label={es ? 'Generación' : 'Generation'}
+                                      value={user.generation}
+                                    />
+                                    <DetailRow
+                                      label={
+                                        es ? 'Año de Graduación' : 'Grad Year'
+                                      }
+                                      value={user.graduationYear?.toString()}
+                                    />
                                   </dl>
                                 </div>
                                 <div>
@@ -827,7 +964,9 @@ export const DirectoryManagement: React.FC = () => {
                                           rel="noopener noreferrer"
                                           className="text-blue-600 hover:underline"
                                         >
-                                          {es ? 'Ver documento' : 'View document'}
+                                          {es
+                                            ? 'Ver documento'
+                                            : 'View document'}
                                         </a>
                                       </div>
                                     )}
@@ -884,8 +1023,12 @@ export const DirectoryManagement: React.FC = () => {
                   className="inline-flex w-full items-center justify-center rounded-md bg-blue-50 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-100 disabled:opacity-50"
                 >
                   {isLoadingMore
-                    ? es ? 'Cargando...' : 'Loading...'
-                    : es ? 'Cargar más' : 'Load more'}
+                    ? es
+                      ? 'Cargando...'
+                      : 'Loading...'
+                    : es
+                      ? 'Cargar más'
+                      : 'Load more'}
                 </button>
               </div>
             )}
@@ -903,11 +1046,19 @@ export const DirectoryManagement: React.FC = () => {
       {/* Modals */}
       <StatusChangeModal
         isOpen={statusModal.isOpen}
-        onClose={() => setStatusModal({ isOpen: false, user: null, targetStatus: 'active' })}
+        onClose={() =>
+          setStatusModal({ isOpen: false, user: null, targetStatus: 'active' })
+        }
         onConfirm={confirmStatusChange}
-        currentStatus={statusModal.user ? getStatus(statusModal.user) : 'collaborator'}
+        currentStatus={
+          statusModal.user ? getStatus(statusModal.user) : 'collaborator'
+        }
         targetStatus={statusModal.targetStatus}
-        memberName={statusModal.user ? `${statusModal.user.firstName} ${statusModal.user.lastName}` : ''}
+        memberName={
+          statusModal.user
+            ? `${statusModal.user.firstName} ${statusModal.user.lastName}`
+            : ''
+        }
         memberEmail={statusModal.user?.email || ''}
         language={language}
       />
@@ -916,7 +1067,11 @@ export const DirectoryManagement: React.FC = () => {
         isOpen={groupModal.isOpen}
         onClose={() => setGroupModal({ isOpen: false, user: null })}
         memberEmail={groupModal.user?.email || ''}
-        memberName={groupModal.user ? `${groupModal.user.firstName} ${groupModal.user.lastName}` : ''}
+        memberName={
+          groupModal.user
+            ? `${groupModal.user.firstName} ${groupModal.user.lastName}`
+            : ''
+        }
         language={language}
         onSuccess={() => {
           loadUsers();
@@ -997,38 +1152,56 @@ function ActionMenu({
             {status !== 'active' && (
               <MenuButton
                 label={es ? 'Aprobar como Miembro' : 'Approve as Member'}
-                onClick={() => { onStatusChange(user, 'active'); setOpen(false); }}
+                onClick={() => {
+                  onStatusChange(user, 'active');
+                  setOpen(false);
+                }}
               />
             )}
             {status !== 'suspended' && status !== 'deactivated' && (
               <MenuButton
                 label={es ? 'Suspender' : 'Suspend'}
-                onClick={() => { onStatusChange(user, 'suspended'); setOpen(false); }}
+                onClick={() => {
+                  onStatusChange(user, 'suspended');
+                  setOpen(false);
+                }}
                 danger
               />
             )}
             {(status === 'suspended' || status === 'inactive') && (
               <MenuButton
                 label={es ? 'Reactivar' : 'Reactivate'}
-                onClick={() => { onStatusChange(user, 'active'); setOpen(false); }}
+                onClick={() => {
+                  onStatusChange(user, 'active');
+                  setOpen(false);
+                }}
               />
             )}
             {status === 'active' && (
               <MenuButton
                 label={es ? 'Marcar Alumni' : 'Mark Alumni'}
-                onClick={() => { onStatusChange(user, 'alumni'); setOpen(false); }}
+                onClick={() => {
+                  onStatusChange(user, 'alumni');
+                  setOpen(false);
+                }}
               />
             )}
             {status !== 'collaborator' && (
               <MenuButton
                 label={es ? 'Revertir a Colaborador' : 'Revert to Collaborator'}
-                onClick={() => { onStatusChange(user, 'collaborator'); setOpen(false); }}
+                onClick={() => {
+                  onStatusChange(user, 'collaborator');
+                  setOpen(false);
+                }}
               />
             )}
             <hr className="my-1" />
             <MenuButton
               label={es ? 'Gestionar Grupos' : 'Manage Groups'}
-              onClick={() => { onManageGroups(); setOpen(false); }}
+              onClick={() => {
+                onManageGroups();
+                setOpen(false);
+              }}
             />
           </div>
         </>
@@ -1050,7 +1223,9 @@ function MenuButton({
     <button
       onClick={onClick}
       className={`w-full px-4 py-2 text-left text-sm ${
-        danger ? 'text-red-700 hover:bg-red-50' : 'text-gray-700 hover:bg-gray-50'
+        danger
+          ? 'text-red-700 hover:bg-red-50'
+          : 'text-gray-700 hover:bg-gray-50'
       }`}
     >
       {label}

@@ -13,7 +13,11 @@ interface BetaGateProps {
  * On production: renders fallback (or nothing).
  * On beta: renders children.
  */
-export const BetaGate: React.FC<BetaGateProps> = ({ feature, children, fallback = null }) => {
+export const BetaGate: React.FC<BetaGateProps> = ({
+  feature,
+  children,
+  fallback = null,
+}) => {
   const enabled = useFeatureFlag(feature);
   return <>{enabled ? children : fallback}</>;
 };

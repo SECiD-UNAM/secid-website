@@ -36,7 +36,7 @@ export class JobBoardPage extends BasePage {
   private readonly filtersPanel: Locator;
   private readonly applyFiltersButton: Locator;
   private readonly clearFiltersButton: Locator;
-  
+
   // Filter controls
   private readonly locationFilter: Locator;
   private readonly jobTypeFilter: Locator;
@@ -46,7 +46,7 @@ export class JobBoardPage extends BasePage {
   private readonly companyFilter: Locator;
   private readonly tagsFilter: Locator;
   private readonly datePostedFilter: Locator;
-  
+
   // Advanced filters
   private readonly advancedFiltersToggle: Locator;
   private readonly advancedFiltersPanel: Locator;
@@ -54,12 +54,12 @@ export class JobBoardPage extends BasePage {
   private readonly industryFilter: Locator;
   private readonly benefitsFilter: Locator;
   private readonly keywordExcludeInput: Locator;
-  
+
   // Sorting and view options
   private readonly sortDropdown: Locator;
   private readonly viewToggle: Locator;
   private readonly resultsPerPageSelect: Locator;
-  
+
   // Job listings
   private readonly jobListings: Locator;
   private readonly jobCards: Locator;
@@ -67,7 +67,7 @@ export class JobBoardPage extends BasePage {
   private readonly jobGridView: Locator;
   private readonly noResultsMessage: Locator;
   private readonly loadingJobsSpinner: Locator;
-  
+
   // Job card elements
   private readonly jobTitle: Locator;
   private readonly jobCompany: Locator;
@@ -80,7 +80,7 @@ export class JobBoardPage extends BasePage {
   private readonly shareButton: Locator;
   private readonly quickApplyButton: Locator;
   private readonly viewDetailsButton: Locator;
-  
+
   // Pagination
   private readonly pagination: Locator;
   private readonly previousPageButton: Locator;
@@ -88,7 +88,7 @@ export class JobBoardPage extends BasePage {
   private readonly pageNumbers: Locator;
   private readonly currentPageIndicator: Locator;
   private readonly totalResultsCount: Locator;
-  
+
   // Quick actions
   private readonly bulkActionsPanel: Locator;
   private readonly selectAllCheckbox: Locator;
@@ -96,34 +96,34 @@ export class JobBoardPage extends BasePage {
   private readonly bulkBookmarkButton: Locator;
   private readonly bulkApplyButton: Locator;
   private readonly bulkShareButton: Locator;
-  
+
   // Job alerts
   private readonly createJobAlertButton: Locator;
   private readonly jobAlertModal: Locator;
   private readonly alertNameInput: Locator;
   private readonly alertFrequencySelect: Locator;
   private readonly saveAlertButton: Locator;
-  
+
   // Featured jobs
   private readonly featuredJobsSection: Locator;
   private readonly featuredJobsCarousel: Locator;
   private readonly featuredJobCard: Locator;
   private readonly nextFeaturedButton: Locator;
   private readonly previousFeaturedButton: Locator;
-  
+
   // Recommended jobs
   private readonly recommendedJobsSection: Locator;
   private readonly recommendedJobCards: Locator;
   private readonly showMoreRecommendedButton: Locator;
-  
+
   // Company logos and branding
   private readonly companyLogos: Locator;
   private readonly verifiedCompanyBadge: Locator;
   private readonly premiumJobBadge: Locator;
-  
+
   constructor(page: Page) {
     super(page);
-    
+
     // Search and filters
     this.searchInput = page.locator('[data-testid="job-search-input"]');
     this.searchButton = page.locator('[data-testid="job-search-button"]');
@@ -132,7 +132,7 @@ export class JobBoardPage extends BasePage {
     this.filtersPanel = page.locator('[data-testid="filters-panel"]');
     this.applyFiltersButton = page.locator('[data-testid="apply-filters"]');
     this.clearFiltersButton = page.locator('[data-testid="clear-filters"]');
-    
+
     // Filter controls
     this.locationFilter = page.locator('[data-testid="filter-location"]');
     this.jobTypeFilter = page.locator('[data-testid="filter-job-type"]');
@@ -142,20 +142,28 @@ export class JobBoardPage extends BasePage {
     this.companyFilter = page.locator('[data-testid="filter-company"]');
     this.tagsFilter = page.locator('[data-testid="filter-tags"]');
     this.datePostedFilter = page.locator('[data-testid="filter-date-posted"]');
-    
+
     // Advanced filters
-    this.advancedFiltersToggle = page.locator('[data-testid="advanced-filters-toggle"]');
-    this.advancedFiltersPanel = page.locator('[data-testid="advanced-filters-panel"]');
-    this.companySizeFilter = page.locator('[data-testid="filter-company-size"]');
+    this.advancedFiltersToggle = page.locator(
+      '[data-testid="advanced-filters-toggle"]'
+    );
+    this.advancedFiltersPanel = page.locator(
+      '[data-testid="advanced-filters-panel"]'
+    );
+    this.companySizeFilter = page.locator(
+      '[data-testid="filter-company-size"]'
+    );
     this.industryFilter = page.locator('[data-testid="filter-industry"]');
     this.benefitsFilter = page.locator('[data-testid="filter-benefits"]');
     this.keywordExcludeInput = page.locator('[data-testid="exclude-keywords"]');
-    
+
     // Sorting and view
     this.sortDropdown = page.locator('[data-testid="sort-dropdown"]');
     this.viewToggle = page.locator('[data-testid="view-toggle"]');
-    this.resultsPerPageSelect = page.locator('[data-testid="results-per-page"]');
-    
+    this.resultsPerPageSelect = page.locator(
+      '[data-testid="results-per-page"]'
+    );
+
     // Job listings
     this.jobListings = page.locator('[data-testid="job-listings"]');
     this.jobCards = page.locator('[data-testid="job-card"]');
@@ -163,7 +171,7 @@ export class JobBoardPage extends BasePage {
     this.jobGridView = page.locator('[data-testid="job-grid-view"]');
     this.noResultsMessage = page.locator('[data-testid="no-results"]');
     this.loadingJobsSpinner = page.locator('[data-testid="loading-jobs"]');
-    
+
     // Job card elements
     this.jobTitle = page.locator('[data-testid="job-title"]');
     this.jobCompany = page.locator('[data-testid="job-company"]');
@@ -176,7 +184,7 @@ export class JobBoardPage extends BasePage {
     this.shareButton = page.locator('[data-testid="share-job"]');
     this.quickApplyButton = page.locator('[data-testid="quick-apply"]');
     this.viewDetailsButton = page.locator('[data-testid="view-job-details"]');
-    
+
     // Pagination
     this.pagination = page.locator('[data-testid="pagination"]');
     this.previousPageButton = page.locator('[data-testid="previous-page"]');
@@ -184,37 +192,53 @@ export class JobBoardPage extends BasePage {
     this.pageNumbers = page.locator('[data-testid="page-number"]');
     this.currentPageIndicator = page.locator('[data-testid="current-page"]');
     this.totalResultsCount = page.locator('[data-testid="total-results"]');
-    
+
     // Quick actions
     this.bulkActionsPanel = page.locator('[data-testid="bulk-actions"]');
     this.selectAllCheckbox = page.locator('[data-testid="select-all-jobs"]');
-    this.selectedJobsCount = page.locator('[data-testid="selected-jobs-count"]');
+    this.selectedJobsCount = page.locator(
+      '[data-testid="selected-jobs-count"]'
+    );
     this.bulkBookmarkButton = page.locator('[data-testid="bulk-bookmark"]');
     this.bulkApplyButton = page.locator('[data-testid="bulk-apply"]');
     this.bulkShareButton = page.locator('[data-testid="bulk-share"]');
-    
+
     // Job alerts
-    this.createJobAlertButton = page.locator('[data-testid="create-job-alert"]');
+    this.createJobAlertButton = page.locator(
+      '[data-testid="create-job-alert"]'
+    );
     this.jobAlertModal = page.locator('[data-testid="job-alert-modal"]');
     this.alertNameInput = page.locator('[data-testid="alert-name"]');
     this.alertFrequencySelect = page.locator('[data-testid="alert-frequency"]');
     this.saveAlertButton = page.locator('[data-testid="save-alert"]');
-    
+
     // Featured jobs
     this.featuredJobsSection = page.locator('[data-testid="featured-jobs"]');
-    this.featuredJobsCarousel = page.locator('[data-testid="featured-carousel"]');
+    this.featuredJobsCarousel = page.locator(
+      '[data-testid="featured-carousel"]'
+    );
     this.featuredJobCard = page.locator('[data-testid="featured-job-card"]');
     this.nextFeaturedButton = page.locator('[data-testid="next-featured"]');
-    this.previousFeaturedButton = page.locator('[data-testid="previous-featured"]');
-    
+    this.previousFeaturedButton = page.locator(
+      '[data-testid="previous-featured"]'
+    );
+
     // Recommended jobs
-    this.recommendedJobsSection = page.locator('[data-testid="recommended-jobs"]');
-    this.recommendedJobCards = page.locator('[data-testid="recommended-job-card"]');
-    this.showMoreRecommendedButton = page.locator('[data-testid="show-more-recommended"]');
-    
+    this.recommendedJobsSection = page.locator(
+      '[data-testid="recommended-jobs"]'
+    );
+    this.recommendedJobCards = page.locator(
+      '[data-testid="recommended-job-card"]'
+    );
+    this.showMoreRecommendedButton = page.locator(
+      '[data-testid="show-more-recommended"]'
+    );
+
     // Company branding
     this.companyLogos = page.locator('[data-testid="company-logo"]');
-    this.verifiedCompanyBadge = page.locator('[data-testid="verified-company"]');
+    this.verifiedCompanyBadge = page.locator(
+      '[data-testid="verified-company"]'
+    );
     this.premiumJobBadge = page.locator('[data-testid="premium-job"]');
   }
 
@@ -248,45 +272,45 @@ export class JobBoardPage extends BasePage {
    */
   async applyFilters(filters: JobFilterOptions) {
     // Open filters panel if not already open
-    if (!await this.filtersPanel.isVisible()) {
+    if (!(await this.filtersPanel.isVisible())) {
       await this.filtersToggle.click();
     }
-    
+
     if (filters.location) {
       await this.locationFilter.selectOption(filters.location);
     }
-    
+
     if (filters.jobType) {
       await this.jobTypeFilter.selectOption(filters.jobType);
     }
-    
+
     if (filters.experience) {
       await this.experienceFilter.selectOption(filters.experience);
     }
-    
+
     if (filters.salary) {
       await this.salaryFilter.selectOption(filters.salary);
     }
-    
+
     if (filters.remote) {
       await this.remoteFilter.selectOption(filters.remote);
     }
-    
+
     if (filters.company) {
       await this.companyFilter.selectOption(filters.company);
     }
-    
+
     if (filters.datePosted) {
       await this.datePostedFilter.selectOption(filters.datePosted);
     }
-    
+
     if (filters.tags && filters.tags.length > 0) {
       for (const tag of filters.tags) {
         const tagCheckbox = this.tagsFilter.locator(`[value="${tag}"]`);
         await tagCheckbox.check();
       }
     }
-    
+
     await this.applyFiltersButton.click();
     await this.waitForJobsToLoad();
   }
@@ -313,7 +337,7 @@ export class JobBoardPage extends BasePage {
   async switchViewMode(mode: 'list' | 'grid') {
     const viewButton = this.viewToggle.locator(`[data-view="${mode}"]`);
     await viewButton.click();
-    
+
     if (mode === 'list') {
       await this.jobListView.waitFor({ state: 'visible' });
     } else {
@@ -326,27 +350,44 @@ export class JobBoardPage extends BasePage {
    */
   async getAllJobCards(): Promise<JobCardData[]> {
     await this.waitForJobsToLoad();
-    
+
     const jobCards = await this.jobCards.all();
     const jobsData: JobCardData[] = [];
-    
+
     for (let i = 0; i < jobCards.length; i++) {
       const card = jobCards[i];
-      
+
       const jobData: JobCardData = {
-        id: await card.getAttribute('data-job-id') || `job-${i}`,
-        title: await card.locator('[data-testid="job-title"]').textContent() || '',
-        company: await card.locator('[data-testid="job-company"]').textContent() || '',
-        location: await card.locator('[data-testid="job-location"]').textContent() || '',
-        salary: await card.locator('[data-testid="job-salary"]').textContent() || undefined,
-        type: await card.locator('[data-testid="job-type"]').textContent() || '',
-        remote: await card.locator('[data-testid="job-remote"]').textContent() || '',
-        datePosted: await card.locator('[data-testid="job-date-posted"]').textContent() || '',
+        id: (await card.getAttribute('data-job-id')) || `job-${i}`,
+        title:
+          (await card.locator('[data-testid="job-title"]').textContent()) || '',
+        company:
+          (await card.locator('[data-testid="job-company"]').textContent()) ||
+          '',
+        location:
+          (await card.locator('[data-testid="job-location"]').textContent()) ||
+          '',
+        salary:
+          (await card.locator('[data-testid="job-salary"]').textContent()) ||
+          undefined,
+        type:
+          (await card.locator('[data-testid="job-type"]').textContent()) || '',
+        remote:
+          (await card.locator('[data-testid="job-remote"]').textContent()) ||
+          '',
+        datePosted:
+          (await card
+            .locator('[data-testid="job-date-posted"]')
+            .textContent()) || '',
         tags: [],
-        isFeatured: await card.locator('[data-testid="featured-badge"]').isVisible(),
-        isBookmarked: await card.locator('[data-testid="bookmark-job"]').isChecked()
+        isFeatured: await card
+          .locator('[data-testid="featured-badge"]')
+          .isVisible(),
+        isBookmarked: await card
+          .locator('[data-testid="bookmark-job"]')
+          .isChecked(),
       };
-      
+
       // Get job tags
       const tagElements = await card.locator('[data-testid="job-tag"]').all();
       for (const tagElement of tagElements) {
@@ -355,10 +396,10 @@ export class JobBoardPage extends BasePage {
           jobData.tags.push(tagText.trim());
         }
       }
-      
+
       jobsData.push(jobData);
     }
-    
+
     return jobsData;
   }
 
@@ -386,7 +427,9 @@ export class JobBoardPage extends BasePage {
    * Click on a specific job card
    */
   async clickJobCard(jobId: string) {
-    const jobCard = this.jobCards.filter({ has: this.page.locator(`[data-job-id="${jobId}"]`) });
+    const jobCard = this.jobCards.filter({
+      has: this.page.locator(`[data-job-id="${jobId}"]`),
+    });
     await jobCard.click();
     await this.waitForNavigation(/\/jobs\/[^\/]+/);
   }
@@ -395,10 +438,12 @@ export class JobBoardPage extends BasePage {
    * Bookmark a job
    */
   async bookmarkJob(jobId: string) {
-    const jobCard = this.jobCards.filter({ has: this.page.locator(`[data-job-id="${jobId}"]`) });
+    const jobCard = this.jobCards.filter({
+      has: this.page.locator(`[data-job-id="${jobId}"]`),
+    });
     const bookmarkBtn = jobCard.locator('[data-testid="bookmark-job"]');
     await bookmarkBtn.click();
-    
+
     // Wait for bookmark state to change
     await this.page.waitForTimeout(500);
   }
@@ -407,16 +452,18 @@ export class JobBoardPage extends BasePage {
    * Quick apply to a job
    */
   async quickApplyToJob(jobId: string) {
-    const jobCard = this.jobCards.filter({ has: this.page.locator(`[data-job-id="${jobId}"]`) });
+    const jobCard = this.jobCards.filter({
+      has: this.page.locator(`[data-job-id="${jobId}"]`),
+    });
     const quickApplyBtn = jobCard.locator('[data-testid="quick-apply"]');
-    
+
     if (await quickApplyBtn.isVisible()) {
       await quickApplyBtn.click();
-      
+
       // Wait for quick apply modal or redirect
       await Promise.race([
         this.page.waitForSelector('[data-testid="quick-apply-modal"]'),
-        this.page.waitForURL(/\/jobs\/[^\/]+\/apply/)
+        this.page.waitForURL(/\/jobs\/[^\/]+\/apply/),
       ]);
     }
   }
@@ -425,7 +472,9 @@ export class JobBoardPage extends BasePage {
    * View job details
    */
   async viewJobDetails(jobId: string) {
-    const jobCard = this.jobCards.filter({ has: this.page.locator(`[data-job-id="${jobId}"]`) });
+    const jobCard = this.jobCards.filter({
+      has: this.page.locator(`[data-job-id="${jobId}"]`),
+    });
     const viewDetailsBtn = jobCard.locator('[data-testid="view-job-details"]');
     await viewDetailsBtn.click();
     await this.waitForNavigation(/\/jobs\/[^\/]+/);
@@ -455,7 +504,9 @@ export class JobBoardPage extends BasePage {
    * Navigate to specific page
    */
   async goToPage(pageNumber: number) {
-    const pageButton = this.pageNumbers.filter({ hasText: pageNumber.toString() });
+    const pageButton = this.pageNumbers.filter({
+      hasText: pageNumber.toString(),
+    });
     await pageButton.click();
     await this.waitForJobsToLoad();
   }
@@ -471,14 +522,17 @@ export class JobBoardPage extends BasePage {
   /**
    * Create job alert
    */
-  async createJobAlert(alertName: string, frequency: 'daily' | 'weekly' | 'monthly' = 'weekly') {
+  async createJobAlert(
+    alertName: string,
+    frequency: 'daily' | 'weekly' | 'monthly' = 'weekly'
+  ) {
     await this.createJobAlertButton.click();
     await this.jobAlertModal.waitFor({ state: 'visible' });
-    
+
     await this.alertNameInput.fill(alertName);
     await this.alertFrequencySelect.selectOption(frequency);
     await this.saveAlertButton.click();
-    
+
     await this.jobAlertModal.waitFor({ state: 'hidden' });
   }
 
@@ -487,11 +541,13 @@ export class JobBoardPage extends BasePage {
    */
   async selectJobsForBulkAction(jobIds: string[]) {
     for (const jobId of jobIds) {
-      const jobCard = this.jobCards.filter({ has: this.page.locator(`[data-job-id="${jobId}"]`) });
+      const jobCard = this.jobCards.filter({
+        has: this.page.locator(`[data-job-id="${jobId}"]`),
+      });
       const checkbox = jobCard.locator('[data-testid="select-job"]');
       await checkbox.check();
     }
-    
+
     // Wait for bulk actions panel to appear
     await this.bulkActionsPanel.waitFor({ state: 'visible' });
   }
@@ -527,12 +583,15 @@ export class JobBoardPage extends BasePage {
    * Navigate featured jobs carousel
    */
   async navigateFeaturedJobsCarousel(direction: 'next' | 'previous') {
-    if (direction === 'next' && await this.nextFeaturedButton.isVisible()) {
+    if (direction === 'next' && (await this.nextFeaturedButton.isVisible())) {
       await this.nextFeaturedButton.click();
-    } else if (direction === 'previous' && await this.previousFeaturedButton.isVisible()) {
+    } else if (
+      direction === 'previous' &&
+      (await this.previousFeaturedButton.isVisible())
+    ) {
       await this.previousFeaturedButton.click();
     }
-    
+
     await this.page.waitForTimeout(500); // Wait for carousel animation
   }
 
@@ -578,13 +637,21 @@ export class JobBoardPage extends BasePage {
   async waitForJobsToLoad() {
     // Wait for loading spinner to disappear
     if (await this.loadingJobsSpinner.isVisible()) {
-      await this.loadingJobsSpinner.waitFor({ state: 'hidden', timeout: 30000 });
+      await this.loadingJobsSpinner.waitFor({
+        state: 'hidden',
+        timeout: 30000,
+      });
     }
-    
+
     // Wait for either job cards or no results message
     await Promise.race([
-      this.jobCards.first().waitFor({ state: 'visible', timeout: 10000 }).catch(() => {}),
-      this.noResultsMessage.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {})
+      this.jobCards
+        .first()
+        .waitFor({ state: 'visible', timeout: 10000 })
+        .catch(() => {}),
+      this.noResultsMessage
+        .waitFor({ state: 'visible', timeout: 10000 })
+        .catch(() => {}),
     ]);
   }
 
@@ -593,15 +660,15 @@ export class JobBoardPage extends BasePage {
    */
   async testMobileExperience() {
     await this.page.setViewportSize({ width: 375, height: 667 });
-    
+
     // Check if filters toggle is available on mobile
     await expect(this.filtersToggle).toBeVisible();
-    
+
     // Check if job cards adapt to mobile layout
     const firstJobCard = this.jobCards.first();
     const cardBox = await firstJobCard.boundingBox();
     expect(cardBox?.width).toBeLessThanOrEqual(375);
-    
+
     return true;
   }
 
@@ -611,10 +678,10 @@ export class JobBoardPage extends BasePage {
   async advancedSearch(searchQuery: string, filters: JobFilterOptions) {
     // Perform search
     await this.searchJobs(searchQuery);
-    
+
     // Apply filters
     await this.applyFilters(filters);
-    
+
     // Return results
     return await this.getAllJobCards();
   }

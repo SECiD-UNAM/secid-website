@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth} from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import {
-  collection, 
-  query, 
-  where, 
-  orderBy, 
-  onSnapshot, 
-  doc, 
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  doc,
   updateDoc,
   deleteDoc,
-  getDoc 
+  getDoc,
 } from 'firebase/firestore';
-import { db} from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import {
   BriefcaseIcon,
   PlusIcon,
@@ -30,7 +30,7 @@ import {
   SparklesIcon,
   ExclamationTriangleIcon,
   ArrowTrendingUpIcon,
-  FunnelIcon
+  FunnelIcon,
 } from '@heroicons/react/24/outline';
 
 interface JobPost {
@@ -67,15 +67,19 @@ interface CompanyDashboardProps {
   lang?: 'es' | 'en';
 }
 
-export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' }) => {
+export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
+  lang = 'es',
+}) => {
   const { user, userProfile } = useAuth();
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
   const [selectedJob, setSelectedJob] = useState<JobPost | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'jobs' | 'applications' | 'analytics'>('overview');
-  
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'jobs' | 'applications' | 'analytics'
+  >('overview');
+
   const [stats, setStats] = useState({
     totalJobs: 0,
     activeJobs: 0,
@@ -84,7 +88,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
     totalViews: 0,
     conversionRate: 0,
     avgTimeToHire: 0,
-    topPerformingJob: null as JobPost | null
+    topPerformingJob: null as JobPost | null,
   });
 
   useEffect(() => {
@@ -98,7 +102,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
     );
 
     const unsubscribe = onSnapshot(jobsQuery, (snapshot) => {
-      const posts = snapshot['docs'].map(doc => {
+      const posts = snapshot['docs'].map((doc) => {
         const data = doc['data']();
         return {
           id: doc['id'],
@@ -126,7 +130,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
     );
 
     const unsubscribe = onSnapshot(applicationsQuery, (snapshot) => {
-      const apps = snapshot['docs'].map(doc => {
+      const apps = snapshot['docs'].map((doc) => {
         const data = doc['data']();
         return {
           id: doc['id'],
@@ -143,18 +147,27 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
 
   const calculateStats = (posts: JobPost[]) => {
     const totalJobs = posts.length;
-    const activeJobs = posts.filter(j => j['status'] === 'active' && j.isApproved).length;
-    const totalApplications = posts.reduce((sum, job) => sum + job.applicationCount, 0);
+    const activeJobs = posts.filter(
+      (j) => j['status'] === 'active' && j.isApproved
+    ).length;
+    const totalApplications = posts.reduce(
+      (sum, job) => sum + job.applicationCount,
+      0
+    );
     const totalViews = posts.reduce((sum, job) => sum + job.viewCount, 0);
-    const conversionRate = totalViews > 0 ? (totalApplications / totalViews) * 100 : 0;
-    
+    const conversionRate =
+      totalViews > 0 ? (totalApplications / totalViews) * 100 : 0;
+
     // Find top performing job
-    const topJob = posts.reduce((top, job) => {
-      if (!top || job.applicationCount > top.applicationCount) {
-        return job;
-      }
-      return top;
-    }, null as JobPost | null);
+    const topJob = posts.reduce(
+      (top, job) => {
+        if (!top || job.applicationCount > top.applicationCount) {
+          return job;
+        }
+        return top;
+      },
+      null as JobPost | null
+    );
 
     setStats({
       totalJobs,
@@ -164,7 +177,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
       totalViews,
       conversionRate: Math.round(conversionRate * 10) / 10,
       avgTimeToHire: 15, // Mock value
-      topPerformingJob: topJob
+      topPerformingJob: topJob,
     });
     setStatsLoading(false);
   };
@@ -173,7 +186,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
     try {
       await updateDoc(doc(db, 'jobs', jobId), {
         status: newStatus,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       });
     } catch (error) {
       console.error('Error updating job status:', error);
@@ -181,10 +194,11 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
   };
 
   const handleDeleteJob = async (jobId: string) => {
-    const confirmMessage = lang === 'es' 
-      ? '¿Estás seguro de que quieres eliminar este empleo?' 
-      : 'Are you sure you want to delete this job?';
-    
+    const confirmMessage =
+      lang === 'es'
+        ? '¿Estás seguro de que quieres eliminar este empleo?'
+        : 'Are you sure you want to delete this job?';
+
     if (confirm(confirmMessage)) {
       try {
         await deleteDoc(doc(db, 'jobs', jobId));
@@ -194,16 +208,17 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
     }
   };
 
-  const handleApplicationStatusChange = async (jobId: string, applicationId: string, newStatus: string) => {
+  const handleApplicationStatusChange = async (
+    jobId: string,
+    applicationId: string,
+    newStatus: string
+  ) => {
     try {
-      await updateDoc(
-        doc(db, 'jobs', jobId, 'applications', applicationId),
-        {
-          status: newStatus,
-          reviewedAt: new Date(),
-          reviewedBy: user?.uid
-        }
-      );
+      await updateDoc(doc(db, 'jobs', jobId, 'applications', applicationId), {
+        status: newStatus,
+        reviewedAt: new Date(),
+        reviewedBy: user?.uid,
+      });
     } catch (error) {
       console.error('Error updating application status:', error);
     }
@@ -212,10 +227,13 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       draft: 'bg-gray-100 dark:bg-gray-900/20 text-gray-700 dark:text-gray-400',
-      pending: 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400',
-      active: 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400',
+      pending:
+        'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400',
+      active:
+        'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400',
       expired: 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400',
-      filled: 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400',
+      filled:
+        'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400',
     };
     return colors[status] || colors.draft;
   };
@@ -231,13 +249,16 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
     return labels[status]?.[lang] || status;
   };
 
-  if(loading) {
+  if (loading) {
     return (
       <div className="animate-pulse">
-        <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-6"></div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-24 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+        <div className="mb-6 h-32 rounded-lg bg-gray-200 dark:bg-gray-700"></div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="h-24 rounded-lg bg-gray-200 dark:bg-gray-700"
+            ></div>
           ))}
         </div>
       </div>
@@ -247,30 +268,30 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
   return (
     <div>
       {/* Header */}
-      <div className="flex justify-between items-start mb-8">
+      <div className="mb-8 flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">
             {lang === 'es' ? 'Panel de Empresa' : 'Company Dashboard'}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            {lang === 'es' 
+            {lang === 'es'
               ? 'Gestiona tus publicaciones de empleo y aplicaciones'
               : 'Manage your job postings and applications'}
           </p>
         </div>
-        
+
         <a
           href={`/${lang}/dashboard/jobs/new`}
-          className="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+          className="inline-flex items-center rounded-lg bg-primary-600 px-4 py-2 text-white transition-colors hover:bg-primary-700"
         >
-          <PlusIcon className="h-5 w-5 mr-2" />
+          <PlusIcon className="mr-2 h-5 w-5" />
           {lang === 'es' ? 'Publicar empleo' : 'Post job'}
         </a>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -284,7 +305,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -298,7 +319,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -312,7 +333,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -328,24 +349,40 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
+      <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
         <nav className="flex space-x-8">
           {[
-            { id: 'overview', label: lang === 'es' ? 'Resumen' : 'Overview', icon: ChartBarIcon },
-            { id: 'jobs', label: lang === 'es' ? 'Empleos' : 'Jobs', icon: BriefcaseIcon },
-            { id: 'applications', label: lang === 'es' ? 'Aplicaciones' : 'Applications', icon: DocumentTextIcon },
-            { id: 'analytics', label: lang === 'es' ? 'Analíticas' : 'Analytics', icon: ChartBarIcon },
-          ].map(tab => (
+            {
+              id: 'overview',
+              label: lang === 'es' ? 'Resumen' : 'Overview',
+              icon: ChartBarIcon,
+            },
+            {
+              id: 'jobs',
+              label: lang === 'es' ? 'Empleos' : 'Jobs',
+              icon: BriefcaseIcon,
+            },
+            {
+              id: 'applications',
+              label: lang === 'es' ? 'Aplicaciones' : 'Applications',
+              icon: DocumentTextIcon,
+            },
+            {
+              id: 'analytics',
+              label: lang === 'es' ? 'Analíticas' : 'Analytics',
+              icon: ChartBarIcon,
+            },
+          ].map((tab) => (
             <button
               key={tab['id']}
               onClick={() => setActiveTab(tab['id'] as any)}
-              className={`flex items-center py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+              className={`flex items-center border-b-2 px-1 py-2 text-sm font-medium transition-colors ${
                 activeTab === tab['id']
                   ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                   : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
               }`}
             >
-              <tab.icon className="h-5 w-5 mr-2" />
+              <tab.icon className="mr-2 h-5 w-5" />
               {tab.label}
             </button>
           ))}
@@ -357,18 +394,18 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
         <div className="space-y-6">
           {/* Top Performing Job */}
           {stats.topPerformingJob && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                <SparklesIcon className="inline h-5 w-5 text-yellow-500 mr-2" />
+            <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+              <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+                <SparklesIcon className="mr-2 inline h-5 w-5 text-yellow-500" />
                 {lang === 'es' ? 'Empleo más popular' : 'Top performing job'}
               </h3>
-              <div className="flex justify-between items-start">
+              <div className="flex items-start justify-between">
                 <div>
                   <h4 className="font-medium text-gray-900 dark:text-white">
                     {stats.topPerformingJob.title}
                   </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    <MapPinIcon className="inline h-4 w-4 mr-1" />
+                  <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                    <MapPinIcon className="mr-1 inline h-4 w-4" />
                     {stats.topPerformingJob.location}
                   </p>
                 </div>
@@ -385,12 +422,12 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
           )}
 
           {/* Recent Applications */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
               {lang === 'es' ? 'Aplicaciones recientes' : 'Recent applications'}
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
-              {lang === 'es' 
+              {lang === 'es'
                 ? 'Selecciona un empleo en la pestaña "Empleos" para ver sus aplicaciones'
                 : 'Select a job from the "Jobs" tab to view its applications'}
             </p>
@@ -401,48 +438,52 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
       {activeTab === 'jobs' && (
         <div className="space-y-4">
           {jobPosts.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
-              <BriefcaseIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                {lang === 'es' ? 'No tienes empleos publicados' : 'No job postings yet'}
+            <div className="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
+              <BriefcaseIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+              <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
+                {lang === 'es'
+                  ? 'No tienes empleos publicados'
+                  : 'No job postings yet'}
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                {lang === 'es' 
+              <p className="mb-4 text-gray-600 dark:text-gray-400">
+                {lang === 'es'
                   ? 'Comienza publicando tu primer empleo'
                   : 'Start by posting your first job'}
               </p>
               <a
                 href={`/${lang}/dashboard/jobs/new`}
-                className="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg"
+                className="inline-flex items-center rounded-lg bg-primary-600 px-4 py-2 text-white hover:bg-primary-700"
               >
-                <PlusIcon className="h-5 w-5 mr-2" />
+                <PlusIcon className="mr-2 h-5 w-5" />
                 {lang === 'es' ? 'Publicar empleo' : 'Post job'}
               </a>
             </div>
           ) : (
-            jobPosts.map(job => (
+            jobPosts.map((job) => (
               <div
                 key={job['id']}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-all p-6"
+                className="rounded-lg bg-white p-6 shadow transition-all hover:shadow-lg dark:bg-gray-800"
               >
-                <div className="flex justify-between items-start">
+                <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-start justify-between">
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                           {job.title}
                         </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          <MapPinIcon className="inline h-4 w-4 mr-1" />
+                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                          <MapPinIcon className="mr-1 inline h-4 w-4" />
                           {job.location}
                         </p>
                       </div>
-                      <span className={`px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(job['status'])}`}>
+                      <span
+                        className={`rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(job['status'])}`}
+                      >
                         {getStatusLabel(job['status'])}
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                    <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
                       <div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           {lang === 'es' ? 'Aplicaciones' : 'Applications'}
@@ -464,7 +505,10 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
                           {lang === 'es' ? 'Publicado' : 'Posted'}
                         </p>
                         <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                          {job.postedAt.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', { month: 'short', day: 'numeric' })}
+                          {job.postedAt.toLocaleDateString(
+                            lang === 'es' ? 'es-MX' : 'en-US',
+                            { month: 'short', day: 'numeric' }
+                          )}
                         </p>
                       </div>
                       {job.expiresAt && (
@@ -473,57 +517,66 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
                             {lang === 'es' ? 'Expira' : 'Expires'}
                           </p>
                           <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                            {job.expiresAt.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', { month: 'short', day: 'numeric' })}
+                            {job.expiresAt.toLocaleDateString(
+                              lang === 'es' ? 'es-MX' : 'en-US',
+                              { month: 'short', day: 'numeric' }
+                            )}
                           </p>
                         </div>
                       )}
                     </div>
 
                     {!job.isApproved && (
-                      <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                      <div className="mt-4 rounded-lg bg-yellow-50 p-3 dark:bg-yellow-900/20">
                         <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                          <ExclamationTriangleIcon className="inline h-4 w-4 mr-1" />
-                          {lang === 'es' 
+                          <ExclamationTriangleIcon className="mr-1 inline h-4 w-4" />
+                          {lang === 'es'
                             ? 'Este empleo está pendiente de aprobación'
                             : 'This job is pending approval'}
                         </p>
                       </div>
                     )}
 
-                    <div className="flex space-x-4 mt-4">
+                    <div className="mt-4 flex space-x-4">
                       <button
                         onClick={() => setSelectedJob(job)}
-                        className="text-primary-600 dark:text-primary-400 hover:underline text-sm font-medium"
+                        className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-400"
                       >
-                        {lang === 'es' ? 'Ver aplicaciones' : 'View applications'}
+                        {lang === 'es'
+                          ? 'Ver aplicaciones'
+                          : 'View applications'}
                       </button>
                       <a
                         href={`/${lang}/dashboard/jobs/${job['id']}`}
-                        className="text-primary-600 dark:text-primary-400 hover:underline text-sm font-medium"
+                        className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-400"
                       >
                         {lang === 'es' ? 'Ver empleo' : 'View job'}
                       </a>
                       <a
                         href={`/${lang}/dashboard/jobs/${job['id']}/edit`}
-                        className="text-primary-600 dark:text-primary-400 hover:underline text-sm font-medium"
+                        className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-400"
                       >
-                        <PencilIcon className="inline h-4 w-4 mr-1" />
+                        <PencilIcon className="mr-1 inline h-4 w-4" />
                         {lang === 'es' ? 'Editar' : 'Edit'}
                       </a>
                       {job['status'] === 'active' && (
                         <button
-                          onClick={() => handleStatusChange(job['id'], 'filled')}
-                          className="text-green-600 dark:text-green-400 hover:underline text-sm font-medium"
+                          onClick={() =>
+                            handleStatusChange(job['id'], 'filled')
+                          }
+                          className="text-sm font-medium text-green-600 hover:underline dark:text-green-400"
                         >
-                          <CheckCircleIcon className="inline h-4 w-4 mr-1" />
-                          {lang === 'es' ? 'Marcar como cubierto' : 'Mark as filled'}
+                          <CheckCircleIcon className="mr-1 inline h-4 w-4" />
+                          {lang === 'es'
+                            ? 'Marcar como cubierto'
+                            : 'Mark as filled'}
                         </button>
                       )}
                       <button
                         onClick={() => handleDeleteJob(job['id'])}
-                        className="text-red-600 dark:text-red-400 hover:underline text-sm font-medium"
+                        className="text-sm font-medium text-red-600 hover:underline dark:text-red-400"
                       >
-                        <TrashIcon className="inline h-4 w-4 mr-1" />
+                        <TrashIcon className="mr-1 inline h-4 w-4" />
                         {lang === 'es' ? 'Eliminar' : 'Delete'}
                       </button>
                     </div>
@@ -539,8 +592,8 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
         <div>
           {selectedJob ? (
             <div className="space-y-6">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+                <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
                   {lang === 'es' ? 'Aplicaciones para:' : 'Applications for:'}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
@@ -548,32 +601,36 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
                 </p>
                 <button
                   onClick={() => setSelectedJob(null)}
-                  className="mt-2 text-primary-600 dark:text-primary-400 hover:underline text-sm"
+                  className="mt-2 text-sm text-primary-600 hover:underline dark:text-primary-400"
                 >
-                  {lang === 'es' ? '← Seleccionar otro empleo' : '← Select another job'}
+                  {lang === 'es'
+                    ? '← Seleccionar otro empleo'
+                    : '← Select another job'}
                 </button>
               </div>
 
               {applications.length === 0 ? (
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
-                  <UsersIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    {lang === 'es' ? 'No hay aplicaciones aún' : 'No applications yet'}
+                <div className="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
+                  <UsersIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                  <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
+                    {lang === 'es'
+                      ? 'No hay aplicaciones aún'
+                      : 'No applications yet'}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400">
-                    {lang === 'es' 
+                    {lang === 'es'
                       ? 'Las aplicaciones aparecerán aquí cuando los candidatos apliquen'
                       : 'Applications will appear here when candidates apply'}
                   </p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {applications.map(application => (
+                  {applications.map((application) => (
                     <div
                       key={application['id']}
-                      className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
+                      className="rounded-lg bg-white p-6 shadow dark:bg-gray-800"
                     >
-                      <div className="flex justify-between items-start mb-4">
+                      <div className="mb-4 flex items-start justify-between">
                         <div>
                           <h4 className="font-medium text-gray-900 dark:text-white">
                             {application.applicantName}
@@ -581,22 +638,28 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
                           <p className="text-sm text-gray-600 dark:text-gray-400">
                             {application.applicantEmail}
                           </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-                            {lang === 'es' ? 'Aplicó' : 'Applied'} {application.appliedAt.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US')}
+                          <p className="mt-1 text-sm text-gray-500 dark:text-gray-500">
+                            {lang === 'es' ? 'Aplicó' : 'Applied'}{' '}
+                            {application.appliedAt.toLocaleDateString(
+                              lang === 'es' ? 'es-MX' : 'en-US'
+                            )}
                           </p>
                         </div>
                         {application.matchScore && (
-                          <span className="px-3 py-1 text-sm font-medium rounded-full bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400">
-                            {application.matchScore}% {lang === 'es' ? 'compatible' : 'match'}
+                          <span className="rounded-full bg-primary-100 px-3 py-1 text-sm font-medium text-primary-700 dark:bg-primary-900/20 dark:text-primary-400">
+                            {application.matchScore}%{' '}
+                            {lang === 'es' ? 'compatible' : 'match'}
                           </span>
                         )}
                       </div>
 
                       <div className="mb-4">
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          {lang === 'es' ? 'Carta de presentación:' : 'Cover letter:'}
+                        <p className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {lang === 'es'
+                            ? 'Carta de presentación:'
+                            : 'Cover letter:'}
                         </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
+                        <p className="line-clamp-3 text-sm text-gray-600 dark:text-gray-400">
                           {application.coverLetter}
                         </p>
                       </div>
@@ -607,23 +670,39 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
                             href={application.resumeUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-primary-600 dark:text-primary-400 hover:underline text-sm font-medium"
+                            className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-400"
                           >
-                            <DocumentTextIcon className="inline h-4 w-4 mr-1" />
+                            <DocumentTextIcon className="mr-1 inline h-4 w-4" />
                             {lang === 'es' ? 'Ver CV' : 'View resume'}
                           </a>
                         )}
-                        
+
                         <select
                           value={application['status']}
-                          onChange={(e) => handleApplicationStatusChange(selectedJob['id'], application['id'], e.target.value)}
-                          className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          onChange={(e) =>
+                            handleApplicationStatusChange(
+                              selectedJob['id'],
+                              application['id'],
+                              e.target.value
+                            )
+                          }
+                          className="rounded-lg border border-gray-300 bg-white px-3 py-1 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                         >
-                          <option value="pending">{lang === 'es' ? 'Pendiente' : 'Pending'}</option>
-                          <option value="reviewed">{lang === 'es' ? 'Revisada' : 'Reviewed'}</option>
-                          <option value="shortlisted">{lang === 'es' ? 'Preseleccionada' : 'Shortlisted'}</option>
-                          <option value="rejected">{lang === 'es' ? 'Rechazada' : 'Rejected'}</option>
-                          <option value="hired">{lang === 'es' ? 'Contratado' : 'Hired'}</option>
+                          <option value="pending">
+                            {lang === 'es' ? 'Pendiente' : 'Pending'}
+                          </option>
+                          <option value="reviewed">
+                            {lang === 'es' ? 'Revisada' : 'Reviewed'}
+                          </option>
+                          <option value="shortlisted">
+                            {lang === 'es' ? 'Preseleccionada' : 'Shortlisted'}
+                          </option>
+                          <option value="rejected">
+                            {lang === 'es' ? 'Rechazada' : 'Rejected'}
+                          </option>
+                          <option value="hired">
+                            {lang === 'es' ? 'Contratado' : 'Hired'}
+                          </option>
                         </select>
                       </div>
                     </div>
@@ -632,13 +711,13 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
               )}
             </div>
           ) : (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
-              <DocumentTextIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            <div className="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
+              <DocumentTextIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+              <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
                 {lang === 'es' ? 'Selecciona un empleo' : 'Select a job'}
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                {lang === 'es' 
+                {lang === 'es'
                   ? 'Selecciona un empleo de la pestaña "Empleos" para ver sus aplicaciones'
                   : 'Select a job from the "Jobs" tab to view its applications'}
               </p>
@@ -648,33 +727,39 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({ lang = 'es' 
       )}
 
       {activeTab === 'analytics' && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            {lang === 'es' ? 'Análisis de rendimiento' : 'Performance analytics'}
+        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+          <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+            {lang === 'es'
+              ? 'Análisis de rendimiento'
+              : 'Performance analytics'}
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {lang === 'es' ? 'Tiempo promedio de contratación' : 'Average time to hire'}
+              <h4 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                {lang === 'es'
+                  ? 'Tiempo promedio de contratación'
+                  : 'Average time to hire'}
               </h4>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">
                 {stats.avgTimeToHire} {lang === 'es' ? 'días' : 'days'}
               </p>
             </div>
             <div>
-              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {lang === 'es' ? 'Tasa de conversión promedio' : 'Average conversion rate'}
+              <h4 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                {lang === 'es'
+                  ? 'Tasa de conversión promedio'
+                  : 'Average conversion rate'}
               </h4>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">
                 {stats.conversionRate}%
               </p>
             </div>
           </div>
-          
-          <div className="mt-8 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
+
+          <div className="mt-8 rounded-lg bg-primary-50 p-4 dark:bg-primary-900/20">
             <p className="text-sm text-primary-700 dark:text-primary-300">
-              <ChartBarIcon className="inline h-4 w-4 mr-1" />
-              {lang === 'es' 
+              <ChartBarIcon className="mr-1 inline h-4 w-4" />
+              {lang === 'es'
                 ? 'Las analíticas detalladas estarán disponibles próximamente'
                 : 'Detailed analytics coming soon'}
             </p>

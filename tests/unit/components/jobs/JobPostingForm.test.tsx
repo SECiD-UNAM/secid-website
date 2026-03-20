@@ -1,6 +1,12 @@
 // @ts-nocheck
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { JobPostingForm } from '@/components/jobs/JobPostingForm';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,17 +27,24 @@ vi.mock('@/lib/firebase', () => ({
   db: {},
 }));
 
-vi.mock('@heroicons/react/24/outline', () =>
-  new Proxy({}, {
-    get: (_target, prop) => {
-      if (typeof prop === 'string' && prop !== '__esModule') {
-        const Icon = ({ className }: any) => <svg className={className} data-testid={`${prop}-icon`} />;
-        Icon.displayName = prop;
-        return Icon;
+vi.mock(
+  '@heroicons/react/24/outline',
+  () =>
+    new Proxy(
+      {},
+      {
+        get: (_target, prop) => {
+          if (typeof prop === 'string' && prop !== '__esModule') {
+            const Icon = ({ className }: any) => (
+              <svg className={className} data-testid={`${prop}-icon`} />
+            );
+            Icon.displayName = prop;
+            return Icon;
+          }
+          return undefined;
+        },
       }
-      return undefined;
-    },
-  })
+    )
 );
 
 describe('JobPostingForm', () => {
@@ -94,7 +107,9 @@ describe('JobPostingForm', () => {
     it('pre-fills company name from user profile', () => {
       render(<JobPostingForm />);
 
-      const companyInput = screen.getByLabelText(/empresa/i) as HTMLInputElement;
+      const companyInput = screen.getByLabelText(
+        /empresa/i
+      ) as HTMLInputElement;
       expect(companyInput.value).toBe('TechCorp México');
     });
 
@@ -103,7 +118,9 @@ describe('JobPostingForm', () => {
 
       expect(screen.getByText('1 de 5')).toBeInTheDocument();
       // Should show progress bar or steps
-      expect(screen.getByRole('progressbar') || screen.getByText(/paso 1/i)).toBeInTheDocument();
+      expect(
+        screen.getByRole('progressbar') || screen.getByText(/paso 1/i)
+      ).toBeInTheDocument();
     });
   });
 
@@ -114,7 +131,9 @@ describe('JobPostingForm', () => {
       const nextButton = screen.getByRole('button', { name: /siguiente/i });
       await user.click(nextButton);
 
-      expect(screen.getByText(/completa todos los campos requeridos/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/completa todos los campos requeridos/i)
+      ).toBeInTheDocument();
     });
 
     it('validates job title length', async () => {
@@ -126,24 +145,31 @@ describe('JobPostingForm', () => {
       const nextButton = screen.getByRole('button', { name: /siguiente/i });
       await user.click(nextButton);
 
-      expect(screen.getByText(/título debe tener al menos/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/título debe tener al menos/i)
+      ).toBeInTheDocument();
     });
 
     it('validates description length in step 2', async () => {
       render(<JobPostingForm />);
 
       // Fill step 1
-      await user.type(screen.getByLabelText(/título del empleo/i), 'Senior Data Scientist');
+      await user.type(
+        screen.getByLabelText(/título del empleo/i),
+        'Senior Data Scientist'
+      );
       await user.type(screen.getByLabelText(/empresa/i), 'TechCorp');
       await user.type(screen.getByLabelText(/ubicación/i), 'Ciudad de México');
-      
+
       await user.click(screen.getByRole('button', { name: /siguiente/i }));
 
       // Now in step 2
       const nextButton = screen.getByRole('button', { name: /siguiente/i });
       await user.click(nextButton);
 
-      expect(screen.getByText(/descripción debe tener al menos 100 caracteres/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/descripción debe tener al menos 100 caracteres/i)
+      ).toBeInTheDocument();
     });
 
     it('validates email format for email application method', async () => {
@@ -158,7 +184,9 @@ describe('JobPostingForm', () => {
       const emailInput = screen.getByLabelText(/email de aplicación/i);
       await user.type(emailInput, 'invalid-email');
 
-      const submitButton = screen.getByRole('button', { name: /publicar empleo/i });
+      const submitButton = screen.getByRole('button', {
+        name: /publicar empleo/i,
+      });
       await user.click(submitButton);
 
       expect(screen.getByText(/email válido/i)).toBeInTheDocument();
@@ -175,7 +203,9 @@ describe('JobPostingForm', () => {
       const urlInput = screen.getByLabelText(/url de aplicación/i);
       await user.type(urlInput, 'invalid-url');
 
-      const submitButton = screen.getByRole('button', { name: /publicar empleo/i });
+      const submitButton = screen.getByRole('button', {
+        name: /publicar empleo/i,
+      });
       await user.click(submitButton);
 
       expect(screen.getByText(/url válida/i)).toBeInTheDocument();
@@ -195,7 +225,9 @@ describe('JobPostingForm', () => {
       const nextButton = screen.getByRole('button', { name: /siguiente/i });
       await user.click(nextButton);
 
-      expect(screen.getByText(/salario máximo debe ser mayor/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/salario máximo debe ser mayor/i)
+      ).toBeInTheDocument();
     });
   });
 
@@ -204,7 +236,10 @@ describe('JobPostingForm', () => {
       render(<JobPostingForm />);
 
       // Fill required fields
-      await user.type(screen.getByLabelText(/título del empleo/i), 'Senior Data Scientist');
+      await user.type(
+        screen.getByLabelText(/título del empleo/i),
+        'Senior Data Scientist'
+      );
       await user.type(screen.getByLabelText(/empresa/i), 'TechCorp');
       await user.type(screen.getByLabelText(/ubicación/i), 'Ciudad de México');
 
@@ -236,7 +271,9 @@ describe('JobPostingForm', () => {
       expect(screen.getByText('Descripción del empleo')).toBeInTheDocument();
 
       await navigateToStep(3);
-      expect(screen.getByText('Requisitos y responsabilidades')).toBeInTheDocument();
+      expect(
+        screen.getByText('Requisitos y responsabilidades')
+      ).toBeInTheDocument();
 
       await navigateToStep(4);
       expect(screen.getByText('Beneficios y etiquetas')).toBeInTheDocument();
@@ -254,7 +291,9 @@ describe('JobPostingForm', () => {
       await navigateToStep(2);
       await navigateToStep(1);
 
-      expect((screen.getByLabelText(/título del empleo/i) as HTMLInputElement).value).toBe('Senior Data Scientist');
+      expect(
+        (screen.getByLabelText(/título del empleo/i) as HTMLInputElement).value
+      ).toBe('Senior Data Scientist');
     });
   });
 
@@ -268,7 +307,9 @@ describe('JobPostingForm', () => {
       const locationTypeSelect = screen.getByLabelText(/modalidad/i);
       await user.selectOptions(locationTypeSelect, 'remote');
 
-      expect((employmentTypeSelect as HTMLSelectElement).value).toBe('part-time');
+      expect((employmentTypeSelect as HTMLSelectElement).value).toBe(
+        'part-time'
+      );
       expect((locationTypeSelect as HTMLSelectElement).value).toBe('remote');
     });
 
@@ -278,19 +319,26 @@ describe('JobPostingForm', () => {
       await navigateToStep(3);
 
       // Add requirement
-      const requirementInput = screen.getByPlaceholderText(/agregar requisito/i);
+      const requirementInput =
+        screen.getByPlaceholderText(/agregar requisito/i);
       await user.type(requirementInput, 'Python programming');
 
-      const addRequirementButton = screen.getByRole('button', { name: /agregar requisito/i });
+      const addRequirementButton = screen.getByRole('button', {
+        name: /agregar requisito/i,
+      });
       await user.click(addRequirementButton);
 
-      expect(screen.getByDisplayValue('Python programming')).toBeInTheDocument();
+      expect(
+        screen.getByDisplayValue('Python programming')
+      ).toBeInTheDocument();
 
       // Remove requirement
       const removeButton = screen.getByRole('button', { name: /eliminar/i });
       await user.click(removeButton);
 
-      expect(screen.queryByDisplayValue('Python programming')).not.toBeInTheDocument();
+      expect(
+        screen.queryByDisplayValue('Python programming')
+      ).not.toBeInTheDocument();
     });
 
     it('handles tag management', async () => {
@@ -306,7 +354,9 @@ describe('JobPostingForm', () => {
       expect(screen.getByText('#python')).toBeInTheDocument();
 
       // Remove tag
-      const removeTagButton = within(screen.getByText('#python').parentElement!).getByRole('button');
+      const removeTagButton = within(
+        screen.getByText('#python').parentElement!
+      ).getByRole('button');
       await user.click(removeTagButton);
 
       expect(screen.queryByText('#python')).not.toBeInTheDocument();
@@ -318,8 +368,12 @@ describe('JobPostingForm', () => {
       await navigateToStep(4);
 
       // Should show suggested tags
-      expect(screen.getByRole('button', { name: 'python' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'machine-learning' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'python' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'machine-learning' })
+      ).toBeInTheDocument();
 
       // Click suggested tag
       const pythonTag = screen.getByRole('button', { name: 'python' });
@@ -369,7 +423,9 @@ describe('JobPostingForm', () => {
       // Fill out complete form
       await fillCompleteForm();
 
-      const submitButton = screen.getByRole('button', { name: /publicar empleo/i });
+      const submitButton = screen.getByRole('button', {
+        name: /publicar empleo/i,
+      });
       await user.click(submitButton);
 
       expect(mockAddDoc).toHaveBeenCalledWith(
@@ -398,7 +454,9 @@ describe('JobPostingForm', () => {
 
       await fillCompleteForm();
 
-      const submitButton = screen.getByRole('button', { name: /publicar empleo/i });
+      const submitButton = screen.getByRole('button', {
+        name: /publicar empleo/i,
+      });
       await user.click(submitButton);
 
       expect(screen.getByText(/enviando/i)).toBeInTheDocument();
@@ -412,11 +470,15 @@ describe('JobPostingForm', () => {
 
       await fillCompleteForm();
 
-      const submitButton = screen.getByRole('button', { name: /publicar empleo/i });
+      const submitButton = screen.getByRole('button', {
+        name: /publicar empleo/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/empleo publicado exitosamente/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/empleo publicado exitosamente/i)
+        ).toBeInTheDocument();
         expect(screen.getByTestId('check-circle-icon')).toBeInTheDocument();
       });
     });
@@ -428,12 +490,16 @@ describe('JobPostingForm', () => {
 
       await fillCompleteForm();
 
-      const submitButton = screen.getByRole('button', { name: /publicar empleo/i });
+      const submitButton = screen.getByRole('button', {
+        name: /publicar empleo/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
         expect(screen.getByText(/error al publicar/i)).toBeInTheDocument();
-        expect(screen.getByTestId('exclamation-circle-icon')).toBeInTheDocument();
+        expect(
+          screen.getByTestId('exclamation-circle-icon')
+        ).toBeInTheDocument();
       });
     });
 
@@ -442,7 +508,9 @@ describe('JobPostingForm', () => {
 
       await fillCompleteForm();
 
-      const submitButton = screen.getByRole('button', { name: /publicar empleo/i });
+      const submitButton = screen.getByRole('button', {
+        name: /publicar empleo/i,
+      });
       await user.click(submitButton);
 
       expect(mockAddDoc).toHaveBeenCalledWith(
@@ -474,7 +542,9 @@ describe('JobPostingForm', () => {
 
       await navigateToStep(5);
 
-      const submitButton = screen.getByRole('button', { name: /publicar empleo/i });
+      const submitButton = screen.getByRole('button', {
+        name: /publicar empleo/i,
+      });
       await user.click(submitButton);
 
       expect(mockAddDoc).toHaveBeenCalledWith(
@@ -496,16 +566,23 @@ describe('JobPostingForm', () => {
       await navigateToStep(3);
 
       // Add some requirements
-      const requirementInput = screen.getByPlaceholderText(/agregar requisito/i);
+      const requirementInput =
+        screen.getByPlaceholderText(/agregar requisito/i);
       await user.type(requirementInput, 'Python');
-      await user.click(screen.getByRole('button', { name: /agregar requisito/i }));
+      await user.click(
+        screen.getByRole('button', { name: /agregar requisito/i })
+      );
 
       await user.type(requirementInput, ''); // Empty requirement
-      await user.click(screen.getByRole('button', { name: /agregar requisito/i }));
+      await user.click(
+        screen.getByRole('button', { name: /agregar requisito/i })
+      );
 
       await navigateToStep(5);
 
-      const submitButton = screen.getByRole('button', { name: /publicar empleo/i });
+      const submitButton = screen.getByRole('button', {
+        name: /publicar empleo/i,
+      });
       await user.click(submitButton);
 
       expect(mockAddDoc).toHaveBeenCalledWith(
@@ -524,7 +601,9 @@ describe('JobPostingForm', () => {
       const deadlineInput = screen.getByLabelText(/fecha límite/i);
       await user.type(deadlineInput, '2024-12-31');
 
-      const submitButton = screen.getByRole('button', { name: /publicar empleo/i });
+      const submitButton = screen.getByRole('button', {
+        name: /publicar empleo/i,
+      });
       await user.click(submitButton);
 
       expect(mockAddDoc).toHaveBeenCalledWith(
@@ -542,7 +621,9 @@ describe('JobPostingForm', () => {
 
       await navigateToStep(2);
 
-      const descriptionTextarea = screen.getByLabelText(/descripción detallada/i);
+      const descriptionTextarea = screen.getByLabelText(
+        /descripción detallada/i
+      );
       await user.type(descriptionTextarea, 'This is a test description');
 
       expect(screen.getByText(/25 caracteres/i)).toBeInTheDocument();
@@ -551,7 +632,9 @@ describe('JobPostingForm', () => {
     it('shows validation hints for required fields', () => {
       render(<JobPostingForm />);
 
-      expect(screen.getByText(/campos marcados con \* son obligatorios/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/campos marcados con \* son obligatorios/i)
+      ).toBeInTheDocument();
     });
 
     it('provides preview of job posting', async () => {
@@ -559,7 +642,9 @@ describe('JobPostingForm', () => {
 
       await fillCompleteForm();
 
-      const previewButton = screen.getByRole('button', { name: /vista previa/i });
+      const previewButton = screen.getByRole('button', {
+        name: /vista previa/i,
+      });
       await user.click(previewButton);
 
       expect(screen.getByText(/vista previa del empleo/i)).toBeInTheDocument();
@@ -571,7 +656,9 @@ describe('JobPostingForm', () => {
 
       await user.type(screen.getByLabelText(/título del empleo/i), 'Draft Job');
 
-      const saveDraftButton = screen.getByRole('button', { name: /guardar borrador/i });
+      const saveDraftButton = screen.getByRole('button', {
+        name: /guardar borrador/i,
+      });
       await user.click(saveDraftButton);
 
       expect(mockAddDoc).toHaveBeenCalledWith(
@@ -612,7 +699,9 @@ describe('JobPostingForm', () => {
 
       render(<JobPostingForm />);
 
-      expect(screen.getByText(/solo empresas pueden publicar empleos/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/solo empresas pueden publicar empleos/i)
+      ).toBeInTheDocument();
     });
 
     it('handles network errors gracefully', async () => {
@@ -622,12 +711,16 @@ describe('JobPostingForm', () => {
 
       await fillCompleteForm();
 
-      const submitButton = screen.getByRole('button', { name: /publicar empleo/i });
+      const submitButton = screen.getByRole('button', {
+        name: /publicar empleo/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
         expect(screen.getByText(/error de conexión/i)).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /reintentar/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /reintentar/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -667,8 +760,12 @@ describe('JobPostingForm', () => {
     it('provides proper heading hierarchy', () => {
       render(<JobPostingForm />);
 
-      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/publicar empleo/i);
-      expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(/información básica/i);
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+        /publicar empleo/i
+      );
+      expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
+        /información básica/i
+      );
     });
 
     it('maintains focus management during step navigation', async () => {
@@ -695,7 +792,9 @@ describe('JobPostingForm', () => {
       expect(screen.getByText('#python')).toBeInTheDocument();
 
       // Should be able to remove with keyboard
-      const removeTagButton = within(screen.getByText('#python').parentElement!).getByRole('button');
+      const removeTagButton = within(
+        screen.getByText('#python').parentElement!
+      ).getByRole('button');
       await user.keyboard('{Tab}');
       await user.keyboard('{Enter}');
 
@@ -710,19 +809,28 @@ describe('JobPostingForm', () => {
       await navigateToStep(2);
 
       const longDescription = 'A'.repeat(5000);
-      const descriptionTextarea = screen.getByLabelText(/descripción detallada/i);
+      const descriptionTextarea = screen.getByLabelText(
+        /descripción detallada/i
+      );
       await user.type(descriptionTextarea, longDescription);
 
-      expect((descriptionTextarea as HTMLTextAreaElement).value).toBe(longDescription);
+      expect((descriptionTextarea as HTMLTextAreaElement).value).toBe(
+        longDescription
+      );
     });
 
     it('handles special characters in form fields', async () => {
       render(<JobPostingForm />);
 
       const titleInput = screen.getByLabelText(/título del empleo/i);
-      await user.type(titleInput, 'Senior Data Scientist & ML Engineer (Remote)');
+      await user.type(
+        titleInput,
+        'Senior Data Scientist & ML Engineer (Remote)'
+      );
 
-      expect((titleInput as HTMLInputElement).value).toBe('Senior Data Scientist & ML Engineer (Remote)');
+      expect((titleInput as HTMLInputElement).value).toBe(
+        'Senior Data Scientist & ML Engineer (Remote)'
+      );
     });
 
     it('handles maximum tag limit', async () => {
@@ -746,18 +854,26 @@ describe('JobPostingForm', () => {
 
       await fillCompleteForm();
 
-      const submitButton = screen.getByRole('button', { name: /publicar empleo/i });
+      const submitButton = screen.getByRole('button', {
+        name: /publicar empleo/i,
+      });
       await user.click(submitButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/empleo publicado exitosamente/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/empleo publicado exitosamente/i)
+        ).toBeInTheDocument();
       });
 
-      const newJobButton = screen.getByRole('button', { name: /publicar otro empleo/i });
+      const newJobButton = screen.getByRole('button', {
+        name: /publicar otro empleo/i,
+      });
       await user.click(newJobButton);
 
       // Form should be reset
-      expect((screen.getByLabelText(/título del empleo/i) as HTMLInputElement).value).toBe('');
+      expect(
+        (screen.getByLabelText(/título del empleo/i) as HTMLInputElement).value
+      ).toBe('');
     });
   });
 
@@ -766,21 +882,28 @@ describe('JobPostingForm', () => {
     for (let i = 1; i < step; i++) {
       if (i === 1) await fillStep1();
       if (i === 2) await fillStep2();
-      
+
       const nextButton = screen.getByRole('button', { name: /siguiente/i });
       await user.click(nextButton);
     }
   }
 
   async function fillStep1() {
-    await user.type(screen.getByLabelText(/título del empleo/i), 'Senior Data Scientist');
+    await user.type(
+      screen.getByLabelText(/título del empleo/i),
+      'Senior Data Scientist'
+    );
     await user.type(screen.getByLabelText(/empresa/i), 'TechCorp México');
     await user.type(screen.getByLabelText(/ubicación/i), 'Ciudad de México');
   }
 
   async function fillStep2() {
-    const description = 'We are looking for an experienced Data Scientist to join our team. You will work with large datasets, build predictive models, and help drive data-driven decisions across the organization.';
-    await user.type(screen.getByLabelText(/descripción detallada/i), description);
+    const description =
+      'We are looking for an experienced Data Scientist to join our team. You will work with large datasets, build predictive models, and help drive data-driven decisions across the organization.';
+    await user.type(
+      screen.getByLabelText(/descripción detallada/i),
+      description
+    );
   }
 
   async function fillCompleteForm() {
@@ -795,11 +918,13 @@ describe('JobPostingForm', () => {
     // Step 3 - Requirements
     const reqInput = screen.getByPlaceholderText(/agregar requisito/i);
     await user.type(reqInput, 'Python');
-    await user.click(screen.getByRole('button', { name: /agregar requisito/i }));
-    
+    await user.click(
+      screen.getByRole('button', { name: /agregar requisito/i })
+    );
+
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
 
-    // Step 4 - Benefits and tags  
+    // Step 4 - Benefits and tags
     await user.click(screen.getByRole('button', { name: /siguiente/i }));
 
     // Step 5 - Application method (keep default)

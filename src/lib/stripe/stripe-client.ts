@@ -24,11 +24,16 @@ export const getStripe = (): Stripe => {
 
 // Legacy export for backwards compatibility
 export const stripe = stripeSecretKey
-  ? new Stripe(stripeSecretKey, { apiVersion: '2024-12-18.acacia', typescript: true })
+  ? new Stripe(stripeSecretKey, {
+      apiVersion: '2024-12-18.acacia',
+      typescript: true,
+    })
   : ({} as Stripe);
 
 // Client-side Stripe instance
-export const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
+export const stripePromise = stripePublishableKey
+  ? loadStripe(stripePublishableKey)
+  : null;
 
 // Subscription plans for SECiD platform
 export const SUBSCRIPTION_PLANS = {

@@ -19,11 +19,7 @@ import {
   Timestamp,
   serverTimestamp,
 } from 'firebase/firestore';
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import type {
   MemberProfile,
   MemberStatus,
@@ -38,13 +34,16 @@ const COLLECTIONS = {
   CONNECTION_REQUESTS: 'connectionRequests',
   CONVERSATIONS: 'conversations',
   MESSAGES: 'messages',
-  MEMBER_ANALYTICS: 'memberAnalytics'
+  MEMBER_ANALYTICS: 'memberAnalytics',
 };
 
 /**
  * Update member profile
  */
-export async function updateMemberProfile(uid: string, updates: Partial<MemberProfile>): Promise<void> {
+export async function updateMemberProfile(
+  uid: string,
+  updates: Partial<MemberProfile>
+): Promise<void> {
   if (isUsingMockAPI()) {
     console.log('Mock: Updating member profile', uid, updates);
     return;
@@ -54,7 +53,7 @@ export async function updateMemberProfile(uid: string, updates: Partial<MemberPr
     const docRef = doc(db, COLLECTIONS.MEMBERS, uid);
     await updateDoc(docRef, {
       ...updates,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error updating member profile:', error);
@@ -71,7 +70,11 @@ export async function sendConnectionRequest(
   message?: string
 ): Promise<void> {
   if (isUsingMockAPI()) {
-    console.log('Mock: Sending connection request', { fromUid, toUid, message });
+    console.log('Mock: Sending connection request', {
+      fromUid,
+      toUid,
+      message,
+    });
     return;
   }
 
@@ -85,14 +88,14 @@ export async function sendConnectionRequest(
       to: toUid,
       message: message || '',
       status: 'pending',
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     batch.set(requestRef, connectionRequest);
 
     const toMemberRef = doc(db, COLLECTIONS.MEMBERS, toUid);
     batch.update(toMemberRef, {
-      'networking.pendingConnections': arrayUnion(fromUid)
+      'networking.pendingConnections': arrayUnion(fromUid),
     });
 
     await batch.commit();
@@ -102,7 +105,9 @@ export async function sendConnectionRequest(
   }
 }
 
-export async function acceptConnectionRequest(requestId: string): Promise<void> {
+export async function acceptConnectionRequest(
+  requestId: string
+): Promise<void> {
   if (isUsingMockAPI()) {
     console.log('Mock: Accepting connection request', requestId);
     return;
@@ -121,7 +126,7 @@ export async function acceptConnectionRequest(requestId: string): Promise<void> 
 
     batch.update(requestRef, {
       status: 'accepted',
-      respondedAt: serverTimestamp()
+      respondedAt: serverTimestamp(),
     });
 
     const fromMemberRef = doc(db, COLLECTIONS.MEMBERS, request.from);
@@ -129,13 +134,13 @@ export async function acceptConnectionRequest(requestId: string): Promise<void> 
 
     batch.update(fromMemberRef, {
       'networking.connections': arrayUnion(request.to),
-      'activity.totalConnections': increment(1)
+      'activity.totalConnections': increment(1),
     });
 
     batch.update(toMemberRef, {
       'networking.connections': arrayUnion(request.from),
       'networking.pendingConnections': arrayRemove(request.from),
-      'activity.totalConnections': increment(1)
+      'activity.totalConnections': increment(1),
     });
 
     await batch.commit();
@@ -170,7 +175,7 @@ export async function sendMessage(
       content,
       type: 'text',
       timestamp: new Date(),
-      read: false
+      read: false,
     };
 
     const batch = writeBatch(db);
@@ -180,7 +185,7 @@ export async function sendMessage(
     batch.update(conversationRef, {
       lastMessage: message,
       updatedAt: serverTimestamp(),
-      [`unreadCount.${toUid}`]: increment(1)
+      [`unreadCount.${toUid}`]: increment(1),
     });
 
     await batch.commit();
@@ -190,7 +195,10 @@ export async function sendMessage(
   }
 }
 
-async function getOrCreateConversation(uid1: string, uid2: string): Promise<string> {
+async function getOrCreateConversation(
+  uid1: string,
+  uid2: string
+): Promise<string> {
   const participants = [uid1, uid2].sort();
 
   const conversationsRef = collection(db, COLLECTIONS.CONVERSATIONS);
@@ -207,7 +215,7 @@ async function getOrCreateConversation(uid1: string, uid2: string): Promise<stri
     participants,
     unreadCount: { [uid1]: 0, [uid2]: 0 },
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   };
 
   await setDoc(conversationRef, conversation);
@@ -217,7 +225,10 @@ async function getOrCreateConversation(uid1: string, uid2: string): Promise<stri
 /**
  * Follow / unfollow
  */
-export async function followMember(followerUid: string, targetUid: string): Promise<void> {
+export async function followMember(
+  followerUid: string,
+  targetUid: string
+): Promise<void> {
   if (isUsingMockAPI()) {
     console.log('Mock: Following member', { followerUid, targetUid });
     return;
@@ -233,7 +244,10 @@ export async function followMember(followerUid: string, targetUid: string): Prom
   await batch.commit();
 }
 
-export async function unfollowMember(followerUid: string, targetUid: string): Promise<void> {
+export async function unfollowMember(
+  followerUid: string,
+  targetUid: string
+): Promise<void> {
   if (isUsingMockAPI()) {
     console.log('Mock: Unfollowing member', { followerUid, targetUid });
     return;
@@ -252,7 +266,10 @@ export async function unfollowMember(followerUid: string, targetUid: string): Pr
 /**
  * File upload functions
  */
-export async function uploadProfileImage(uid: string, file: File): Promise<string> {
+export async function uploadProfileImage(
+  uid: string,
+  file: File
+): Promise<string> {
   if (isUsingMockAPI()) {
     return 'https://via.placeholder.com/150';
   }
@@ -270,7 +287,10 @@ export async function uploadProfileImage(uid: string, file: File): Promise<strin
 /**
  * Analytics functions
  */
-export async function trackProfileView(viewerUid: string, profileUid: string): Promise<void> {
+export async function trackProfileView(
+  viewerUid: string,
+  profileUid: string
+): Promise<void> {
   if (isUsingMockAPI()) {
     console.log('Mock: Tracking profile view', { viewerUid, profileUid });
     return;
@@ -279,7 +299,7 @@ export async function trackProfileView(viewerUid: string, profileUid: string): P
   try {
     const profileRef = doc(db, COLLECTIONS.MEMBERS, profileUid);
     await updateDoc(profileRef, {
-      'activity.profileViews': increment(1)
+      'activity.profileViews': increment(1),
     });
   } catch (error) {
     console.error('Error tracking profile view:', error);
@@ -296,7 +316,12 @@ export async function updateMemberStatus(
   reason: string = ''
 ): Promise<void> {
   if (isUsingMockAPI()) {
-    console.log('Mock: Updating member status', { uid, newStatus, changedBy, reason });
+    console.log('Mock: Updating member status', {
+      uid,
+      newStatus,
+      changedBy,
+      reason,
+    });
     return;
   }
 
@@ -327,7 +352,9 @@ export async function updateMemberStatus(
     ...(newStatus === 'active' ? { role: 'member' } : {}),
     ...(newStatus === 'collaborator' ? { role: 'collaborator' } : {}),
     ...(newStatus === 'pending' ? { verificationStatus: 'pending' } : {}),
-    ...(newStatus === 'active' ? { verificationStatus: 'approved', isVerified: true } : {}),
+    ...(newStatus === 'active'
+      ? { verificationStatus: 'approved', isVerified: true }
+      : {}),
     updatedAt: serverTimestamp(),
   });
 }

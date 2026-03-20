@@ -35,7 +35,7 @@ test.describe('Mobile Responsive Journey', () => {
 
     // Menu should be visible
     await expect(mobileMenu).toBeVisible();
-    
+
     // Check menu items
     const menuLinks = mobileMenu.locator('.secid-navbar__link');
     await expect(menuLinks).toHaveCount(4);
@@ -48,16 +48,16 @@ test.describe('Mobile Responsive Journey', () => {
     // Logo should appear above content (order: -1)
     const heroImage = page.locator('.secid-hero__image');
     const heroContent = page.locator('.secid-hero__content');
-    
+
     await expect(heroImage).toBeVisible();
     await expect(heroContent).toBeVisible();
 
     // Buttons should stack vertically
     const heroActions = page.locator('.secid-hero__actions');
     const buttons = heroActions.locator('.secid-button');
-    
+
     await expect(buttons).toHaveCount(2);
-    
+
     // Buttons should take full width on mobile
     // Check that buttons fill their container
     const firstButton = buttons.first();
@@ -67,17 +67,17 @@ test.describe('Mobile Responsive Journey', () => {
   test('should display feature cards in single column', async ({ page }) => {
     const featureGrid = page.locator('.secid-features__grid');
     await featureGrid.scrollIntoViewIfNeeded();
-    
+
     const cards = featureGrid.locator('.secid-feature-card');
     await expect(cards).toHaveCount(4);
 
     // Cards should stack vertically on mobile
     const firstCard = cards.first();
     const secondCard = cards.nth(1);
-    
+
     const firstBox = await firstCard.boundingBox();
     const secondBox = await secondCard.boundingBox();
-    
+
     if (firstBox && secondBox) {
       // Second card should be below first card
       expect(secondBox.y).toBeGreaterThan(firstBox.y + firstBox.height);
@@ -109,7 +109,7 @@ test.describe('Mobile Responsive Journey', () => {
 
     const esLink = mobileLangControls.locator('text=ES');
     const enLink = mobileLangControls.locator('text=EN');
-    
+
     await expect(esLink).toBeVisible();
     await expect(enLink).toBeVisible();
 
@@ -130,7 +130,7 @@ test.describe('Mobile Responsive Journey', () => {
     const featureCard = page.locator('.secid-feature-card').first();
     await featureCard.scrollIntoViewIfNeeded();
     await featureCard.tap();
-    
+
     // Card should still be visible and functional
     await expect(featureCard).toBeVisible();
   });
@@ -138,19 +138,19 @@ test.describe('Mobile Responsive Journey', () => {
   test('should have readable text on mobile', async ({ page }) => {
     // Check hero title font size
     const heroTitle = page.locator('.secid-hero__title');
-    const fontSize = await heroTitle.evaluate(el => 
-      window.getComputedStyle(el).fontSize
+    const fontSize = await heroTitle.evaluate(
+      (el) => window.getComputedStyle(el).fontSize
     );
-    
+
     // Font size should be at least 24px on mobile
     expect(parseInt(fontSize)).toBeGreaterThanOrEqual(24);
 
     // Check button text is readable
     const button = page.locator('.secid-button').first();
-    const buttonFontSize = await button.evaluate(el => 
-      window.getComputedStyle(el).fontSize
+    const buttonFontSize = await button.evaluate(
+      (el) => window.getComputedStyle(el).fontSize
     );
-    
+
     // Button font should be at least 14px
     expect(parseInt(buttonFontSize)).toBeGreaterThanOrEqual(14);
   });
