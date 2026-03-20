@@ -1,6 +1,15 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import type { MemberProfile } from '@/types/member';
+import { MemberFilters, filterMembers } from './MemberFilters';
 import type { FilterState } from './MemberFilters';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+export type SortColumn = 'name' | 'company' | 'campus' | 'generation' | 'skills' | 'status';
+export type SortDirection = 'asc' | 'desc';
 
 interface MembersTabProps {
   members: MemberProfile[];
@@ -9,10 +18,508 @@ interface MembersTabProps {
   lang: 'es' | 'en';
 }
 
-export const MembersTab: React.FC<MembersTabProps> = ({ lang }) => {
+// ---------------------------------------------------------------------------
+// Translations
+// ---------------------------------------------------------------------------
+
+const labels = {
+  es: {
+    showing: 'Mostrando',
+    of: 'de',
+    membersLabel: 'miembros',
+    name: 'Nombre',
+    company: 'Empresa',
+    campus: 'Campus',
+    generation: 'Generación',
+    skills: 'Habilidades',
+    status: 'Estado',
+    noResults: 'No hay miembros que coincidan con los filtros actuales',
+    bio: 'Biografía',
+    email: 'Correo',
+    position: 'Puesto',
+    degree: 'Nivel académico',
+    mentorship: 'Mentoría',
+    joined: 'Se unió',
+    mentor: 'Mentor',
+    mentee: 'Aprendiz',
+    both: 'Mentor y aprendiz',
+    none: 'No disponible',
+    notAvailable: 'No disponible',
+  },
+  en: {
+    showing: 'Showing',
+    of: 'of',
+    membersLabel: 'members',
+    name: 'Name',
+    company: 'Company',
+    campus: 'Campus',
+    generation: 'Generation',
+    skills: 'Skills',
+    status: 'Status',
+    noResults: 'No members match the current filters',
+    bio: 'Bio',
+    email: 'Email',
+    position: 'Position',
+    degree: 'Academic level',
+    mentorship: 'Mentorship',
+    joined: 'Joined',
+    mentor: 'Mentor',
+    mentee: 'Mentee',
+    both: 'Mentor & Mentee',
+    none: 'Not available',
+    notAvailable: 'Not available',
+  },
+} as const;
+
+// ---------------------------------------------------------------------------
+// Pure utility: sorting (exported for testing)
+// ---------------------------------------------------------------------------
+
+function getMemberStatus(m: MemberProfile): string {
+  return m.lifecycle?.status ?? m.role;
+}
+
+function getStringValue(m: MemberProfile, column: SortColumn): string {
+  switch (column) {
+    case 'name':
+      return m.displayName.toLowerCase();
+    case 'company':
+      return (m.profile.company ?? '').toLowerCase();
+    case 'campus':
+      return (m.campus ?? '').toLowerCase();
+    case 'generation':
+      return m.generation ?? '';
+    case 'status':
+      return getMemberStatus(m).toLowerCase();
+    case 'skills':
+      return '';
+    default:
+      return '';
+  }
+}
+
+export function sortMembers(
+  members: MemberProfile[],
+  column: SortColumn,
+  direction: SortDirection,
+): MemberProfile[] {
+  const sorted = [...members];
+  const dirMultiplier = direction === 'asc' ? 1 : -1;
+
+  sorted.sort((a, b) => {
+    if (column === 'skills') {
+      return (a.profile.skills.length - b.profile.skills.length) * dirMultiplier;
+    }
+    const aVal = getStringValue(a, column);
+    const bVal = getStringValue(b, column);
+    return aVal.localeCompare(bVal) * dirMultiplier;
+  });
+
+  return sorted;
+}
+
+// ---------------------------------------------------------------------------
+// Sub-components
+// ---------------------------------------------------------------------------
+
+interface SortableHeaderProps {
+  label: string;
+  column: SortColumn;
+  activeColumn: SortColumn;
+  direction: SortDirection;
+  onSort: (column: SortColumn) => void;
+}
+
+function SortableHeader({ label, column, activeColumn, direction, onSort }: SortableHeaderProps) {
+  const isActive = column === activeColumn;
+
   return (
-    <div className="text-gray-500">
-      {lang === 'es' ? 'Miembros (en desarrollo)' : 'Members (in progress)'}
+    <th
+      className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+      onClick={() => onSort(column)}
+    >
+      <span className="inline-flex items-center gap-1">
+        {label}
+        {isActive && (
+          <span
+            className={`inline-block transition-transform ${direction === 'desc' ? 'rotate-180' : ''}`}
+            aria-hidden="true"
+          >
+            &#x25B2;
+          </span>
+        )}
+      </span>
+    </th>
+  );
+}
+
+interface SkillTagsProps {
+  skills: string[];
+  max?: number;
+}
+
+function SkillTags({ skills, max = 3 }: SkillTagsProps) {
+  const visible = skills.slice(0, max);
+  const remaining = skills.length - max;
+
+  return (
+    <div className="flex flex-wrap gap-1">
+      {visible.map((skill) => (
+        <span
+          key={skill}
+          className="px-2 py-0.5 text-xs bg-primary-100 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 rounded-full"
+        >
+          {skill}
+        </span>
+      ))}
+      {remaining > 0 && (
+        <span className="px-2 py-0.5 text-xs text-gray-500 dark:text-gray-400">
+          +{remaining}
+        </span>
+      )}
+    </div>
+  );
+}
+
+interface ExpandedRowProps {
+  member: MemberProfile;
+  lang: 'es' | 'en';
+}
+
+function ExpandedRow({ member, lang }: ExpandedRowProps) {
+  const t = labels[lang];
+  const mentorshipLabel = getMentorshipLabel(member.networking.mentorshipStatus, lang);
+  const joinedDate = member.joinedAt instanceof Date
+    ? member.joinedAt.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : '';
+
+  return (
+    <tr>
+      <td colSpan={7} className="px-0 py-0">
+        <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 border-t border-gray-100 dark:border-gray-700">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+            {/* Full name */}
+            <div>
+              <span className="font-medium text-gray-700 dark:text-gray-300">{t.name}:</span>{' '}
+              <span className="text-gray-900 dark:text-white">{member.displayName}</span>
+            </div>
+
+            {/* Email — only if privacy allows */}
+            {member.privacy.showEmail && member.email && (
+              <div>
+                <span className="font-medium text-gray-700 dark:text-gray-300">{t.email}:</span>{' '}
+                <a
+                  href={`mailto:${member.email}`}
+                  className="text-primary-600 dark:text-primary-400 hover:underline"
+                >
+                  {member.email}
+                </a>
+              </div>
+            )}
+
+            {/* Company + position */}
+            {member.profile.company && (
+              <div>
+                <span className="font-medium text-gray-700 dark:text-gray-300">{t.company}:</span>{' '}
+                <span className="text-gray-900 dark:text-white">
+                  {member.profile.company}
+                  {member.profile.position && ` — ${member.profile.position}`}
+                </span>
+              </div>
+            )}
+
+            {/* Position (if no company) */}
+            {!member.profile.company && member.profile.position && (
+              <div>
+                <span className="font-medium text-gray-700 dark:text-gray-300">{t.position}:</span>{' '}
+                <span className="text-gray-900 dark:text-white">{member.profile.position}</span>
+              </div>
+            )}
+
+            {/* Campus */}
+            {member.campus && (
+              <div>
+                <span className="font-medium text-gray-700 dark:text-gray-300">{t.campus}:</span>{' '}
+                <span className="text-gray-900 dark:text-white">{member.campus}</span>
+              </div>
+            )}
+
+            {/* Generation */}
+            {member.generation && (
+              <div>
+                <span className="font-medium text-gray-700 dark:text-gray-300">{t.generation}:</span>{' '}
+                <span className="text-gray-900 dark:text-white">{member.generation}</span>
+              </div>
+            )}
+
+            {/* Degree */}
+            {member.academicLevel && (
+              <div>
+                <span className="font-medium text-gray-700 dark:text-gray-300">{t.degree}:</span>{' '}
+                <span className="text-gray-900 dark:text-white">{member.academicLevel}</span>
+              </div>
+            )}
+
+            {/* Mentorship status */}
+            <div>
+              <span className="font-medium text-gray-700 dark:text-gray-300">{t.mentorship}:</span>{' '}
+              <span className="text-gray-900 dark:text-white">{mentorshipLabel}</span>
+            </div>
+
+            {/* Joined date */}
+            {joinedDate && (
+              <div>
+                <span className="font-medium text-gray-700 dark:text-gray-300">{t.joined}:</span>{' '}
+                <span className="text-gray-900 dark:text-white">{joinedDate}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Bio */}
+          {member.profile.bio && (
+            <div className="mt-3">
+              <span className="font-medium text-sm text-gray-700 dark:text-gray-300">{t.bio}:</span>
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{member.profile.bio}</p>
+            </div>
+          )}
+
+          {/* Skills as tags (all) */}
+          {member.profile.skills.length > 0 && (
+            <div className="mt-3">
+              <span className="font-medium text-sm text-gray-700 dark:text-gray-300">{t.skills}:</span>
+              <div className="mt-1 flex flex-wrap gap-1.5">
+                {member.profile.skills.map((skill) => (
+                  <span
+                    key={skill}
+                    className="px-2 py-0.5 text-xs bg-primary-100 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 rounded-full"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Social links */}
+          {(member.social.linkedin || member.social.github) && (
+            <div className="mt-3 flex gap-4">
+              {member.social.linkedin && (
+                <a
+                  href={member.social.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+                >
+                  LinkedIn
+                </a>
+              )}
+              {member.social.github && (
+                <a
+                  href={member.social.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+                >
+                  GitHub
+                </a>
+              )}
+            </div>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+function getMentorshipLabel(
+  status: 'mentor' | 'mentee' | 'both' | 'none' | undefined,
+  lang: 'es' | 'en',
+): string {
+  const t = labels[lang];
+  switch (status) {
+    case 'mentor':
+      return t.mentor;
+    case 'mentee':
+      return t.mentee;
+    case 'both':
+      return t.both;
+    case 'none':
+      return t.none;
+    default:
+      return t.notAvailable;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Main Component
+// ---------------------------------------------------------------------------
+
+export const MembersTab: React.FC<MembersTabProps> = ({
+  members,
+  filters,
+  onFiltersChange,
+  lang,
+}) => {
+  const t = labels[lang];
+  const [sortColumn, setSortColumn] = useState<SortColumn>('name');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [expandedUid, setExpandedUid] = useState<string | null>(null);
+
+  const filtered = useMemo(() => filterMembers(members, filters), [members, filters]);
+  const sorted = useMemo(
+    () => sortMembers(filtered, sortColumn, sortDirection),
+    [filtered, sortColumn, sortDirection],
+  );
+
+  function handleSort(column: SortColumn) {
+    if (column === sortColumn) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  }
+
+  function handleRowClick(uid: string) {
+    setExpandedUid((prev) => (prev === uid ? null : uid));
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Filters */}
+      <MemberFilters
+        members={members}
+        filters={filters}
+        onFiltersChange={onFiltersChange}
+        lang={lang}
+      />
+
+      {/* Results count */}
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        {t.showing} {sorted.length} {t.of} {members.length} {t.membersLabel}
+      </p>
+
+      {/* Table or empty state */}
+      {sorted.length === 0 ? (
+        <div className="py-12 text-center text-gray-500 dark:text-gray-400">
+          {t.noResults}
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+          <table className="w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                {/* Chevron column */}
+                <th className="w-10 px-2 py-3" />
+                <SortableHeader
+                  label={t.name}
+                  column="name"
+                  activeColumn={sortColumn}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label={t.company}
+                  column="company"
+                  activeColumn={sortColumn}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label={t.campus}
+                  column="campus"
+                  activeColumn={sortColumn}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label={t.generation}
+                  column="generation"
+                  activeColumn={sortColumn}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label={t.skills}
+                  column="skills"
+                  activeColumn={sortColumn}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label={t.status}
+                  column="status"
+                  activeColumn={sortColumn}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+              </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              {sorted.map((member) => {
+                const isExpanded = expandedUid === member.uid;
+                const status = getMemberStatus(member);
+
+                return (
+                  <React.Fragment key={member.uid}>
+                    <tr
+                      className="hover:bg-gray-50 dark:hover:bg-gray-800/80 cursor-pointer transition-colors"
+                      onClick={() => handleRowClick(member.uid)}
+                    >
+                      {/* Chevron */}
+                      <td className="w-10 px-2 py-3 text-center">
+                        <ChevronDownIcon
+                          className={`h-4 w-4 text-gray-400 dark:text-gray-500 transition-transform inline-block ${
+                            isExpanded ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </td>
+
+                      {/* Name */}
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                        {member.displayName}
+                      </td>
+
+                      {/* Company */}
+                      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                        {member.profile.company || '—'}
+                      </td>
+
+                      {/* Campus */}
+                      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                        {member.campus || '—'}
+                      </td>
+
+                      {/* Generation */}
+                      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                        {member.generation || '—'}
+                      </td>
+
+                      {/* Skills */}
+                      <td className="px-4 py-3">
+                        <SkillTags skills={member.profile.skills} max={3} />
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap capitalize">
+                        {status}
+                      </td>
+                    </tr>
+
+                    {isExpanded && <ExpandedRow member={member} lang={lang} />}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
+
+export default MembersTab;
