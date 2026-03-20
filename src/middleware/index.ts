@@ -171,6 +171,7 @@ const sessionValidationMiddleware: MiddlewareHandler = async (
   const protectedPaths = [
     '/api/user/',
     '/api/admin/',
+    '/api/companies/',
     '/dashboard',
     '/api/create-',
   ];

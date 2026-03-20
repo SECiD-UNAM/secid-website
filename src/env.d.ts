@@ -24,6 +24,9 @@ interface ImportMetaEnv {
   readonly PUBLIC_FEATURE_FORUMS: string;
   readonly PUBLIC_FEATURE_BLOG: string;
 
+  // External Service Tokens
+  readonly LOGO_DEV_API_TOKEN?: string;
+
   // Development Settings
   readonly PUBLIC_DEBUG_MODE: string;
   readonly PUBLIC_USE_EMULATORS: string;
