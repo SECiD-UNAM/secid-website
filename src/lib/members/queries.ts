@@ -532,11 +532,22 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
         degreeMap.set(maxDegree, (degreeMap.get(maxDegree) || 0) + 1);
       }
 
-      // Initiative priorities
+      // Initiative priorities — values are Spanish strings or numbers
+      const priorityScaleMap: Record<string, number> = {
+        'Muy bajo': 1,
+        Bajo: 2,
+        Medio: 3,
+        Alto: 4,
+        'Muy alto': 5,
+      };
       const priorities = data.registrationData?.priorities || data.priorities;
       if (priorities) {
         for (const key of priorityKeys) {
-          const val = parseFloat(priorities[key]);
+          const raw = priorities[key];
+          const val =
+            typeof raw === 'number'
+              ? raw
+              : (priorityScaleMap[raw] ?? parseFloat(raw));
           if (!isNaN(val)) {
             prioritySums.set(key, (prioritySums.get(key) || 0) + val);
             priorityCounts.set(key, (priorityCounts.get(key) || 0) + 1);
