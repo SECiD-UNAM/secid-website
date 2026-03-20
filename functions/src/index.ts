@@ -558,3 +558,5 @@ export const getMemberGroupList = onCall(async (request) => {
   const groups = await getMemberGroups(memberEmail, getAllGroups());
   return { success: true, groups };
 });
+
+export { onMemberCompanyChange } from './companies';
