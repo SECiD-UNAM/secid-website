@@ -96,7 +96,7 @@ export const MemberStatistics: React.FC<MemberStatisticsProps> = ({ lang = 'es' 
 
   if (!data) return null;
 
-  const totalIntegrantes = data.totalMembers + data.totalCollaborators;
+  const totalIntegrantes = data.totalMembers;
   const hasData = totalIntegrantes > 0;
 
   if (!hasData) {
@@ -163,13 +163,6 @@ export const MemberStatistics: React.FC<MemberStatisticsProps> = ({ lang = 'es' 
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Role Composition */}
-          <HorizontalBarCard
-            title={lang === 'es' ? 'Composición integrantes' : 'Member Composition'}
-            data={data.roleComposition}
-            lang={lang}
-          />
-
           {/* Campus Composition */}
           <HorizontalBarCard
             title={

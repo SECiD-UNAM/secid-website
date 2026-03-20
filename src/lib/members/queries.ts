@@ -364,7 +364,6 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
   if (isUsingMockAPI()) {
     return {
       totalMembers: 21,
-      totalCollaborators: 3,
       companies: [
         { name: 'Datateam Analytics Force', count: 1 },
         { name: 'Xaldigital', count: 1 },
@@ -382,10 +381,6 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
         { name: 'The Coca-Cola Company', count: 1 },
         { name: 'El Puerto de Liverpool', count: 1 },
         { name: 'Microsoft', count: 1 },
-      ],
-      roleComposition: [
-        { label: 'Miembros', count: 21 },
-        { label: 'Colaboradores', count: 3 },
       ],
       campusComposition: [
         { label: 'IIMAS', count: 18 },
@@ -416,6 +411,9 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
         { initiative: 'Newsletter', avgScore: 3 },
         { initiative: 'Asesorías', avgScore: 2.7 },
       ],
+      skillsDistribution: [],
+      experienceDistribution: [],
+      professionalStatusDistribution: [],
     };
   }
 
@@ -424,7 +422,6 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
     const snapshot = await getDocs(membersRef);
 
     let totalMembers = 0;
-    let totalCollaborators = 0;
     const companyMap = new Map<string, number>();
     const campusMap = new Map<string, number>();
     const degreeMap = new Map<string, number>();
@@ -450,13 +447,8 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
     snapshot.forEach((d) => {
       const data = d.data();
 
-      // Role composition
-      const role = data.role || 'member';
-      if (role === 'collaborator') {
-        totalCollaborators++;
-      } else {
-        totalMembers++;
-      }
+      // Count all documents as members (collaborators excluded from stats view)
+      totalMembers++;
 
       // Company
       const company = data.profile?.company || data.currentCompany;
@@ -518,14 +510,9 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
 
     return {
       totalMembers,
-      totalCollaborators,
       companies: Array.from(companyMap.entries())
         .map(([name, count]) => ({ name, count }))
         .sort((a, b) => b.count - a.count),
-      roleComposition: [
-        { label: 'Miembros', count: totalMembers },
-        { label: 'Colaboradores', count: totalCollaborators },
-      ],
       campusComposition: mapToArray(campusMap),
       degreeComposition: mapToArray(degreeMap),
       genderComposition: mapToArray(genderMap),
@@ -543,6 +530,9 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
         })
         .filter((item) => item.avgScore > 0)
         .sort((a, b) => b.avgScore - a.avgScore),
+      skillsDistribution: [],
+      experienceDistribution: [],
+      professionalStatusDistribution: [],
     };
   } catch (error) {
     console.error('Error fetching member statistics:', error);

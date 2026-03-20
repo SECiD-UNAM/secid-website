@@ -52,6 +52,9 @@ export interface MemberProfile extends UserProfile {
     industries: string[];
   };
 
+  // Professional status from registration data
+  professionalStatus?: string;
+
   // Social and networking
   social: {
     linkedin?: string;
@@ -234,14 +237,15 @@ export interface MemberStats {
 // Aggregated statistics for the member statistics view
 export interface MemberStatisticsData {
   totalMembers: number;
-  totalCollaborators: number;
   companies: Array<{ name: string; count: number }>;
-  roleComposition: Array<{ label: string; count: number }>;
   campusComposition: Array<{ label: string; count: number }>;
   degreeComposition: Array<{ label: string; count: number }>;
   genderComposition: Array<{ label: string; count: number }>;
   generationDistribution: Array<{ year: string; count: number }>;
   initiativeImportance: Array<{ initiative: string; avgScore: number }>;
+  skillsDistribution: Array<{ skill: string; count: number }>;
+  experienceDistribution: Array<{ level: string; count: number }>;
+  professionalStatusDistribution: Array<{ status: string; count: number }>;
 }
 
 // View mode types
