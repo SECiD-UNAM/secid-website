@@ -10,6 +10,7 @@ import {
   Cell,
   LabelList,
 } from 'recharts';
+import { ChartBarIcon } from '@heroicons/react/24/outline';
 import { getMemberStatistics } from '@/lib/members';
 import type { MemberStatisticsData } from '@/types/member';
 
@@ -96,10 +97,28 @@ export const MemberStatistics: React.FC<MemberStatisticsProps> = ({ lang = 'es' 
   if (!data) return null;
 
   const totalIntegrantes = data.totalMembers + data.totalCollaborators;
+  const hasData = totalIntegrantes > 0;
+
+  if (!hasData) {
+    return (
+      <div className="text-center py-12">
+        <ChartBarIcon className="mx-auto h-12 w-12 text-gray-400" />
+        <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+          {lang === 'es' ? 'Sin datos de estadísticas' : 'No statistics data'}
+        </h3>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          {lang === 'es'
+            ? 'No hay datos suficientes para generar estadísticas.'
+            : 'Not enough data to generate statistics.'}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
       {/* Section 1: Company Grid */}
+      {data.companies.length > 0 && (
       <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">
           {lang === 'es'
@@ -135,6 +154,7 @@ export const MemberStatistics: React.FC<MemberStatisticsProps> = ({ lang = 'es' 
             : `We have ${totalIntegrantes} members and counting!`}
         </p>
       </section>
+      )}
 
       {/* Section 2: Composition Charts */}
       <section>
@@ -186,6 +206,7 @@ export const MemberStatistics: React.FC<MemberStatisticsProps> = ({ lang = 'es' 
       </section>
 
       {/* Section 3: Generation Distribution */}
+      {data.generationDistribution.length > 0 && (
       <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <h3 className="text-lg font-semibold text-gray-500 dark:text-gray-400 mb-4">
           {lang === 'es'
@@ -215,8 +236,10 @@ export const MemberStatistics: React.FC<MemberStatisticsProps> = ({ lang = 'es' 
           </BarChart>
         </ResponsiveContainer>
       </section>
+      )}
 
       {/* Section 4: Initiative Importance */}
+      {data.initiativeImportance.length > 0 && (
       <section className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <h3 className="text-lg font-semibold text-gray-500 dark:text-gray-400 mb-4">
           {lang === 'es'
@@ -255,6 +278,7 @@ export const MemberStatistics: React.FC<MemberStatisticsProps> = ({ lang = 'es' 
           </BarChart>
         </ResponsiveContainer>
       </section>
+      )}
     </div>
   );
 };
