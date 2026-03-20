@@ -13,6 +13,18 @@ function slugify(text: string): string {
     .replace(/(^-|-$)/g, '');
 }
 
+const EXPERIENCE_LEVEL_MAP: Record<string, 'junior' | 'mid' | 'senior' | 'lead' | 'executive'> = {
+  'Principiante': 'junior',
+  'Intermedio': 'mid',
+  'Avanzado': 'senior',
+  'Experto': 'lead',
+};
+
+function mapExperienceLevel(raw: string | undefined): 'junior' | 'mid' | 'senior' | 'lead' | 'executive' {
+  if (!raw) return 'mid';
+  return EXPERIENCE_LEVEL_MAP[raw] ?? 'mid';
+}
+
 /**
  * Map a flat Firestore user document (as written by Cloud Functions)
  * to the MemberProfile shape expected by the UI components.
@@ -56,10 +68,10 @@ export function mapUserDocToMemberProfile(uid: string, data: Record<string, any>
     },
     experience: data.experience || {
       years: 0,
-      level: 'mid' as const,
+      level: mapExperienceLevel(data.registrationData?.experienceLevel),
       currentRole: data.currentPosition || '',
       previousRoles: [],
-      industries: '',
+      industries: [],
     },
     social: data.social || {
       linkedin: data.linkedinUrl,
@@ -101,6 +113,7 @@ export function mapUserDocToMemberProfile(uid: string, data: Record<string, any>
     searchableKeywords: data.searchableKeywords || (data.skills || []).map((s: string) => s.toLowerCase()),
     featuredSkills: data.featuredSkills || (data.skills || []).slice(0, 5),
     isPremium: data.isPremium || data.membershipTier === 'premium' || data.membershipTier === 'corporate',
+    professionalStatus: data.registrationData?.professionalStatus || undefined,
     settings: data.settings || {
       emailNotifications: data.notificationSettings?.email !== false,
       profileVisibility: data.privacySettings?.profileVisible !== false ? 'public' : 'private',
