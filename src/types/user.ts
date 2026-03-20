@@ -23,6 +23,7 @@ export interface UserProfile {
     lastName: string;
     bio: string;
     company: string;
+    companyId?: string; // reference to companies collection doc
     position: string;
     location: string;
     linkedin: string;

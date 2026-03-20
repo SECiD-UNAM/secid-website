@@ -167,6 +167,7 @@ export interface Certification {
 export interface WorkExperience {
   id: string;
   company: string;
+  companyId?: string; // reference to companies collection doc
   position: string;
   startDate: Date;
   endDate?: Date;
