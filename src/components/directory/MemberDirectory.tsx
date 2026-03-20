@@ -2,13 +2,17 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { MemberCard } from './MemberCard';
 import { MemberSearch } from './MemberSearch';
-import { getMemberProfiles, searchMembers, getMemberStats } from '@/lib/members';
+import {
+  getMemberProfiles,
+  searchMembers,
+  getMemberStats,
+} from '@/lib/members';
 import type {
   MemberProfile,
   MemberSearchFilters,
   MemberSearchResult,
   ViewMode,
-  MemberStats
+  MemberStats,
 } from '@/types/member';
 import {
   Squares2X2Icon,
@@ -16,7 +20,7 @@ import {
   AdjustmentsHorizontalIcon,
   UserGroupIcon,
   ChartBarIcon,
-  FunnelIcon
+  FunnelIcon,
 } from '@heroicons/react/24/outline';
 
 interface MemberDirectoryProps {
@@ -26,11 +30,11 @@ interface MemberDirectoryProps {
   maxMembers?: number;
 }
 
-export const MemberDirectory: React.FC<MemberDirectoryProps> = ({ 
-  lang = 'es', 
+export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
+  lang = 'es',
   initialView = 'grid',
   showStats = true,
-  maxMembers = 50
+  maxMembers = 50,
 }) => {
   const { user, loading: authLoading } = useAuth();
   const [members, setMembers] = useState<MemberProfile[]>([]);
@@ -38,19 +42,23 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
   const [stats, setStats] = useState<MemberStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Top-level view: directory vs statistics
-  const [activeView, setActiveView] = useState<'directory' | 'statistics'>('directory');
+  const [activeView, setActiveView] = useState<'directory' | 'statistics'>(
+    'directory'
+  );
 
   // View and pagination state
   const [viewMode, setViewMode] = useState<ViewMode>(initialView);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);
   const [showFilters, setShowFilters] = useState(false);
-  const [memberType, setMemberType] = useState<'all' | 'member' | 'collaborator'>('member');
+  const [memberType, setMemberType] = useState<
+    'all' | 'member' | 'collaborator'
+  >('member');
   const [searchFilters, setSearchFilters] = useState<MemberSearchFilters>({
     sortBy: 'joinDate',
-    sortOrder: 'desc'
+    sortOrder: 'desc',
   });
 
   // Loading timeout — don't hang forever if Firestore is unreachable
@@ -73,7 +81,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
   useEffect(() => {
     if (authLoading) return;
     loadMembers();
-    if(showStats) {
+    if (showStats) {
       loadStats();
     }
   }, [showStats, memberType, authLoading]);
@@ -94,7 +102,11 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
             case 'joinDate':
               return order * (a.joinedAt.getTime() - b.joinedAt.getTime());
             case 'activity':
-              return order * ((a.activity.lastActive?.getTime() || 0) - (b.activity.lastActive?.getTime() || 0));
+              return (
+                order *
+                ((a.activity.lastActive?.getTime() || 0) -
+                  (b.activity.lastActive?.getTime() || 0))
+              );
             case 'reputation':
               return order * (a.activity.reputation - b.activity.reputation);
             default:
@@ -110,15 +122,26 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
     try {
       setLoading(true);
       setError(null);
-      const memberProfiles = await getMemberProfiles({ filters: { memberType }, limit: maxMembers });
+      const memberProfiles = await getMemberProfiles({
+        filters: { memberType },
+        limit: maxMembers,
+      });
       setMembers(memberProfiles);
     } catch (err) {
       console.error('Error loading members:', err);
       const firebaseError = err as { code?: string };
       if (firebaseError.code === 'permission-denied') {
-        setError(lang === 'es' ? 'No tienes permisos para ver el directorio de miembros' : 'You do not have permission to view the member directory');
+        setError(
+          lang === 'es'
+            ? 'No tienes permisos para ver el directorio de miembros'
+            : 'You do not have permission to view the member directory'
+        );
       } else {
-        setError(lang === 'es' ? 'Error al cargar miembros. Intenta de nuevo.' : 'Error loading members. Please try again.');
+        setError(
+          lang === 'es'
+            ? 'Error al cargar miembros. Intenta de nuevo.'
+            : 'Error loading members. Please try again.'
+        );
       }
     } finally {
       setLoading(false);
@@ -165,23 +188,23 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
   };
 
   const displayMembers = useMemo(() => {
-    const activeMembers = searchResults.length > 0 
-      ? searchResults.map(r => r.member) 
-      : members;
-    
+    const activeMembers =
+      searchResults.length > 0 ? searchResults.map((r) => r.member) : members;
+
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return activeMembers.slice(startIndex, endIndex);
   }, [members, searchResults, currentPage, itemsPerPage]);
 
-  const totalMembers = searchResults.length > 0 ? searchResults.length : members.length;
+  const totalMembers =
+    searchResults.length > 0 ? searchResults.length : members.length;
   const totalPages = Math.ceil(totalMembers / itemsPerPage);
 
   const getViewModeLabel = (mode: ViewMode): string => {
     const labels: Record<ViewMode, Record<string, string>> = {
       grid: { es: 'Cuadrícula', en: 'Grid' },
       list: { es: 'Lista', en: 'List' },
-      compact: { es: 'Compacto', en: 'Compact' }
+      compact: { es: 'Compacto', en: 'Compact' },
     };
     return labels[mode][lang] ?? mode;
   };
@@ -198,14 +221,14 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
   const clearFilters = () => {
     setSearchFilters({
       sortBy: 'joinDate',
-      sortOrder: 'desc'
+      sortOrder: 'desc',
     });
     setSearchResults([]);
     setCurrentPage(1);
   };
 
   const getGridClasses = (): string => {
-    switch(viewMode) {
+    switch (viewMode) {
       case 'grid':
         return 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6';
       case 'list':
@@ -220,7 +243,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
   if (loading && members.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary-600"></div>
         <span className="ml-3 text-gray-600 dark:text-gray-400">
           {lang === 'es' ? 'Cargando miembros...' : 'Loading members...'}
         </span>
@@ -228,13 +251,13 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
     );
   }
 
-  if(error) {
+  if (error) {
     return (
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+      <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
         <p className="text-red-700 dark:text-red-400">{error}</p>
         <button
           onClick={loadMembers}
-          className="mt-2 text-sm text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200"
+          className="mt-2 text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200"
         >
           {lang === 'es' ? 'Intentar de nuevo' : 'Try again'}
         </button>
@@ -246,8 +269,8 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
     <div className="space-y-6">
       {/* Stats Section */}
       {showStats && stats && (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+        <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 md:grid-cols-4">
+          <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center">
               <UserGroupIcon className="h-8 w-8 text-primary-600 dark:text-primary-400" />
               <div className="ml-3">
@@ -260,11 +283,11 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
               </div>
             </div>
           </div>
-          
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+
+          <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center">
-              <div className="h-8 w-8 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
-                <div className="h-3 w-3 bg-green-500 rounded-full"></div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
+                <div className="h-3 w-3 rounded-full bg-green-500"></div>
               </div>
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -276,8 +299,8 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
               </div>
             </div>
           </div>
-          
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+
+          <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center">
               <ChartBarIcon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
               <div className="ml-3">
@@ -290,8 +313,8 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
               </div>
             </div>
           </div>
-          
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+
+          <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center">
               <FunnelIcon className="h-8 w-8 text-purple-600 dark:text-purple-400" />
               <div className="ml-3">
@@ -308,21 +331,29 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
       )}
 
       {/* View Toggle: Directory / Statistics */}
-      <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700 pb-3">
-        {([
-          { value: 'directory' as const, label: lang === 'es' ? 'Directorio' : 'Directory' },
-          { value: 'statistics' as const, label: lang === 'es' ? 'Estadísticas' : 'Statistics' },
-        ]).map((tab) => (
+      <div className="flex gap-2 border-b border-gray-200 pb-3 dark:border-gray-700">
+        {[
+          {
+            value: 'directory' as const,
+            label: lang === 'es' ? 'Directorio' : 'Directory',
+          },
+          {
+            value: 'statistics' as const,
+            label: lang === 'es' ? 'Estadísticas' : 'Statistics',
+          },
+        ].map((tab) => (
           <button
             key={tab.value}
             onClick={() => setActiveView(tab.value)}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
               activeView === tab.value
                 ? 'bg-primary-600 text-white'
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
             }`}
           >
-            {tab.value === 'statistics' && <ChartBarIcon className="h-4 w-4 inline-block mr-1.5 -mt-0.5" />}
+            {tab.value === 'statistics' && (
+              <ChartBarIcon className="-mt-0.5 mr-1.5 inline-block h-4 w-4" />
+            )}
             {tab.label}
           </button>
         ))}
@@ -330,7 +361,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
 
       {/* Statistics View */}
       {activeView === 'statistics' && (
-        <div className="text-center py-12">
+        <div className="py-12 text-center">
           <ChartBarIcon className="mx-auto h-12 w-12 text-gray-400" />
           <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
             {lang === 'es'
@@ -341,185 +372,219 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
       )}
 
       {/* Directory View */}
-      {activeView === 'directory' && <>
-      {/* Member Type Tabs */}
-      <div className="flex gap-2">
-        {([
-          { value: 'member' as const, label: lang === 'es' ? 'Miembros' : 'Members' },
-          { value: 'collaborator' as const, label: lang === 'es' ? 'Colaboradores' : 'Collaborators' },
-          { value: 'all' as const, label: lang === 'es' ? 'Todos' : 'All' },
-        ]).map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => { setMemberType(tab.value); setCurrentPage(1); }}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              memberType === tab.value
-                ? 'bg-primary-600 text-white'
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Search and Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
-        <div className="flex flex-col gap-3 sm:gap-4">
-          <div className="flex-1">
-            <MemberSearch
-              onSearch={handleFiltersChange}
-              initialFilters={searchFilters}
-              lang={lang}
-              showAdvanced={showFilters}
-            />
-          </div>
-
-          <div className="flex items-center justify-between sm:justify-end space-x-2">
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`p-2 rounded-lg border transition-colors ${
-                showFilters
-                  ? 'bg-primary-100 dark:bg-primary-900/20 border-primary-300 dark:border-primary-700 text-primary-700 dark:text-primary-400'
-                  : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-              }`}
-              title={lang === 'es' ? 'Filtros avanzados' : 'Advanced filters'}
-            >
-              <AdjustmentsHorizontalIcon className="h-5 w-5" />
-            </button>
-
-            {hasActiveFilters(searchFilters) && (
+      {activeView === 'directory' && (
+        <>
+          {/* Member Type Tabs */}
+          <div className="flex gap-2">
+            {[
+              {
+                value: 'member' as const,
+                label: lang === 'es' ? 'Miembros' : 'Members',
+              },
+              {
+                value: 'collaborator' as const,
+                label: lang === 'es' ? 'Colaboradores' : 'Collaborators',
+              },
+              { value: 'all' as const, label: lang === 'es' ? 'Todos' : 'All' },
+            ].map((tab) => (
               <button
-                onClick={clearFilters}
-                className="px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-              >
-                {lang === 'es' ? 'Limpiar' : 'Clear'}
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Results Header and View Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center space-x-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {lang === 'es' ? 'Mostrando' : 'Showing'}{' '}
-            <span className="font-semibold">
-              {Math.min((currentPage - 1) * itemsPerPage + 1, totalMembers)}
-            </span>
-            -{' '}
-            <span className="font-semibold">
-              {Math.min(currentPage * itemsPerPage, totalMembers)}
-            </span>{' '}
-            {lang === 'es' ? 'de' : 'of'}{' '}
-            <span className="font-semibold">{totalMembers}</span>{' '}
-            {lang === 'es' ? 'miembros' : 'members'}
-          </p>
-          
-          {searchResults.length > 0 && (
-            <span className="px-2 py-1 text-xs bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 rounded-full">
-              {lang === 'es' ? 'Filtrado' : 'Filtered'}
-            </span>
-          )}
-        </div>
-
-        {/* View Mode Toggle */}
-        <div className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-          {(['grid', 'list', 'compact'] as ViewMode[]).map((mode) => (
-            <button
-              key={mode}
-              onClick={() => setViewMode(mode)}
-              className={`p-2 rounded transition-colors ${
-                viewMode === mode
-                  ? 'bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 shadow-sm'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-              }`}
-              title={getViewModeLabel(mode)}
-            >
-              {mode === 'grid' && <Squares2X2Icon className="h-4 w-4" />}
-              {mode === 'list' && <ListBulletIcon className="h-4 w-4" />}
-              {mode === 'compact' && <Squares2X2Icon className="h-3 w-3" />}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Members Grid/List */}
-      {displayMembers.length === 0 ? (
-        <div className="text-center py-12">
-          <UserGroupIcon className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-            {lang === 'es' ? 'No se encontraron miembros' : 'No members found'}
-          </h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {hasActiveFilters(searchFilters)
-              ? (lang === 'es' ? 'Intenta ajustar los filtros de búsqueda' : 'Try adjusting your search filters')
-              : (lang === 'es' ? 'No hay miembros disponibles en este momento' : 'No members available at this time')
-            }
-          </p>
-        </div>
-      ) : (
-        <div className={getGridClasses()}>
-          {displayMembers.map((member) => (
-            <MemberCard
-              key={member.uid}
-              member={member}
-              viewMode={viewMode}
-              lang={lang}
-              currentUser={user ? { uid: user.uid, email: user.email ?? '', displayName: user.displayName ?? '', photoURL: user.photoURL ?? undefined, role: 'member' } : null}
-              showMatchScore={searchResults.length > 0}
-              matchScore={searchResults.find(r => r.member.uid === member.uid)?.matchScore}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center space-x-1 sm:space-x-2 mt-6 sm:mt-8">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-2 sm:px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
-          >
-            <span className="hidden sm:inline">{lang === 'es' ? 'Anterior' : 'Previous'}</span>
-            <span className="sm:hidden">&lsaquo;</span>
-          </button>
-
-          {[...Array(Math.min(5, totalPages))].map((_, index) => {
-            const pageNumber = currentPage <= 3
-              ? index + 1
-              : currentPage + index - 2;
-
-            if (pageNumber > totalPages) return null;
-
-            return (
-              <button
-                key={pageNumber}
-                onClick={() => handlePageChange(pageNumber)}
-                className={`px-3 py-2 text-sm font-medium rounded-lg ${
-                  currentPage === pageNumber
+                key={tab.value}
+                onClick={() => {
+                  setMemberType(tab.value);
+                  setCurrentPage(1);
+                }}
+                className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                  memberType === tab.value
                     ? 'bg-primary-600 text-white'
-                    : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
                 }`}
               >
-                {pageNumber}
+                {tab.label}
               </button>
-            );
-          })}
+            ))}
+          </div>
 
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-2 sm:px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700"
-          >
-            <span className="hidden sm:inline">{lang === 'es' ? 'Siguiente' : 'Next'}</span>
-            <span className="sm:hidden">&rsaquo;</span>
-          </button>
-        </div>
+          {/* Search and Filters */}
+          <div className="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800 sm:p-4">
+            <div className="flex flex-col gap-3 sm:gap-4">
+              <div className="flex-1">
+                <MemberSearch
+                  onSearch={handleFiltersChange}
+                  initialFilters={searchFilters}
+                  lang={lang}
+                  showAdvanced={showFilters}
+                />
+              </div>
+
+              <div className="flex items-center justify-between space-x-2 sm:justify-end">
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`rounded-lg border p-2 transition-colors ${
+                    showFilters
+                      ? 'border-primary-300 bg-primary-100 text-primary-700 dark:border-primary-700 dark:bg-primary-900/20 dark:text-primary-400'
+                      : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
+                  }`}
+                  title={
+                    lang === 'es' ? 'Filtros avanzados' : 'Advanced filters'
+                  }
+                >
+                  <AdjustmentsHorizontalIcon className="h-5 w-5" />
+                </button>
+
+                {hasActiveFilters(searchFilters) && (
+                  <button
+                    onClick={clearFilters}
+                    className="rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                  >
+                    {lang === 'es' ? 'Limpiar' : 'Clear'}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Results Header and View Controls */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center space-x-4">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {lang === 'es' ? 'Mostrando' : 'Showing'}{' '}
+                <span className="font-semibold">
+                  {Math.min((currentPage - 1) * itemsPerPage + 1, totalMembers)}
+                </span>
+                -{' '}
+                <span className="font-semibold">
+                  {Math.min(currentPage * itemsPerPage, totalMembers)}
+                </span>{' '}
+                {lang === 'es' ? 'de' : 'of'}{' '}
+                <span className="font-semibold">{totalMembers}</span>{' '}
+                {lang === 'es' ? 'miembros' : 'members'}
+              </p>
+
+              {searchResults.length > 0 && (
+                <span className="rounded-full bg-primary-100 px-2 py-1 text-xs text-primary-700 dark:bg-primary-900/20 dark:text-primary-400">
+                  {lang === 'es' ? 'Filtrado' : 'Filtered'}
+                </span>
+              )}
+            </div>
+
+            {/* View Mode Toggle */}
+            <div className="flex items-center space-x-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-700">
+              {(['grid', 'list', 'compact'] as ViewMode[]).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  className={`rounded p-2 transition-colors ${
+                    viewMode === mode
+                      ? 'bg-white text-primary-600 shadow-sm dark:bg-gray-800 dark:text-primary-400'
+                      : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+                  }`}
+                  title={getViewModeLabel(mode)}
+                >
+                  {mode === 'grid' && <Squares2X2Icon className="h-4 w-4" />}
+                  {mode === 'list' && <ListBulletIcon className="h-4 w-4" />}
+                  {mode === 'compact' && <Squares2X2Icon className="h-3 w-3" />}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Members Grid/List */}
+          {displayMembers.length === 0 ? (
+            <div className="py-12 text-center">
+              <UserGroupIcon className="mx-auto h-12 w-12 text-gray-400" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                {lang === 'es'
+                  ? 'No se encontraron miembros'
+                  : 'No members found'}
+              </h3>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {hasActiveFilters(searchFilters)
+                  ? lang === 'es'
+                    ? 'Intenta ajustar los filtros de búsqueda'
+                    : 'Try adjusting your search filters'
+                  : lang === 'es'
+                    ? 'No hay miembros disponibles en este momento'
+                    : 'No members available at this time'}
+              </p>
+            </div>
+          ) : (
+            <div className={getGridClasses()}>
+              {displayMembers.map((member) => (
+                <MemberCard
+                  key={member.uid}
+                  member={member}
+                  viewMode={viewMode}
+                  lang={lang}
+                  currentUser={
+                    user
+                      ? {
+                          uid: user.uid,
+                          email: user.email ?? '',
+                          displayName: user.displayName ?? '',
+                          photoURL: user.photoURL ?? undefined,
+                          role: 'member',
+                        }
+                      : null
+                  }
+                  showMatchScore={searchResults.length > 0}
+                  matchScore={
+                    searchResults.find((r) => r.member.uid === member.uid)
+                      ?.matchScore
+                  }
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-6 flex items-center justify-center space-x-1 sm:mt-8 sm:space-x-2">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 sm:px-3"
+              >
+                <span className="hidden sm:inline">
+                  {lang === 'es' ? 'Anterior' : 'Previous'}
+                </span>
+                <span className="sm:hidden">&lsaquo;</span>
+              </button>
+
+              {[...Array(Math.min(5, totalPages))].map((_, index) => {
+                const pageNumber =
+                  currentPage <= 3 ? index + 1 : currentPage + index - 2;
+
+                if (pageNumber > totalPages) return null;
+
+                return (
+                  <button
+                    key={pageNumber}
+                    onClick={() => handlePageChange(pageNumber)}
+                    className={`rounded-lg px-3 py-2 text-sm font-medium ${
+                      currentPage === pageNumber
+                        ? 'bg-primary-600 text-white'
+                        : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    {pageNumber}
+                  </button>
+                );
+              })}
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 sm:px-3"
+              >
+                <span className="hidden sm:inline">
+                  {lang === 'es' ? 'Siguiente' : 'Next'}
+                </span>
+                <span className="sm:hidden">&rsaquo;</span>
+              </button>
+            </div>
+          )}
+        </>
       )}
-      </>}
     </div>
   );
 };
