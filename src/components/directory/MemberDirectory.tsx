@@ -10,7 +10,6 @@ import type {
   ViewMode,
   MemberStats
 } from '@/types/member';
-import { MemberStatistics } from './MemberStatistics';
 import {
   Squares2X2Icon,
   ListBulletIcon,
@@ -330,7 +329,16 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
       </div>
 
       {/* Statistics View */}
-      {activeView === 'statistics' && <MemberStatistics lang={lang} />}
+      {activeView === 'statistics' && (
+        <div className="text-center py-12">
+          <ChartBarIcon className="mx-auto h-12 w-12 text-gray-400" />
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            {lang === 'es'
+              ? 'Las estadísticas están disponibles en el panel de miembros.'
+              : 'Statistics are available in the members dashboard.'}
+          </p>
+        </div>
+      )}
 
       {/* Directory View */}
       {activeView === 'directory' && <>

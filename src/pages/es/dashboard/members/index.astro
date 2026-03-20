@@ -1,6 +1,6 @@
 ---
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import MemberDirectoryPage from '@/components/wrappers/MemberDirectoryPage';
+import MemberDashboardPage from '@/components/wrappers/MemberDashboardPage';
 ---
 
 <DashboardLayout
@@ -18,5 +18,5 @@ import MemberDirectoryPage from '@/components/wrappers/MemberDirectoryPage';
     </p>
   </div>
 
-  <MemberDirectoryPage client:only="react" lang="es" />
+  <MemberDashboardPage client:only="react" lang="es" />
 </DashboardLayout>
