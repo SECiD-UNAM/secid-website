@@ -19,71 +19,141 @@
  *   - Optional: LOGO_DEV_API_TOKEN env var for Logo.dev
  */
 
-const path = require("path");
-const admin = require(path.resolve(__dirname, "../functions/node_modules/firebase-admin"));
-const fs = require("fs");
-const https = require("https");
+const path = require('path');
+const admin = require(
+  path.resolve(__dirname, '../functions/node_modules/firebase-admin')
+);
+const fs = require('fs');
+const https = require('https');
 
 // --- Config ---
-const PROJECT_ID = "secid-org";
+const PROJECT_ID = 'secid-org';
 const FIREBASE_CONFIG_PATH = path.join(
   process.env.HOME || process.env.USERPROFILE,
-  ".config/configstore/firebase-tools.json"
+  '.config/configstore/firebase-tools.json'
 );
 
 // --- Company Map ---
 // Entries with `normalizedTo` are case-variant aliases — skipped during company creation,
 // used during member linking to map the alias to the canonical company name.
 const COMPANY_MAP = {
-  'BBVA': { domain: 'bbva.com', industry: 'Finanzas', location: 'Ciudad de México' },
-  'Bbva': { normalizedTo: 'BBVA' },
-  'Algorithia': { domain: 'algorithia.com', industry: 'Tecnología', location: 'Ciudad de México' },
-  'coppel': { domain: 'coppel.com', industry: 'Retail', location: 'Culiacán' },
-  'Uber': { domain: 'uber.com', industry: 'Tecnología', location: 'Global' },
-  'The Coca Cola Company': { domain: 'coca-colacompany.com', industry: 'Consumo', location: 'Global' },
-  'Datateam': { domain: 'datateam.com.mx', industry: 'Tecnología', location: 'Ciudad de México' },
-  'Planet Fitness México': { domain: 'planetfitness.com', industry: 'Fitness', location: 'Ciudad de México' },
-  'Cognodata': { domain: 'cognodata.com', industry: 'Tecnología', location: 'Madrid' },
-  'Arkham Technologies Inc.': { domain: 'arkham.com', industry: 'Tecnología', location: 'Ciudad de México' },
-  'Secretaria de Finanzas de la CDMX': { domain: 'finanzas.cdmx.gob.mx', industry: 'Gobierno', location: 'Ciudad de México' },
-  'El puerto de liverpool': { domain: 'liverpool.com.mx', industry: 'Retail', location: 'Ciudad de México' },
-  'Banorte': { domain: 'banorte.com', industry: 'Finanzas', location: 'Monterrey' },
-  'Oracle': { domain: 'oracle.com', industry: 'Tecnología', location: 'Global' },
-  'XalDigital': { domain: 'xaldigital.com', industry: 'Tecnología', location: 'Ciudad de México' },
-  'J.D. Power': { domain: 'jdpower.com', industry: 'Consultoría', location: 'Global' },
-  'Circulo': { domain: 'circulodecredito.com.mx', industry: 'Finanzas', location: 'Ciudad de México' },
-  'Kuona': { domain: 'kuona.ai', industry: 'Tecnología', location: 'Ciudad de México' },
-  'Microsoft': { domain: 'microsoft.com', industry: 'Tecnología', location: 'Global' },
-  'NielsenIQ': { domain: 'nielseniq.com', industry: 'Datos', location: 'Global' },
-  'Universal Pictures International': { domain: 'universalpictures.com', industry: 'Entretenimiento', location: 'Global' },
+  BBVA: {
+    domain: 'bbva.com',
+    industry: 'Finanzas',
+    location: 'Ciudad de México',
+  },
+  Bbva: { normalizedTo: 'BBVA' },
+  Algorithia: {
+    domain: 'algorithia.com',
+    industry: 'Tecnología',
+    location: 'Ciudad de México',
+  },
+  coppel: { domain: 'coppel.com', industry: 'Retail', location: 'Culiacán' },
+  Uber: { domain: 'uber.com', industry: 'Tecnología', location: 'Global' },
+  'The Coca Cola Company': {
+    domain: 'coca-colacompany.com',
+    industry: 'Consumo',
+    location: 'Global',
+  },
+  Datateam: {
+    domain: 'datateam.com.mx',
+    industry: 'Tecnología',
+    location: 'Ciudad de México',
+  },
+  'Planet Fitness México': {
+    domain: 'planetfitness.com',
+    industry: 'Fitness',
+    location: 'Ciudad de México',
+  },
+  Cognodata: {
+    domain: 'cognodata.com',
+    industry: 'Tecnología',
+    location: 'Madrid',
+  },
+  'Arkham Technologies Inc.': {
+    domain: 'arkham.com',
+    industry: 'Tecnología',
+    location: 'Ciudad de México',
+  },
+  'Secretaria de Finanzas de la CDMX': {
+    domain: 'finanzas.cdmx.gob.mx',
+    industry: 'Gobierno',
+    location: 'Ciudad de México',
+  },
+  'El puerto de liverpool': {
+    domain: 'liverpool.com.mx',
+    industry: 'Retail',
+    location: 'Ciudad de México',
+  },
+  Banorte: {
+    domain: 'banorte.com',
+    industry: 'Finanzas',
+    location: 'Monterrey',
+  },
+  Oracle: { domain: 'oracle.com', industry: 'Tecnología', location: 'Global' },
+  XalDigital: {
+    domain: 'xaldigital.com',
+    industry: 'Tecnología',
+    location: 'Ciudad de México',
+  },
+  'J.D. Power': {
+    domain: 'jdpower.com',
+    industry: 'Consultoría',
+    location: 'Global',
+  },
+  Circulo: {
+    domain: 'circulodecredito.com.mx',
+    industry: 'Finanzas',
+    location: 'Ciudad de México',
+  },
+  Kuona: {
+    domain: 'kuona.ai',
+    industry: 'Tecnología',
+    location: 'Ciudad de México',
+  },
+  Microsoft: {
+    domain: 'microsoft.com',
+    industry: 'Tecnología',
+    location: 'Global',
+  },
+  NielsenIQ: { domain: 'nielseniq.com', industry: 'Datos', location: 'Global' },
+  'Universal Pictures International': {
+    domain: 'universalpictures.com',
+    industry: 'Entretenimiento',
+    location: 'Global',
+  },
 };
 
 // --- Parse args ---
 const args = process.argv.slice(2);
-const isDryRun = args.includes("--dry-run");
-const skipLogos = args.includes("--skip-logos");
+const isDryRun = args.includes('--dry-run');
+const skipLogos = args.includes('--skip-logos');
 
 // --- Firebase CLI OAuth credentials (public, embedded in the CLI) ---
-const FIREBASE_CLIENT_ID = "563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com";
-const FIREBASE_CLIENT_SECRET = "j9iVZfS8kkCEFUPaAeJV0sAi";
+const FIREBASE_CLIENT_ID =
+  '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com';
+const FIREBASE_CLIENT_SECRET = 'j9iVZfS8kkCEFUPaAeJV0sAi';
 
 let tempADCPath = null;
 
 if (!admin.apps.length) {
-  const firebaseConfig = JSON.parse(fs.readFileSync(FIREBASE_CONFIG_PATH, "utf-8"));
-  const refreshToken = firebaseConfig.tokens && firebaseConfig.tokens.refresh_token;
+  const firebaseConfig = JSON.parse(
+    fs.readFileSync(FIREBASE_CONFIG_PATH, 'utf-8')
+  );
+  const refreshToken =
+    firebaseConfig.tokens && firebaseConfig.tokens.refresh_token;
   if (!refreshToken) {
-    console.error("No refresh token found. Run: firebase login --reauth");
+    console.error('No refresh token found. Run: firebase login --reauth');
     process.exit(1);
   }
 
   const adcPayload = {
-    type: "authorized_user",
+    type: 'authorized_user',
     client_id: FIREBASE_CLIENT_ID,
     client_secret: FIREBASE_CLIENT_SECRET,
     refresh_token: refreshToken,
   };
-  tempADCPath = path.resolve(__dirname, "../tmp/.adc-temp.json");
+  tempADCPath = path.resolve(__dirname, '../tmp/.adc-temp.json');
   fs.writeFileSync(tempADCPath, JSON.stringify(adcPayload));
   process.env.GOOGLE_APPLICATION_CREDENTIALS = tempADCPath;
 
@@ -118,26 +188,32 @@ function buildNameLookup() {
 function fetchBuffer(url, maxRedirects = 3) {
   return new Promise((resolve, reject) => {
     const doRequest = (currentUrl, redirectsLeft) => {
-      const protocol = currentUrl.startsWith("https") ? https : require("http");
-      protocol.get(currentUrl, (res) => {
-        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-          if (redirectsLeft <= 0) {
-            reject(new Error(`Too many redirects for ${url}`));
+      const protocol = currentUrl.startsWith('https') ? https : require('http');
+      protocol
+        .get(currentUrl, (res) => {
+          if (
+            res.statusCode >= 300 &&
+            res.statusCode < 400 &&
+            res.headers.location
+          ) {
+            if (redirectsLeft <= 0) {
+              reject(new Error(`Too many redirects for ${url}`));
+              return;
+            }
+            doRequest(res.headers.location, redirectsLeft - 1);
             return;
           }
-          doRequest(res.headers.location, redirectsLeft - 1);
-          return;
-        }
-        if (res.statusCode < 200 || res.statusCode >= 300) {
-          res.resume();
-          reject(new Error(`HTTP ${res.statusCode} for ${currentUrl}`));
-          return;
-        }
-        const chunks = [];
-        res.on("data", (chunk) => chunks.push(chunk));
-        res.on("end", () => resolve(Buffer.concat(chunks)));
-        res.on("error", reject);
-      }).on("error", reject);
+          if (res.statusCode < 200 || res.statusCode >= 300) {
+            res.resume();
+            reject(new Error(`HTTP ${res.statusCode} for ${currentUrl}`));
+            return;
+          }
+          const chunks = [];
+          res.on('data', (chunk) => chunks.push(chunk));
+          res.on('end', () => resolve(Buffer.concat(chunks)));
+          res.on('error', reject);
+        })
+        .on('error', reject);
     };
     doRequest(url, maxRedirects);
   });
@@ -183,7 +259,7 @@ async function uploadLogo(companyId, buffer) {
   const filePath = `companies/${companyId}/logo.png`;
   const file = bucket.file(filePath);
   await file.save(buffer, {
-    metadata: { contentType: "image/png" },
+    metadata: { contentType: 'image/png' },
     public: true,
   });
   return file.publicUrl();
@@ -194,11 +270,15 @@ async function uploadLogo(companyId, buffer) {
 async function backfillCompanies() {
   console.log(`\n========================================`);
   console.log(`  SECiD Company Backfill`);
-  console.log(`  Mode: ${isDryRun ? "DRY RUN" : "LIVE"}${skipLogos ? " (skip logos)" : ""}`);
+  console.log(
+    `  Mode: ${isDryRun ? 'DRY RUN' : 'LIVE'}${skipLogos ? ' (skip logos)' : ''}`
+  );
   console.log(`========================================\n`);
 
   const nameLookup = buildNameLookup();
-  const canonicalEntries = Object.entries(COMPANY_MAP).filter(([, v]) => !v.normalizedTo);
+  const canonicalEntries = Object.entries(COMPANY_MAP).filter(
+    ([, v]) => !v.normalizedTo
+  );
 
   // Track companyId by canonical name for member linking
   const companyIdByName = {};
@@ -208,7 +288,9 @@ async function backfillCompanies() {
   // --------------------------------------------------
   // Phase 1: Create company documents
   // --------------------------------------------------
-  console.log(`--- Phase 1: Create company documents (${canonicalEntries.length} companies) ---\n`);
+  console.log(
+    `--- Phase 1: Create company documents (${canonicalEntries.length} companies) ---\n`
+  );
 
   let companiesCreated = 0;
   let companiesSkipped = 0;
@@ -219,8 +301,8 @@ async function backfillCompanies() {
     try {
       // Idempotency: check if a company with this domain already exists
       const existing = await db
-        .collection("companies")
-        .where("domain", "==", entry.domain)
+        .collection('companies')
+        .where('domain', '==', entry.domain)
         .limit(1)
         .get();
 
@@ -234,7 +316,9 @@ async function backfillCompanies() {
       }
 
       if (isDryRun) {
-        console.log(`  WOULD CREATE  ${name} (${entry.domain}, ${entry.industry}, ${entry.location})`);
+        console.log(
+          `  WOULD CREATE  ${name} (${entry.domain}, ${entry.industry}, ${entry.location})`
+        );
         companyIdByName[name] = `dry-run-${name}`;
         companiesCreated++;
         continue;
@@ -242,14 +326,14 @@ async function backfillCompanies() {
 
       // Create the company document
       const now = admin.firestore.FieldValue.serverTimestamp();
-      const docRef = db.collection("companies").doc();
+      const docRef = db.collection('companies').doc();
       const companyDoc = {
         name,
         domain: entry.domain,
-        industry: entry.industry || "",
-        location: entry.location || "",
+        industry: entry.industry || '',
+        location: entry.location || '',
         memberCount: 0,
-        createdBy: "backfill-script",
+        createdBy: 'backfill-script',
         createdAt: now,
         updatedAt: now,
         pendingReview: false,
@@ -279,7 +363,9 @@ async function backfillCompanies() {
     }
   }
 
-  console.log(`\n  Companies: ${companiesCreated} created, ${companiesSkipped} skipped, ${companiesErrored} errors`);
+  console.log(
+    `\n  Companies: ${companiesCreated} created, ${companiesSkipped} skipped, ${companiesErrored} errors`
+  );
   if (!skipLogos && !isDryRun) {
     console.log(`  Logos: ${logosFetched} fetched`);
   }
@@ -289,7 +375,7 @@ async function backfillCompanies() {
   // --------------------------------------------------
   console.log(`\n--- Phase 2: Link members to company docs ---\n`);
 
-  const usersSnapshot = await db.collection("users").get();
+  const usersSnapshot = await db.collection('users').get();
   let membersLinked = 0;
   let membersUnmatched = 0;
   let membersNoCompany = 0;
@@ -297,7 +383,7 @@ async function backfillCompanies() {
 
   for (const userDoc of usersSnapshot.docs) {
     const data = userDoc.data();
-    const companyName = data.profile?.company || data.currentCompany || "";
+    const companyName = data.profile?.company || data.currentCompany || '';
 
     if (!companyName) {
       membersNoCompany++;
@@ -318,20 +404,26 @@ async function backfillCompanies() {
     // Match against COMPANY_MAP (case-insensitive)
     const canonicalName = nameLookup[companyName.toLowerCase()];
     if (!canonicalName) {
-      console.log(`  UNMATCHED  ${data.displayName || userDoc.id} — company "${companyName}" not in COMPANY_MAP`);
+      console.log(
+        `  UNMATCHED  ${data.displayName || userDoc.id} — company "${companyName}" not in COMPANY_MAP`
+      );
       membersUnmatched++;
       continue;
     }
 
     const companyId = companyIdByName[canonicalName];
     if (!companyId) {
-      console.log(`  WARN  ${data.displayName || userDoc.id} — canonical "${canonicalName}" has no companyId`);
+      console.log(
+        `  WARN  ${data.displayName || userDoc.id} — canonical "${canonicalName}" has no companyId`
+      );
       membersUnmatched++;
       continue;
     }
 
     if (isDryRun) {
-      console.log(`  WOULD LINK  ${data.displayName || userDoc.id} -> ${canonicalName} (${companyId})`);
+      console.log(
+        `  WOULD LINK  ${data.displayName || userDoc.id} -> ${canonicalName} (${companyId})`
+      );
       membersLinked++;
       if (memberCountByCompanyId[companyId] !== undefined) {
         memberCountByCompanyId[companyId]++;
@@ -340,12 +432,14 @@ async function backfillCompanies() {
     }
 
     // Update the member doc with companyId and _backfill flag
-    await db.collection("users").doc(userDoc.id).update({
-      "profile.companyId": companyId,
+    await db.collection('users').doc(userDoc.id).update({
+      'profile.companyId': companyId,
       _backfill: true,
     });
 
-    console.log(`  LINK  ${data.displayName || userDoc.id} -> ${canonicalName} (${companyId})`);
+    console.log(
+      `  LINK  ${data.displayName || userDoc.id} -> ${canonicalName} (${companyId})`
+    );
     membersLinked++;
 
     if (memberCountByCompanyId[companyId] !== undefined) {
@@ -353,7 +447,9 @@ async function backfillCompanies() {
     }
   }
 
-  console.log(`\n  Members: ${membersLinked} linked, ${membersAlreadyLinked} already linked, ${membersNoCompany} no company, ${membersUnmatched} unmatched`);
+  console.log(
+    `\n  Members: ${membersLinked} linked, ${membersAlreadyLinked} already linked, ${membersNoCompany} no company, ${membersUnmatched} unmatched`
+  );
 
   // --------------------------------------------------
   // Phase 3: Recompute memberCount on each company
@@ -372,12 +468,15 @@ async function backfillCompanies() {
 
     // Direct count: query all users with this companyId
     const memberSnapshot = await db
-      .collection("users")
-      .where("profile.companyId", "==", companyId)
+      .collection('users')
+      .where('profile.companyId', '==', companyId)
       .get();
 
     const count = memberSnapshot.size;
-    await db.collection("companies").doc(companyId).update({ memberCount: count });
+    await db
+      .collection('companies')
+      .doc(companyId)
+      .update({ memberCount: count });
     console.log(`  SET   ${name} memberCount = ${count}`);
     countsUpdated++;
   }
@@ -417,6 +516,6 @@ backfillCompanies()
   })
   .catch((err) => {
     if (tempADCPath && fs.existsSync(tempADCPath)) fs.unlinkSync(tempADCPath);
-    console.error("Backfill failed:", err);
+    console.error('Backfill failed:', err);
     process.exit(1);
   });
