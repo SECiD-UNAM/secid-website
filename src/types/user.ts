@@ -18,6 +18,7 @@ export interface UserProfile {
   academicLevel?: AcademicLevel;
   campus?: string; // Sede de estudios
   generation?: string; // Generación / cohort
+  onboardingCompleted?: boolean;
   profile: {
     firstName: string;
     lastName: string;

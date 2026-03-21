@@ -26,6 +26,7 @@ import type { TabId, ProfileEditProps } from './profile-edit-types';
 import { INITIAL_FORM_DATA } from './profile-edit-types';
 import type { FormData } from './profile-edit-types';
 import { getMemberProfile, updateMemberProfile } from '@/lib/members';
+import { OnboardingWizard } from './OnboardingWizard';
 
 const TAB_DEFINITIONS: {
   id: TabId;
@@ -81,6 +82,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
   const [adminLifecycleStatus, setAdminLifecycleStatus] =
     useState<string>('active');
   const [savingAdmin, setSavingAdmin] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const populateFormFromProfile = (profile: any, fallbackEmail?: string) => {
     const workHistory = profile.experience?.previousRoles || [];
@@ -161,6 +163,9 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
         });
     } else if (userProfile) {
       populateFormFromProfile(userProfile, user?.email);
+      if (!userProfile.onboardingCompleted) {
+        setShowOnboarding(true);
+      }
     }
   }, [targetUid, userProfile, user]);
 
@@ -282,6 +287,20 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
       );
     } finally {
       setUploadingPhoto(false);
+    }
+  };
+
+  const handleOnboardingComplete = async () => {
+    setShowOnboarding(false);
+    if (!effectiveUid) return;
+
+    try {
+      await updateDoc(doc(db, 'users', effectiveUid), {
+        onboardingCompleted: true,
+        updatedAt: serverTimestamp(),
+      });
+    } catch (err) {
+      console.error('Error marking onboarding complete:', err);
     }
   };
 
@@ -409,6 +428,20 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
       setSavingAdmin(false);
     }
   };
+
+  if (showOnboarding) {
+    return (
+      <OnboardingWizard
+        formData={formData}
+        setFormData={setFormData}
+        onComplete={handleOnboardingComplete}
+        onPhotoUpload={handlePhotoUpload}
+        uploadingPhoto={uploadingPhoto}
+        profileCompleteness={profileCompleteness}
+        lang={lang}
+      />
+    );
+  }
 
   return (
     <div>

@@ -118,6 +118,7 @@ export function mapUserDocToMemberProfile(
     email: data.email || '',
     role: data.role || 'member',
     createdAt: data.createdAt?.toDate?.() || data.createdAt || new Date(),
+    onboardingCompleted: data.onboardingCompleted || false,
     displayName,
     slug,
     initials,
