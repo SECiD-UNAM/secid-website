@@ -147,6 +147,7 @@ export function mapUserDocToMemberProfile(
       endDate:
         e.endDate?.toDate?.() || (e.endDate ? new Date(e.endDate) : undefined),
     })),
+    cvVisibility: data.cvVisibility || 'members',
     languages: data.languages || [],
     settings: data.settings || {
       emailNotifications: data.notificationSettings?.email !== false,
@@ -247,6 +248,7 @@ export const createMockMemberProfile = (index: number): MemberProfile => ({
     reputation: Math.floor(Math.random() * 1000),
     lastActive: new Date(),
   },
+  cvVisibility: 'members',
   educationHistory: [],
   languages: [],
   searchableKeywords: ['data', 'science', 'machine', 'learning'],

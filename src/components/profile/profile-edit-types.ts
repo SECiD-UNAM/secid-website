@@ -56,6 +56,7 @@ export interface FormData {
   contactVisible: boolean;
   jobSearching: boolean;
   mentorshipAvailable: boolean;
+  cvVisibility: 'public' | 'members' | 'private';
 
   // Notification Settings
   emailNotifications: boolean;
@@ -116,6 +117,7 @@ export const INITIAL_FORM_DATA: FormData = {
   contactVisible: false,
   jobSearching: false,
   mentorshipAvailable: false,
+  cvVisibility: 'members',
   emailNotifications: true,
   pushNotifications: false,
   jobMatchNotifications: true,

@@ -54,6 +54,9 @@ export interface MemberProfile extends UserProfile {
   educationHistory: EducationEntry[];
   languages: Language[];
 
+  // CV visibility control
+  cvVisibility: 'public' | 'members' | 'private';
+
   // Professional information
   experience: {
     years: number;
