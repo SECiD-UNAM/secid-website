@@ -84,8 +84,16 @@ export function mapUserDocToMemberProfile(
       industries: [],
     },
     social: data.social || {
-      linkedin: data.linkedinUrl,
-      github: data.githubUrl,
+      linkedin:
+        data.profile?.linkedin ||
+        data.linkedinUrl ||
+        data.registrationData?.socialMedia?.linkedin ||
+        undefined,
+      github:
+        data.githubUrl ||
+        data.registrationData?.socialMedia?.github ||
+        undefined,
+      twitter: data.registrationData?.socialMedia?.twitter || undefined,
       portfolio: data.portfolioUrl,
     },
     networking: {
