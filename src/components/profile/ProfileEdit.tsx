@@ -4,120 +4,92 @@ import { useAuth } from '@/contexts/AuthContext';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { updateProfile, updateEmail } from 'firebase/auth';
-import { db, storage, auth } from '@/lib/firebase';
+import { db, storage } from '@/lib/firebase';
 import {
   UserCircleIcon,
   BriefcaseIcon,
   AcademicCapIcon,
-  GlobeAltIcon,
-  LinkIcon,
-  PlusIcon,
-  XMarkIcon,
   CheckCircleIcon,
   ExclamationCircleIcon,
   ShieldCheckIcon,
   EyeIcon,
+  RectangleStackIcon,
 } from '@heroicons/react/24/outline';
 import { PersonalTab } from './tabs/PersonalTab';
+import { CareerTab } from './tabs/CareerTab';
+import { EducationTab } from './tabs/EducationTab';
+import { PortfolioTab } from './tabs/PortfolioTab';
 import { PrivacyTab } from './tabs/PrivacyTab';
 import { SecurityTab } from './tabs/SecurityTab';
+import type { TabId } from './profile-edit-types';
+import { INITIAL_FORM_DATA, COMPLETENESS_FIELDS } from './profile-edit-types';
+import type { FormData } from './profile-edit-types';
 
 interface ProfileEditProps {
   lang?: 'es' | 'en';
 }
 
-interface FormData {
-  // Personal Information
-  displayName: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  location: string;
-  bio: string;
-  photoURL: string;
-
-  // Professional Information
-  currentPosition: string;
-  currentCompany: string;
-  industry: string;
-  experience: string;
-  skills: string[];
-
-  // Education
-  unamEmail: string;
-  graduationYear: string;
-  program: string;
-  studentId: string;
-
-  // Social Links
-  linkedinUrl: string;
-  githubUrl: string;
-  portfolioUrl: string;
-  twitterUrl: string;
-
-  // Privacy Settings
-  profileVisible: boolean;
-  contactVisible: boolean;
-  jobSearching: boolean;
-  mentorshipAvailable: boolean;
-
-  // Notification Settings
-  emailNotifications: boolean;
-  pushNotifications: boolean;
-  jobMatchNotifications: boolean;
-  eventNotifications: boolean;
-  forumNotifications: boolean;
-}
+const TAB_DEFINITIONS: {
+  id: TabId;
+  labelEs: string;
+  labelEn: string;
+  icon: React.FC<React.SVGProps<SVGSVGElement>>;
+}[] = [
+  {
+    id: 'personal',
+    labelEs: 'Personal',
+    labelEn: 'Personal',
+    icon: UserCircleIcon,
+  },
+  { id: 'career', labelEs: 'Carrera', labelEn: 'Career', icon: BriefcaseIcon },
+  {
+    id: 'education',
+    labelEs: 'Educación',
+    labelEn: 'Education',
+    icon: AcademicCapIcon,
+  },
+  {
+    id: 'portfolio',
+    labelEs: 'Portafolio',
+    labelEn: 'Portfolio',
+    icon: RectangleStackIcon,
+  },
+  { id: 'privacy', labelEs: 'Privacidad', labelEn: 'Privacy', icon: EyeIcon },
+  {
+    id: 'security',
+    labelEs: 'Seguridad',
+    labelEn: 'Security',
+    icon: ShieldCheckIcon,
+  },
+];
 
 export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
   const { user, userProfile } = useAuth();
-  const [activeTab, setActiveTab] = useState<
-    'personal' | 'professional' | 'education' | 'privacy' | 'security'
-  >('personal');
-  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabId>('personal');
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  const [currentSkill, setCurrentSkill] = useState('');
   const [profileCompleteness, setProfileCompleteness] = useState(0);
-
-  const [formData, setFormData] = useState<FormData>({
-    displayName: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
-    location: '',
-    bio: '',
-    photoURL: '',
-    currentPosition: '',
-    currentCompany: '',
-    industry: '',
-    experience: '',
-    skills: [],
-    unamEmail: '',
-    graduationYear: '',
-    program: '',
-    studentId: '',
-    linkedinUrl: '',
-    githubUrl: '',
-    portfolioUrl: '',
-    twitterUrl: '',
-    profileVisible: true,
-    contactVisible: false,
-    jobSearching: false,
-    mentorshipAvailable: false,
-    emailNotifications: true,
-    pushNotifications: false,
-    jobMatchNotifications: true,
-    eventNotifications: true,
-    forumNotifications: false,
-  });
+  const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
 
   useEffect(() => {
     if (userProfile) {
+      // Build work history from existing profile data
+      const workHistory = userProfile.experience?.previousRoles || [];
+      if (
+        userProfile.currentPosition &&
+        !workHistory.some((w: { current?: boolean }) => w.current)
+      ) {
+        workHistory.unshift({
+          id: crypto.randomUUID(),
+          company: userProfile.currentCompany || '',
+          position: userProfile.currentPosition || '',
+          startDate: new Date(),
+          current: true,
+        });
+      }
+
       setFormData({
         displayName: userProfile.displayName || '',
         firstName: userProfile.firstName || '',
@@ -130,8 +102,14 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
         currentPosition: userProfile.currentPosition || '',
         currentCompany: userProfile.currentCompany || '',
         industry: userProfile.industry || '',
-        experience: userProfile.experience || '',
+        experience:
+          userProfile.experience?.level || userProfile.experience || '',
         skills: userProfile.skills || [],
+        workHistory,
+        educationHistory: userProfile.educationHistory || [],
+        certifications: userProfile.portfolio?.certifications || [],
+        languages: userProfile.languages || [],
+        projects: userProfile.portfolio?.projects || [],
         unamEmail: userProfile.unamEmail || '',
         graduationYear: userProfile.graduationYear || '',
         program: userProfile.program || '',
@@ -152,37 +130,26 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
         eventNotifications: userProfile?.notificationSettings?.events ?? true,
         forumNotifications: userProfile?.notificationSettings?.forums ?? false,
       });
-      calculateCompleteness();
     }
   }, [userProfile, user]);
 
+  useEffect(() => {
+    calculateCompleteness();
+  }, [formData]);
+
   const calculateCompleteness = () => {
     let completed = 0;
-    const fields = [
-      'displayName',
-      'firstName',
-      'lastName',
-      'email',
-      'phoneNumber',
-      'location',
-      'bio',
-      'currentPosition',
-      'currentCompany',
-      'industry',
-      'experience',
-      'unamEmail',
-      'graduationYear',
-      'program',
-    ];
 
-    fields['forEach']((field) => {
+    COMPLETENESS_FIELDS.forEach((field) => {
       if (formData[field as keyof FormData]) completed++;
     });
 
     if (formData.skills.length > 0) completed++;
     if (formData.photoURL) completed++;
 
-    const percentage = Math.round((completed / (fields['length'] + 2)) * 100);
+    const percentage = Math.round(
+      (completed / (COMPLETENESS_FIELDS.length + 2)) * 100
+    );
     setProfileCompleteness(percentage);
   };
 
@@ -190,8 +157,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
-    // Validate file
-    if (!file['type'].startsWith('image/')) {
+    if (!file.type.startsWith('image/')) {
       setError(
         lang === 'es'
           ? 'Por favor selecciona una imagen'
@@ -215,43 +181,25 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
     try {
       const photoRef = ref(
         storage,
-        `profiles/${user.uid}/${Date.now()}_${file['name']}`
+        `profiles/${user.uid}/${Date.now()}_${file.name}`
       );
       const snapshot = await uploadBytes(photoRef, file);
-      const photoURL = await getDownloadURL(snapshot['ref']);
+      const photoURL = await getDownloadURL(snapshot.ref);
 
       setFormData((prev) => ({ ...prev, photoURL }));
 
-      // Update auth profile
       await updateProfile(user, { photoURL });
 
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-    } catch (error) {
-      console.error('Error uploading photo:', error);
+    } catch (uploadError) {
+      console.error('Error uploading photo:', uploadError);
       setError(
         lang === 'es' ? 'Error al subir la foto' : 'Error uploading photo'
       );
     } finally {
       setUploadingPhoto(false);
     }
-  };
-
-  const handleAddSkill = () => {
-    if (currentSkill.trim() && !formData.skills.includes(currentSkill.trim())) {
-      setFormData((prev) => ({
-        ...prev,
-        skills: [...prev.skills, currentSkill.trim()],
-      }));
-      setCurrentSkill('');
-    }
-  };
-
-  const handleRemoveSkill = (skillToRemove: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      skills: prev.skills.filter((skill) => skill !== skillToRemove),
-    }));
   };
 
   const handleSave = async () => {
@@ -261,7 +209,8 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
     setError(null);
 
     try {
-      // Update Firestore profile
+      const currentWork = formData.workHistory.find((w) => w.current);
+
       await updateDoc(doc(db, 'users', user.uid), {
         displayName: formData.displayName,
         firstName: formData.firstName,
@@ -270,24 +219,44 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
         location: formData.location,
         bio: formData.bio,
         photoURL: formData.photoURL,
-        currentPosition: formData.currentPosition,
-        currentCompany: formData.currentCompany,
+        // Career data — derive top-level fields from work history
+        currentPosition:
+          currentWork?.position || formData.currentPosition || '',
+        currentCompany: currentWork?.company || formData.currentCompany || '',
+        'profile.company':
+          currentWork?.company || formData.currentCompany || '',
+        'profile.companyId': currentWork?.companyId || undefined,
+        'profile.position':
+          currentWork?.position || formData.currentPosition || '',
+        'experience.previousRoles': formData.workHistory,
+        'experience.currentRole':
+          currentWork?.position || formData.currentPosition || '',
         industry: formData.industry,
         experience: formData.experience,
         skills: formData.skills,
+        // Education data
         unamEmail: formData.unamEmail,
         graduationYear: formData.graduationYear,
         program: formData.program,
+        educationHistory: formData.educationHistory,
+        // Portfolio data
+        'portfolio.certifications': formData.certifications,
+        'portfolio.projects': formData.projects,
+        // Languages
+        languages: formData.languages,
+        // Social links
         linkedinUrl: formData.linkedinUrl,
         githubUrl: formData.githubUrl,
         portfolioUrl: formData.portfolioUrl,
         twitterUrl: formData.twitterUrl,
+        // Privacy
         privacySettings: {
           profileVisible: formData.profileVisible,
           contactVisible: formData.contactVisible,
           jobSearching: formData.jobSearching,
           mentorshipAvailable: formData.mentorshipAvailable,
         },
+        // Notifications
         notificationSettings: {
           email: formData.emailNotifications,
           push: formData.pushNotifications,
@@ -299,23 +268,23 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
         profileCompleteness,
       });
 
-      // Update auth profile
       await updateProfile(user, {
         displayName: formData.displayName,
         photoURL: formData.photoURL,
       });
 
-      // Update email if changed
-      if (formData['email'] !== user['email']) {
-        await updateEmail(user, formData['email']);
+      if (formData.email !== user.email) {
+        await updateEmail(user, formData.email);
       }
 
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-    } catch (error: any) {
-      console.error('Error saving profile:', error);
+    } catch (saveError: unknown) {
+      console.error('Error saving profile:', saveError);
+      const message =
+        saveError instanceof Error ? saveError.message : undefined;
       setError(
-        error['message'] ||
+        message ||
           (lang === 'es'
             ? 'Error al guardar el perfil'
             : 'Error saving profile')
@@ -325,35 +294,8 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
     }
   };
 
-  const suggestedSkills = [
-    'Python',
-    'R',
-    'SQL',
-    'Machine Learning',
-    'Deep Learning',
-    'TensorFlow',
-    'PyTorch',
-    'Pandas',
-    'NumPy',
-    'Scikit-learn',
-    'Data Visualization',
-    'Tableau',
-    'Power BI',
-    'Statistics',
-    'NLP',
-    'Computer Vision',
-    'AWS',
-    'Azure',
-    'GCP',
-    'Docker',
-    'Kubernetes',
-    'Git',
-  ];
-
   return (
     <div>
-      {/* Header removed - rendered by Astro page wrapper */}
-
       {/* Profile Completeness */}
       <div className="mb-6 rounded-lg bg-white p-6 shadow dark:bg-gray-800">
         <div className="mb-2 flex items-center justify-between">
@@ -405,44 +347,18 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
       {/* Tabs */}
       <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
         <nav className="flex space-x-8 overflow-x-auto">
-          {[
-            {
-              id: 'personal',
-              label: lang === 'es' ? 'Personal' : 'Personal',
-              icon: UserCircleIcon,
-            },
-            {
-              id: 'professional',
-              label: lang === 'es' ? 'Profesional' : 'Professional',
-              icon: BriefcaseIcon,
-            },
-            {
-              id: 'education',
-              label: lang === 'es' ? 'Educación' : 'Education',
-              icon: AcademicCapIcon,
-            },
-            {
-              id: 'privacy',
-              label: lang === 'es' ? 'Privacidad' : 'Privacy',
-              icon: EyeIcon,
-            },
-            {
-              id: 'security',
-              label: lang === 'es' ? 'Seguridad' : 'Security',
-              icon: ShieldCheckIcon,
-            },
-          ].map((tab) => (
+          {TAB_DEFINITIONS.map((tab) => (
             <button
-              key={tab['id']}
-              onClick={() => setActiveTab(tab['id'] as any)}
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
               className={`flex items-center whitespace-nowrap border-b-2 px-1 py-2 text-sm font-medium transition-colors ${
-                activeTab === tab['id']
+                activeTab === tab.id
                   ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                   : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
               }`}
             >
               <tab.icon className="mr-2 h-5 w-5" />
-              {tab.label}
+              {lang === 'es' ? tab.labelEs : tab.labelEn}
             </button>
           ))}
         </nav>
@@ -460,380 +376,28 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
           />
         )}
 
-        {activeTab === 'professional' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {lang === 'es' ? 'Puesto actual' : 'Current position'}
-                </label>
-                <input
-                  type="text"
-                  value={formData.currentPosition}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      currentPosition: e.target.value,
-                    }))
-                  }
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder={
-                    lang === 'es'
-                      ? 'Ej: Data Scientist Senior'
-                      : 'Ex: Senior Data Scientist'
-                  }
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {lang === 'es' ? 'Empresa actual' : 'Current company'}
-                </label>
-                <input
-                  type="text"
-                  value={formData.currentCompany}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      currentCompany: e.target.value,
-                    }))
-                  }
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {lang === 'es' ? 'Industria' : 'Industry'}
-                </label>
-                <select
-                  value={formData.industry}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      industry: e.target.value,
-                    }))
-                  }
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                >
-                  <option value="">
-                    {lang === 'es' ? 'Selecciona...' : 'Select...'}
-                  </option>
-                  <option value="technology">
-                    {lang === 'es' ? 'Tecnología' : 'Technology'}
-                  </option>
-                  <option value="finance">
-                    {lang === 'es' ? 'Finanzas' : 'Finance'}
-                  </option>
-                  <option value="healthcare">
-                    {lang === 'es' ? 'Salud' : 'Healthcare'}
-                  </option>
-                  <option value="retail">
-                    {lang === 'es' ? 'Retail' : 'Retail'}
-                  </option>
-                  <option value="education">
-                    {lang === 'es' ? 'Educación' : 'Education'}
-                  </option>
-                  <option value="consulting">
-                    {lang === 'es' ? 'Consultoría' : 'Consulting'}
-                  </option>
-                  <option value="manufacturing">
-                    {lang === 'es' ? 'Manufactura' : 'Manufacturing'}
-                  </option>
-                  <option value="government">
-                    {lang === 'es' ? 'Gobierno' : 'Government'}
-                  </option>
-                  <option value="other">
-                    {lang === 'es' ? 'Otro' : 'Other'}
-                  </option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {lang === 'es' ? 'Experiencia' : 'Experience'}
-                </label>
-                <select
-                  value={formData.experience}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      experience: e.target.value,
-                    }))
-                  }
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                >
-                  <option value="">
-                    {lang === 'es' ? 'Selecciona...' : 'Select...'}
-                  </option>
-                  <option value="0-1">
-                    {lang === 'es' ? 'Menos de 1 año' : 'Less than 1 year'}
-                  </option>
-                  <option value="1-3">
-                    1-3 {lang === 'es' ? 'años' : 'years'}
-                  </option>
-                  <option value="3-5">
-                    3-5 {lang === 'es' ? 'años' : 'years'}
-                  </option>
-                  <option value="5-10">
-                    5-10 {lang === 'es' ? 'años' : 'years'}
-                  </option>
-                  <option value="10+">
-                    {lang === 'es' ? 'Más de 10 años' : 'More than 10 years'}
-                  </option>
-                </select>
-              </div>
-            </div>
-
-            {/* Skills */}
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {lang === 'es' ? 'Habilidades' : 'Skills'}
-              </label>
-              <div className="mb-2 flex gap-2">
-                <input
-                  type="text"
-                  value={currentSkill}
-                  onChange={(e) => setCurrentSkill(e.target.value)}
-                  onKeyPress={(e) =>
-                    e.key === 'Enter' && (e.preventDefault(), handleAddSkill())
-                  }
-                  className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder={
-                    lang === 'es' ? 'Agregar habilidad...' : 'Add skill...'
-                  }
-                />
-                <button
-                  type="button"
-                  onClick={handleAddSkill}
-                  className="rounded-lg bg-primary-600 px-4 py-2 text-white hover:bg-primary-700"
-                >
-                  <PlusIcon className="h-5 w-5" />
-                </button>
-              </div>
-
-              {formData.skills.length > 0 && (
-                <div className="mb-4 flex flex-wrap gap-2">
-                  {formData.skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="inline-flex items-center rounded-full bg-primary-100 px-3 py-1 text-sm text-primary-700 dark:bg-primary-900/20 dark:text-primary-400"
-                    >
-                      {skill}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveSkill(skill)}
-                        className="ml-2 text-primary-600 hover:text-primary-800 dark:text-primary-500 dark:hover:text-primary-300"
-                      >
-                        <XMarkIcon className="h-4 w-4" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-700">
-                <p className="mb-2 text-xs text-gray-600 dark:text-gray-400">
-                  {lang === 'es' ? 'Sugerencias:' : 'Suggestions:'}
-                </p>
-                <div className="flex flex-wrap gap-1">
-                  {suggestedSkills
-                    .filter((skill) => !formData.skills.includes(skill))
-                    .slice(0, 10)
-                    .map((skill) => (
-                      <button
-                        key={skill}
-                        type="button"
-                        onClick={() =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            skills: [...prev.skills, skill],
-                          }))
-                        }
-                        className="rounded bg-white px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-500"
-                      >
-                        +{skill}
-                      </button>
-                    ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                {lang === 'es' ? 'Enlaces sociales' : 'Social links'}
-              </h3>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  <LinkIcon className="mr-1 inline h-4 w-4" />
-                  LinkedIn
-                </label>
-                <input
-                  type="url"
-                  value={formData.linkedinUrl}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      linkedinUrl: e.target.value,
-                    }))
-                  }
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder="https://linkedin.com/in/username"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  <LinkIcon className="mr-1 inline h-4 w-4" />
-                  GitHub
-                </label>
-                <input
-                  type="url"
-                  value={formData.githubUrl}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      githubUrl: e.target.value,
-                    }))
-                  }
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder="https://github.com/username"
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  <GlobeAltIcon className="mr-1 inline h-4 w-4" />
-                  {lang === 'es' ? 'Portafolio' : 'Portfolio'}
-                </label>
-                <input
-                  type="url"
-                  value={formData.portfolioUrl}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      portfolioUrl: e.target.value,
-                    }))
-                  }
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder="https://portfolio.com"
-                />
-              </div>
-            </div>
-          </div>
+        {activeTab === 'career' && (
+          <CareerTab
+            formData={formData}
+            setFormData={setFormData}
+            lang={lang}
+          />
         )}
 
         {activeTab === 'education' && (
-          <div className="space-y-6">
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {lang === 'es' ? 'Correo UNAM' : 'UNAM Email'} *
-              </label>
-              <input
-                type="email"
-                value={formData.unamEmail}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    unamEmail: e.target.value,
-                  }))
-                }
-                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                placeholder="usuario@alumno.unam.mx"
-              />
-            </div>
+          <EducationTab
+            formData={formData}
+            setFormData={setFormData}
+            lang={lang}
+          />
+        )}
 
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {lang === 'es' ? 'Año de graduación' : 'Graduation year'} *
-                </label>
-                <input
-                  type="number"
-                  value={formData.graduationYear}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      graduationYear: e.target.value,
-                    }))
-                  }
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder="2024"
-                  min="2000"
-                  max={new Date().getFullYear() + 5}
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {lang === 'es' ? 'Número de cuenta' : 'Student ID'}
-                </label>
-                <input
-                  type="text"
-                  value={formData.studentId}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      studentId: e.target.value,
-                    }))
-                  }
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder="123456789"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {lang === 'es' ? 'Programa académico' : 'Academic program'} *
-              </label>
-              <select
-                value={formData.program}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, program: e.target.value }))
-                }
-                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              >
-                <option value="">
-                  {lang === 'es' ? 'Selecciona...' : 'Select...'}
-                </option>
-                <option value="licenciatura-ciencia-datos">
-                  {lang === 'es'
-                    ? 'Licenciatura en Ciencia de Datos'
-                    : 'Bachelor in Data Science'}
-                </option>
-                <option value="maestria-ciencia-datos">
-                  {lang === 'es'
-                    ? 'Maestría en Ciencia de Datos'
-                    : 'Master in Data Science'}
-                </option>
-                <option value="doctorado-ciencia-datos">
-                  {lang === 'es'
-                    ? 'Doctorado en Ciencia de Datos'
-                    : 'PhD in Data Science'}
-                </option>
-                <option value="especializacion">
-                  {lang === 'es' ? 'Especialización' : 'Specialization'}
-                </option>
-                <option value="diplomado">
-                  {lang === 'es' ? 'Diplomado' : 'Certificate Program'}
-                </option>
-              </select>
-            </div>
-
-            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
-              <p className="text-sm text-blue-700 dark:text-blue-300">
-                <AcademicCapIcon className="mr-1 inline h-4 w-4" />
-                {lang === 'es'
-                  ? 'La verificación UNAM te da acceso a beneficios exclusivos para egresados'
-                  : 'UNAM verification gives you access to exclusive alumni benefits'}
-              </p>
-            </div>
-          </div>
+        {activeTab === 'portfolio' && (
+          <PortfolioTab
+            formData={formData}
+            setFormData={setFormData}
+            lang={lang}
+          />
         )}
 
         {activeTab === 'privacy' && (
