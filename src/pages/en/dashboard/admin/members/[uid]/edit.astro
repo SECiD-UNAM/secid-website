@@ -1,0 +1,16 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import AdminMemberEditPage from '@/components/wrappers/AdminMemberEditPage';
+
+const { uid } = Astro.params;
+---
+
+<DashboardLayout
+  title="Edit Member - SECiD"
+  description="Edit member profile"
+  lang="en"
+  requireVerified={true}
+  requireRole={['admin', 'moderator']}
+>
+  <AdminMemberEditPage client:only="react" lang="en" uid={uid!} />
+</DashboardLayout>
