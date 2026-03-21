@@ -73,6 +73,12 @@ export type TabId =
   | 'privacy'
   | 'security';
 
+export interface ProfileEditProps {
+  lang?: 'es' | 'en';
+  targetUid?: string;
+  isAdmin?: boolean;
+}
+
 export interface ProfileTabProps {
   lang: 'es' | 'en';
   formData: FormData;

@@ -14,6 +14,7 @@ import {
   ShieldCheckIcon,
   EyeIcon,
   RectangleStackIcon,
+  ArrowLeftIcon,
 } from '@heroicons/react/24/outline';
 import { PersonalTab } from './tabs/PersonalTab';
 import { CareerTab } from './tabs/CareerTab';
@@ -21,13 +22,10 @@ import { EducationTab } from './tabs/EducationTab';
 import { PortfolioTab } from './tabs/PortfolioTab';
 import { PrivacyTab } from './tabs/PrivacyTab';
 import { SecurityTab } from './tabs/SecurityTab';
-import type { TabId } from './profile-edit-types';
+import type { TabId, ProfileEditProps } from './profile-edit-types';
 import { INITIAL_FORM_DATA, COMPLETENESS_FIELDS } from './profile-edit-types';
 import type { FormData } from './profile-edit-types';
-
-interface ProfileEditProps {
-  lang?: 'es' | 'en';
-}
+import { getMemberProfile, updateMemberProfile } from '@/lib/members';
 
 const TAB_DEFINITIONS: {
   id: TabId;
@@ -63,8 +61,13 @@ const TAB_DEFINITIONS: {
   },
 ];
 
-export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
+export const ProfileEdit: React.FC<ProfileEditProps> = ({
+  lang = 'es',
+  targetUid,
+  isAdmin = false,
+}) => {
   const { user, userProfile } = useAuth();
+  const effectiveUid = targetUid || user?.uid;
   const [activeTab, setActiveTab] = useState<TabId>('personal');
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -72,66 +75,94 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [profileCompleteness, setProfileCompleteness] = useState(0);
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
+  const [adminRole, setAdminRole] = useState<string>('member');
+  const [adminVerificationStatus, setAdminVerificationStatus] =
+    useState<string>('none');
+  const [adminLifecycleStatus, setAdminLifecycleStatus] =
+    useState<string>('active');
+  const [savingAdmin, setSavingAdmin] = useState(false);
 
-  useEffect(() => {
-    if (userProfile) {
-      // Build work history from existing profile data
-      const workHistory = userProfile.experience?.previousRoles || [];
-      if (
-        userProfile.currentPosition &&
-        !workHistory.some((w: { current?: boolean }) => w.current)
-      ) {
-        workHistory.unshift({
-          id: crypto.randomUUID(),
-          company: userProfile.currentCompany || '',
-          position: userProfile.currentPosition || '',
-          startDate: new Date(),
-          current: true,
-        });
-      }
-
-      setFormData({
-        displayName: userProfile.displayName || '',
-        firstName: userProfile.firstName || '',
-        lastName: userProfile.lastName || '',
-        email: userProfile['email'] || user?.email || '',
-        phoneNumber: userProfile.phoneNumber || '',
-        location: userProfile.location || '',
-        bio: userProfile.bio || '',
-        photoURL: userProfile.photoURL || '',
-        currentPosition: userProfile.currentPosition || '',
-        currentCompany: userProfile.currentCompany || '',
-        industry: userProfile.industry || '',
-        experience:
-          userProfile.experience?.level || userProfile.experience || '',
-        skills: userProfile.skills || [],
-        workHistory,
-        educationHistory: userProfile.educationHistory || [],
-        certifications: userProfile.portfolio?.certifications || [],
-        languages: userProfile.languages || [],
-        projects: userProfile.portfolio?.projects || [],
-        unamEmail: userProfile.unamEmail || '',
-        graduationYear: userProfile.graduationYear || '',
-        program: userProfile.program || '',
-        studentId: userProfile.studentId || '',
-        linkedinUrl: userProfile.linkedinUrl || '',
-        githubUrl: userProfile.githubUrl || '',
-        portfolioUrl: userProfile.portfolioUrl || '',
-        twitterUrl: userProfile.twitterUrl || '',
-        profileVisible: userProfile?.privacySettings?.profileVisible ?? true,
-        contactVisible: userProfile?.privacySettings?.contactVisible ?? false,
-        jobSearching: userProfile?.privacySettings?.jobSearching ?? false,
-        mentorshipAvailable:
-          userProfile?.privacySettings?.mentorshipAvailable ?? false,
-        emailNotifications: userProfile?.notificationSettings?.email ?? true,
-        pushNotifications: userProfile?.notificationSettings?.push ?? false,
-        jobMatchNotifications:
-          userProfile?.notificationSettings?.jobMatches ?? true,
-        eventNotifications: userProfile?.notificationSettings?.events ?? true,
-        forumNotifications: userProfile?.notificationSettings?.forums ?? false,
+  const populateFormFromProfile = (profile: any, fallbackEmail?: string) => {
+    const workHistory = profile.experience?.previousRoles || [];
+    if (
+      profile.currentPosition &&
+      !workHistory.some((w: { current?: boolean }) => w.current)
+    ) {
+      workHistory.unshift({
+        id: crypto.randomUUID(),
+        company: profile.currentCompany || '',
+        position: profile.currentPosition || '',
+        startDate: new Date(),
+        current: true,
       });
     }
-  }, [userProfile, user]);
+
+    setFormData({
+      displayName: profile.displayName || '',
+      firstName: profile.firstName || '',
+      lastName: profile.lastName || '',
+      email: profile['email'] || fallbackEmail || '',
+      phoneNumber: profile.phoneNumber || '',
+      location: profile.location || '',
+      bio: profile.bio || '',
+      photoURL: profile.photoURL || '',
+      currentPosition: profile.currentPosition || '',
+      currentCompany: profile.currentCompany || '',
+      industry: profile.industry || '',
+      experience: profile.experience?.level || profile.experience || '',
+      skills: profile.skills || [],
+      workHistory,
+      educationHistory: profile.educationHistory || [],
+      certifications: profile.portfolio?.certifications || [],
+      languages: profile.languages || [],
+      projects: profile.portfolio?.projects || [],
+      unamEmail: profile.unamEmail || '',
+      graduationYear: profile.graduationYear || '',
+      program: profile.program || '',
+      studentId: profile.studentId || '',
+      linkedinUrl: profile.linkedinUrl || '',
+      githubUrl: profile.githubUrl || '',
+      portfolioUrl: profile.portfolioUrl || '',
+      twitterUrl: profile.twitterUrl || '',
+      profileVisible: profile?.privacySettings?.profileVisible ?? true,
+      contactVisible: profile?.privacySettings?.contactVisible ?? false,
+      jobSearching: profile?.privacySettings?.jobSearching ?? false,
+      mentorshipAvailable:
+        profile?.privacySettings?.mentorshipAvailable ?? false,
+      emailNotifications: profile?.notificationSettings?.email ?? true,
+      pushNotifications: profile?.notificationSettings?.push ?? false,
+      jobMatchNotifications: profile?.notificationSettings?.jobMatches ?? true,
+      eventNotifications: profile?.notificationSettings?.events ?? true,
+      forumNotifications: profile?.notificationSettings?.forums ?? false,
+    });
+
+    if (isAdmin) {
+      setAdminRole(profile.role || 'member');
+      setAdminVerificationStatus(profile.verificationStatus || 'none');
+      setAdminLifecycleStatus(profile.lifecycle?.status || 'active');
+    }
+  };
+
+  useEffect(() => {
+    if (targetUid) {
+      getMemberProfile(targetUid)
+        .then((profile) => {
+          if (profile) {
+            populateFormFromProfile(profile);
+          }
+        })
+        .catch((err) => {
+          console.error('Error loading target member profile:', err);
+          setError(
+            lang === 'es'
+              ? 'Error al cargar el perfil del miembro'
+              : 'Error loading member profile'
+          );
+        });
+    } else if (userProfile) {
+      populateFormFromProfile(userProfile, user?.email);
+    }
+  }, [targetUid, userProfile, user]);
 
   useEffect(() => {
     calculateCompleteness();
@@ -155,7 +186,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !user) return;
+    if (!file || !effectiveUid) return;
 
     if (!file.type.startsWith('image/')) {
       setError(
@@ -181,14 +212,17 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
     try {
       const photoRef = ref(
         storage,
-        `profiles/${user.uid}/${Date.now()}_${file.name}`
+        `profiles/${effectiveUid}/${Date.now()}_${file.name}`
       );
       const snapshot = await uploadBytes(photoRef, file);
       const photoURL = await getDownloadURL(snapshot.ref);
 
       setFormData((prev) => ({ ...prev, photoURL }));
 
-      await updateProfile(user, { photoURL });
+      // Only update Firebase Auth profile when editing own profile
+      if (!targetUid && user) {
+        await updateProfile(user, { photoURL });
+      }
 
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
@@ -203,7 +237,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
   };
 
   const handleSave = async () => {
-    if (!user) return;
+    if (!effectiveUid) return;
 
     setSaving(true);
     setError(null);
@@ -211,7 +245,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
     try {
       const currentWork = formData.workHistory.find((w) => w.current);
 
-      await updateDoc(doc(db, 'users', user.uid), {
+      await updateDoc(doc(db, 'users', effectiveUid), {
         displayName: formData.displayName,
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -268,13 +302,16 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
         profileCompleteness,
       });
 
-      await updateProfile(user, {
-        displayName: formData.displayName,
-        photoURL: formData.photoURL,
-      });
+      // Only update Firebase Auth profile when editing own profile
+      if (!targetUid && user) {
+        await updateProfile(user, {
+          displayName: formData.displayName,
+          photoURL: formData.photoURL,
+        });
 
-      if (formData.email !== user.email) {
-        await updateEmail(user, formData.email);
+        if (formData.email !== user.email) {
+          await updateEmail(user, formData.email);
+        }
       }
 
       setSuccess(true);
@@ -294,8 +331,51 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
     }
   };
 
+  const handleAdminSave = async () => {
+    if (!effectiveUid) return;
+
+    setSavingAdmin(true);
+    setError(null);
+
+    try {
+      await updateMemberProfile(effectiveUid, {
+        role: adminRole,
+        verificationStatus: adminVerificationStatus,
+        'lifecycle.status': adminLifecycleStatus,
+      } as any);
+
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (saveError: unknown) {
+      console.error('Error saving admin fields:', saveError);
+      const message =
+        saveError instanceof Error ? saveError.message : undefined;
+      setError(
+        message ||
+          (lang === 'es'
+            ? 'Error al guardar campos administrativos'
+            : 'Error saving admin fields')
+      );
+    } finally {
+      setSavingAdmin(false);
+    }
+  };
+
   return (
     <div>
+      {/* Back to Members (admin editing another member) */}
+      {targetUid && (
+        <div className="mb-4">
+          <a
+            href={`/${lang}/dashboard/admin/members`}
+            className="inline-flex items-center text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+          >
+            <ArrowLeftIcon className="mr-2 h-4 w-4" />
+            {lang === 'es' ? 'Volver a Miembros' : 'Back to Members'}
+          </a>
+        </div>
+      )}
+
       {/* Profile Completeness */}
       <div className="mb-6 rounded-lg bg-white p-6 shadow dark:bg-gray-800">
         <div className="mb-2 flex items-center justify-between">
@@ -462,6 +542,117 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({ lang = 'es' }) => {
           </div>
         )}
       </div>
+
+      {/* Admin Section */}
+      {isAdmin && (
+        <div className="mt-6 rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+          <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+            {lang === 'es' ? 'Administraci\u00f3n' : 'Administration'}
+          </h3>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            {/* Role */}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                {lang === 'es' ? 'Rol' : 'Role'}
+              </label>
+              <select
+                value={adminRole}
+                onChange={(e) => setAdminRole(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              >
+                <option value="member">
+                  {lang === 'es' ? 'Miembro' : 'Member'}
+                </option>
+                <option value="collaborator">
+                  {lang === 'es' ? 'Colaborador' : 'Collaborator'}
+                </option>
+                <option value="admin">
+                  {lang === 'es' ? 'Administrador' : 'Admin'}
+                </option>
+                <option value="moderator">
+                  {lang === 'es' ? 'Moderador' : 'Moderator'}
+                </option>
+              </select>
+            </div>
+
+            {/* Verification Status */}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                {lang === 'es'
+                  ? 'Estado de verificaci\u00f3n'
+                  : 'Verification status'}
+              </label>
+              <select
+                value={adminVerificationStatus}
+                onChange={(e) => setAdminVerificationStatus(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              >
+                <option value="none">
+                  {lang === 'es' ? 'Ninguno' : 'None'}
+                </option>
+                <option value="pending">
+                  {lang === 'es' ? 'Pendiente' : 'Pending'}
+                </option>
+                <option value="approved">
+                  {lang === 'es' ? 'Aprobado' : 'Approved'}
+                </option>
+                <option value="rejected">
+                  {lang === 'es' ? 'Rechazado' : 'Rejected'}
+                </option>
+              </select>
+            </div>
+
+            {/* Lifecycle Status */}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                {lang === 'es'
+                  ? 'Estado del ciclo de vida'
+                  : 'Lifecycle status'}
+              </label>
+              <select
+                value={adminLifecycleStatus}
+                onChange={(e) => setAdminLifecycleStatus(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              >
+                <option value="active">
+                  {lang === 'es' ? 'Activo' : 'Active'}
+                </option>
+                <option value="inactive">
+                  {lang === 'es' ? 'Inactivo' : 'Inactive'}
+                </option>
+                <option value="suspended">
+                  {lang === 'es' ? 'Suspendido' : 'Suspended'}
+                </option>
+                <option value="pending">
+                  {lang === 'es' ? 'Pendiente' : 'Pending'}
+                </option>
+                <option value="alumni">
+                  {lang === 'es' ? 'Egresado' : 'Alumni'}
+                </option>
+                <option value="deactivated">
+                  {lang === 'es' ? 'Desactivado' : 'Deactivated'}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div className="mt-4 flex justify-end">
+            <button
+              onClick={handleAdminSave}
+              disabled={savingAdmin}
+              className="inline-flex items-center rounded-lg bg-amber-600 px-6 py-3 font-medium text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {savingAdmin
+                ? lang === 'es'
+                  ? 'Guardando...'
+                  : 'Saving...'
+                : lang === 'es'
+                  ? 'Guardar campos admin'
+                  : 'Save admin fields'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
