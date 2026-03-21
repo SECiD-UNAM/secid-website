@@ -2,7 +2,11 @@
  * Member profile data mapping and mock data generation.
  */
 
-import type { MemberProfile } from '@/types/member';
+import type {
+  MemberProfile,
+  WorkExperience,
+  EducationEntry,
+} from '@/types/member';
 
 function slugify(text: string): string {
   return text
@@ -28,6 +32,65 @@ function mapExperienceLevel(
 ): 'junior' | 'mid' | 'senior' | 'lead' | 'executive' {
   if (!raw) return 'mid';
   return EXPERIENCE_LEVEL_MAP[raw] ?? 'mid';
+}
+
+const ACADEMIC_LEVEL_MAP: Record<string, string> = {
+  licenciatura: 'Licenciatura en Ciencia de Datos',
+  posgrado: 'Posgrado en Ciencia de Datos',
+  curso: 'Curso de Actualización en Ciencia de Datos',
+};
+
+/**
+ * Build a work history entry from registration data when the member
+ * has no manually entered roles. Returns undefined if insufficient data.
+ */
+function buildAutoWorkEntry(
+  data: Record<string, any>
+): WorkExperience | undefined {
+  const company = data.profile?.company || data.currentCompany;
+  if (!company) return undefined;
+
+  return {
+    id: 'auto-' + Date.now(),
+    company,
+    companyId: data.profile?.companyId || data.companyId || undefined,
+    position: data.profile?.position || data.currentPosition || '',
+    startDate: data.createdAt?.toDate?.() || data.createdAt || new Date(),
+    endDate: undefined,
+    current: true,
+    description: '',
+    technologies: [],
+    achievements: [],
+  };
+}
+
+/**
+ * Build an education entry from UNAM registration data when the member
+ * has no manually entered education. Returns undefined if insufficient data.
+ */
+function buildAutoEducationEntry(
+  data: Record<string, any>
+): EducationEntry | undefined {
+  if (!data.campus && !data.academicLevel) return undefined;
+
+  const generation = data.generation;
+  const graduationYear = data.profile?.graduationYear;
+
+  return {
+    id: 'auto-edu-' + Date.now(),
+    institution: 'Universidad Nacional Autónoma de México (UNAM)',
+    degree:
+      ACADEMIC_LEVEL_MAP[data.academicLevel] ||
+      data.academicLevel ||
+      'Ciencia de Datos',
+    fieldOfStudy: 'Ciencia de Datos',
+    startDate: generation ? new Date(parseInt(generation), 7, 1) : new Date(),
+    endDate: graduationYear ? new Date(graduationYear, 5, 1) : undefined,
+    current: !graduationYear,
+    campus: data.campus || '',
+    numeroCuenta: data.numeroCuenta || '',
+    generation: generation || '',
+  };
 }
 
 /**
@@ -76,13 +139,22 @@ export function mapUserDocToMemberProfile(
       degree: data.degree || 'Ciencia de Datos',
       specialization: data.specialization || '',
     },
-    experience: data.experience || {
-      years: 0,
-      level: mapExperienceLevel(data.registrationData?.experienceLevel),
-      currentRole: data.currentPosition || '',
-      previousRoles: [],
-      industries: [],
-    },
+    experience: (() => {
+      const base = data.experience || {
+        years: 0,
+        level: mapExperienceLevel(data.registrationData?.experienceLevel),
+        currentRole: data.currentPosition || '',
+        previousRoles: [] as WorkExperience[],
+        industries: [] as string[],
+      };
+      if (base.previousRoles.length === 0) {
+        const autoEntry = buildAutoWorkEntry(data);
+        if (autoEntry) {
+          return { ...base, previousRoles: [autoEntry] };
+        }
+      }
+      return base;
+    })(),
     social: data.social || {
       linkedin:
         data.profile?.linkedin ||
@@ -141,12 +213,24 @@ export function mapUserDocToMemberProfile(
       data.membershipTier === 'premium' ||
       data.membershipTier === 'corporate',
     professionalStatus: data.registrationData?.professionalStatus || undefined,
-    educationHistory: (data.educationHistory || []).map((e: any) => ({
-      ...e,
-      startDate: e.startDate?.toDate?.() || new Date(e.startDate || 0),
-      endDate:
-        e.endDate?.toDate?.() || (e.endDate ? new Date(e.endDate) : undefined),
-    })),
+    educationHistory: (() => {
+      const mapped: EducationEntry[] = (data.educationHistory || []).map(
+        (e: any) => ({
+          ...e,
+          startDate: e.startDate?.toDate?.() || new Date(e.startDate || 0),
+          endDate:
+            e.endDate?.toDate?.() ||
+            (e.endDate ? new Date(e.endDate) : undefined),
+        })
+      );
+      if (mapped.length === 0) {
+        const autoEntry = buildAutoEducationEntry(data);
+        if (autoEntry) {
+          mapped.push(autoEntry);
+        }
+      }
+      return mapped;
+    })(),
     cvVisibility: data.cvVisibility || 'members',
     languages: data.languages || [],
     settings: data.settings || {
