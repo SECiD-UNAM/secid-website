@@ -57,7 +57,11 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   const [followLoading, setFollowLoading] = useState(false);
 
   const isOwnProfile = currentUser?.uid === member.uid;
-  const visibility = getVisibleFields(member, currentUser?.uid);
+  const visibility = getVisibleFields(
+    member,
+    currentUser?.uid,
+    currentUser?.role
+  );
 
   useEffect(() => {
     if (!currentUser || isOwnProfile) return;

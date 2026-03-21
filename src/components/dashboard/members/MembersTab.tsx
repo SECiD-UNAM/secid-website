@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import type { MemberProfile } from '@/types/member';
 import { MemberFilters, filterMembers } from './MemberFilters';
 import type { FilterState } from './MemberFilters';
@@ -198,9 +199,10 @@ function SkillTags({ skills, max = 3 }: SkillTagsProps) {
 interface ExpandedRowProps {
   member: MemberProfile;
   lang: 'es' | 'en';
+  isAdmin?: boolean;
 }
 
-function ExpandedRow({ member, lang }: ExpandedRowProps) {
+function ExpandedRow({ member, lang, isAdmin }: ExpandedRowProps) {
   const t = labels[lang];
   const mentorshipLabel = getMentorshipLabel(
     member.networking.mentorshipStatus,
@@ -230,8 +232,8 @@ function ExpandedRow({ member, lang }: ExpandedRowProps) {
               </span>
             </div>
 
-            {/* Email — only if privacy allows */}
-            {member.privacy.showEmail && member.email && (
+            {/* Email — visible if privacy allows or viewer is admin */}
+            {(member.privacy.showEmail || isAdmin) && member.email && (
               <div>
                 <span className="font-medium text-gray-700 dark:text-gray-300">
                   {t.email}:
@@ -420,6 +422,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
   onFiltersChange,
   lang,
 }) => {
+  const { isAdmin } = useAuth();
   const t = labels[lang];
   const [sortColumn, setSortColumn] = useState<SortColumn>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
@@ -569,7 +572,13 @@ export const MembersTab: React.FC<MembersTabProps> = ({
                       </td>
                     </tr>
 
-                    {isExpanded && <ExpandedRow member={member} lang={lang} />}
+                    {isExpanded && (
+                      <ExpandedRow
+                        member={member}
+                        lang={lang}
+                        isAdmin={isAdmin}
+                      />
+                    )}
                   </React.Fragment>
                 );
               })}

@@ -101,9 +101,9 @@ export function mapUserDocToMemberProfile(
     },
     privacy: data.privacy || {
       profileVisibility:
-        data.privacySettings?.profileVisible !== false ? 'public' : 'private',
-      showEmail: data.privacySettings?.contactVisible || false,
-      showPhone: false,
+        data.privacySettings?.profileVisible !== false ? 'members' : 'private',
+      showEmail: data.privacySettings?.contactVisible !== false,
+      showPhone: true,
       showLocation: true,
       showCurrentCompany: true,
       showSalaryExpectations: false,

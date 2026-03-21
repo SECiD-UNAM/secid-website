@@ -49,13 +49,15 @@ export interface VisibleFields {
  */
 export function getVisibleFields(
   member: MemberProfile,
-  viewerUid?: string
+  viewerUid?: string,
+  viewerRole?: string
 ): VisibleFields {
   const privacy = member.privacy;
   const isOwn = viewerUid === member.uid;
+  const isAdminOrMod = viewerRole === 'admin' || viewerRole === 'moderator';
 
-  // Owner can always see everything
-  if (isOwn) {
+  // Owner or admin can always see everything
+  if (isOwn || isAdminOrMod) {
     return {
       canViewProfile: true,
       showEmail: true,
@@ -63,8 +65,8 @@ export function getVisibleFields(
       showCompany: true,
       showOnlineStatus: true,
       showLastSeen: true,
-      allowMessages: false,
-      allowConnectionRequests: false,
+      allowMessages: !isOwn,
+      allowConnectionRequests: !isOwn,
     };
   }
 
