@@ -141,6 +141,13 @@ export function mapUserDocToMemberProfile(
       data.membershipTier === 'premium' ||
       data.membershipTier === 'corporate',
     professionalStatus: data.registrationData?.professionalStatus || undefined,
+    educationHistory: (data.educationHistory || []).map((e: any) => ({
+      ...e,
+      startDate: e.startDate?.toDate?.() || new Date(e.startDate || 0),
+      endDate:
+        e.endDate?.toDate?.() || (e.endDate ? new Date(e.endDate) : undefined),
+    })),
+    languages: data.languages || [],
     settings: data.settings || {
       emailNotifications: data.notificationSettings?.email !== false,
       profileVisibility:
@@ -240,6 +247,8 @@ export const createMockMemberProfile = (index: number): MemberProfile => ({
     reputation: Math.floor(Math.random() * 1000),
     lastActive: new Date(),
   },
+  educationHistory: [],
+  languages: [],
   searchableKeywords: ['data', 'science', 'machine', 'learning'],
   featuredSkills: ['Python', 'SQL', 'Machine Learning'],
   isPremium: Math.random() > 0.8,

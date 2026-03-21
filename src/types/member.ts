@@ -50,6 +50,10 @@ export interface MemberProfile extends UserProfile {
     certifications: Certification[];
   };
 
+  // Education and languages
+  educationHistory: EducationEntry[];
+  languages: Language[];
+
   // Professional information
   experience: {
     years: number;
@@ -175,6 +179,27 @@ export interface WorkExperience {
   technologies?: string[];
   achievements?: string[];
   current: boolean;
+}
+
+export interface EducationEntry {
+  id: string;
+  institution: string;
+  degree: string;
+  fieldOfStudy?: string;
+  startDate: Date;
+  endDate?: Date;
+  current: boolean;
+  gpa?: number;
+  description?: string;
+  campus?: string;
+  numeroCuenta?: string;
+  generation?: string;
+}
+
+export interface Language {
+  id: string;
+  name: string;
+  proficiency: 'beginner' | 'intermediate' | 'advanced' | 'native';
 }
 
 export interface ConnectionRequest {
