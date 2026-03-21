@@ -4,6 +4,8 @@
  * as fallback), upload it to Firebase Storage, and update the company doc.
  */
 
+export const prerender = false;
+
 import type { APIRoute } from 'astro';
 import {
   verifyRequest,

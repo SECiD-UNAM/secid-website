@@ -5,6 +5,8 @@
  * Rate-limited to 5 creations per 24-hour window per user.
  */
 
+export const prerender = false;
+
 import type { APIRoute } from 'astro';
 import {
   verifyRequest,
