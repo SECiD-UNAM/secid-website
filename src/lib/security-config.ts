@@ -484,12 +484,7 @@ export function createSecurityManagerFromEnv(): SecurityManager {
 
   // Validate required secrets in production
   if (environment === 'production') {
-    const requiredSecrets = [
-      'sessionSecret',
-      'captchaSiteKey',
-      'captchaSecretKey',
-      'jwtSecret',
-    ];
+    const requiredSecrets = ['sessionSecret', 'jwtSecret'];
     const missingSecrets = requiredSecrets.filter(
       (key) => !secrets[key as keyof typeof secrets]
     );
