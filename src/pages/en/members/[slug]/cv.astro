@@ -9,6 +9,7 @@ import CvCertifications from '@/components/cv/CvCertifications.astro';
 import CvSkills from '@/components/cv/CvSkills.astro';
 import CvProjects from '@/components/cv/CvProjects.astro';
 import CvLanguages from '@/components/cv/CvLanguages.astro';
+import CvPdfDownloader from '@/components/cv/CvPdfDownloader';
 import { getMemberProfile } from '@/lib/members';
 import { transformProfileToCV } from '@/lib/cv/transform';
 
@@ -89,6 +90,7 @@ const cvData = !accessDenied ? transformProfileToCV(member, 'en') : null;
         {cvData.languages.length > 0 && (
           <CvLanguages languages={cvData.languages} lang="en" />
         )}
+        <CvPdfDownloader client:only="react" cvData={cvData} lang="en" />
       </CvLayout>
     )
   )
