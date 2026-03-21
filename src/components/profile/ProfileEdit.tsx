@@ -23,7 +23,7 @@ import { PortfolioTab } from './tabs/PortfolioTab';
 import { PrivacyTab } from './tabs/PrivacyTab';
 import { SecurityTab } from './tabs/SecurityTab';
 import type { TabId, ProfileEditProps } from './profile-edit-types';
-import { INITIAL_FORM_DATA, COMPLETENESS_FIELDS } from './profile-edit-types';
+import { INITIAL_FORM_DATA } from './profile-edit-types';
 import type { FormData } from './profile-edit-types';
 import { getMemberProfile, updateMemberProfile } from '@/lib/members';
 
@@ -169,19 +169,68 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
   }, [formData]);
 
   const calculateCompleteness = () => {
-    let completed = 0;
+    let score = 0;
+    const checks = [
+      { field: !!formData.firstName && !!formData.lastName, weight: 10 },
+      { field: !!formData.bio, weight: 10 },
+      { field: !!formData.photoURL, weight: 10 },
+      { field: (formData.workHistory || []).length > 0, weight: 15 },
+      { field: (formData.educationHistory || []).length > 0, weight: 10 },
+      { field: (formData.skills || []).length >= 3, weight: 10 },
+      { field: !!formData.linkedinUrl, weight: 5 },
+      { field: !!formData.currentPosition, weight: 5 },
+      { field: !!formData.currentCompany, weight: 5 },
+      { field: (formData.projects || []).length > 0, weight: 10 },
+      { field: (formData.languages || []).length > 0, weight: 5 },
+      { field: (formData.certifications || []).length > 0, weight: 5 },
+    ];
+    for (const check of checks) {
+      if (check.field) score += check.weight;
+    }
+    setProfileCompleteness(score);
+  };
 
-    COMPLETENESS_FIELDS.forEach((field) => {
-      if (formData[field as keyof FormData]) completed++;
-    });
+  const getCompletionHints = (): string[] => {
+    const hints: string[] = [];
 
-    if (formData.skills.length > 0) completed++;
-    if (formData.photoURL) completed++;
+    if (!formData.bio)
+      hints.push(lang === 'es' ? 'Agrega una biografía' : 'Add a bio');
+    if (!formData.photoURL)
+      hints.push(
+        lang === 'es' ? 'Sube una foto de perfil' : 'Upload a profile photo'
+      );
+    if ((formData.workHistory || []).length === 0)
+      hints.push(
+        lang === 'es'
+          ? 'Agrega tu experiencia laboral'
+          : 'Add your work experience'
+      );
+    if ((formData.educationHistory || []).length === 0)
+      hints.push(
+        lang === 'es'
+          ? 'Agrega tu historial educativo'
+          : 'Add your education history'
+      );
+    if ((formData.skills || []).length === 0)
+      hints.push(lang === 'es' ? 'Agrega tus habilidades' : 'Add your skills');
+    if (!formData.linkedinUrl)
+      hints.push(lang === 'es' ? 'Agrega tu LinkedIn' : 'Add your LinkedIn');
+    if ((formData.projects || []).length === 0)
+      hints.push(
+        lang === 'es'
+          ? 'Agrega un proyecto a tu portafolio'
+          : 'Add a project to your portfolio'
+      );
+    if ((formData.languages || []).length === 0)
+      hints.push(
+        lang === 'es' ? 'Agrega los idiomas que hablas' : 'Add your languages'
+      );
+    if ((formData.certifications || []).length === 0)
+      hints.push(
+        lang === 'es' ? 'Agrega tus certificaciones' : 'Add your certifications'
+      );
 
-    const percentage = Math.round(
-      (completed / (COMPLETENESS_FIELDS.length + 2)) * 100
-    );
-    setProfileCompleteness(percentage);
+    return hints.slice(0, 3);
   };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -377,27 +426,38 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
       )}
 
       {/* Profile Completeness */}
-      <div className="mb-6 rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
         <div className="mb-2 flex items-center justify-between">
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {lang === 'es' ? 'Perfil completado' : 'Profile completeness'}
-          </span>
-          <span className="text-sm font-medium text-gray-900 dark:text-white">
-            {profileCompleteness}%
+            {lang === 'es' ? 'Perfil' : 'Profile'} {profileCompleteness}%{' '}
+            {lang === 'es' ? 'completo' : 'complete'}
           </span>
         </div>
-        <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+        <div className="h-2.5 w-full rounded-full bg-gray-200 dark:bg-gray-700">
           <div
-            className="h-2 rounded-full bg-primary-600 transition-all duration-300"
+            className={`h-2.5 rounded-full transition-all duration-500 ${
+              profileCompleteness >= 80
+                ? 'bg-green-500'
+                : profileCompleteness >= 60
+                  ? 'bg-yellow-500'
+                  : profileCompleteness >= 30
+                    ? 'bg-orange-500'
+                    : 'bg-red-500'
+            }`}
             style={{ width: `${profileCompleteness}%` }}
-          ></div>
+          />
         </div>
-        {profileCompleteness < 100 && (
-          <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
-            {lang === 'es'
-              ? 'Completa tu perfil para mejores oportunidades'
-              : 'Complete your profile for better opportunities'}
-          </p>
+        {getCompletionHints().length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {getCompletionHints().map((hint, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center rounded-full bg-primary-50 px-3 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/20 dark:text-primary-400"
+              >
+                + {hint}
+              </span>
+            ))}
+          </div>
         )}
       </div>
 
