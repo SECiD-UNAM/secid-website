@@ -7,6 +7,7 @@ import type {
   EducationEntry,
   Certification,
   Language,
+  ProjectShowcase,
 } from '@/types/member';
 
 export interface FormData {
@@ -40,6 +41,9 @@ export interface FormData {
   educationHistory: EducationEntry[];
   certifications: Certification[];
   languages: Language[];
+
+  // Portfolio
+  projects: ProjectShowcase[];
 
   // Social Links
   linkedinUrl: string;
@@ -92,6 +96,7 @@ export const INITIAL_FORM_DATA: FormData = {
   educationHistory: [],
   certifications: [],
   languages: [],
+  projects: [],
   unamEmail: '',
   graduationYear: '',
   program: '',
