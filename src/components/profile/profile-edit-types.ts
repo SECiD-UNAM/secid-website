@@ -2,6 +2,8 @@
  * Shared types and constants for ProfileEdit sub-components.
  */
 
+import type { WorkExperience } from '@/types/member';
+
 export interface FormData {
   // Personal Information
   displayName: string;
@@ -19,6 +21,9 @@ export interface FormData {
   industry: string;
   experience: string;
   skills: string[];
+
+  // Work History
+  workHistory: WorkExperience[];
 
   // Education
   unamEmail: string;
@@ -48,7 +53,7 @@ export interface FormData {
 
 export type TabId =
   | 'personal'
-  | 'professional'
+  | 'career'
   | 'education'
   | 'privacy'
   | 'security';
@@ -73,6 +78,7 @@ export const INITIAL_FORM_DATA: FormData = {
   industry: '',
   experience: '',
   skills: [],
+  workHistory: [],
   unamEmail: '',
   graduationYear: '',
   program: '',
