@@ -1,0 +1,95 @@
+---
+export const prerender = false;
+
+import CvLayout from '@/components/cv/CvLayout.astro';
+import CvAbout from '@/components/cv/CvAbout.astro';
+import CvExperience from '@/components/cv/CvExperience.astro';
+import CvEducation from '@/components/cv/CvEducation.astro';
+import CvCertifications from '@/components/cv/CvCertifications.astro';
+import CvSkills from '@/components/cv/CvSkills.astro';
+import CvProjects from '@/components/cv/CvProjects.astro';
+import CvLanguages from '@/components/cv/CvLanguages.astro';
+import { getMemberProfile } from '@/lib/members';
+import { transformProfileToCV } from '@/lib/cv/transform';
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect('/es/members');
+}
+
+const member = await getMemberProfile(slug);
+
+if (!member) {
+  return Astro.redirect('/es/members');
+}
+
+// Privacy check
+const cvVisibility = member.cvVisibility || 'members';
+const sessionCookie = Astro.cookies.get('session')?.value;
+const isAuthenticated = !!sessionCookie;
+
+let accessDenied = false;
+let accessMessage = '';
+
+if (cvVisibility === 'private') {
+  accessDenied = true;
+  accessMessage = 'Este CV no esta disponible publicamente.';
+} else if (cvVisibility === 'members' && !isAuthenticated) {
+  accessDenied = true;
+  accessMessage = 'Inicia sesion para ver este CV.';
+}
+
+const cvData = !accessDenied ? transformProfileToCV(member, 'es') : null;
+---
+
+{
+  accessDenied ? (
+    <CvLayout title="CV No Disponible" lang="es">
+      <div class="flex min-h-[60vh] items-center justify-center">
+        <div class="text-center">
+          <h2 class="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
+            {accessMessage}
+          </h2>
+          <a
+            href="/es/login"
+            class="text-primary-600 hover:underline dark:text-primary-400"
+          >
+            Iniciar Sesion
+          </a>
+          <span class="mx-2 text-gray-400">|</span>
+          <a
+            href="/es/members"
+            class="text-primary-600 hover:underline dark:text-primary-400"
+          >
+            Directorio de Miembros
+          </a>
+        </div>
+      </div>
+    </CvLayout>
+  ) : (
+    cvData && (
+      <CvLayout title={`CV - ${member.displayName}`} lang="es">
+        <CvAbout personal={cvData.personal} />
+        {cvData.experience.length > 0 && (
+          <CvExperience experience={cvData.experience} lang="es" />
+        )}
+        {cvData.education.length > 0 && (
+          <CvEducation education={cvData.education} lang="es" />
+        )}
+        {cvData.certifications.length > 0 && (
+          <CvCertifications certifications={cvData.certifications} lang="es" />
+        )}
+        {cvData.skills.length > 0 && (
+          <CvSkills skills={cvData.skills} lang="es" />
+        )}
+        {cvData.projects.length > 0 && (
+          <CvProjects projects={cvData.projects} lang="es" />
+        )}
+        {cvData.languages.length > 0 && (
+          <CvLanguages languages={cvData.languages} lang="es" />
+        )}
+      </CvLayout>
+    )
+  )
+}
