@@ -11,6 +11,7 @@ import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 export type SortColumn =
   | 'name'
+  | 'email'
   | 'company'
   | 'campus'
   | 'generation'
@@ -90,6 +91,8 @@ function getStringValue(m: MemberProfile, column: SortColumn): string {
   switch (column) {
     case 'name':
       return m.displayName.toLowerCase();
+    case 'email':
+      return (m.email ?? '').toLowerCase();
     case 'company':
       return (m.profile.company ?? '').toLowerCase();
     case 'campus':
@@ -485,6 +488,13 @@ export const MembersTab: React.FC<MembersTabProps> = ({
                   onSort={handleSort}
                 />
                 <SortableHeader
+                  label={t.email}
+                  column="email"
+                  activeColumn={sortColumn}
+                  direction={sortDirection}
+                  onSort={handleSort}
+                />
+                <SortableHeader
                   label={t.company}
                   column="company"
                   activeColumn={sortColumn}
@@ -544,6 +554,13 @@ export const MembersTab: React.FC<MembersTabProps> = ({
                       {/* Name */}
                       <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
                         {member.displayName}
+                      </td>
+
+                      {/* Email */}
+                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
+                        {(member.privacy.showEmail || isAdmin) && member.email
+                          ? member.email
+                          : '—'}
                       </td>
 
                       {/* Company */}
