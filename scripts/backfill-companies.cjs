@@ -122,6 +122,26 @@ const COMPANY_MAP = {
     industry: 'Entretenimiento',
     location: 'Global',
   },
+  INFOMEDIA: {
+    domain: 'infomedia.com.mx',
+    industry: 'Tecnología',
+    location: 'Ciudad de México',
+  },
+  Zendesk: {
+    domain: 'zendesk.com',
+    industry: 'Tecnología',
+    location: 'Global',
+  },
+  'SAS INSTITUTE': {
+    domain: 'sas.com',
+    industry: 'Tecnología',
+    location: 'Global',
+  },
+  UNAM: {
+    domain: 'unam.mx',
+    industry: 'Educación',
+    location: 'Ciudad de México',
+  },
 };
 
 // --- Parse args ---
