@@ -36,8 +36,15 @@ export async function updateCompany(
   companyId: string,
   input: CompanyUpdateInput
 ): Promise<void> {
+  // Filter out undefined values — Firestore rejects them
+  const cleaned: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(input)) {
+    if (value !== undefined) {
+      cleaned[key] = value;
+    }
+  }
   await updateDoc(doc(db, COLLECTION, companyId), {
-    ...input,
+    ...cleaned,
     updatedAt: serverTimestamp(),
   });
 }
