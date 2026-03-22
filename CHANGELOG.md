@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Merge mutations library**: Added `src/lib/merge/mutations.ts` with client-side Firestore operations for the profile merge flow: `checkNumeroCuentaMatch()` for O(1) conflict detection against the `numero_cuenta_index` collection, `setPotentialMergeMatch()` to embed merge prompts in user profiles, `dismissMergeMatch()` to suppress the merge banner, `hasPendingMergeRequest()` to prevent duplicates, `createMergeRequest()` to submit a merge with field selections, and `fetchUserProfile()` for loading profiles into the comparison UI. All functions short-circuit on `isUsingMockAPI()`. 4 unit tests in `tests/unit/lib/merge/mutations.test.ts`.
+
 - **Merge field group mapping**: Added `src/lib/merge/field-groups.ts` with `FIELD_GROUPS` constant mapping all 9 `FieldGroupKey` values to their Firestore document paths, `getFieldsForGroup()` accessor, and `applyFieldSelections()` which builds a Firestore update payload from a `FieldSelections` record using dot-notation keys for nested fields. Used by both the comparison UI and the merge engine. 5 unit tests in `tests/unit/lib/merge/field-groups.test.ts`.
 
 - **Profile merge type system**: Added `src/types/merge.ts` with all domain types for the profile merge flow (`MergeRequest`, `FieldSelections`, `FieldGroupKey`, `MergeRequestStatus`, `OldDocAction`, `PotentialMergeMatch`, `NumeroCuentaIndex`, `NumeroCuentaConflict`). Extended `UserProfile` with optional `potentialMergeMatch` and `numeroCuentaConflict` fields for in-profile merge state tracking. All types exported from the `src/types/` barrel.
