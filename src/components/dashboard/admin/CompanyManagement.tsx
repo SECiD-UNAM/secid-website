@@ -25,6 +25,7 @@ import {
   ArrowPathIcon,
   BuildingOffice2Icon,
   MagnifyingGlassIcon,
+  Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 
 /* ------------------------------------------------------------------ */
@@ -84,6 +85,12 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [showTokenSettings, setShowTokenSettings] = useState(false);
+  const [logoDevToken, setLogoDevToken] = useState(() =>
+    typeof window !== 'undefined'
+      ? localStorage.getItem('logoDevApiToken') || ''
+      : ''
+  );
   const [fetchingLogo, setFetchingLogo] = useState(false);
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
 
@@ -161,32 +168,53 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
     }
   }
 
-  /* ---- fetch logo from API ---- */
+  /* ---- fetch logo client-side (Logo.dev or Google favicon) ---- */
 
   async function handleFetchLogo() {
-    if (!formData.domain.trim()) return;
-
-    // Fetch logo is only available when editing an existing company
-    if (!editingCompany) return;
+    const domain = formData.domain.trim();
+    if (!domain) return;
 
     setFetchingLogo(true);
     try {
-      const response = await fetch('/api/companies/fetch-logo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          domain: formData.domain.trim(),
-          companyId: editingCompany.id,
-        }),
-      });
+      // Try Logo.dev first if token is configured
+      const storedToken = localStorage.getItem('logoDevApiToken');
+      let logoBlob: Blob | null = null;
 
-      if (!response.ok) {
-        const errorBody = await response.json();
-        throw new Error(errorBody.error || 'Failed to fetch logo');
+      if (storedToken) {
+        try {
+          const logoDevUrl = `https://img.logo.dev/${domain}?token=${storedToken}&format=png&size=200`;
+          const resp = await fetch(logoDevUrl);
+          if (resp.ok) {
+            logoBlob = await resp.blob();
+          }
+        } catch {
+          // Logo.dev failed, fall back to favicon
+        }
       }
 
-      const data = await response.json();
-      setLogoPreview(data.logoUrl);
+      // Fallback: Google Favicon API
+      if (!logoBlob) {
+        const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+        const resp = await fetch(faviconUrl);
+        if (resp.ok) {
+          logoBlob = await resp.blob();
+        }
+      }
+
+      if (!logoBlob) throw new Error('Could not fetch logo');
+
+      // If editing existing company, upload immediately
+      if (editingCompany) {
+        const file = new File([logoBlob], `logo.png`, { type: 'image/png' });
+        const logoUrl = await uploadCompanyLogo(editingCompany.id, file);
+        await updateCompany(editingCompany.id, { logoUrl });
+        setLogoPreview(logoUrl);
+      } else {
+        // For new companies, store the blob as a file for upload on save
+        const file = new File([logoBlob], `logo.png`, { type: 'image/png' });
+        setLogoFile(file);
+        setLogoPreview(URL.createObjectURL(logoBlob));
+      }
       setLogoFile(null);
     } catch (err) {
       console.error('Error fetching logo:', err);
@@ -364,14 +392,61 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
           />
         </div>
 
-        <button
-          onClick={openAddModal}
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-        >
-          <PlusIcon className="h-4 w-4" />
-          {t(lang, 'Agregar empresa', 'Add Company')}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowTokenSettings(!showTokenSettings)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+            title={t(
+              lang,
+              'Configurar Logo.dev API token',
+              'Configure Logo.dev API token'
+            )}
+          >
+            <Cog6ToothIcon className="h-4 w-4" />
+          </button>
+          <button
+            onClick={openAddModal}
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+          >
+            <PlusIcon className="h-4 w-4" />
+            {t(lang, 'Agregar empresa', 'Add Company')}
+          </button>
+        </div>
       </div>
+
+      {/* Logo.dev Token Settings */}
+      {showTokenSettings && (
+        <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
+          <h3 className="mb-2 text-sm font-medium text-blue-900 dark:text-blue-200">
+            Logo.dev API Token
+          </h3>
+          <p className="mb-3 text-xs text-blue-700 dark:text-blue-300">
+            {t(
+              lang,
+              'Configura tu token de Logo.dev para obtener logos de alta calidad. Sin token, se usará Google Favicon (baja calidad). Obtén uno gratis en logo.dev',
+              'Set your Logo.dev token for high-quality logos. Without it, Google Favicon (low quality) is used. Get one free at logo.dev'
+            )}
+          </p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={logoDevToken}
+              onChange={(e) => setLogoDevToken(e.target.value)}
+              placeholder="pk_..."
+              className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            />
+            <button
+              onClick={() => {
+                localStorage.setItem('logoDevApiToken', logoDevToken);
+                setShowTokenSettings(false);
+              }}
+              className="shrink-0 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              {t(lang, 'Guardar', 'Save')}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Company table */}
       {displayedCompanies.length === 0 ? (
@@ -493,7 +568,7 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
           logoPreview={logoPreview}
           fetchingLogo={fetchingLogo}
           saving={saving}
-          canFetchLogo={editingCompany !== null}
+          canFetchLogo={true}
           onChange={handleFormChange}
           onLogoFileChange={handleLogoFileChange}
           onFetchLogo={handleFetchLogo}
