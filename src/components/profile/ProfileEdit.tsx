@@ -25,7 +25,7 @@ import type { TabId, ProfileEditProps } from './profile-edit-types';
 import { INITIAL_FORM_DATA } from './profile-edit-types';
 import type { FormData } from './profile-edit-types';
 import { getMemberProfile, updateMemberProfile } from '@/lib/members';
-import { getCompanies, createCompany } from '@/lib/companies';
+import { getCompanies } from '@/lib/companies';
 import { OnboardingWizard } from './OnboardingWizard';
 
 const TAB_DEFINITIONS: {
@@ -409,24 +409,24 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
           if (existing) {
             entry.companyId = existing.id;
           } else {
-            // Create with pendingReview: true — admin will review later
-            const domain = nameLC.replace(/[^a-z0-9]+/g, '') + '.com';
-            const newId = await createCompany(
-              { name: entry.company, domain },
-              effectiveUid
-            );
-            entry.companyId = newId;
-            allCompanies.push({
-              id: newId,
-              name: entry.company,
-              domain,
-              slug: '',
-              memberCount: 0,
-              createdBy: effectiveUid,
-              createdAt: new Date(),
-              updatedAt: new Date(),
-              pendingReview: true,
-            });
+            // Create via API route (handles auth + rules server-side)
+            try {
+              const domain = nameLC.replace(/[^a-z0-9]+/g, '') + '.com';
+              const resp = await fetch('/api/companies', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ name: entry.company, domain }),
+              });
+              if (resp.ok) {
+                const data = (await resp.json()) as { companyId: string };
+                entry.companyId = data.companyId;
+              } else {
+                console.warn('Auto-create company failed:', await resp.text());
+              }
+            } catch (err) {
+              console.warn('Auto-create company error:', err);
+            }
           }
         }
       }
