@@ -350,12 +350,22 @@ const langPathRegex = /^\/(es|en)/;
           <i class="fas fa-moon" data-theme-icon="dark"></i>
         </button>
       </div>
-      <AuthNavButtons
-        client:only="react"
-        lang={lang}
-        loginLabel={t.nav.login}
-        registerLabel={t.nav.register}
-      />
+      <!-- Auth buttons (React) with static fallback -->
+      <div class="secid-navbar__mobile-auth">
+        <AuthNavButtons
+          client:only="react"
+          lang={lang}
+          loginLabel={t.nav.login}
+          registerLabel={t.nav.register}
+        />
+      </div>
+      <!-- Static fallback shown before React loads -->
+      <noscript>
+        <div class="secid-navbar__mobile-auth-fallback">
+          <a href={`/${lang}/login`} class="secid-button secid-button--outline secid-button--sm">{t.nav.login}</a>
+          <a href={`/${lang}/signup`} class="secid-button secid-button--primary secid-button--sm">{t.nav.register}</a>
+        </div>
+      </noscript>
     </div>
   </div>
 </nav>
