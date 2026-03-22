@@ -29,9 +29,16 @@ export async function createCompany(
   input: CompanyCreateInput,
   createdBy: string
 ): Promise<string> {
+  // Filter out undefined values — Firestore rejects them
+  const cleaned: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(input)) {
+    if (value !== undefined) {
+      cleaned[key] = value;
+    }
+  }
   const docRef = doc(collection(db, COLLECTION));
   await setDoc(docRef, {
-    ...input,
+    ...cleaned,
     slug: slugify(input.name),
     memberCount: 0,
     createdBy,
