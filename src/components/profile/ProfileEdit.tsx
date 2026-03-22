@@ -85,8 +85,11 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   const populateFormFromProfile = (profile: any, fallbackEmail?: string) => {
+    const rd = profile.registrationData || {};
+    const sm = rd.socialMedia || {};
+
+    // --- Auto-populate work history ---
     const workHistory = profile.experience?.previousRoles || [];
-    // Auto-create current work entry from profile data if no work history exists
     if (
       workHistory.length === 0 &&
       (profile.profile?.company ||
@@ -96,7 +99,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
       workHistory.unshift({
         id: 'auto-' + Date.now(),
         company: profile.profile?.company || profile.currentCompany || '',
-        companyId: profile.profile?.companyId || undefined,
+        companyId: profile.profile?.companyId || null,
         position: profile.profile?.position || profile.currentPosition || '',
         startDate: profile.createdAt?.toDate?.() || new Date(),
         current: true,
@@ -106,11 +109,47 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
       !workHistory.some((w: { current?: boolean }) => w.current)
     ) {
       workHistory.unshift({
-        id: crypto.randomUUID(),
+        id: 'auto-' + Date.now(),
         company: profile.currentCompany || '',
         position: profile.currentPosition || '',
         startDate: new Date(),
         current: true,
+      });
+    }
+
+    // --- Auto-populate education history ---
+    const educationHistory = profile.educationHistory || [];
+    if (
+      educationHistory.length === 0 &&
+      (profile.campus || profile.academicLevel || rd.maxDegreeInstitution)
+    ) {
+      const academicLevelMap: Record<string, string> = {
+        licenciatura: 'Licenciatura en Ciencia de Datos',
+        posgrado: 'Posgrado en Ciencia de Datos',
+        curso: 'Curso de Actualización en Ciencia de Datos',
+      };
+      educationHistory.push({
+        id: 'auto-edu-' + Date.now(),
+        institution:
+          rd.maxDegreeInstitution ||
+          'Universidad Nacional Autónoma de México (UNAM)',
+        degree:
+          rd.maxDegreeProgram ||
+          academicLevelMap[profile.academicLevel] ||
+          rd.maxDegree ||
+          'Ciencia de Datos',
+        fieldOfStudy: 'Ciencia de Datos',
+        startDate: profile.generation
+          ? new Date(parseInt(profile.generation), 7, 1)
+          : new Date(),
+        endDate: profile.profile?.graduationYear
+          ? new Date(profile.profile.graduationYear, 5, 1)
+          : undefined,
+        current:
+          rd.currentlyStudying === 'Sí' || !profile.profile?.graduationYear,
+        campus: profile.campus || '',
+        numeroCuenta: profile.numeroCuenta || '',
+        generation: profile.generation || '',
       });
     }
 
@@ -119,30 +158,32 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
       firstName: profile.firstName || '',
       lastName: profile.lastName || '',
       email: profile['email'] || fallbackEmail || '',
-      phoneNumber: profile.phoneNumber || '',
+      phoneNumber: profile.phoneNumber || rd.phone || '',
       location: profile.location || '',
       bio: profile.bio || '',
       photoURL: profile.photoURL || '',
-      currentPosition: profile.currentPosition || '',
-      currentCompany: profile.currentCompany || '',
+      currentPosition:
+        profile.currentPosition || profile.profile?.position || '',
+      currentCompany: profile.currentCompany || profile.profile?.company || '',
       industry: profile.industry || '',
       experience: profile.experience?.level || profile.experience || '',
-      skills: profile.skills || [],
+      skills: profile.skills || profile.profile?.skills || [],
       workHistory,
-      educationHistory: profile.educationHistory || [],
+      educationHistory,
       certifications: profile.portfolio?.certifications || [],
       languages: profile.languages || [],
       projects: profile.portfolio?.projects || [],
       unamEmail: profile.unamEmail || '',
-      graduationYear: profile.graduationYear || '',
-      program: profile.program || '',
-      studentId: profile.studentId || '',
-      linkedinUrl: profile.linkedinUrl || '',
-      githubUrl: profile.githubUrl || '',
+      graduationYear: profile.graduationYear || profile.generation || '',
+      program: profile.program || profile.academicLevel || '',
+      studentId: profile.studentId || profile.numeroCuenta || '',
+      linkedinUrl:
+        profile.linkedinUrl || profile.profile?.linkedin || sm.linkedin || '',
+      githubUrl: profile.githubUrl || sm.github || '',
       portfolioUrl: profile.portfolioUrl || '',
-      twitterUrl: profile.twitterUrl || '',
+      twitterUrl: profile.twitterUrl || sm.twitter || '',
       profileVisible: profile?.privacySettings?.profileVisible ?? true,
-      contactVisible: profile?.privacySettings?.contactVisible ?? false,
+      contactVisible: profile?.privacySettings?.contactVisible ?? true,
       jobSearching: profile?.privacySettings?.jobSearching ?? false,
       mentorshipAvailable:
         profile?.privacySettings?.mentorshipAvailable ?? false,
@@ -328,7 +369,8 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
     try {
       const currentWork = formData.workHistory.find((w) => w.current);
 
-      await updateDoc(doc(db, 'users', effectiveUid), {
+      // Build update object — filter out undefined values (Firestore rejects them)
+      const updates: Record<string, any> = {
         displayName: formData.displayName,
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -342,7 +384,6 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
         currentCompany: currentWork?.company || formData.currentCompany || '',
         'profile.company':
           currentWork?.company || formData.currentCompany || '',
-        'profile.companyId': currentWork?.companyId || undefined,
         'profile.position':
           currentWork?.position || formData.currentPosition || '',
         'experience.previousRoles': formData.workHistory,
@@ -383,7 +424,21 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
         },
         updatedAt: serverTimestamp(),
         profileCompleteness,
-      });
+      };
+
+      // Only set companyId if it has a value (Firestore rejects undefined)
+      if (currentWork?.companyId) {
+        updates['profile.companyId'] = currentWork.companyId;
+      }
+
+      // Remove any remaining undefined values
+      for (const key of Object.keys(updates)) {
+        if (updates[key] === undefined) {
+          delete updates[key];
+        }
+      }
+
+      await updateDoc(doc(db, 'users', effectiveUid), updates);
 
       // Only update Firebase Auth profile when editing own profile
       if (!targetUid && user) {
