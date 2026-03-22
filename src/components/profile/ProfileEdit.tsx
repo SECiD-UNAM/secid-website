@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { doc, updateDoc, serverTimestamp, deleteField } from 'firebase/firestore';
@@ -214,6 +213,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
       jobSearching: profile?.privacySettings?.jobSearching ?? false,
       mentorshipAvailable:
         profile?.privacySettings?.mentorshipAvailable ?? false,
+      cvVisibility: profile?.privacySettings?.cvVisibility ?? 'members',
       emailNotifications: profile?.notificationSettings?.email ?? true,
       pushNotifications: profile?.notificationSettings?.push ?? false,
       jobMatchNotifications: profile?.notificationSettings?.jobMatches ?? true,
@@ -246,7 +246,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
           );
         });
     } else if (userProfile) {
-      populateFormFromProfile(userProfile, user?.email);
+      populateFormFromProfile(userProfile, user?.email ?? undefined);
       if (!userProfile.onboardingCompleted) {
         setShowOnboarding(true);
       }

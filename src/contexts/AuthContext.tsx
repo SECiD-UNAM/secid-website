@@ -38,6 +38,7 @@ export interface UserProfile {
   portfolioUrl?: string;
   profileCompleteness?: number;
   photoURL?: string;
+  onboardingCompleted?: boolean;
   createdAt?: any;
   updatedAt?: any;
   // Profile merge detection
