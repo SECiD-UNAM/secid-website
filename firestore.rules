@@ -127,9 +127,9 @@ service cloud.firestore {
       }
     }
 
-    // Companies collection
+    // Companies collection (public read for logo display)
     match /companies/{companyId} {
-      allow read: if isAuthenticated();
+      allow read: if true;
 
       allow create: if isAuthenticated() &&
         isVerified() &&
