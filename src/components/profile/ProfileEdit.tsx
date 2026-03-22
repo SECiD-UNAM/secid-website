@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, updateDoc, serverTimestamp, deleteField } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { updateProfile, updateEmail } from 'firebase/auth';
 import { db, storage } from '@/lib/firebase';
@@ -187,6 +187,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
       location: profile.location || '',
       bio: profile.bio || '',
       photoURL: profile.photoURL || '',
+      slug: profile.slug || '',
       currentPosition:
         profile.currentPosition || profile.profile?.position || '',
       currentCompany: profile.currentCompany || profile.profile?.company || '',
@@ -404,6 +405,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
         location: formData.location,
         bio: formData.bio,
         photoURL: formData.photoURL,
+        slug: formData.slug || deleteField(),
         // Career data — derive top-level fields from work history
         currentPosition:
           currentWork?.position || formData.currentPosition || '',
