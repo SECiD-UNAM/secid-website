@@ -88,12 +88,29 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
     any
   > | null>(null);
 
+  // Convert Firestore Timestamps ({_seconds, _nanoseconds}) or ISO strings to JS Dates
+  const toDate = (val: any): Date | undefined => {
+    if (!val) return undefined;
+    if (val instanceof Date) return val;
+    if (val.toDate) return val.toDate(); // Firestore Timestamp
+    if (val._seconds) return new Date(val._seconds * 1000); // raw Timestamp object
+    if (typeof val === 'string' || typeof val === 'number')
+      return new Date(val);
+    return undefined;
+  };
+
   const populateFormFromProfile = (profile: any, fallbackEmail?: string) => {
     const rd = profile.registrationData || {};
     const sm = rd.socialMedia || {};
 
     // --- Auto-populate work history ---
-    const workHistory = profile.experience?.previousRoles || [];
+    const workHistory = (profile.experience?.previousRoles || []).map(
+      (w: any) => ({
+        ...w,
+        startDate: toDate(w.startDate) || new Date(),
+        endDate: toDate(w.endDate),
+      })
+    );
     if (
       workHistory.length === 0 &&
       (profile.profile?.company ||
@@ -122,7 +139,11 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
     }
 
     // --- Auto-populate education history ---
-    const educationHistory = profile.educationHistory || [];
+    const educationHistory = (profile.educationHistory || []).map((e: any) => ({
+      ...e,
+      startDate: toDate(e.startDate) || new Date(),
+      endDate: toDate(e.endDate),
+    }));
     if (
       educationHistory.length === 0 &&
       (profile.campus || profile.academicLevel || rd.maxDegreeInstitution)
