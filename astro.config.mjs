@@ -11,7 +11,7 @@ export default defineConfig({
   base: process.env.NODE_ENV === 'production' ? '' : '/',
 
   // Static by default, server-rendered for routes with `export const prerender = false`
-  output: 'hybrid',
+  output: 'static',
   adapter: node({
     mode: 'standalone',
   }),
