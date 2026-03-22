@@ -1,127 +1,118 @@
-# Handoff: Full Session — Statistics, Companies, Profile Editor, Admin Management
+# Handoff: Full Session — 9 Features Built
 
 **Created:** 2026-03-21
 **Project:** /Users/artemiopadilla/Documents/repos/GitHub/secid/secid-website
 **Branch:** `feature/hub`
-**Supersedes:** `.claude/handoffs/2026-03-21-member-statistics-and-companies.md`
 
 ---
 
 ## Session Summary
 
-This session built 5 major features + ran the companies backfill:
+### Features Built (9)
 
-### 1. Member Statistics Views (Complete, Deployed)
+1. **Member Statistics Views** — 3-tab dashboard + public showcase (69 tests)
+2. **Companies Collection** — Firestore + Storage + admin UI + Cloud Function + backfill (24 companies, 28 members linked)
+3. **Enhanced Profile Editor** — 6 tabs, work history, education, certs, languages, portfolio (38 tests)
+4. **Admin Member Management** — inline editing, bulk actions, edit any member's profile
+5. **Member CV Pages** — auto-generated from profile, 3 PDF formats, privacy control (53 tests)
+6. **Pre-fill profiles from registration data** — auto-create work history + education entries (16 tests)
+7. **Profile completeness progress bar** — weighted scoring with actionable hints
+8. **LinkedIn text import** — paste LinkedIn experience text, parse into work history entries (12 tests)
+9. **Guided onboarding wizard** — 5-step flow for new members
 
-- Public `/es/members`: MemberShowcase (company grid + count)
-- Dashboard `/es/dashboard/members/`: MemberDashboard with 3 tabs (Overview, Members, Insights)
-- 69 tests
+### Infrastructure Fixes
 
-### 2. Companies Collection (Complete, Backfilled)
-
-- `companies` Firestore collection with 24 companies
-- CompanyLogo shared component, admin UI at `/es/dashboard/admin/companies`
-- API routes: `POST /api/companies` (member creation), `POST /api/companies/fetch-logo` (admin)
-- Cloud Function: `onMemberCompanyChange` for memberCount sync
-- Backfill executed: 24 companies, 28 members linked, 0 unmatched
-
-### 3. Enhanced Profile Editor (Complete, Deployed)
-
-- 6 tabs: Personal, Career, Education, Portfolio, Privacy, Security
-- ProfileEdit.tsx: 1,391 → 469 lines (split into 6 tab + 4 shared components)
-- Career tab: work history with company autocomplete + inline company creation
-- Education tab: education history + certifications + languages
-- Portfolio tab: project showcases
-- 38 tests (shared form components)
-
-### 4. Admin Member Management (Complete, Deployed)
-
-- AdminMembersTable at `/es/dashboard/admin/members`: inline role/status editing, bulk actions, filters
-- Admin can edit any member's profile at `/es/dashboard/admin/members/{uid}/edit`
-- ProfileEdit extended with `targetUid` and `isAdmin` props
-
-### 5. Infrastructure Fixes
-
-- Privacy defaults: all info visible to members, hidden from public
+- Privacy defaults (all info visible to members, hidden from public)
 - Admin override for contact visibility
-- CAPTCHA requirement removed (was blocking deploys)
-- Social links mapper fixed (reads from profile.linkedin + registrationData.socialMedia)
+- CAPTCHA removed (was blocking deploys)
+- Social links mapper fixed
 - Prettier formatted entire codebase (304 files)
-- `prerender = false` on API routes
+- `prerender = false` on all dynamic routes/API routes
+- Firestore rules deployed
+- Companies backfilled
+
+### Total: 212+ tests, 100+ files created/modified
 
 ---
 
-## What's Next
+## Outstanding Issues (for next session)
 
-### Subsystem 4: Member CV Pages
+### 1. AdminDashboard forum stats — permission denied
 
-Transform MemberProfile data into auto-generated CV pages using the template from artemiop.com (`/Users/artemiopadilla/Documents/repos/GitHub/personal/ArtemioPadilla.github.io`).
+- `src/components/admin/AdminDashboard.tsx` queries forum data but gets "Missing or insufficient permissions"
+- Need to investigate what query it uses and fix the Firestore rules or the query
+- Pre-existing issue, not caused by our changes
 
-**Architecture:**
+### 2. Events composite index
 
-1. `MemberProfile → CV JSON` transformer — maps profile data to the CV JSON schema
-2. Astro pages at `/members/{slug}/cv` — renders the CV using adapted components
-3. PDF export — jsPDF client-side generation (3 formats: full, resume, summary)
+- Created via Firebase Console link (may still be building)
+- Needed for `status + date` composite query on events collection
 
-**Key reference:** The artemiop.com CV site uses:
+### 3. Company logos not fetched
 
-- JSON data (`src/content/cv/cv-data.json`) with schema validation
-- 12 Astro section components (`src/components/cv/`)
-- jsPDF for PDF export (`src/components/cv-interactive/PdfDownloader.tsx`)
-- Preact islands for interactivity
+- Backfill ran with `--skip-logos` — all 24 companies show colored initial avatars
+- Need Logo.dev API token OR manual upload via admin panel at `/es/dashboard/admin/companies`
 
-**Data mapping (MemberProfile → CV JSON):**
+### 4. ProfileEdit.tsx uses @ts-nocheck
 
-- `experience.previousRoles` → `experience[]`
-- `educationHistory` → `education[]`
-- `portfolio.certifications` → `certifications[]`
-- `portfolio.projects` → `projects[]`
-- `profile.skills` → `skills{}`
-- `languages` → `languages[]`
-- `profile` → `personal` (name, title, location, contact, bio)
-
-### Subsystem 3: CV Upload + Auto-Extract (Future)
-
-Parse uploaded PDF/DOCX CVs to auto-populate profile fields. Lower priority than CV pages.
+- Pre-existing tech debt (TD-014)
+- The file is now 469 lines (down from 1,391) but still needs proper typing
 
 ---
 
-## Critical Files
+## Key URLs
 
-### New in this session
-
-- `src/types/company.ts` — Company interface
-- `src/lib/companies/` — queries, mutations, barrel
-- `src/components/shared/CompanyLogo.tsx` — logo + fallback
-- `src/components/dashboard/members/` — MemberDashboard, tabs, filters
-- `src/components/dashboard/admin/CompanyManagement.tsx` — admin companies
-- `src/components/dashboard/admin/AdminMembersTable.tsx` — admin members
-- `src/components/profile/tabs/` — CareerTab, EducationTab, PortfolioTab, PersonalTab, PrivacyTab, SecurityTab
-- `src/components/profile/shared/` — MonthYearPicker, TagInput, EntryCard, CompanyAutocomplete
-- `src/pages/api/companies/` — company creation + logo fetch routes
-- `functions/src/companies.ts` — memberCount Cloud Function
-- `scripts/backfill-companies.cjs` — companies backfill
-
-### Specs and Plans
-
-- `docs/superpowers/specs/2026-03-20-member-statistics-views-design.md`
-- `docs/superpowers/specs/2026-03-20-companies-collection-design.md`
-- `docs/superpowers/specs/2026-03-21-profile-editor-design.md`
-- `docs/superpowers/specs/2026-03-21-admin-member-management-design.md`
-
-### CV Template Reference
-
-- `/Users/artemiopadilla/Documents/repos/GitHub/personal/ArtemioPadilla.github.io/src/content/cv/cv-data.json` — CV JSON schema
-- `/Users/artemiopadilla/Documents/repos/GitHub/personal/ArtemioPadilla.github.io/src/components/cv/` — section components
-- `/Users/artemiopadilla/Documents/repos/GitHub/personal/ArtemioPadilla.github.io/src/components/cv-interactive/PdfDownloader.tsx` — PDF export
+| Page              | URL                                      |
+| ----------------- | ---------------------------------------- |
+| Public members    | `/es/members`                            |
+| Dashboard members | `/es/dashboard/members/`                 |
+| Admin companies   | `/es/dashboard/admin/companies`          |
+| Admin members     | `/es/dashboard/admin/members`            |
+| Admin edit member | `/es/dashboard/admin/members/{uid}/edit` |
+| Profile edit      | `/es/dashboard/profile/edit`             |
+| Member CV         | `/es/members/{slug}/cv`                  |
 
 ---
 
-## Potential Gotchas
+## Critical Files Created This Session
 
-- `@ts-nocheck` on ProfileEdit.tsx — pre-existing, needs cleanup
-- Companies have no logos yet (backfill ran with `--skip-logos`)
-- Fernando Raúl Garay is a collaborator (changed from member)
-- CAPTCHA is disabled — add keys when public forms go live
-- API routes need `export const prerender = false`
-- Firestore dot-notation in save handlers (`'profile.company'`, `'lifecycle.status'`)
+### Types
+
+- `src/types/company.ts`, `src/types/cv.ts`
+
+### Data Layer
+
+- `src/lib/companies/` (queries, mutations, barrel)
+- `src/lib/cv/transform.ts` (MemberProfile → CVData)
+- `src/lib/linkedin-parser.ts` (LinkedIn text parser)
+
+### Components
+
+- `src/components/cv/` (8 Astro section components + PDF downloader)
+- `src/components/shared/CompanyLogo.tsx`
+- `src/components/dashboard/members/` (MemberDashboard, tabs, filters)
+- `src/components/dashboard/admin/CompanyManagement.tsx`
+- `src/components/dashboard/admin/AdminMembersTable.tsx`
+- `src/components/profile/tabs/` (6 tab components)
+- `src/components/profile/shared/` (4 shared form components)
+- `src/components/profile/OnboardingWizard.tsx`
+
+### Pages
+
+- `src/pages/api/companies/` (2 API routes)
+- `src/pages/{es,en}/members/[slug]/cv.astro`
+- `src/pages/{es,en}/dashboard/admin/members/` (list + [uid]/edit)
+- `src/pages/{es,en}/dashboard/admin/companies/`
+
+### Scripts
+
+- `scripts/backfill-companies.cjs`
+
+### Cloud Functions
+
+- `functions/src/companies.ts` (memberCount trigger)
+
+### Specs & Plans
+
+- `docs/superpowers/specs/` (5 design specs)
+- `docs/superpowers/plans/` (4 implementation plans)
