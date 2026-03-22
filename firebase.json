@@ -4,12 +4,28 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
+        "source": "/es/members/*/cv",
+        "destination": "/es/cv/index.html"
+      },
+      {
+        "source": "/en/members/*/cv",
+        "destination": "/en/cv/index.html"
+      },
+      {
         "source": "/es/members/*",
         "destination": "/es/members/profile/index.html"
       },
       {
         "source": "/en/members/*",
         "destination": "/en/members/profile/index.html"
+      },
+      {
+        "source": "/es/companies/*",
+        "destination": "/es/companies/profile/index.html"
+      },
+      {
+        "source": "/en/companies/*",
+        "destination": "/en/companies/profile/index.html"
       }
     ],
     "headers": [
