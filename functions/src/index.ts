@@ -26,6 +26,7 @@ import {
 } from "./group-config";
 import { onUserNumeroCuentaChange } from "./numero-cuenta-index";
 import { onMergeRequestApproved } from "./merge-engine";
+import { completeRegistration } from "./complete-registration";
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -247,8 +248,30 @@ export const onNewJobPosted = onDocumentCreated(
     const jobData = snapshot.data();
     const jobId = event.params.jobId;
 
-    // Only notify for published/active jobs
-    if (jobData.status !== "active" && jobData.status !== "published") return;
+    // Auto-publish for company-role users
+    if (jobData.status === "draft") {
+      const posterUid = jobData.postedBy;
+      if (posterUid) {
+        const posterDoc = await admin
+          .firestore()
+          .collection("users")
+          .doc(posterUid)
+          .get();
+        if (posterDoc.data()?.role === "company") {
+          await event.data?.ref.update({
+            status: "active",
+            approvedAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+          // Continue to send notifications since job is now active
+        } else {
+          return; // Non-company draft jobs wait for admin approval
+        }
+      } else {
+        return;
+      }
+    } else if (jobData.status !== "active" && jobData.status !== "published") {
+      return;
+    }
 
     try {
       // Find users with job match notifications enabled
@@ -357,6 +380,14 @@ export const onMemberStatusChange = onDocumentUpdated(
 
     // Skip during merge operations to prevent unintended group changes
     if (afterData._mergeInProgress) return;
+
+    // Skip during registration to prevent unintended group changes for recruiters
+    if (afterData._skipGroupSync) {
+      await event.data?.after.ref.update({
+        _skipGroupSync: admin.firestore.FieldValue.delete(),
+      });
+      return;
+    }
 
     const oldStatus = beforeData.lifecycle?.status;
     const newStatus = afterData.lifecycle?.status;
@@ -571,3 +602,6 @@ export { onUserNumeroCuentaChange };
 
 // Profile Merge: merge engine
 export { onMergeRequestApproved };
+
+// Registration: complete registration callable CF
+export { completeRegistration };
