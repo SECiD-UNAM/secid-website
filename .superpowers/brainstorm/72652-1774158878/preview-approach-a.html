@@ -1,0 +1,211 @@
+<h2>Approach A — Company Cards with Member Drawer</h2>
+<p class="subtitle">Click a company card to see the slide-out drawer with current & former members</p>
+
+<div class="mockup">
+  <div class="mockup-header">Preview: /es/dashboard/network</div>
+  <div class="mockup-body" style="padding: 0; background: #f9fafb; min-height: 600px; position: relative; overflow: hidden;">
+
+    <!-- Top bar -->
+    <div style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb;">
+      <h3 style="margin: 0 0 4px 0; font-size: 20px; color: #111;">Red de Empresas SECiD</h3>
+      <p style="margin: 0; color: #6b7280; font-size: 13px;">Descubre dónde trabajan y han trabajado los miembros</p>
+    </div>
+
+    <!-- Filters -->
+    <div style="padding: 12px 24px; display: flex; gap: 12px; border-bottom: 1px solid #e5e7eb; background: white;">
+      <div style="flex: 1; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; color: #9ca3af; font-size: 13px;">🔍 Buscar empresa...</div>
+      <div style="padding: 8px 16px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; color: #374151; background: white;">Industria ▾</div>
+      <div style="padding: 8px 16px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; color: #374151; background: white;">Ordenar ▾</div>
+    </div>
+
+    <div style="display: flex;">
+      <!-- Company Grid -->
+      <div style="flex: 1; padding: 20px 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+        <!-- Company cards -->
+        <div style="background: white; border: 2px solid #3b82f6; border-radius: 12px; padding: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(59,130,246,0.15);">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <div style="width: 40px; height: 40px; border-radius: 8px; background: #1e40af; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">B</div>
+            <div>
+              <div style="font-weight: 600; font-size: 14px; color: #111;">BBVA</div>
+              <div style="font-size: 11px; color: #6b7280;">Finanzas</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; font-size: 11px; color: #6b7280;">
+            <span>👥 3 actuales</span>
+            <span>📋 2 anteriores</span>
+          </div>
+        </div>
+
+        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <div style="width: 40px; height: 40px; border-radius: 8px; background: #dc2626; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">U</div>
+            <div>
+              <div style="font-weight: 600; font-size: 14px; color: #111;">Uber</div>
+              <div style="font-size: 11px; color: #6b7280;">Tecnología</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; font-size: 11px; color: #6b7280;">
+            <span>👥 1 actual</span>
+            <span>📋 1 anterior</span>
+          </div>
+        </div>
+
+        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <div style="width: 40px; height: 40px; border-radius: 8px; background: #059669; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">M</div>
+            <div>
+              <div style="font-weight: 600; font-size: 14px; color: #111;">Microsoft</div>
+              <div style="font-size: 11px; color: #6b7280;">Tecnología</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; font-size: 11px; color: #6b7280;">
+            <span>👥 1 actual</span>
+            <span>📋 0 anteriores</span>
+          </div>
+        </div>
+
+        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <div style="width: 40px; height: 40px; border-radius: 8px; background: #7c3aed; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">A</div>
+            <div>
+              <div style="font-weight: 600; font-size: 14px; color: #111;">Algorithmia</div>
+              <div style="font-size: 11px; color: #6b7280;">Tecnología</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; font-size: 11px; color: #6b7280;">
+            <span>👥 2 actuales</span>
+            <span>📋 0 anteriores</span>
+          </div>
+        </div>
+
+        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <div style="width: 40px; height: 40px; border-radius: 8px; background: #ea580c; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">B</div>
+            <div>
+              <div style="font-weight: 600; font-size: 14px; color: #111;">Banorte</div>
+              <div style="font-size: 11px; color: #6b7280;">Finanzas</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; font-size: 11px; color: #6b7280;">
+            <span>👥 1 actual</span>
+            <span>📋 1 anterior</span>
+          </div>
+        </div>
+
+        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <div style="width: 40px; height: 40px; border-radius: 8px; background: #0891b2; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">N</div>
+            <div>
+              <div style="font-weight: 600; font-size: 14px; color: #111;">NielsenIQ</div>
+              <div style="font-size: 11px; color: #6b7280;">Datos</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 12px; font-size: 11px; color: #6b7280;">
+            <span>👥 1 actual</span>
+            <span>📋 0 anteriores</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide-out Drawer (open for BBVA) -->
+      <div style="width: 340px; background: white; border-left: 1px solid #e5e7eb; box-shadow: -4px 0 12px rgba(0,0,0,0.05); overflow-y: auto;">
+        <div style="padding: 20px; border-bottom: 1px solid #e5e7eb;">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 48px; height: 48px; border-radius: 10px; background: #1e40af; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">B</div>
+              <div>
+                <h3 style="margin: 0; font-size: 18px;">BBVA</h3>
+                <p style="margin: 2px 0 0; font-size: 12px; color: #6b7280;">Finanzas · CDMX</p>
+              </div>
+            </div>
+            <span style="cursor: pointer; color: #9ca3af; font-size: 18px;">✕</span>
+          </div>
+          <a href="#" style="display: inline-block; margin-top: 8px; font-size: 12px; color: #3b82f6; text-decoration: none;">🌐 bbva.com ↗</a>
+        </div>
+
+        <!-- Current Members -->
+        <div style="padding: 16px 20px;">
+          <h4 style="margin: 0 0 12px; font-size: 13px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">👥 Miembros Actuales (3)</h4>
+
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #f9fafb; border-radius: 8px;">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: #6366f1; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600;">EG</div>
+              <div style="flex: 1;">
+                <div style="font-weight: 500; font-size: 13px; color: #111;">Eduardo Garduño</div>
+                <div style="font-size: 11px; color: #6b7280;">Data Scientist · Desde 2022</div>
+              </div>
+              <div style="display: flex; gap: 4px;">
+                <span style="width: 24px; height: 24px; background: #eff6ff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer;" title="LinkedIn">in</span>
+                <span style="width: 24px; height: 24px; background: #f0fdf4; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer;" title="Contactar">✉</span>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #f9fafb; border-radius: 8px;">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: #ec4899; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600;">IP</div>
+              <div style="flex: 1;">
+                <div style="font-weight: 500; font-size: 13px; color: #111;">Ingrid Pamela Ruíz</div>
+                <div style="font-size: 11px; color: #6b7280;">ML Engineer · Desde 2023</div>
+              </div>
+              <div style="display: flex; gap: 4px;">
+                <span style="width: 24px; height: 24px; background: #eff6ff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer;">in</span>
+                <span style="width: 24px; height: 24px; background: #f0fdf4; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer;">✉</span>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #f9fafb; border-radius: 8px;">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: #f59e0b; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600;">IC</div>
+              <div style="flex: 1;">
+                <div style="font-weight: 500; font-size: 13px; color: #111;">Israel Cabello</div>
+                <div style="font-size: 11px; color: #6b7280;">Data Analyst · Desde 2024</div>
+              </div>
+              <div style="display: flex; gap: 4px;">
+                <span style="width: 24px; height: 24px; background: #eff6ff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer;">in</span>
+                <span style="width: 24px; height: 24px; background: #f0fdf4; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer;">✉</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Former Members -->
+        <div style="padding: 0 20px 16px;">
+          <h4 style="margin: 0 0 12px; font-size: 13px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">📋 Alumni (2)</h4>
+
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #fefce8; border-radius: 8px;">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: #84cc16; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600;">AP</div>
+              <div style="flex: 1;">
+                <div style="font-weight: 500; font-size: 13px; color: #111;">Artemio Padilla</div>
+                <div style="font-size: 11px; color: #6b7280;">MLOps Eng Sr · 2022–2025</div>
+                <div style="font-size: 10px; color: #d97706; margin-top: 2px;">Ahora en: AWS</div>
+              </div>
+              <div style="display: flex; gap: 4px;">
+                <span style="width: 24px; height: 24px; background: #eff6ff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer;">in</span>
+                <span style="width: 24px; height: 24px; background: #fef3c7; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer;">📞</span>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; padding: 10px; background: #fefce8; border-radius: 8px;">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: #0ea5e9; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600;">JR</div>
+              <div style="flex: 1;">
+                <div style="font-weight: 500; font-size: 13px; color: #111;">Jorge Ramírez</div>
+                <div style="font-size: 11px; color: #6b7280;">Data Engineer · 2021–2023</div>
+                <div style="font-size: 10px; color: #d97706; margin-top: 2px;">Ahora en: Oracle</div>
+              </div>
+              <div style="display: flex; gap: 4px;">
+                <span style="width: 24px; height: 24px; background: #eff6ff; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer;">in</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Request Reference -->
+        <div style="padding: 16px 20px; border-top: 1px solid #e5e7eb;">
+          <button style="width: 100%; padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer;">🤝 Solicitar Referencia</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top: 1.5rem;">Approach A: Company grid with slide-out drawer showing current members and alumni with contact options</p>
+<p class="subtitle"><a href="http://localhost:54656" style="color: #3b82f6;">← Back to all approaches</a> | Next: Approach B →</p>
