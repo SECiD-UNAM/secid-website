@@ -25,7 +25,7 @@ import type { TabId, ProfileEditProps } from './profile-edit-types';
 import { INITIAL_FORM_DATA } from './profile-edit-types';
 import type { FormData } from './profile-edit-types';
 import { getMemberProfile, updateMemberProfile } from '@/lib/members';
-import { getCompanies } from '@/lib/companies';
+import { getCompanies, createCompany } from '@/lib/companies';
 import { OnboardingWizard } from './OnboardingWizard';
 
 const TAB_DEFINITIONS: {
@@ -409,27 +409,16 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
           if (existing) {
             entry.companyId = existing.id;
           } else {
-            // Create via API route (handles auth + rules server-side)
+            // Create company directly in Firestore (rules allow slug + memberCount)
             try {
               const domain = nameLC.replace(/[^a-z0-9]+/g, '') + '.com';
-              const token = await user?.getIdToken();
-              const resp = await fetch('/api/companies', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  ...(token ? { Authorization: `Bearer ${token}` } : {}),
-                },
-                credentials: 'include',
-                body: JSON.stringify({ name: entry.company, domain }),
-              });
-              if (resp.ok) {
-                const data = (await resp.json()) as { companyId: string };
-                entry.companyId = data.companyId;
-              } else {
-                console.warn('Auto-create company failed:', await resp.text());
-              }
+              const newId = await createCompany(
+                { name: entry.company, domain },
+                effectiveUid
+              );
+              entry.companyId = newId;
             } catch (err) {
-              console.warn('Auto-create company error:', err);
+              console.warn('Auto-create company failed:', err);
             }
           }
         }
