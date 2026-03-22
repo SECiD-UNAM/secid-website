@@ -79,7 +79,10 @@ service cloud.firestore {
     
     // Users collection with enhanced security
     match /users/{userId} {
-      allow read: if true;
+      // Own profile: always readable
+      // Other profiles: only by verified members, moderators, or admins
+      allow read: if isAuthenticated() &&
+                     (isOwner(userId) || isVerified() || canModerate());
       
       allow create: if isAuthenticated() &&
                        isOwner(userId) &&
