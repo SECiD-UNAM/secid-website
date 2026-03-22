@@ -1,12 +1,12 @@
-import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
-import { onRequest } from 'firebase-functions/v2/https';
-import { FieldValue } from 'firebase-admin/firestore';
-import * as admin from 'firebase-admin';
+import { onDocumentUpdated } from "firebase-functions/v2/firestore";
+import { onRequest } from "firebase-functions/v2/https";
+import { FieldValue } from "firebase-admin/firestore";
+import * as admin from "firebase-admin";
 
 const db = admin.firestore();
 
 export const onMemberCompanyChange = onDocumentUpdated(
-  'users/{userId}',
+  "users/{userId}",
   async (event) => {
     const beforeData = event.data?.before.data();
     const afterData = event.data?.after.data();
@@ -26,13 +26,13 @@ export const onMemberCompanyChange = onDocumentUpdated(
 
     // Decrement old company's memberCount
     if (oldCompanyId) {
-      const oldRef = db.collection('companies').doc(oldCompanyId);
+      const oldRef = db.collection("companies").doc(oldCompanyId);
       batch.update(oldRef, { memberCount: FieldValue.increment(-1) });
     }
 
     // Increment new company's memberCount
     if (newCompanyId) {
-      const newRef = db.collection('companies').doc(newCompanyId);
+      const newRef = db.collection("companies").doc(newCompanyId);
       batch.update(newRef, { memberCount: FieldValue.increment(1) });
     }
 
@@ -47,14 +47,14 @@ export const onMemberCompanyChange = onDocumentUpdated(
  * Firebase Hosting caches the response at the CDN edge for 1 hour.
  */
 export const serveLogo = onRequest(
-  { region: 'us-central1' },
+  { region: "us-central1" },
   async (req, res) => {
     // Extract companyId from path: /logos/{companyId}
-    const parts = req.path.split('/').filter(Boolean);
+    const parts = req.path.split("/").filter(Boolean);
     const companyId = parts[1]; // parts[0] = 'logos'
 
     if (!companyId) {
-      res.status(400).send('Missing companyId');
+      res.status(400).send("Missing companyId");
       return;
     }
 
@@ -62,29 +62,29 @@ export const serveLogo = onRequest(
       // Look up the company's logoUrl from Firestore
       const companyDoc = await admin
         .firestore()
-        .collection('companies')
+        .collection("companies")
         .doc(companyId)
         .get();
 
       if (!companyDoc.exists) {
-        res.status(404).send('Company not found');
+        res.status(404).send("Company not found");
         return;
       }
 
       const logoUrl = companyDoc.data()?.logoUrl;
       if (!logoUrl) {
-        res.status(404).send('No logo');
+        res.status(404).send("No logo");
         return;
       }
 
       // Set CDN cache headers: cache at edge for 1 hour, browser for 10 min
-      res.set('Cache-Control', 'public, max-age=600, s-maxage=3600');
+      res.set("Cache-Control", "public, max-age=600, s-maxage=3600");
 
       // Redirect to the Storage URL (CDN caches the redirect target)
       res.redirect(302, logoUrl);
     } catch (error) {
-      console.error('Error serving logo:', error);
-      res.status(500).send('Error');
+      console.error("Error serving logo:", error);
+      res.status(500).send("Error");
     }
   }
 );

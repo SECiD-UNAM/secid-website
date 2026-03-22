@@ -1,15 +1,15 @@
 import {
   onDocumentUpdated,
   onDocumentCreated,
-} from 'firebase-functions/v2/firestore';
-import { onCall, HttpsError } from 'firebase-functions/v2/https';
+} from "firebase-functions/v2/firestore";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
 import {
   beforeUserCreated,
   AuthBlockingEvent,
-} from 'firebase-functions/v2/identity';
-import * as functionsV1 from 'firebase-functions/v1';
-import * as admin from 'firebase-admin';
-import { sendEmail, generateJobMatchEmail } from './email-service';
+} from "firebase-functions/v2/identity";
+import * as functionsV1 from "firebase-functions/v1";
+import * as admin from "firebase-admin";
+import { sendEmail, generateJobMatchEmail } from "./email-service";
 import {
   addMemberToGroup,
   removeMemberFromGroup,
@@ -17,13 +17,13 @@ import {
   listGroupMembers,
   listAllGroups,
   getMemberGroups,
-} from './google-admin';
+} from "./google-admin";
 import {
   GROUP_MAP,
   getAllGroups,
   getDefaultGroup,
   getMembersGroup,
-} from './group-config';
+} from "./group-config";
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -33,7 +33,7 @@ export const onUserCreate = beforeUserCreated(
   async (event: AuthBlockingEvent) => {
     const user = event.data;
     if (!user) {
-      console.log('No user data in event');
+      console.log("No user data in event");
       return;
     }
     const { uid, email, displayName, photoURL } = user;
@@ -42,23 +42,23 @@ export const onUserCreate = beforeUserCreated(
     // Users start as collaborators; membership requires admin approval
     await admin
       .firestore()
-      .collection('users')
+      .collection("users")
       .doc(uid)
       .set({
         email,
-        displayName: displayName || '',
-        photoURL: photoURL || '',
-        firstName: '',
-        lastName: '',
-        role: 'collaborator',
-        registrationType: 'collaborator',
-        verificationStatus: 'none',
+        displayName: displayName || "",
+        photoURL: photoURL || "",
+        firstName: "",
+        lastName: "",
+        role: "collaborator",
+        registrationType: "collaborator",
+        verificationStatus: "none",
         isActive: true,
         isVerified: false,
-        membershipTier: 'free',
+        membershipTier: "free",
         skills: [],
         lifecycle: {
-          status: 'collaborator',
+          status: "collaborator",
           statusChangedAt: admin.firestore.FieldValue.serverTimestamp(),
           statusHistory: [],
           lastActiveDate: admin.firestore.FieldValue.serverTimestamp(),
@@ -94,7 +94,7 @@ interface VerifyUnamEmailData {
 // UNAM email verification
 export const verifyUnamEmail = onCall<VerifyUnamEmailData>(async (request) => {
   if (!request.auth) {
-    throw new HttpsError('unauthenticated', 'User must be authenticated');
+    throw new HttpsError("unauthenticated", "User must be authenticated");
   }
 
   const { unamEmail, studentId, graduationYear } = request.data;
@@ -102,10 +102,10 @@ export const verifyUnamEmail = onCall<VerifyUnamEmailData>(async (request) => {
 
   // Validate UNAM email format
   if (
-    !unamEmail.includes('@alumno.unam.mx') &&
-    !unamEmail.includes('@unam.mx')
+    !unamEmail.includes("@alumno.unam.mx") &&
+    !unamEmail.includes("@unam.mx")
   ) {
-    throw new HttpsError('invalid-argument', 'Email must be from UNAM domain');
+    throw new HttpsError("invalid-argument", "Email must be from UNAM domain");
   }
 
   // In production, this would call UNAM's verification API
@@ -115,25 +115,25 @@ export const verifyUnamEmail = onCall<VerifyUnamEmailData>(async (request) => {
   if (isValid) {
     await admin
       .firestore()
-      .collection('users')
+      .collection("users")
       .doc(userId)
       .update({
         isVerified: true,
         unamEmail,
-        studentId: studentId || '',
+        studentId: studentId || "",
         graduationYear: graduationYear || 0,
         verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
 
-    return { success: true, message: 'UNAM verification completed' };
+    return { success: true, message: "UNAM verification completed" };
   } else {
-    throw new HttpsError('invalid-argument', 'UNAM verification failed');
+    throw new HttpsError("invalid-argument", "UNAM verification failed");
   }
 });
 
 // Job matching algorithm
 export const matchJobsForUser = onDocumentUpdated(
-  'users/{userId}',
+  "users/{userId}",
   async (event) => {
     const userId = event.params.userId;
     const afterData = event.data?.after.data();
@@ -155,8 +155,8 @@ export const matchJobsForUser = onDocumentUpdated(
     // Find matching jobs
     const jobsSnapshot = await admin
       .firestore()
-      .collection('jobs')
-      .where('status', '==', 'active')
+      .collection("jobs")
+      .where("status", "==", "active")
       .get();
 
     const matches: {
@@ -197,10 +197,10 @@ export const matchJobsForUser = onDocumentUpdated(
     if (matches.length > 0) {
       await admin
         .firestore()
-        .collection('users')
+        .collection("users")
         .doc(userId)
-        .collection('jobMatches')
-        .doc('latest')
+        .collection("jobMatches")
+        .doc("latest")
         .set({
           matches: matches.slice(0, 10),
           generatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -216,13 +216,13 @@ export const onUserDelete = functionsV1.auth.user().onDelete(async (user) => {
   const { uid } = user;
 
   // Delete user profile
-  await admin.firestore().collection('users').doc(uid).delete();
+  await admin.firestore().collection("users").doc(uid).delete();
 
   // Clean up user's job applications
   const applicationsSnapshot = await admin
     .firestore()
-    .collectionGroup('applications')
-    .where('applicantId', '==', uid)
+    .collectionGroup("applications")
+    .where("applicantId", "==", uid)
     .get();
 
   const batch = admin.firestore().batch();
@@ -237,7 +237,7 @@ export const onUserDelete = functionsV1.auth.user().onDelete(async (user) => {
 
 // Trigger when a new job is posted
 export const onNewJobPosted = onDocumentCreated(
-  'jobs/{jobId}',
+  "jobs/{jobId}",
   async (event) => {
     const snapshot = event.data;
     if (!snapshot) return;
@@ -246,19 +246,19 @@ export const onNewJobPosted = onDocumentCreated(
     const jobId = event.params.jobId;
 
     // Only notify for published/active jobs
-    if (jobData.status !== 'active' && jobData.status !== 'published') return;
+    if (jobData.status !== "active" && jobData.status !== "published") return;
 
     try {
       // Find users with job match notifications enabled
       const usersSnapshot = await admin
         .firestore()
-        .collection('users')
-        .where('notificationSettings.jobMatches', '==', true)
-        .where('privacySettings.jobSearching', '==', true)
+        .collection("users")
+        .where("notificationSettings.jobMatches", "==", true)
+        .where("privacySettings.jobSearching", "==", true)
         .limit(100)
         .get();
 
-      const siteUrl = process.env.SITE_URL || 'https://secid.mx';
+      const siteUrl = process.env.SITE_URL || "https://secid.mx";
 
       for (const userDoc of usersSnapshot.docs) {
         const userData = userDoc.data();
@@ -284,7 +284,7 @@ export const onNewJobPosted = onDocumentCreated(
 
         const html = generateJobMatchEmail({
           recipientName:
-            userData.displayName || userData.firstName || 'Miembro',
+            userData.displayName || userData.firstName || "Miembro",
           jobTitle: jobData.title,
           company: jobData.company,
           matchScore,
@@ -300,7 +300,7 @@ export const onNewJobPosted = onDocumentCreated(
 
       console.log(`Job notifications sent for job ${jobId}`);
     } catch (error) {
-      console.error('Error sending job notifications:', error);
+      console.error("Error sending job notifications:", error);
     }
   }
 );
@@ -313,7 +313,7 @@ export const onNewJobPosted = onDocumentCreated(
  * When a new user document is created, add them to the collaborators group.
  */
 export const onUserDocCreated = onDocumentCreated(
-  'users/{userId}',
+  "users/{userId}",
   async (event) => {
     const snapshot = event.data;
     if (!snapshot) return;
@@ -322,7 +322,7 @@ export const onUserDocCreated = onDocumentCreated(
     const email = userData.email;
 
     if (!email) {
-      console.log('No email for user, skipping group add');
+      console.log("No email for user, skipping group add");
       return;
     }
 
@@ -346,7 +346,7 @@ export const onUserDocCreated = onDocumentCreated(
  * - any → collaborator (rejected/downgraded): ensure in colaboradores@, remove from miembros@
  */
 export const onMemberStatusChange = onDocumentUpdated(
-  'users/{userId}',
+  "users/{userId}",
   async (event) => {
     const beforeData = event.data?.before.data();
     const afterData = event.data?.after.data();
@@ -365,35 +365,35 @@ export const onMemberStatusChange = onDocumentUpdated(
     console.log(`Status change for ${email}: ${oldStatus} → ${newStatus}`);
 
     switch (newStatus) {
-      case 'active':
-        // Member approved or reinstated → add to miembros@, remove from colaboradores@
-        await addMemberToGroup(getMembersGroup(), email);
-        await removeMemberFromGroup(getDefaultGroup(), email);
-        break;
+    case "active":
+      // Member approved or reinstated → add to miembros@, remove from colaboradores@
+      await addMemberToGroup(getMembersGroup(), email);
+      await removeMemberFromGroup(getDefaultGroup(), email);
+      break;
 
-      case 'suspended':
-      case 'deactivated':
-        // Suspended or deactivated → remove from all groups
-        await removeMemberFromAllGroups(email, getAllGroups());
-        break;
+    case "suspended":
+    case "deactivated":
+      // Suspended or deactivated → remove from all groups
+      await removeMemberFromAllGroups(email, getAllGroups());
+      break;
 
-      case 'alumni':
-        // Alumni → remove from miembros@, optionally keep in colaboradores@
-        await removeMemberFromGroup(getMembersGroup(), email);
-        break;
+    case "alumni":
+      // Alumni → remove from miembros@, optionally keep in colaboradores@
+      await removeMemberFromGroup(getMembersGroup(), email);
+      break;
 
-      case 'collaborator':
-        // Rejected or downgraded → ensure in colaboradores@, remove from miembros@
-        await addMemberToGroup(getDefaultGroup(), email);
-        await removeMemberFromGroup(getMembersGroup(), email);
-        break;
+    case "collaborator":
+      // Rejected or downgraded → ensure in colaboradores@, remove from miembros@
+      await addMemberToGroup(getDefaultGroup(), email);
+      await removeMemberFromGroup(getMembersGroup(), email);
+      break;
 
-      case 'pending':
-        // Membership requested → no group change (still in colaboradores@)
-        break;
+    case "pending":
+      // Membership requested → no group change (still in colaboradores@)
+      break;
 
-      default:
-        console.log(`Unknown status: ${newStatus}`);
+    default:
+      console.log(`Unknown status: ${newStatus}`);
     }
   }
 );
@@ -404,21 +404,21 @@ export const onMemberStatusChange = onDocumentUpdated(
  */
 export const syncGroupMembership = onCall(async (request) => {
   if (!request.auth) {
-    throw new HttpsError('unauthenticated', 'User must be authenticated');
+    throw new HttpsError("unauthenticated", "User must be authenticated");
   }
 
   // Verify admin role
   const userDoc = await admin
     .firestore()
-    .collection('users')
+    .collection("users")
     .doc(request.auth.uid)
     .get();
 
   const userData = userDoc.data();
-  if (!userData || !['admin', 'moderator'].includes(userData.role)) {
+  if (!userData || !["admin", "moderator"].includes(userData.role)) {
     throw new HttpsError(
-      'permission-denied',
-      'Only admins and moderators can sync group membership'
+      "permission-denied",
+      "Only admins and moderators can sync group membership"
     );
   }
 
@@ -451,8 +451,8 @@ export const syncGroupMembership = onCall(async (request) => {
 
     return { success: true, groups: groupData };
   } catch (error: any) {
-    console.error('Error syncing group membership:', error?.message);
-    throw new HttpsError('internal', 'Failed to sync group membership');
+    console.error("Error syncing group membership:", error?.message);
+    throw new HttpsError("internal", "Failed to sync group membership");
   }
 });
 
@@ -461,21 +461,21 @@ export const syncGroupMembership = onCall(async (request) => {
  */
 export const updateMemberGroups = onCall(async (request) => {
   if (!request.auth) {
-    throw new HttpsError('unauthenticated', 'User must be authenticated');
+    throw new HttpsError("unauthenticated", "User must be authenticated");
   }
 
   // Verify admin role
   const userDoc = await admin
     .firestore()
-    .collection('users')
+    .collection("users")
     .doc(request.auth.uid)
     .get();
 
   const userData = userDoc.data();
-  if (!userData || !['admin', 'moderator'].includes(userData.role)) {
+  if (!userData || !["admin", "moderator"].includes(userData.role)) {
     throw new HttpsError(
-      'permission-denied',
-      'Only admins and moderators can manage group membership'
+      "permission-denied",
+      "Only admins and moderators can manage group membership"
     );
   }
 
@@ -486,7 +486,7 @@ export const updateMemberGroups = onCall(async (request) => {
   };
 
   if (!memberEmail) {
-    throw new HttpsError('invalid-argument', 'memberEmail is required');
+    throw new HttpsError("invalid-argument", "memberEmail is required");
   }
 
   // Validate group emails against known groups
@@ -494,7 +494,7 @@ export const updateMemberGroups = onCall(async (request) => {
   const allRequested = [...(addToGroups || []), ...(removeFromGroups || [])];
   for (const g of allRequested) {
     if (!validGroups.includes(g as any)) {
-      throw new HttpsError('invalid-argument', `Invalid group: ${g}`);
+      throw new HttpsError("invalid-argument", `Invalid group: ${g}`);
     }
   }
 
@@ -532,31 +532,31 @@ export const updateMemberGroups = onCall(async (request) => {
  */
 export const getMemberGroupList = onCall(async (request) => {
   if (!request.auth) {
-    throw new HttpsError('unauthenticated', 'User must be authenticated');
+    throw new HttpsError("unauthenticated", "User must be authenticated");
   }
 
   // Verify admin role
   const userDoc = await admin
     .firestore()
-    .collection('users')
+    .collection("users")
     .doc(request.auth.uid)
     .get();
 
   const userData = userDoc.data();
-  if (!userData || !['admin', 'moderator'].includes(userData.role)) {
+  if (!userData || !["admin", "moderator"].includes(userData.role)) {
     throw new HttpsError(
-      'permission-denied',
-      'Only admins and moderators can view group membership'
+      "permission-denied",
+      "Only admins and moderators can view group membership"
     );
   }
 
   const { memberEmail } = request.data as { memberEmail: string };
   if (!memberEmail) {
-    throw new HttpsError('invalid-argument', 'memberEmail is required');
+    throw new HttpsError("invalid-argument", "memberEmail is required");
   }
 
   const groups = await getMemberGroups(memberEmail, getAllGroups());
   return { success: true, groups };
 });
 
-export { onMemberCompanyChange, serveLogo } from './companies';
+export { onMemberCompanyChange, serveLogo } from "./companies";
