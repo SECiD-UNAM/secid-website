@@ -86,7 +86,22 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
 
   const populateFormFromProfile = (profile: any, fallbackEmail?: string) => {
     const workHistory = profile.experience?.previousRoles || [];
+    // Auto-create current work entry from profile data if no work history exists
     if (
+      workHistory.length === 0 &&
+      (profile.profile?.company ||
+        profile.currentCompany ||
+        profile.currentPosition)
+    ) {
+      workHistory.unshift({
+        id: 'auto-' + Date.now(),
+        company: profile.profile?.company || profile.currentCompany || '',
+        companyId: profile.profile?.companyId || undefined,
+        position: profile.profile?.position || profile.currentPosition || '',
+        startDate: profile.createdAt?.toDate?.() || new Date(),
+        current: true,
+      });
+    } else if (
       profile.currentPosition &&
       !workHistory.some((w: { current?: boolean }) => w.current)
     ) {
