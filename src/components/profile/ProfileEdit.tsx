@@ -412,9 +412,13 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
             // Create via API route (handles auth + rules server-side)
             try {
               const domain = nameLC.replace(/[^a-z0-9]+/g, '') + '.com';
+              const token = await user?.getIdToken();
               const resp = await fetch('/api/companies', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
                 credentials: 'include',
                 body: JSON.stringify({ name: entry.company, domain }),
               });

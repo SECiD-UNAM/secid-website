@@ -50,6 +50,8 @@ async function isVerifiedMember(userId: string): Promise<boolean> {
   const userDoc = await getDoc(doc(db, USERS_COLLECTION, userId));
   if (!userDoc.exists()) return false;
   const data = userDoc.data();
+  // Admins and moderators can always create companies
+  if (data.role === 'admin' || data.role === 'moderator') return true;
   return (
     data.role === 'member' &&
     (data.verificationStatus === 'approved' || data.verified === true)
