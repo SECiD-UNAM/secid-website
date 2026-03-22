@@ -256,6 +256,8 @@ export * from './subscription';
 export * from './learning';
 export * from './spotlight';
 
+export * from './merge';
+
 // Resolve ambiguous re-exports by explicitly choosing the canonical source
 export { type Resource } from './resource';
 export { type Conversation } from './messaging';

@@ -45,6 +45,18 @@ export interface UserProfile {
   lastLogin?: Date;
   lastLoginProvider?: string;
   securityEvents?: SecurityEvent[];
+  // Profile merge detection
+  potentialMergeMatch?: {
+    matchedUid: string;
+    numeroCuenta: string;
+    detectedAt: Date;
+    dismissed: boolean;
+  };
+  numeroCuentaConflict?: {
+    existingUid: string;
+    numeroCuenta: string;
+    detectedAt: Date;
+  };
 }
 
 export interface UserBasicInfo {
