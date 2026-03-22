@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { httpsCallable } from 'firebase/functions';
+import { db, functions } from '@/lib/firebase';
 import {
   BriefcaseIcon,
   BuildingOfficeIcon,
@@ -76,6 +77,10 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
     applicationDeadline: '',
     featured: false,
   });
+
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactName, setContactName] = useState('');
+  const [publicSubmission, setPublicSubmission] = useState(false);
 
   const [currentTag, setCurrentTag] = useState('');
   const totalSteps = 5;
@@ -238,12 +243,59 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
   };
 
   const handleSubmit = async () => {
+    // Public submission (no auth required)
     if (!user) {
-      setError(
-        lang === 'es'
-          ? 'Debes iniciar sesión para publicar un empleo'
-          : 'You must be logged in to post a job'
-      );
+      if (!contactEmail || !contactName) {
+        setError(
+          lang === 'es'
+            ? 'Email y nombre son requeridos'
+            : 'Email and name are required'
+        );
+        return;
+      }
+      setSubmitting(true);
+      try {
+        const submitFn = httpsCallable(functions, 'submitPublicJob');
+        await submitFn({
+          title: formData.title,
+          company: formData.company,
+          location: formData.location,
+          locationType: formData.locationType,
+          employmentType: formData.employmentType,
+          description: formData.description,
+          requirements: formData.requirements,
+          contactEmail,
+          contactName,
+          ...(formData.salaryMin && { salaryMin: formData.salaryMin }),
+          ...(formData.salaryMax && { salaryMax: formData.salaryMax }),
+          ...(formData.responsibilities?.length && {
+            responsibilities: formData.responsibilities,
+          }),
+          ...(formData.benefits?.length && { benefits: formData.benefits }),
+          ...(formData.tags?.length && { tags: formData.tags }),
+          ...(formData.applicationMethod && {
+            applicationMethod: formData.applicationMethod,
+          }),
+          ...(formData.applicationUrl && {
+            applicationUrl: formData.applicationUrl,
+          }),
+          ...(formData.applicationEmail && {
+            applicationEmail: formData.applicationEmail,
+          }),
+          ...(formData.applicationDeadline && {
+            applicationDeadline: formData.applicationDeadline,
+          }),
+        });
+        setPublicSubmission(true);
+        setSuccess(true);
+      } catch (err: any) {
+        setError(
+          err.message ||
+            (lang === 'es' ? 'Error al enviar' : 'Submission error')
+        );
+      } finally {
+        setSubmitting(false);
+      }
       return;
     }
 
@@ -293,7 +345,8 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
         postedBy: user.uid,
         postedByName: userProfile?.displayName || user['email'],
         postedAt: serverTimestamp(),
-        status: 'pending', // Needs admin approval
+        createdAt: serverTimestamp(),
+        status: 'draft',
         isApproved: false,
         applicationCount: 0,
         viewCount: 0,
@@ -318,16 +371,33 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
     return (
       <div className="mx-auto max-w-2xl py-12 text-center">
         <CheckCircleIcon className="mx-auto mb-4 h-16 w-16 text-green-500" />
-        <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
-          {lang === 'es'
-            ? '¡Empleo publicado exitosamente!'
-            : 'Job posted successfully!'}
-        </h2>
-        <p className="mb-6 text-gray-600 dark:text-gray-400">
-          {lang === 'es'
-            ? 'Tu empleo será revisado por nuestro equipo y publicado pronto.'
-            : 'Your job will be reviewed by our team and published soon.'}
-        </p>
+        {publicSubmission ? (
+          <>
+            <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
+              {lang === 'es'
+                ? '¡Publicación enviada para revisión!'
+                : 'Job posting submitted for review!'}
+            </h2>
+            <p className="mb-6 text-gray-600 dark:text-gray-400">
+              {lang === 'es'
+                ? `Te notificaremos en ${contactEmail} cuando sea publicada.`
+                : `We'll notify you at ${contactEmail} when it's published.`}
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
+              {lang === 'es'
+                ? '¡Empleo publicado exitosamente!'
+                : 'Job posted successfully!'}
+            </h2>
+            <p className="mb-6 text-gray-600 dark:text-gray-400">
+              {lang === 'es'
+                ? 'Tu empleo será revisado por nuestro equipo y publicado pronto.'
+                : 'Your job will be reviewed by our team and published soon.'}
+            </p>
+          </>
+        )}
         <div className="space-y-2">
           <a
             href={`/${lang}/dashboard/jobs`}
@@ -450,6 +520,39 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
         {/* Step 1: Basic Information */}
         {currentStep === 1 && (
           <div className="space-y-6">
+            {!user && (
+              <div className="mb-6 space-y-4 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
+                <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                  {lang === 'es'
+                    ? 'Información de contacto (publicación sin cuenta)'
+                    : 'Contact info (posting without account)'}
+                </p>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {lang === 'es' ? 'Tu Nombre' : 'Your Name'} *
+                  </label>
+                  <input
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
+                    className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {lang === 'es' ? 'Tu Email' : 'Your Email'} *
+                  </label>
+                  <input
+                    type="email"
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
+                    className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    required
+                  />
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 {lang === 'es' ? 'Título del puesto' : 'Job title'} *
