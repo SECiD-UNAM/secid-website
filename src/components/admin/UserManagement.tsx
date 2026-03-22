@@ -72,7 +72,7 @@ interface UserFilters {
 }
 
 export const UserManagement: React.FC = () => {
-  const { userProfile, isAdmin } = useAuth();
+  const { userProfile, isAdmin, loading: authLoading } = useAuth();
   const { language } = useTranslations();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -206,6 +206,7 @@ export const UserManagement: React.FC = () => {
   };
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isAdmin) {
       setError('Unauthorized access. Admin privileges required.');
       setLoading(false);
@@ -213,7 +214,7 @@ export const UserManagement: React.FC = () => {
     }
 
     loadUsers();
-  }, [isAdmin, filters]);
+  }, [authLoading, isAdmin, filters]);
 
   const handleUserAction = async (action: string, userId: string) => {
     try {

@@ -124,7 +124,7 @@ const STATUS_CONFIG: Record<
 };
 
 export const DirectoryManagement: React.FC = () => {
-  const { userProfile, isAdmin } = useAuth();
+  const { userProfile, isAdmin, loading: authLoading } = useAuth();
   const { language } = useTranslations();
   const es = language === 'es';
 
@@ -290,6 +290,7 @@ export const DirectoryManagement: React.FC = () => {
   };
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isAdmin) {
       setError('Unauthorized');
       setLoading(false);
@@ -297,7 +298,7 @@ export const DirectoryManagement: React.FC = () => {
     }
     loadUsers();
     loadStats();
-  }, [isAdmin, statusFilter, activeTab]);
+  }, [authLoading, isAdmin, statusFilter, activeTab]);
 
   // Handle status change
   const handleStatusChange = async (

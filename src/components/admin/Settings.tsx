@@ -182,7 +182,7 @@ const defaultSettings: PlatformSettings = {
 };
 
 export const Settings: React.FC = () => {
-  const { userProfile, isAdmin } = useAuth();
+  const { userProfile, isAdmin, loading: authLoading } = useAuth();
   const { language } = useTranslations();
   const [settings, setSettings] = useState<PlatformSettings>(defaultSettings);
   const [backups, setBackups] = useState<BackupInfo[]>([]);
@@ -234,6 +234,7 @@ export const Settings: React.FC = () => {
   ];
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isAdmin) {
       setError('Unauthorized access. Admin privileges required.');
       setLoading(false);
@@ -242,7 +243,7 @@ export const Settings: React.FC = () => {
 
     loadSettings();
     loadBackups();
-  }, [isAdmin]);
+  }, [authLoading, isAdmin]);
 
   const loadSettings = async () => {
     try {

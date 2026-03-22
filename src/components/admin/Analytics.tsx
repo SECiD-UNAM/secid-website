@@ -71,7 +71,11 @@ interface TimeRange {
 }
 
 export const Analytics: React.FC = () => {
-  const { userProfile: _userProfile, isAdmin } = useAuth();
+  const {
+    userProfile: _userProfile,
+    isAdmin,
+    loading: authLoading,
+  } = useAuth();
   const { t: _t, language } = useTranslations();
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -116,6 +120,7 @@ export const Analytics: React.FC = () => {
   ];
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isAdmin) {
       setError('Unauthorized access. Admin privileges required.');
       setLoading(false);
@@ -123,7 +128,7 @@ export const Analytics: React.FC = () => {
     }
 
     loadAnalyticsData();
-  }, [isAdmin, selectedTimeRange]);
+  }, [authLoading, isAdmin, selectedTimeRange]);
 
   const loadAnalyticsData = async () => {
     try {
