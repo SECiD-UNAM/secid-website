@@ -107,6 +107,18 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       requireRole: ['admin'],
     },
     {
+      name: lang === 'es' ? 'Gestión Miembros' : 'Manage Members',
+      href: `/${lang}/dashboard/admin/members`,
+      icon: UserGroupIcon,
+      requireRole: ['admin', 'moderator'],
+    },
+    {
+      name: lang === 'es' ? 'Empresas' : 'Companies',
+      href: `/${lang}/dashboard/admin/companies`,
+      icon: BriefcaseIcon,
+      requireRole: ['admin', 'moderator'],
+    },
+    {
       name: 'Reports',
       href: `/${lang}/dashboard/admin/reports`,
       icon: DocumentTextIcon,
