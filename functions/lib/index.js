@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.serveLogo = exports.onMemberCompanyChange = exports.getMemberGroupList = exports.updateMemberGroups = exports.syncGroupMembership = exports.onMemberStatusChange = exports.onUserDocCreated = exports.onNewJobPosted = exports.onUserDelete = exports.matchJobsForUser = exports.verifyUnamEmail = exports.onUserCreate = void 0;
+exports.submitPublicJob = exports.completeRegistration = exports.onMergeRequestApproved = exports.onUserNumeroCuentaChange = exports.serveLogo = exports.onMemberCompanyChange = exports.getMemberGroupList = exports.updateMemberGroups = exports.syncGroupMembership = exports.onMemberStatusChange = exports.onUserDocCreated = exports.onNewJobPosted = exports.onUserDelete = exports.matchJobsForUser = exports.verifyUnamEmail = exports.onUserCreate = void 0;
 const firestore_1 = require("firebase-functions/v2/firestore");
 const https_1 = require("firebase-functions/v2/https");
 const identity_1 = require("firebase-functions/v2/identity");
@@ -9,6 +9,14 @@ const admin = require("firebase-admin");
 const email_service_1 = require("./email-service");
 const google_admin_1 = require("./google-admin");
 const group_config_1 = require("./group-config");
+const numero_cuenta_index_1 = require("./numero-cuenta-index");
+Object.defineProperty(exports, "onUserNumeroCuentaChange", { enumerable: true, get: function () { return numero_cuenta_index_1.onUserNumeroCuentaChange; } });
+const merge_engine_1 = require("./merge-engine");
+Object.defineProperty(exports, "onMergeRequestApproved", { enumerable: true, get: function () { return merge_engine_1.onMergeRequestApproved; } });
+const complete_registration_1 = require("./complete-registration");
+Object.defineProperty(exports, "completeRegistration", { enumerable: true, get: function () { return complete_registration_1.completeRegistration; } });
+const public_job_submit_1 = require("./public-job-submit");
+Object.defineProperty(exports, "submitPublicJob", { enumerable: true, get: function () { return public_job_submit_1.submitPublicJob; } });
 // Initialize Firebase Admin
 admin.initializeApp();
 // User creation trigger - set up initial user profile
@@ -172,14 +180,39 @@ exports.onUserDelete = functionsV1.auth.user().onDelete(async (user) => {
 });
 // Trigger when a new job is posted
 exports.onNewJobPosted = (0, firestore_1.onDocumentCreated)("jobs/{jobId}", async (event) => {
+    var _a, _b;
     const snapshot = event.data;
     if (!snapshot)
         return;
     const jobData = snapshot.data();
     const jobId = event.params.jobId;
-    // Only notify for published/active jobs
-    if (jobData.status !== "active" && jobData.status !== "published")
+    // Auto-publish for company-role users
+    if (jobData.status === "draft") {
+        const posterUid = jobData.postedBy;
+        if (posterUid) {
+            const posterDoc = await admin
+                .firestore()
+                .collection("users")
+                .doc(posterUid)
+                .get();
+            if (((_a = posterDoc.data()) === null || _a === void 0 ? void 0 : _a.role) === "company") {
+                await ((_b = event.data) === null || _b === void 0 ? void 0 : _b.ref.update({
+                    status: "active",
+                    approvedAt: admin.firestore.FieldValue.serverTimestamp(),
+                }));
+                // Continue to send notifications since job is now active
+            }
+            else {
+                return; // Non-company draft jobs wait for admin approval
+            }
+        }
+        else {
+            return;
+        }
+    }
+    else if (jobData.status !== "active" && jobData.status !== "published") {
         return;
+    }
     try {
         // Find users with job match notifications enabled
         const usersSnapshot = await admin
@@ -257,13 +290,23 @@ exports.onUserDocCreated = (0, firestore_1.onDocumentCreated)("users/{userId}", 
  * - any → collaborator (rejected/downgraded): ensure in colaboradores@, remove from miembros@
  */
 exports.onMemberStatusChange = (0, firestore_1.onDocumentUpdated)("users/{userId}", async (event) => {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     const beforeData = (_a = event.data) === null || _a === void 0 ? void 0 : _a.before.data();
     const afterData = (_b = event.data) === null || _b === void 0 ? void 0 : _b.after.data();
     if (!beforeData || !afterData)
         return;
-    const oldStatus = (_c = beforeData.lifecycle) === null || _c === void 0 ? void 0 : _c.status;
-    const newStatus = (_d = afterData.lifecycle) === null || _d === void 0 ? void 0 : _d.status;
+    // Skip during merge operations to prevent unintended group changes
+    if (afterData._mergeInProgress)
+        return;
+    // Skip during registration to prevent unintended group changes for recruiters
+    if (afterData._skipGroupSync) {
+        await ((_c = event.data) === null || _c === void 0 ? void 0 : _c.after.ref.update({
+            _skipGroupSync: admin.firestore.FieldValue.delete(),
+        }));
+        return;
+    }
+    const oldStatus = (_d = beforeData.lifecycle) === null || _d === void 0 ? void 0 : _d.status;
+    const newStatus = (_e = afterData.lifecycle) === null || _e === void 0 ? void 0 : _e.status;
     // Only react to lifecycle status changes
     if (!newStatus || oldStatus === newStatus)
         return;

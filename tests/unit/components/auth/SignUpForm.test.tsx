@@ -25,9 +25,24 @@ vi.mock('firebase/firestore', () => ({
   serverTimestamp: vi.fn(() => ({ seconds: 1234567890, nanoseconds: 0 })),
 }));
 
+vi.mock('firebase/functions', () => ({
+  httpsCallable: vi.fn(() => vi.fn(() => Promise.resolve({ data: {} }))),
+}));
+
 vi.mock('@/lib/firebase', () => ({
-  auth: {},
+  auth: { currentUser: { uid: 'user123' } },
   db: {},
+  storage: {},
+  functions: {},
+}));
+
+vi.mock('@/lib/merge/mutations', () => ({
+  checkNumeroCuentaMatch: vi.fn(() => Promise.resolve(null)),
+  setPotentialMergeMatch: vi.fn(() => Promise.resolve()),
+}));
+
+vi.mock('lucide-react', () => ({
+  Building2: () => null,
 }));
 
 vi.mock('@/hooks/useTranslations', () => ({

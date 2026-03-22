@@ -9,12 +9,14 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from 'firebase/auth';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { auth, db, storage } from '@/lib/firebase';
+import { httpsCallable } from 'firebase/functions';
+import { auth, db, storage, functions } from '@/lib/firebase';
 import Button from '@/components/ui/Button';
 import { useTranslations } from '@/hooks/useTranslations';
 import { checkNumeroCuentaMatch, setPotentialMergeMatch } from '@/lib/merge/mutations';
+import { Building2 } from 'lucide-react';
 
 // Step 1: Account creation schema
 const signUpSchema = z
@@ -46,10 +48,18 @@ const unamVerificationSchema = z.object({
   graduationYear: z.coerce.number().min(2000).max(2030).optional(),
 });
 
+// Step 3 alt: Recruiter company schema
+const recruiterSchema = z.object({
+  companyName: z.string().min(2, 'Company name is required'),
+  companyPosition: z.string().min(2, 'Position is required'),
+  companyWebsite: z.string().url().optional().or(z.literal('')),
+});
+
 type SignUpFormData = z.infer<typeof signUpSchema>;
 type UnamFormData = z.infer<typeof unamVerificationSchema>;
-type RegistrationType = 'member' | 'collaborator';
-type Step = 'account' | 'type' | 'unam' | 'done';
+type RecruiterFormData = z.infer<typeof recruiterSchema>;
+type RegistrationType = 'member' | 'collaborator' | 'recruiter';
+type Step = 'account' | 'type' | 'unam' | 'company' | 'done';
 
 interface SignUpFormProps {
   onSuccess?: () => void;
@@ -89,6 +99,8 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
     useState<RegistrationType | null>(null);
   const [verificationFile, setVerificationFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(false);
+  const [matchChecking, setMatchChecking] = useState(false);
+  const [matchFound, setMatchFound] = useState(false);
 
   const accountForm = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
@@ -102,6 +114,27 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
     },
   });
 
+  const recruiterForm = useForm<RecruiterFormData>({
+    resolver: zodResolver(recruiterSchema),
+    defaultValues: { companyName: '', companyPosition: '', companyWebsite: '' },
+  });
+
+  // Pre-select registration type from query parameter
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const role = params.get('role');
+    if (role === 'member' || role === 'collaborator' || role === 'recruiter') {
+      setRegistrationType(role);
+    }
+  }, []);
+
+  // Call the completeRegistration Cloud Function
+  const callCompleteRegistration = async (data: Record<string, any>) => {
+    const fn = httpsCallable(functions, 'completeRegistration');
+    const result = await fn(data);
+    return result.data;
+  };
+
   const labels = {
     es: {
       stepAccount: 'Crear cuenta',
@@ -114,6 +147,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       collaboratorOption: 'Quiero colaborar con SECiD',
       collaboratorDesc:
         'Únete como colaborador externo. Acceso a eventos públicos y bolsa de trabajo.',
+      recruiterOption: 'Quiero reclutar talento',
+      recruiterDesc:
+        'Publica empleos directamente. Acceso a la bolsa de trabajo y perfiles de candidatos.',
       numeroCuenta: 'Número de Cuenta UNAM',
       numeroCuentaHelp: 'Tu número de cuenta de la UNAM (ej. 317123456)',
       academicLevel: 'Nivel Académico',
@@ -151,6 +187,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       collaboratorOption: 'I want to collaborate with SECiD',
       collaboratorDesc:
         'Join as an external collaborator. Access to public events and job board.',
+      recruiterOption: 'I want to recruit talent',
+      recruiterDesc:
+        'Post jobs directly. Access to job board and candidate profiles.',
       numeroCuenta: 'UNAM Account Number',
       numeroCuentaHelp: 'Your UNAM account number (e.g. 317123456)',
       academicLevel: 'Academic Level',
@@ -269,26 +308,21 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
   const handleTypeSelection = async (type: RegistrationType) => {
     setRegistrationType(type);
 
-    if (type === 'collaborator') {
-      // Update Firestore and go to done
+    if (type === 'member') {
+      setStep('unam');
+    } else if (type === 'recruiter') {
+      setStep('company');
+    } else {
+      // Collaborator — call CF then go to done
       setIsLoading(true);
       try {
-        const user = auth.currentUser;
-        if (user) {
-          const userRef = doc(db, 'users', user.uid);
-          await updateDoc(userRef, {
-            registrationType: 'collaborator',
-            updatedAt: serverTimestamp(),
-          });
-        }
-        setStep('done');
-      } catch {
-        setStep('done'); // Still proceed even if update fails
+        await callCompleteRegistration({ registrationType: 'collaborator' });
+      } catch (err) {
+        console.warn('completeRegistration failed for collaborator:', err);
       } finally {
         setIsLoading(false);
       }
-    } else {
-      setStep('unam');
+      setStep('done');
     }
   };
 
@@ -315,22 +349,15 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         setUploadProgress(false);
       }
 
-      // Update user profile with UNAM data
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
+      // Complete registration via Cloud Function
+      await callCompleteRegistration({
         registrationType: 'member',
-        verificationStatus: 'pending',
         numeroCuenta: data.numeroCuenta,
         academicLevel: data.academicLevel,
         campus: data.campus,
-        generation: data.generation || null,
-        ...(data.graduationYear && {
-          'profile.graduationYear': data.graduationYear,
-        }),
-        ...(verificationDocumentUrl && { verificationDocumentUrl }),
-        'lifecycle.status': 'pending',
-        'lifecycle.statusChangedAt': serverTimestamp(),
-        updatedAt: serverTimestamp(),
+        generation: data.generation || '',
+        graduationYear: data.graduationYear,
+        verificationDocumentUrl: verificationDocumentUrl || '',
       });
 
       // Check for existing profile with same numeroCuenta
@@ -358,6 +385,29 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
     } finally {
       setIsLoading(false);
       setUploadProgress(false);
+    }
+  };
+
+  // Step 3 alt: Submit recruiter company info
+  const onRecruiterSubmit = async (data: RecruiterFormData) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await callCompleteRegistration({
+        registrationType: 'recruiter',
+        companyName: data.companyName,
+        companyPosition: data.companyPosition,
+        companyWebsite: data.companyWebsite || '',
+      });
+      setStep('done');
+    } catch (err) {
+      setError(
+        lang === 'es'
+          ? 'Error al registrar. Inténtalo de nuevo.'
+          : 'Registration error. Please try again.'
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -400,6 +450,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
     { key: 'type', label: l.stepType },
     ...(registrationType === 'member'
       ? [{ key: 'unam' as Step, label: l.stepUnam }]
+      : []),
+    ...(registrationType === 'recruiter'
+      ? [{ key: 'company' as Step, label: lang === 'es' ? 'Empresa' : 'Company' }]
       : []),
   ];
 
@@ -740,6 +793,28 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 </div>
               </div>
             </button>
+
+            {/* Recruiter option */}
+            <button
+              type="button"
+              onClick={() => handleTypeSelection('recruiter')}
+              disabled={isLoading}
+              className="w-full rounded-lg border-2 border-gray-200 p-6 text-left transition-all hover:border-amber-500 hover:shadow-md dark:border-gray-700 dark:hover:border-amber-400"
+            >
+              <div className="flex items-start space-x-4">
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
+                  <Building2 className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {l.recruiterOption}
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    {l.recruiterDesc}
+                  </p>
+                </div>
+              </div>
+            </button>
           </div>
         </div>
       )}
@@ -780,11 +855,43 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 type="text"
                 placeholder="317123456"
                 {...unamForm.register('numeroCuenta')}
+                onBlur={async (e) => {
+                  // Run RHF's own onBlur first
+                  unamForm.register('numeroCuenta').onBlur(e);
+                  // Then check for migration match
+                  const value = e.target.value;
+                  if (value.length >= 5 && auth.currentUser) {
+                    setMatchChecking(true);
+                    try {
+                      const { checkNumeroCuentaMatch: checkMatch } = await import('@/lib/merge/mutations');
+                      const match = await checkMatch(value, auth.currentUser.uid);
+                      setMatchFound(!!match);
+                    } catch {
+                      // Silent fail
+                    } finally {
+                      setMatchChecking(false);
+                    }
+                  }
+                }}
                 className={inputClass}
               />
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 {l.numeroCuentaHelp}
               </p>
+              {matchChecking && (
+                <p className="mt-1 text-xs text-gray-500">
+                  {lang === 'es' ? 'Verificando...' : 'Checking...'}
+                </p>
+              )}
+              {matchFound && (
+                <div className="mt-2 rounded-md border border-green-200 bg-green-50 p-3 dark:border-green-800 dark:bg-green-900/20">
+                  <p className="text-sm font-medium text-green-800 dark:text-green-300">
+                    {lang === 'es'
+                      ? '¡Perfil existente detectado! Puedes reclamarlo después de completar el registro.'
+                      : 'Existing profile detected! You can claim it after completing registration.'}
+                  </p>
+                </div>
+              )}
               {unamForm.formState.errors.numeroCuenta && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">
                   {unamForm.formState.errors.numeroCuenta.message}
@@ -958,6 +1065,88 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         </div>
       )}
 
+      {/* Step 3 alt: Company info (recruiter path) */}
+      {step === 'company' && (
+        <div className="space-y-6">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {lang === 'es' ? 'Información de la Empresa' : 'Company Information'}
+            </h2>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              {lang === 'es'
+                ? 'Cuéntanos sobre tu empresa para completar tu registro como reclutador.'
+                : 'Tell us about your company to complete your recruiter registration.'}
+            </p>
+          </div>
+
+          <form onSubmit={recruiterForm.handleSubmit(onRecruiterSubmit)} className="space-y-4">
+            {error && (
+              <div className="rounded-md bg-red-50 p-4 dark:bg-red-900/20">
+                <p className="text-sm text-red-800 dark:text-red-400">{error}</p>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                {lang === 'es' ? 'Nombre de la Empresa' : 'Company Name'} *
+              </label>
+              <input
+                {...recruiterForm.register('companyName')}
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+              {recruiterForm.formState.errors.companyName && (
+                <p className="mt-1 text-sm text-red-600">{recruiterForm.formState.errors.companyName.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                {lang === 'es' ? 'Tu Cargo' : 'Your Position'} *
+              </label>
+              <input
+                {...recruiterForm.register('companyPosition')}
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+              {recruiterForm.formState.errors.companyPosition && (
+                <p className="mt-1 text-sm text-red-600">{recruiterForm.formState.errors.companyPosition.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                {lang === 'es' ? 'Sitio Web de la Empresa' : 'Company Website'}
+              </label>
+              <input
+                {...recruiterForm.register('companyWebsite')}
+                placeholder="https://..."
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+
+            <div className="flex space-x-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                className="w-1/3"
+                onClick={() => setStep('type')}
+              >
+                {l.back}
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                className="w-2/3"
+                loading={isLoading}
+              >
+                {isLoading
+                  ? (lang === 'es' ? 'Registrando...' : 'Registering...')
+                  : (lang === 'es' ? 'Completar Registro' : 'Complete Registration')}
+              </Button>
+            </div>
+          </form>
+        </div>
+      )}
+
       {/* Step 4: Done */}
       {step === 'done' && (
         <div className="space-y-6 text-center">
@@ -977,25 +1166,54 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
             </svg>
           </div>
 
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {registrationType === 'member'
-              ? l.welcomeMember
-              : l.welcomeCollaborator}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            {registrationType === 'member'
-              ? l.welcomeMemberMsg
-              : l.welcomeCollaboratorMsg}
-          </p>
+          {registrationType === 'recruiter' ? (
+            <>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {lang === 'es' ? '¡Bienvenido/a, reclutador/a!' : 'Welcome, recruiter!'}
+              </h2>
+              <p className="mt-2 text-gray-600 dark:text-gray-400">
+                {lang === 'es'
+                  ? 'Tu cuenta ha sido creada. Ahora puedes publicar empleos que se publicarán inmediatamente.'
+                  : 'Your account has been created. You can now post jobs that will be published immediately.'}
+              </p>
+              <div className="mt-4 flex justify-center gap-3">
+                <button
+                  onClick={goToDashboard}
+                  className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                >
+                  {lang === 'es' ? 'Ir al panel' : 'Go to Dashboard'}
+                </button>
+                <a
+                  href={`/${lang}/post-job`}
+                  className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300"
+                >
+                  {lang === 'es' ? 'Publicar un empleo' : 'Post a Job'}
+                </a>
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {registrationType === 'member'
+                  ? l.welcomeMember
+                  : l.welcomeCollaborator}
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                {registrationType === 'member'
+                  ? l.welcomeMemberMsg
+                  : l.welcomeCollaboratorMsg}
+              </p>
 
-          <Button
-            variant="primary"
-            size="lg"
-            className="w-full"
-            onClick={goToDashboard}
-          >
-            {l.goToDashboard}
-          </Button>
+              <Button
+                variant="primary"
+                size="lg"
+                className="w-full"
+                onClick={goToDashboard}
+              >
+                {l.goToDashboard}
+              </Button>
+            </>
+          )}
         </div>
       )}
     </div>
