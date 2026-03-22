@@ -126,17 +126,35 @@ function CompanyGrid({
   return (
     <SectionCard title={title}>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-        {companies.map((c) => (
-          <div
-            key={c.id}
-            className="flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50"
-          >
-            <CompanyLogo company={c} size="md" />
-            <span className="truncate text-sm font-medium text-gray-700 dark:text-gray-200">
-              {c.name}
-            </span>
-          </div>
-        ))}
+        {companies.map((c) => {
+          const href = c.website || (c.domain ? `https://${c.domain}` : null);
+          const inner = (
+            <>
+              <CompanyLogo company={c} size="md" />
+              <span className="truncate text-sm font-medium text-gray-700 dark:text-gray-200">
+                {c.name}
+              </span>
+            </>
+          );
+          return href ? (
+            <a
+              key={c.id}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800/50"
+            >
+              {inner}
+            </a>
+          ) : (
+            <div
+              key={c.id}
+              className="flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50"
+            >
+              {inner}
+            </div>
+          );
+        })}
       </div>
     </SectionCard>
   );
