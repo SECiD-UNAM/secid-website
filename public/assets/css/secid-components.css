@@ -918,7 +918,7 @@ body {
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
-  /* Tablets - show hamburger menu */
+  /* Tablets - show hamburger menu + bottom nav for login access */
   .secid-navbar__nav {
     display: none;
   }
@@ -936,7 +936,11 @@ body {
   }
 
   .secid-bottom-nav {
-    display: none;
+    display: block;
+  }
+
+  body {
+    padding-bottom: 5rem;
   }
 }
 
