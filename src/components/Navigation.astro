@@ -1,5 +1,6 @@
 ---
 import AuthNavButtons from './auth/AuthNavButtons';
+import BottomNavAuth from './auth/BottomNavAuth';
 
 interface Props {
   lang?: 'es' | 'en';
@@ -393,17 +394,8 @@ const langPathRegex = /^\/(es|en)/;
       <span class="secid-bottom-nav__label">{t.nav.community}</span>
     </button>
 
-    <!-- More button for additional options -->
-    <button
-      class="secid-bottom-nav__item"
-      aria-label={lang === 'es' ? 'Más opciones' : 'More options'}
-      data-bottom-nav-more
-    >
-      <i class="secid-bottom-nav__icon fas fa-ellipsis-h"></i>
-      <span class="secid-bottom-nav__label"
-        >{lang === 'es' ? 'Más' : 'More'}</span
-      >
-    </button>
+    <!-- Login / Account button -->
+    <BottomNavAuth client:only="react" lang={lang} />
   </div>
 
   <!-- Community drawer for mobile -->
