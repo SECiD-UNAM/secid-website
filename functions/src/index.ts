@@ -559,4 +559,4 @@ export const getMemberGroupList = onCall(async (request) => {
   return { success: true, groups };
 });
 
-export { onMemberCompanyChange } from './companies';
+export { onMemberCompanyChange, serveLogo } from './companies';

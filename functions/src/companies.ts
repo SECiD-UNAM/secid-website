@@ -1,4 +1,5 @@
 import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
+import { onRequest } from 'firebase-functions/v2/https';
 import { FieldValue } from 'firebase-admin/firestore';
 import * as admin from 'firebase-admin';
 
@@ -37,5 +38,53 @@ export const onMemberCompanyChange = onDocumentUpdated(
 
     await batch.commit();
     return null;
+  }
+);
+
+/**
+ * Serve company logos via Firebase Hosting CDN.
+ * URL pattern: /logos/{companyId}
+ * Firebase Hosting caches the response at the CDN edge for 1 hour.
+ */
+export const serveLogo = onRequest(
+  { region: 'us-central1' },
+  async (req, res) => {
+    // Extract companyId from path: /logos/{companyId}
+    const parts = req.path.split('/').filter(Boolean);
+    const companyId = parts[1]; // parts[0] = 'logos'
+
+    if (!companyId) {
+      res.status(400).send('Missing companyId');
+      return;
+    }
+
+    try {
+      // Look up the company's logoUrl from Firestore
+      const companyDoc = await admin
+        .firestore()
+        .collection('companies')
+        .doc(companyId)
+        .get();
+
+      if (!companyDoc.exists) {
+        res.status(404).send('Company not found');
+        return;
+      }
+
+      const logoUrl = companyDoc.data()?.logoUrl;
+      if (!logoUrl) {
+        res.status(404).send('No logo');
+        return;
+      }
+
+      // Set CDN cache headers: cache at edge for 1 hour, browser for 10 min
+      res.set('Cache-Control', 'public, max-age=600, s-maxage=3600');
+
+      // Redirect to the Storage URL (CDN caches the redirect target)
+      res.redirect(302, logoUrl);
+    } catch (error) {
+      console.error('Error serving logo:', error);
+      res.status(500).send('Error');
+    }
   }
 );

@@ -53,7 +53,7 @@ const ROUNDED_CLASSES = {
 /* ------------------------------------------------------------------ */
 
 export interface CompanyLogoProps {
-  company: { name: string; logoUrl?: string };
+  company: { id?: string; name: string; logoUrl?: string };
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
@@ -69,7 +69,10 @@ export const CompanyLogo: React.FC<CompanyLogoProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false);
 
-  const hasLogo = !!company.logoUrl && !imageError;
+  // Prefer CDN path (/logos/{id}) over raw Storage URL for caching
+  const logoSrc =
+    company.id && company.logoUrl ? `/logos/${company.id}` : company.logoUrl;
+  const hasLogo = !!logoSrc && !imageError;
   const sizeClass = SIZE_CLASSES[size];
   const roundedClass = ROUNDED_CLASSES[size];
   const initial = company.name.charAt(0).toUpperCase();
@@ -81,8 +84,9 @@ export const CompanyLogo: React.FC<CompanyLogoProps> = ({
         className={`${sizeClass} ${roundedClass} shrink-0 overflow-hidden ${className}`.trim()}
       >
         <img
-          src={company.logoUrl}
+          src={logoSrc}
           alt={company.name}
+          loading="lazy"
           onError={() => setImageError(true)}
           className={`h-full w-full object-contain ${roundedClass}`}
         />
