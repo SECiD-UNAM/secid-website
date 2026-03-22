@@ -140,8 +140,8 @@ service cloud.firestore {
         isVerified() &&
         request.resource.data.pendingReview == true &&
         request.resource.data.keys().hasOnly([
-          'name', 'domain', 'logoUrl', 'industry', 'location',
-          'website', 'description', 'createdBy', 'createdAt',
+          'name', 'domain', 'slug', 'logoUrl', 'industry', 'location',
+          'website', 'description', 'memberCount', 'createdBy', 'createdAt',
           'updatedAt', 'pendingReview'
         ]);
 
@@ -150,8 +150,8 @@ service cloud.firestore {
           resource.data.createdBy == request.auth.uid &&
           request.resource.data.pendingReview == true &&
           request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['name', 'domain', 'logoUrl', 'industry', 'location',
-                      'website', 'description', 'updatedAt', 'pendingReview']))
+            .hasOnly(['name', 'domain', 'slug', 'logoUrl', 'industry', 'location',
+                      'website', 'description', 'memberCount', 'updatedAt', 'pendingReview']))
         || canModerate()
       );
 
