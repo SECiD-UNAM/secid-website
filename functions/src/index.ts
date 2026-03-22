@@ -24,6 +24,7 @@ import {
   getDefaultGroup,
   getMembersGroup,
 } from "./group-config";
+import { onUserNumeroCuentaChange } from "./numero-cuenta-index";
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -560,3 +561,6 @@ export const getMemberGroupList = onCall(async (request) => {
 });
 
 export { onMemberCompanyChange, serveLogo } from "./companies";
+
+// Profile Merge: numero_cuenta_index maintenance
+export { onUserNumeroCuentaChange };

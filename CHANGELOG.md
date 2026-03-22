@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Merge field group mapping**: Added `src/lib/merge/field-groups.ts` with `FIELD_GROUPS` constant mapping all 9 `FieldGroupKey` values to their Firestore document paths, `getFieldsForGroup()` accessor, and `applyFieldSelections()` which builds a Firestore update payload from a `FieldSelections` record using dot-notation keys for nested fields. Used by both the comparison UI and the merge engine. 5 unit tests in `tests/unit/lib/merge/field-groups.test.ts`.
+
 - **Profile merge type system**: Added `src/types/merge.ts` with all domain types for the profile merge flow (`MergeRequest`, `FieldSelections`, `FieldGroupKey`, `MergeRequestStatus`, `OldDocAction`, `PotentialMergeMatch`, `NumeroCuentaIndex`, `NumeroCuentaConflict`). Extended `UserProfile` with optional `potentialMergeMatch` and `numeroCuentaConflict` fields for in-profile merge state tracking. All types exported from the `src/types/` barrel.
 
 - **Guided onboarding wizard**: New `OnboardingWizard` component (`src/components/profile/OnboardingWizard.tsx`) that guides first-time members through 5 steps: Welcome + Photo, Career, Education, Skills, and Done. Shown instead of the full tab editor when `onboardingCompleted` is falsy on the user profile. Members can skip individual steps or jump to the full editor at any time. On completion, sets `onboardingCompleted: true` on the Firestore user doc. Not shown when admin is editing another member's profile. Added `onboardingCompleted` field to `UserProfile` type and `mapUserDocToMemberProfile` mapper. Bilingual (es/en), dark mode compatible.
