@@ -59,7 +59,10 @@ export async function uploadCompanyLogo(
 ): Promise<string> {
   const ext = file.name.split('.').pop() || 'png';
   const logoRef = ref(storage, `companies/${companyId}/logo.${ext}`);
-  await uploadBytes(logoRef, file, { contentType: file.type });
+  await uploadBytes(logoRef, file, {
+    contentType: file.type,
+    cacheControl: 'public, max-age=86400',
+  });
   return getDownloadURL(logoRef);
 }
 

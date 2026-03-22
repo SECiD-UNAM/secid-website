@@ -69,9 +69,7 @@ export const CompanyLogo: React.FC<CompanyLogoProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false);
 
-  // Prefer CDN path (/logos/{id}) over raw Storage URL for caching
-  const logoSrc =
-    company.id && company.logoUrl ? `/logos/${company.id}` : company.logoUrl;
+  const logoSrc = company.logoUrl;
   const hasLogo = !!logoSrc && !imageError;
   const sizeClass = SIZE_CLASSES[size];
   const roundedClass = ROUNDED_CLASSES[size];

@@ -4,13 +4,6 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
-        "source": "/logos/**",
-        "function": {
-          "functionId": "serveLogo",
-          "region": "us-central1"
-        }
-      },
-      {
         "source": "/es/members/*",
         "destination": "/es/members/profile/index.html"
       },
