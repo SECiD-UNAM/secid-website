@@ -27,6 +27,7 @@ import {
 import { onUserNumeroCuentaChange } from "./numero-cuenta-index";
 import { onMergeRequestApproved } from "./merge-engine";
 import { completeRegistration } from "./complete-registration";
+import { submitPublicJob } from "./public-job-submit";
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -605,3 +606,6 @@ export { onMergeRequestApproved };
 
 // Registration: complete registration callable CF
 export { completeRegistration };
+
+// Jobs: public anonymous job submission callable CF
+export { submitPublicJob };
