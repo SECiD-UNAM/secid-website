@@ -365,31 +365,43 @@ function ExpandedRow({ member, lang, isAdmin }: ExpandedRowProps) {
             </div>
           )}
 
-          {/* Social links */}
-          {(member.social.linkedin || member.social.github) && (
-            <div className="mt-3 flex gap-4">
-              {member.social.linkedin && (
-                <a
-                  href={member.social.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-primary-600 hover:underline dark:text-primary-400"
-                >
-                  LinkedIn
-                </a>
-              )}
-              {member.social.github && (
-                <a
-                  href={member.social.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-primary-600 hover:underline dark:text-primary-400"
-                >
-                  GitHub
-                </a>
-              )}
-            </div>
-          )}
+          {/* Links */}
+          <div className="mt-3 flex flex-wrap gap-4">
+            <a
+              href={`/${lang}/members/${member.slug || member.uid}`}
+              className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-400"
+            >
+              {lang === 'es' ? 'Ver perfil' : 'View profile'}
+            </a>
+            {member.cvVisibility !== 'private' && (
+              <a
+                href={`/${lang}/members/${member.slug || member.uid}/cv`}
+                className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-400"
+              >
+                {lang === 'es' ? 'Ver CV' : 'View CV'}
+              </a>
+            )}
+            {member.social.linkedin && (
+              <a
+                href={member.social.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-primary-600 hover:underline dark:text-primary-400"
+              >
+                LinkedIn
+              </a>
+            )}
+            {member.social.github && (
+              <a
+                href={member.social.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-primary-600 hover:underline dark:text-primary-400"
+              >
+                GitHub
+              </a>
+            )}
+          </div>
         </div>
       </td>
     </tr>
