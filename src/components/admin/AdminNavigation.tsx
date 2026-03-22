@@ -17,6 +17,7 @@ import {
   Home,
   AlertTriangle,
   BookUser,
+  GitMerge,
 } from 'lucide-react';
 
 interface AdminNavigationProps {
@@ -102,6 +103,13 @@ export const AdminNavigation: React.FC<AdminNavigationProps> = ({
           badge: 2,
         },
       ],
+    },
+    {
+      key: 'merge-profiles',
+      label: language === 'es' ? 'Fusionar Perfiles' : 'Merge Profiles',
+      icon: GitMerge,
+      path: '/admin/merge-profiles',
+      requiredPermission: 'admin',
     },
     {
       key: 'analytics',
