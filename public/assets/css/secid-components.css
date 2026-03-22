@@ -903,15 +903,6 @@ body {
     display: none;
   }
 
-  .secid-bottom-nav {
-    display: block;
-  }
-
-  /* Add bottom padding to body to account for fixed bottom nav */
-  body {
-    padding-bottom: 5rem;
-  }
-
   /* Enhanced touch feedback on mobile */
   .secid-job-card,
   .secid-member-card {
@@ -965,14 +956,6 @@ body {
 
   .secid-navbar__mobile-menu--open {
     display: block;
-  }
-
-  .secid-bottom-nav {
-    display: block;
-  }
-
-  body {
-    padding-bottom: 5rem;
   }
 }
 

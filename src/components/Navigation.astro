@@ -1,6 +1,6 @@
 ---
 import AuthNavButtons from './auth/AuthNavButtons';
-import BottomNav from './nav/BottomNav';
+import DashboardBottomNav from './nav/DashboardBottomNav';
 
 interface Props {
   lang?: 'es' | 'en';
@@ -370,18 +370,8 @@ const langPathRegex = /^\/(es|en)/;
   </div>
 </nav>
 
-<!-- Bottom Navigation (for mobile/tablet) -->
-<nav
-  class="secid-bottom-nav"
-  aria-label={lang === 'es' ? 'Navegación móvil' : 'Mobile navigation'}
-  role="navigation"
->
-  <BottomNav
-    client:only="react"
-    lang={lang}
-    communityLinks={communityLinks}
-  />
-</nav>
+<!-- Bottom Navigation: only renders for logged-in members on mobile/tablet -->
+<DashboardBottomNav client:only="react" lang={lang} />
 
 <style>
   /* Community dropdown styles */
