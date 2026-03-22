@@ -96,7 +96,8 @@ service cloud.firestore {
                                   'registrationType', 'verificationStatus', 'verificationDocumentUrl',
                                   'numeroCuenta', 'academicLevel', 'campus', 'generation',
                                   'graduationYear', 'lifecycle',
-                                  'networking', 'activity']);
+                                  'networking', 'activity',
+                                  'potentialMergeMatch']);
 
       // Allow authenticated members to update networking fields on other users
       // (connection requests, follow/unfollow, accept connections)
@@ -704,6 +705,39 @@ service cloud.firestore {
     match /member_status_log/{logId} {
       allow read: if isAuthenticated() && canModerate();
       allow write: if false; // Only Cloud Functions can write
+    }
+
+    // =========================================================================
+    // Profile Merge System
+    // =========================================================================
+
+    // numero_cuenta_index: read-only for authenticated users
+    // Cloud Functions use Admin SDK (bypasses rules) to write
+    match /numero_cuenta_index/{numeroCuenta} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // merge_requests: users create their own, admins create and manage
+    match /merge_requests/{requestId} {
+      // Users can create pending requests for themselves
+      allow create: if isAuthenticated()
+        && request.resource.data.targetUid == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.initiatedBy == 'user';
+      // Admins can create requests with any status (including pre-approved)
+      allow create: if isAuthenticated() && canAdminister();
+      allow read: if isAuthenticated()
+        && (resource.data.targetUid == request.auth.uid
+            || resource.data.sourceUid == request.auth.uid
+            || canAdminister());
+      allow update: if isAuthenticated() && canAdminister();
+      allow delete: if false;
+    }
+
+    // archived_users: admin only
+    match /archived_users/{userId} {
+      allow read, write: if isAuthenticated() && canAdminister();
     }
   }
 }
