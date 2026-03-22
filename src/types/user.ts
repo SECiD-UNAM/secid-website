@@ -2,13 +2,13 @@
  * User Type Definitions
  */
 
-export type RegistrationType = 'member' | 'collaborator';
+export type RegistrationType = 'member' | 'collaborator' | 'recruiter';
 export type VerificationStatus = 'none' | 'pending' | 'approved' | 'rejected';
 export type AcademicLevel = 'licenciatura' | 'posgrado' | 'curso';
 
 export interface UserProfile {
   email: string;
-  role: 'member' | 'admin' | 'moderator' | 'collaborator';
+  role: 'member' | 'admin' | 'moderator' | 'collaborator' | 'company';
   createdAt: Date;
   registrationType?: RegistrationType;
   verificationStatus?: VerificationStatus;

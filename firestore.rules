@@ -742,5 +742,11 @@ service cloud.firestore {
     match /archived_users/{userId} {
       allow read, write: if isAuthenticated() && canAdminister();
     }
+
+    // Public job submissions: server writes only (callable CF uses Admin SDK)
+    match /public_job_submissions/{submissionId} {
+      allow create: if false;
+      allow read, update, delete: if isAuthenticated() && canAdminister();
+    }
   }
 }
