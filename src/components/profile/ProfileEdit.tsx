@@ -83,6 +83,10 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
     useState<string>('active');
   const [savingAdmin, setSavingAdmin] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [registrationData, setRegistrationData] = useState<Record<
+    string,
+    any
+  > | null>(null);
 
   const populateFormFromProfile = (profile: any, fallbackEmail?: string) => {
     const rd = profile.registrationData || {};
@@ -198,6 +202,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
       setAdminRole(profile.role || 'member');
       setAdminVerificationStatus(profile.verificationStatus || 'none');
       setAdminLifecycleStatus(profile.lifecycle?.status || 'active');
+      setRegistrationData(profile.registrationData || null);
     }
   };
 
@@ -814,6 +819,164 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
                   : 'Save admin fields'}
             </button>
           </div>
+
+          {/* Registration Data (read-only) */}
+          {registrationData && Object.keys(registrationData).length > 0 && (
+            <div className="mt-6 border-t border-gray-200 pt-6 dark:border-gray-700">
+              <h4 className="mb-3 text-sm font-semibold text-gray-500 dark:text-gray-400">
+                {lang === 'es'
+                  ? 'Datos de registro (solo lectura)'
+                  : 'Registration Data (read-only)'}
+              </h4>
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                {[
+                  { key: 'gender', label: { es: 'Género', en: 'Gender' } },
+                  {
+                    key: 'birthDate',
+                    label: { es: 'Fecha de nacimiento', en: 'Birth Date' },
+                    format: (v: string) => new Date(v).toLocaleDateString(),
+                  },
+                  { key: 'phone', label: { es: 'Teléfono', en: 'Phone' } },
+                  {
+                    key: 'professionalStatus',
+                    label: {
+                      es: 'Situación profesional',
+                      en: 'Professional Status',
+                    },
+                  },
+                  {
+                    key: 'experienceLevel',
+                    label: {
+                      es: 'Nivel de experiencia',
+                      en: 'Experience Level',
+                    },
+                  },
+                  {
+                    key: 'maxDegree',
+                    label: { es: 'Máximo grado', en: 'Max Degree' },
+                  },
+                  {
+                    key: 'maxDegreeInstitution',
+                    label: { es: 'Institución', en: 'Institution' },
+                  },
+                  {
+                    key: 'maxDegreeProgram',
+                    label: { es: 'Programa', en: 'Program' },
+                  },
+                  {
+                    key: 'currentlyStudying',
+                    label: {
+                      es: '¿Estudia actualmente?',
+                      en: 'Currently Studying?',
+                    },
+                  },
+                  {
+                    key: 'whatsappConsent',
+                    label: { es: 'WhatsApp', en: 'WhatsApp' },
+                  },
+                ].map(({ key, label, format }) => {
+                  const val = registrationData[key];
+                  if (!val) return null;
+                  return (
+                    <div key={key} className="text-sm">
+                      <span className="font-medium text-gray-700 dark:text-gray-300">
+                        {label[lang === 'es' ? 'es' : 'en']}:
+                      </span>{' '}
+                      <span className="text-gray-600 dark:text-gray-400">
+                        {format ? format(val) : val}
+                      </span>
+                    </div>
+                  );
+                })}
+                {registrationData.cvUrl && (
+                  <div className="text-sm">
+                    <span className="font-medium text-gray-700 dark:text-gray-300">
+                      CV URL:
+                    </span>{' '}
+                    <a
+                      href={registrationData.cvUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary-600 hover:underline dark:text-primary-400"
+                    >
+                      {lang === 'es' ? 'Ver CV' : 'View CV'}
+                    </a>
+                  </div>
+                )}
+                {registrationData.cvHighlights && (
+                  <div className="text-sm">
+                    <span className="font-medium text-gray-700 dark:text-gray-300">
+                      CV Highlights:
+                    </span>{' '}
+                    {registrationData.cvHighlights.startsWith('http') ? (
+                      <a
+                        href={registrationData.cvHighlights}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary-600 hover:underline dark:text-primary-400"
+                      >
+                        {lang === 'es' ? 'Ver documento' : 'View document'}
+                      </a>
+                    ) : (
+                      <span className="text-gray-600 dark:text-gray-400">
+                        {registrationData.cvHighlights}
+                      </span>
+                    )}
+                  </div>
+                )}
+                {registrationData.objectives && (
+                  <div className="text-sm md:col-span-2">
+                    <span className="font-medium text-gray-700 dark:text-gray-300">
+                      {lang === 'es' ? 'Objetivos' : 'Objectives'}:
+                    </span>{' '}
+                    <span className="text-gray-600 dark:text-gray-400">
+                      {registrationData.objectives}
+                    </span>
+                  </div>
+                )}
+                {registrationData.expectations && (
+                  <div className="text-sm md:col-span-2">
+                    <span className="font-medium text-gray-700 dark:text-gray-300">
+                      {lang === 'es' ? 'Expectativas' : 'Expectations'}:
+                    </span>{' '}
+                    <span className="text-gray-600 dark:text-gray-400">
+                      {registrationData.expectations}
+                    </span>
+                  </div>
+                )}
+                {registrationData.comments && (
+                  <div className="text-sm md:col-span-2">
+                    <span className="font-medium text-gray-700 dark:text-gray-300">
+                      {lang === 'es' ? 'Comentarios' : 'Comments'}:
+                    </span>{' '}
+                    <span className="text-gray-600 dark:text-gray-400">
+                      {registrationData.comments}
+                    </span>
+                  </div>
+                )}
+                {registrationData.priorities &&
+                  Object.keys(registrationData.priorities).length > 0 && (
+                    <div className="text-sm md:col-span-2">
+                      <span className="font-medium text-gray-700 dark:text-gray-300">
+                        {lang === 'es' ? 'Prioridades' : 'Priorities'}:
+                      </span>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {Object.entries(registrationData.priorities).map(
+                          ([k, v]) => (
+                            <span
+                              key={k}
+                              className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+                            >
+                              {k}: {String(v)}
+                            </span>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
