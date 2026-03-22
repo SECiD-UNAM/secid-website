@@ -14,6 +14,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth, db, storage } from '@/lib/firebase';
 import Button from '@/components/ui/Button';
 import { useTranslations } from '@/hooks/useTranslations';
+import { checkNumeroCuentaMatch, setPotentialMergeMatch } from '@/lib/merge/mutations';
 
 // Step 1: Account creation schema
 const signUpSchema = z
@@ -331,6 +332,20 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         'lifecycle.statusChangedAt': serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+
+      // Check for existing profile with same numeroCuenta
+      try {
+        const match = await checkNumeroCuentaMatch(data.numeroCuenta, user.uid);
+        if (match) {
+          await setPotentialMergeMatch(user.uid, {
+            matchedUid: match.uid,
+            numeroCuenta: data.numeroCuenta,
+          });
+        }
+      } catch (matchErr) {
+        // Non-blocking: merge detection failure shouldn't break registration
+        console.warn('Merge match detection failed:', matchErr);
+      }
 
       setStep('done');
     } catch (err: any) {
