@@ -93,6 +93,8 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
   );
   const [fetchingLogo, setFetchingLogo] = useState(false);
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
+  const [bulkFetching, setBulkFetching] = useState(false);
+  const [bulkProgress, setBulkProgress] = useState({ done: 0, total: 0, success: 0 });
 
   /* ---- data loading ---- */
 
@@ -234,6 +236,48 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
     } finally {
       setFetchingLogo(false);
     }
+  }
+
+  /* ---- bulk fetch logos for companies without one ---- */
+
+  async function handleBulkFetchLogos() {
+    const missing = companies.filter((c) => !c.logoUrl && c.domain);
+    if (missing.length === 0) return;
+
+    setBulkFetching(true);
+    setBulkProgress({ done: 0, total: missing.length, success: 0 });
+
+    let successCount = 0;
+    for (let i = 0; i < missing.length; i++) {
+      const company = missing[i]!;
+      try {
+        const storedToken = localStorage.getItem('logoDevApiToken');
+        let logoBlob: Blob | null = null;
+
+        if (storedToken) {
+          logoBlob = await imageUrlToBlob(
+            `https://img.logo.dev/${company.domain}?token=${storedToken}&format=png&size=200`
+          );
+        }
+        if (!logoBlob) {
+          logoBlob = await imageUrlToBlob(
+            `https://www.google.com/s2/favicons?domain=${company.domain}&sz=128`
+          );
+        }
+        if (logoBlob) {
+          const file = new File([logoBlob], 'logo.png', { type: 'image/png' });
+          const logoUrl = await uploadCompanyLogo(company.id, file);
+          await updateCompany(company.id, { logoUrl });
+          successCount++;
+        }
+      } catch (err) {
+        console.error(`Failed to fetch logo for ${company.name}:`, err);
+      }
+      setBulkProgress({ done: i + 1, total: missing.length, success: successCount });
+    }
+
+    setBulkFetching(false);
+    await loadCompanies();
   }
 
   /* ---- save (create or update) ---- */
@@ -415,6 +459,21 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
             )}
           >
             <Cog6ToothIcon className="h-4 w-4" />
+          </button>
+          <button
+            onClick={handleBulkFetchLogos}
+            disabled={bulkFetching || companies.filter((c) => !c.logoUrl && c.domain).length === 0}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+            title={t(lang, 'Obtener logos faltantes', 'Fetch missing logos')}
+          >
+            {bulkFetching ? (
+              <ArrowPathIcon className="h-4 w-4 animate-spin" />
+            ) : (
+              <ArrowPathIcon className="h-4 w-4" />
+            )}
+            {bulkFetching
+              ? `${bulkProgress.done}/${bulkProgress.total}`
+              : t(lang, 'Logos faltantes', 'Missing logos')}
           </button>
           <button
             onClick={openAddModal}
