@@ -890,17 +890,17 @@ body {
 
 /* Responsive behavior */
 @media (max-width: 480px) {
-  /* Small mobile - show bottom nav only */
+  /* Small mobile - hide desktop nav, keep hamburger for settings/public pages */
   .secid-navbar__nav {
     display: none;
   }
 
-  .secid-navbar__actions {
+  .secid-navbar__actions > *:not(.secid-navbar__mobile-toggle) {
     display: none;
   }
 
   .secid-navbar__mobile-toggle {
-    display: none;
+    display: flex;
   }
 
   /* Enhanced touch feedback on mobile */
