@@ -1,6 +1,6 @@
 ---
 import AuthNavButtons from './auth/AuthNavButtons';
-import BottomNavAuth from './auth/BottomNavAuth';
+import BottomNav from './nav/BottomNav';
 
 interface Props {
   lang?: 'es' | 'en';
@@ -370,68 +370,17 @@ const langPathRegex = /^\/(es|en)/;
   </div>
 </nav>
 
-<!-- Bottom Navigation (for mobile) -->
+<!-- Bottom Navigation (for mobile/tablet) -->
 <nav
   class="secid-bottom-nav"
   aria-label={lang === 'es' ? 'Navegación móvil' : 'Mobile navigation'}
   role="navigation"
 >
-  <div class="secid-bottom-nav__container">
-    <a
-      href={`/${lang}/`}
-      class={`secid-bottom-nav__item ${currentPath === `/${lang}/` ? 'secid-bottom-nav__item--active' : ''}`}
-      aria-label={t.nav.home}
-    >
-      <i class="secid-bottom-nav__icon fas fa-home"></i>
-      <span class="secid-bottom-nav__label">{t.nav.home}</span>
-    </a>
-
-    <a
-      href={`/${lang}/jobs`}
-      class={`secid-bottom-nav__item ${currentPath === `/${lang}/jobs` ? 'secid-bottom-nav__item--active' : ''}`}
-      aria-label={t.nav.jobs}
-    >
-      <i class="secid-bottom-nav__icon fas fa-briefcase"></i>
-      <span class="secid-bottom-nav__label">{t.nav.jobs}</span>
-    </a>
-
-    <button
-      class={`secid-bottom-nav__item ${isCommunityActive ? 'secid-bottom-nav__item--active' : ''}`}
-      aria-label={t.nav.community}
-      data-bottom-nav-community
-    >
-      <i class="secid-bottom-nav__icon fas fa-users"></i>
-      <span class="secid-bottom-nav__label">{t.nav.community}</span>
-    </button>
-
-    <!-- Login / Account button -->
-    <BottomNavAuth client:only="react" lang={lang} />
-  </div>
-
-  <!-- Community drawer for mobile -->
-  <div
-    class="secid-bottom-nav__drawer"
-    data-community-drawer
-    aria-hidden="true"
-    inert
-  >
-    <div class="secid-bottom-nav__drawer-header">
-      <span>{t.nav.community}</span>
-      <button data-close-drawer aria-label={lang === 'es' ? 'Cerrar' : 'Close'}>
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div class="secid-bottom-nav__drawer-links">
-      {
-        communityLinks.map((link) => (
-          <a href={link.href} class="secid-bottom-nav__drawer-link">
-            <i class={link.icon} aria-hidden="true" />
-            <span>{link.label}</span>
-          </a>
-        ))
-      }
-    </div>
-  </div>
+  <BottomNav
+    client:only="react"
+    lang={lang}
+    communityLinks={communityLinks}
+  />
 </nav>
 
 <style>
