@@ -394,8 +394,8 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
         'experience.previousRoles': formData.workHistory,
         'experience.currentRole':
           currentWork?.position || formData.currentPosition || '',
+        'experience.level': formData.experience || 'mid',
         industry: formData.industry,
-        experience: formData.experience,
         skills: formData.skills,
         // Education data
         unamEmail: formData.unamEmail,
