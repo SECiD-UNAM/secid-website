@@ -26,6 +26,7 @@ import type { TabId, ProfileEditProps } from './profile-edit-types';
 import { INITIAL_FORM_DATA } from './profile-edit-types';
 import type { FormData } from './profile-edit-types';
 import { getMemberProfile, updateMemberProfile } from '@/lib/members';
+import { getCompanies, createCompany } from '@/lib/companies';
 import { OnboardingWizard } from './OnboardingWizard';
 
 const TAB_DEFINITIONS: {
@@ -394,7 +395,43 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
     setError(null);
 
     try {
-      const currentWork = formData.workHistory.find((w) => w.current);
+      // Auto-link unlinked companies: if a work entry has a company name but
+      // no companyId, look up or create the company in the companies collection.
+      const workHistory = [...formData.workHistory];
+      const unlinked = workHistory.filter((w) => w.company && !w.companyId);
+      if (unlinked.length > 0) {
+        const allCompanies = await getCompanies();
+        for (const entry of unlinked) {
+          const nameLC = entry.company.toLowerCase();
+          const existing = allCompanies.find(
+            (c) => c.name.toLowerCase() === nameLC
+          );
+          if (existing) {
+            entry.companyId = existing.id;
+          } else {
+            // Create with pendingReview: true — admin will review later
+            const domain = nameLC.replace(/[^a-z0-9]+/g, '') + '.com';
+            const newId = await createCompany(
+              { name: entry.company, domain },
+              effectiveUid
+            );
+            entry.companyId = newId;
+            allCompanies.push({
+              id: newId,
+              name: entry.company,
+              domain,
+              slug: '',
+              memberCount: 0,
+              createdBy: effectiveUid,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              pendingReview: true,
+            });
+          }
+        }
+      }
+
+      const currentWork = workHistory.find((w) => w.current);
 
       // Build update object — filter out undefined values (Firestore rejects them)
       const updates: Record<string, any> = {
@@ -414,7 +451,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
           currentWork?.company || formData.currentCompany || '',
         'profile.position':
           currentWork?.position || formData.currentPosition || '',
-        'experience.previousRoles': formData.workHistory,
+        'experience.previousRoles': workHistory,
         'experience.currentRole':
           currentWork?.position || formData.currentPosition || '',
         'experience.level': formData.experience || 'mid',
@@ -582,7 +619,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
           </span>
           {effectiveUid && (
             <a
-              href={`/${lang}/members/${effectiveUid}/cv`}
+              href={`/${lang}/members/${formData.slug || effectiveUid}/cv`}
               className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
             >
               {lang === 'es' ? 'Ver mi CV' : 'View my CV'} &rarr;

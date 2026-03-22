@@ -23,7 +23,8 @@ interface Action {
 }
 
 export const QuickActions: React.FC<QuickActionsProps> = ({ lang = 'es' }) => {
-  const { isVerified, user } = useAuth();
+  const { isVerified, user, userProfile } = useAuth();
+  const memberSlug = (userProfile as any)?.slug || user?.uid;
 
   const actions: Action[] = [
     {
@@ -55,7 +56,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ lang = 'es' }) => {
                 ? 'Previsualiza tu CV generado'
                 : 'Preview your generated CV',
             icon: EyeIcon,
-            href: `/${lang}/members/${user.uid}/cv`,
+            href: `/${lang}/members/${memberSlug}/cv`,
             color: 'green',
           },
         ]
