@@ -7,8 +7,9 @@
  * - Checks CV visibility against auth state
  * - Transforms profile to CVData and renders all sections
  * - Includes PDF download functionality
+ * - Provides sidebar navigation with active section tracking
  */
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getMemberProfile } from '@/lib/members';
 import { transformProfileToCV } from '@/lib/cv/transform';
@@ -53,6 +54,7 @@ function getLabels(lang: 'es' | 'en') {
         signIn: 'Iniciar Sesion',
         memberDirectory: 'Directorio de Miembros',
         errorLoading: 'Error al cargar el CV',
+        about: 'Acerca de',
         experience: 'Experiencia Profesional',
         education: 'Educacion',
         certifications: 'Certificaciones',
@@ -64,6 +66,7 @@ function getLabels(lang: 'es' | 'en') {
         featured: 'Destacado',
         directory: 'Directorio',
         generatedFrom: 'Generado desde el perfil SECiD',
+        download: 'Descargar PDF',
       }
     : {
         loading: 'Loading CV...',
@@ -76,6 +79,7 @@ function getLabels(lang: 'es' | 'en') {
         signIn: 'Sign In',
         memberDirectory: 'Member Directory',
         errorLoading: 'Error loading CV',
+        about: 'About',
         experience: 'Professional Experience',
         education: 'Education',
         certifications: 'Certifications',
@@ -87,8 +91,31 @@ function getLabels(lang: 'es' | 'en') {
         featured: 'Featured',
         directory: 'Directory',
         generatedFrom: 'Generated from SECiD profile',
+        download: 'Download PDF',
       };
 }
+
+type Labels = ReturnType<typeof getLabels>;
+
+// ---------------------------------------------------------------------------
+// Section navigation definition
+// ---------------------------------------------------------------------------
+
+interface NavSection {
+  id: string;
+  labelKey: keyof Labels;
+}
+
+const ALL_SECTIONS: NavSection[] = [
+  { id: 'about', labelKey: 'about' },
+  { id: 'experience', labelKey: 'experience' },
+  { id: 'education', labelKey: 'education' },
+  { id: 'certifications', labelKey: 'certifications' },
+  { id: 'skills', labelKey: 'skills' },
+  { id: 'projects', labelKey: 'projects' },
+  { id: 'languages', labelKey: 'languages' },
+  { id: 'download', labelKey: 'download' },
+];
 
 // ---------------------------------------------------------------------------
 // Proficiency badge colors (matches CvLanguages.astro)
@@ -123,6 +150,156 @@ function getBadgeClasses(proficiency: string): string {
 }
 
 // ---------------------------------------------------------------------------
+// Shared UI primitives
+// ---------------------------------------------------------------------------
+
+function GradientDivider() {
+  return (
+    <div className="my-12 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent dark:via-gray-700" />
+  );
+}
+
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="mb-8 text-3xl font-bold uppercase tracking-wide text-gray-900 dark:text-white">
+      {children}
+    </h2>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Section navigation components
+// ---------------------------------------------------------------------------
+
+function SidebarNav({
+  sections,
+  activeSection,
+  labels,
+}: {
+  sections: NavSection[];
+  activeSection: string;
+  labels: Labels;
+}) {
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+      e.preventDefault();
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    },
+    [],
+  );
+
+  return (
+    <aside className="hidden lg:block lg:w-48 flex-shrink-0">
+      <nav className="sticky top-24 space-y-1">
+        {sections.map((section) => {
+          const isActive = activeSection === section.id;
+          return (
+            <a
+              key={section.id}
+              href={`#${section.id}`}
+              onClick={(e) => handleClick(e, section.id)}
+              className={`block rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                isActive
+                  ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400'
+                  : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white'
+              }`}
+            >
+              {String(labels[section.labelKey])}
+            </a>
+          );
+        })}
+      </nav>
+    </aside>
+  );
+}
+
+function MobileNav({
+  sections,
+  activeSection,
+  labels,
+}: {
+  sections: NavSection[];
+  activeSection: string;
+  labels: Labels;
+}) {
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+      e.preventDefault();
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    },
+    [],
+  );
+
+  return (
+    <nav className="lg:hidden mb-8 -mx-6 px-6 overflow-x-auto scrollbar-hide">
+      <div className="flex gap-2 pb-2">
+        {sections.map((section) => {
+          const isActive = activeSection === section.id;
+          return (
+            <a
+              key={section.id}
+              href={`#${section.id}`}
+              onClick={(e) => handleClick(e, section.id)}
+              className={`flex-shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200 ${
+                isActive
+                  ? 'bg-primary-600 text-white shadow-sm'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+              }`}
+            >
+              {String(labels[section.labelKey])}
+            </a>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Active section tracking hook
+// ---------------------------------------------------------------------------
+
+function useActiveSection(sectionIds: string[]): string {
+  const [activeSection, setActiveSection] = useState(sectionIds[0] || '');
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === 'undefined') return;
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+        const first = visible[0];
+        if (first) {
+          setActiveSection(first.target.id);
+        }
+      },
+      { rootMargin: '-80px 0px -60% 0px', threshold: 0 },
+    );
+
+    const observer = observerRef.current;
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [sectionIds]);
+
+  return activeSection;
+}
+
+// ---------------------------------------------------------------------------
 // Sub-components for CV sections
 // ---------------------------------------------------------------------------
 
@@ -131,155 +308,163 @@ function CvAboutSection({ personal }: { personal: CVData['personal'] }) {
   const initials = `${name.first.charAt(0)}${name.last.charAt(0)}`.toUpperCase();
 
   const socialLinkClass =
-    'inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition-all hover:-translate-y-0.5 hover:border-primary-500 hover:bg-primary-500 hover:text-white dark:border-gray-700 dark:text-gray-400 dark:hover:border-primary-500';
+    'inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary-500 hover:bg-primary-500 hover:text-white dark:border-gray-700 dark:text-gray-400 dark:hover:border-primary-500';
 
   return (
-    <section id="about" className="pb-10">
-      <div className="flex flex-col-reverse gap-8 md:flex-row md:items-start">
-        <div className="flex-1">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white md:text-5xl">
-            {name.full}
-          </h1>
+    <section id="about" className="scroll-mt-24 pb-10">
+      <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-gray-900 md:p-8">
+        <div className="flex flex-col-reverse gap-8 md:flex-row md:items-start">
+          <div className="flex-1">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white md:text-5xl">
+              {name.full}
+            </h1>
 
-          {title && (
-            <p className="mt-2 text-xl text-primary-600 dark:text-primary-400">
-              {title}
-            </p>
-          )}
+            {title && (
+              <p className="mt-2 text-xl text-primary-600 dark:text-primary-400">
+                {title}
+              </p>
+            )}
 
-          {location && (
-            <div className="mt-3 flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              <span>{location}</span>
+            {location && (
+              <div className="mt-3 flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                <span className="relative flex items-center gap-1.5">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+                  </span>
+                  {location}
+                </span>
+              </div>
+            )}
+
+            {summary && (
+              <p className="mt-6 leading-relaxed text-gray-600 dark:text-gray-300">
+                {summary}
+              </p>
+            )}
+
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              {contact.linkedin && (
+                <a
+                  href={contact.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={socialLinkClass}
+                  aria-label="LinkedIn"
+                >
+                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                  </svg>
+                </a>
+              )}
+
+              {contact.github && (
+                <a
+                  href={contact.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={socialLinkClass}
+                  aria-label="GitHub"
+                >
+                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+                  </svg>
+                </a>
+              )}
+
+              {contact.twitter && (
+                <a
+                  href={contact.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={socialLinkClass}
+                  aria-label="Twitter"
+                >
+                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                </a>
+              )}
+
+              {contact.email && (
+                <a
+                  href={`mailto:${contact.email}`}
+                  className={socialLinkClass}
+                  aria-label="Email"
+                >
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                </a>
+              )}
+
+              {contact.portfolio && (
+                <a
+                  href={contact.portfolio}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={socialLinkClass}
+                  aria-label="Portfolio"
+                >
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                    />
+                  </svg>
+                </a>
+              )}
             </div>
-          )}
+          </div>
 
-          {summary && (
-            <p className="mt-6 leading-relaxed text-gray-600 dark:text-gray-300">
-              {summary}
-            </p>
-          )}
-
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            {contact.linkedin && (
-              <a
-                href={contact.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={socialLinkClass}
-                aria-label="LinkedIn"
-              >
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                </svg>
-              </a>
-            )}
-
-            {contact.github && (
-              <a
-                href={contact.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={socialLinkClass}
-                aria-label="GitHub"
-              >
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                </svg>
-              </a>
-            )}
-
-            {contact.twitter && (
-              <a
-                href={contact.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={socialLinkClass}
-                aria-label="Twitter"
-              >
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-              </a>
-            )}
-
-            {contact.email && (
-              <a
-                href={`mailto:${contact.email}`}
-                className={socialLinkClass}
-                aria-label="Email"
-              >
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-              </a>
-            )}
-
-            {contact.portfolio && (
-              <a
-                href={contact.portfolio}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={socialLinkClass}
-                aria-label="Portfolio"
-              >
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                  />
-                </svg>
-              </a>
+          <div className="flex flex-shrink-0 justify-center md:justify-end">
+            {profileImage ? (
+              <img
+                src={profileImage}
+                alt={name.full}
+                className="h-36 w-36 rounded-full border-4 border-white object-cover shadow-lg dark:border-gray-800 md:h-44 md:w-44"
+              />
+            ) : (
+              <div className="flex h-36 w-36 items-center justify-center rounded-full border-4 border-white bg-primary-100 text-4xl font-bold text-primary-700 shadow-lg dark:border-gray-800 dark:bg-primary-900/30 dark:text-primary-400 md:h-44 md:w-44 md:text-5xl">
+                {initials}
+              </div>
             )}
           </div>
-        </div>
-
-        <div className="flex flex-shrink-0 justify-center md:justify-end">
-          {profileImage ? (
-            <img
-              src={profileImage}
-              alt={name.full}
-              className="h-32 w-32 rounded-full border-4 border-white object-cover shadow-lg dark:border-gray-800 md:h-40 md:w-40"
-            />
-          ) : (
-            <div className="flex h-32 w-32 items-center justify-center rounded-full border-4 border-white bg-primary-100 text-3xl font-bold text-primary-700 shadow-lg dark:border-gray-800 dark:bg-primary-900/30 dark:text-primary-400 md:h-40 md:w-40 md:text-4xl">
-              {initials}
-            </div>
-          )}
         </div>
       </div>
     </section>
@@ -291,22 +476,17 @@ function CvExperienceSection({
   labels,
 }: {
   experience: CVData['experience'];
-  labels: ReturnType<typeof getLabels>;
+  labels: Labels;
 }) {
   if (experience.length === 0) return null;
   return (
-    <section
-      id="experience"
-      className="border-t border-gray-200 py-10 dark:border-gray-800"
-    >
-      <h2 className="mb-8 text-2xl font-bold text-gray-900 dark:text-white">
-        {labels.experience}
-      </h2>
-      <div className="space-y-0">
+    <section id="experience" className="scroll-mt-24 py-10">
+      <SectionHeading>{labels.experience}</SectionHeading>
+      <div className="space-y-4">
         {experience.map((exp, i) => (
           <div
             key={`${exp.company}-${exp.title}-${i}`}
-            className="border-b border-gray-100 py-5 last:border-b-0 dark:border-gray-800/50"
+            className="rounded-xl border border-gray-200 bg-white p-5 transition-all duration-200 hover:border-primary-500 hover:shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:hover:border-primary-500"
           >
             <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
               <div>
@@ -322,7 +502,11 @@ function CvExperienceSection({
                   {exp.startDate} &ndash; {exp.endDate || labels.current}
                 </span>
                 {exp.current && (
-                  <span className="inline-flex items-center rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500" />
+                    </span>
                     {labels.current}
                   </span>
                 )}
@@ -340,7 +524,7 @@ function CvExperienceSection({
                 {exp.technologies.map((tech) => (
                   <span
                     key={tech}
-                    className="rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                    className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300"
                   >
                     {tech}
                   </span>
@@ -359,22 +543,17 @@ function CvEducationSection({
   labels,
 }: {
   education: CVData['education'];
-  labels: ReturnType<typeof getLabels>;
+  labels: Labels;
 }) {
   if (education.length === 0) return null;
   return (
-    <section
-      id="education"
-      className="border-t border-gray-200 py-10 dark:border-gray-800"
-    >
-      <h2 className="mb-8 text-2xl font-bold text-gray-900 dark:text-white">
-        {labels.education}
-      </h2>
-      <div className="space-y-0">
+    <section id="education" className="scroll-mt-24 py-10">
+      <SectionHeading>{labels.education}</SectionHeading>
+      <div className="space-y-4">
         {education.map((edu, i) => (
           <div
             key={`${edu.institution}-${edu.degree}-${i}`}
-            className="border-b border-gray-100 py-5 last:border-b-0 dark:border-gray-800/50"
+            className="rounded-xl border border-gray-200 bg-white p-5 transition-all duration-200 hover:border-primary-500 hover:shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:hover:border-primary-500"
           >
             <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
               <div>
@@ -395,7 +574,11 @@ function CvEducationSection({
                   {edu.startDate} &ndash; {edu.endDate || labels.current}
                 </span>
                 {edu.current && (
-                  <span className="inline-flex items-center rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500" />
+                    </span>
                     {labels.current}
                   </span>
                 )}
@@ -428,22 +611,17 @@ function CvCertificationsSection({
   labels,
 }: {
   certifications: CVData['certifications'];
-  labels: ReturnType<typeof getLabels>;
+  labels: Labels;
 }) {
   if (certifications.length === 0) return null;
   return (
-    <section
-      id="certifications"
-      className="border-t border-gray-200 py-10 dark:border-gray-800"
-    >
-      <h2 className="mb-8 text-2xl font-bold text-gray-900 dark:text-white">
-        {labels.certifications}
-      </h2>
-      <div className="space-y-0">
+    <section id="certifications" className="scroll-mt-24 py-10">
+      <SectionHeading>{labels.certifications}</SectionHeading>
+      <div className="space-y-4">
         {certifications.map((cert, i) => (
           <div
             key={`${cert.issuer}-${cert.name}-${i}`}
-            className="border-b border-gray-100 py-4 last:border-b-0 dark:border-gray-800/50"
+            className="rounded-xl border border-gray-200 bg-white p-5 transition-all duration-200 hover:border-primary-500 hover:shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:hover:border-primary-500"
           >
             <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex-1">
@@ -458,11 +636,10 @@ function CvCertificationsSection({
                     href={cert.credentialUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-1 inline-flex items-center gap-1 text-xs text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                    className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-primary-200 bg-primary-50 px-3 py-1.5 text-xs font-medium text-primary-700 transition-all duration-200 hover:bg-primary-100 dark:border-primary-800 dark:bg-primary-900/20 dark:text-primary-400 dark:hover:bg-primary-900/40"
                   >
-                    {labels.viewCredential}
                     <svg
-                      className="h-3 w-3"
+                      className="h-3.5 w-3.5"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth={2}
@@ -474,6 +651,7 @@ function CvCertificationsSection({
                         d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                       />
                     </svg>
+                    {labels.viewCredential}
                   </a>
                 )}
               </div>
@@ -493,22 +671,17 @@ function CvSkillsSection({
   labels,
 }: {
   skills: string[];
-  labels: ReturnType<typeof getLabels>;
+  labels: Labels;
 }) {
   if (skills.length === 0) return null;
   return (
-    <section
-      id="skills"
-      className="border-t border-gray-200 py-10 dark:border-gray-800"
-    >
-      <h2 className="mb-8 text-2xl font-bold text-gray-900 dark:text-white">
-        {labels.skills}
-      </h2>
-      <div className="flex flex-wrap gap-2">
+    <section id="skills" className="scroll-mt-24 py-10">
+      <SectionHeading>{labels.skills}</SectionHeading>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
         {skills.map((skill) => (
           <span
             key={skill}
-            className="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-primary-300 hover:text-primary-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-primary-600 dark:hover:text-primary-400"
+            className="rounded-full border border-gray-200 px-3 py-1 text-center text-sm font-medium text-gray-700 transition-colors duration-200 hover:border-primary-500 hover:text-primary-600 dark:border-gray-700 dark:text-gray-300 dark:hover:border-primary-500 dark:hover:text-primary-400"
           >
             {skill}
           </span>
@@ -523,22 +696,17 @@ function CvProjectsSection({
   labels,
 }: {
   projects: CVData['projects'];
-  labels: ReturnType<typeof getLabels>;
+  labels: Labels;
 }) {
   if (projects.length === 0) return null;
   return (
-    <section
-      id="projects"
-      className="border-t border-gray-200 py-10 dark:border-gray-800"
-    >
-      <h2 className="mb-8 text-2xl font-bold text-gray-900 dark:text-white">
-        {labels.projects}
-      </h2>
+    <section id="projects" className="scroll-mt-24 py-10">
+      <SectionHeading>{labels.projects}</SectionHeading>
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {projects.map((project, i) => (
           <div
             key={`${project.title}-${i}`}
-            className="flex flex-col rounded-xl border border-gray-200 bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-primary-300 hover:shadow-md dark:border-gray-700 dark:bg-gray-800/50 dark:hover:border-primary-600"
+            className="flex flex-col rounded-xl border border-gray-200 bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary-500 hover:shadow-md dark:border-gray-700 dark:bg-gray-900 dark:hover:border-primary-500"
           >
             <div className="mb-2 flex items-start justify-between gap-3">
               <h3 className="text-base font-semibold text-gray-900 dark:text-white">
@@ -574,7 +742,7 @@ function CvProjectsSection({
                 {project.technologies.map((tech) => (
                   <span
                     key={tech}
-                    className="rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                    className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300"
                   >
                     {tech}
                   </span>
@@ -636,22 +804,17 @@ function CvLanguagesSection({
   labels,
 }: {
   languages: CVData['languages'];
-  labels: ReturnType<typeof getLabels>;
+  labels: Labels;
 }) {
   if (languages.length === 0) return null;
   return (
-    <section
-      id="languages"
-      className="border-t border-gray-200 py-10 dark:border-gray-800"
-    >
-      <h2 className="mb-8 text-2xl font-bold text-gray-900 dark:text-white">
-        {labels.languages}
-      </h2>
+    <section id="languages" className="scroll-mt-24 py-10">
+      <SectionHeading>{labels.languages}</SectionHeading>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {languages.map((language, i) => (
           <div
             key={`${language.name}-${i}`}
-            className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800/50"
+            className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-primary-500"
           >
             <span className="font-medium text-gray-900 dark:text-white">
               {language.name}
@@ -674,9 +837,9 @@ function CvLanguagesSection({
 
 function LoadingView({ label }: { label: string }) {
   return (
-    <div className="flex items-center justify-center py-20">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
       <div className="text-center">
-        <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-primary-600" />
+        <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-primary-600 dark:border-gray-700 dark:border-t-primary-400" />
         <p className="text-gray-600 dark:text-gray-400">{label}</p>
       </div>
     </div>
@@ -695,16 +858,18 @@ function ErrorView({
   backLabel: string;
 }) {
   return (
-    <div className="flex items-center justify-center py-20">
-      <div className="text-center">
-        <div className="mb-4 text-6xl">:(</div>
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
+      <div className="mx-auto max-w-md rounded-2xl bg-white p-8 text-center shadow-sm dark:bg-gray-900">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-3xl dark:bg-gray-800">
+          :(
+        </div>
         <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
           {message}
         </h2>
         <p className="mb-6 text-gray-600 dark:text-gray-400">{detail}</p>
         <a
           href={backHref}
-          className="inline-flex items-center rounded-lg bg-primary-600 px-4 py-2 text-white transition-colors hover:bg-primary-700"
+          className="inline-flex items-center rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-700"
         >
           {backLabel}
         </a>
@@ -722,54 +887,11 @@ function AccessDeniedView({
 }) {
   const labels = getLabels(lang);
   return (
-    <div className="flex items-center justify-center py-20">
-      <div className="text-center">
-        <h2 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
-          {message}
-        </h2>
-        <a
-          href={`/${lang}/login`}
-          className="text-primary-600 hover:underline dark:text-primary-400"
-        >
-          {labels.signIn}
-        </a>
-        <span className="mx-2 text-gray-400">|</span>
-        <a
-          href={`/${lang}/members`}
-          className="text-primary-600 hover:underline dark:text-primary-400"
-        >
-          {labels.memberDirectory}
-        </a>
-      </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// CV content wrapper with header and footer (replaces CvLayout.astro)
-// ---------------------------------------------------------------------------
-
-function CvContentWrapper({
-  memberName,
-  lang,
-  labels,
-  children,
-}: {
-  memberName: string;
-  lang: 'es' | 'en';
-  labels: ReturnType<typeof getLabels>;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      {/* CV Header */}
-      <div className="mb-6 flex items-center gap-3">
-        <a
-          href={`/${lang}/members`}
-          className="flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400"
-        >
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
+      <div className="mx-auto max-w-md rounded-2xl bg-white p-8 text-center shadow-sm dark:bg-gray-900">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/20">
           <svg
-            className="h-4 w-4"
+            className="h-8 w-8 text-amber-600 dark:text-amber-400"
             fill="none"
             stroke="currentColor"
             strokeWidth={2}
@@ -778,29 +900,58 @@ function CvContentWrapper({
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
             />
           </svg>
-          {labels.directory}
-        </a>
-        <span className="text-gray-300 dark:text-gray-700">|</span>
-        <span className="text-lg font-bold text-gray-900 dark:text-white">
-          SECiD
-        </span>
-        <span className="rounded bg-primary-100 px-1.5 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">
-          CV
-        </span>
-      </div>
-
-      {/* CV Content */}
-      <div className="mx-auto max-w-4xl">{children}</div>
-
-      {/* CV Footer */}
-      <div className="mt-10 border-t border-gray-200 pt-6 text-center text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
-        {labels.generatedFrom} &copy; {new Date().getFullYear()}
+        </div>
+        <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">
+          {message}
+        </h2>
+        <div className="flex items-center justify-center gap-4">
+          <a
+            href={`/${lang}/login`}
+            className="inline-flex items-center rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+          >
+            {labels.signIn}
+          </a>
+          <a
+            href={`/${lang}/members`}
+            className="text-sm text-primary-600 hover:underline dark:text-primary-400"
+          >
+            {labels.memberDirectory}
+          </a>
+        </div>
       </div>
     </div>
   );
+}
+
+// ---------------------------------------------------------------------------
+// Helpers for visible section filtering
+// ---------------------------------------------------------------------------
+
+function getVisibleSections(cvData: CVData): NavSection[] {
+  return ALL_SECTIONS.filter((section) => {
+    switch (section.id) {
+      case 'about':
+      case 'download':
+        return true;
+      case 'experience':
+        return cvData.experience.length > 0;
+      case 'education':
+        return cvData.education.length > 0;
+      case 'certifications':
+        return cvData.certifications.length > 0;
+      case 'skills':
+        return cvData.skills.length > 0;
+      case 'projects':
+        return cvData.projects.length > 0;
+      case 'languages':
+        return cvData.languages.length > 0;
+      default:
+        return false;
+    }
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -853,6 +1004,26 @@ export default function CvPageClient({ lang }: CvPageClientProps) {
     };
   }, [slug, lang, authLoading, labels.notFound, labels.errorLoading]);
 
+  // Compute cvData and visible sections before hooks so hook call count is stable
+  const cvData = useMemo(
+    () => (member ? transformProfileToCV(member, lang) : null),
+    [member, lang],
+  );
+
+  const visibleSections = useMemo(
+    () => (cvData ? getVisibleSections(cvData) : []),
+    [cvData],
+  );
+
+  const sectionIds = useMemo(
+    () => visibleSections.map((s) => s.id),
+    [visibleSections],
+  );
+
+  const activeSection = useActiveSection(sectionIds);
+
+  // --- Early returns after all hooks ---
+
   if (authLoading || loading) {
     return <LoadingView label={labels.loading} />;
   }
@@ -881,23 +1052,118 @@ export default function CvPageClient({ lang }: CvPageClientProps) {
     );
   }
 
-  const cvData = transformProfileToCV(member, lang);
+  if (!cvData) {
+    return <LoadingView label={labels.loading} />;
+  }
 
   return (
-    <CvContentWrapper memberName={member.displayName} lang={lang} labels={labels}>
-      <CvAboutSection personal={cvData.personal} />
-      <CvExperienceSection experience={cvData.experience} labels={labels} />
-      <CvEducationSection education={cvData.education} labels={labels} />
-      <CvCertificationsSection
-        certifications={cvData.certifications}
-        labels={labels}
-      />
-      <CvSkillsSection skills={cvData.skills} labels={labels} />
-      <CvProjectsSection projects={cvData.projects} labels={labels} />
-      <CvLanguagesSection languages={cvData.languages} labels={labels} />
-      <div className="border-t border-gray-200 pt-10 dark:border-gray-800">
-        <CvPdfDownloader cvData={cvData} lang={lang} />
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      {/* Header bar */}
+      <header className="border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+        <div className="mx-auto flex max-w-6xl items-center gap-3 px-6 py-4">
+          <a
+            href={`/${lang}/members`}
+            className="flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            {labels.directory}
+          </a>
+          <span className="text-gray-300 dark:text-gray-700">|</span>
+          <span className="text-lg font-bold text-gray-900 dark:text-white">
+            SECiD
+          </span>
+          <span className="rounded bg-primary-100 px-1.5 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">
+            CV
+          </span>
+        </div>
+      </header>
+
+      {/* Main layout with sidebar */}
+      <div className="mx-auto max-w-6xl px-6 py-12 lg:flex lg:gap-8">
+        {/* Sidebar nav - sticky, hidden on mobile */}
+        <SidebarNav
+          sections={visibleSections}
+          activeSection={activeSection}
+          labels={labels}
+        />
+
+        {/* Main content */}
+        <main className="min-w-0 flex-1 max-w-4xl">
+          {/* Mobile section nav - horizontal scroll */}
+          <MobileNav
+            sections={visibleSections}
+            activeSection={activeSection}
+            labels={labels}
+          />
+
+          <CvAboutSection personal={cvData.personal} />
+          <GradientDivider />
+          {cvData.experience.length > 0 && (
+            <>
+              <CvExperienceSection experience={cvData.experience} labels={labels} />
+              <GradientDivider />
+            </>
+          )}
+          {cvData.education.length > 0 && (
+            <>
+              <CvEducationSection education={cvData.education} labels={labels} />
+              <GradientDivider />
+            </>
+          )}
+          {cvData.certifications.length > 0 && (
+            <>
+              <CvCertificationsSection
+                certifications={cvData.certifications}
+                labels={labels}
+              />
+              <GradientDivider />
+            </>
+          )}
+          {cvData.skills.length > 0 && (
+            <>
+              <CvSkillsSection skills={cvData.skills} labels={labels} />
+              <GradientDivider />
+            </>
+          )}
+          {cvData.projects.length > 0 && (
+            <>
+              <CvProjectsSection projects={cvData.projects} labels={labels} />
+              <GradientDivider />
+            </>
+          )}
+          {cvData.languages.length > 0 && (
+            <>
+              <CvLanguagesSection languages={cvData.languages} labels={labels} />
+              <GradientDivider />
+            </>
+          )}
+          <section id="download" className="scroll-mt-24 py-10">
+            <CvPdfDownloader cvData={cvData} lang={lang} />
+          </section>
+        </main>
       </div>
-    </CvContentWrapper>
+
+      {/* Footer */}
+      <footer className="pb-8 pt-4">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent dark:via-gray-700" />
+          <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+            {labels.generatedFrom} &copy; {new Date().getFullYear()}
+          </p>
+        </div>
+      </footer>
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.submitPublicJob = exports.completeRegistration = exports.onMergeRequestApproved = exports.onUserNumeroCuentaChange = exports.serveLogo = exports.onMemberCompanyChange = exports.getMemberGroupList = exports.updateMemberGroups = exports.syncGroupMembership = exports.onMemberStatusChange = exports.onUserDocCreated = exports.onNewJobPosted = exports.onUserDelete = exports.matchJobsForUser = exports.verifyUnamEmail = exports.onUserCreate = void 0;
+exports.submitPublicJob = exports.completeRegistration = exports.onMergeRequestApproved = exports.onUserNumeroCuentaChange = exports.onMemberCompanyChange = exports.getMemberGroupList = exports.updateMemberGroups = exports.syncGroupMembership = exports.onMemberStatusChange = exports.onUserDocCreated = exports.onNewJobPosted = exports.onUserDelete = exports.matchJobsForUser = exports.verifyUnamEmail = exports.onUserCreate = void 0;
 const firestore_1 = require("firebase-functions/v2/firestore");
 const https_1 = require("firebase-functions/v2/https");
 const identity_1 = require("firebase-functions/v2/identity");
@@ -465,5 +465,4 @@ exports.getMemberGroupList = (0, https_1.onCall)(async (request) => {
 });
 var companies_1 = require("./companies");
 Object.defineProperty(exports, "onMemberCompanyChange", { enumerable: true, get: function () { return companies_1.onMemberCompanyChange; } });
-Object.defineProperty(exports, "serveLogo", { enumerable: true, get: function () { return companies_1.serveLogo; } });
 //# sourceMappingURL=index.js.map

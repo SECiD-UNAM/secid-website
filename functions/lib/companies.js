@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.serveLogo = exports.onMemberCompanyChange = void 0;
+exports.onMemberCompanyChange = void 0;
 const firestore_1 = require("firebase-functions/v2/firestore");
-const https_1 = require("firebase-functions/v2/https");
 const firestore_2 = require("firebase-admin/firestore");
 const admin = require("firebase-admin");
 const db = admin.firestore();
@@ -33,45 +32,5 @@ exports.onMemberCompanyChange = (0, firestore_1.onDocumentUpdated)("users/{userI
     }
     await batch.commit();
     return null;
-});
-/**
- * Serve company logos via Firebase Hosting CDN.
- * URL pattern: /logos/{companyId}
- * Firebase Hosting caches the response at the CDN edge for 1 hour.
- */
-exports.serveLogo = (0, https_1.onRequest)({ region: "us-central1" }, async (req, res) => {
-    var _a;
-    // Extract companyId from path: /logos/{companyId}
-    const parts = req.path.split("/").filter(Boolean);
-    const companyId = parts[1]; // parts[0] = 'logos'
-    if (!companyId) {
-        res.status(400).send("Missing companyId");
-        return;
-    }
-    try {
-        // Look up the company's logoUrl from Firestore
-        const companyDoc = await admin
-            .firestore()
-            .collection("companies")
-            .doc(companyId)
-            .get();
-        if (!companyDoc.exists) {
-            res.status(404).send("Company not found");
-            return;
-        }
-        const logoUrl = (_a = companyDoc.data()) === null || _a === void 0 ? void 0 : _a.logoUrl;
-        if (!logoUrl) {
-            res.status(404).send("No logo");
-            return;
-        }
-        // Set CDN cache headers: cache at edge for 1 hour, browser for 10 min
-        res.set("Cache-Control", "public, max-age=600, s-maxage=3600");
-        // Redirect to the Storage URL (CDN caches the redirect target)
-        res.redirect(302, logoUrl);
-    }
-    catch (error) {
-        console.error("Error serving logo:", error);
-        res.status(500).send("Error");
-    }
 });
 //# sourceMappingURL=companies.js.map

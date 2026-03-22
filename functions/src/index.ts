@@ -596,7 +596,7 @@ export const getMemberGroupList = onCall(async (request) => {
   return { success: true, groups };
 });
 
-export { onMemberCompanyChange, serveLogo } from "./companies";
+export { onMemberCompanyChange } from "./companies";
 
 // Profile Merge: numero_cuenta_index maintenance
 export { onUserNumeroCuentaChange };
