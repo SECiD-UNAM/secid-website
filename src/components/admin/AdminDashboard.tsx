@@ -136,22 +136,28 @@ export const AdminDashboard: React.FC = () => {
         const eventsRef = collection(db, 'events');
         const totalEventsSnapshot = await getDocs(eventsRef);
         totalEvents = totalEventsSnapshot.size;
-        const upcomingEventsQuery = query(
-          eventsRef,
-          where('date', '>=', Timestamp.fromDate(now)),
-          where('status', '==', 'published')
-        );
-        const upcomingEventsSnapshot = await getDocs(upcomingEventsQuery);
-        upcomingEvents = upcomingEventsSnapshot.size;
+        // Count upcoming events client-side to avoid composite index requirement
+        totalEventsSnapshot.forEach((doc) => {
+          const data = doc.data();
+          const eventDate = data.date?.toDate?.() || new Date(0);
+          if (eventDate >= now && data.status === 'published') {
+            upcomingEvents++;
+          }
+        });
       } catch (err) {
         console.warn('Error loading events stats:', err);
       }
 
       // Load forum stats
       try {
-        const forumPostsRef = collection(db, 'forum_posts');
-        const totalForumPostsSnapshot = await getDocs(forumPostsRef);
-        totalForumPosts = totalForumPostsSnapshot.size;
+        const forumsRef = collection(db, 'forums');
+        const forumsSnapshot = await getDocs(forumsRef);
+        // Count posts across all forum subcollections
+        for (const forumDoc of forumsSnapshot.docs) {
+          const postsRef = collection(db, 'forums', forumDoc.id, 'posts');
+          const postsSnapshot = await getDocs(postsRef);
+          totalForumPosts += postsSnapshot.size;
+        }
       } catch (err) {
         console.warn('Error loading forum stats:', err);
       }
