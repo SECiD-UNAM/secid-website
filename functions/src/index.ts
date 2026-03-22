@@ -25,6 +25,7 @@ import {
   getMembersGroup,
 } from "./group-config";
 import { onUserNumeroCuentaChange } from "./numero-cuenta-index";
+import { onMergeRequestApproved } from "./merge-engine";
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -354,6 +355,9 @@ export const onMemberStatusChange = onDocumentUpdated(
 
     if (!beforeData || !afterData) return;
 
+    // Skip during merge operations to prevent unintended group changes
+    if (afterData._mergeInProgress) return;
+
     const oldStatus = beforeData.lifecycle?.status;
     const newStatus = afterData.lifecycle?.status;
 
@@ -564,3 +568,6 @@ export { onMemberCompanyChange, serveLogo } from "./companies";
 
 // Profile Merge: numero_cuenta_index maintenance
 export { onUserNumeroCuentaChange };
+
+// Profile Merge: merge engine
+export { onMergeRequestApproved };

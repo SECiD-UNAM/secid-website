@@ -40,6 +40,13 @@ export interface UserProfile {
   photoURL?: string;
   createdAt?: any;
   updatedAt?: any;
+  // Profile merge detection
+  potentialMergeMatch?: {
+    matchedUid: string;
+    numeroCuenta: string;
+    detectedAt: any;
+    dismissed: boolean;
+  };
 }
 
 interface AuthContextType {
