@@ -174,7 +174,7 @@ export async function searchMembers(
 
 /**
  * Get a single member profile by UID or slug.
- * Slugs are detected by the presence of a hyphen (UIDs are alphanumeric).
+ * Tries UID document lookup first; falls back to slug query.
  */
 export async function getMemberProfile(
   idOrSlug: string
@@ -183,26 +183,21 @@ export async function getMemberProfile(
     return createMockMemberProfile(1);
   }
 
-  const isSlug = idOrSlug.includes('-');
-
-  if (isSlug) {
-    return getMemberBySlug(idOrSlug);
-  }
-
   try {
+    // Try UID lookup first
     const docRef = doc(db, COLLECTIONS.MEMBERS, idOrSlug);
     let docSnap = await getDoc(docRef);
 
-    // Fallback to server if persistent cache returns a miss
     if (!docSnap.exists()) {
       docSnap = await getDocFromServer(docRef);
     }
 
     if (docSnap.exists()) {
-      return mapUserDocToMemberProfile(docSnap['id'], docSnap.data());
+      return mapUserDocToMemberProfile(docSnap.id, docSnap.data());
     }
 
-    return null;
+    // Fall back to slug query
+    return getMemberBySlug(idOrSlug);
   } catch (error) {
     console.error('Error fetching member profile:', error);
     throw error;
@@ -210,19 +205,20 @@ export async function getMemberProfile(
 }
 
 /**
- * Look up a member by their URL slug (derived from displayName).
+ * Look up a member by their URL slug via Firestore indexed query.
  */
 async function getMemberBySlug(slug: string): Promise<MemberProfile | null> {
   try {
-    const snapshot = await getDocs(
-      query(collection(db, COLLECTIONS.MEMBERS), limit(200))
+    const q = query(
+      collection(db, COLLECTIONS.MEMBERS),
+      where('slug', '==', slug),
+      limit(1)
     );
+    const snapshot = await getDocs(q);
 
-    for (const d of snapshot.docs) {
-      const profile = mapUserDocToMemberProfile(d.id, d.data());
-      if (profile.slug === slug) {
-        return profile;
-      }
+    const d = snapshot.docs[0];
+    if (d) {
+      return mapUserDocToMemberProfile(d.id, d.data());
     }
 
     return null;
