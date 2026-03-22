@@ -580,6 +580,14 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
             {lang === 'es' ? 'Perfil' : 'Profile'} {profileCompleteness}%{' '}
             {lang === 'es' ? 'completo' : 'complete'}
           </span>
+          {effectiveUid && (
+            <a
+              href={`/${lang}/members/${effectiveUid}/cv`}
+              className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+            >
+              {lang === 'es' ? 'Ver mi CV' : 'View my CV'} &rarr;
+            </a>
+          )}
         </div>
         <div className="h-2.5 w-full rounded-full bg-gray-200 dark:bg-gray-700">
           <div
