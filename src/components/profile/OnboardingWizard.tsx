@@ -161,7 +161,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   };
 
   return (
-    <div className="mx-auto max-w-lg">
+    <div className="mx-auto max-w-lg pb-24">
       {/* Progress */}
       <div className="mb-8">
         <ProgressDots currentStep={currentStep} totalSteps={TOTAL_STEPS} />

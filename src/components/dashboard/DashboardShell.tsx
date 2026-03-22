@@ -50,7 +50,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
           />
 
           <main className="flex-1 lg:ml-64">
-            <div className="px-4 py-8 sm:px-6 lg:px-8">
+            <div className="px-4 py-8 pb-24 sm:px-6 md:pb-8 lg:px-8">
               <MergeNotificationBanner lang={lang} />
               {children}
             </div>
