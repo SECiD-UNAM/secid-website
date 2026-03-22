@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { MagnifyingGlassIcon, FunnelIcon, BuildingOffice2Icon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, FunnelIcon, BuildingOffice2Icon, ListBulletIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Company } from '@/types/company';
 import { getCompanies } from '@/lib/companies';
 import { CompanyLogo } from '@/components/shared/CompanyLogo';
 import { CompanyDrawer } from './CompanyDrawer';
+import { CompanyNetworkGraph } from './CompanyNetworkGraph';
+
+type ViewMode = 'list' | 'graph';
 
 interface Props {
   lang?: 'es' | 'en';
@@ -19,6 +22,7 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
   const [industryFilter, setIndustryFilter] = useState('');
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
 
   const loadCompanies = useCallback(async () => {
     try {
@@ -134,7 +138,7 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
         </div>
       </div>
 
-      {/* Search + Filter */}
+      {/* Search + Filter + View Toggle */}
       <div className="mb-6 flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
@@ -159,49 +163,94 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
             ))}
           </select>
         </div>
+        {/* View toggle */}
+        <div className="flex rounded-lg border border-gray-300 dark:border-gray-600">
+          <button
+            onClick={() => setViewMode('list')}
+            className={`flex items-center gap-1.5 rounded-l-lg px-3 py-2 text-sm font-medium transition-colors ${
+              viewMode === 'list'
+                ? 'bg-primary-600 text-white'
+                : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
+            }`}
+            title={lang === 'es' ? 'Vista de lista' : 'List view'}
+          >
+            <ListBulletIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">{lang === 'es' ? 'Lista' : 'List'}</span>
+          </button>
+          <button
+            onClick={() => setViewMode('graph')}
+            className={`flex items-center gap-1.5 rounded-r-lg px-3 py-2 text-sm font-medium transition-colors ${
+              viewMode === 'graph'
+                ? 'bg-primary-600 text-white'
+                : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
+            }`}
+            title={lang === 'es' ? 'Vista de red' : 'Network view'}
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <circle cx="6" cy="6" r="2.5" />
+              <circle cx="18" cy="8" r="2.5" />
+              <circle cx="12" cy="18" r="2.5" />
+              <line x1="8" y1="7" x2="16" y2="8" strokeLinecap="round" />
+              <line x1="7" y1="8.5" x2="11" y2="16" strokeLinecap="round" />
+              <line x1="17" y1="10" x2="13" y2="16" strokeLinecap="round" />
+            </svg>
+            <span className="hidden sm:inline">{lang === 'es' ? 'Red' : 'Network'}</span>
+          </button>
+        </div>
       </div>
 
-      {/* Results count */}
-      <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
-        {filtered.length} {lang === 'es' ? 'empresas encontradas' : 'companies found'}
-      </p>
-
-      {/* Company list */}
-      {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-gray-200 bg-white py-16 dark:border-gray-700 dark:bg-gray-800">
-          <BuildingOffice2Icon className="mb-4 h-12 w-12 text-gray-300 dark:text-gray-600" />
-          <p className="text-gray-500 dark:text-gray-400">
-            {lang === 'es' ? 'No se encontraron empresas' : 'No companies found'}
-          </p>
-        </div>
+      {/* Content: List or Graph */}
+      {viewMode === 'graph' ? (
+        <CompanyNetworkGraph
+          companies={filtered}
+          onCompanyClick={openDrawer}
+          lang={lang}
+        />
       ) : (
-        <div className="space-y-2">
-          {filtered.map((company) => (
-            <button
-              key={company.id}
-              onClick={() => openDrawer(company)}
-              className="flex w-full items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 text-left transition-colors hover:border-primary-300 hover:bg-primary-50/50 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-primary-700 dark:hover:bg-primary-900/10"
-            >
-              <CompanyLogo company={company} size="md" />
-              <div className="min-w-0 flex-1">
-                <p className="font-medium text-gray-900 dark:text-white">
-                  {company.name}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {[company.industry, company.location].filter(Boolean).join(' · ')}
-                </p>
-              </div>
-              <div className="flex shrink-0 items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                <span title={lang === 'es' ? 'Miembros' : 'Members'}>
-                  {company.memberCount} {lang === 'es' ? 'miembros' : 'members'}
-                </span>
-                <svg className="h-5 w-5 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                </svg>
-              </div>
-            </button>
-          ))}
-        </div>
+        <>
+          {/* Results count */}
+          <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+            {filtered.length} {lang === 'es' ? 'empresas encontradas' : 'companies found'}
+          </p>
+
+          {/* Company list */}
+          {filtered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-xl border border-gray-200 bg-white py-16 dark:border-gray-700 dark:bg-gray-800">
+              <BuildingOffice2Icon className="mb-4 h-12 w-12 text-gray-300 dark:text-gray-600" />
+              <p className="text-gray-500 dark:text-gray-400">
+                {lang === 'es' ? 'No se encontraron empresas' : 'No companies found'}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {filtered.map((company) => (
+                <button
+                  key={company.id}
+                  onClick={() => openDrawer(company)}
+                  className="flex w-full items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 text-left transition-colors hover:border-primary-300 hover:bg-primary-50/50 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-primary-700 dark:hover:bg-primary-900/10"
+                >
+                  <CompanyLogo company={company} size="md" />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {company.name}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {[company.industry, company.location].filter(Boolean).join(' · ')}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                    <span title={lang === 'es' ? 'Miembros' : 'Members'}>
+                      {company.memberCount} {lang === 'es' ? 'miembros' : 'members'}
+                    </span>
+                    <svg className="h-5 w-5 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {/* Drawer */}
