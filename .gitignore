@@ -144,3 +144,5 @@ tmp/
 
 # Local dev tools
 tools/
+.superpowers/
+functions/lib/
