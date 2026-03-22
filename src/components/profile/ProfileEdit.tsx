@@ -431,19 +431,36 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
         profileCompleteness,
       };
 
-      // Only set companyId if it has a value (Firestore rejects undefined)
+      // Only set companyId if it has a value
       if (currentWork?.companyId) {
         updates['profile.companyId'] = currentWork.companyId;
       }
 
-      // Remove any remaining undefined values
-      for (const key of Object.keys(updates)) {
-        if (updates[key] === undefined) {
-          delete updates[key];
+      // Deep-clean undefined values — Firestore rejects them anywhere in the tree
+      function removeUndefined(obj: any): any {
+        if (Array.isArray(obj)) {
+          return obj.map(removeUndefined);
         }
+        if (
+          obj &&
+          typeof obj === 'object' &&
+          !(obj instanceof Date) &&
+          typeof obj.toDate !== 'function'
+        ) {
+          const cleaned: Record<string, any> = {};
+          for (const [k, v] of Object.entries(obj)) {
+            if (v !== undefined) {
+              cleaned[k] = removeUndefined(v);
+            }
+          }
+          return cleaned;
+        }
+        return obj;
       }
 
-      await updateDoc(doc(db, 'users', effectiveUid), updates);
+      const cleanedUpdates = removeUndefined(updates);
+
+      await updateDoc(doc(db, 'users', effectiveUid), cleanedUpdates);
 
       // Only update Firebase Auth profile when editing own profile
       if (!targetUid && user) {
