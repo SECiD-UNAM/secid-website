@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardSidebar } from './DashboardSidebar';
+import { MergeNotificationBanner } from '@/components/merge/MergeNotificationBanner';
 import { Bars3Icon } from '@heroicons/react/24/outline';
 
 interface DashboardShellProps {
@@ -49,7 +50,10 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
           />
 
           <main className="flex-1 lg:ml-64">
-            <div className="px-4 py-8 sm:px-6 lg:px-8">{children}</div>
+            <div className="px-4 py-8 sm:px-6 lg:px-8">
+              <MergeNotificationBanner lang={lang} />
+              {children}
+            </div>
           </main>
         </div>
       </ProtectedRoute>
