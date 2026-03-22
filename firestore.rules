@@ -100,7 +100,8 @@ service cloud.firestore {
                                   'numeroCuenta', 'academicLevel', 'campus', 'generation',
                                   'graduationYear', 'lifecycle',
                                   'networking', 'activity',
-                                  'potentialMergeMatch']);
+                                  'potentialMergeMatch',
+                                  'slug']);
 
       // Allow authenticated members to update networking fields on other users
       // (connection requests, follow/unfollow, accept connections)

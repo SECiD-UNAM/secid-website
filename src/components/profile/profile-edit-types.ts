@@ -20,6 +20,7 @@ export interface FormData {
   location: string;
   bio: string;
   photoURL: string;
+  slug: string;
 
   // Professional Information
   currentPosition: string;
@@ -95,6 +96,7 @@ export const INITIAL_FORM_DATA: FormData = {
   location: '',
   bio: '',
   photoURL: '',
+  slug: '',
   currentPosition: '',
   currentCompany: '',
   industry: '',

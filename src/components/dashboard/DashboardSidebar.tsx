@@ -18,6 +18,7 @@ import {
   BellIcon,
   ArrowRightOnRectangleIcon,
   XMarkIcon,
+  BuildingOffice2Icon,
 } from '@heroicons/react/24/outline';
 
 interface DashboardSidebarProps {
@@ -99,6 +100,12 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       name: 'Members',
       href: `/${lang}/dashboard/members`,
       icon: UserGroupIcon,
+      requireVerified: true,
+    },
+    {
+      name: lang === 'es' ? 'Red de Empresas' : 'Company Network',
+      href: `/${lang}/companies`,
+      icon: BuildingOffice2Icon,
       requireVerified: true,
     },
   ];

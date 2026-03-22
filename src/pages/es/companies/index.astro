@@ -1,0 +1,23 @@
+---
+export const prerender = false;
+import ModernLayout from '../../../layouts/ModernLayout.astro';
+import Navigation from '../../../components/Navigation.astro';
+import Footer from '../../../components/Footer.astro';
+import CompanyListPage from '../../../components/wrappers/CompanyListPage';
+---
+
+<ModernLayout
+  title="Red de Empresas - SECiD"
+  description="Directorio de empresas donde trabajan miembros de SECiD - Sociedad de Egresados en Ciencia de Datos UNAM"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <section class="secid-section">
+    <div class="secid-container">
+      <CompanyListPage client:load lang="es" />
+    </div>
+  </section>
+
+  <Footer lang="es" />
+</ModernLayout>
