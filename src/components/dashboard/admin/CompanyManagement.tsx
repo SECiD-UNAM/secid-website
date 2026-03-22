@@ -170,48 +170,60 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
 
   /* ---- fetch logo client-side (Logo.dev or Google favicon) ---- */
 
+  // Helper: load image via <img> tag (avoids CORS) and convert to blob via canvas
+  function imageUrlToBlob(url: string): Promise<Blob | null> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(null);
+          return;
+        }
+        ctx.drawImage(img, 0, 0);
+        canvas.toBlob((blob) => resolve(blob), 'image/png');
+      };
+      img.onerror = () => resolve(null);
+      img.src = url;
+    });
+  }
+
   async function handleFetchLogo() {
     const domain = formData.domain.trim();
     if (!domain) return;
 
     setFetchingLogo(true);
     try {
-      // Try Logo.dev first if token is configured
       const storedToken = localStorage.getItem('logoDevApiToken');
       let logoBlob: Blob | null = null;
 
+      // Try Logo.dev if token configured (use pk_ public token, not sk_ secret)
       if (storedToken) {
-        try {
-          const logoDevUrl = `https://img.logo.dev/${domain}?token=${storedToken}&format=png&size=200`;
-          const resp = await fetch(logoDevUrl);
-          if (resp.ok) {
-            logoBlob = await resp.blob();
-          }
-        } catch {
-          // Logo.dev failed, fall back to favicon
-        }
+        logoBlob = await imageUrlToBlob(
+          `https://img.logo.dev/${domain}?token=${storedToken}&format=png&size=200`
+        );
       }
 
-      // Fallback: Google Favicon API
+      // Fallback: Google Favicon via img tag (avoids CORS)
       if (!logoBlob) {
-        const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
-        const resp = await fetch(faviconUrl);
-        if (resp.ok) {
-          logoBlob = await resp.blob();
-        }
+        logoBlob = await imageUrlToBlob(
+          `https://www.google.com/s2/favicons?domain=${domain}&sz=128`
+        );
       }
 
       if (!logoBlob) throw new Error('Could not fetch logo');
 
-      // If editing existing company, upload immediately
+      const file = new File([logoBlob], 'logo.png', { type: 'image/png' });
+
       if (editingCompany) {
-        const file = new File([logoBlob], `logo.png`, { type: 'image/png' });
         const logoUrl = await uploadCompanyLogo(editingCompany.id, file);
         await updateCompany(editingCompany.id, { logoUrl });
         setLogoPreview(logoUrl);
       } else {
-        // For new companies, store the blob as a file for upload on save
-        const file = new File([logoBlob], `logo.png`, { type: 'image/png' });
         setLogoFile(file);
         setLogoPreview(URL.createObjectURL(logoBlob));
       }
