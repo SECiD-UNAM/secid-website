@@ -8,6 +8,7 @@ export interface Company {
   id: string;
   name: string;
   domain: string;
+  slug: string;
   logoUrl?: string;
   industry?: string;
   location?: string;

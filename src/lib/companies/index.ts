@@ -8,6 +8,7 @@ export {
   getCompaniesWithMembers,
   getCompany,
   getCompanyByDomain,
+  getCompanyBySlug,
   getPendingReviewCompanies,
 } from './queries';
 
@@ -19,3 +20,6 @@ export {
   approveCompany,
   rejectCompany,
 } from './mutations';
+
+export { getCompanyMembers } from './members';
+export type { CompanyMembers } from './members';

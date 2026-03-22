@@ -16,6 +16,15 @@ import type { CompanyCreateInput, CompanyUpdateInput } from '@/types/company';
 
 const COLLECTION = 'companies';
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
 export async function createCompany(
   input: CompanyCreateInput,
   createdBy: string
@@ -23,6 +32,7 @@ export async function createCompany(
   const docRef = doc(collection(db, COLLECTION));
   await setDoc(docRef, {
     ...input,
+    slug: slugify(input.name),
     memberCount: 0,
     createdBy,
     createdAt: serverTimestamp(),
@@ -42,6 +52,9 @@ export async function updateCompany(
     if (value !== undefined) {
       cleaned[key] = value;
     }
+  }
+  if (input.name) {
+    cleaned['slug'] = slugify(input.name);
   }
   await updateDoc(doc(db, COLLECTION, companyId), {
     ...cleaned,

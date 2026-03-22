@@ -15,11 +15,22 @@ import type { Company } from '@/types/company';
 
 const COLLECTION = 'companies';
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
 function mapCompanyDoc(id: string, data: Record<string, unknown>): Company {
+  const name = (data.name as string) || '';
   return {
     id,
-    name: (data.name as string) || '',
+    name,
     domain: (data.domain as string) || '',
+    slug: (data.slug as string) || slugify(name),
     logoUrl: (data.logoUrl as string) || undefined,
     industry: (data.industry as string) || undefined,
     location: (data.location as string) || undefined,
@@ -74,4 +85,21 @@ export async function getPendingReviewCompanies(): Promise<Company[]> {
     query(collection(db, COLLECTION), where('pendingReview', '==', true))
   );
   return snapshot.docs.map((d) => mapCompanyDoc(d.id, d.data()));
+}
+
+export async function getCompanyBySlug(slug: string): Promise<Company | null> {
+  const snapshot = await getDocs(
+    query(collection(db, COLLECTION), where('slug', '==', slug))
+  );
+  if (!snapshot.empty) {
+    const d = snapshot.docs[0]!;
+    return mapCompanyDoc(d.id, d.data());
+  }
+  // Fallback: compute slug from name for companies without stored slug
+  const allSnapshot = await getDocs(collection(db, COLLECTION));
+  for (const d of allSnapshot.docs) {
+    const company = mapCompanyDoc(d.id, d.data());
+    if (company.slug === slug) return company;
+  }
+  return null;
 }
