@@ -69,16 +69,19 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       name: 'Jobs',
       href: `/${lang}/dashboard/jobs`,
       icon: BriefcaseIcon,
+      requireVerified: true,
     },
     {
       name: 'Events',
       href: `/${lang}/dashboard/events`,
       icon: CalendarIcon,
+      requireVerified: true,
     },
     {
       name: 'Forums',
       href: `/${lang}/dashboard/forums`,
       icon: ChatBubbleLeftRightIcon,
+      requireVerified: true,
     },
     {
       name: 'Mentorship',
@@ -90,6 +93,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       name: 'Resources',
       href: `/${lang}/dashboard/resources`,
       icon: BookOpenIcon,
+      requireVerified: true,
     },
     {
       name: 'Members',
