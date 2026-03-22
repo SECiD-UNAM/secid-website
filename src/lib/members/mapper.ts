@@ -8,7 +8,7 @@ import type {
   EducationEntry,
 } from '@/types/member';
 
-function slugify(text: string): string {
+export function slugify(text: string): string {
   return text
     .toLowerCase()
     .normalize('NFD')
@@ -111,7 +111,7 @@ export function mapUserDocToMemberProfile(
     .join('')
     .toUpperCase()
     .slice(0, 2);
-  const slug = slugify(displayName);
+  const slug = data.slug || slugify(displayName);
 
   return {
     uid,
