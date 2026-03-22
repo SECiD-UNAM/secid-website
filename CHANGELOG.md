@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Custom 404 page**: Added `src/pages/404.astro` — a static error page using `ModernLayout`, `Navigation`, and `Footer`. Shows a friendly "Página no encontrada" message in Spanish with links back to the homepage (`/es/`) and the member directory (`/es/dashboard/members/`). Marked `noIndex` to prevent search engine indexing. Astro's 404 convention outputs this as `dist/client/404.html`, which Firebase Hosting serves automatically for unmatched routes.
+
+- **SignUpForm recruiter path**: Expanded `src/components/auth/SignUpForm.tsx` with a recruiter registration flow. Adds a new `company` step with Zod-validated fields (company name, position, website). Replaces direct Firestore writes with `completeRegistration` Cloud Function calls for all registration types (member, collaborator, recruiter). Adds inline migration check on `numeroCuenta` blur that detects existing profiles via `checkNumeroCuentaMatch`. Supports `?role=` query parameter pre-selection. Recruiter Done step shows "Post a Job" CTA.
+
+- **CompanyMemberCard**: Added `src/components/companies/CompanyMemberCard.tsx` — renders a member row for the company directory. Shows avatar, name, role at the company, tenure date range, an "Now at" alumni badge when applicable, and LinkedIn/profile action links. Unauthenticated viewers see a blurred skeleton row with a "Sign in to view" label.
+
+- **CompanyDrawer**: Added `src/components/companies/CompanyDrawer.tsx` — a right-side slide-in panel that opens when a company card is selected. Lazy-loads current members and alumni via `getCompanyMembers`, displays company logo, industry, location, and website, and lists `CompanyMemberCard` rows for each group. Supports Escape-key and backdrop-click dismissal. Footer links to the full company profile page.
+
+- **Admin merge profiles page**: Added `src/pages/admin/merge-profiles.astro` — SSR page at `/admin/merge-profiles` that mounts `AdminMergeTool` behind `AdminAuthGuard` (`requiredRole="admin"`), completing the routing so the nav link in `AdminNavigation.tsx` is live.
+
 - **Admin merge tool**: Added `src/components/admin/AdminMergeTool.tsx`, a tabbed admin component for managing profile merges. Tab 1 renders `MergeRequestsQueue` for the real-time request queue. Tab 2 provides a manual merge flow: search users by email or numeroCuenta, assign Old/New roles, configure field selections via `ProfileComparison`, set migrateReferences and oldDocAction options, then execute via the required two-write pattern (`setDoc(pending)` then `updateDoc(approved)`) that triggers the `onDocumentUpdated` Cloud Function. 7 unit tests.
 
 - **Admin merge requests queue**: Added `src/components/admin/MergeRequestsQueue.tsx` that subscribes to the `merge_requests` Firestore collection via `onSnapshot` for real-time updates. Lists requests with numeroCuenta, truncated UIDs, status badge, and error text. Pending requests show a Review button that opens an inline review UI with `ProfileComparison`, migrateReferences toggle, oldDocAction radio, reviewNotes textarea, and Approve/Reject controls. Failed requests show a Retry button that resets status to `approved`. 8 unit tests.
