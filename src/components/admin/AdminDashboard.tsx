@@ -56,7 +56,7 @@ interface RecentActivity {
 }
 
 export const AdminDashboard: React.FC = () => {
-  const { userProfile, isAdmin } = useAuth();
+  const { userProfile, isAdmin, loading: authLoading } = useAuth();
   const { t: _t, language } = useTranslations();
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
@@ -81,6 +81,7 @@ export const AdminDashboard: React.FC = () => {
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isAdmin) {
       setError('Unauthorized access. Admin privileges required.');
       setLoading(false);
