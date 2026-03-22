@@ -5,7 +5,8 @@ import {
   type User,
   type Unsubscribe,
 } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
 
 interface Props {
   lang?: 'es' | 'en';
@@ -36,13 +37,24 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
   const [ready, setReady] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [userRole, setUserRole] = useState<string>('member');
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
     auth.authStateReady().then(() => {
-      unsubscribe = onAuthStateChanged(auth, (u) => {
+      unsubscribe = onAuthStateChanged(auth, async (u) => {
         setUser(u);
         setReady(true);
+        if (u) {
+          try {
+            const snap = await getDoc(doc(db, 'users', u.uid));
+            if (snap.exists()) {
+              setUserRole((snap.data().role as string) || 'member');
+            }
+          } catch {
+            // ignore — default to member
+          }
+        }
       });
     });
     return () => {
@@ -140,6 +152,28 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
       icon: 'fas fa-cog',
     },
   ];
+
+  const isAdmin = userRole === 'admin' || userRole === 'moderator';
+
+  const adminItems = isAdmin
+    ? [
+        {
+          href: `/${lang}/dashboard/admin`,
+          label: 'Admin Panel',
+          icon: 'fas fa-shield-alt',
+        },
+        {
+          href: `/${lang}/dashboard/admin/members`,
+          label: lang === 'es' ? 'Gestionar Miembros' : 'Manage Members',
+          icon: 'fas fa-user-cog',
+        },
+        {
+          href: `/${lang}/dashboard/admin/companies`,
+          label: lang === 'es' ? 'Gestionar Empresas' : 'Manage Companies',
+          icon: 'fas fa-building',
+        },
+      ]
+    : [];
 
   const handleSignOut = async () => {
     setSheetOpen(false);
@@ -314,6 +348,62 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
               {item.label}
             </a>
           ))}
+        </div>
+
+        {/* Admin section */}
+        {adminItems.length > 0 && (
+          <>
+            <div
+              style={{
+                padding: '4px 16px 8px',
+                fontSize: 10,
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                color: 'var(--color-text-secondary, #64748b)',
+              }}
+            >
+              {lang === 'es' ? 'Administración' : 'Administration'}
+            </div>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: 8,
+                padding: '0 16px 12px',
+              }}
+            >
+              {adminItems.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setSheetOpen(false)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: 12,
+                    borderRadius: 8,
+                    background: 'var(--color-background, #0f172a)',
+                    textDecoration: 'none',
+                    color: 'var(--color-text-primary, #e2e8f0)',
+                    fontSize: 13,
+                  }}
+                >
+                  <i className={item.icon} style={{ width: 18, textAlign: 'center', fontSize: 14 }} />
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Sign out */}
+        <div
+          style={{
+            padding: '0 16px 12px',
+          }}
+        >
           <button
             onClick={handleSignOut}
             style={{
