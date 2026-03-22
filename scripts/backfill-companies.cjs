@@ -181,7 +181,7 @@ if (!admin.apps.length) {
 }
 
 const db = admin.firestore();
-const bucket = admin.storage().bucket(`${PROJECT_ID}.firebasestorage.app`);
+const bucket = admin.storage().bucket(`${PROJECT_ID}-storage`);
 
 // --- Helpers ---
 
