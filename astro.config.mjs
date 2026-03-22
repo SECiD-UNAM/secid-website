@@ -11,17 +11,17 @@ export default defineConfig({
   base: process.env.NODE_ENV === 'production' ? '' : '/',
 
   // Static by default, server-rendered for routes with `export const prerender = false`
-  output: 'static',
+  output: 'hybrid',
   adapter: node({
     mode: 'standalone',
   }),
-  
+
   // Build configuration
   build: {
     format: 'directory',
     assets: 'assets',
   },
-  
+
   // Integrations
   integrations: [
     react(),
@@ -77,7 +77,7 @@ export default defineConfig({
       SVG: true,
     }),
   ],
-  
+
   // Vite configuration
   vite: {
     ssr: {
@@ -89,10 +89,16 @@ export default defineConfig({
       },
     },
     optimizeDeps: {
-      exclude: ['firebase', 'firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
+      exclude: [
+        'firebase',
+        'firebase/app',
+        'firebase/auth',
+        'firebase/firestore',
+        'firebase/storage',
+      ],
     },
   },
-  
+
   // i18n configuration
   i18n: {
     defaultLocale: 'es',
@@ -101,7 +107,7 @@ export default defineConfig({
       prefixDefaultLocale: true,
     },
   },
-  
+
   // Markdown configuration
   markdown: {
     shikiConfig: {
@@ -110,7 +116,7 @@ export default defineConfig({
       wrap: true,
     },
   },
-  
+
   // Prefetch configuration for better performance
   prefetch: {
     prefetchAll: true,
