@@ -19,6 +19,7 @@ import {
   ChatBubbleLeftEllipsisIcon,
   ShareIcon,
   DocumentArrowDownIcon,
+  DocumentTextIcon,
   GlobeAltIcon,
   CodeBracketIcon,
   AcademicCapIcon,
@@ -594,6 +595,19 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
               >
                 <DocumentArrowDownIcon className="h-4 w-4" aria-hidden="true" />
               </button>
+
+              {member.cvVisibility !== 'private' && (
+                <a
+                  href={`/${lang}/members/${member.slug || member.uid}/cv`}
+                  className="flex items-center rounded-lg bg-primary-50 px-3 py-2 text-sm font-medium text-primary-700 transition-colors hover:bg-primary-100 dark:bg-primary-900/20 dark:text-primary-400 dark:hover:bg-primary-900/30"
+                >
+                  <DocumentTextIcon
+                    className="mr-1.5 h-4 w-4"
+                    aria-hidden="true"
+                  />
+                  {lang === 'es' ? 'Ver CV' : 'View CV'}
+                </a>
+              )}
             </div>
           </div>
 

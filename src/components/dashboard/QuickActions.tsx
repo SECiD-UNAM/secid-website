@@ -7,6 +7,7 @@ import {
   UserPlusIcon,
   AcademicCapIcon,
   MagnifyingGlassIcon,
+  EyeIcon,
 } from '@heroicons/react/24/outline';
 
 interface QuickActionsProps {
@@ -22,7 +23,7 @@ interface Action {
 }
 
 export const QuickActions: React.FC<QuickActionsProps> = ({ lang = 'es' }) => {
-  const { isVerified } = useAuth();
+  const { isVerified, user } = useAuth();
 
   const actions: Action[] = [
     {
@@ -45,6 +46,20 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ lang = 'es' }) => {
       href: `/${lang}/dashboard/profile`,
       color: 'green',
     },
+    ...(user
+      ? [
+          {
+            title: lang === 'es' ? 'Ver mi CV' : 'View my CV',
+            description:
+              lang === 'es'
+                ? 'Previsualiza tu CV generado'
+                : 'Preview your generated CV',
+            icon: EyeIcon,
+            href: `/${lang}/members/${user.uid}/cv`,
+            color: 'green',
+          },
+        ]
+      : []),
     {
       title: lang === 'es' ? 'Ver Eventos' : 'View Events',
       description:
