@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { createBlogPost, type BlogPost } from '@/lib/blog';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { sanitizeHtml } from '@/lib/validation/sanitization';
 
 interface Props {
   lang?: 'es' | 'en';
@@ -340,7 +341,7 @@ export default function BlogEditor({ lang = 'es' }: Props) {
           {content ? (
             <div
               className="blog-editor__preview-content"
-              dangerouslySetInnerHTML={{ __html: content }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
             />
           ) : (
             <p

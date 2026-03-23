@@ -33,6 +33,7 @@ lerna-debug.log*
 .env
 .env.local
 .env.development.local
+.env.test
 .env.test.local
 .env.production.local
 .env.*.local
@@ -146,3 +147,9 @@ tmp/
 tools/
 .superpowers/
 functions/lib/
+
+# Personal scripts (not shared)
+scripts/update-artemio-profile.mjs
+
+# Claude worktrees
+.claude/worktrees/

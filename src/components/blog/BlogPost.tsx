@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getBlogPost, type BlogPost as BlogPostType } from '@/lib/blog';
+import { sanitizeHtml } from '@/lib/validation/sanitization';
 
 interface Props {
   slug: string;
@@ -170,7 +171,7 @@ export default function BlogPost({ slug, lang = 'es' }: Props) {
       {/* Content */}
       <div
         className="blog-post__content"
-        dangerouslySetInnerHTML={{ __html: post.content }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
       />
 
       {/* Tags */}

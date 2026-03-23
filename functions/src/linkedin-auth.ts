@@ -83,6 +83,10 @@ export const linkedinAuthCallback = onRequest(
           Buffer.from(stateParam, "base64").toString(),
         );
         returnUrl = stateData.returnUrl || "/";
+        // Prevent open redirect — only allow relative paths
+        if (/^https?:\/\//i.test(returnUrl) || returnUrl.startsWith("//")) {
+          returnUrl = "/";
+        }
       } catch {
         // Malformed state is non-fatal; default returnUrl is fine.
       }

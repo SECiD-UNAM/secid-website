@@ -11,7 +11,6 @@ import {
 import type { APIRoute } from 'astro';
 
 interface PaymentIntentRequest {
-  amount?: number;
   currency?: string;
   planId?: keyof typeof SUBSCRIPTION_PLANS;
   billingCycle?: 'monthly' | 'yearly';
@@ -30,38 +29,35 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const body: PaymentIntentRequest = await request.json();
 
-    let amount = body.amount;
     const currency = body.currency || 'mxn';
     const customerId = body.customerId;
 
-    // Calculate amount from plan if planId is provided
-    if (body.planId && !amount) {
-      const plan = SUBSCRIPTION_PLANS[body['planId']];
-      if (!plan) {
-        return new Response(JSON.stringify({ error: 'Invalid plan ID' }), {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' },
-        });
-      }
-
-      let planPrice = plan.price;
-
-      // Apply yearly discount if applicable
-      if (body.billingCycle === 'yearly') {
-        planPrice = planPrice * 12 * 0.83; // 17% discount
-      }
-
-      // Calculate Mexican taxes
-      const taxCalculation = calculateMexicanTaxes(planPrice);
-      amount = taxCalculation.total;
-    }
-
-    if (!amount) {
-      return new Response(JSON.stringify({ error: 'Amount is required' }), {
+    // Amount is always derived server-side from planId — never trust client
+    if (!body.planId) {
+      return new Response(JSON.stringify({ error: 'Plan ID is required' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
     }
+
+    const plan = SUBSCRIPTION_PLANS[body['planId']];
+    if (!plan) {
+      return new Response(JSON.stringify({ error: 'Invalid plan ID' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    let planPrice = plan.price;
+
+    // Apply yearly discount if applicable
+    if (body.billingCycle === 'yearly') {
+      planPrice = planPrice * 12 * 0.83; // 17% discount
+    }
+
+    // Calculate Mexican taxes
+    const taxCalculation = calculateMexicanTaxes(planPrice);
+    const amount = taxCalculation.total;
 
     // Prepare metadata
     const metadata: Record<string, string> = {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getSpotlight } from '@/lib/spotlights';
+import { sanitizeHtml } from '@/lib/validation/sanitization';
 import type { AlumniSpotlight } from '@/types/spotlight';
 
 interface Props {
@@ -150,7 +151,7 @@ export default function SpotlightDetail({ spotlightId, lang = 'es' }: Props) {
           lineHeight: 1.8,
           color: 'var(--color-text-primary)',
         }}
-        dangerouslySetInnerHTML={{ __html: spotlight.story }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(spotlight.story) }}
       />
     </div>
   );

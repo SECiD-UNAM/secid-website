@@ -112,27 +112,13 @@ export const verifyUnamEmail = onCall<VerifyUnamEmailData>(async (request) => {
     throw new HttpsError("invalid-argument", "Email must be from UNAM domain");
   }
 
-  // In production, this would call UNAM's verification API
-  // For now, we'll simulate verification
-  const isValid = true; // Mock verification
-
-  if (isValid) {
-    await admin
-      .firestore()
-      .collection("users")
-      .doc(userId)
-      .update({
-        isVerified: true,
-        unamEmail,
-        studentId: studentId || "",
-        graduationYear: graduationYear || 0,
-        verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-
-    return { success: true, message: "UNAM verification completed" };
-  } else {
-    throw new HttpsError("invalid-argument", "UNAM verification failed");
-  }
+  // UNAM verification API not yet integrated — block auto-approval
+  // to prevent privilege escalation. Admin can manually verify members
+  // via the admin panel until the real API is connected.
+  throw new HttpsError(
+    "unimplemented",
+    "UNAM email verification is not yet available. Contact an administrator for manual verification.",
+  );
 });
 
 // Job matching algorithm

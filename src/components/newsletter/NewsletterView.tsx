@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getNewsletter, type NewsletterIssue } from '@/lib/newsletter-archive';
+import { sanitizeHtml } from '@/lib/validation/sanitization';
 
 interface Props {
   newsletterId: string;
@@ -104,7 +105,7 @@ export default function NewsletterView({ newsletterId, lang = 'es' }: Props) {
           lineHeight: 1.8,
           color: 'var(--color-text-primary)',
         }}
-        dangerouslySetInnerHTML={{ __html: newsletter.content }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(newsletter.content) }}
       />
     </div>
   );

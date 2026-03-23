@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from '../../hooks/useTranslations';
+import { sanitizeHtml } from '@/lib/validation/sanitization';
 import CourseProgress from './CourseProgress';
 
 import type {
@@ -607,7 +608,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({
                 <div className="prose mb-6 max-w-none">
                   <div
                     dangerouslySetInnerHTML={{
-                      __html: selectedLesson.content.text.content,
+                      __html: sanitizeHtml(selectedLesson.content.text.content),
                     }}
                   />
                 </div>

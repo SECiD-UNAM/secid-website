@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { sanitizeHtml } from '@/lib/validation/sanitization';
 import {
   Search,
   Filter,
@@ -563,10 +564,10 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
                         href={`/${language}/forum/topic/${result.id}`}
                         className="transition-colors hover:text-blue-600 dark:hover:text-blue-400"
                         dangerouslySetInnerHTML={{
-                          __html: highlightText(
+                          __html: sanitizeHtml(highlightText(
                             result.title,
                             result.highlights
-                          ),
+                          )),
                         }}
                       />
                     </h3>
@@ -574,7 +575,7 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
                     <div
                       className="mb-3 line-clamp-2 text-gray-600 dark:text-gray-400"
                       dangerouslySetInnerHTML={{
-                        __html: highlightText(
+                        __html: sanitizeHtml(highlightText(
                           result.excerpt,
                           result.highlights
                         ),
@@ -629,7 +630,7 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
                     <div
                       className="mb-3 line-clamp-3 text-gray-600 dark:text-gray-400"
                       dangerouslySetInnerHTML={{
-                        __html: highlightText(
+                        __html: sanitizeHtml(highlightText(
                           result.excerpt,
                           result.highlights
                         ),

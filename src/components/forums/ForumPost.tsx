@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { sanitizeHtml } from '@/lib/validation/sanitization';
 import {
   Bold,
   Italic,
@@ -540,7 +541,7 @@ const ForumPost: React.FC<ForumPostProps> = ({
                   <div className="prose max-w-none dark:prose-invert">
                     <div
                       dangerouslySetInnerHTML={{
-                        __html: processContent(content),
+                        __html: sanitizeHtml(processContent(content)),
                       }}
                     />
                   </div>
