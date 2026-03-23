@@ -7,6 +7,7 @@ import { EntryCard } from '../shared/EntryCard';
 import { CompanyAutocomplete } from '../shared/CompanyAutocomplete';
 import { MonthYearPicker } from '../shared/MonthYearPicker';
 import { TagInput } from '../shared/TagInput';
+import { CompensationFields } from '../shared/CompensationFields';
 import { parseLinkedInText } from '@/lib/linkedin-parser';
 
 interface CareerTabProps {
@@ -614,6 +615,13 @@ const WorkEntryForm: React.FC<{
           }
         />
       </div>
+
+      {/* Compensation */}
+      <CompensationFields
+        compensation={entry.compensation}
+        onUpdate={(comp) => onUpdate({ compensation: comp })}
+        lang={lang}
+      />
     </>
   );
 };
