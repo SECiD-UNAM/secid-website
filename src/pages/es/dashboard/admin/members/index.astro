@@ -1,0 +1,23 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import AdminMembersPage from '@/components/wrappers/AdminMembersPage';
+---
+
+<DashboardLayout
+  title="Gesti\u00f3n de Miembros - SECiD"
+  description="Administraci\u00f3n de miembros de la comunidad SECiD"
+  lang="es"
+  requireVerified={true}
+  requireRole={['admin', 'moderator']}
+>
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+      Gesti\u00f3n de Miembros
+    </h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">
+      Administra los miembros de la comunidad SECiD
+    </p>
+  </div>
+
+  <AdminMembersPage client:only="react" lang="es" />
+</DashboardLayout>

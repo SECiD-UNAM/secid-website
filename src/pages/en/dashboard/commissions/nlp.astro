@@ -1,0 +1,8 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import NLPDashboard from '@/components/commissions/NLPDashboard';
+---
+
+<DashboardLayout title="NLP Commission Dashboard" lang="en">
+  <NLPDashboard client:only="react" />
+</DashboardLayout>

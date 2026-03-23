@@ -1,0 +1,377 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('en');
+---
+
+<ModernLayout
+  title="About Us - SECiD"
+  description="Learn about UNAM's Data Science Alumni Society"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">About Us</h1>
+          <p class="secid-hero__subtitle">
+            Learn about UNAM's Data Science Alumni Society
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-content">
+          <div class="secid-logo-container">
+            <img
+              src="/images/logo.png"
+              alt="SECiD - Data Science Alumni Society logo"
+              class="secid-logo-image"
+              width="200"
+              height="200"
+            />
+          </div>
+
+          <p class="secid-lead">
+            SECiD (Sociedad de Egresados en Ciencia de Datos) is a dynamic and
+            forward-thinking professional network exclusively dedicated to
+            alumni from the data science programs at the National Autonomous
+            University of Mexico (UNAM). Founded by passionate data
+            professionals who recognized the transformative potential of
+            community and continuous learning, our organization serves as a
+            critical bridge between academic excellence and the rapidly evolving
+            technological landscape.
+          </p>
+
+          <p>
+            Our mission extends far beyond traditional alumni networks. We are
+            committed to creating a comprehensive ecosystem that supports data
+            science professionals throughout their career journeys, from recent
+            graduates to seasoned industry experts. By fostering meaningful
+            connections, facilitating knowledge exchange, and providing
+            strategic resources, we aim to elevate the professional trajectory
+            of each member while collectively advancing the field of data
+            science in Mexico and beyond.
+          </p>
+
+          <p>
+            Through a multifaceted approach, SECiD offers numerous
+            opportunities, including exclusive networking events, cutting-edge
+            workshops, mentorship programs, and a specialized job board that
+            connects top-tier talent with innovative organizations. We believe
+            in the power of collaborative learning and professional development,
+            understanding that the most significant breakthroughs emerge from
+            sharing diverse perspectives and collective expertise.
+          </p>
+
+          <p>
+            Our community focuses not only on individual advancement but also on
+            creating a robust, supportive network that upholds the highest
+            standards of technical excellence, ethical practice, and innovative
+            thinking. We celebrate the unique strengths of UNAM's data science
+            alumni and work tirelessly to ensure that our members are not just
+            participants but leaders and pioneers in the global data science
+            ecosystem.
+          </p>
+
+          <p>
+            As the technological landscape continues to evolve at an
+            unprecedented pace, SECiD remains dedicated to providing our members
+            with the tools, connections, and insights necessary to stay at the
+            forefront of innovation, adapt to emerging trends, and make
+            meaningful contributions to their organizations and society at
+            large.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Join Us Section -->
+    <section class="secid-section secid-bg-light">
+      <div class="secid-container">
+        <div class="secid-content">
+          <h2 class="secid-section__title">Join Us</h2>
+          <p class="secid-section__description">
+            Join us and be part of a transformative community reshaping the
+            future of data science, one connection at a time.
+          </p>
+          <div class="secid-section__actions">
+            <a
+              href="/registro"
+              class="secid-button secid-button--primary secid-button--lg"
+            >
+              <i class="fas fa-users secid-button__icon"></i>
+              Register Now
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Board Section -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <h2 class="secid-section__title">Our Board of Directors</h2>
+
+        <div class="secid-grid secid-grid--3">
+          <div class="secid-board-member">
+            <div class="secid-board-member__icon">
+              <i class="fas fa-user-tie"></i>
+            </div>
+            <h3 class="secid-board-member__title">President</h3>
+            <p class="secid-board-member__name">
+              Jorge Alejandro Ramirez Bondi
+            </p>
+          </div>
+
+          <div class="secid-board-member">
+            <div class="secid-board-member__icon">
+              <i class="fas fa-file-signature"></i>
+            </div>
+            <h3 class="secid-board-member__title">Secretary</h3>
+            <p class="secid-board-member__name">
+              Artemio Santiago Padilla Robles
+            </p>
+          </div>
+
+          <div class="secid-board-member">
+            <div class="secid-board-member__icon">
+              <i class="fas fa-coins"></i>
+            </div>
+            <h3 class="secid-board-member__title">Treasurer</h3>
+            <p class="secid-board-member__name">Sara Kenia Cisneros</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Leaders Section -->
+    <section class="secid-section secid-bg-light">
+      <div class="secid-container">
+        <h2 class="secid-section__title">Our Leaders</h2>
+        <div class="secid-content">
+          <h3 class="secid-subsection__title">Committee Heads</h3>
+          <p class="secid-text-center">
+            <em><strong>To be defined</strong></em>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Values Section -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <h2 class="secid-section__title">Our Values</h2>
+
+        <div class="secid-grid secid-grid--2">
+          <div class="secid-value-card">
+            <div class="secid-value-card__icon">
+              <i class="fas fa-star"></i>
+            </div>
+            <h3 class="secid-value-card__title">Excellence</h3>
+            <p class="secid-value-card__description">
+              We strive to maintain the highest standards in everything we do.
+            </p>
+          </div>
+
+          <div class="secid-value-card">
+            <div class="secid-value-card__icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3 class="secid-value-card__title">Collaboration</h3>
+            <p class="secid-value-card__description">
+              We believe in the power of community and teamwork.
+            </p>
+          </div>
+
+          <div class="secid-value-card">
+            <div class="secid-value-card__icon">
+              <i class="fas fa-lightbulb"></i>
+            </div>
+            <h3 class="secid-value-card__title">Innovation</h3>
+            <p class="secid-value-card__description">
+              We drive technological advancement and new ideas.
+            </p>
+          </div>
+
+          <div class="secid-value-card">
+            <div class="secid-value-card__icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3 class="secid-value-card__title">Integrity</h3>
+            <p class="secid-value-card__description">
+              We act with honesty and transparency in all our activities.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</ModernLayout>
+
+<style>
+  .secid-hero--secondary {
+    background: linear-gradient(
+      135deg,
+      var(--secid-dark-blue) 0%,
+      var(--secid-secondary) 100%
+    );
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .secid-hero--secondary .secid-hero__title {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .secid-hero--secondary .secid-hero__subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .secid-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .secid-content p {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    color: var(--secid-gray-700);
+  }
+
+  .secid-lead {
+    font-size: 1.25rem !important;
+    font-weight: 500;
+    color: var(--secid-dark-blue) !important;
+  }
+
+  .secid-logo-container {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .secid-logo-image {
+    max-width: 200px;
+    height: auto;
+  }
+
+  .secid-board-member {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+  }
+
+  .secid-board-member:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .secid-board-member__icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(
+      135deg,
+      var(--secid-primary) 0%,
+      var(--secid-secondary) 100%
+    );
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+  }
+
+  .secid-board-member__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--secid-secondary);
+    margin-bottom: 0.5rem;
+  }
+
+  .secid-board-member__name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--secid-dark-blue);
+  }
+
+  .secid-subsection__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--secid-dark-blue);
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .secid-value-card {
+    padding: 2rem;
+    text-align: center;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+  }
+
+  .secid-value-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .secid-value-card__icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1rem;
+    background: var(--secid-gray-100);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--secid-primary);
+  }
+
+  .secid-value-card__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--secid-dark-blue);
+    margin-bottom: 0.75rem;
+  }
+
+  .secid-value-card__description {
+    color: var(--secid-gray-600);
+    line-height: 1.6;
+  }
+
+  .secid-text-center {
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    .secid-grid--3 {
+      grid-template-columns: 1fr;
+    }
+
+    .secid-grid--2 {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

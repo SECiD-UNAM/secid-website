@@ -1,0 +1,8 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import AnalyticsDashboard from '@/components/commissions/AnalyticsDashboard';
+---
+
+<DashboardLayout title="Analytics Commission Dashboard" lang="en">
+  <AnalyticsDashboard client:only="react" />
+</DashboardLayout>

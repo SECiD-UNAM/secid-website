@@ -1,1 +1,9 @@
+#!/usr/bin/env sh
+
+# Run lint-staged for formatting and linting
 npx lint-staged
+
+# Run TypeScript check
+npm run type-check
+
+echo "Pre-commit checks passed!"

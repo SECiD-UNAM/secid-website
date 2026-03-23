@@ -1,0 +1,371 @@
+{
+  "id": "sql_fundamentals_bank",
+  "name": "SQL Fundamentals Question Bank",
+  "description": "Questions covering fundamental SQL concepts including SELECT statements, JOINs, GROUP BY, subqueries, and database design principles.",
+  "category": "sql",
+  "language": "es",
+  "version": "1.0",
+  "created_at": "2024-01-01",
+  "questions": [
+    {
+      "id": "sql_basic_001",
+      "type": "single_choice",
+      "category": "sql",
+      "difficulty": "beginner",
+      "title": "Consulta Básica SELECT",
+      "description": "¿Cuál es la sintaxis correcta para seleccionar todas las columnas de una tabla llamada 'empleados'?",
+      "points": 10,
+      "timeLimit": 60,
+      "options": [
+        {
+          "id": "a",
+          "text": "GET * FROM empleados;",
+          "isCorrect": false,
+          "explanation": "GET no es una palabra clave válida en SQL."
+        },
+        {
+          "id": "b",
+          "text": "SELECT ALL FROM empleados;",
+          "isCorrect": false,
+          "explanation": "La sintaxis correcta usa * para todas las columnas."
+        },
+        {
+          "id": "c",
+          "text": "SELECT * FROM empleados;",
+          "isCorrect": true,
+          "explanation": "Esta es la sintaxis correcta para seleccionar todas las columnas."
+        },
+        {
+          "id": "d",
+          "text": "SHOW * FROM empleados;",
+          "isCorrect": false,
+          "explanation": "SHOW no se usa para consultas SELECT estándar."
+        }
+      ],
+      "explanation": "SELECT * FROM tabla es la sintaxis estándar para seleccionar todas las columnas de una tabla en SQL.",
+      "resources": [
+        {
+          "title": "SQL SELECT Statement",
+          "url": "https://www.w3schools.com/sql/sql_select.asp",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["select", "sintaxis-basica", "consultas"]
+    },
+    {
+      "id": "sql_basic_002",
+      "type": "coding_challenge",
+      "category": "sql",
+      "difficulty": "intermediate",
+      "title": "JOIN de Tablas",
+      "description": "Escribe una consulta SQL que una las tablas 'empleados' y 'departamentos' para mostrar el nombre del empleado y el nombre del departamento.",
+      "points": 20,
+      "timeLimit": 300,
+      "codingChallenge": {
+        "starterCode": "-- Tablas disponibles:\n-- empleados (id, nombre, departamento_id)\n-- departamentos (id, nombre)\n\n-- Escribe tu consulta aquí:\nSELECT \n    \nFROM \n    \nJOIN \n    ;",
+        "language": "sql",
+        "testCases": [
+          {
+            "input": "empleados: [(1, 'Juan', 1), (2, 'María', 2)] departamentos: [(1, 'IT'), (2, 'RRHH')]",
+            "expectedOutput": "[('Juan', 'IT'), ('María', 'RRHH')]",
+            "description": "JOIN básico entre empleados y departamentos",
+            "isVisible": true
+          }
+        ],
+        "timeLimit": 5
+      },
+      "explanation": "Para unir tablas usa JOIN: SELECT e.nombre, d.nombre FROM empleados e JOIN departamentos d ON e.departamento_id = d.id",
+      "resources": [
+        {
+          "title": "SQL JOINs",
+          "url": "https://www.w3schools.com/sql/sql_join.asp",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["join", "tablas", "relaciones"]
+    },
+    {
+      "id": "sql_basic_003",
+      "type": "multiple_choice",
+      "category": "sql",
+      "difficulty": "intermediate",
+      "title": "Tipos de JOIN",
+      "description": "¿Cuáles de los siguientes son tipos válidos de JOIN en SQL? (Selecciona todos los correctos)",
+      "points": 15,
+      "timeLimit": 90,
+      "options": [
+        {
+          "id": "a",
+          "text": "INNER JOIN",
+          "isCorrect": true,
+          "explanation": "INNER JOIN retorna solo los registros que coinciden en ambas tablas."
+        },
+        {
+          "id": "b",
+          "text": "LEFT JOIN",
+          "isCorrect": true,
+          "explanation": "LEFT JOIN retorna todos los registros de la tabla izquierda y los coincidentes de la derecha."
+        },
+        {
+          "id": "c",
+          "text": "OUTER JOIN",
+          "isCorrect": true,
+          "explanation": "OUTER JOIN incluye registros que no tienen coincidencia en una o ambas tablas."
+        },
+        {
+          "id": "d",
+          "text": "CROSS JOIN",
+          "isCorrect": true,
+          "explanation": "CROSS JOIN produce el producto cartesiano de ambas tablas."
+        },
+        {
+          "id": "e",
+          "text": "DIAGONAL JOIN",
+          "isCorrect": false,
+          "explanation": "DIAGONAL JOIN no es un tipo válido de JOIN en SQL."
+        }
+      ],
+      "explanation": "SQL soporta varios tipos de JOIN: INNER, LEFT, RIGHT, FULL OUTER, y CROSS JOIN, cada uno con diferentes comportamientos.",
+      "resources": [
+        {
+          "title": "Types of SQL JOINs",
+          "url": "https://www.tutorialspoint.com/sql/sql-using-joins.htm",
+          "type": "article"
+        }
+      ],
+      "tags": ["join-types", "inner", "outer", "cross"]
+    },
+    {
+      "id": "sql_basic_004",
+      "type": "true_false",
+      "category": "sql",
+      "difficulty": "beginner",
+      "title": "Palabras Clave SQL",
+      "description": "En SQL, las palabras clave como SELECT, FROM, WHERE son case-sensitive (distinguen mayúsculas y minúsculas).",
+      "points": 5,
+      "timeLimit": 30,
+      "correctAnswer": false,
+      "explanation": "Falso. Las palabras clave SQL no son case-sensitive. SELECT, select, y Select son equivalentes.",
+      "resources": [
+        {
+          "title": "SQL Syntax Rules",
+          "url": "https://www.w3schools.com/sql/sql_syntax.asp",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["sintaxis", "case-sensitivity", "palabras-clave"]
+    },
+    {
+      "id": "sql_basic_005",
+      "type": "coding_challenge",
+      "category": "sql",
+      "difficulty": "intermediate",
+      "title": "GROUP BY y Agregaciones",
+      "description": "Escribe una consulta que muestre el promedio de salario por departamento de la tabla empleados.",
+      "points": 25,
+      "timeLimit": 240,
+      "codingChallenge": {
+        "starterCode": "-- Tabla: empleados (id, nombre, salario, departamento)\n-- Calcula el promedio de salario por departamento\n\nSELECT \n    \nFROM \n    \nGROUP BY \n    ;",
+        "language": "sql",
+        "testCases": [
+          {
+            "input": "empleados: [(1, 'Juan', 50000, 'IT'), (2, 'María', 60000, 'IT'), (3, 'Pedro', 45000, 'RRHH')]",
+            "expectedOutput": "[('IT', 55000), ('RRHH', 45000)]",
+            "description": "Promedio de salario por departamento",
+            "isVisible": true
+          }
+        ],
+        "timeLimit": 4
+      },
+      "explanation": "Solución: SELECT departamento, AVG(salario) FROM empleados GROUP BY departamento",
+      "resources": [
+        {
+          "title": "SQL GROUP BY",
+          "url": "https://www.w3schools.com/sql/sql_groupby.asp",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["group-by", "avg", "agregaciones"]
+    },
+    {
+      "id": "sql_basic_006",
+      "type": "single_choice",
+      "category": "sql",
+      "difficulty": "intermediate",
+      "title": "Subconsultas",
+      "description": "¿Cuál es la diferencia principal entre una subconsulta y un JOIN?",
+      "points": 12,
+      "timeLimit": 90,
+      "options": [
+        {
+          "id": "a",
+          "text": "Las subconsultas son más rápidas que los JOINs",
+          "isCorrect": false,
+          "explanation": "El rendimiento depende del caso específico, no hay una regla general."
+        },
+        {
+          "id": "b",
+          "text": "Las subconsultas se ejecutan independientemente, los JOINs combinan tablas",
+          "isCorrect": true,
+          "explanation": "Las subconsultas se evalúan primero como consultas separadas, mientras que los JOINs combinan datos de múltiples tablas."
+        },
+        {
+          "id": "c",
+          "text": "Solo se pueden usar subconsultas en la cláusula WHERE",
+          "isCorrect": false,
+          "explanation": "Las subconsultas pueden usarse en SELECT, WHERE, FROM, y otras cláusulas."
+        },
+        {
+          "id": "d",
+          "text": "Los JOINs no pueden usarse con subconsultas",
+          "isCorrect": false,
+          "explanation": "Se pueden combinar JOINs y subconsultas en la misma consulta."
+        }
+      ],
+      "explanation": "Las subconsultas son consultas anidadas que se ejecutan independientemente, mientras que los JOINs combinan datos de múltiples tablas en una sola operación.",
+      "resources": [
+        {
+          "title": "SQL Subqueries",
+          "url": "https://www.w3schools.com/sql/sql_subqueries.asp",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["subconsultas", "join", "consultas-anidadas"]
+    },
+    {
+      "id": "sql_basic_007",
+      "type": "fill_blank",
+      "category": "sql",
+      "difficulty": "beginner",
+      "title": "Cláusula WHERE",
+      "description": "Completa la consulta para seleccionar empleados con salario mayor a 50000: SELECT * FROM empleados _____ salario > 50000;",
+      "points": 8,
+      "timeLimit": 45,
+      "fillBlanks": ["WHERE"],
+      "explanation": "WHERE es la cláusula que se usa para filtrar registros basándose en condiciones específicas.",
+      "resources": [
+        {
+          "title": "SQL WHERE Clause",
+          "url": "https://www.w3schools.com/sql/sql_where.asp",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["where", "filtros", "condiciones"]
+    },
+    {
+      "id": "sql_basic_008",
+      "type": "coding_challenge",
+      "category": "sql",
+      "difficulty": "advanced",
+      "title": "Window Functions",
+      "description": "Escribe una consulta que muestre el ranking de empleados por salario dentro de cada departamento usando window functions.",
+      "points": 30,
+      "timeLimit": 360,
+      "codingChallenge": {
+        "starterCode": "-- Tabla: empleados (id, nombre, salario, departamento)\n-- Usa RANK() OVER() para clasificar por salario dentro de cada departamento\n\nSELECT \n    nombre,\n    salario,\n    departamento,\n    -- Tu código de window function aquí\nFROM \n    empleados\nORDER BY \n    departamento, ranking;",
+        "language": "sql",
+        "testCases": [
+          {
+            "input": "empleados con diferentes salarios por departamento",
+            "expectedOutput": "Ranking de empleados por salario dentro de cada departamento",
+            "description": "Window function con RANK() OVER(PARTITION BY departamento ORDER BY salario DESC)",
+            "isVisible": true
+          }
+        ],
+        "timeLimit": 6
+      },
+      "explanation": "Solución: RANK() OVER(PARTITION BY departamento ORDER BY salario DESC) AS ranking",
+      "resources": [
+        {
+          "title": "SQL Window Functions",
+          "url": "https://www.postgresql.org/docs/current/functions-window.html",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["window-functions", "rank", "partition"]
+    },
+    {
+      "id": "sql_basic_009",
+      "type": "practical_scenario",
+      "category": "sql",
+      "difficulty": "advanced",
+      "title": "Optimización de Consultas",
+      "description": "Tienes una tabla 'ventas' con 10 millones de registros. La consulta 'SELECT * FROM ventas WHERE fecha BETWEEN '2023-01-01' AND '2023-12-31'' es muy lenta. ¿Qué estrategias de optimización recomendarías?",
+      "points": 25,
+      "timeLimit": 300,
+      "requiresPeerReview": true,
+      "reviewCriteria": [
+        "Comprensión del problema de rendimiento",
+        "Conocimiento de técnicas de optimización",
+        "Consideración de índices y estructura de datos",
+        "Propuestas prácticas y realistas"
+      ],
+      "explanation": "Estrategias incluyen: crear índices en la columna fecha, usar LIMIT si no necesitas todos los registros, considerar particionamiento por fecha, seleccionar solo columnas necesarias en lugar de *, y verificar las estadísticas de la tabla.",
+      "resources": [
+        {
+          "title": "SQL Performance Tuning",
+          "url": "https://use-the-index-luke.com/",
+          "type": "article"
+        }
+      ],
+      "tags": ["optimizacion", "rendimiento", "indices", "particionamiento"]
+    },
+    {
+      "id": "sql_basic_010",
+      "type": "multiple_choice",
+      "category": "sql",
+      "difficulty": "intermediate",
+      "title": "Funciones de Agregación",
+      "description": "¿Cuáles de las siguientes son funciones de agregación válidas en SQL? (Selecciona todas las correctas)",
+      "points": 15,
+      "timeLimit": 75,
+      "options": [
+        {
+          "id": "a",
+          "text": "COUNT()",
+          "isCorrect": true,
+          "explanation": "COUNT() cuenta el número de filas o valores no nulos."
+        },
+        {
+          "id": "b",
+          "text": "SUM()",
+          "isCorrect": true,
+          "explanation": "SUM() calcula la suma de valores numéricos."
+        },
+        {
+          "id": "c",
+          "text": "AVERAGE()",
+          "isCorrect": false,
+          "explanation": "La función correcta es AVG(), no AVERAGE()."
+        },
+        {
+          "id": "d",
+          "text": "MAX()",
+          "isCorrect": true,
+          "explanation": "MAX() encuentra el valor máximo en un conjunto de datos."
+        },
+        {
+          "id": "e",
+          "text": "MEDIAN()",
+          "isCorrect": false,
+          "explanation": "MEDIAN() no es una función estándar en todos los sistemas SQL (aunque algunos la soportan)."
+        },
+        {
+          "id": "f",
+          "text": "MIN()",
+          "isCorrect": true,
+          "explanation": "MIN() encuentra el valor mínimo en un conjunto de datos."
+        }
+      ],
+      "explanation": "Las funciones de agregación estándar en SQL son COUNT(), SUM(), AVG(), MAX(), y MIN().",
+      "resources": [
+        {
+          "title": "SQL Aggregate Functions",
+          "url": "https://www.w3schools.com/sql/sql_count_avg_sum.asp",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["agregaciones", "count", "sum", "avg", "max", "min"]
+    }
+  ]
+}

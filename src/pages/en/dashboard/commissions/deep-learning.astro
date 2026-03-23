@@ -1,0 +1,8 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import DLDashboard from '@/components/commissions/DLDashboard';
+---
+
+<DashboardLayout title="Deep Learning Commission Dashboard" lang="en">
+  <DLDashboard client:only="react" />
+</DashboardLayout>

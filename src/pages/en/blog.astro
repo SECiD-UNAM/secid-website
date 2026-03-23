@@ -1,0 +1,35 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import BlogListPage from '../../components/wrappers/BlogListPage';
+---
+
+<ModernLayout
+  title="Blog - SECiD"
+  description="Articles, tutorials, and resources on data science, machine learning, and artificial intelligence"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <main>
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">SECiD Blog</h1>
+          <p class="secid-hero__subtitle">
+            Knowledge, experiences, and trends in data science
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="secid-section">
+      <div class="secid-container">
+        <BlogListPage client:load lang="en" />
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</ModernLayout>

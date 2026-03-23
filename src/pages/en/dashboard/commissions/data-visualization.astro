@@ -1,0 +1,8 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import DataVizDashboard from '@/components/commissions/DataVizDashboard';
+---
+
+<DashboardLayout title="Data Visualization Commission Dashboard" lang="en">
+  <DataVizDashboard client:only="react" />
+</DashboardLayout>
