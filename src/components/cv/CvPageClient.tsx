@@ -1,13 +1,13 @@
 /**
  * Client-side CV page component.
  *
- * Replaces the SSR Astro CV pages with a React component that:
- * - Extracts the member slug from the URL path
- * - Fetches member profile data from Firestore
- * - Checks CV visibility against auth state
- * - Transforms profile to CVData and renders all sections
- * - Includes PDF download functionality
- * - Provides sidebar navigation with active section tracking
+ * Replicates the personal site CV design with:
+ * - Fixed sidebar (260px) with profile, navigation, back link
+ * - CSS custom properties for theming (light/dark)
+ * - IntersectionObserver active-section tracking
+ * - Mobile hamburger + slide-in overlay
+ * - Gradient dividers between sections
+ * - Polished cards, skill tags, language badges, project grid
  */
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,6 +17,10 @@ import CvPdfDownloader from '@/components/cv/CvPdfDownloader';
 import type { CVData } from '@/types/cv';
 import type { MemberProfile } from '@/types/member';
 
+// ---------------------------------------------------------------------------
+// Props
+// ---------------------------------------------------------------------------
+
 interface CvPageClientProps {
   lang: 'es' | 'en';
 }
@@ -25,7 +29,6 @@ interface CvPageClientProps {
 // URL extraction
 // ---------------------------------------------------------------------------
 
-/** Extract member slug from URL path: /{lang}/members/{slug}/cv */
 function extractSlugFromUrl(): string | null {
   if (typeof window === 'undefined') return null;
   const segments = window.location.pathname.split('/').filter(Boolean);
@@ -98,6 +101,53 @@ function getLabels(lang: 'es' | 'en') {
 type Labels = ReturnType<typeof getLabels>;
 
 // ---------------------------------------------------------------------------
+// CSS custom properties
+// ---------------------------------------------------------------------------
+
+const LIGHT_VARS: Record<string, string> = {
+  '--color-text': '#1e293b',
+  '--color-text-muted': '#64748b',
+  '--color-heading': '#0f172a',
+  '--color-primary': '#f65425',
+  '--color-accent': '#10b981',
+  '--color-border': '#e2e8f0',
+  '--color-surface': '#ffffff',
+  '--color-surface-light': '#f8fafc',
+};
+
+const DARK_VARS: Record<string, string> = {
+  '--color-text': '#e2e8f0',
+  '--color-text-muted': '#94a3b8',
+  '--color-heading': '#f8fafc',
+  '--color-primary': '#f65425',
+  '--color-accent': '#34d399',
+  '--color-border': '#334155',
+  '--color-surface': '#1e293b',
+  '--color-surface-light': '#0f172a',
+};
+
+function useThemeVars(): Record<string, string> {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    const check = () =>
+      setIsDark(document.documentElement.classList.contains('dark'));
+    check();
+
+    const observer = new MutationObserver(check);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  return isDark ? DARK_VARS : LIGHT_VARS;
+}
+
+// ---------------------------------------------------------------------------
 // Section navigation definition
 // ---------------------------------------------------------------------------
 
@@ -117,148 +167,28 @@ const ALL_SECTIONS: NavSection[] = [
   { id: 'download', labelKey: 'download' },
 ];
 
-// ---------------------------------------------------------------------------
-// Proficiency badge colors (matches CvLanguages.astro)
-// ---------------------------------------------------------------------------
-
-const PROFICIENCY_COLORS: Record<string, string> = {
-  native:
-    'border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400',
-  nativo:
-    'border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400',
-  fluent:
-    'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-  avanzado:
-    'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-  advanced:
-    'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-  intermediate:
-    'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400',
-  intermedio:
-    'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400',
-  basic:
-    'border-gray-200 bg-gray-50 text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400',
-  basico:
-    'border-gray-200 bg-gray-50 text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400',
-};
-
-const DEFAULT_BADGE =
-  'border-gray-200 bg-gray-50 text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400';
-
-function getBadgeClasses(proficiency: string): string {
-  return PROFICIENCY_COLORS[proficiency.toLowerCase()] || DEFAULT_BADGE;
-}
-
-// ---------------------------------------------------------------------------
-// Shared UI primitives
-// ---------------------------------------------------------------------------
-
-function GradientDivider() {
-  return (
-    <div className="my-12 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent dark:via-gray-700" />
-  );
-}
-
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="mb-8 text-3xl font-bold uppercase tracking-wide text-gray-900 dark:text-white">
-      {children}
-    </h2>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Section navigation components
-// ---------------------------------------------------------------------------
-
-function SidebarNav({
-  sections,
-  activeSection,
-  labels,
-}: {
-  sections: NavSection[];
-  activeSection: string;
-  labels: Labels;
-}) {
-  const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
-      e.preventDefault();
-      const el = document.getElementById(sectionId);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
-    },
-    [],
-  );
-
-  return (
-    <aside className="hidden lg:block lg:w-48 flex-shrink-0">
-      <nav className="sticky top-24 space-y-1">
-        {sections.map((section) => {
-          const isActive = activeSection === section.id;
-          return (
-            <a
-              key={section.id}
-              href={`#${section.id}`}
-              onClick={(e) => handleClick(e, section.id)}
-              className={`block rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400'
-                  : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white'
-              }`}
-            >
-              {String(labels[section.labelKey])}
-            </a>
-          );
-        })}
-      </nav>
-    </aside>
-  );
-}
-
-function MobileNav({
-  sections,
-  activeSection,
-  labels,
-}: {
-  sections: NavSection[];
-  activeSection: string;
-  labels: Labels;
-}) {
-  const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
-      e.preventDefault();
-      const el = document.getElementById(sectionId);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      }
-    },
-    [],
-  );
-
-  return (
-    <nav className="lg:hidden mb-8 -mx-6 px-6 overflow-x-auto scrollbar-hide">
-      <div className="flex gap-2 pb-2">
-        {sections.map((section) => {
-          const isActive = activeSection === section.id;
-          return (
-            <a
-              key={section.id}
-              href={`#${section.id}`}
-              onClick={(e) => handleClick(e, section.id)}
-              className={`flex-shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? 'bg-primary-600 text-white shadow-sm'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
-              }`}
-            >
-              {String(labels[section.labelKey])}
-            </a>
-          );
-        })}
-      </div>
-    </nav>
-  );
+function getVisibleSections(cvData: CVData): NavSection[] {
+  return ALL_SECTIONS.filter((section) => {
+    switch (section.id) {
+      case 'about':
+      case 'download':
+        return true;
+      case 'experience':
+        return cvData.experience.length > 0;
+      case 'education':
+        return cvData.education.length > 0;
+      case 'certifications':
+        return cvData.certifications.length > 0;
+      case 'skills':
+        return cvData.skills.length > 0;
+      case 'projects':
+        return cvData.projects.length > 0;
+      case 'languages':
+        return cvData.languages.length > 0;
+      default:
+        return false;
+    }
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -300,176 +230,534 @@ function useActiveSection(sectionIds: string[]): string {
 }
 
 // ---------------------------------------------------------------------------
-// Sub-components for CV sections
+// Proficiency badge helpers (language level colors)
 // ---------------------------------------------------------------------------
 
-function CvAboutSection({ personal }: { personal: CVData['personal'] }) {
-  const { name, title, location, contact, profileImage, summary } = personal;
-  const initials = `${name.first.charAt(0)}${name.last.charAt(0)}`.toUpperCase();
+function getLevelBadgeStyle(proficiency: string): React.CSSProperties {
+  const key = proficiency.toLowerCase();
+  if (key === 'native' || key === 'nativo') {
+    return {
+      background: 'rgb(16 185 129 / 0.2)',
+      color: '#10b981',
+      border: '1px solid rgb(16 185 129 / 0.3)',
+    };
+  }
+  if (key === 'fluent' || key === 'fluido') {
+    return {
+      background: 'rgb(246 84 37 / 0.15)',
+      color: 'var(--color-primary)',
+      border: '1px solid rgb(246 84 37 / 0.3)',
+    };
+  }
+  if (key === 'advanced' || key === 'avanzado') {
+    return {
+      background: 'rgb(59 130 246 / 0.2)',
+      color: '#60a5fa',
+      border: '1px solid rgb(59 130 246 / 0.3)',
+    };
+  }
+  if (key === 'intermediate' || key === 'intermedio') {
+    return {
+      background: 'rgb(234 179 8 / 0.2)',
+      color: '#facc15',
+      border: '1px solid rgb(234 179 8 / 0.3)',
+    };
+  }
+  // basic / basico / default
+  return {
+    background: 'rgb(107 114 128 / 0.2)',
+    color: '#9ca3af',
+    border: '1px solid rgb(107 114 128 / 0.3)',
+  };
+}
 
-  const socialLinkClass =
-    'inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary-500 hover:bg-primary-500 hover:text-white dark:border-gray-700 dark:text-gray-400 dark:hover:border-primary-500';
+// ---------------------------------------------------------------------------
+// Shared UI primitives
+// ---------------------------------------------------------------------------
+
+function GradientDivider() {
+  return (
+    <div
+      style={{
+        margin: '3rem 0',
+        height: '1px',
+        background:
+          'linear-gradient(to right, transparent, var(--color-border), transparent)',
+      }}
+    />
+  );
+}
+
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <h2
+      className="text-3xl font-bold uppercase tracking-wide mb-8"
+      style={{ color: 'var(--color-text)' }}
+    >
+      {children}
+    </h2>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// SVG icon helpers
+// ---------------------------------------------------------------------------
+
+function LinkedInIcon() {
+  return (
+    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+    </svg>
+  );
+}
+
+function GitHubIcon() {
+  return (
+    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+    </svg>
+  );
+}
+
+function TwitterIcon() {
+  return (
+    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
+
+function EmailIcon() {
+  return (
+    <svg
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+      />
+    </svg>
+  );
+}
+
+function PortfolioIcon() {
+  return (
+    <svg
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+      />
+    </svg>
+  );
+}
+
+function HamburgerIcon() {
+  return (
+    <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  );
+}
+
+function ArrowLeftIcon() {
+  return (
+    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    </svg>
+  );
+}
+
+function ExternalLinkIcon() {
+  return (
+    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+    </svg>
+  );
+}
+
+function StarIcon() {
+  return (
+    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Social icon button
+// ---------------------------------------------------------------------------
+
+function SocialButton({
+  href,
+  label,
+  children,
+}: {
+  href: string;
+  label: string;
+  children: React.ReactNode;
+}) {
+  const baseStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '2.5rem',
+    height: '2.5rem',
+    borderRadius: '9999px',
+    border: '1px solid var(--color-border)',
+    color: 'var(--color-text-muted)',
+    transition: 'all 0.2s ease',
+    cursor: 'pointer',
+    background: 'transparent',
+  };
 
   return (
-    <section id="about" className="scroll-mt-24 pb-10">
-      <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-gray-900 md:p-8">
-        <div className="flex flex-col-reverse gap-8 md:flex-row md:items-start">
-          <div className="flex-1">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white md:text-5xl">
-              {name.full}
-            </h1>
+    <a
+      href={href}
+      target={href.startsWith('mailto:') ? undefined : '_blank'}
+      rel={href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+      aria-label={label}
+      style={baseStyle}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = 'var(--color-primary)';
+        e.currentTarget.style.color = '#ffffff';
+        e.currentTarget.style.borderColor = 'var(--color-primary)';
+        e.currentTarget.style.transform = 'translateY(-2px)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = 'transparent';
+        e.currentTarget.style.color = 'var(--color-text-muted)';
+        e.currentTarget.style.borderColor = 'var(--color-border)';
+        e.currentTarget.style.transform = 'translateY(0)';
+      }}
+    >
+      {children}
+    </a>
+  );
+}
 
-            {title && (
-              <p className="mt-2 text-xl text-primary-600 dark:text-primary-400">
-                {title}
-              </p>
-            )}
+// ---------------------------------------------------------------------------
+// Sidebar component
+// ---------------------------------------------------------------------------
 
-            {location && (
-              <div className="mt-3 flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-                <span className="relative flex items-center gap-1.5">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
-                  </span>
-                  {location}
-                </span>
-              </div>
-            )}
+function Sidebar({
+  personal,
+  sections,
+  activeSection,
+  labels,
+  lang,
+  mobileOpen,
+  onClose,
+}: {
+  personal: CVData['personal'];
+  sections: NavSection[];
+  activeSection: string;
+  labels: Labels;
+  lang: 'es' | 'en';
+  mobileOpen: boolean;
+  onClose: () => void;
+}) {
+  const initials = `${personal.name.first.charAt(0)}${personal.name.last.charAt(0)}`.toUpperCase();
 
-            {summary && (
-              <p className="mt-6 leading-relaxed text-gray-600 dark:text-gray-300">
-                {summary}
-              </p>
-            )}
+  const handleNavClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+      e.preventDefault();
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+      onClose();
+    },
+    [onClose],
+  );
 
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              {contact.linkedin && (
-                <a
-                  href={contact.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={socialLinkClass}
-                  aria-label="LinkedIn"
-                >
-                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                  </svg>
-                </a>
-              )}
+  const sidebarContent = (
+    <div
+      className="flex flex-col h-full"
+      style={{
+        background: 'var(--color-surface)',
+        borderRight: '1px solid var(--color-border)',
+      }}
+    >
+      {/* Profile section */}
+      <div className="flex flex-col items-center px-5 pt-8 pb-6">
+        {personal.profileImage ? (
+          <img
+            src={personal.profileImage}
+            alt={personal.name.full}
+            className="h-28 w-28 rounded-full object-cover border-4 shadow-lg"
+            style={{ borderColor: 'var(--color-surface-light)' }}
+          />
+        ) : (
+          <div
+            className="flex h-28 w-28 items-center justify-center rounded-full text-3xl font-bold shadow-lg"
+            style={{
+              background: 'var(--color-surface-light)',
+              color: 'var(--color-primary)',
+              border: '4px solid var(--color-border)',
+            }}
+          >
+            {initials}
+          </div>
+        )}
+        <h2
+          className="mt-4 text-base font-bold text-center"
+          style={{ color: 'var(--color-heading)' }}
+        >
+          {personal.name.full}
+        </h2>
+        {personal.title && (
+          <p
+            className="mt-1 text-sm text-center"
+            style={{ color: 'var(--color-text-muted)' }}
+          >
+            {personal.title}
+          </p>
+        )}
+      </div>
 
-              {contact.github && (
-                <a
-                  href={contact.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={socialLinkClass}
-                  aria-label="GitHub"
-                >
-                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                  </svg>
-                </a>
-              )}
+      {/* Divider */}
+      <div
+        style={{
+          height: '1px',
+          margin: '0 1.25rem',
+          background:
+            'linear-gradient(to right, transparent, var(--color-border), transparent)',
+        }}
+      />
 
-              {contact.twitter && (
-                <a
-                  href={contact.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={socialLinkClass}
-                  aria-label="Twitter"
-                >
-                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                </a>
-              )}
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-4 overflow-y-auto">
+        <div className="space-y-0.5">
+          {sections.map((section) => {
+            const isActive = activeSection === section.id;
+            return (
+              <a
+                key={section.id}
+                href={`#${section.id}`}
+                onClick={(e) => handleNavClick(e, section.id)}
+                style={{
+                  display: 'block',
+                  padding: '0.4rem 0.75rem',
+                  borderRadius: '0.5rem',
+                  fontSize: '0.8125rem',
+                  color: isActive ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                  background: isActive ? 'var(--color-surface-light)' : 'transparent',
+                  fontWeight: isActive ? 500 : 400,
+                  transition: 'all 0.2s ease',
+                  textDecoration: 'none',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.color = 'var(--color-heading)';
+                    e.currentTarget.style.background = 'var(--color-surface-light)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.color = 'var(--color-text-muted)';
+                    e.currentTarget.style.background = 'transparent';
+                  }
+                }}
+              >
+                {String(labels[section.labelKey])}
+              </a>
+            );
+          })}
+        </div>
+      </nav>
 
-              {contact.email && (
-                <a
-                  href={`mailto:${contact.email}`}
-                  className={socialLinkClass}
-                  aria-label="Email"
-                >
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                </a>
-              )}
+      {/* Bottom section: back link */}
+      <div className="px-5 pb-6 pt-2">
+        <div
+          style={{
+            height: '1px',
+            marginBottom: '1rem',
+            background:
+              'linear-gradient(to right, transparent, var(--color-border), transparent)',
+          }}
+        />
+        <a
+          href={`/${lang}/members`}
+          className="flex items-center gap-2 text-sm"
+          style={{
+            color: 'var(--color-text-muted)',
+            textDecoration: 'none',
+            transition: 'color 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = 'var(--color-primary)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = 'var(--color-text-muted)';
+          }}
+        >
+          <ArrowLeftIcon />
+          {labels.backToDirectory}
+        </a>
+      </div>
+    </div>
+  );
 
-              {contact.portfolio && (
-                <a
-                  href={contact.portfolio}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={socialLinkClass}
-                  aria-label="Portfolio"
-                >
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                    />
-                  </svg>
-                </a>
-              )}
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside
+        className="fixed top-0 left-0 z-40 h-screen w-[260px] hidden lg:block"
+        style={{
+          background: 'var(--color-surface)',
+          borderRight: '1px solid var(--color-border)',
+        }}
+      >
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile overlay */}
+      <div
+        className={`fixed inset-0 z-30 bg-black/60 lg:hidden transition-opacity duration-300 ${
+          mobileOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={onClose}
+      />
+
+      {/* Mobile sidebar */}
+      <aside
+        className={`fixed top-0 left-0 z-40 h-screen w-[260px] lg:hidden transition-transform duration-300 ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+        style={{
+          background: 'var(--color-surface)',
+          borderRight: '1px solid var(--color-border)',
+        }}
+      >
+        {sidebarContent}
+      </aside>
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Section: About
+// ---------------------------------------------------------------------------
+
+function CvAboutSection({
+  personal,
+  labels,
+}: {
+  personal: CVData['personal'];
+  labels: Labels;
+}) {
+  const { name, title, location, contact, profileImage, summary } = personal;
+
+  return (
+    <section id="about" className="scroll-mt-8">
+      <div className="flex flex-col-reverse md:flex-row md:items-start gap-8">
+        {/* Text column */}
+        <div className="flex-1">
+          <h1
+            className="text-5xl md:text-6xl font-bold uppercase tracking-wide leading-tight"
+            style={{ color: 'var(--color-text)' }}
+          >
+            {name.full}
+          </h1>
+
+          {(title || location) && (
+            <div className="flex items-center gap-2 mt-3 mb-6">
+              <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-lg" style={{ color: 'var(--color-text-muted)' }}>
+                {[title, location].filter(Boolean).join(' \u00B7 ')}
+              </span>
             </div>
-          </div>
+          )}
 
-          <div className="flex flex-shrink-0 justify-center md:justify-end">
-            {profileImage ? (
-              <img
-                src={profileImage}
-                alt={name.full}
-                className="h-36 w-36 rounded-full border-4 border-white object-cover shadow-lg dark:border-gray-800 md:h-44 md:w-44"
-              />
-            ) : (
-              <div className="flex h-36 w-36 items-center justify-center rounded-full border-4 border-white bg-primary-100 text-4xl font-bold text-primary-700 shadow-lg dark:border-gray-800 dark:bg-primary-900/30 dark:text-primary-400 md:h-44 md:w-44 md:text-5xl">
-                {initials}
-              </div>
+          {summary && (
+            <p
+              className="leading-relaxed"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
+              {summary}
+            </p>
+          )}
+
+          {/* Social icons */}
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            {contact.linkedin && (
+              <SocialButton href={contact.linkedin} label="LinkedIn">
+                <LinkedInIcon />
+              </SocialButton>
+            )}
+            {contact.github && (
+              <SocialButton href={contact.github} label="GitHub">
+                <GitHubIcon />
+              </SocialButton>
+            )}
+            {contact.twitter && (
+              <SocialButton href={contact.twitter} label="Twitter">
+                <TwitterIcon />
+              </SocialButton>
+            )}
+            {contact.email && (
+              <SocialButton href={`mailto:${contact.email}`} label="Email">
+                <EmailIcon />
+              </SocialButton>
+            )}
+            {contact.portfolio && (
+              <SocialButton href={contact.portfolio} label="Portfolio">
+                <PortfolioIcon />
+              </SocialButton>
             )}
           </div>
+        </div>
+
+        {/* Profile image */}
+        <div className="flex-shrink-0 flex justify-center md:justify-end">
+          {profileImage ? (
+            <img
+              src={profileImage}
+              alt={name.full}
+              className="w-36 h-36 md:w-44 md:h-44 rounded-full object-cover border-4 shadow-xl"
+              style={{ borderColor: 'var(--color-surface-light)' }}
+            />
+          ) : (
+            <div
+              className="flex w-36 h-36 md:w-44 md:h-44 items-center justify-center rounded-full text-4xl md:text-5xl font-bold shadow-xl"
+              style={{
+                background: 'var(--color-surface-light)',
+                color: 'var(--color-primary)',
+                border: '4px solid var(--color-border)',
+              }}
+            >
+              {`${name.first.charAt(0)}${name.last.charAt(0)}`.toUpperCase()}
+            </div>
+          )}
         </div>
       </div>
     </section>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Section: Experience
+// ---------------------------------------------------------------------------
 
 function CvExperienceSection({
   experience,
@@ -479,64 +767,98 @@ function CvExperienceSection({
   labels: Labels;
 }) {
   if (experience.length === 0) return null;
+
   return (
-    <section id="experience" className="scroll-mt-24 py-10">
+    <section id="experience" className="scroll-mt-8">
       <SectionHeading>{labels.experience}</SectionHeading>
-      <div className="space-y-4">
-        {experience.map((exp, i) => (
-          <div
-            key={`${exp.company}-${exp.title}-${i}`}
-            className="rounded-xl border border-gray-200 bg-white p-5 transition-all duration-200 hover:border-primary-500 hover:shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:hover:border-primary-500"
-          >
-            <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {exp.title}
-                </h3>
-                <p className="font-medium text-primary-600 dark:text-primary-400">
-                  {exp.company}
-                </p>
-              </div>
-              <div className="flex flex-shrink-0 items-center gap-2">
-                <span className="whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                  {exp.startDate} &ndash; {exp.endDate || labels.current}
-                </span>
-                {exp.current && (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500" />
-                    </span>
-                    {labels.current}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {exp.description && (
-              <p className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
-                {exp.description}
-              </p>
-            )}
-
-            {exp.technologies && exp.technologies.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {exp.technologies.map((tech) => (
+      <div>
+        {experience.map((exp, i) => {
+          const isLast = i === experience.length - 1;
+          return (
+            <div
+              key={`${exp.company}-${exp.title}-${i}`}
+              style={{
+                padding: '1.25rem 0',
+                borderBottom: isLast ? 'none' : '1px solid var(--color-border)',
+              }}
+            >
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-3">
+                <div>
+                  <h3 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+                    {exp.title}
+                  </h3>
+                  <p className="font-medium" style={{ color: 'var(--color-primary)' }}>
+                    {exp.company}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <span
-                    key={tech}
-                    className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                    className="text-sm whitespace-nowrap"
+                    style={{ color: 'var(--color-text-muted)' }}
                   >
-                    {tech}
+                    {exp.startDate} &ndash; {exp.endDate || labels.current}
                   </span>
-                ))}
+                  {exp.current && (
+                    <span
+                      className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                      style={{
+                        background: 'rgb(16 185 129 / 0.2)',
+                        color: 'var(--color-accent)',
+                        border: '1px solid rgb(16 185 129 / 0.3)',
+                      }}
+                    >
+                      {labels.current}
+                    </span>
+                  )}
+                </div>
               </div>
-            )}
-          </div>
-        ))}
+
+              {exp.description && (
+                <ul className="space-y-2 mt-3">
+                  <li
+                    className="flex items-start gap-3 text-sm leading-relaxed"
+                    style={{ color: 'var(--color-text-muted)' }}
+                  >
+                    <span
+                      className="mt-1.5 w-1 h-1 rounded-full flex-shrink-0"
+                      style={{ background: 'var(--color-border)' }}
+                    />
+                    <span>{exp.description}</span>
+                  </li>
+                </ul>
+              )}
+
+              {exp.technologies && exp.technologies.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {exp.technologies.map((tech) => (
+                    <span
+                      key={tech}
+                      style={{
+                        display: 'inline-block',
+                        padding: '0.25rem 0.625rem',
+                        borderRadius: '0.375rem',
+                        fontSize: '0.75rem',
+                        color: 'var(--color-text-muted)',
+                        background: 'var(--color-surface-light)',
+                        border: '1px solid var(--color-border)',
+                      }}
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </section>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Section: Education
+// ---------------------------------------------------------------------------
 
 function CvEducationSection({
   education,
@@ -546,65 +868,91 @@ function CvEducationSection({
   labels: Labels;
 }) {
   if (education.length === 0) return null;
+
   return (
-    <section id="education" className="scroll-mt-24 py-10">
+    <section id="education" className="scroll-mt-8">
       <SectionHeading>{labels.education}</SectionHeading>
-      <div className="space-y-4">
-        {education.map((edu, i) => (
-          <div
-            key={`${edu.institution}-${edu.degree}-${i}`}
-            className="rounded-xl border border-gray-200 bg-white p-5 transition-all duration-200 hover:border-primary-500 hover:shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:hover:border-primary-500"
-          >
-            <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {edu.degree}
-                </h3>
-                <p className="font-medium text-primary-600 dark:text-primary-400">
-                  {edu.institution}
-                </p>
-                {edu.fieldOfStudy && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {edu.fieldOfStudy}
+      <div>
+        {education.map((edu, i) => {
+          const isLast = i === education.length - 1;
+          return (
+            <div
+              key={`${edu.institution}-${edu.degree}-${i}`}
+              style={{
+                padding: '1.25rem 0',
+                borderBottom: isLast ? 'none' : '1px solid var(--color-border)',
+              }}
+            >
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-3">
+                <div>
+                  <h3 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+                    {edu.degree}
+                  </h3>
+                  <p className="font-medium" style={{ color: 'var(--color-primary)' }}>
+                    {edu.institution}
                   </p>
-                )}
-              </div>
-              <div className="flex flex-shrink-0 items-center gap-2">
-                <span className="whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                  {edu.startDate} &ndash; {edu.endDate || labels.current}
-                </span>
-                {edu.current && (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-green-500" />
-                    </span>
-                    {labels.current}
+                  {edu.fieldOfStudy && (
+                    <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                      {edu.fieldOfStudy}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span
+                    className="text-sm whitespace-nowrap"
+                    style={{ color: 'var(--color-text-muted)' }}
+                  >
+                    {edu.startDate} &ndash; {edu.endDate || labels.current}
                   </span>
-                )}
+                  {edu.current && (
+                    <span
+                      className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                      style={{
+                        background: 'rgb(16 185 129 / 0.2)',
+                        color: 'var(--color-accent)',
+                        border: '1px solid rgb(16 185 129 / 0.3)',
+                      }}
+                    >
+                      {labels.current}
+                    </span>
+                  )}
+                </div>
               </div>
+
+              {edu.gpa != null && (
+                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                  <span className="font-medium" style={{ color: 'var(--color-text)' }}>
+                    GPA:
+                  </span>{' '}
+                  {edu.gpa}
+                </p>
+              )}
+
+              {edu.description && (
+                <ul className="space-y-2 mt-3">
+                  <li
+                    className="flex items-start gap-3 text-sm leading-relaxed"
+                    style={{ color: 'var(--color-text-muted)' }}
+                  >
+                    <span
+                      className="mt-1.5 w-1 h-1 rounded-full flex-shrink-0"
+                      style={{ background: 'var(--color-border)' }}
+                    />
+                    <span>{edu.description}</span>
+                  </li>
+                </ul>
+              )}
             </div>
-
-            {edu.gpa != null && (
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                <span className="font-medium text-gray-700 dark:text-gray-300">
-                  GPA:
-                </span>{' '}
-                {edu.gpa}
-              </p>
-            )}
-
-            {edu.description && (
-              <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
-                {edu.description}
-              </p>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Section: Certifications
+// ---------------------------------------------------------------------------
 
 function CvCertificationsSection({
   certifications,
@@ -614,57 +962,70 @@ function CvCertificationsSection({
   labels: Labels;
 }) {
   if (certifications.length === 0) return null;
+
   return (
-    <section id="certifications" className="scroll-mt-24 py-10">
+    <section id="certifications" className="scroll-mt-8">
       <SectionHeading>{labels.certifications}</SectionHeading>
-      <div className="space-y-4">
-        {certifications.map((cert, i) => (
-          <div
-            key={`${cert.issuer}-${cert.name}-${i}`}
-            className="rounded-xl border border-gray-200 bg-white p-5 transition-all duration-200 hover:border-primary-500 hover:shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:hover:border-primary-500"
-          >
-            <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-              <div className="flex-1">
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-                  {cert.name}
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {cert.issuer}
-                </p>
-                {cert.credentialUrl && (
-                  <a
-                    href={cert.credentialUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-primary-200 bg-primary-50 px-3 py-1.5 text-xs font-medium text-primary-700 transition-all duration-200 hover:bg-primary-100 dark:border-primary-800 dark:bg-primary-900/20 dark:text-primary-400 dark:hover:bg-primary-900/40"
-                  >
-                    <svg
-                      className="h-3.5 w-3.5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                      />
-                    </svg>
-                    {labels.viewCredential}
-                  </a>
-                )}
+      <div>
+        {certifications.map((cert, i) => {
+          const isLast = i === certifications.length - 1;
+          return (
+            <div
+              key={`${cert.issuer}-${cert.name}-${i}`}
+              style={{
+                padding: '1.25rem 0',
+                borderBottom: isLast ? 'none' : '1px solid var(--color-border)',
+              }}
+            >
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-2">
+                <div className="flex-1">
+                  <h3 className="text-base font-semibold" style={{ color: 'var(--color-text)' }}>
+                    {cert.name}
+                  </h3>
+                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                    {cert.issuer}
+                  </p>
+                </div>
+                <span
+                  className="flex-shrink-0 text-sm"
+                  style={{ color: 'var(--color-text-muted)' }}
+                >
+                  {cert.date}
+                </span>
               </div>
-              <span className="flex-shrink-0 text-sm text-gray-500 dark:text-gray-400">
-                {cert.date}
-              </span>
+              {cert.credentialUrl && (
+                <a
+                  href={cert.credentialUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 mt-2 text-xs font-medium"
+                  style={{
+                    color: 'var(--color-primary)',
+                    textDecoration: 'none',
+                    transition: 'opacity 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = '0.8';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = '1';
+                  }}
+                >
+                  <ExternalLinkIcon />
+                  {labels.viewCredential}
+                </a>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Section: Skills
+// ---------------------------------------------------------------------------
 
 function CvSkillsSection({
   skills,
@@ -674,22 +1035,64 @@ function CvSkillsSection({
   labels: Labels;
 }) {
   if (skills.length === 0) return null;
+
   return (
-    <section id="skills" className="scroll-mt-24 py-10">
+    <section id="skills" className="scroll-mt-8">
       <SectionHeading>{labels.skills}</SectionHeading>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-        {skills.map((skill) => (
-          <span
-            key={skill}
-            className="rounded-full border border-gray-200 px-3 py-1 text-center text-sm font-medium text-gray-700 transition-colors duration-200 hover:border-primary-500 hover:text-primary-600 dark:border-gray-700 dark:text-gray-300 dark:hover:border-primary-500 dark:hover:text-primary-400"
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Since skills are a flat array, render as a single card */}
+        <div
+          className="sm:col-span-2 lg:col-span-3"
+          style={{
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            borderRadius: '0.75rem',
+            padding: '1.25rem',
+          }}
+        >
+          <h3
+            className="text-xs font-semibold uppercase tracking-wider mb-3"
+            style={{ color: 'var(--color-primary)' }}
           >
-            {skill}
-          </span>
-        ))}
+            {labels.skills}
+          </h3>
+          <div className="flex flex-wrap gap-1.5">
+            {skills.map((skill) => (
+              <span
+                key={skill}
+                style={{
+                  display: 'inline-block',
+                  padding: '0.25rem 0.625rem',
+                  borderRadius: '0.375rem',
+                  fontSize: '0.8125rem',
+                  color: 'var(--color-text)',
+                  background: 'var(--color-surface-light)',
+                  border: '1px solid var(--color-border)',
+                  transition: 'border-color 0.15s ease, color 0.15s ease',
+                  cursor: 'default',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--color-primary)';
+                  e.currentTarget.style.color = 'var(--color-primary)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--color-border)';
+                  e.currentTarget.style.color = 'var(--color-text)';
+                }}
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Section: Projects
+// ---------------------------------------------------------------------------
 
 function CvProjectsSection({
   projects,
@@ -699,41 +1102,69 @@ function CvProjectsSection({
   labels: Labels;
 }) {
   if (projects.length === 0) return null;
+
   return (
-    <section id="projects" className="scroll-mt-24 py-10">
+    <section id="projects" className="scroll-mt-8">
       <SectionHeading>{labels.projects}</SectionHeading>
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {projects.map((project, i) => (
           <div
             key={`${project.title}-${i}`}
-            className="flex flex-col rounded-xl border border-gray-200 bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary-500 hover:shadow-md dark:border-gray-700 dark:bg-gray-900 dark:hover:border-primary-500"
+            className="flex flex-col"
+            style={{
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '0.75rem',
+              padding: '1.25rem',
+              transition: 'border-color 0.2s ease, transform 0.2s ease',
+              cursor: 'default',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-primary)';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-border)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
           >
             <div className="mb-2 flex items-start justify-between gap-3">
-              <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+              <h3 className="text-base font-semibold" style={{ color: 'var(--color-text)' }}>
                 {project.title}
               </h3>
               <div className="flex flex-shrink-0 items-center gap-2">
                 {project.featured && (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400">
-                    <svg
-                      className="h-3 w-3"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
+                  <span
+                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+                    style={{
+                      background: 'rgb(245 158 11 / 0.2)',
+                      color: '#f59e0b',
+                      border: '1px solid rgb(245 158 11 / 0.3)',
+                    }}
+                  >
+                    <StarIcon />
                     {labels.featured}
                   </span>
                 )}
                 {project.category && (
-                  <span className="rounded-full border border-primary-200 bg-primary-50 px-2 py-0.5 text-xs font-medium text-primary-700 dark:border-primary-800 dark:bg-primary-900/20 dark:text-primary-400">
+                  <span
+                    className="rounded-full px-2 py-0.5 text-xs font-medium"
+                    style={{
+                      background: 'rgb(246 84 37 / 0.15)',
+                      color: 'var(--color-primary)',
+                      border: '1px solid rgb(246 84 37 / 0.3)',
+                    }}
+                  >
                     {project.category}
                   </span>
                 )}
               </div>
             </div>
 
-            <p className="mb-3 flex-1 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+            <p
+              className="mb-3 flex-1 text-sm leading-relaxed"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
               {project.description}
             </p>
 
@@ -742,7 +1173,15 @@ function CvProjectsSection({
                 {project.technologies.map((tech) => (
                   <span
                     key={tech}
-                    className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                    style={{
+                      display: 'inline-block',
+                      padding: '0.25rem 0.625rem',
+                      borderRadius: '0.375rem',
+                      fontSize: '0.75rem',
+                      color: 'var(--color-text-muted)',
+                      background: 'var(--color-surface-light)',
+                      border: '1px solid var(--color-border)',
+                    }}
                   >
                     {tech}
                   </span>
@@ -756,15 +1195,20 @@ function CvProjectsSection({
                   href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-gray-500 transition-colors hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400"
+                  className="inline-flex items-center gap-1 text-xs"
+                  style={{
+                    color: 'var(--color-text-muted)',
+                    textDecoration: 'none',
+                    transition: 'color 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = 'var(--color-primary)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = 'var(--color-text-muted)';
+                  }}
                 >
-                  <svg
-                    className="h-4 w-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                  </svg>
+                  <GitHubIcon />
                   GitHub
                 </a>
               )}
@@ -773,21 +1217,20 @@ function CvProjectsSection({
                   href={project.liveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-gray-500 transition-colors hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400"
+                  className="inline-flex items-center gap-1 text-xs"
+                  style={{
+                    color: 'var(--color-text-muted)',
+                    textDecoration: 'none',
+                    transition: 'color 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = 'var(--color-primary)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = 'var(--color-text-muted)';
+                  }}
                 >
-                  <svg
-                    className="h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                    />
-                  </svg>
+                  <ExternalLinkIcon />
                   Live
                 </a>
               )}
@@ -799,6 +1242,10 @@ function CvProjectsSection({
   );
 }
 
+// ---------------------------------------------------------------------------
+// Section: Languages
+// ---------------------------------------------------------------------------
+
 function CvLanguagesSection({
   languages,
   labels,
@@ -807,23 +1254,39 @@ function CvLanguagesSection({
   labels: Labels;
 }) {
   if (languages.length === 0) return null;
+
   return (
-    <section id="languages" className="scroll-mt-24 py-10">
+    <section id="languages" className="scroll-mt-8">
       <SectionHeading>{labels.languages}</SectionHeading>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {languages.map((language, i) => (
           <div
             key={`${language.name}-${i}`}
-            className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-primary-500 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-primary-500"
+            style={{
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '0.75rem',
+              padding: '1.25rem',
+              transition: 'border-color 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-primary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-border)';
+            }}
           >
-            <span className="font-medium text-gray-900 dark:text-white">
-              {language.name}
-            </span>
-            <span
-              className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${getBadgeClasses(language.proficiency)}`}
-            >
-              {language.proficiency}
-            </span>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+                {language.name}
+              </h3>
+              <span
+                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                style={getLevelBadgeStyle(language.proficiency)}
+              >
+                {language.proficiency}
+              </span>
+            </div>
           </div>
         ))}
       </div>
@@ -837,10 +1300,13 @@ function CvLanguagesSection({
 
 function LoadingView({ label }: { label: string }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
+    <div className="flex min-h-screen items-center justify-center" style={{ background: 'var(--color-surface-light)' }}>
       <div className="text-center">
-        <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-primary-600 dark:border-gray-700 dark:border-t-primary-400" />
-        <p className="text-gray-600 dark:text-gray-400">{label}</p>
+        <div
+          className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4"
+          style={{ borderColor: 'var(--color-border)', borderTopColor: 'var(--color-primary)' }}
+        />
+        <p style={{ color: 'var(--color-text-muted)' }}>{label}</p>
       </div>
     </div>
   );
@@ -858,18 +1324,30 @@ function ErrorView({
   backLabel: string;
 }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
-      <div className="mx-auto max-w-md rounded-2xl bg-white p-8 text-center shadow-sm dark:bg-gray-900">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-3xl dark:bg-gray-800">
+    <div className="flex min-h-screen items-center justify-center" style={{ background: 'var(--color-surface-light)' }}>
+      <div
+        className="mx-auto max-w-md rounded-2xl p-8 text-center shadow-sm"
+        style={{ background: 'var(--color-surface)' }}
+      >
+        <div
+          className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-3xl"
+          style={{ background: 'var(--color-surface-light)' }}
+        >
           :(
         </div>
-        <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
+        <h2
+          className="mb-2 text-xl font-semibold"
+          style={{ color: 'var(--color-heading)' }}
+        >
           {message}
         </h2>
-        <p className="mb-6 text-gray-600 dark:text-gray-400">{detail}</p>
+        <p className="mb-6" style={{ color: 'var(--color-text-muted)' }}>
+          {detail}
+        </p>
         <a
           href={backHref}
-          className="inline-flex items-center rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+          className="inline-flex items-center rounded-lg px-5 py-2.5 text-sm font-medium text-white transition-colors"
+          style={{ background: 'var(--color-primary)' }}
         >
           {backLabel}
         </a>
@@ -886,12 +1364,20 @@ function AccessDeniedView({
   lang: 'es' | 'en';
 }) {
   const labels = getLabels(lang);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
-      <div className="mx-auto max-w-md rounded-2xl bg-white p-8 text-center shadow-sm dark:bg-gray-900">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/20">
+    <div className="flex min-h-screen items-center justify-center" style={{ background: 'var(--color-surface-light)' }}>
+      <div
+        className="mx-auto max-w-md rounded-2xl p-8 text-center shadow-sm"
+        style={{ background: 'var(--color-surface)' }}
+      >
+        <div
+          className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full"
+          style={{ background: 'rgb(245 158 11 / 0.15)' }}
+        >
           <svg
-            className="h-8 w-8 text-amber-600 dark:text-amber-400"
+            className="h-8 w-8"
+            style={{ color: '#f59e0b' }}
             fill="none"
             stroke="currentColor"
             strokeWidth={2}
@@ -904,19 +1390,24 @@ function AccessDeniedView({
             />
           </svg>
         </div>
-        <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">
+        <h2
+          className="mb-4 text-xl font-bold"
+          style={{ color: 'var(--color-heading)' }}
+        >
           {message}
         </h2>
         <div className="flex items-center justify-center gap-4">
           <a
             href={`/${lang}/login`}
-            className="inline-flex items-center rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+            className="inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium text-white"
+            style={{ background: 'var(--color-primary)' }}
           >
             {labels.signIn}
           </a>
           <a
             href={`/${lang}/members`}
-            className="text-sm text-primary-600 hover:underline dark:text-primary-400"
+            className="text-sm"
+            style={{ color: 'var(--color-primary)', textDecoration: 'none' }}
           >
             {labels.memberDirectory}
           </a>
@@ -924,34 +1415,6 @@ function AccessDeniedView({
       </div>
     </div>
   );
-}
-
-// ---------------------------------------------------------------------------
-// Helpers for visible section filtering
-// ---------------------------------------------------------------------------
-
-function getVisibleSections(cvData: CVData): NavSection[] {
-  return ALL_SECTIONS.filter((section) => {
-    switch (section.id) {
-      case 'about':
-      case 'download':
-        return true;
-      case 'experience':
-        return cvData.experience.length > 0;
-      case 'education':
-        return cvData.education.length > 0;
-      case 'certifications':
-        return cvData.certifications.length > 0;
-      case 'skills':
-        return cvData.skills.length > 0;
-      case 'projects':
-        return cvData.projects.length > 0;
-      case 'languages':
-        return cvData.languages.length > 0;
-      default:
-        return false;
-    }
-  });
 }
 
 // ---------------------------------------------------------------------------
@@ -963,9 +1426,11 @@ export default function CvPageClient({ lang }: CvPageClientProps) {
   const [member, setMember] = useState<MemberProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const slug = useMemo(() => extractSlugFromUrl(), []);
   const labels = useMemo(() => getLabels(lang), [lang]);
+  const themeVars = useThemeVars();
 
   useEffect(() => {
     if (authLoading) return;
@@ -1004,7 +1469,6 @@ export default function CvPageClient({ lang }: CvPageClientProps) {
     };
   }, [slug, lang, authLoading, labels.notFound, labels.errorLoading]);
 
-  // Compute cvData and visible sections before hooks so hook call count is stable
   const cvData = useMemo(
     () => (member ? transformProfileToCV(member, lang) : null),
     [member, lang],
@@ -1022,148 +1486,162 @@ export default function CvPageClient({ lang }: CvPageClientProps) {
 
   const activeSection = useActiveSection(sectionIds);
 
+  // Close sidebar on route change / resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setSidebarOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // --- Early returns after all hooks ---
 
   if (authLoading || loading) {
-    return <LoadingView label={labels.loading} />;
+    return (
+      <div style={themeVars as React.CSSProperties}>
+        <LoadingView label={labels.loading} />
+      </div>
+    );
   }
 
   if (error || !member) {
     return (
-      <ErrorView
-        message={error || labels.notFound}
-        detail={labels.notFoundDetail}
-        backHref={`/${lang}/members`}
-        backLabel={labels.backToDirectory}
-      />
+      <div style={themeVars as React.CSSProperties}>
+        <ErrorView
+          message={error || labels.notFound}
+          detail={labels.notFoundDetail}
+          backHref={`/${lang}/members`}
+          backLabel={labels.backToDirectory}
+        />
+      </div>
     );
   }
 
-  // Privacy check
   const cvVisibility = member.cvVisibility || 'members';
 
   if (cvVisibility === 'private') {
-    return <AccessDeniedView message={labels.accessDeniedPrivate} lang={lang} />;
+    return (
+      <div style={themeVars as React.CSSProperties}>
+        <AccessDeniedView message={labels.accessDeniedPrivate} lang={lang} />
+      </div>
+    );
   }
 
   if (cvVisibility === 'members' && !isAuthenticated) {
     return (
-      <AccessDeniedView message={labels.accessDeniedMembers} lang={lang} />
+      <div style={themeVars as React.CSSProperties}>
+        <AccessDeniedView message={labels.accessDeniedMembers} lang={lang} />
+      </div>
     );
   }
 
   if (!cvData) {
-    return <LoadingView label={labels.loading} />;
+    return (
+      <div style={themeVars as React.CSSProperties}>
+        <LoadingView label={labels.loading} />
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      {/* Header bar */}
-      <header className="border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
-        <div className="mx-auto flex max-w-6xl items-center gap-3 px-6 py-4">
-          <a
-            href={`/${lang}/members`}
-            className="flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400"
-          >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            {labels.directory}
-          </a>
-          <span className="text-gray-300 dark:text-gray-700">|</span>
-          <span className="text-lg font-bold text-gray-900 dark:text-white">
-            SECiD
-          </span>
-          <span className="rounded bg-primary-100 px-1.5 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">
-            CV
-          </span>
-        </div>
-      </header>
+    <div style={themeVars as React.CSSProperties}>
+      {/* Mobile hamburger button */}
+      <button
+        onClick={() => setSidebarOpen((prev) => !prev)}
+        className="fixed top-4 left-4 z-50 lg:hidden inline-flex items-center justify-center rounded-lg p-2 shadow-md"
+        style={{
+          background: 'var(--color-surface)',
+          border: '1px solid var(--color-border)',
+          color: 'var(--color-text)',
+          cursor: 'pointer',
+        }}
+        aria-label="Toggle sidebar"
+      >
+        {sidebarOpen ? <CloseIcon /> : <HamburgerIcon />}
+      </button>
 
-      {/* Main layout with sidebar */}
-      <div className="mx-auto max-w-6xl px-6 py-12 lg:flex lg:gap-8">
-        {/* Sidebar nav - sticky, hidden on mobile */}
-        <SidebarNav
-          sections={visibleSections}
-          activeSection={activeSection}
-          labels={labels}
-        />
+      {/* Sidebar */}
+      <Sidebar
+        personal={cvData.personal}
+        sections={visibleSections}
+        activeSection={activeSection}
+        labels={labels}
+        lang={lang}
+        mobileOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
-        {/* Main content */}
-        <main className="min-w-0 flex-1 max-w-4xl">
-          {/* Mobile section nav - horizontal scroll */}
-          <MobileNav
-            sections={visibleSections}
-            activeSection={activeSection}
-            labels={labels}
-          />
-
-          <CvAboutSection personal={cvData.personal} />
+      {/* Main content - offset by sidebar on desktop */}
+      <main className="min-h-screen lg:ml-[260px]">
+        <div className="mx-auto max-w-4xl px-6 py-12 lg:py-16">
+          <CvAboutSection personal={cvData.personal} labels={labels} />
           <GradientDivider />
+
           {cvData.experience.length > 0 && (
             <>
               <CvExperienceSection experience={cvData.experience} labels={labels} />
               <GradientDivider />
             </>
           )}
+
           {cvData.education.length > 0 && (
             <>
               <CvEducationSection education={cvData.education} labels={labels} />
               <GradientDivider />
             </>
           )}
+
           {cvData.certifications.length > 0 && (
             <>
-              <CvCertificationsSection
-                certifications={cvData.certifications}
-                labels={labels}
-              />
+              <CvCertificationsSection certifications={cvData.certifications} labels={labels} />
               <GradientDivider />
             </>
           )}
+
           {cvData.skills.length > 0 && (
             <>
               <CvSkillsSection skills={cvData.skills} labels={labels} />
               <GradientDivider />
             </>
           )}
+
           {cvData.projects.length > 0 && (
             <>
               <CvProjectsSection projects={cvData.projects} labels={labels} />
               <GradientDivider />
             </>
           )}
+
           {cvData.languages.length > 0 && (
             <>
               <CvLanguagesSection languages={cvData.languages} labels={labels} />
               <GradientDivider />
             </>
           )}
-          <section id="download" className="scroll-mt-24 py-10">
+
+          {/* PDF Downloader */}
+          <section id="download" className="scroll-mt-8">
             <CvPdfDownloader cvData={cvData} lang={lang} />
           </section>
-        </main>
-      </div>
 
-      {/* Footer */}
-      <footer className="pb-8 pt-4">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent dark:via-gray-700" />
-          <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-            {labels.generatedFrom} &copy; {new Date().getFullYear()}
-          </p>
+          {/* Footer */}
+          <footer
+            style={{
+              borderTop: '1px solid var(--color-border)',
+              marginTop: '3rem',
+              padding: '2rem 0',
+              textAlign: 'center',
+            }}
+          >
+            <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+              {labels.generatedFrom} &copy; {new Date().getFullYear()}
+            </p>
+          </footer>
         </div>
-      </footer>
+      </main>
     </div>
   );
 }
