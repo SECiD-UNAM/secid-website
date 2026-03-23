@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Company } from '@/types/company';
 import { CompanyLogo } from '@/components/shared/CompanyLogo';
 
@@ -40,9 +40,16 @@ export const CompanyLandscape: React.FC<Props> = ({
   onCompanyClick,
   lang = 'es',
 }) => {
+  const [filter, setFilter] = useState<'current' | 'all'>('current');
+
+  // Filter: current = companies with active members, all = every company
+  const displayed = filter === 'current'
+    ? companies.filter((c) => c.memberCount > 0)
+    : companies;
+
   // Group by industry
   const groups = new Map<string, Company[]>();
-  for (const c of companies) {
+  for (const c of displayed) {
     const key = c.industry || (lang === 'es' ? 'Otros' : 'Other');
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(c);
@@ -53,7 +60,7 @@ export const CompanyLandscape: React.FC<Props> = ({
     (a, b) => b[1].length - a[1].length
   );
 
-  const totalMembers = companies.reduce((s, c) => s + c.memberCount, 0);
+  const totalMembers = displayed.reduce((s, c) => s + c.memberCount, 0);
 
   return (
     <div>
@@ -100,7 +107,7 @@ export const CompanyLandscape: React.FC<Props> = ({
           }}
         >
           <div style={{ background: 'var(--color-background, #0f172a)', borderRadius: 10, padding: '10px 8px' }}>
-            <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--secid-primary, #f65425)' }}>{companies.length}</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--secid-primary, #f65425)' }}>{displayed.length}</div>
             <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-secondary, #94a3b8)' }}>
               {lang === 'es' ? 'Empresas' : 'Companies'}
             </div>
@@ -122,6 +129,40 @@ export const CompanyLandscape: React.FC<Props> = ({
             <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--color-text-secondary, #94a3b8)' }}>
               {lang === 'es' ? 'Ciencia de Datos' : 'Data Science'}
             </div>
+          </div>
+        </div>
+
+        {/* Current / All toggle */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+          <div style={{ display: 'inline-flex', borderRadius: 20, overflow: 'hidden', border: '1px solid var(--color-border, #334155)' }}>
+            <button
+              onClick={() => setFilter('current')}
+              style={{
+                padding: '6px 16px',
+                fontSize: 13,
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
+                background: filter === 'current' ? 'var(--secid-primary, #f65425)' : 'transparent',
+                color: filter === 'current' ? 'white' : 'var(--color-text-secondary, #94a3b8)',
+              }}
+            >
+              {lang === 'es' ? 'Actuales' : 'Current'}
+            </button>
+            <button
+              onClick={() => setFilter('all')}
+              style={{
+                padding: '6px 16px',
+                fontSize: 13,
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
+                background: filter === 'all' ? 'var(--secid-primary, #f65425)' : 'transparent',
+                color: filter === 'all' ? 'white' : 'var(--color-text-secondary, #94a3b8)',
+              }}
+            >
+              {lang === 'es' ? 'Historial completo' : 'Full history'}
+            </button>
           </div>
         </div>
       </div>
