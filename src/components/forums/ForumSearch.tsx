@@ -580,7 +580,7 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
                         __html: sanitizeHtml(highlightText(
                           result.excerpt,
                           result.highlights
-                        ),
+                        )),
                       }}
                     />
 
@@ -635,7 +635,7 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
                         __html: sanitizeHtml(highlightText(
                           result.excerpt,
                           result.highlights
-                        ),
+                        )),
                       }}
                     />
 
