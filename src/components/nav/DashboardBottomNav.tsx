@@ -147,6 +147,11 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
       icon: 'fas fa-book-open',
     },
     {
+      href: `/${lang}/dashboard/salary-insights`,
+      label: lang === 'es' ? 'Salarios' : 'Salary Insights',
+      icon: 'fas fa-chart-line',
+    },
+    {
       href: `/${lang}/dashboard/settings`,
       label: lang === 'es' ? 'Ajustes' : 'Settings',
       icon: 'fas fa-cog',

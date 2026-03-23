@@ -55,6 +55,8 @@ const schemaOrgJson = JSON.stringify({
 });
 ---
 
+import FeedbackFAB from '../components/feedback/FeedbackFAB.tsx';
+
 <!doctype html>
 <html lang={lang}>
   <head>
@@ -329,6 +331,9 @@ const schemaOrgJson = JSON.stringify({
     <main id="main">
       <slot />
     </main>
+
+    <!-- Feedback FAB -->
+    <FeedbackFAB client:load />
 
     <!-- Modern JavaScript Only -->
     <script>

@@ -19,6 +19,7 @@ import {
   ArrowRightOnRectangleIcon,
   XMarkIcon,
   BuildingOffice2Icon,
+  CurrencyDollarIcon,
 } from '@heroicons/react/24/outline';
 
 interface DashboardSidebarProps {
@@ -106,6 +107,12 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       name: lang === 'es' ? 'Red de Empresas' : 'Company Network',
       href: `/${lang}/dashboard/companies`,
       icon: BuildingOffice2Icon,
+      requireVerified: true,
+    },
+    {
+      name: lang === 'es' ? 'Salarios' : 'Salary Insights',
+      href: `/${lang}/dashboard/salary-insights`,
+      icon: CurrencyDollarIcon,
       requireVerified: true,
     },
   ];

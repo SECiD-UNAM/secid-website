@@ -1,0 +1,13 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import SalaryInsightsPage from '@/components/wrappers/SalaryInsightsPage';
+---
+
+<DashboardLayout
+  title="Salarios - SECiD"
+  description="Estadísticas anónimas de compensación de los miembros de SECiD"
+  lang="es"
+  requireVerified={true}
+>
+  <SalaryInsightsPage client:only="react" lang="es" />
+</DashboardLayout>
