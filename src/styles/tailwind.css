@@ -45,16 +45,7 @@
   font-size: 1.125rem;
 }
 
-.beta-banner__text--es,
-.beta-banner__text--en {
-  display: none;
-}
-
-html[lang='es'] .beta-banner__text--es {
-  display: inline;
-}
-
-html[lang='en'] .beta-banner__text--en {
+.beta-banner__text {
   display: inline;
 }
 

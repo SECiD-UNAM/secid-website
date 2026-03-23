@@ -58,47 +58,47 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
   const menuItems: MenuItem[] = [
     {
-      name: 'Dashboard',
+      name: lang === 'es' ? 'Panel' : 'Dashboard',
       href: `/${lang}/dashboard`,
       icon: HomeIcon,
     },
     {
-      name: 'My Profile',
+      name: lang === 'es' ? 'Mi Perfil' : 'My Profile',
       href: `/${lang}/dashboard/profile`,
       icon: UserCircleIcon,
     },
     {
-      name: 'Jobs',
+      name: lang === 'es' ? 'Empleos' : 'Jobs',
       href: `/${lang}/dashboard/jobs`,
       icon: BriefcaseIcon,
       requireVerified: true,
     },
     {
-      name: 'Events',
+      name: lang === 'es' ? 'Eventos' : 'Events',
       href: `/${lang}/dashboard/events`,
       icon: CalendarIcon,
       requireVerified: true,
     },
     {
-      name: 'Forums',
+      name: lang === 'es' ? 'Foros' : 'Forums',
       href: `/${lang}/dashboard/forums`,
       icon: ChatBubbleLeftRightIcon,
       requireVerified: true,
     },
     {
-      name: 'Mentorship',
+      name: lang === 'es' ? 'Mentoría' : 'Mentorship',
       href: `/${lang}/dashboard/mentorship`,
       icon: AcademicCapIcon,
       requireVerified: true,
     },
     {
-      name: 'Resources',
+      name: lang === 'es' ? 'Recursos' : 'Resources',
       href: `/${lang}/dashboard/resources`,
       icon: BookOpenIcon,
       requireVerified: true,
     },
     {
-      name: 'Members',
+      name: lang === 'es' ? 'Miembros' : 'Members',
       href: `/${lang}/dashboard/members`,
       icon: UserGroupIcon,
       requireVerified: true,
@@ -119,7 +119,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
   const adminItems: MenuItem[] = [
     {
-      name: 'Admin Panel',
+      name: lang === 'es' ? 'Panel Admin' : 'Admin Panel',
       href: `/${lang}/dashboard/admin`,
       icon: ChartBarIcon,
       requireRole: ['admin'],
@@ -137,13 +137,13 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       requireRole: ['admin', 'moderator'],
     },
     {
-      name: 'Reports',
+      name: lang === 'es' ? 'Reportes' : 'Reports',
       href: `/${lang}/dashboard/admin/reports`,
       icon: DocumentTextIcon,
       requireRole: ['admin', 'moderator'],
     },
     {
-      name: 'Notifications',
+      name: lang === 'es' ? 'Notificaciones' : 'Notifications',
       href: `/${lang}/dashboard/admin/notifications`,
       icon: BellIcon,
       requireRole: ['admin', 'moderator'],
@@ -152,7 +152,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
   const bottomItems: MenuItem[] = [
     {
-      name: 'Settings',
+      name: lang === 'es' ? 'Configuración' : 'Settings',
       href: `/${lang}/dashboard/settings`,
       icon: Cog6ToothIcon,
     },
@@ -204,7 +204,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           <span>{item['name']}</span>
           {!accessible && item.requireVerified && (
             <span className="ml-2 text-xs text-yellow-600 dark:text-yellow-400">
-              (Verification Required)
+              {lang === 'es' ? '(Verificación requerida)' : '(Verification Required)'}
             </span>
           )}
         </div>
@@ -245,7 +245,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             <div className="my-4 border-t border-gray-200 dark:border-gray-700"></div>
             <div className="space-y-1">
               <p className="px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                Administration
+                {lang === 'es' ? 'Administración' : 'Administration'}
               </p>
               {adminItems.map((item) => {
                 if (isItemAccessible(item)) {
