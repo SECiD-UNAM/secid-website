@@ -444,7 +444,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
           currentWork?.company || formData.currentCompany || '',
         'profile.position':
           currentWork?.position || formData.currentPosition || '',
-        'experience.previousRoles': workHistory,
+        'experience.previousRoles': workHistory.map(({ compensation, ...rest }: any) => rest),
         'experience.currentRole':
           currentWork?.position || formData.currentPosition || '',
         'experience.level': formData.experience || 'mid',
