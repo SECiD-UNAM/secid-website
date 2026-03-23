@@ -239,21 +239,6 @@ const {
       }
     </script>
 
-    <!-- Emergency admin access -->
-    <script>
-      // Emergency admin access key combination (Ctrl+Shift+Alt+A)
-      document.addEventListener('keydown', function (e) {
-        if (e.ctrlKey && e.shiftKey && e.altKey && e.key === 'A') {
-          const password = prompt('Contraseña de emergencia:');
-          if (password === 'SECID_EMERGENCY_2024') {
-            console.log('Emergency admin access granted');
-            localStorage.setItem('emergency_admin', 'true');
-            window.location.reload();
-          }
-        }
-      });
-    </script>
-
     <!-- Error Boundary for Admin -->
     <script>
       // @ts-nocheck

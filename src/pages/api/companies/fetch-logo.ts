@@ -36,6 +36,17 @@ async function isAdmin(userId: string): Promise<boolean> {
   return userDoc.data().role === 'admin';
 }
 
+const VALID_DOMAIN_RE =
+  /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z]{2,})+$/i;
+
+function isValidDomain(domain: string): boolean {
+  if (!VALID_DOMAIN_RE.test(domain)) return false;
+  // Block IP addresses, localhost, and internal hostnames
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(domain)) return false;
+  if (/^(localhost|internal|metadata|169\.254\.)/.test(domain)) return false;
+  return true;
+}
+
 function validateRequest(
   body: unknown
 ): { valid: true; data: FetchLogoRequest } | { valid: false; error: string } {
@@ -49,6 +60,14 @@ function validateRequest(
     return { valid: false, error: 'Domain is required' };
   }
 
+  const cleanDomain = domain.trim().toLowerCase();
+  if (!isValidDomain(cleanDomain)) {
+    return {
+      valid: false,
+      error: 'Invalid domain. Must be a valid public domain name.',
+    };
+  }
+
   if (
     !companyId ||
     typeof companyId !== 'string' ||
@@ -60,7 +79,7 @@ function validateRequest(
   return {
     valid: true,
     data: {
-      domain: domain.trim().toLowerCase(),
+      domain: cleanDomain,
       companyId: companyId.trim(),
     },
   };
