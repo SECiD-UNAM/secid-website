@@ -98,6 +98,8 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
   const [bulkFetching, setBulkFetching] = useState(false);
   const [bulkProgress, setBulkProgress] = useState({ done: 0, total: 0, success: 0 });
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkApproving, setBulkApproving] = useState(false);
   const [creatorProfiles, setCreatorProfiles] = useState<Record<string, { name: string; email: string; role: string; company?: string } | null>>({});
   const creatorCache = useRef<Record<string, Promise<{ name: string; email: string; role: string; company?: string } | null>>>({});
 
@@ -424,6 +426,43 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
     }
   }
 
+  /* ---- batch actions ---- */
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    const pending = displayedCompanies.filter((c) => c.pendingReview);
+    if (selectedIds.size === pending.length && pending.length > 0) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(pending.map((c) => c.id)));
+    }
+  }
+
+  async function handleBulkApprove() {
+    if (!user || selectedIds.size === 0) return;
+    setBulkApproving(true);
+    try {
+      for (const id of selectedIds) {
+        await approveCompany(id, user.uid);
+      }
+      setSelectedIds(new Set());
+      await loadCompanies();
+    } catch (err) {
+      console.error('Bulk approve error:', err);
+      setError(t(lang, 'Error al aprobar empresas', 'Error approving companies'));
+    } finally {
+      setBulkApproving(false);
+    }
+  }
+
   /* ---- derived data ---- */
 
   const displayedCompanies =
@@ -545,6 +584,33 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
         </div>
       )}
 
+      {/* Bulk action bar */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-3 rounded-lg border border-green-200 bg-green-50 p-3 dark:border-green-800 dark:bg-green-900/20">
+          <span className="text-sm font-medium text-green-800 dark:text-green-300">
+            {selectedIds.size} {t(lang, 'seleccionadas', 'selected')}
+          </span>
+          <button
+            onClick={handleBulkApprove}
+            disabled={bulkApproving}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
+          >
+            {bulkApproving ? (
+              <ArrowPathIcon className="h-4 w-4 animate-spin" />
+            ) : (
+              <CheckIcon className="h-4 w-4" />
+            )}
+            {t(lang, 'Aprobar seleccionadas', 'Approve selected')}
+          </button>
+          <button
+            onClick={() => setSelectedIds(new Set())}
+            className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            {t(lang, 'Cancelar', 'Cancel')}
+          </button>
+        </div>
+      )}
+
       {/* Company table */}
       {displayedCompanies.length === 0 ? (
         <EmptyState lang={lang} isReviewTab={activeTab === 'review'} />
@@ -554,6 +620,18 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-gray-900">
                 <tr>
+                  <th className="px-3 py-3">
+                    <input
+                      type="checkbox"
+                      checked={
+                        displayedCompanies.filter((c) => c.pendingReview).length > 0 &&
+                        selectedIds.size === displayedCompanies.filter((c) => c.pendingReview).length
+                      }
+                      onChange={toggleSelectAll}
+                      className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+                      title={t(lang, 'Seleccionar todas pendientes', 'Select all pending')}
+                    />
+                  </th>
                   <Th>{t(lang, 'Empresa', 'Company')}</Th>
                   <Th>{t(lang, 'Dominio', 'Domain')}</Th>
                   <Th>{t(lang, 'Industria', 'Industry')}</Th>
@@ -569,6 +647,20 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
                   <tr
                     className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
                   >
+                    {/* Checkbox */}
+                    <td className="px-3 py-3">
+                      {company.pendingReview ? (
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(company.id)}
+                          onChange={() => toggleSelect(company.id)}
+                          className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+                        />
+                      ) : (
+                        <div className="h-4 w-4" />
+                      )}
+                    </td>
+
                     {/* Logo + Name */}
                     <td className="whitespace-nowrap px-4 py-3">
                       <div className="flex items-center gap-3">
@@ -679,7 +771,7 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
                   {/* Expandable context row */}
                   {expandedId === company.id && company.createdBy && (
                     <tr>
-                      <td colSpan={7} className="bg-gray-50 px-6 py-4 dark:bg-gray-900/50">
+                      <td colSpan={8} className="bg-gray-50 px-6 py-4 dark:bg-gray-900/50">
                         {(() => {
                           const profile = creatorProfiles[company.createdBy];
                           if (!profile) return null;
