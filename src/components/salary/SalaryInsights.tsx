@@ -19,6 +19,7 @@ import { SalaryByIndustry } from './SalaryByIndustry';
 import { BenefitsHeatmap } from './BenefitsHeatmap';
 import { CompensationBreakdown } from './CompensationBreakdown';
 import { SalaryDistribution } from './SalaryDistribution';
+import { SalaryAdminTable } from './SalaryAdminTable';
 
 export interface SalaryDataPoint {
   monthlyGross: number;
@@ -150,9 +151,11 @@ function BlurredOverlay({
 }
 
 export function SalaryInsights({ lang = 'es' }: Props) {
-  const { user, userProfile, isVerified } = useAuth();
+  const { user, userProfile, isVerified, isAdmin } = useAuth();
   const [dataPoints, setDataPoints] = useState<SalaryDataPoint[]>([]);
   const [currentMember, setCurrentMember] = useState<MemberProfile | null>(null);
+  const [allMembers, setAllMembers] = useState<MemberProfile[]>([]);
+  const [companyMap, setCompanyMap] = useState<Map<string, Company>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -216,11 +219,13 @@ export function SalaryInsights({ lang = 'es' }: Props) {
 
         if (cancelled) return;
 
-        const companyMap = new Map<string, Company>(
+        const cMap = new Map<string, Company>(
           companies.map((c) => [c.id, c])
         );
-        const points = extractSalaryDataPoints(members, companyMap);
+        const points = extractSalaryDataPoints(members, cMap);
         setDataPoints(points);
+        setAllMembers(members);
+        setCompanyMap(cMap);
 
         // Find current user's member profile
         if (user) {
@@ -455,6 +460,11 @@ export function SalaryInsights({ lang = 'es' }: Props) {
           </BlurredOverlay>
         )}
       </div>
+
+      {/* Admin raw data table */}
+      {isAdmin && (
+        <SalaryAdminTable members={allMembers} companyMap={companyMap} lang={lang} />
+      )}
     </div>
   );
 }
