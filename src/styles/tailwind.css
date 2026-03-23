@@ -17,6 +17,7 @@
   font-weight: 500;
   text-align: center;
   padding: 0.5rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 [data-beta='true'] .beta-banner {
@@ -27,11 +28,11 @@
 
 /* Push fixed elements down when beta banner is visible */
 [data-beta='true'] .secid-navbar {
-  top: 2rem !important;
+  top: 2.25rem !important;
 }
 
 [data-beta='true'] body {
-  padding-top: 2rem;
+  padding-top: 2.25rem;
 }
 
 .beta-banner__content {
