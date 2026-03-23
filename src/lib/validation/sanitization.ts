@@ -1,5 +1,19 @@
-import DOMPurify from 'isomorphic-dompurify';
 import { z } from 'zod';
+
+// Lightweight HTML sanitizer (replaces isomorphic-dompurify to avoid build issues)
+const DOMPurify = {
+  sanitize(html: string, options?: { ALLOWED_TAGS?: string[]; ALLOWED_ATTR?: string[] }): string {
+    if (!options?.ALLOWED_TAGS || options.ALLOWED_TAGS.length === 0) {
+      // Strip all HTML tags
+      return html.replace(/<[^>]*>/g, '');
+    }
+    // Strip tags not in allowlist
+    const allowed = new Set(options.ALLOWED_TAGS);
+    return html.replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)\b[^>]*>/g, (match, tag) => {
+      return allowed.has(tag.toLowerCase()) ? match : '';
+    });
+  },
+};
 
 /**
  * Data sanitization utilities for SECiD platform
