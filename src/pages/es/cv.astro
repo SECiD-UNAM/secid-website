@@ -1,7 +1,5 @@
 ---
 import ModernLayout from '../../layouts/ModernLayout.astro';
-import Navigation from '../../components/Navigation.astro';
-import Footer from '../../components/Footer.astro';
 import CvPageWrapper from '../../components/wrappers/CvPageWrapper';
 ---
 
@@ -10,11 +8,5 @@ import CvPageWrapper from '../../components/wrappers/CvPageWrapper';
   description="Curriculum Vitae de miembro de la comunidad SECiD"
   lang="es"
 >
-  <Navigation lang="es" />
-  <section class="secid-section">
-    <div class="secid-container">
-      <CvPageWrapper client:only="react" lang="es" />
-    </div>
-  </section>
-  <Footer lang="es" />
+  <CvPageWrapper client:only="react" lang="es" />
 </ModernLayout>
