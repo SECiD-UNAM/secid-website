@@ -201,11 +201,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Fetch base branch
+        run: git fetch origin main:refs/remotes/origin/main || true
+
       - name: Run TruffleHog secret scan
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: main
+          base: ${{ github.event.pull_request.base.sha || 'origin/main' }}
           head: HEAD
           extra_args: --debug --only-verified
 
