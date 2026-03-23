@@ -26,6 +26,8 @@ import {
   type SupportedProvider,
   type LinkedAccount,
 } from './auth/oauth-providers';
+import { signInWithLinkedIn, completeLinkedInSignIn } from './auth/linkedin-auth';
+export { signInWithLinkedIn, completeLinkedInSignIn };
 
 /**
  * Sign in with email and password
@@ -174,6 +176,12 @@ export async function signInWithProvider(
     } as User;
 
     return { user: mockUser, isNewUser: true };
+  }
+
+  if (providerId === 'linkedin') {
+    await signInWithLinkedIn();
+    // Page redirects — this return is never reached, but TypeScript requires it.
+    return { user: {} as User, isNewUser: false };
   }
 
   const result = await signInWithOAuth(providerId);
