@@ -404,7 +404,4 @@ export function sanitizeRateLimitKey(key: string): string {
     .substring(0, 100); // Limit length
 }
 
-/**
- * Export sanitization constants
- */
-export { SanitizationConfig };
+// SanitizationConfig already exported at declaration (line 12)
