@@ -101,7 +101,8 @@ service cloud.firestore {
                                   'graduationYear', 'lifecycle',
                                   'networking', 'activity',
                                   'potentialMergeMatch',
-                                  'slug']);
+                                  'slug',
+                                  'cvVisibility']);
 
       // Allow authenticated members to update networking fields on other users
       // (connection requests, follow/unfollow, accept connections)

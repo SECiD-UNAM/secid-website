@@ -471,7 +471,9 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
           contactVisible: formData.contactVisible,
           jobSearching: formData.jobSearching,
           mentorshipAvailable: formData.mentorshipAvailable,
+          cvVisibility: formData.cvVisibility,
         },
+        cvVisibility: formData.cvVisibility,
         // Notifications
         notificationSettings: {
           email: formData.emailNotifications,
