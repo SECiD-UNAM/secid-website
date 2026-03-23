@@ -169,11 +169,24 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     return true;
   };
 
+  const allHrefs = [...menuItems, ...adminItems, ...bottomItems].map(
+    (i) => i.href,
+  );
+
   const isItemActive = (href: string): boolean => {
-    if (href === `/${lang}/dashboard`) {
-      return currentPath === href || currentPath === href + '/';
+    const path = currentPath.replace(/\/$/, '');
+    const target = href.replace(/\/$/, '');
+    if (path === target) return true;
+    // Only match as prefix if no more-specific sibling matches
+    if (path.startsWith(target + '/')) {
+      return !allHrefs.some(
+        (other) =>
+          other !== href &&
+          other.startsWith(target + '/') &&
+          path.startsWith(other.replace(/\/$/, '')),
+      );
     }
-    return currentPath === href || currentPath.startsWith(href + '/');
+    return false;
   };
 
   const handleSignOut = async () => {
