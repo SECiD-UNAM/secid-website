@@ -70,6 +70,14 @@ function getLabels(lang: 'es' | 'en') {
         directory: 'Directorio',
         generatedFrom: 'Generado desde el perfil SECiD',
         download: 'Descargar PDF',
+        awards: 'Reconocimientos',
+        currentlyWorkingOn: 'Actualmente',
+        copyEmail: 'Copiar email',
+        shareCv: 'Compartir CV',
+        printCv: 'Imprimir',
+        downloadVcard: 'Descargar contacto',
+        currentEducation: 'Educacion en Curso',
+        activeProjects: 'Proyectos Activos',
       }
     : {
         loading: 'Loading CV...',
@@ -95,6 +103,14 @@ function getLabels(lang: 'es' | 'en') {
         directory: 'Directory',
         generatedFrom: 'Generated from SECiD profile',
         download: 'Download PDF',
+        awards: 'Awards',
+        currentlyWorkingOn: 'Currently Working On',
+        copyEmail: 'Copy Email',
+        shareCv: 'Share CV',
+        printCv: 'Print',
+        downloadVcard: 'Download Contact',
+        currentEducation: 'Current Education',
+        activeProjects: 'Active Projects',
       };
 }
 
@@ -158,12 +174,14 @@ interface NavSection {
 
 const ALL_SECTIONS: NavSection[] = [
   { id: 'about', labelKey: 'about' },
+  { id: 'currentlyWorkingOn', labelKey: 'currentlyWorkingOn' },
   { id: 'experience', labelKey: 'experience' },
   { id: 'education', labelKey: 'education' },
   { id: 'certifications', labelKey: 'certifications' },
   { id: 'skills', labelKey: 'skills' },
   { id: 'projects', labelKey: 'projects' },
   { id: 'languages', labelKey: 'languages' },
+  { id: 'awards', labelKey: 'awards' },
   { id: 'download', labelKey: 'download' },
 ];
 
@@ -173,6 +191,8 @@ function getVisibleSections(cvData: CVData): NavSection[] {
       case 'about':
       case 'download':
         return true;
+      case 'currentlyWorkingOn':
+        return !!cvData.currentlyWorkingOn;
       case 'experience':
         return cvData.experience.length > 0;
       case 'education':
@@ -185,6 +205,8 @@ function getVisibleSections(cvData: CVData): NavSection[] {
         return cvData.projects.length > 0;
       case 'languages':
         return cvData.languages.length > 0;
+      case 'awards':
+        return !!cvData.awards && cvData.awards.length > 0;
       default:
         return false;
     }
@@ -1024,67 +1046,154 @@ function CvCertificationsSection({
 }
 
 // ---------------------------------------------------------------------------
-// Section: Skills
+// Skill categorization
+// ---------------------------------------------------------------------------
+
+const SKILL_CATEGORIES: Record<string, string[]> = {
+  Languages: [
+    'Python', 'R', 'SQL', 'Java', 'Julia', 'C++', 'JavaScript', 'TypeScript',
+    'Scala', 'MATLAB', 'Fortran', 'Node.js', 'HTML', 'CSS', 'Go', 'Rust',
+    'Kotlin', 'Swift', 'PHP', 'Ruby', 'Perl', 'Shell', 'Bash',
+  ],
+  'Cloud & MLOps': [
+    'AWS', 'Azure', 'GCP', 'SageMaker', 'EMR', 'Lambda', 'Docker',
+    'Kubernetes', 'Airflow', 'MLflow', 'Snowflake', 'Glue', 'Terraform',
+    'CloudFormation', 'Databricks', 'Vertex AI',
+  ],
+  Databases: [
+    'PostgreSQL', 'MySQL', 'MongoDB', 'Cassandra', 'Neo4j', 'Redis',
+    'SQL Server', 'Riak', 'DynamoDB', 'Elasticsearch', 'InfluxDB', 'SQLite',
+  ],
+  'Machine Learning': [
+    'PyTorch', 'TensorFlow', 'Scikit-learn', 'XGBoost', 'Keras', 'CUDA',
+    'Deep Learning', 'Machine Learning', 'NLP', 'Computer Vision',
+    'Transformers', 'LLMs', 'HuggingFace', 'OpenCV', 'spaCy', 'NLTK',
+    'LangChain', 'RAG',
+  ],
+  'Data & Visualization': [
+    'Pandas', 'NumPy', 'Spark', 'PySpark', 'Power BI', 'Tableau',
+    'Matplotlib', 'Seaborn', 'Plotly', 'D3.js', 'Qlik', 'Data Studio',
+    'Excel', 'Grafana', 'Looker', 'dbt',
+  ],
+  Tools: [
+    'Git', 'Linux', 'Jenkins', 'Jira', 'LaTeX', 'Postman', 'CI/CD',
+    'GitHub Actions', 'GitLab CI', 'Confluence', 'Notion', 'VS Code',
+  ],
+};
+
+function categorizeSkills(
+  skills: string[],
+  lang: 'es' | 'en'
+): { label: string; items: string[] }[] {
+  const categorized: { label: string; items: string[] }[] = [];
+  const used = new Set<string>();
+
+  for (const [category, keywords] of Object.entries(SKILL_CATEGORIES)) {
+    const matches = skills.filter(
+      (s) =>
+        keywords.some((k) => s.toLowerCase().includes(k.toLowerCase())) &&
+        !used.has(s)
+    );
+    if (matches.length > 0) {
+      categorized.push({ label: category, items: matches });
+      matches.forEach((m) => used.add(m));
+    }
+  }
+
+  const remaining = skills.filter((s) => !used.has(s));
+  if (remaining.length > 0) {
+    categorized.push({
+      label: lang === 'es' ? 'Otros' : 'Other',
+      items: remaining,
+    });
+  }
+
+  return categorized;
+}
+
+// ---------------------------------------------------------------------------
+// Skill pill component (reused in multiple sections)
+// ---------------------------------------------------------------------------
+
+function SkillPill({ label }: { label: string }) {
+  return (
+    <span
+      style={{
+        display: 'inline-block',
+        padding: '0.25rem 0.625rem',
+        borderRadius: '0.375rem',
+        fontSize: '0.8125rem',
+        color: 'var(--color-text)',
+        background: 'var(--color-surface-light)',
+        border: '1px solid var(--color-border)',
+        transition: 'border-color 0.15s ease, color 0.15s ease',
+        cursor: 'default',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = 'var(--color-primary)';
+        e.currentTarget.style.color = 'var(--color-primary)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = 'var(--color-border)';
+        e.currentTarget.style.color = 'var(--color-text)';
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Section: Skills (with smart grouping)
 // ---------------------------------------------------------------------------
 
 function CvSkillsSection({
   skills,
   labels,
+  lang,
 }: {
   skills: string[];
   labels: Labels;
+  lang: 'es' | 'en';
 }) {
   if (skills.length === 0) return null;
+
+  const groups = categorizeSkills(skills, lang);
 
   return (
     <section id="skills" className="scroll-mt-8">
       <SectionHeading>{labels.skills}</SectionHeading>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Since skills are a flat array, render as a single card */}
-        <div
-          className="sm:col-span-2 lg:col-span-3"
-          style={{
-            background: 'var(--color-surface)',
-            border: '1px solid var(--color-border)',
-            borderRadius: '0.75rem',
-            padding: '1.25rem',
-          }}
-        >
-          <h3
-            className="text-xs font-semibold uppercase tracking-wider mb-3"
-            style={{ color: 'var(--color-primary)' }}
+        {groups.map((group) => (
+          <div
+            key={group.label}
+            style={{
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '0.75rem',
+              padding: '1.25rem',
+              transition: 'border-color 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-primary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-border)';
+            }}
           >
-            {labels.skills}
-          </h3>
-          <div className="flex flex-wrap gap-1.5">
-            {skills.map((skill) => (
-              <span
-                key={skill}
-                style={{
-                  display: 'inline-block',
-                  padding: '0.25rem 0.625rem',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.8125rem',
-                  color: 'var(--color-text)',
-                  background: 'var(--color-surface-light)',
-                  border: '1px solid var(--color-border)',
-                  transition: 'border-color 0.15s ease, color 0.15s ease',
-                  cursor: 'default',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--color-primary)';
-                  e.currentTarget.style.color = 'var(--color-primary)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--color-border)';
-                  e.currentTarget.style.color = 'var(--color-text)';
-                }}
-              >
-                {skill}
-              </span>
-            ))}
+            <h3
+              className="text-xs font-semibold uppercase tracking-wider mb-3"
+              style={{ color: 'var(--color-primary)' }}
+            >
+              {group.label}
+            </h3>
+            <div className="flex flex-wrap gap-1.5">
+              {group.items.map((skill) => (
+                <SkillPill key={skill} label={skill} />
+              ))}
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </section>
   );
@@ -1291,6 +1400,434 @@ function CvLanguagesSection({
         ))}
       </div>
     </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Section: Currently Working On
+// ---------------------------------------------------------------------------
+
+function CvCurrentlyWorkingOnSection({
+  data,
+  labels,
+}: {
+  data: NonNullable<CVData['currentlyWorkingOn']>;
+  labels: Labels;
+}) {
+  return (
+    <section id="currentlyWorkingOn" className="scroll-mt-8">
+      <SectionHeading>{labels.currentlyWorkingOn}</SectionHeading>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {data.education && (
+          <div
+            style={{
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '0.75rem',
+              padding: '1.5rem',
+              transition: 'border-color 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-primary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-border)';
+            }}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xl" role="img" aria-label="Education">
+                &#x1F393;
+              </span>
+              <h3
+                className="text-sm font-semibold uppercase tracking-wider"
+                style={{ color: 'var(--color-primary)' }}
+              >
+                {labels.currentEducation}
+              </h3>
+            </div>
+            <p
+              className="text-base font-semibold"
+              style={{ color: 'var(--color-text)' }}
+            >
+              {data.education.degree}
+            </p>
+            <p
+              className="text-sm mt-1"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
+              {data.education.institution}
+            </p>
+            {data.education.expectedCompletion && (
+              <p
+                className="text-xs mt-2"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
+                {data.education.expectedCompletion}
+              </p>
+            )}
+          </div>
+        )}
+
+        {data.activeProjects && data.activeProjects.length > 0 && (
+          <div
+            style={{
+              background: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '0.75rem',
+              padding: '1.5rem',
+              transition: 'border-color 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-primary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-border)';
+            }}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xl" role="img" aria-label="Projects">
+                &#x1F680;
+              </span>
+              <h3
+                className="text-sm font-semibold uppercase tracking-wider"
+                style={{ color: 'var(--color-primary)' }}
+              >
+                {labels.activeProjects}
+              </h3>
+            </div>
+            <div className="space-y-3">
+              {data.activeProjects.map((project) => (
+                <div key={project.title}>
+                  <p
+                    className="text-sm font-semibold"
+                    style={{ color: 'var(--color-text)' }}
+                  >
+                    {project.title}
+                  </p>
+                  <p
+                    className="text-xs mt-0.5 leading-relaxed"
+                    style={{ color: 'var(--color-text-muted)' }}
+                  >
+                    {project.description}
+                  </p>
+                  <div className="mt-1.5 flex flex-wrap gap-1">
+                    {project.technologies.map((tech) => (
+                      <SkillPill key={tech} label={tech} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Section: Awards
+// ---------------------------------------------------------------------------
+
+function CvAwardsSection({
+  awards,
+  labels,
+}: {
+  awards: NonNullable<CVData['awards']>;
+  labels: Labels;
+}) {
+  if (awards.length === 0) return null;
+
+  return (
+    <section id="awards" className="scroll-mt-8">
+      <SectionHeading>{labels.awards}</SectionHeading>
+      <div>
+        {awards.map((award, i) => {
+          const isLast = i === awards.length - 1;
+          return (
+            <div
+              key={`${award.title}-${i}`}
+              style={{
+                padding: '1.25rem 0',
+                borderBottom: isLast
+                  ? 'none'
+                  : '1px solid var(--color-border)',
+              }}
+            >
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-2">
+                <div className="flex-1">
+                  <h3
+                    className="text-base font-semibold"
+                    style={{ color: 'var(--color-text)' }}
+                  >
+                    {award.title}
+                  </h3>
+                  {award.category && (
+                    <span
+                      className="inline-block mt-1 rounded-full px-2 py-0.5 text-xs font-medium"
+                      style={{
+                        background: 'rgb(245 158 11 / 0.2)',
+                        color: '#f59e0b',
+                        border: '1px solid rgb(245 158 11 / 0.3)',
+                      }}
+                    >
+                      {award.category}
+                    </span>
+                  )}
+                </div>
+                {award.year && (
+                  <span
+                    className="flex-shrink-0 text-sm"
+                    style={{ color: 'var(--color-text-muted)' }}
+                  >
+                    {award.year}
+                  </span>
+                )}
+              </div>
+              {award.description && (
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: 'var(--color-text-muted)' }}
+                >
+                  {award.description}
+                </p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Copy to Clipboard Sidebar
+// ---------------------------------------------------------------------------
+
+function CopyToClipboardSidebar({
+  contact,
+  lang,
+}: {
+  contact: CVData['personal']['contact'];
+  lang: 'es' | 'en';
+}) {
+  const [toast, setToast] = useState<string | null>(null);
+  const labels = getLabels(lang);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2000);
+  };
+
+  const copyEmail = () => {
+    if (contact.email) {
+      navigator.clipboard.writeText(contact.email);
+      showToast(lang === 'es' ? 'Email copiado' : 'Email copied');
+    }
+  };
+
+  const shareCv = () => {
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      navigator.share({ title: 'CV', url: window.location.href });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      showToast(lang === 'es' ? 'Link copiado' : 'Link copied');
+    }
+  };
+
+  const printCv = () => {
+    window.print();
+  };
+
+  const buttonStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '44px',
+    height: '44px',
+    borderRadius: '9999px',
+    border: '1px solid var(--color-border)',
+    background: 'var(--color-surface)',
+    color: 'var(--color-text-muted)',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    fontSize: '1.125rem',
+    boxShadow: '0 1px 3px rgb(0 0 0 / 0.1)',
+  };
+
+  const actions = [
+    ...(contact.email
+      ? [{ label: labels.copyEmail, icon: '\u2709', onClick: copyEmail }]
+      : []),
+    { label: labels.shareCv, icon: '\u{1F517}', onClick: shareCv },
+    { label: labels.printCv, icon: '\u{1F5A8}', onClick: printCv },
+  ];
+
+  return (
+    <>
+      <div
+        className="hidden lg:flex flex-col gap-2"
+        style={{
+          position: 'fixed',
+          right: '-50px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 40,
+          transition: 'right 0.3s ease',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.right = '12px';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.right = '-50px';
+        }}
+      >
+        {actions.map((action) => (
+          <button
+            key={action.label}
+            onClick={action.onClick}
+            title={action.label}
+            aria-label={action.label}
+            style={buttonStyle}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--color-primary)';
+              e.currentTarget.style.color = '#ffffff';
+              e.currentTarget.style.borderColor = 'var(--color-primary)';
+              e.currentTarget.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'var(--color-surface)';
+              e.currentTarget.style.color = 'var(--color-text-muted)';
+              e.currentTarget.style.borderColor = 'var(--color-border)';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <span role="img" aria-hidden="true">
+              {action.icon}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Toast notification */}
+      {toast && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '2rem',
+            right: '2rem',
+            zIndex: 50,
+            background: 'var(--color-primary)',
+            color: '#ffffff',
+            padding: '0.75rem 1.25rem',
+            borderRadius: '0.5rem',
+            fontSize: '0.875rem',
+            fontWeight: 500,
+            boxShadow: '0 4px 12px rgb(0 0 0 / 0.15)',
+            animation: 'fadeIn 0.2s ease',
+          }}
+        >
+          {toast}
+        </div>
+      )}
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// VCard Download Button
+// ---------------------------------------------------------------------------
+
+function generateVCard(personal: CVData['personal']): string {
+  const lines = [
+    'BEGIN:VCARD',
+    'VERSION:3.0',
+    `FN:${personal.name.full}`,
+    `N:${personal.name.last};${personal.name.first};;;`,
+  ];
+
+  if (personal.title) {
+    lines.push(`TITLE:${personal.title}`);
+  }
+  if (personal.location) {
+    lines.push(`ADR;TYPE=WORK:;;${personal.location};;;;`);
+  }
+  if (personal.contact.email) {
+    lines.push(`EMAIL;TYPE=INTERNET:${personal.contact.email}`);
+  }
+  if (personal.contact.linkedin) {
+    lines.push(`URL;TYPE=LinkedIn:${personal.contact.linkedin}`);
+  }
+  if (personal.contact.github) {
+    lines.push(`URL;TYPE=GitHub:${personal.contact.github}`);
+  }
+  if (personal.contact.portfolio) {
+    lines.push(`URL;TYPE=Portfolio:${personal.contact.portfolio}`);
+  }
+  if (personal.summary) {
+    lines.push(`NOTE:${personal.summary.replace(/\n/g, '\\n')}`);
+  }
+
+  lines.push('END:VCARD');
+  return lines.join('\r\n');
+}
+
+function VCardDownloadButton({
+  personal,
+  lang,
+}: {
+  personal: CVData['personal'];
+  lang: 'es' | 'en';
+}) {
+  const labels = getLabels(lang);
+
+  const handleDownload = () => {
+    const vcf = generateVCard(personal);
+    const blob = new Blob([vcf], { type: 'text/vcard;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${personal.name.full.replace(/\s+/g, '_')}.vcf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <button
+      onClick={handleDownload}
+      title={labels.downloadVcard}
+      aria-label={labels.downloadVcard}
+      className="hidden lg:flex items-center gap-2 fixed bottom-6 left-[276px] z-40"
+      style={{
+        background: '#10b981',
+        color: '#ffffff',
+        border: 'none',
+        borderRadius: '9999px',
+        padding: '0.625rem 1.25rem',
+        fontSize: '0.8125rem',
+        fontWeight: 600,
+        cursor: 'pointer',
+        boxShadow: '0 4px 12px rgb(16 185 129 / 0.3)',
+        transition: 'all 0.2s ease',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = '#059669';
+        e.currentTarget.style.transform = 'translateY(-2px)';
+        e.currentTarget.style.boxShadow = '0 6px 16px rgb(16 185 129 / 0.4)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = '#10b981';
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = '0 4px 12px rgb(16 185 129 / 0.3)';
+      }}
+    >
+      <span role="img" aria-hidden="true">
+        &#x1F4C7;
+      </span>
+      {labels.downloadVcard}
+    </button>
   );
 }
 
@@ -1574,11 +2111,24 @@ export default function CvPageClient({ lang }: CvPageClientProps) {
         onClose={() => setSidebarOpen(false)}
       />
 
+      {/* Copy to Clipboard Sidebar */}
+      <CopyToClipboardSidebar contact={cvData.personal.contact} lang={lang} />
+
+      {/* VCard Download Button */}
+      <VCardDownloadButton personal={cvData.personal} lang={lang} />
+
       {/* Main content - offset by sidebar on desktop */}
       <main className="min-h-screen lg:ml-[260px]">
         <div className="mx-auto max-w-4xl px-6 py-12 lg:py-16">
           <CvAboutSection personal={cvData.personal} labels={labels} />
           <GradientDivider />
+
+          {cvData.currentlyWorkingOn && (
+            <>
+              <CvCurrentlyWorkingOnSection data={cvData.currentlyWorkingOn} labels={labels} />
+              <GradientDivider />
+            </>
+          )}
 
           {cvData.experience.length > 0 && (
             <>
@@ -1603,7 +2153,7 @@ export default function CvPageClient({ lang }: CvPageClientProps) {
 
           {cvData.skills.length > 0 && (
             <>
-              <CvSkillsSection skills={cvData.skills} labels={labels} />
+              <CvSkillsSection skills={cvData.skills} labels={labels} lang={lang} />
               <GradientDivider />
             </>
           )}
@@ -1618,6 +2168,13 @@ export default function CvPageClient({ lang }: CvPageClientProps) {
           {cvData.languages.length > 0 && (
             <>
               <CvLanguagesSection languages={cvData.languages} labels={labels} />
+              <GradientDivider />
+            </>
+          )}
+
+          {cvData.awards && cvData.awards.length > 0 && (
+            <>
+              <CvAwardsSection awards={cvData.awards} labels={labels} />
               <GradientDivider />
             </>
           )}

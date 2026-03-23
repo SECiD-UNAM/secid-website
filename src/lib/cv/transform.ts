@@ -38,6 +38,8 @@ export function transformProfileToCV(
     projects: buildProjectsSection(member),
     skills: member.profile.skills || [],
     languages: buildLanguagesSection(member),
+    awards: buildAwardsSection(member),
+    currentlyWorkingOn: buildCurrentlyWorkingOnSection(member),
     metadata: {
       generatedAt: new Date().toISOString(),
       memberSlug: member.slug,
@@ -134,4 +136,42 @@ function buildLanguagesSection(member: MemberProfile): CVData['languages'] {
     name: language.name,
     proficiency: language.proficiency,
   }));
+}
+
+function buildAwardsSection(member: MemberProfile): CVData['awards'] {
+  const achievements = member.portfolio?.achievements || [];
+  if (achievements.length === 0) return undefined;
+
+  return achievements.map((a) => ({
+    title: a.title,
+    description: a.description,
+    category: a.category,
+    year: a.earnedAt?.getFullYear?.(),
+  }));
+}
+
+function buildCurrentlyWorkingOnSection(
+  member: MemberProfile
+): CVData['currentlyWorkingOn'] {
+  const currentEdu = (member.educationHistory || []).find((e) => e.current);
+  const activeProjects = (member.portfolio?.projects || [])
+    .filter((p) => p.featured)
+    .slice(0, 3)
+    .map((p) => ({
+      title: p.title,
+      description: p.description,
+      technologies: p.technologies,
+    }));
+
+  if (!currentEdu && activeProjects.length === 0) return undefined;
+
+  return {
+    education: currentEdu
+      ? {
+          degree: currentEdu.degree,
+          institution: currentEdu.institution,
+        }
+      : undefined,
+    activeProjects: activeProjects.length > 0 ? activeProjects : undefined,
+  };
 }

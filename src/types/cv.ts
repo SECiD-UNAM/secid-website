@@ -63,6 +63,25 @@ export interface CVData {
     name: string;
     proficiency: string;
   }>;
+  awards?: Array<{
+    title: string;
+    description?: string;
+    year?: number;
+    category?: string;
+  }>;
+  currentlyWorkingOn?: {
+    education?: {
+      degree: string;
+      institution: string;
+      progress?: number;
+      expectedCompletion?: string;
+    };
+    activeProjects?: Array<{
+      title: string;
+      description: string;
+      technologies: string[];
+    }>;
+  };
   metadata: {
     generatedAt: string;
     memberSlug: string;
