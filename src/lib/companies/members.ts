@@ -46,10 +46,30 @@ export async function getCompanyMembers(
       seen.add(member.uid);
     }
 
-    // 3. Fallback: string match on company name
+    // 3. Fallback: string match on company name (for entries without companyId)
     if (!seen.has(member.uid)) {
-      if (member.profile.company?.toLowerCase() === companyName.toLowerCase()) {
+      const nameLC = companyName.toLowerCase();
+
+      // Check if current company matches by name
+      if (member.profile.company?.toLowerCase() === nameLC) {
         current.push(member);
+        seen.add(member.uid);
+        continue;
+      }
+
+      // Check work history entries by name (no companyId)
+      const currentByName = roles.find(
+        (r) => !r.companyId && r.current && r.company?.toLowerCase() === nameLC
+      );
+      const pastByName = roles.filter(
+        (r) => !r.companyId && !r.current && r.company?.toLowerCase() === nameLC
+      );
+
+      if (currentByName) {
+        current.push(member);
+        seen.add(member.uid);
+      } else if (pastByName.length > 0) {
+        alumni.push(member);
         seen.add(member.uid);
       }
     }

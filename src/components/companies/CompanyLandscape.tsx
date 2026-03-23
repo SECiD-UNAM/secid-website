@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import type { Company } from '@/types/company';
 import { CompanyLogo } from '@/components/shared/CompanyLogo';
 
@@ -41,6 +41,9 @@ export const CompanyLandscape: React.FC<Props> = ({
   lang = 'es',
 }) => {
   const [filter, setFilter] = useState<'current' | 'all'>('current');
+  const [hoveredCompany, setHoveredCompany] = useState<Company | null>(null);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Filter: current = companies with active members, all = every company
   const displayed = filter === 'current'
@@ -63,7 +66,7 @@ export const CompanyLandscape: React.FC<Props> = ({
   const totalMembers = displayed.reduce((s, c) => s + c.memberCount, 0);
 
   return (
-    <div>
+    <div ref={containerRef} style={{ position: 'relative' }}>
       {/* Header */}
       <div
         style={{
@@ -245,12 +248,19 @@ export const CompanyLandscape: React.FC<Props> = ({
                       transition: 'border-color 150ms',
                       maxWidth: '100%',
                     }}
-                    title={`${company.name} — ${company.memberCount} ${lang === 'es' ? 'miembros' : 'members'}`}
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLElement).style.borderColor = color;
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const containerRect = containerRef.current?.getBoundingClientRect();
+                      setHoveredCompany(company);
+                      setTooltipPos({
+                        x: rect.left - (containerRect?.left || 0) + rect.width / 2,
+                        y: rect.top - (containerRect?.top || 0) - 8,
+                      });
                     }}
                     onMouseLeave={(e) => {
                       (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border, #334155)';
+                      setHoveredCompany(null);
                     }}
                   >
                     <CompanyLogo company={company} size="sm" />
@@ -286,6 +296,54 @@ export const CompanyLandscape: React.FC<Props> = ({
       >
         SECiD — Sociedad de Egresados en Ciencia de Datos · UNAM
       </div>
+
+      {/* Hover card */}
+      {hoveredCompany && (
+        <div
+          style={{
+            position: 'absolute',
+            left: tooltipPos.x,
+            top: tooltipPos.y,
+            transform: 'translate(-50%, -100%)',
+            zIndex: 50,
+            pointerEvents: 'none',
+            background: 'var(--card-bg, #1e293b)',
+            border: '1px solid var(--color-border, #334155)',
+            borderRadius: 10,
+            padding: '10px 14px',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+            minWidth: 180,
+            maxWidth: 260,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+            <CompanyLogo company={hoveredCompany} size="md" />
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary, #f8fafc)' }}>
+                {hoveredCompany.name}
+              </div>
+              {hoveredCompany.industry && (
+                <div style={{ fontSize: 11, color: 'var(--color-text-secondary, #94a3b8)' }}>
+                  {hoveredCompany.industry}
+                </div>
+              )}
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 12, fontSize: 11, color: 'var(--color-text-secondary, #94a3b8)' }}>
+            {hoveredCompany.location && (
+              <span>📍 {hoveredCompany.location}</span>
+            )}
+            <span style={{ color: 'var(--secid-primary, #f65425)', fontWeight: 600 }}>
+              {hoveredCompany.memberCount} {lang === 'es' ? 'miembros' : 'members'}
+            </span>
+          </div>
+          {hoveredCompany.website && (
+            <div style={{ fontSize: 10, color: 'var(--color-text-secondary, #64748b)', marginTop: 4 }}>
+              🌐 {hoveredCompany.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
