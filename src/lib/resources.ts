@@ -196,6 +196,26 @@ export async function getResource(id: string): Promise<Resource | null> {
 /**
  * Upload a new resource
  */
+const ALLOWED_RESOURCE_TYPES = [
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'text/csv',
+  'text/plain',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+];
+const MAX_RESOURCE_SIZE = 50 * 1024 * 1024; // 50MB
+
+function sanitizeUploadFilename(name: string): string {
+  return name
+    .replace(/[^a-zA-Z0-9._-]/g, '_')
+    .replace(/\.{2,}/g, '.')
+    .substring(0, 200);
+}
+
 export async function uploadResource(
   request: ResourceUploadRequest
 ): Promise<string> {
@@ -208,14 +228,26 @@ export async function uploadResource(
     throw new Error('User not authenticated');
   }
 
+  if (!ALLOWED_RESOURCE_TYPES.includes(request.file.type)) {
+    throw new Error(
+      'Invalid file type. Allowed: PDF, DOCX, XLSX, PPTX, CSV, TXT, JPEG, PNG, WebP.'
+    );
+  }
+  if (request.file.size > MAX_RESOURCE_SIZE) {
+    throw new Error('File too large. Maximum size is 50MB.');
+  }
+
   try {
     return await runTransaction(db, async (transaction) => {
       // Upload main file
+      const safeName = sanitizeUploadFilename(request.file.name);
       const fileRef = ref(
         storage,
-        `resources/${Date.now()}_${request.file['name']}`
+        `resources/${Date.now()}_${safeName}`
       );
-      const fileSnapshot = await uploadBytes(fileRef, request.file);
+      const fileSnapshot = await uploadBytes(fileRef, request.file, {
+        contentType: request.file.type,
+      });
       const fileUrl = await getDownloadURL(fileSnapshot.ref);
       const fileMetadata = await getMetadata(fileSnapshot.ref);
 

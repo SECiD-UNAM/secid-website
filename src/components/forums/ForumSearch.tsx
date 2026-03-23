@@ -179,7 +179,9 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
 
     let highlightedText = text;
     highlights.forEach((highlight) => {
-      const regex = new RegExp(`(${highlight})`, 'gi');
+      const escaped = highlight.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      if (!escaped) return;
+      const regex = new RegExp(`(${escaped})`, 'gi');
       highlightedText = highlightedText.replace(regex, '<mark>$1</mark>');
     });
 

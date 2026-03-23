@@ -266,6 +266,9 @@ export async function unfollowMember(
 /**
  * File upload functions
  */
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+
 export async function uploadProfileImage(
   uid: string,
   file: File
@@ -274,9 +277,16 @@ export async function uploadProfileImage(
     return 'https://via.placeholder.com/150';
   }
 
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    throw new Error('Invalid file type. Only JPEG, PNG, and WebP are allowed.');
+  }
+  if (file.size > MAX_IMAGE_SIZE) {
+    throw new Error('File too large. Maximum size is 5MB.');
+  }
+
   try {
     const fileRef = ref(storage, `profiles/${uid}/avatar.jpg`);
-    await uploadBytes(fileRef, file);
+    await uploadBytes(fileRef, file, { contentType: file.type });
     return await getDownloadURL(fileRef);
   } catch (error) {
     console.error('Error uploading profile image:', error);

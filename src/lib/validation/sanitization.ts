@@ -219,7 +219,7 @@ export function sanitizeFilename(filename: string): string {
   // Limit length
   const maxLength = 255;
   if (sanitized.length > maxLength) {
-    const ext = sanitized.split('').pop() || '';
+    const ext = sanitized.split('.').pop() || '';
     const name = sanitized.substring(0, maxLength - ext.length - 1);
     sanitized = `${name}.${ext}`;
   }
