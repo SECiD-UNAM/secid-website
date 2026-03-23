@@ -484,9 +484,12 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
         profileCompleteness,
       };
 
-      // Only set companyId if it has a value
+      // Always update companyId — set to new value or clear it
+      // This triggers onMemberCompanyChange CF to update memberCount
       if (currentWork?.companyId) {
         updates['profile.companyId'] = currentWork.companyId;
+      } else {
+        updates['profile.companyId'] = deleteField();
       }
 
       // Deep-clean undefined values — Firestore rejects them anywhere in the tree
