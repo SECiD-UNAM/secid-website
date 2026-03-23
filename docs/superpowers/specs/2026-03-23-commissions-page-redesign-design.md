@@ -46,16 +46,26 @@ A pill toggle below the hero switches between views with a crossfade transition.
 
 ### Components
 
-- **`CommissionOverview.tsx`** — Top-level component (already exists as wrapper). Renders the toggle and conditionally shows either the list view or the chart view.
-- **`CommissionsListView.tsx`** — New component. The nested layout (Option B). Pure React, no external dependencies. Each board direction is a container card with commission cards nested inside.
-- **`CommissionsChartView.tsx`** — New component. The ReactFlow interactive org chart (Option D). Uses `@xyflow/react` for the node graph with custom node components, bezier edges, minimap, and controls.
-- **`commissions-data.ts`** — New file. Shared data source for both views. Contains the org structure, commission details, and i18n strings (ES/EN). Both views consume this same data.
+- **`CommissionOverview.tsx`** — Gutted and rebuilt. The existing data arrays (`directiveCommissions`, `horizontalCommissions`, `boardMembers`, `parentLabels`, `Commission` interface) are extracted to `commissions-data.ts`. The existing flat-grid rendering is replaced entirely. The new component renders only the toggle pill and conditionally mounts `CommissionsListView` or `CommissionsChartView`. The wrapper `CommissionsPage.tsx` is unchanged.
+- **`CommissionsListView.tsx`** — New component. The nested layout (Option B) which replaces the current flat grid. Each board direction (Presidencia, Secretaria, Tesoreria) is a container card with its commissions nested inside — this is a different layout than the current flat grid with "reports to" badges. Pure React, no external dependencies.
+- **`CommissionsChartView.tsx`** — New component. The ReactFlow interactive org chart (Option D). Uses `@xyflow/react` for the node graph with custom node components, bezier edges, minimap, and controls. Loaded via `React.lazy()`.
+- **`commissions-data.ts`** — New file. Migrates all existing data from `CommissionOverview.tsx` (board members, directive commissions, horizontal commissions, parent labels, interfaces, i18n strings). Both views consume this same data.
 
 ### Custom ReactFlow Nodes
 
-- **`BoardNode`** — Gradient header with role + name, connection handle at bottom.
-- **`CommissionNode`** — Border colored by parent direction, title + short description, sub-area tags, connection handle at top.
-- **`HorizontalCommissionNode`** — Full-width bar with color accent, title + responsibilities.
+- **`BoardNode`** — Gradient header with role + name, connection handle at bottom. Width: 160px.
+- **`CommissionNode`** — Border colored by parent direction, title + short description, sub-area tags, connection handle at top. Width: 140px.
+- **`HorizontalCommissionNode`** — Full-width bar with color accent, title + responsibilities. Width: 500px.
+
+### ReactFlow Layout Strategy
+
+Node positions are hardcoded in `CommissionsChartView.tsx` (not auto-layout). The graph has a fixed conceptual canvas of ~600x700px:
+
+- **Row 1 (y=0)**: 3 board nodes, spaced evenly at x=0, x=200, x=400
+- **Row 2 (y=180)**: 4 directive commission nodes at x=0, x=150, x=300, x=450. Each positioned roughly below its parent.
+- **Row 3 (y=420)**: 5 horizontal commission nodes stacked vertically (y increments of 60), centered at x=50, full width.
+
+This avoids the complexity of a layout algorithm (dagre/elk) while producing a clean result. Positions can be fine-tuned visually during implementation.
 
 ### Data Flow
 
@@ -70,9 +80,10 @@ Both views are stateless renders of the same data — the toggle just swaps whic
 ### Toggle Behavior
 
 - Default view: "Vista detallada" (list/nested)
-- Toggle state stored in React `useState`
-- Crossfade transition: outgoing view fades out (300ms), incoming view fades in (300ms)
+- Toggle state stored in React `useState<'list' | 'chart'>`, default `'list'`
 - Toggle is a pill-style segmented control below the hero
+- **Transition**: Both views are always mounted but the inactive one is hidden with `opacity: 0; pointer-events: none; position: absolute`. CSS transitions handle the 300ms fade. This avoids the complexity of coordinating `React.lazy` with animated unmounting.
+- **Code-splitting**: `CommissionsChartView` is loaded via `React.lazy()` with a `<Suspense>` fallback (simple spinner). The lazy load triggers on first mount, so the chart bundle is fetched immediately but doesn't block the list view render. On slow connections, the user sees the list view instantly and the chart loads in the background.
 
 ### i18n
 
