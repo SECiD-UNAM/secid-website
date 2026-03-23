@@ -609,3 +609,6 @@ export { completeRegistration };
 
 // Jobs: public anonymous job submission callable CF
 export { submitPublicJob };
+
+// LinkedIn OAuth: custom OAuth flow (avoids Identity Platform OIDC charges)
+export { linkedinAuthRedirect, linkedinAuthCallback } from "./linkedin-auth";

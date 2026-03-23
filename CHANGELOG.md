@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **LinkedIn OAuth Cloud Functions**: Added `functions/src/linkedin-auth.ts` with two Cloud Functions (`linkedinAuthRedirect` and `linkedinAuthCallback`) that implement a custom LinkedIn OAuth flow using `createCustomToken()`. This avoids Firebase Identity Platform OIDC charges ($0.26/MAU) by using free "Custom" auth. The flow handles authorization redirect, token exchange, profile fetching, user creation/merge by email, optional LinkedIn verification check, and redirect back to the app with a Firebase custom token. Secrets managed via `defineSecret`. 15 unit tests.
+
 - **CV data migration script**: Added `scripts/migrate-cv-data.mjs` — a Node.js migration script that uses firebase-admin to create 24 new company documents (with `pendingReview: true`) and update 13 member profiles with structured data extracted from CVs (bio, skills, experience history, education, languages, GitHub URLs). Supports `--dry-run` mode for safe preview. Resolves company name-to-ID mapping for experience entries.
 
 - **DashboardBottomNav**: New `src/components/nav/DashboardBottomNav.tsx` replaces the old `BottomNav.tsx` and `BottomNavAuth.tsx`. Renders nothing for logged-out users, and a 5-tab bottom bar (Home, Members, Jobs, Companies, More) for authenticated members on mobile/tablet (< 768px). The "More" tab opens an animated bottom sheet with a profile card, secondary nav items (Events, Forums, Mentorship, Resources, Settings), and a Sign Out button. Body padding is managed by the component via `useEffect` rather than static CSS.

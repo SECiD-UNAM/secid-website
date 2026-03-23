@@ -114,14 +114,15 @@ function addWrappedText(
 function addSectionHeader(
   doc: JsPDFInstance,
   title: string,
-  y: number
+  y: number,
+  color: string = SECID_PRIMARY
 ): number {
   doc.setFontSize(14);
-  doc.setTextColor(SECID_PRIMARY);
+  doc.setTextColor(color);
   doc.setFont('helvetica', 'bold');
   doc.text(title, MARGIN, y);
   const lineY = y + 3;
-  doc.setDrawColor(SECID_PRIMARY);
+  doc.setDrawColor(color);
   doc.setLineWidth(0.5);
   doc.line(MARGIN, lineY, MARGIN + CONTENT_WIDTH, lineY);
   doc.setFont('helvetica', 'normal');
@@ -140,9 +141,9 @@ function checkPageBreak(
   return y;
 }
 
-function renderHeader(doc: JsPDFInstance, cvData: CVData, y: number): number {
+function renderHeader(doc: JsPDFInstance, cvData: CVData, y: number, color: string = SECID_PRIMARY): number {
   doc.setFontSize(22);
-  doc.setTextColor(SECID_PRIMARY);
+  doc.setTextColor(color);
   doc.setFont('helvetica', 'bold');
   doc.text(cvData.personal.name.full, MARGIN, y);
   y += 8;
@@ -172,11 +173,12 @@ function renderSummary(
   doc: JsPDFInstance,
   cvData: CVData,
   labels: Labels,
-  y: number
+  y: number,
+  color: string = SECID_PRIMARY
 ): number {
   if (!cvData.personal.summary) return y;
 
-  y = addSectionHeader(doc, labels.summary, y);
+  y = addSectionHeader(doc, labels.summary, y, color);
   const height = addWrappedText(
     doc,
     cvData.personal.summary,
@@ -193,13 +195,14 @@ function renderExperience(
   cvData: CVData,
   format: PdfFormat,
   labels: Labels,
-  y: number
+  y: number,
+  color: string = SECID_PRIMARY
 ): number {
   const sliceCount = getExperienceSlice(format, cvData.experience.length);
   const experience = cvData.experience.slice(0, sliceCount);
   if (experience.length === 0) return y;
 
-  y = addSectionHeader(doc, labels.experience, y);
+  y = addSectionHeader(doc, labels.experience, y, color);
 
   for (const job of experience) {
     y = checkPageBreak(doc, y, 20);
@@ -244,13 +247,14 @@ function renderEducation(
   cvData: CVData,
   format: PdfFormat,
   labels: Labels,
-  y: number
+  y: number,
+  color: string = SECID_PRIMARY
 ): number {
   const sliceCount = getEducationSlice(format, cvData.education.length);
   const education = cvData.education.slice(0, sliceCount);
   if (education.length === 0) return y;
 
-  y = addSectionHeader(doc, labels.education, y);
+  y = addSectionHeader(doc, labels.education, y, color);
 
   for (const edu of education) {
     y = checkPageBreak(doc, y, 15);
@@ -275,11 +279,12 @@ function renderSkills(
   doc: JsPDFInstance,
   cvData: CVData,
   labels: Labels,
-  y: number
+  y: number,
+  color: string = SECID_PRIMARY
 ): number {
   if (cvData.skills.length === 0) return y;
 
-  y = addSectionHeader(doc, labels.skills, y);
+  y = addSectionHeader(doc, labels.skills, y, color);
   const height = addWrappedText(
     doc,
     cvData.skills.join(' \u2022 '),
@@ -296,7 +301,8 @@ function renderCertifications(
   cvData: CVData,
   format: PdfFormat,
   labels: Labels,
-  y: number
+  y: number,
+  color: string = SECID_PRIMARY
 ): number {
   if (format === 'summary') return y;
 
@@ -307,7 +313,7 @@ function renderCertifications(
   const certs = cvData.certifications.slice(0, sliceCount);
   if (certs.length === 0) return y;
 
-  y = addSectionHeader(doc, labels.certifications, y);
+  y = addSectionHeader(doc, labels.certifications, y, color);
 
   for (const cert of certs) {
     y = checkPageBreak(doc, y, 10);
@@ -331,11 +337,12 @@ function renderLanguages(
   doc: JsPDFInstance,
   cvData: CVData,
   labels: Labels,
-  y: number
+  y: number,
+  color: string = SECID_PRIMARY
 ): number {
   if (cvData.languages.length === 0) return y;
 
-  y = addSectionHeader(doc, labels.languages, y);
+  y = addSectionHeader(doc, labels.languages, y, color);
   const langText = cvData.languages
     .map((l) => `${l.name} (${l.proficiency})`)
     .join(' \u2022 ');
@@ -348,12 +355,13 @@ function renderProjects(
   cvData: CVData,
   format: PdfFormat,
   labels: Labels,
-  y: number
+  y: number,
+  color: string = SECID_PRIMARY
 ): number {
   if (format !== 'full') return y;
   if (cvData.projects.length === 0) return y;
 
-  y = addSectionHeader(doc, labels.projects, y);
+  y = addSectionHeader(doc, labels.projects, y, color);
 
   for (const proj of cvData.projects) {
     y = checkPageBreak(doc, y, 15);
@@ -402,7 +410,8 @@ function renderFooter(doc: JsPDFInstance, fullName: string): void {
 export async function generateCvPdf(
   cvData: CVData,
   format: PdfFormat,
-  lang: 'es' | 'en'
+  lang: 'es' | 'en',
+  accentColor: string = SECID_PRIMARY
 ): Promise<void> {
   const { jsPDF } = await import('jspdf');
   const doc = new jsPDF({ format: 'a4', unit: 'mm' });
@@ -410,14 +419,15 @@ export async function generateCvPdf(
   const labels = getLabels(lang);
   let y = MARGIN;
 
-  y = renderHeader(doc, cvData, y);
-  y = renderSummary(doc, cvData, labels, y);
-  y = renderExperience(doc, cvData, format, labels, y);
-  y = renderEducation(doc, cvData, format, labels, y);
-  y = renderSkills(doc, cvData, labels, y);
-  y = renderCertifications(doc, cvData, format, labels, y);
-  y = renderLanguages(doc, cvData, labels, y);
-  y = renderProjects(doc, cvData, format, labels, y);
+  const c = accentColor;
+  y = renderHeader(doc, cvData, y, c);
+  y = renderSummary(doc, cvData, labels, y, c);
+  y = renderExperience(doc, cvData, format, labels, y, c);
+  y = renderEducation(doc, cvData, format, labels, y, c);
+  y = renderSkills(doc, cvData, labels, y, c);
+  y = renderCertifications(doc, cvData, format, labels, y, c);
+  y = renderLanguages(doc, cvData, labels, y, c);
+  y = renderProjects(doc, cvData, format, labels, y, c);
 
   // Suppress unused variable warning -- y tracks cursor position for extensibility
   void y;
