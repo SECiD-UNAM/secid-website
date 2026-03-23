@@ -110,14 +110,14 @@ const schemaOrgJson = JSON.stringify({
     <link rel="stylesheet" href="/assets/css/fontawesome-all.min.css" />
     <link rel="stylesheet" href="/assets/css/secid-components.css" />
 
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-    <!-- Google Fonts -->
+    <!-- Self-hosted fonts -->
+    <link rel="stylesheet" href="/assets/css/fonts.css" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/assets/fonts/inter-var-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
 
     <!-- Schema.org Structured Data -->

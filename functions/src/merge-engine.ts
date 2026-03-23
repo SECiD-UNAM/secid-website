@@ -101,8 +101,8 @@ function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
 export const onMergeRequestApproved = onDocumentUpdated(
   {
     document: "merge_requests/{requestId}",
-    timeoutSeconds: 540,
-    memory: "512MiB",
+    timeoutSeconds: 120,
+    memory: "256MiB",
   },
   async (event) => {
     const beforeData = event.data?.before.data();

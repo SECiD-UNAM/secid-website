@@ -72,7 +72,7 @@ export default defineConfig({
         trimCustomFragments: true,
         useShortDoctype: true,
       },
-      Image: false, // We'll handle image optimization separately
+      Image: true,
       JavaScript: true,
       SVG: true,
     }),
@@ -86,6 +86,11 @@ export default defineConfig({
     build: {
       rollupOptions: {
         external: ['sharp'],
+        output: {
+          manualChunks: {
+            recharts: ['recharts'],
+          },
+        },
       },
     },
     optimizeDeps: {
@@ -119,7 +124,7 @@ export default defineConfig({
 
   // Prefetch configuration for better performance
   prefetch: {
-    prefetchAll: true,
+    prefetchAll: false,
     defaultStrategy: 'viewport',
   },
 });
