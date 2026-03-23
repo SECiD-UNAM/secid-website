@@ -171,6 +171,18 @@ export interface Certification {
   verified: boolean;
 }
 
+export interface Compensation {
+  monthlyGross?: number;
+  currency: 'MXN' | 'USD';
+  country: 'MX' | 'US' | 'OTHER';
+  fiscalRegime?: 'asalariado' | 'honorarios' | 'resico' | 'w2' | '1099';
+  annualBonus?: number;
+  annualBonusType?: 'fixed' | 'percentage';
+  signOnBonus?: number;
+  stockAnnualValue?: number;
+  benefits?: string[];
+}
+
 export interface WorkExperience {
   id: string;
   company: string;
@@ -182,6 +194,7 @@ export interface WorkExperience {
   technologies?: string[];
   achievements?: string[];
   current: boolean;
+  compensation?: Compensation;
 }
 
 export interface EducationEntry {
