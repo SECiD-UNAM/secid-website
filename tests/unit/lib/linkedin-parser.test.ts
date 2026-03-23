@@ -8,7 +8,7 @@ import { describe, it, expect } from 'vitest';
 import {
   parseLinkedInText,
   parseMonthYear,
-} from '../../../src/lib/linkedin-parser';
+} from '../../../src/lib/linkedin-parser/experience-parser';
 
 describe('parseMonthYear', () => {
   it('TC-linkedin-import-001: parses English abbreviated month', () => {
