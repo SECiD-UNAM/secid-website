@@ -170,6 +170,9 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   };
 
   const isItemActive = (href: string): boolean => {
+    if (href === `/${lang}/dashboard`) {
+      return currentPath === href || currentPath === href + '/';
+    }
     return currentPath === href || currentPath.startsWith(href + '/');
   };
 
