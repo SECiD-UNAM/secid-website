@@ -238,7 +238,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
   const sidebarContent = (
     <>
-      <div className="space-y-1 px-4">
+      <div className="space-y-1 px-4 pt-4">
         {/* Main menu items */}
         <div className="space-y-1">{menuItems.map(renderMenuItem)}</div>
 
