@@ -4,6 +4,8 @@ import { signInWithProvider } from '@/lib/auth';
 import { signInWithLinkedIn } from '@/lib/auth/linkedin-auth';
 import { useTranslations } from '@/hooks/useTranslations';
 import toast from 'react-hot-toast';
+import { AccountMergePrompt } from './AccountMergePrompt';
+import { handleAccountExistsError, completeMerge, type PendingMerge } from '@/lib/auth/auto-merge';
 
 interface SocialLoginButtonsProps {
   onSuccess?: () => void;
@@ -33,6 +35,8 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
 }) => {
   const t = useTranslations(lang);
   const [loading, setLoading] = useState<SupportedProvider | null>(null);
+  const [pendingMerge, setPendingMerge] = useState<PendingMerge | null>(null);
+  const [merging, setMerging] = useState(false);
 
   const providers: ProviderConfig[] = [
     {
@@ -114,6 +118,14 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
 
       onSuccess?.();
     } catch (error: any) {
+      // Check for account-exists-with-different-credential before generic handling
+      const merge = await handleAccountExistsError(error);
+      if (merge) {
+        setPendingMerge(merge);
+        setLoading(null);
+        return;
+      }
+
       const errorCode = error.code || '';
       let errorMessage: string;
 
@@ -156,6 +168,36 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
 
   return (
     <div className={`space-y-3 ${className}`}>
+      {pendingMerge && (
+        <AccountMergePrompt
+          email={pendingMerge.email}
+          existingProvider={pendingMerge.existingProvider}
+          lang={lang}
+          loading={merging}
+          onSignInWithExisting={async () => {
+            setMerging(true);
+            try {
+              await completeMerge(
+                pendingMerge.existingProvider as Exclude<SupportedProvider, 'linkedin'>,
+                pendingMerge.pendingCredential
+              );
+              setPendingMerge(null);
+              toast.success(
+                lang === 'es' ? '¡Cuentas vinculadas exitosamente!' : 'Accounts linked successfully!'
+              );
+              onSuccess?.();
+            } catch {
+              toast.error(
+                lang === 'es' ? 'Error al vincular cuentas' : 'Failed to link accounts'
+              );
+            } finally {
+              setMerging(false);
+            }
+          }}
+          onCancel={() => setPendingMerge(null)}
+        />
+      )}
+
       {providers.map((provider) => (
         <button
           key={provider.id}

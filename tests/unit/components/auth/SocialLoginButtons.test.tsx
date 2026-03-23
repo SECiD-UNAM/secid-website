@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { SocialLoginButtons } from '@/components/auth/SocialLoginButtons';
 import { signInWithProvider } from '@/lib/auth';
 import { signInWithLinkedIn } from '@/lib/auth/linkedin-auth';
+import { handleAccountExistsError, completeMerge } from '@/lib/auth/auto-merge';
 import toast from 'react-hot-toast';
 
 // Mock dependencies
@@ -13,6 +14,11 @@ vi.mock('@/lib/auth', () => ({
 
 vi.mock('@/lib/auth/linkedin-auth', () => ({
   signInWithLinkedIn: vi.fn(),
+}));
+
+vi.mock('@/lib/auth/auto-merge', () => ({
+  handleAccountExistsError: vi.fn().mockResolvedValue(null),
+  completeMerge: vi.fn(),
 }));
 
 vi.mock('react-hot-toast', () => ({
@@ -35,6 +41,8 @@ vi.mock('@/hooks/useTranslations', () => ({
 describe.sequential('SocialLoginButtons', () => {
   const mockSignInWithProvider = vi.mocked(signInWithProvider);
   const mockSignInWithLinkedIn = vi.mocked(signInWithLinkedIn);
+  const mockHandleAccountExistsError = vi.mocked(handleAccountExistsError);
+  const mockCompleteMerge = vi.mocked(completeMerge);
   const mockToast = vi.mocked(toast);
 
   const mockSuccessResult = {
@@ -655,6 +663,222 @@ describe.sequential('SocialLoginButtons', () => {
       expect(container.querySelector('.animate-spin')).toBeInTheDocument();
 
       resolveSignIn!(mockSuccessResult);
+    });
+  });
+
+  describe('Account Merge Flow', () => {
+    const mockMergeData = {
+      email: 'user@example.com',
+      pendingCredential: { providerId: 'github.com' },
+      existingProvider: 'google' as const,
+    };
+
+    it('shows merge prompt when account-exists-with-different-credential is detected', async () => {
+      /**
+       * TC-SLB-001: Verifies merge prompt is displayed on account conflict
+       * Verifies: AC-merge-01
+       */
+      const user = userEvent.setup();
+      const conflictError = { code: 'auth/account-exists-with-different-credential' };
+      mockSignInWithProvider.mockRejectedValue(conflictError);
+      mockHandleAccountExistsError.mockResolvedValue(mockMergeData);
+
+      render(<SocialLoginButtons lang="en" />);
+
+      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      await user.click(googleButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/already exists via Google/i)).toBeInTheDocument();
+      });
+    });
+
+    it('shows merge prompt in Spanish when lang is es', async () => {
+      /**
+       * TC-SLB-002: Verifies merge prompt message is in Spanish
+       * Verifies: AC-merge-01
+       */
+      const user = userEvent.setup();
+      const conflictError = { code: 'auth/account-exists-with-different-credential' };
+      mockSignInWithProvider.mockRejectedValue(conflictError);
+      mockHandleAccountExistsError.mockResolvedValue(mockMergeData);
+
+      render(<SocialLoginButtons lang="es" />);
+
+      const googleButton = screen.getByRole('button', { name: /continuar con google/i });
+      await user.click(googleButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Ya existe una cuenta con/i)).toBeInTheDocument();
+      });
+    });
+
+    it('clears loading state when merge prompt is shown', async () => {
+      /**
+       * TC-SLB-003: Verifies loading is cleared when merge prompt appears
+       * Verifies: AC-merge-02
+       */
+      const user = userEvent.setup();
+      const conflictError = { code: 'auth/account-exists-with-different-credential' };
+      mockSignInWithProvider.mockRejectedValue(conflictError);
+      mockHandleAccountExistsError.mockResolvedValue(mockMergeData);
+
+      const { container } = render(<SocialLoginButtons lang="en" />);
+
+      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      await user.click(googleButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/already exists via Google/i)).toBeInTheDocument();
+      });
+
+      // Provider buttons should not be in loading state
+      expect(container.querySelector('.animate-spin')).toBeNull();
+    });
+
+    it('does not show merge prompt for non-conflict errors', async () => {
+      /**
+       * TC-SLB-004: Verifies non-conflict errors still show generic error message
+       * Verifies: AC-merge-03
+       */
+      const user = userEvent.setup();
+      const genericError = new Error('Authentication failed');
+      mockSignInWithProvider.mockRejectedValue(genericError);
+      mockHandleAccountExistsError.mockResolvedValue(null);
+
+      render(<SocialLoginButtons lang="en" />);
+
+      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      await user.click(googleButton);
+
+      await waitFor(() => {
+        expect(mockToast.error).toHaveBeenCalledWith('Authentication failed');
+      });
+
+      expect(screen.queryByText(/already exists via/i)).not.toBeInTheDocument();
+    });
+
+    it('dismisses merge prompt when cancel is clicked', async () => {
+      /**
+       * TC-SLB-005: Verifies cancel button hides the merge prompt
+       * Verifies: AC-merge-04
+       */
+      const user = userEvent.setup();
+      const conflictError = { code: 'auth/account-exists-with-different-credential' };
+      mockSignInWithProvider.mockRejectedValue(conflictError);
+      mockHandleAccountExistsError.mockResolvedValue(mockMergeData);
+
+      render(<SocialLoginButtons lang="en" />);
+
+      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      await user.click(googleButton);
+
+      await waitFor(() => {
+        expect(screen.getByText(/already exists via Google/i)).toBeInTheDocument();
+      });
+
+      const cancelButton = screen.getByRole('button', { name: /cancel/i });
+      await user.click(cancelButton);
+
+      expect(screen.queryByText(/already exists via Google/i)).not.toBeInTheDocument();
+    });
+
+    it('completes merge and calls onSuccess when sign in with existing is clicked', async () => {
+      /**
+       * TC-SLB-006: Verifies successful merge flow calls completeMerge and onSuccess
+       * Verifies: AC-merge-05
+       */
+      const user = userEvent.setup();
+      const conflictError = { code: 'auth/account-exists-with-different-credential' };
+      mockSignInWithProvider.mockRejectedValue(conflictError);
+      mockHandleAccountExistsError.mockResolvedValue(mockMergeData);
+      mockCompleteMerge.mockResolvedValue(undefined);
+
+      const onSuccess = vi.fn();
+      render(<SocialLoginButtons lang="en" onSuccess={onSuccess} />);
+
+      // First click triggers the conflict flow (there are multiple "Continue with Google" buttons)
+      const providerButtons = screen.getAllByRole('button', { name: /continue with google/i });
+      await user.click(providerButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByText(/already exists via Google/i)).toBeInTheDocument();
+      });
+
+      // The merge prompt button is now first in the list; use the amber-styled one
+      const mergeButtons = screen.getAllByRole('button', { name: /continue with google/i });
+      const mergePromptButton = mergeButtons.find((btn) =>
+        btn.className.includes('bg-amber-600')
+      )!;
+      await user.click(mergePromptButton);
+
+      await waitFor(() => {
+        expect(mockCompleteMerge).toHaveBeenCalledWith('google', mockMergeData.pendingCredential);
+        expect(mockToast.success).toHaveBeenCalledWith('Accounts linked successfully!');
+        expect(onSuccess).toHaveBeenCalled();
+      });
+    });
+
+    it('shows error toast when merge fails', async () => {
+      /**
+       * TC-SLB-007: Verifies error is shown when completeMerge throws
+       * Verifies: AC-merge-06
+       */
+      const user = userEvent.setup();
+      const conflictError = { code: 'auth/account-exists-with-different-credential' };
+      mockSignInWithProvider.mockRejectedValue(conflictError);
+      mockHandleAccountExistsError.mockResolvedValue(mockMergeData);
+      mockCompleteMerge.mockRejectedValue(new Error('Merge failed'));
+
+      render(<SocialLoginButtons lang="en" />);
+
+      const providerButtons = screen.getAllByRole('button', { name: /continue with google/i });
+      await user.click(providerButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByText(/already exists via Google/i)).toBeInTheDocument();
+      });
+
+      const mergeButtons = screen.getAllByRole('button', { name: /continue with google/i });
+      const mergePromptButton = mergeButtons.find((btn) =>
+        btn.className.includes('bg-amber-600')
+      )!;
+      await user.click(mergePromptButton);
+
+      await waitFor(() => {
+        expect(mockToast.error).toHaveBeenCalledWith('Failed to link accounts');
+      });
+    });
+
+    it('shows Spanish success message after merge when lang is es', async () => {
+      /**
+       * TC-SLB-008: Verifies merge success message is in Spanish
+       * Verifies: AC-merge-05
+       */
+      const user = userEvent.setup();
+      const conflictError = { code: 'auth/account-exists-with-different-credential' };
+      mockSignInWithProvider.mockRejectedValue(conflictError);
+      mockHandleAccountExistsError.mockResolvedValue(mockMergeData);
+      mockCompleteMerge.mockResolvedValue(undefined);
+
+      render(<SocialLoginButtons lang="es" />);
+
+      const providerButtons = screen.getAllByRole('button', { name: /continuar con google/i });
+      await user.click(providerButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Ya existe una cuenta con/i)).toBeInTheDocument();
+      });
+
+      const mergeButtons = screen.getAllByRole('button', { name: /Continuar con Google/i });
+      const mergePromptButton = mergeButtons.find((btn) =>
+        btn.className.includes('bg-amber-600')
+      )!;
+      await user.click(mergePromptButton);
+
+      await waitFor(() => {
+        expect(mockToast.success).toHaveBeenCalledWith('¡Cuentas vinculadas exitosamente!');
+      });
     });
   });
 });
