@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   getCompanies,
@@ -95,6 +97,30 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
   const [bulkFetching, setBulkFetching] = useState(false);
   const [bulkProgress, setBulkProgress] = useState({ done: 0, total: 0, success: 0 });
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [creatorProfiles, setCreatorProfiles] = useState<Record<string, { name: string; email: string; role: string; company?: string } | null>>({});
+  const creatorCache = useRef<Record<string, Promise<{ name: string; email: string; role: string; company?: string } | null>>>({});
+
+  const getCreatorProfile = useCallback(async (uid: string) => {
+    if (creatorProfiles[uid] !== undefined) return;
+    if (!creatorCache.current[uid]) {
+      creatorCache.current[uid] = (async () => {
+        try {
+          const snap = await getDoc(doc(db, 'users', uid));
+          if (!snap.exists()) return null;
+          const d = snap.data();
+          return {
+            name: d.displayName || d.firstName ? `${d.firstName || ''} ${d.lastName || ''}`.trim() : d.email || uid,
+            email: d.email || '',
+            role: d.role || 'member',
+            company: d.profile?.company || undefined,
+          };
+        } catch { return null; }
+      })();
+    }
+    const result = await creatorCache.current[uid];
+    setCreatorProfiles((prev) => ({ ...prev, [uid]: result }));
+  }, [creatorProfiles]);
 
   /* ---- data loading ---- */
 
@@ -532,14 +558,15 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
                   <Th>{t(lang, 'Dominio', 'Domain')}</Th>
                   <Th>{t(lang, 'Industria', 'Industry')}</Th>
                   <Th>{t(lang, 'Miembros', 'Members')}</Th>
+                  <Th>{t(lang, 'Creado por', 'Submitted By')}</Th>
                   <Th>{t(lang, 'Estado', 'Status')}</Th>
                   <Th>{t(lang, 'Acciones', 'Actions')}</Th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {displayedCompanies.map((company) => (
+                  <React.Fragment key={company.id}>
                   <tr
-                    key={company.id}
                     className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
                   >
                     {/* Logo + Name */}
@@ -565,6 +592,32 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
                     {/* Member count */}
                     <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
                       {company.memberCount}
+                    </td>
+
+                    {/* Submitted By */}
+                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                      {company.createdBy ? (
+                        (() => {
+                          const profile = creatorProfiles[company.createdBy];
+                          if (profile === undefined) {
+                            getCreatorProfile(company.createdBy);
+                            return <span className="text-gray-400">...</span>;
+                          }
+                          if (!profile) return <span className="text-gray-400">-</span>;
+                          return (
+                            <button
+                              onClick={() => setExpandedId(expandedId === company.id ? null : company.id)}
+                              className="text-left hover:text-primary-600 dark:hover:text-primary-400"
+                              title={t(lang, 'Ver contexto', 'View context')}
+                            >
+                              <div className="font-medium text-gray-900 dark:text-white">{profile.name}</div>
+                              <div className="text-xs text-gray-400">{profile.role}</div>
+                            </button>
+                          );
+                        })()
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
                     </td>
 
                     {/* Status badge */}
@@ -623,6 +676,55 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
                       </div>
                     </td>
                   </tr>
+                  {/* Expandable context row */}
+                  {expandedId === company.id && company.createdBy && (
+                    <tr>
+                      <td colSpan={7} className="bg-gray-50 px-6 py-4 dark:bg-gray-900/50">
+                        {(() => {
+                          const profile = creatorProfiles[company.createdBy];
+                          if (!profile) return null;
+                          return (
+                            <div className="flex flex-col gap-2 text-sm">
+                              <div className="font-semibold text-gray-700 dark:text-gray-300">
+                                {t(lang, 'Contexto de la solicitud', 'Submission Context')}
+                              </div>
+                              <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-gray-600 dark:text-gray-400">
+                                <div>
+                                  <span className="font-medium">{t(lang, 'Solicitante', 'Submitted by')}:</span>{' '}
+                                  {profile.name}
+                                </div>
+                                <div>
+                                  <span className="font-medium">Email:</span>{' '}
+                                  {profile.email}
+                                </div>
+                                <div>
+                                  <span className="font-medium">{t(lang, 'Rol', 'Role')}:</span>{' '}
+                                  {profile.role}
+                                </div>
+                                <div>
+                                  <span className="font-medium">{t(lang, 'Empresa actual', 'Current company')}:</span>{' '}
+                                  {profile.company || '-'}
+                                </div>
+                                <div>
+                                  <span className="font-medium">{t(lang, 'Fecha', 'Date')}:</span>{' '}
+                                  {company.createdAt instanceof Date
+                                    ? company.createdAt.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                                    : '-'}
+                                </div>
+                                <div>
+                                  <span className="font-medium">{t(lang, 'Motivo probable', 'Likely reason')}:</span>{' '}
+                                  {profile.company?.toLowerCase() === company.name.toLowerCase()
+                                    ? t(lang, 'Es su empresa actual', 'This is their current company')
+                                    : t(lang, 'Agregado desde historial laboral', 'Added from work history')}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </td>
+                    </tr>
+                  )}
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
