@@ -1,21 +1,11 @@
 /**
- * SalaryByExperience — Horizontal bar chart showing median monthly gross
- * salary by experience level (junior → executive).
+ * SalaryByExperience — Box plot showing salary distribution by experience level.
+ * Shows p10, p25, median, p75, p90 as box-and-whisker for each level.
  * Groups with fewer than 3 data points are hidden (privacy rule).
  */
 import React from 'react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from 'recharts';
 import type { SalaryDataPoint } from './SalaryInsights';
-import { safeAggregate } from './salary-utils';
+import { safeAggregate, formatCurrency as _fmt } from './salary-utils';
 
 interface Props {
   dataPoints: SalaryDataPoint[];
@@ -24,7 +14,6 @@ interface Props {
 
 const EXPERIENCE_ORDER = ['junior', 'mid', 'senior', 'lead', 'executive'];
 
-// Gradient from blue (junior) to orange (executive)
 const LEVEL_COLORS: Record<string, string> = {
   junior: '#3B82F6',
   mid: '#6366F1',
@@ -49,18 +38,29 @@ const LEVEL_LABELS_EN: Record<string, string> = {
   executive: 'Executive',
 };
 
-interface ChartEntry {
+interface BoxPlotData {
   level: string;
   label: string;
-  median: number;
-  count: number;
   color: string;
+  count: number;
+  p10: number;
+  p25: number;
+  median: number;
+  p75: number;
+  p90: number;
+  min: number;
+  max: number;
 }
 
-function buildChartData(
+function percentile(sorted: number[], p: number): number {
+  const idx = Math.floor(sorted.length * p);
+  return sorted[Math.min(idx, sorted.length - 1)]!;
+}
+
+function buildBoxPlotData(
   dataPoints: SalaryDataPoint[],
   lang: 'es' | 'en'
-): ChartEntry[] {
+): BoxPlotData[] {
   const labels = lang === 'es' ? LEVEL_LABELS_ES : LEVEL_LABELS_EN;
   const grouped = new Map<string, number[]>();
 
@@ -74,107 +74,127 @@ function buildChartData(
     const values = grouped.get(level) ?? [];
     const stats = safeAggregate(values);
     if (!stats) return [];
-    return [
-      {
-        level,
-        label: labels[level] ?? level,
-        median: stats.median,
-        count: stats.count,
-        color: LEVEL_COLORS[level] ?? '#8B5CF6',
-      },
-    ];
+
+    const sorted = [...values].sort((a, b) => a - b);
+    return [{
+      level,
+      label: labels[level] ?? level,
+      color: LEVEL_COLORS[level] ?? '#8B5CF6',
+      count: stats.count,
+      p10: percentile(sorted, 0.1),
+      p25: percentile(sorted, 0.25),
+      median: stats.median,
+      p75: percentile(sorted, 0.75),
+      p90: percentile(sorted, 0.9),
+      min: sorted[0]!,
+      max: sorted[sorted.length - 1]!,
+    }];
   });
 }
 
-interface TooltipPayload {
-  payload: ChartEntry;
-}
-
-function CustomTooltip({
-  active,
-  payload,
-  lang,
-}: {
-  active?: boolean;
-  payload?: TooltipPayload[];
-  label?: string;
-  lang: 'es' | 'en';
-}) {
-  if (!active || !payload?.length) return null;
-  const entry = payload[0]!.payload;
-  const countLabel = lang === 'es' ? 'muestras' : 'samples';
-  return (
-    <div className="rounded-lg bg-gray-900 px-3 py-2 text-white shadow-lg">
-      <p className="text-sm font-semibold">{entry.label}</p>
-      <p className="text-sm">
-        {new Intl.NumberFormat(lang === 'es' ? 'es-MX' : 'en-US', {
-          style: 'currency',
-          currency: 'MXN',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        }).format(entry.median)}
-        {lang === 'es' ? '/mes' : '/mo'}
-      </p>
-      <p className="text-xs text-gray-400">
-        {entry.count} {countLabel}
-      </p>
-    </div>
-  );
-}
-
 export function SalaryByExperience({ dataPoints, lang = 'es' }: Props) {
-  const chartData = buildChartData(dataPoints, lang);
-  const noDataLabel =
-    lang === 'es'
-      ? 'No hay suficientes datos por nivel.'
-      : 'Not enough data by level.';
+  const fmt = (v: number) => _fmt(v, 'MXN', lang);
+  const boxData = buildBoxPlotData(dataPoints, lang);
 
-  if (chartData.length === 0) {
+  if (boxData.length === 0) {
     return (
-      <p className="text-sm text-gray-500 dark:text-gray-400">{noDataLabel}</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        {lang === 'es' ? 'No hay suficientes datos por nivel.' : 'Not enough data by level.'}
+      </p>
     );
   }
 
+  // Determine scale
+  const allMax = Math.max(...boxData.map((d) => d.p90));
+  const scale = (v: number) => (v / allMax) * 100;
+
   return (
-    <ResponsiveContainer width="100%" height={chartData.length * 52 + 20}>
-      <BarChart
-        layout="vertical"
-        data={chartData}
-        margin={{ top: 0, right: 16, bottom: 0, left: 64 }}
-      >
-        <CartesianGrid
-          strokeDasharray="3 3"
-          horizontal={false}
-          stroke="rgba(107,114,128,0.2)"
-        />
-        <XAxis
-          type="number"
-          tick={{ fontSize: 11, fill: 'var(--color-text-secondary, #9CA3AF)' }}
-          tickFormatter={(v: number) =>
-            new Intl.NumberFormat(lang === 'es' ? 'es-MX' : 'en-US', {
-              notation: 'compact',
-              maximumFractionDigits: 0,
-            }).format(v)
-          }
-        />
-        <YAxis
-          type="category"
-          dataKey="label"
-          width={60}
-          tick={{ fontSize: 12, fill: 'var(--color-text-primary, #374151)' }}
-        />
-        <Tooltip
-          content={
-            <CustomTooltip lang={lang} />
-          }
-          cursor={{ fill: 'rgba(99,102,241,0.08)' }}
-        />
-        <Bar dataKey="median" radius={[0, 4, 4, 0]}>
-          {chartData.map((entry) => (
-            <Cell key={entry.level} fill={entry.color} />
-          ))}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
+    <div className="space-y-4">
+      {boxData.map((d) => (
+        <div key={d.level}>
+          {/* Label row */}
+          <div className="mb-1 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-900 dark:text-white">{d.label}</span>
+              <span className="text-xs text-gray-400 dark:text-gray-500">n={d.count}</span>
+            </div>
+            <span className="text-sm font-semibold" style={{ color: d.color }}>
+              {fmt(d.median)}
+            </span>
+          </div>
+
+          {/* Box plot */}
+          <div className="relative h-8" style={{ marginLeft: `${scale(d.p10)}%`, width: `${scale(d.p90) - scale(d.p10)}%` }}>
+            {/* Whisker line (p10 to p90) */}
+            <div
+              className="absolute top-1/2 h-px -translate-y-1/2"
+              style={{
+                left: 0,
+                right: 0,
+                background: d.color,
+                opacity: 0.4,
+              }}
+            />
+
+            {/* Whisker caps */}
+            <div
+              className="absolute top-1/2 w-px -translate-y-1/2"
+              style={{ left: 0, height: 16, marginTop: -8, background: d.color, opacity: 0.6 }}
+            />
+            <div
+              className="absolute top-1/2 w-px -translate-y-1/2"
+              style={{ right: 0, height: 16, marginTop: -8, background: d.color, opacity: 0.6 }}
+            />
+
+            {/* Box (p25 to p75) */}
+            <div
+              className="absolute top-1/2 -translate-y-1/2 rounded"
+              style={{
+                left: `${((d.p25 - d.p10) / (d.p90 - d.p10)) * 100}%`,
+                width: `${((d.p75 - d.p25) / (d.p90 - d.p10)) * 100}%`,
+                height: 24,
+                background: d.color,
+                opacity: 0.25,
+                border: `2px solid ${d.color}`,
+              }}
+            />
+
+            {/* Median line */}
+            <div
+              className="absolute top-1/2 -translate-y-1/2"
+              style={{
+                left: `${((d.median - d.p10) / (d.p90 - d.p10)) * 100}%`,
+                width: 3,
+                height: 24,
+                background: d.color,
+                borderRadius: 2,
+              }}
+            />
+          </div>
+
+          {/* Scale labels */}
+          <div className="mt-0.5 flex justify-between text-[10px] text-gray-400 dark:text-gray-500" style={{ marginLeft: `${scale(d.p10)}%`, width: `${scale(d.p90) - scale(d.p10)}%` }}>
+            <span>P10: {fmt(d.p10)}</span>
+            <span>P90: {fmt(d.p90)}</span>
+          </div>
+        </div>
+      ))}
+
+      {/* Legend */}
+      <div className="flex flex-wrap items-center gap-4 border-t border-gray-200 pt-3 text-[10px] text-gray-400 dark:border-gray-700 dark:text-gray-500">
+        <span className="flex items-center gap-1">
+          <div className="h-3 w-3 rounded border-2 border-gray-400 bg-gray-400/25" />
+          {lang === 'es' ? 'P25–P75 (rango intercuartil)' : 'P25–P75 (interquartile range)'}
+        </span>
+        <span className="flex items-center gap-1">
+          <div className="h-3 w-1 rounded bg-gray-400" />
+          {lang === 'es' ? 'Mediana' : 'Median'}
+        </span>
+        <span className="flex items-center gap-1">
+          <div className="h-px w-4 bg-gray-400 opacity-40" />
+          {lang === 'es' ? 'P10–P90' : 'P10–P90'}
+        </span>
+      </div>
+    </div>
   );
 }

@@ -18,6 +18,7 @@ import { SalaryByExperience } from './SalaryByExperience';
 import { SalaryByIndustry } from './SalaryByIndustry';
 import { BenefitsHeatmap } from './BenefitsHeatmap';
 import { CompensationBreakdown } from './CompensationBreakdown';
+import { SalaryDistribution } from './SalaryDistribution';
 
 export interface SalaryDataPoint {
   monthlyGross: number;
@@ -363,6 +364,14 @@ export function SalaryInsights({ lang = 'es' }: Props) {
 
       {/* Overview stats — visible to all members */}
       <SalaryOverview dataPoints={dataPoints} lang={lang} />
+
+      {/* Salary distribution — visible to all members */}
+      <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+        <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+          {lang === 'es' ? 'Distribucion Salarial (Mensual Bruto)' : 'Salary Distribution (Monthly Gross)'}
+        </h3>
+        <SalaryDistribution dataPoints={dataPoints} lang={lang} />
+      </div>
 
       {/* Charts grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
