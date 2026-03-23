@@ -244,10 +244,11 @@ export const CompanyLandscape: React.FC<Props> = ({
                       padding: '5px 10px 5px 5px',
                       borderRadius: 8,
                       background: 'var(--color-background, #0f172a)',
-                      border: '1px solid var(--color-border, #334155)',
+                      border: `1px solid ${company.memberCount === 0 ? 'var(--color-border, #334155)' : 'var(--color-border, #334155)'}`,
                       cursor: 'pointer',
-                      transition: 'border-color 150ms',
+                      transition: 'border-color 150ms, opacity 150ms',
                       maxWidth: '100%',
+                      opacity: company.memberCount === 0 ? 0.5 : 1,
                     }}
                     onMouseEnter={(e) => {
                       (e.currentTarget as HTMLElement).style.borderColor = color;
@@ -296,6 +297,18 @@ export const CompanyLandscape: React.FC<Props> = ({
         }}
       >
         SECiD — Sociedad de Egresados en Ciencia de Datos · UNAM
+        {filter === 'all' && (
+          <div style={{ display: 'flex', gap: 16, justifyContent: 'center', marginTop: 8, fontSize: 11 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <div style={{ width: 14, height: 10, borderRadius: 3, background: 'var(--color-text-primary, #e2e8f0)' }} />
+              {lang === 'es' ? 'Actuales' : 'Current'}
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, opacity: 0.5 }}>
+              <div style={{ width: 14, height: 10, borderRadius: 3, background: 'var(--color-text-primary, #e2e8f0)' }} />
+              {lang === 'es' ? 'Anteriores' : 'Former'}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Hover card */}

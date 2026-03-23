@@ -136,7 +136,7 @@ export const CompanyProfile: React.FC<Props> = ({
     },
     {
       key: 'alumni',
-      label: 'Alumni',
+      label: lang === 'es' ? 'Anteriores' : 'Former',
       count: alumni.length,
     },
     {
@@ -247,7 +247,7 @@ export const CompanyProfile: React.FC<Props> = ({
             ))
           ) : (
             <p className="py-8 text-center text-gray-400 dark:text-gray-500">
-              {lang === 'es' ? 'Sin alumni registrados' : 'No alumni registered'}
+              {lang === 'es' ? 'Sin miembros anteriores registrados' : 'No former members registered'}
             </p>
           )}
         </div>

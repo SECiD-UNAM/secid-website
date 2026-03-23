@@ -158,7 +158,7 @@ export const CompanyDrawer: React.FC<Props> = ({
               {alumni.length > 0 && (
                 <div className="mb-6">
                   <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                    Alumni ({alumni.length})
+                    {lang === 'es' ? `Anteriores (${alumni.length})` : `Former (${alumni.length})`}
                   </h3>
                   <div className="space-y-2">
                     {alumni.map((m) => (
