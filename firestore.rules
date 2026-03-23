@@ -131,6 +131,12 @@ service cloud.firestore {
                           .hasOnly(['read', 'readAt']);
         allow delete: if isAuthenticated() && isOwner(userId);
       }
+
+      // Compensation sub-collection: owner + admin read/write
+      match /compensation/{entryId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+        allow read: if isAuthenticated() && canModerate();
+      }
     }
 
     // Companies collection (public read for logo display)

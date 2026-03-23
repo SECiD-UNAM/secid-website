@@ -612,3 +612,9 @@ export { submitPublicJob };
 
 // LinkedIn OAuth: custom OAuth flow (avoids Identity Platform OIDC charges)
 export { linkedinAuthRedirect, linkedinAuthCallback } from "./linkedin-auth";
+
+// LinkedIn PDF Parser: extract text from a base64-encoded LinkedIn PDF export
+export { parseLinkedInPdf } from "./parse-linkedin-pdf";
+
+// Salary stats: aggregated compensation analytics with tiered privacy enforcement
+export { getSalaryStats } from "./get-salary-stats";
