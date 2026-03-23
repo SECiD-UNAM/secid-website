@@ -364,6 +364,57 @@ const t = getTranslations('es');
     text-align: center;
   }
 
+  /* Dark Mode */
+  :global([data-theme='dark']) .secid-content p {
+    color: var(--color-text-secondary);
+  }
+
+  :global([data-theme='dark']) .secid-lead {
+    color: var(--color-text-primary) !important;
+  }
+
+  :global([data-theme='dark']) .secid-board-member {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+  }
+
+  :global([data-theme='dark']) .secid-board-member__title {
+    color: var(--secid-primary);
+  }
+
+  :global([data-theme='dark']) .secid-board-member__name {
+    color: var(--color-text-primary);
+  }
+
+  :global([data-theme='dark']) .secid-value-card {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+  }
+
+  :global([data-theme='dark']) .secid-value-card__title {
+    color: var(--color-text-primary);
+  }
+
+  :global([data-theme='dark']) .secid-value-card__description {
+    color: var(--color-text-secondary);
+  }
+
+  :global([data-theme='dark']) .secid-value-card__icon {
+    background: var(--color-surface-alt);
+  }
+
+  :global([data-theme='dark']) .secid-subsection__title {
+    color: var(--color-text-primary);
+  }
+
+  :global([data-theme='dark']) .secid-section__title {
+    color: var(--color-text-primary);
+  }
+
+  :global([data-theme='dark']) .secid-section__description {
+    color: var(--color-text-secondary);
+  }
+
   @media (max-width: 768px) {
     .secid-grid--3 {
       grid-template-columns: 1fr;

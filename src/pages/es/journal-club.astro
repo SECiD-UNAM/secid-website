@@ -244,6 +244,36 @@ const sessions = [
     color: var(--secid-primary);
   }
 
+  /* Dark Mode */
+  :global([data-theme='dark']) .secid-content p {
+    color: var(--color-text-secondary);
+  }
+
+  :global([data-theme='dark']) .secid-lead {
+    color: var(--color-text-primary) !important;
+  }
+
+  :global([data-theme='dark']) .secid-jc-session {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+  }
+
+  :global([data-theme='dark']) .secid-jc-session__topic {
+    color: var(--color-text-primary);
+  }
+
+  :global([data-theme='dark']) .secid-jc-session__meta {
+    color: var(--color-text-secondary);
+  }
+
+  :global([data-theme='dark']) .secid-section__title {
+    color: var(--color-text-primary);
+  }
+
+  :global([data-theme='dark']) .secid-section__description {
+    color: var(--color-text-secondary);
+  }
+
   @media (max-width: 768px) {
     .secid-jc-session {
       flex-direction: column;
