@@ -45,6 +45,8 @@ export interface UserProfile {
   lastLogin?: Date;
   lastLoginProvider?: string;
   securityEvents?: SecurityEvent[];
+  linkedinVerified?: boolean;
+  linkedinVerifiedAt?: Date;
   // Profile merge detection
   potentialMergeMatch?: {
     matchedUid: string;
@@ -69,7 +71,7 @@ export interface UserBasicInfo {
 
 // ===== OAuth & Social Login Types =====
 
-export type SupportedProvider = 'google';
+export type SupportedProvider = 'google' | 'github' | 'linkedin';
 
 export interface LinkedAccount {
   providerId: SupportedProvider;

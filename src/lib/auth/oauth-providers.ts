@@ -1,7 +1,6 @@
 import {
   GoogleAuthProvider,
   GithubAuthProvider,
-  OAuthProvider,
   signInWithPopup,
   linkWithPopup,
   unlink,
@@ -10,16 +9,17 @@ import {
   type AuthProvider,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 /**
  * OAuth Providers Configuration and Management
- * Supports Google, GitHub, and LinkedIn OAuth providers
+ * Supports Google and GitHub OAuth providers.
+ * LinkedIn uses custom OAuth Cloud Functions + signInWithCustomToken().
  */
-import type { UserProfile } from '@/types/user';
+import type { SupportedProvider } from '@/types/user';
 
-export type SupportedProvider = 'google' | 'github' | 'linkedin';
+export type { SupportedProvider } from '@/types/user';
 
 export interface OAuthUserInfo {
   uid: string;
@@ -71,39 +71,29 @@ export function createGitHubProvider(): GithubAuthProvider {
 }
 
 /**
- * Configure LinkedIn OAuth provider
+ * Get provider instance by name.
+ * LinkedIn uses custom OAuth Cloud Functions — not Firebase's OAuthProvider.
  */
-export function createLinkedInProvider(): OAuthProvider {
-  const provider = new OAuthProvider('linkedin.com');
-
-  // Request additional scopes
-  provider.addScope('openid');
-  provider.addScope('profile');
-  provider.addScope('email');
-
-  return provider;
-}
-
-/**
- * Get provider instance by name
- */
-export function getProvider(providerId: SupportedProvider): AuthProvider {
+export function getProvider(
+  providerId: Exclude<SupportedProvider, 'linkedin'>
+): AuthProvider {
   switch (providerId) {
     case 'google':
       return createGoogleProvider();
     case 'github':
       return createGitHubProvider();
-    case 'linkedin':
-      return createLinkedInProvider();
     default:
       throw new Error(`Unsupported provider: ${providerId}`);
   }
 }
 
 /**
- * Sign in with OAuth provider
+ * Sign in with Firebase-backed OAuth provider (Google or GitHub).
+ * LinkedIn sign-in uses Cloud Functions + signInWithCustomToken() instead.
  */
-export async function signInWithOAuth(providerId: SupportedProvider): Promise<{
+export async function signInWithOAuth(
+  providerId: Exclude<SupportedProvider, 'linkedin'>
+): Promise<{
   user: User;
   credential: UserCredential;
   isNewUser: boolean;
@@ -136,11 +126,12 @@ export async function signInWithOAuth(providerId: SupportedProvider): Promise<{
 }
 
 /**
- * Link additional OAuth provider to existing account
+ * Link additional Firebase-backed OAuth provider to existing account (Google or GitHub).
+ * LinkedIn linking uses Cloud Functions + addLinkedAccount() directly.
  */
 export async function linkOAuthProvider(
   user: User,
-  providerId: SupportedProvider
+  providerId: Exclude<SupportedProvider, 'linkedin'>
 ): Promise<UserCredential> {
   try {
     const provider = getProvider(providerId);
@@ -225,7 +216,7 @@ async function updateUserOAuthInfo(
 /**
  * Add linked account to user profile
  */
-async function addLinkedAccount(
+export async function addLinkedAccount(
   uid: string,
   linkedAccount: LinkedAccount
 ): Promise<void> {
@@ -314,18 +305,18 @@ function getOAuthErrorMessage(
 }
 
 /**
- * Validate OAuth configuration
+ * Validate OAuth configuration for Firebase-backed providers (Google, GitHub).
+ * LinkedIn validation is handled separately via Cloud Function config.
  */
 export function validateOAuthConfig(): {
   isValid: boolean;
-  missingProviders: SupportedProvider[];
+  missingProviders: Exclude<SupportedProvider, 'linkedin'>[];
   errors: string[];
 } {
   const errors: string[] = [];
-  const missingProviders: SupportedProvider[] = [];
+  const missingProviders: Exclude<SupportedProvider, 'linkedin'>[] = [];
 
   try {
-    // Test provider creation
     createGoogleProvider();
   } catch (error) {
     missingProviders.push('google');
@@ -337,13 +328,6 @@ export function validateOAuthConfig(): {
   } catch (error) {
     missingProviders.push('github');
     errors.push('GitHub OAuth configuration is missing or invalid');
-  }
-
-  try {
-    createLinkedInProvider();
-  } catch (error) {
-    missingProviders.push('linkedin');
-    errors.push('LinkedIn OAuth configuration is missing or invalid');
   }
 
   return {
