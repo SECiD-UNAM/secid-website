@@ -55,7 +55,8 @@ const schemaOrgJson = JSON.stringify({
 });
 ---
 
-import FeedbackFAB from '../components/feedback/FeedbackFAB.tsx';
+// FeedbackFAB disabled — lucide-react breaks Astro static build
+// import FeedbackFAB from '../components/feedback/FeedbackFAB.tsx';
 
 <!doctype html>
 <html lang={lang}>
@@ -332,8 +333,8 @@ import FeedbackFAB from '../components/feedback/FeedbackFAB.tsx';
       <slot />
     </main>
 
-    <!-- Feedback FAB -->
-    <FeedbackFAB client:only="react" />
+    <!-- Feedback FAB disabled — lucide-react breaks Astro static build -->
+    <!-- <FeedbackFAB client:only="react" /> -->
 
     <!-- Modern JavaScript Only -->
     <script>
