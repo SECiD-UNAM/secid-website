@@ -44,7 +44,7 @@ export function parseLinkedInCertifications(text: string): ParsedCertificationEn
       const dateLine = lines[i + 2];
       if (dateLine) {
         const match = dateLine.match(ISSUED_RE);
-        if (match) {
+        if (match?.[1]) {
           entry.issuedDate = match[1].trim();
           i += 3;
         } else {
@@ -55,7 +55,7 @@ export function parseLinkedInCertifications(text: string): ParsedCertificationEn
       }
     } else if (nextLine && ISSUED_RE.test(nextLine)) {
       const match = nextLine.match(ISSUED_RE);
-      if (match) {
+      if (match?.[1]) {
         entry.issuedDate = match[1].trim();
       }
       i += 2;
