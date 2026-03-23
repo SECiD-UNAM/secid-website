@@ -1,6 +1,7 @@
 /**
  * SalaryByIndustry — Horizontal bar chart showing median monthly gross
- * salary per industry. Groups with fewer than 3 data points are hidden.
+ * salary per industry. Groups with fewer than 3 data points are hidden
+ * (enforced server-side by the CF).
  */
 import React from 'react';
 import {
@@ -13,12 +14,16 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
-import type { SalaryDataPoint } from './SalaryInsights';
-import { safeAggregate } from './salary-utils';
 import { translateIndustry } from '@/lib/companies/industry-i18n';
 
+export interface IndustryRow {
+  industry: string;
+  median: number;
+  count: number;
+}
+
 interface Props {
-  dataPoints: SalaryDataPoint[];
+  byIndustry: IndustryRow[];
   lang?: 'es' | 'en';
 }
 
@@ -57,34 +62,6 @@ interface ChartEntry {
   color: string;
 }
 
-function buildChartData(
-  dataPoints: SalaryDataPoint[],
-  lang: 'es' | 'en'
-): ChartEntry[] {
-  const grouped = new Map<string, number[]>();
-
-  for (const dp of dataPoints) {
-    if (!grouped.has(dp.industry)) grouped.set(dp.industry, []);
-    grouped.get(dp.industry)!.push(dp.monthlyGross);
-  }
-
-  const entries: ChartEntry[] = [];
-  for (const [industry, values] of grouped) {
-    const stats = safeAggregate(values);
-    if (!stats) continue;
-    const label = translateIndustry(industry, lang);
-    entries.push({
-      industryKey: industry,
-      label,
-      median: stats.median,
-      count: stats.count,
-      color: getIndustryColor(label),
-    });
-  }
-
-  return entries.sort((a, b) => b.median - a.median);
-}
-
 interface TooltipPayload {
   payload: ChartEntry;
 }
@@ -121,8 +98,18 @@ function CustomTooltip({
   );
 }
 
-export function SalaryByIndustry({ dataPoints, lang = 'es' }: Props) {
-  const chartData = buildChartData(dataPoints, lang);
+export function SalaryByIndustry({ byIndustry, lang = 'es' }: Props) {
+  const chartData: ChartEntry[] = byIndustry.map((row) => {
+    const label = translateIndustry(row.industry, lang);
+    return {
+      industryKey: row.industry,
+      label,
+      median: row.median,
+      count: row.count,
+      color: getIndustryColor(label),
+    };
+  }).sort((a, b) => b.median - a.median);
+
   const noDataLabel =
     lang === 'es'
       ? 'No hay suficientes datos por industria.'

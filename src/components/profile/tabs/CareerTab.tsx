@@ -8,12 +8,14 @@ import { CompanyAutocomplete } from '../shared/CompanyAutocomplete';
 import { MonthYearPicker } from '../shared/MonthYearPicker';
 import { TagInput } from '../shared/TagInput';
 import { CompensationFields } from '../shared/CompensationFields';
-import { parseLinkedInText } from '@/lib/linkedin-parser';
+import { LinkedInImportModal, type ImportedData } from '@/components/profile/LinkedInImportModal';
+import { deduplicateExperience, deduplicateSkills } from '@/lib/linkedin-parser/deduplication';
 
 interface CareerTabProps {
   formData: FormData;
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
   lang: 'es' | 'en';
+  userId?: string;
 }
 
 const MAX_WORK_ENTRIES = 20;
@@ -94,33 +96,15 @@ function LinkedInIcon({ className }: { className?: string }) {
   );
 }
 
-function convertParsedToWorkExperience(
-  parsed: ReturnType<typeof parseLinkedInText>
-): WorkExperience[] {
-  return parsed.map((entry) => ({
-    id: crypto.randomUUID(),
-    company: entry.company,
-    position: entry.position,
-    startDate: entry.startDate
-      ? new Date(entry.startDate.year, entry.startDate.month - 1, 1)
-      : new Date(),
-    endDate: entry.endDate
-      ? new Date(entry.endDate.year, entry.endDate.month - 1, 1)
-      : undefined,
-    current: entry.current,
-    description: entry.location ? `Location: ${entry.location}` : undefined,
-  }));
-}
-
 export const CareerTab: React.FC<CareerTabProps> = ({
   formData,
   setFormData,
   lang,
+  userId,
 }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draftEntry, setDraftEntry] = useState<WorkExperience | null>(null);
   const [showLinkedInModal, setShowLinkedInModal] = useState(false);
-  const [linkedInText, setLinkedInText] = useState('');
   const [importMessage, setImportMessage] = useState<string | null>(null);
 
   const sortedEntries = sortByDateDescending(formData.workHistory);
@@ -196,32 +180,70 @@ export const CareerTab: React.FC<CareerTabProps> = ({
     setDraftEntry({ ...draftEntry, ...updates });
   };
 
-  const handleLinkedInImport = () => {
-    const parsed = parseLinkedInText(linkedInText);
-    if (parsed.length === 0) {
-      setImportMessage(
-        lang === 'es'
-          ? 'No se encontraron entradas. Verifica el texto e intenta de nuevo.'
-          : 'No entries found. Check the text and try again.'
-      );
-      return;
-    }
+  const handleLinkedInImport = useCallback(
+    (data: ImportedData) => {
+      setFormData((prev) => {
+        const next = { ...prev };
 
-    const newEntries = convertParsedToWorkExperience(parsed);
-    const available = MAX_WORK_ENTRIES - formData.workHistory.length;
-    const toAdd = newEntries.slice(0, available);
+        if (data.experience && data.experience.length > 0) {
+          const existingForDedup = prev.workHistory.map((e) => ({
+            company: e.company,
+            position: e.position,
+          }));
+          const importedForDedup = data.experience.map((e) => ({
+            company: e.company,
+            position: e.position,
+            current: e.current,
+          }));
+          const { newEntries } = deduplicateExperience(existingForDedup, importedForDedup);
+          const newWorkEntries = data.experience.filter((e) =>
+            newEntries.some(
+              (n) =>
+                n.company.trim().toLowerCase() === e.company.trim().toLowerCase() &&
+                n.position.trim().toLowerCase() === e.position.trim().toLowerCase()
+            )
+          );
+          const available = MAX_WORK_ENTRIES - prev.workHistory.length;
+          next.workHistory = [
+            ...prev.workHistory,
+            ...newWorkEntries.slice(0, available),
+          ];
+        }
 
-    updateWorkHistory((entries) => [...entries, ...toAdd]);
+        if (data.skills && data.skills.length > 0) {
+          next.skills = deduplicateSkills(prev.skills, data.skills);
+        }
 
-    const count = toAdd.length;
-    setImportMessage(
-      lang === 'es'
-        ? `Se importaron ${count} entrada${count !== 1 ? 's' : ''}. Revisa y edita antes de guardar.`
-        : `Imported ${count} entr${count !== 1 ? 'ies' : 'y'}. Review and edit before saving.`
-    );
-    setShowLinkedInModal(false);
-    setLinkedInText('');
-  };
+        if (data.education && data.education.length > 0) {
+          next.educationHistory = [...prev.educationHistory, ...data.education];
+        }
+
+        if (data.certifications && data.certifications.length > 0) {
+          next.certifications = [...prev.certifications, ...data.certifications];
+        }
+
+        if (data.languages && data.languages.length > 0) {
+          next.languages = [...prev.languages, ...data.languages];
+        }
+
+        return next;
+      });
+
+      const experience = data.experience ?? [];
+      const count = experience.length;
+      const message =
+        count > 0
+          ? lang === 'es'
+            ? `Se importaron ${count} entrada${count !== 1 ? 's' : ''}. Revisa y edita antes de guardar.`
+            : `Imported ${count} entr${count !== 1 ? 'ies' : 'y'}. Review and edit before saving.`
+          : lang === 'es'
+            ? 'Datos importados. Revisa y edita antes de guardar.'
+            : 'Data imported. Review and edit before saving.';
+
+      setImportMessage(message);
+    },
+    [lang, setFormData]
+  );
 
   return (
     <div className="space-y-8">
@@ -302,6 +324,7 @@ export const CareerTab: React.FC<CareerTabProps> = ({
                     entry={editData}
                     onUpdate={updateDraft}
                     lang={lang}
+                    userId={userId}
                   />
                 )}
               </EntryCard>
@@ -415,80 +438,12 @@ export const CareerTab: React.FC<CareerTabProps> = ({
       </div>
 
       {/* LinkedIn Import Modal */}
-      {showLinkedInModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="mx-4 w-full max-w-lg rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                <LinkedInIcon className="mr-2 inline h-5 w-5 text-[#0A66C2]" />
-                {lang === 'es'
-                  ? 'Importar de LinkedIn'
-                  : 'Import from LinkedIn'}
-              </h3>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowLinkedInModal(false);
-                  setLinkedInText('');
-                }}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                <XMarkIcon className="h-5 w-5" />
-              </button>
-            </div>
-
-            <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
-              {lang === 'es'
-                ? 'Copia la seccion de Experiencia de tu perfil de LinkedIn y pegala aqui. El formato esperado es: Puesto, Empresa, Fechas, Ubicacion (una entrada por bloque).'
-                : 'Copy the Experience section from your LinkedIn profile and paste it here. Expected format: Position, Company, Dates, Location (one entry per block).'}
-            </p>
-
-            <textarea
-              value={linkedInText}
-              onChange={(e) => setLinkedInText(e.target.value)}
-              rows={10}
-              className={
-                INPUT_CLASS +
-                ' resize-y font-mono text-sm placeholder:font-sans'
-              }
-              placeholder={
-                lang === 'es'
-                  ? 'Data Scientist\nBBVA\nEne 2022 - Actual · 3 anos\nCiudad de Mexico'
-                  : 'Data Scientist\nBBVA\nJan 2022 - Present · 3 yrs\nMexico City, Mexico'
-              }
-            />
-
-            <div className="mt-4 flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowLinkedInModal(false);
-                  setLinkedInText('');
-                }}
-                className={
-                  'rounded-lg border border-gray-300 px-4 py-2 text-sm ' +
-                  'font-medium text-gray-700 hover:bg-gray-50 ' +
-                  'dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700'
-                }
-              >
-                {lang === 'es' ? 'Cancelar' : 'Cancel'}
-              </button>
-              <button
-                type="button"
-                onClick={handleLinkedInImport}
-                disabled={!linkedInText.trim()}
-                className={
-                  'rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium ' +
-                  'text-white hover:bg-primary-700 disabled:cursor-not-allowed ' +
-                  'transition-colors disabled:opacity-50'
-                }
-              >
-                {lang === 'es' ? 'Importar' : 'Import'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <LinkedInImportModal
+        isOpen={showLinkedInModal}
+        onClose={() => setShowLinkedInModal(false)}
+        onImport={handleLinkedInImport}
+        lang={lang}
+      />
     </div>
   );
 };
@@ -501,7 +456,8 @@ const WorkEntryForm: React.FC<{
   entry: WorkExperience;
   onUpdate: (updates: Partial<WorkExperience>) => void;
   lang: 'es' | 'en';
-}> = ({ entry, onUpdate, lang }) => {
+  userId?: string;
+}> = ({ entry, onUpdate, lang, userId }) => {
   return (
     <>
       {/* Company */}
@@ -620,6 +576,8 @@ const WorkEntryForm: React.FC<{
       <CompensationFields
         compensation={entry.compensation}
         onUpdate={(comp) => onUpdate({ compensation: comp })}
+        userId={userId}
+        roleId={entry.id}
         lang={lang}
       />
     </>

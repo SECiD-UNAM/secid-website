@@ -1,6 +1,6 @@
 /**
  * SalaryDistribution — Histogram showing salary frequency distribution
- * with kernel density estimate overlay and percentile markers.
+ * with median reference line and summary statistics.
  */
 import React, { useMemo } from 'react';
 import {
@@ -13,11 +13,16 @@ import {
   ReferenceLine,
   Cell,
 } from 'recharts';
-import type { SalaryDataPoint } from './SalaryInsights';
 import { formatCurrency as _fmt } from './salary-utils';
 
+export interface DistributionBin {
+  rangeMin: number;
+  rangeMax: number;
+  count: number;
+}
+
 interface Props {
-  dataPoints: SalaryDataPoint[];
+  distribution: DistributionBin[];
   lang?: 'es' | 'en';
 }
 
@@ -29,74 +34,75 @@ interface Bin {
   isMedianBin: boolean;
 }
 
-function buildHistogram(values: number[], binCount = 12): Bin[] {
-  if (values.length === 0) return [];
-
-  const sorted = [...values].sort((a, b) => a - b);
-  const min = sorted[0]!;
-  const max = sorted[sorted.length - 1]!;
-  const median = sorted[Math.floor(sorted.length / 2)]!;
-
-  const shortFmt = (v: number) => {
-    if (v >= 1000) return `${Math.round(v / 1000)}k`;
-    return String(Math.round(v));
-  };
-
-  if (min === max) {
-    return [{ range: shortFmt(min), rangeMin: min, rangeMax: max, count: values.length, isMedianBin: true }];
-  }
-
-  const binWidth = (max - min) / binCount;
-  const bins: Bin[] = [];
-
-  for (let i = 0; i < binCount; i++) {
-    const lo = min + i * binWidth;
-    const hi = lo + binWidth;
-    const count = values.filter((v) => (i === binCount - 1 ? v >= lo && v <= hi : v >= lo && v < hi)).length;
-    const isMedianBin = median >= lo && median < hi;
-
-    bins.push({
-      range: shortFmt(lo),
-      rangeMin: lo,
-      rangeMax: hi,
-      count,
-      isMedianBin,
-    });
-  }
-
-  return bins;
+function shortFmt(v: number): string {
+  if (v >= 1000) return `${Math.round(v / 1000)}k`;
+  return String(Math.round(v));
 }
 
-function stats(values: number[]) {
-  if (values.length === 0) return null;
-  const sorted = [...values].sort((a, b) => a - b);
-  const n = sorted.length;
-  const mean = values.reduce((s, v) => s + v, 0) / n;
-  const variance = values.reduce((s, v) => s + (v - mean) ** 2, 0) / n;
-  const stdDev = Math.sqrt(variance);
-  return {
-    mean,
-    median: sorted[Math.floor(n / 2)]!,
-    stdDev,
-    p25: sorted[Math.floor(n * 0.25)]!,
-    p75: sorted[Math.floor(n * 0.75)]!,
-    min: sorted[0]!,
-    max: sorted[n - 1]!,
-    n,
-  };
+function buildDisplayBins(distribution: DistributionBin[]): Bin[] {
+  if (distribution.length === 0) return [];
+
+  const totalCount = distribution.reduce((s, d) => s + d.count, 0);
+  let cumulative = 0;
+  const halfTotal = totalCount / 2;
+  let medianBinIndex = 0;
+
+  for (let i = 0; i < distribution.length; i++) {
+    cumulative += distribution[i]!.count;
+    if (cumulative >= halfTotal) {
+      medianBinIndex = i;
+      break;
+    }
+  }
+
+  return distribution.map((d, i) => ({
+    range: shortFmt(d.rangeMin),
+    rangeMin: d.rangeMin,
+    rangeMax: d.rangeMax,
+    count: d.count,
+    isMedianBin: i === medianBinIndex,
+  }));
 }
 
-export function SalaryDistribution({ dataPoints, lang = 'es' }: Props) {
+function computeSummaryStats(distribution: DistributionBin[]): {
+  mean: number;
+  median: number;
+  p25: number;
+  p75: number;
+  min: number;
+  max: number;
+  n: number;
+} | null {
+  const total = distribution.reduce((s, d) => s + d.count, 0);
+  if (total < 3) return null;
+
+  const allValues: number[] = [];
+  for (const bin of distribution) {
+    const midpoint = (bin.rangeMin + bin.rangeMax) / 2;
+    for (let i = 0; i < bin.count; i++) {
+      allValues.push(midpoint);
+    }
+  }
+
+  allValues.sort((a, b) => a - b);
+  const n = allValues.length;
+  const mean = allValues.reduce((s, v) => s + v, 0) / n;
+  const median = allValues[Math.floor(n / 2)]!;
+  const p25 = allValues[Math.floor(n * 0.25)]!;
+  const p75 = allValues[Math.floor(n * 0.75)]!;
+  const min = allValues[0]!;
+  const max = allValues[n - 1]!;
+
+  return { mean, median, p25, p75, min, max, n: total };
+}
+
+export function SalaryDistribution({ distribution, lang = 'es' }: Props) {
   const formatCurrency = (v: number) => _fmt(v, 'MXN', lang);
-  const values = useMemo(
-    () => dataPoints.map((d) => d.monthlyGross),
-    [dataPoints]
-  );
 
-  const histogram = useMemo(() => buildHistogram(values), [values]);
-  const s = useMemo(() => stats(values), [values]);
+  const histogram = useMemo(() => buildDisplayBins(distribution), [distribution]);
+  const s = useMemo(() => computeSummaryStats(distribution), [distribution]);
 
-  if (!s || values.length < 3) {
+  if (!s || s.n < 3) {
     return (
       <p className="text-sm text-gray-500 dark:text-gray-400">
         {lang === 'es' ? 'Se necesitan al menos 3 datos.' : 'At least 3 data points needed.'}
@@ -128,10 +134,10 @@ export function SalaryDistribution({ dataPoints, lang = 'es' }: Props) {
         </div>
         <div>
           <div className="text-lg font-bold text-primary-600 dark:text-primary-400">
-            {formatCurrency(s.stdDev)}
+            {formatCurrency(s.max - s.min)}
           </div>
           <div className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
-            {lang === 'es' ? 'Desv. Est.' : 'Std Dev'}
+            {lang === 'es' ? 'Rango' : 'Range'}
           </div>
         </div>
         <div>

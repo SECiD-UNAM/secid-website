@@ -11,10 +11,16 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import type { SalaryDataPoint } from './SalaryInsights';
+
+export interface BreakdownStats {
+  base: number;
+  bonus: number;
+  stock: number;
+  signOn: number;
+}
 
 interface Props {
-  dataPoints: SalaryDataPoint[];
+  breakdown: BreakdownStats;
   lang?: 'es' | 'en';
 }
 
@@ -31,24 +37,8 @@ const COLORS = {
   signOn: '#A855F7', // purple-500
 };
 
-function buildBreakdown(
-  dataPoints: SalaryDataPoint[],
-  lang: 'es' | 'en'
-): BreakdownSlice[] | null {
-  if (dataPoints.length === 0) return null;
-
-  const totals = dataPoints.reduce(
-    (acc, dp) => {
-      acc.base += dp.monthlyGross * 12;
-      acc.bonus += dp.annualBonus;
-      acc.stock += dp.stockValue;
-      acc.signOn += dp.signOnBonus;
-      return acc;
-    },
-    { base: 0, bonus: 0, stock: 0, signOn: 0 }
-  );
-
-  const hasNonBase = totals.bonus > 0 || totals.stock > 0 || totals.signOn > 0;
+function buildSlices(breakdown: BreakdownStats, lang: 'es' | 'en'): BreakdownSlice[] | null {
+  const hasNonBase = breakdown.bonus > 0 || breakdown.stock > 0 || breakdown.signOn > 0;
   if (!hasNonBase) return null;
 
   const labels =
@@ -57,14 +47,14 @@ function buildBreakdown(
       : { base: 'Base Salary', bonus: 'Bonus', stock: 'Stock', signOn: 'Sign-On' };
 
   const slices: BreakdownSlice[] = [
-    { name: labels.base, value: Math.round(totals.base), color: COLORS.base },
+    { name: labels.base, value: Math.round(breakdown.base), color: COLORS.base },
   ];
-  if (totals.bonus > 0)
-    slices.push({ name: labels.bonus, value: Math.round(totals.bonus), color: COLORS.bonus });
-  if (totals.stock > 0)
-    slices.push({ name: labels.stock, value: Math.round(totals.stock), color: COLORS.stock });
-  if (totals.signOn > 0)
-    slices.push({ name: labels.signOn, value: Math.round(totals.signOn), color: COLORS.signOn });
+  if (breakdown.bonus > 0)
+    slices.push({ name: labels.bonus, value: Math.round(breakdown.bonus), color: COLORS.bonus });
+  if (breakdown.stock > 0)
+    slices.push({ name: labels.stock, value: Math.round(breakdown.stock), color: COLORS.stock });
+  if (breakdown.signOn > 0)
+    slices.push({ name: labels.signOn, value: Math.round(breakdown.signOn), color: COLORS.signOn });
 
   return slices;
 }
@@ -97,8 +87,8 @@ function CustomTooltip({
   );
 }
 
-export function CompensationBreakdown({ dataPoints, lang = 'es' }: Props) {
-  const slices = buildBreakdown(dataPoints, lang);
+export function CompensationBreakdown({ breakdown, lang = 'es' }: Props) {
+  const slices = buildSlices(breakdown, lang);
 
   const noDataLabel =
     lang === 'es'

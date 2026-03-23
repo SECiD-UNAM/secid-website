@@ -1,5 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ChevronDownIcon, ChevronUpIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import type { Compensation } from '@/types/member';
 import { calculateNetSalary, calculateTotalCompensation } from '@/lib/tax';
 import { TagInput } from './TagInput';
@@ -7,6 +9,8 @@ import { TagInput } from './TagInput';
 interface Props {
   compensation?: Compensation;
   onUpdate: (compensation: Compensation) => void;
+  userId?: string;
+  roleId?: string;
   lang?: 'es' | 'en';
 }
 
@@ -79,22 +83,74 @@ function buildSummary(comp: Compensation, lang: 'es' | 'en'): string {
   return `${formatted} ${label}`;
 }
 
+function buildDefaultCompensation(): Compensation {
+  return { currency: 'MXN', country: 'MX' };
+}
+
 export const CompensationFields: React.FC<Props> = ({
   compensation,
   onUpdate,
+  userId,
+  roleId,
   lang = 'es',
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [localComp, setLocalComp] = useState<Compensation>(
+    compensation ?? buildDefaultCompensation()
+  );
 
-  const current: Compensation = compensation ?? {
-    currency: 'MXN',
-    country: 'MX',
-  };
+  // Load from sub-collection on mount when userId + roleId are provided
+  useEffect(() => {
+    if (!userId || !roleId) return;
+    let cancelled = false;
 
-  const hasData = hasCompensationData(compensation);
+    (async () => {
+      try {
+        const snap = await getDoc(doc(db, 'users', userId, 'compensation', roleId));
+        if (!cancelled && snap.exists()) {
+          const data = snap.data() as Compensation;
+          setLocalComp({
+            currency: data.currency ?? 'MXN',
+            country: data.country ?? 'MX',
+            fiscalRegime: data.fiscalRegime,
+            monthlyGross: data.monthlyGross,
+            annualBonus: data.annualBonus,
+            annualBonusType: data.annualBonusType,
+            signOnBonus: data.signOnBonus,
+            stockAnnualValue: data.stockAnnualValue,
+            benefits: data.benefits,
+          });
+        }
+      } catch (err) {
+        console.warn('Error loading compensation:', err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, roleId]);
+
+  const current = localComp;
+  const hasData = hasCompensationData(current);
+
+  async function saveToSubCollection(comp: Compensation): Promise<void> {
+    if (!userId || !roleId) return;
+    try {
+      await setDoc(doc(db, 'users', userId, 'compensation', roleId), {
+        ...comp,
+        updatedAt: serverTimestamp(),
+      });
+    } catch (err) {
+      console.warn('Error saving compensation:', err);
+    }
+  }
 
   const update = (partial: Partial<Compensation>) => {
-    onUpdate({ ...current, ...partial });
+    const updated = { ...current, ...partial };
+    setLocalComp(updated);
+    onUpdate(updated);
+    void saveToSubCollection(updated);
   };
 
   const handleCountryChange = (country: 'MX' | 'US' | 'OTHER') => {

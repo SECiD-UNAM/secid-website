@@ -1,161 +1,82 @@
 /**
  * SalaryInsights — Main analytics dashboard with tiered access.
  *
- * Access tiers:
- * - Public (no auth):       Total data points count + general salary range only
- * - Member (no contribution): Overview cards + experience chart (blurred details)
- * - Contributor (shared salary data in last 12 months): Full access to all charts
+ * Access tiers are determined server-side by the getSalaryStats Cloud Function:
+ * - public:      Total data points count only (overview.dataPointCount)
+ * - member:      Overview cards + experience chart (industry/benefits/breakdown null)
+ * - contributor: Full access to all charts
+ * - admin:       Full access + raw data table
+ *
+ * Null fields from the CF mean "not authorized for this tier" — no client-side
+ * blurring needed. Instead, a "share to unlock" card is shown in place of null sections.
  */
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
-import { getMemberProfiles } from '@/lib/members';
-import { getCompanies } from '@/lib/companies';
-import { calculateNetSalary, calculateTotalCompensation } from '@/lib/tax';
-import type { MemberProfile } from '@/types/member';
-import type { Company } from '@/types/company';
-import { SalaryOverview } from './SalaryOverview';
-import { SalaryByExperience } from './SalaryByExperience';
-import { SalaryByIndustry } from './SalaryByIndustry';
-import { BenefitsHeatmap } from './BenefitsHeatmap';
-import { CompensationBreakdown } from './CompensationBreakdown';
-import { SalaryDistribution } from './SalaryDistribution';
-import { SalaryAdminTable } from './SalaryAdminTable';
+import { SalaryOverview, type OverviewStats } from './SalaryOverview';
+import { SalaryByExperience, type ExperienceRow } from './SalaryByExperience';
+import { SalaryByIndustry, type IndustryRow } from './SalaryByIndustry';
+import { BenefitsHeatmap, type BenefitRow } from './BenefitsHeatmap';
+import { CompensationBreakdown, type BreakdownStats } from './CompensationBreakdown';
+import { SalaryDistribution, type DistributionBin } from './SalaryDistribution';
+import { SalaryAdminTable, type AdminRawRow } from './SalaryAdminTable';
 
-export interface SalaryDataPoint {
-  monthlyGross: number;
-  monthlyNet: number;
-  totalComp: number;
-  currency: string;
-  country: string;
-  experienceLevel: string;
-  industry: string;
-  benefits: string[];
-  annualBonus: number;
-  stockValue: number;
-  signOnBonus: number;
+interface SalaryStatsResponse {
+  tier: 'public' | 'member' | 'contributor' | 'admin';
+  overview: OverviewStats | null;
+  distribution: DistributionBin[] | null;
+  byExperience: ExperienceRow[] | null;
+  byIndustry: IndustryRow[] | null;
+  benefits: BenefitRow[] | null;
+  breakdown: BreakdownStats | null;
+  rawData: AdminRawRow[] | null;
 }
-
-type AccessTier = 'public' | 'member' | 'contributor';
 
 interface Props {
   lang?: 'es' | 'en';
 }
 
-function extractSalaryDataPoints(
-  members: MemberProfile[],
-  companyMap: Map<string, Company>
-): SalaryDataPoint[] {
-  const dataPoints: SalaryDataPoint[] = [];
-
-  for (const member of members) {
-    const level = member.experience?.level ?? 'mid';
-    for (const role of member.experience?.previousRoles ?? []) {
-      const comp = role.compensation;
-      if (!comp?.monthlyGross) continue;
-
-      const netResult = calculateNetSalary(
-        comp.monthlyGross,
-        comp.country,
-        comp.fiscalRegime
-      );
-      const totalComp = calculateTotalCompensation(
-        comp.monthlyGross,
-        comp.annualBonus,
-        comp.annualBonusType,
-        comp.signOnBonus,
-        comp.stockAnnualValue
-      );
-
-      const company = role.companyId ? companyMap.get(role.companyId) : null;
-      const industry = company?.industry ?? 'Otros';
-
-      dataPoints.push({
-        monthlyGross: comp.monthlyGross,
-        monthlyNet: netResult.monthlyNet,
-        totalComp,
-        currency: comp.currency,
-        country: comp.country,
-        experienceLevel: level,
-        industry,
-        benefits: comp.benefits ?? [],
-        annualBonus: comp.annualBonus ?? 0,
-        stockValue: comp.stockAnnualValue ?? 0,
-        signOnBonus: comp.signOnBonus ?? 0,
-      });
-    }
-  }
-
-  return dataPoints;
-}
-
-/** Check if a member has contributed salary data in the last 12 months */
-function hasRecentContribution(member: MemberProfile | null): boolean {
-  if (!member) return false;
-  const oneYearAgo = new Date();
-  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-
-  for (const role of member.experience?.previousRoles ?? []) {
-    if (role.compensation?.monthlyGross) {
-      // If they have any salary data, count as contributor
-      // In future, could check an updatedAt timestamp on compensation
-      return true;
-    }
-  }
-  return false;
-}
-
-function BlurredOverlay({
-  children,
+function ShareToUnlockCard({
   message,
   ctaLabel,
   ctaHref,
-  lang,
 }: {
-  children: React.ReactNode;
   message: string;
   ctaLabel: string;
   ctaHref: string;
-  lang: string;
 }) {
   return (
-    <div className="relative">
-      <div className="pointer-events-none select-none blur-md">{children}</div>
-      <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl bg-white/60 dark:bg-gray-900/70">
-        <div className="text-center">
-          <svg
-            className="mx-auto mb-3 h-10 w-10 text-gray-400 dark:text-gray-500"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
-            />
-          </svg>
-          <p className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-            {message}
-          </p>
-          <a
-            href={ctaHref}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
-          >
-            {ctaLabel}
-          </a>
-        </div>
-      </div>
+    <div className="flex flex-col items-center justify-center rounded-xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-800 dark:bg-amber-900/20">
+      <svg
+        className="mx-auto mb-3 h-10 w-10 text-amber-400 dark:text-amber-500"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1.5}
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+        />
+      </svg>
+      <p className="mb-3 text-sm font-medium text-amber-800 dark:text-amber-300">
+        {message}
+      </p>
+      <a
+        href={ctaHref}
+        className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+      >
+        {ctaLabel}
+      </a>
     </div>
   );
 }
 
 export function SalaryInsights({ lang = 'es' }: Props) {
-  const { user, userProfile, isVerified, isAdmin } = useAuth();
-  const [dataPoints, setDataPoints] = useState<SalaryDataPoint[]>([]);
-  const [currentMember, setCurrentMember] = useState<MemberProfile | null>(null);
-  const [allMembers, setAllMembers] = useState<MemberProfile[]>([]);
-  const [companyMap, setCompanyMap] = useState<Map<string, Company>>(new Map());
+  const { user, isAdmin } = useAuth();
+  const [stats, setStats] = useState<SalaryStatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -182,7 +103,6 @@ export function SalaryInsights({ lang = 'es' }: Props) {
       lang === 'es' ? 'Beneficios mas Comunes' : 'Most Common Benefits',
     breakdown:
       lang === 'es' ? 'Composicion del Paquete' : 'Compensation Breakdown',
-    // Tier messages
     publicMsg:
       lang === 'es'
         ? 'Inicia sesion para ver estadisticas salariales de la comunidad.'
@@ -210,27 +130,15 @@ export function SalaryInsights({ lang = 'es' }: Props) {
   useEffect(() => {
     let cancelled = false;
 
-    async function loadData() {
+    async function loadStats() {
       try {
-        const [members, companies] = await Promise.all([
-          getMemberProfiles({ limit: 500 }),
-          getCompanies(),
-        ]);
-
-        if (cancelled) return;
-
-        const cMap = new Map<string, Company>(
-          companies.map((c) => [c.id, c])
+        const getSalaryStatsFn = httpsCallable<void, SalaryStatsResponse>(
+          functions,
+          'getSalaryStats'
         );
-        const points = extractSalaryDataPoints(members, cMap);
-        setDataPoints(points);
-        setAllMembers(members);
-        setCompanyMap(cMap);
-
-        // Find current user's member profile
-        if (user) {
-          const me = members.find((m) => m.uid === user.uid);
-          setCurrentMember(me || null);
+        const result = await getSalaryStatsFn();
+        if (!cancelled) {
+          setStats(result.data);
         }
       } catch {
         if (!cancelled) setError(t.errorFetch);
@@ -239,16 +147,11 @@ export function SalaryInsights({ lang = 'es' }: Props) {
       }
     }
 
-    loadData();
-    return () => { cancelled = true; };
+    loadStats();
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
-
-  // Determine access tier
-  const accessTier: AccessTier = useMemo(() => {
-    if (!user || !isVerified) return 'public';
-    if (hasRecentContribution(currentMember)) return 'contributor';
-    return 'member';
-  }, [user, isVerified, currentMember]);
 
   if (loading) {
     return (
@@ -267,8 +170,12 @@ export function SalaryInsights({ lang = 'es' }: Props) {
     );
   }
 
+  const tier = stats?.tier ?? 'public';
+  const overview = stats?.overview ?? null;
+  const profileEditUrl = `/${lang}/dashboard/profile/edit`;
+
   // === PUBLIC TIER ===
-  if (accessTier === 'public') {
+  if (tier === 'public') {
     return (
       <div className="space-y-6">
         <div>
@@ -278,10 +185,10 @@ export function SalaryInsights({ lang = 'es' }: Props) {
 
         {/* Public: only show count */}
         <div className="rounded-xl border border-gray-200 bg-white p-8 text-center dark:border-gray-700 dark:bg-gray-800">
-          {dataPoints.length > 0 ? (
+          {overview && overview.dataPointCount > 0 ? (
             <>
               <p className="text-4xl font-bold text-primary-600 dark:text-primary-400">
-                {dataPoints.length}
+                {overview.dataPointCount}
               </p>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t.dataPoints}</p>
               <p className="text-xs text-gray-400 dark:text-gray-500">{t.fromMembers}</p>
@@ -299,7 +206,7 @@ export function SalaryInsights({ lang = 'es' }: Props) {
             strokeWidth={1.5}
             stroke="currentColor"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
           </svg>
           <p className="mb-3 text-sm font-medium text-blue-800 dark:text-blue-300">
             {t.publicMsg}
@@ -315,7 +222,7 @@ export function SalaryInsights({ lang = 'es' }: Props) {
     );
   }
 
-  if (dataPoints.length === 0) {
+  if (!overview || overview.dataPointCount === 0) {
     return (
       <div className="space-y-6">
         <div>
@@ -325,7 +232,7 @@ export function SalaryInsights({ lang = 'es' }: Props) {
         <div className="py-12 text-center">
           <p className="text-gray-500 dark:text-gray-400">{t.empty}</p>
           <a
-            href={`/${lang}/dashboard/profile/edit`}
+            href={profileEditUrl}
             className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700"
           >
             {t.memberCta}
@@ -335,8 +242,7 @@ export function SalaryInsights({ lang = 'es' }: Props) {
     );
   }
 
-  const isContributor = accessTier === 'contributor';
-  const profileEditUrl = `/${lang}/dashboard/profile/edit`;
+  const isContributor = tier === 'contributor' || tier === 'admin';
 
   return (
     <div className="space-y-6">
@@ -368,103 +274,83 @@ export function SalaryInsights({ lang = 'es' }: Props) {
       )}
 
       {/* Overview stats — visible to all members */}
-      <SalaryOverview dataPoints={dataPoints} lang={lang} />
+      <SalaryOverview overview={overview} lang={lang} />
 
       {/* Salary distribution — visible to all members */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-        <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
-          {lang === 'es' ? 'Distribucion Salarial (Mensual Bruto)' : 'Salary Distribution (Monthly Gross)'}
-        </h3>
-        <SalaryDistribution dataPoints={dataPoints} lang={lang} />
-      </div>
+      {stats?.distribution && stats.distribution.length > 0 ? (
+        <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+          <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+            {lang === 'es' ? 'Distribucion Salarial (Mensual Bruto)' : 'Salary Distribution (Monthly Gross)'}
+          </h3>
+          <SalaryDistribution distribution={stats.distribution} lang={lang} />
+        </div>
+      ) : null}
 
       {/* Charts grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Experience chart — visible to all members */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-          <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
-            {t.byExperience}
-          </h3>
-          <SalaryByExperience dataPoints={dataPoints} lang={lang} />
-        </div>
+        {stats?.byExperience && stats.byExperience.length > 0 ? (
+          <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+            <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+              {t.byExperience}
+            </h3>
+            <SalaryByExperience byExperience={stats.byExperience} lang={lang} />
+          </div>
+        ) : null}
 
-        {/* Industry chart — contributor only */}
-        {isContributor ? (
+        {/* Industry chart — contributor only (null from CF when member tier) */}
+        {stats?.byIndustry ? (
           <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
             <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
               {t.byIndustry}
             </h3>
-            <SalaryByIndustry dataPoints={dataPoints} lang={lang} />
+            <SalaryByIndustry byIndustry={stats.byIndustry} lang={lang} />
           </div>
         ) : (
-          <BlurredOverlay
+          <ShareToUnlockCard
             message={t.memberMsg}
             ctaLabel={t.memberCta}
             ctaHref={profileEditUrl}
-            lang={lang}
-          >
-            <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-              <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
-                {t.byIndustry}
-              </h3>
-              <SalaryByIndustry dataPoints={dataPoints} lang={lang} />
-            </div>
-          </BlurredOverlay>
+          />
         )}
 
         {/* Benefits — contributor only */}
-        {isContributor ? (
+        {stats?.benefits ? (
           <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
             <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
               {t.benefits}
             </h3>
-            <BenefitsHeatmap dataPoints={dataPoints} lang={lang} />
+            <BenefitsHeatmap benefits={stats.benefits} lang={lang} />
           </div>
         ) : (
-          <BlurredOverlay
+          <ShareToUnlockCard
             message={t.memberMsg}
             ctaLabel={t.memberCta}
             ctaHref={profileEditUrl}
-            lang={lang}
-          >
-            <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-              <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
-                {t.benefits}
-              </h3>
-              <BenefitsHeatmap dataPoints={dataPoints} lang={lang} />
-            </div>
-          </BlurredOverlay>
+          />
         )}
 
         {/* Comp breakdown — contributor only */}
-        {isContributor ? (
+        {stats?.breakdown ? (
           <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
             <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
               {t.breakdown}
             </h3>
-            <CompensationBreakdown dataPoints={dataPoints} lang={lang} />
+            <CompensationBreakdown breakdown={stats.breakdown} lang={lang} />
           </div>
         ) : (
-          <BlurredOverlay
+          <ShareToUnlockCard
             message={t.memberMsg}
             ctaLabel={t.memberCta}
             ctaHref={profileEditUrl}
-            lang={lang}
-          >
-            <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-              <h3 className="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">
-                {t.breakdown}
-              </h3>
-              <CompensationBreakdown dataPoints={dataPoints} lang={lang} />
-            </div>
-          </BlurredOverlay>
+          />
         )}
       </div>
 
       {/* Admin raw data table */}
-      {isAdmin && (
-        <SalaryAdminTable members={allMembers} companyMap={companyMap} lang={lang} />
-      )}
+      {(isAdmin || tier === 'admin') && stats?.rawData ? (
+        <SalaryAdminTable rawData={stats.rawData} lang={lang} />
+      ) : null}
     </div>
   );
 }

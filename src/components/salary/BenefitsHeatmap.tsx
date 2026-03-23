@@ -3,38 +3,16 @@
  * each benefit is across all data points. Sorted by frequency descending.
  */
 import React from 'react';
-import type { SalaryDataPoint } from './SalaryInsights';
 
-interface Props {
-  dataPoints: SalaryDataPoint[];
-  lang?: 'es' | 'en';
-}
-
-interface BenefitEntry {
+export interface BenefitRow {
   name: string;
   count: number;
   percentage: number;
 }
 
-function buildBenefitEntries(dataPoints: SalaryDataPoint[]): BenefitEntry[] {
-  const total = dataPoints.length;
-  if (total === 0) return [];
-
-  const counts = new Map<string, number>();
-  for (const dp of dataPoints) {
-    for (const benefit of dp.benefits) {
-      const key = benefit.trim();
-      if (key) counts.set(key, (counts.get(key) ?? 0) + 1);
-    }
-  }
-
-  return Array.from(counts.entries())
-    .map(([name, count]) => ({
-      name,
-      count,
-      percentage: Math.round((count / total) * 100),
-    }))
-    .sort((a, b) => b.count - a.count);
+interface Props {
+  benefits: BenefitRow[];
+  lang?: 'es' | 'en';
 }
 
 function getBarColor(percentage: number): string {
@@ -44,9 +22,7 @@ function getBarColor(percentage: number): string {
   return '#A78BFA';                        // violet-400
 }
 
-export function BenefitsHeatmap({ dataPoints, lang = 'es' }: Props) {
-  const entries = buildBenefitEntries(dataPoints);
-
+export function BenefitsHeatmap({ benefits, lang = 'es' }: Props) {
   const t = {
     noData:
       lang === 'es'
@@ -56,7 +32,7 @@ export function BenefitsHeatmap({ dataPoints, lang = 'es' }: Props) {
     count: lang === 'es' ? 'respuestas' : 'responses',
   };
 
-  if (entries.length === 0) {
+  if (benefits.length === 0) {
     return (
       <p className="text-sm text-gray-500 dark:text-gray-400">{t.noData}</p>
     );
@@ -64,7 +40,7 @@ export function BenefitsHeatmap({ dataPoints, lang = 'es' }: Props) {
 
   return (
     <div className="space-y-3">
-      {entries.map((entry) => (
+      {benefits.map((entry) => (
         <div key={entry.name}>
           <div className="mb-1 flex items-center justify-between">
             <span className="text-sm text-gray-700 dark:text-gray-300">

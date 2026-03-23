@@ -7,7 +7,7 @@
 import React from 'react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, within, cleanup } from '@testing-library/react';
-import type { SalaryDataPoint } from '../../../../src/components/salary/SalaryInsights';
+import type { BreakdownStats } from '../../../../src/components/salary/CompensationBreakdown';
 
 afterEach(cleanup);
 
@@ -27,19 +27,12 @@ const { CompensationBreakdown } = await import(
   '../../../../src/components/salary/CompensationBreakdown'
 );
 
-function makeDataPoint(overrides: Partial<SalaryDataPoint> = {}): SalaryDataPoint {
+function makeBreakdown(overrides: Partial<BreakdownStats> = {}): BreakdownStats {
   return {
-    monthlyGross: 20000,
-    monthlyNet: 15000,
-    totalComp: 240000,
-    currency: 'MXN',
-    country: 'MX',
-    experienceLevel: 'mid',
-    industry: 'Tecnología',
-    benefits: [],
-    annualBonus: 0,
-    stockValue: 0,
-    signOnBonus: 0,
+    base: 240000,
+    bonus: 0,
+    stock: 0,
+    signOn: 0,
     ...overrides,
   };
 }
@@ -47,10 +40,10 @@ function makeDataPoint(overrides: Partial<SalaryDataPoint> = {}): SalaryDataPoin
 describe('TC-salary-breakdown-001: English no-data message when only base salary', () => {
   it('shows base-only message in English', () => {
     // Arrange
-    const dataPoints = [makeDataPoint(), makeDataPoint(), makeDataPoint()];
+    const breakdown = makeBreakdown();
     // Act
     const { container } = render(
-      <CompensationBreakdown dataPoints={dataPoints} lang="en" />
+      <CompensationBreakdown breakdown={breakdown} lang="en" />
     );
     // Assert
     const msg = within(container).getAllByText(
@@ -63,10 +56,10 @@ describe('TC-salary-breakdown-001: English no-data message when only base salary
 describe('TC-salary-breakdown-002: Spanish no-data message when only base salary', () => {
   it('shows base-only message in Spanish', () => {
     // Arrange
-    const dataPoints = [makeDataPoint(), makeDataPoint(), makeDataPoint()];
+    const breakdown = makeBreakdown();
     // Act
     const { container } = render(
-      <CompensationBreakdown dataPoints={dataPoints} lang="es" />
+      <CompensationBreakdown breakdown={breakdown} lang="es" />
     );
     // Assert
     const msg = within(container).getAllByText(
@@ -79,14 +72,10 @@ describe('TC-salary-breakdown-002: Spanish no-data message when only base salary
 describe('TC-salary-breakdown-003: renders pie chart when bonus data present', () => {
   it('renders the pie chart component', () => {
     // Arrange
-    const dataPoints = [
-      makeDataPoint({ annualBonus: 30000 }),
-      makeDataPoint({ annualBonus: 30000 }),
-      makeDataPoint({ annualBonus: 30000 }),
-    ];
+    const breakdown = makeBreakdown({ bonus: 90000 });
     // Act
     const { container } = render(
-      <CompensationBreakdown dataPoints={dataPoints} lang="en" />
+      <CompensationBreakdown breakdown={breakdown} lang="en" />
     );
     // Assert
     const charts = within(container).getAllByTestId('pie-chart');
@@ -97,14 +86,10 @@ describe('TC-salary-breakdown-003: renders pie chart when bonus data present', (
 describe('TC-salary-breakdown-004: shows Base Salary in legend when bonus present', () => {
   it('shows Base Salary label', () => {
     // Arrange
-    const dataPoints = [
-      makeDataPoint({ annualBonus: 30000 }),
-      makeDataPoint({ annualBonus: 30000 }),
-      makeDataPoint({ annualBonus: 30000 }),
-    ];
+    const breakdown = makeBreakdown({ bonus: 90000 });
     // Act
     const { container } = render(
-      <CompensationBreakdown dataPoints={dataPoints} lang="en" />
+      <CompensationBreakdown breakdown={breakdown} lang="en" />
     );
     // Assert
     const items = within(container).getAllByText('Base Salary');
@@ -115,14 +100,10 @@ describe('TC-salary-breakdown-004: shows Base Salary in legend when bonus presen
 describe('TC-salary-breakdown-005: shows Bonus in legend when annual bonus present', () => {
   it('shows Bonus label', () => {
     // Arrange
-    const dataPoints = [
-      makeDataPoint({ annualBonus: 30000 }),
-      makeDataPoint({ annualBonus: 30000 }),
-      makeDataPoint({ annualBonus: 30000 }),
-    ];
+    const breakdown = makeBreakdown({ bonus: 90000 });
     // Act
     const { container } = render(
-      <CompensationBreakdown dataPoints={dataPoints} lang="en" />
+      <CompensationBreakdown breakdown={breakdown} lang="en" />
     );
     // Assert
     const items = within(container).getAllByText('Bonus');
@@ -133,14 +114,10 @@ describe('TC-salary-breakdown-005: shows Bonus in legend when annual bonus prese
 describe('TC-salary-breakdown-006: shows Stock in legend when stock data present', () => {
   it('shows Stock label', () => {
     // Arrange
-    const dataPoints = [
-      makeDataPoint({ stockValue: 50000 }),
-      makeDataPoint({ stockValue: 50000 }),
-      makeDataPoint({ stockValue: 50000 }),
-    ];
+    const breakdown = makeBreakdown({ stock: 150000 });
     // Act
     const { container } = render(
-      <CompensationBreakdown dataPoints={dataPoints} lang="en" />
+      <CompensationBreakdown breakdown={breakdown} lang="en" />
     );
     // Assert
     const items = within(container).getAllByText('Stock');

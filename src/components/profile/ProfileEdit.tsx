@@ -712,6 +712,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
             formData={formData}
             setFormData={setFormData}
             lang={lang}
+            userId={effectiveUid}
           />
         )}
 

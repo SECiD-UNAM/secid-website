@@ -1,14 +1,23 @@
 /**
  * SalaryByExperience — Box plot showing salary distribution by experience level.
  * Shows p10, p25, median, p75, p90 as box-and-whisker for each level.
- * Groups with fewer than 3 data points are hidden (privacy rule).
+ * Groups with fewer than 3 data points are hidden (enforced server-side).
  */
 import React from 'react';
-import type { SalaryDataPoint } from './SalaryInsights';
-import { safeAggregate, formatCurrency as _fmt } from './salary-utils';
+import { formatCurrency as _fmt } from './salary-utils';
+
+export interface ExperienceRow {
+  level: string;
+  median: number;
+  p10: number;
+  p25: number;
+  p75: number;
+  p90: number;
+  count: number;
+}
 
 interface Props {
-  dataPoints: SalaryDataPoint[];
+  byExperience: ExperienceRow[];
   lang?: 'es' | 'en';
 }
 
@@ -48,53 +57,32 @@ interface BoxPlotData {
   median: number;
   p75: number;
   p90: number;
-  min: number;
-  max: number;
 }
 
-function percentile(sorted: number[], p: number): number {
-  const idx = Math.floor(sorted.length * p);
-  return sorted[Math.min(idx, sorted.length - 1)]!;
-}
-
-function buildBoxPlotData(
-  dataPoints: SalaryDataPoint[],
-  lang: 'es' | 'en'
-): BoxPlotData[] {
+function buildBoxPlotData(rows: ExperienceRow[], lang: 'es' | 'en'): BoxPlotData[] {
   const labels = lang === 'es' ? LEVEL_LABELS_ES : LEVEL_LABELS_EN;
-  const grouped = new Map<string, number[]>();
-
-  for (const dp of dataPoints) {
-    const level = dp.experienceLevel;
-    if (!grouped.has(level)) grouped.set(level, []);
-    grouped.get(level)!.push(dp.monthlyGross);
-  }
+  const rowMap = new Map(rows.map((r) => [r.level, r]));
 
   return EXPERIENCE_ORDER.flatMap((level) => {
-    const values = grouped.get(level) ?? [];
-    const stats = safeAggregate(values);
-    if (!stats) return [];
-
-    const sorted = [...values].sort((a, b) => a - b);
+    const row = rowMap.get(level);
+    if (!row) return [];
     return [{
       level,
       label: labels[level] ?? level,
       color: LEVEL_COLORS[level] ?? '#8B5CF6',
-      count: stats.count,
-      p10: percentile(sorted, 0.1),
-      p25: percentile(sorted, 0.25),
-      median: stats.median,
-      p75: percentile(sorted, 0.75),
-      p90: percentile(sorted, 0.9),
-      min: sorted[0]!,
-      max: sorted[sorted.length - 1]!,
+      count: row.count,
+      p10: row.p10,
+      p25: row.p25,
+      median: row.median,
+      p75: row.p75,
+      p90: row.p90,
     }];
   });
 }
 
-export function SalaryByExperience({ dataPoints, lang = 'es' }: Props) {
+export function SalaryByExperience({ byExperience, lang = 'es' }: Props) {
   const fmt = (v: number) => _fmt(v, 'MXN', lang);
-  const boxData = buildBoxPlotData(dataPoints, lang);
+  const boxData = buildBoxPlotData(byExperience, lang);
 
   if (boxData.length === 0) {
     return (
@@ -104,7 +92,6 @@ export function SalaryByExperience({ dataPoints, lang = 'es' }: Props) {
     );
   }
 
-  // Determine scale
   const allMax = Math.max(...boxData.map((d) => d.p90));
   const scale = (v: number) => (v / allMax) * 100;
 

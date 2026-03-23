@@ -1,38 +1,35 @@
 /**
  * SalaryAdminTable — Raw salary data table visible only to admins.
- * Shows individual compensation entries with member names for data
+ * Shows individual compensation entries with member details for data
  * quality verification and anomaly detection.
+ * Data is provided pre-computed by the getSalaryStats Cloud Function.
  */
 import React, { useState } from 'react';
-import type { MemberProfile } from '@/types/member';
-import type { Company } from '@/types/company';
-import { calculateNetSalary, calculateTotalCompensation } from '@/lib/tax';
 import { translateIndustry } from '@/lib/companies/industry-i18n';
 
-interface Props {
-  members: MemberProfile[];
-  companyMap: Map<string, Company>;
-  lang?: 'es' | 'en';
-}
-
-interface AdminRow {
+export interface AdminRawRow {
   memberName: string;
-  memberUid: string;
   memberEmail: string;
   company: string;
-  industry: string;
   position: string;
   current: boolean;
+  industry: string;
   country: string;
   currency: string;
   fiscalRegime: string;
   monthlyGross: number;
-  monthlyNet: number;
-  annualGross: number;
-  totalComp: number;
   annualBonus: number;
   stockValue: number;
   benefits: string[];
+}
+
+interface AdminRow extends AdminRawRow {
+  label: string;
+}
+
+interface Props {
+  rawData: AdminRawRow[];
+  lang?: 'es' | 'en';
 }
 
 function formatMoney(v: number, currency: string): string {
@@ -43,50 +40,15 @@ function formatMoney(v: number, currency: string): string {
   }).format(v);
 }
 
-export function SalaryAdminTable({ members, companyMap, lang = 'es' }: Props) {
+export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
   const [sortField, setSortField] = useState<keyof AdminRow>('monthlyGross');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [search, setSearch] = useState('');
 
-  // Build rows from all members with compensation data
-  const rows: AdminRow[] = [];
-  for (const member of members) {
-    for (const role of member.experience?.previousRoles ?? []) {
-      const comp = role.compensation;
-      if (!comp?.monthlyGross) continue;
-
-      const net = calculateNetSalary(comp.monthlyGross, comp.country, comp.fiscalRegime);
-      const totalComp = calculateTotalCompensation(
-        comp.monthlyGross,
-        comp.annualBonus,
-        comp.annualBonusType,
-        comp.signOnBonus,
-        comp.stockAnnualValue
-      );
-
-      const company = role.companyId ? companyMap.get(role.companyId) : null;
-
-      rows.push({
-        memberName: member.displayName || 'Unknown',
-        memberUid: member.uid,
-        memberEmail: (member as unknown as { email?: string }).email || '',
-        company: role.company || company?.name || '-',
-        industry: translateIndustry(company?.industry || 'Otros', lang),
-        position: role.position || '-',
-        current: role.current,
-        country: comp.country,
-        currency: comp.currency,
-        fiscalRegime: comp.fiscalRegime || '-',
-        monthlyGross: comp.monthlyGross,
-        monthlyNet: net.monthlyNet,
-        annualGross: net.annualGross,
-        totalComp,
-        annualBonus: comp.annualBonus || 0,
-        stockValue: comp.stockAnnualValue || 0,
-        benefits: comp.benefits || [],
-      });
-    }
-  }
+  const rows: AdminRow[] = rawData.map((r) => ({
+    ...r,
+    label: translateIndustry(r.industry, lang),
+  }));
 
   // Filter
   const filtered = search
@@ -160,12 +122,10 @@ export function SalaryAdminTable({ members, companyMap, lang = 'es' }: Props) {
               <SortHeader field="memberName" label={lang === 'es' ? 'Miembro' : 'Member'} />
               <SortHeader field="company" label={lang === 'es' ? 'Empresa' : 'Company'} />
               <SortHeader field="position" label={lang === 'es' ? 'Puesto' : 'Position'} />
-              <SortHeader field="industry" label={lang === 'es' ? 'Industria' : 'Industry'} />
+              <SortHeader field="label" label={lang === 'es' ? 'Industria' : 'Industry'} />
               <SortHeader field="country" label={lang === 'es' ? 'Pais' : 'Country'} />
               <SortHeader field="fiscalRegime" label={lang === 'es' ? 'Regimen' : 'Regime'} />
               <SortHeader field="monthlyGross" label={lang === 'es' ? 'Bruto Mensual' : 'Monthly Gross'} />
-              <SortHeader field="monthlyNet" label={lang === 'es' ? 'Neto Mensual' : 'Monthly Net'} />
-              <SortHeader field="totalComp" label={lang === 'es' ? 'Comp. Total' : 'Total Comp'} />
               <SortHeader field="annualBonus" label="Bonus" />
               <SortHeader field="stockValue" label="Stock" />
               <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
@@ -176,7 +136,7 @@ export function SalaryAdminTable({ members, companyMap, lang = 'es' }: Props) {
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {sorted.map((row, i) => (
               <tr
-                key={`${row.memberUid}-${row.company}-${i}`}
+                key={`${row.memberEmail}-${row.company}-${i}`}
                 className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
               >
                 <td className="whitespace-nowrap px-3 py-2">
@@ -190,17 +150,11 @@ export function SalaryAdminTable({ members, companyMap, lang = 'es' }: Props) {
                   )}
                 </td>
                 <td className="whitespace-nowrap px-3 py-2 text-gray-600 dark:text-gray-400">{row.position}</td>
-                <td className="whitespace-nowrap px-3 py-2 text-gray-600 dark:text-gray-400">{row.industry}</td>
+                <td className="whitespace-nowrap px-3 py-2 text-gray-600 dark:text-gray-400">{row.label}</td>
                 <td className="whitespace-nowrap px-3 py-2 text-gray-600 dark:text-gray-400">{row.country}</td>
                 <td className="whitespace-nowrap px-3 py-2 text-gray-600 dark:text-gray-400">{row.fiscalRegime}</td>
                 <td className="whitespace-nowrap px-3 py-2 font-medium text-gray-900 dark:text-white">
                   {formatMoney(row.monthlyGross, row.currency)}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 text-gray-700 dark:text-gray-300">
-                  {formatMoney(row.monthlyNet, row.currency)}
-                </td>
-                <td className="whitespace-nowrap px-3 py-2 font-medium text-primary-600 dark:text-primary-400">
-                  {formatMoney(row.totalComp, row.currency)}
                 </td>
                 <td className="whitespace-nowrap px-3 py-2 text-gray-600 dark:text-gray-400">
                   {row.annualBonus > 0 ? formatMoney(row.annualBonus, row.currency) : '-'}
