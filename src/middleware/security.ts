@@ -150,7 +150,17 @@ function buildPermissionsPolicyHeader(
 export function createSecurityMiddleware(
   config: Partial<SecurityConfig> = {}
 ): MiddlewareHandler {
-  const securityConfig = { ...defaultSecurityConfig, ...config };
+  // Deep merge nested objects so production overrides don't discard CSP/HSTS
+  const securityConfig = {
+    ...defaultSecurityConfig,
+    ...config,
+    csp: { ...defaultSecurityConfig.csp, ...(config.csp ?? {}) },
+    hsts: { ...defaultSecurityConfig.hsts, ...(config.hsts ?? {}) },
+    permissionsPolicy: {
+      ...defaultSecurityConfig.permissionsPolicy,
+      ...(config.permissionsPolicy ?? {}),
+    },
+  };
 
   return async (context, next) => {
     const response = await next();

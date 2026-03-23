@@ -12,7 +12,6 @@ import type { APIRoute } from 'astro';
 
 interface InvoiceRequest {
   customerId: string;
-  amount: number;
   currency?: string;
   description: string;
   dueDate?: string;
@@ -71,9 +70,9 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    if (!body.amount && !body.items) {
+    if (!body.items || body.items.length === 0) {
       return new Response(
-        JSON.stringify({ error: 'Amount or items are required' }),
+        JSON.stringify({ error: 'Invoice items are required' }),
         {
           status: 400,
           headers: { 'Content-Type': 'application/json' },
@@ -99,29 +98,34 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Calculate total amount from items if provided
-    let totalAmount = body.amount || 0;
+    // Calculate total amount from items — items are required for invoices
+    if (!body.items || body.items.length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Invoice items are required' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    let totalAmount = 0;
     const invoiceItems: InvoiceLineItem[] = [];
 
-    if (body.items && body['items'].length > 0) {
-      totalAmount = 0;
-      for (const item of body.items) {
-        const itemTotal = item.quantity * item.unit_amount;
-        totalAmount += itemTotal;
-        invoiceItems.push({
-          description: item['description'],
-          quantity: item.quantity,
-          unit_amount: item.unit_amount,
-          total_amount: itemTotal,
-        });
+    for (const item of body.items) {
+      if (!item.quantity || item.quantity <= 0 || !item.unit_amount || item.unit_amount <= 0) {
+        return new Response(
+          JSON.stringify({ error: 'Each item must have positive quantity and unit_amount' }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
       }
-    } else {
-      // Create a single line item from the total amount
+      const itemTotal = item.quantity * item.unit_amount;
+      totalAmount += itemTotal;
       invoiceItems.push({
-        description: body.description,
-        quantity: 1,
-        unit_amount: totalAmount,
-        total_amount: totalAmount,
+        description: item['description'],
+        quantity: item.quantity,
+        unit_amount: item.unit_amount,
+        total_amount: itemTotal,
       });
     }
 

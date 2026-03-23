@@ -252,31 +252,35 @@ export const exchangeLinkedInCode = onCall<{ code: string }>(
       throw new HttpsError("invalid-argument", "Code is required");
     }
 
-    const db = admin.firestore();
-    const codeRef = db.collection("linkedin_auth_codes").doc(code);
-    const codeDoc = await codeRef.get();
+    const firestore = admin.firestore();
+    const codeRef = firestore.collection("linkedin_auth_codes").doc(code);
 
-    if (!codeDoc.exists) {
-      throw new HttpsError("not-found", "Invalid or expired code");
-    }
+    // Atomic read-check-update to prevent race conditions
+    const token = await firestore.runTransaction(async (tx) => {
+      const codeDoc = await tx.get(codeRef);
 
-    const data = codeDoc.data()!;
+      if (!codeDoc.exists) {
+        throw new HttpsError("not-found", "Invalid or expired code");
+      }
 
-    if (data.used) {
-      throw new HttpsError("already-exists", "Code already used");
-    }
+      const data = codeDoc.data()!;
 
-    if (data.expiresAt.toDate() < new Date()) {
-      await codeRef.delete();
-      throw new HttpsError("deadline-exceeded", "Code expired");
-    }
+      if (data.used) {
+        throw new HttpsError("already-exists", "Code already used");
+      }
 
-    // Mark as used and return token
-    await codeRef.update({ used: true });
+      if (data.expiresAt.toDate() < new Date()) {
+        tx.delete(codeRef);
+        throw new HttpsError("deadline-exceeded", "Code expired");
+      }
 
-    // Clean up — delete after returning
+      tx.update(codeRef, { used: true });
+      return data.token as string;
+    });
+
+    // Clean up after transaction completes
     codeRef.delete().catch(() => {});
 
-    return { token: data.token };
+    return { token };
   },
 );

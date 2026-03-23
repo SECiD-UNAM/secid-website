@@ -756,5 +756,10 @@ service cloud.firestore {
       allow create: if false;
       allow read, update, delete: if isAuthenticated() && canAdminister();
     }
+
+    // LinkedIn auth codes: server-only (Admin SDK). Deny all client access.
+    match /linkedin_auth_codes/{codeId} {
+      allow read, write: if false;
+    }
   }
 }

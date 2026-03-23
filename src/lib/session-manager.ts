@@ -623,8 +623,7 @@ export class SessionManager {
 export function createSessionMiddleware(sessionManager: SessionManager) {
   return async (request: Request): Promise<Response | null> => {
     const sessionId =
-      request.headers.get('authorization')?.replace('Bearer ', '') ||
-      new URL(request.url).searchParams.get('session');
+      request.headers.get('authorization')?.replace('Bearer ', '') || null;
 
     if (!sessionId) {
       return null; // No session to validate

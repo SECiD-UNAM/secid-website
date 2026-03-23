@@ -41,6 +41,11 @@ function decodeAndValidateToken(
     )
       return null;
 
+    // Check audience matches our project (prevents cross-project token reuse)
+    const projectId =
+      import.meta.env.PUBLIC_FIREBASE_PROJECT_ID || 'secid-org';
+    if (payload.aud !== projectId) return null;
+
     return { uid: payload.sub, exp: payload.exp };
   } catch {
     return null;
