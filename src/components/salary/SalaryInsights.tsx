@@ -75,7 +75,7 @@ function ShareToUnlockCard({
 }
 
 export function SalaryInsights({ lang = 'es' }: Props) {
-  const { user, isAdmin } = useAuth();
+  const { user } = useAuth();
   const [stats, setStats] = useState<SalaryStatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -348,7 +348,7 @@ export function SalaryInsights({ lang = 'es' }: Props) {
       </div>
 
       {/* Admin raw data table */}
-      {(isAdmin || tier === 'admin') && stats?.rawData ? (
+      {tier === 'admin' && stats?.rawData ? (
         <SalaryAdminTable rawData={stats.rawData} lang={lang} />
       ) : null}
     </div>

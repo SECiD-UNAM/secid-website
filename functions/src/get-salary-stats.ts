@@ -70,8 +70,8 @@ export const getSalaryStats = onCall(
     const callerDoc = await db.collection("users").doc(callerUid).get();
     const callerData = callerDoc.data();
     const callerRole = callerData?.role || "member";
-    const isAdmin = callerRole === "admin" || callerRole === "moderator";
-    const isVerified = callerData?.isVerified === true || isAdmin;
+    const isAdmin = callerRole === "admin"; // Only admin gets raw data, NOT moderator
+    const isVerified = callerData?.isVerified === true || isAdmin || callerRole === "moderator";
 
     if (!isVerified) {
       return {
@@ -172,15 +172,22 @@ export const getSalaryStats = onCall(
         annualBonusType: data.annualBonusType || "fixed",
         stockAnnualValue: data.stockAnnualValue || 0,
         signOnBonus: data.signOnBonus || 0,
-        memberName:
-          userData.displayName ||
-          `${userData.firstName || ""} ${userData.lastName || ""}`.trim() ||
-          "Unknown",
-        memberEmail: userData.email || "",
-        company: matchingRole?.company || company?.name || "-",
-        position:
-          matchingRole?.position || userData.experience?.currentRole || "-",
-        current: matchingRole?.current || false,
+        // PII only populated for admin tier — minimizes in-memory exposure
+        ...(isAdmin
+          ? {
+              memberName:
+                userData.displayName ||
+                `${userData.firstName || ""} ${userData.lastName || ""}`.trim() ||
+                "Unknown",
+              memberEmail: userData.email || "",
+              company: matchingRole?.company || company?.name || "-",
+              position:
+                matchingRole?.position ||
+                userData.experience?.currentRole ||
+                "-",
+              current: matchingRole?.current || false,
+            }
+          : {}),
       });
     }
 
@@ -265,6 +272,7 @@ export const getSalaryStats = onCall(
         });
       });
       benefits = Array.from(benefitCounts.entries())
+        .filter(([, count]) => count >= MIN_GROUP_SIZE) // Privacy: suppress rare benefits
         .map(([name, count]) => ({
           name,
           count,
@@ -291,7 +299,7 @@ export const getSalaryStats = onCall(
         totalSignOn += d.signOnBonus;
       });
       const total = totalBase + totalBonus + totalStock + totalSignOn;
-      if (total > 0) {
+      if (total > 0 && dataPoints.length >= MIN_GROUP_SIZE) {
         breakdown = {
           base: Math.round((totalBase / total) * 100),
           bonus: Math.round((totalBonus / total) * 100),
