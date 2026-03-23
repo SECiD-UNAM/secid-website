@@ -91,24 +91,36 @@ const Spinner: React.FC = () => (
   </svg>
 );
 
+const PRESET_COLORS = [
+  { value: '#1E3A5F', label: 'SECiD Blue' },
+  { value: '#f65425', label: 'SECiD Orange' },
+  { value: '#059669', label: 'Green' },
+  { value: '#7c3aed', label: 'Purple' },
+  { value: '#dc2626', label: 'Red' },
+  { value: '#0284c7', label: 'Sky Blue' },
+  { value: '#333333', label: 'Classic' },
+];
+
 export default function CvPdfDownloader({
   cvData,
   lang,
 }: CvPdfDownloaderProps) {
   const [generating, setGenerating] = useState<PdfFormat | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [accentColor, setAccentColor] = useState('#1E3A5F');
 
   const formats = getFormatOptions(lang);
   const downloadingLabel = lang === 'es' ? 'Generando...' : 'Generating...';
   const errorDismissLabel = lang === 'es' ? 'Cerrar' : 'Dismiss';
   const sectionTitle = lang === 'es' ? 'Descargar PDF' : 'Download PDF';
+  const colorLabel = lang === 'es' ? 'Color de acento' : 'Accent color';
 
   async function handleDownload(format: PdfFormat) {
     setGenerating(format);
     setError(null);
     try {
       const { generateCvPdf } = await import('@/lib/cv/pdf-generator');
-      await generateCvPdf(cvData, format, lang);
+      await generateCvPdf(cvData, format, lang, accentColor);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
       setError(
@@ -144,6 +156,43 @@ export default function CvPdfDownloader({
           </button>
         </div>
       )}
+
+      {/* Color picker */}
+      <div className="mb-4">
+        <label className="mb-2 block text-xs font-medium text-gray-500 dark:text-gray-400">
+          {colorLabel}
+        </label>
+        <div className="flex items-center gap-2">
+          {PRESET_COLORS.map((c) => (
+            <button
+              key={c.value}
+              type="button"
+              onClick={() => setAccentColor(c.value)}
+              className={`h-7 w-7 rounded-full border-2 transition-transform hover:scale-110 ${
+                accentColor === c.value
+                  ? 'border-gray-900 dark:border-white scale-110'
+                  : 'border-transparent'
+              }`}
+              style={{ backgroundColor: c.value }}
+              title={c.label}
+              aria-label={c.label}
+            />
+          ))}
+          <label className="relative cursor-pointer" title={lang === 'es' ? 'Color personalizado' : 'Custom color'}>
+            <input
+              type="color"
+              value={accentColor}
+              onChange={(e) => setAccentColor(e.target.value)}
+              className="absolute inset-0 h-7 w-7 cursor-pointer opacity-0"
+            />
+            <div
+              className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-dashed border-gray-300 text-xs text-gray-400 dark:border-gray-600 dark:text-gray-500"
+            >
+              +
+            </div>
+          </label>
+        </div>
+      </div>
 
       {/* Download buttons */}
       <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
