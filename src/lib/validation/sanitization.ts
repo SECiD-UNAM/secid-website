@@ -233,7 +233,7 @@ export function sanitizeFilename(filename: string): string {
 export function sanitizeSearchQuery(query: string): string {
   return query
     .trim()
-    .replace(/[';--]/g, '') // Remove SQL injection patterns
+    .replace(/[';-]/g, '') // Remove SQL injection patterns
     .replace(/\s+/g, ' ') // Normalize whitespace
     .substring(0, 255); // Limit length
 }
