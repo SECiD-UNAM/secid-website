@@ -21,14 +21,14 @@ import path from 'path';
 
 // Resolve firebase-admin from functions/node_modules
 const require = createRequire(path.resolve('functions/index.js'));
-const { initializeApp } = require('firebase-admin/app');
+const { initializeApp, applicationDefault } = require('firebase-admin/app');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 
 // --- Config ---
 const PROJECT_ID = 'secid-org';
 const isDryRun = process.argv.includes('--dry-run');
 
-initializeApp({ projectId: PROJECT_ID });
+initializeApp({ projectId: PROJECT_ID, credential: applicationDefault() });
 const db = getFirestore();
 
 // ---------------------------------------------------------------------------

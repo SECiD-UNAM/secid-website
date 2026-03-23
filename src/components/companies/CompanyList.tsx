@@ -5,10 +5,9 @@ import type { Company } from '@/types/company';
 import { getCompanies } from '@/lib/companies';
 import { CompanyLogo } from '@/components/shared/CompanyLogo';
 import { CompanyDrawer } from './CompanyDrawer';
-import { CompanyNetworkGraph } from './CompanyNetworkGraph';
 import { CompanyLandscape } from './CompanyLandscape';
 
-type ViewMode = 'list' | 'graph' | 'landscape';
+type ViewMode = 'list' | 'landscape';
 
 interface Props {
   lang?: 'es' | 'en';
@@ -180,7 +179,7 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
           </button>
           <button
             onClick={() => setViewMode('landscape')}
-            className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors ${
+            className={`flex items-center gap-1.5 rounded-r-lg px-3 py-2 text-sm font-medium transition-colors ${
               viewMode === 'landscape'
                 ? 'bg-primary-600 text-white'
                 : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
@@ -192,37 +191,12 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
             </svg>
             <span className="hidden sm:inline">{lang === 'es' ? 'Mapa' : 'Map'}</span>
           </button>
-          <button
-            onClick={() => setViewMode('graph')}
-            className={`flex items-center gap-1.5 rounded-r-lg px-3 py-2 text-sm font-medium transition-colors ${
-              viewMode === 'graph'
-                ? 'bg-primary-600 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
-            }`}
-            title={lang === 'es' ? 'Vista de red' : 'Network view'}
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-              <circle cx="6" cy="6" r="2.5" />
-              <circle cx="18" cy="8" r="2.5" />
-              <circle cx="12" cy="18" r="2.5" />
-              <line x1="8" y1="7" x2="16" y2="8" strokeLinecap="round" />
-              <line x1="7" y1="8.5" x2="11" y2="16" strokeLinecap="round" />
-              <line x1="17" y1="10" x2="13" y2="16" strokeLinecap="round" />
-            </svg>
-            <span className="hidden sm:inline">{lang === 'es' ? 'Red' : 'Network'}</span>
-          </button>
         </div>
       </div>
 
-      {/* Content: List, Landscape, or Graph */}
+      {/* Content: List or Landscape */}
       {viewMode === 'landscape' ? (
         <CompanyLandscape
-          companies={filtered}
-          onCompanyClick={openDrawer}
-          lang={lang}
-        />
-      ) : viewMode === 'graph' ? (
-        <CompanyNetworkGraph
           companies={filtered}
           onCompanyClick={openDrawer}
           lang={lang}
