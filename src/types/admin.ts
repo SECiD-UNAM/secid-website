@@ -201,9 +201,7 @@ export interface PlatformSettings {
     eventTicketBasePrice: number;
     paymentEnabled: boolean;
     stripePublishableKey: string;
-    stripeSecretKey: string;
     paypalClientId: string;
-    paypalClientSecret: string;
     currency: string;
     taxRate: number;
     refundPolicy: string;

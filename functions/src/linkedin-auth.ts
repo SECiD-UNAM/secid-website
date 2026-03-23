@@ -1,7 +1,8 @@
-import { onRequest } from "firebase-functions/v2/https";
+import { onRequest, onCall, HttpsError } from "firebase-functions/v2/https";
 import { defineSecret } from "firebase-functions/params";
 import { FieldValue } from "firebase-admin/firestore";
 import * as admin from "firebase-admin";
+import * as crypto from "crypto";
 
 const linkedinClientId = defineSecret("LINKEDIN_CLIENT_ID");
 const linkedinClientSecret = defineSecret("LINKEDIN_CLIENT_SECRET");
@@ -215,15 +216,67 @@ export const linkedinAuthCallback = onRequest(
         console.warn("LinkedIn verification check skipped:", e);
       }
 
-      // --- Generate custom token and redirect ---
+      // --- Generate custom token and store via short-lived code ---
       const customToken = await auth.createCustomToken(firebaseUser.uid);
+      const code = crypto.randomBytes(32).toString("hex");
+      const db = admin.firestore();
+
+      await db
+        .collection("linkedin_auth_codes")
+        .doc(code)
+        .set({
+          token: customToken,
+          createdAt: FieldValue.serverTimestamp(),
+          expiresAt: new Date(Date.now() + 60_000), // 60 seconds
+          used: false,
+        });
 
       res.redirect(
-        `${appUrl}/es/login?linkedinToken=${encodeURIComponent(customToken)}&returnUrl=${encodeURIComponent(returnUrl)}`,
+        `${appUrl}/es/login?linkedinCode=${encodeURIComponent(code)}&returnUrl=${encodeURIComponent(returnUrl)}`,
       );
     } catch (err) {
       console.error("LinkedIn auth error:", err);
       res.redirect(`${appUrl}/es/login?error=linkedin_server`);
     }
+  },
+);
+
+/**
+ * Step 3: Client exchanges a short-lived code for the custom token.
+ * The code is single-use and expires after 60 seconds.
+ */
+export const exchangeLinkedInCode = onCall<{ code: string }>(
+  async (request) => {
+    const { code } = request.data;
+    if (!code || typeof code !== "string") {
+      throw new HttpsError("invalid-argument", "Code is required");
+    }
+
+    const db = admin.firestore();
+    const codeRef = db.collection("linkedin_auth_codes").doc(code);
+    const codeDoc = await codeRef.get();
+
+    if (!codeDoc.exists) {
+      throw new HttpsError("not-found", "Invalid or expired code");
+    }
+
+    const data = codeDoc.data()!;
+
+    if (data.used) {
+      throw new HttpsError("already-exists", "Code already used");
+    }
+
+    if (data.expiresAt.toDate() < new Date()) {
+      await codeRef.delete();
+      throw new HttpsError("deadline-exceeded", "Code expired");
+    }
+
+    // Mark as used and return token
+    await codeRef.update({ used: true });
+
+    // Clean up — delete after returning
+    codeRef.delete().catch(() => {});
+
+    return { token: data.token };
   },
 );

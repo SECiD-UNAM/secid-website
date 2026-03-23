@@ -1,4 +1,5 @@
 import { signInWithCustomToken } from 'firebase/auth';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { auth } from '@/lib/firebase';
 
 const LINKEDIN_AUTH_URL = import.meta.env.DEV
@@ -9,7 +10,7 @@ const LINKEDIN_AUTH_URL = import.meta.env.DEV
  * Sign in with LinkedIn via custom OAuth flow.
  * Redirects the current page to the LinkedIn OAuth Cloud Function.
  * After authorization, the user is redirected back to the login page
- * with a ?linkedinToken= parameter.
+ * with a ?linkedinCode= parameter.
  */
 export async function signInWithLinkedIn(): Promise<void> {
   const returnUrl = window.location.pathname;
@@ -17,9 +18,16 @@ export async function signInWithLinkedIn(): Promise<void> {
 }
 
 /**
- * Complete LinkedIn sign-in by exchanging the custom token from the URL.
- * Called from the login page when ?linkedinToken= is present.
+ * Complete LinkedIn sign-in by exchanging a short-lived code for a custom token.
+ * Called from the login page when ?linkedinCode= is present.
  */
-export async function completeLinkedInSignIn(customToken: string): Promise<void> {
-  await signInWithCustomToken(auth, customToken);
+export async function completeLinkedInSignIn(code: string): Promise<void> {
+  const functions = getFunctions();
+  const exchangeCode = httpsCallable<{ code: string }, { token: string }>(
+    functions,
+    'exchangeLinkedInCode'
+  );
+
+  const result = await exchangeCode({ code });
+  await signInWithCustomToken(auth, result.data.token);
 }

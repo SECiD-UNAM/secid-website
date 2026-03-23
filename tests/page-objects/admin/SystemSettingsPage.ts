@@ -116,7 +116,6 @@ export class SystemSettingsPage extends BasePage {
   private readonly googleAnalyticsInput: Locator;
   private readonly amplitudeApiKeyInput: Locator;
   private readonly stripePublishableKeyInput: Locator;
-  private readonly stripeSecretKeyInput: Locator;
   private readonly firebaseConfigTextarea: Locator;
   private readonly slackWebhookInput: Locator;
   private readonly discordWebhookInput: Locator;
@@ -268,9 +267,6 @@ export class SystemSettingsPage extends BasePage {
     );
     this.stripePublishableKeyInput = page.locator(
       '[data-testid="stripe-publishable-key"]'
-    );
-    this.stripeSecretKeyInput = page.locator(
-      '[data-testid="stripe-secret-key"]'
     );
     this.firebaseConfigTextarea = page.locator(
       '[data-testid="firebase-config"]'
@@ -698,7 +694,6 @@ export class SystemSettingsPage extends BasePage {
     googleAnalyticsId?: string;
     amplitudeApiKey?: string;
     stripePublishableKey?: string;
-    stripeSecretKey?: string;
     firebaseConfig?: string;
     slackWebhook?: string;
     discordWebhook?: string;
@@ -710,7 +705,6 @@ export class SystemSettingsPage extends BasePage {
       googleAnalyticsId: this.googleAnalyticsInput,
       amplitudeApiKey: this.amplitudeApiKeyInput,
       stripePublishableKey: this.stripePublishableKeyInput,
-      stripeSecretKey: this.stripeSecretKeyInput,
       firebaseConfig: this.firebaseConfigTextarea,
       slackWebhook: this.slackWebhookInput,
       discordWebhook: this.discordWebhookInput,

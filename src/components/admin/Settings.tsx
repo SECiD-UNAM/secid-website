@@ -72,7 +72,6 @@ interface PlatformSettings {
     eventTicketBasePrice: number;
     paymentEnabled: boolean;
     stripePublishableKey: string;
-    stripeSecretKey: string;
     paypalClientId: string;
   };
   analytics: {
@@ -150,7 +149,6 @@ const defaultSettings: PlatformSettings = {
     eventTicketBasePrice: 100,
     paymentEnabled: false,
     stripePublishableKey: '',
-    stripeSecretKey: '',
     paypalClientId: '',
   },
   analytics: {
