@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import type { Company } from '@/types/company';
 import { CompanyLogo } from '@/components/shared/CompanyLogo';
+import { translateIndustry } from '@/lib/companies/industry-i18n';
 
 interface Props {
   companies: Company[];
@@ -50,10 +51,10 @@ export const CompanyLandscape: React.FC<Props> = ({
     ? companies.filter((c) => c.memberCount > 0)
     : companies;
 
-  // Group by industry
+  // Group by industry (translate for display)
   const groups = new Map<string, Company[]>();
   for (const c of displayed) {
-    const key = c.industry || (lang === 'es' ? 'Otros' : 'Other');
+    const key = translateIndustry(c.industry || 'Otros', lang);
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key)!.push(c);
   }
@@ -324,7 +325,7 @@ export const CompanyLandscape: React.FC<Props> = ({
               </div>
               {hoveredCompany.industry && (
                 <div style={{ fontSize: 11, color: 'var(--color-text-secondary, #94a3b8)' }}>
-                  {hoveredCompany.industry}
+                  {translateIndustry(hoveredCompany.industry, lang)}
                 </div>
               )}
             </div>

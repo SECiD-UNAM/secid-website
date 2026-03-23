@@ -7,6 +7,7 @@ import { getCompanyBySlug } from '@/lib/companies';
 import { getCompanyMembers } from '@/lib/companies/members';
 import { CompanyLogo } from '@/components/shared/CompanyLogo';
 import { CompanyMemberCard } from './CompanyMemberCard';
+import { translateIndustry } from '@/lib/companies/industry-i18n';
 
 interface Props {
   slug: string;
@@ -166,7 +167,7 @@ export const CompanyProfile: React.FC<Props> = ({
           <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
             {company.industry && (
               <span className="rounded-full bg-primary-100 px-3 py-0.5 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">
-                {company.industry}
+                {translateIndustry(company.industry, lang)}
               </span>
             )}
             {company.location && <span>{company.location}</span>}

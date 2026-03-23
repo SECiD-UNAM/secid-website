@@ -7,6 +7,7 @@ import { CompanyLogo } from '@/components/shared/CompanyLogo';
 import { CompanyDrawer } from './CompanyDrawer';
 import { CompanyLandscape } from './CompanyLandscape';
 import { CompanyTimeline } from './CompanyTimeline';
+import { translateIndustry } from '@/lib/companies/industry-i18n';
 
 type ViewMode = 'list' | 'landscape' | 'timeline';
 
@@ -160,7 +161,7 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
           >
             <option value="">{lang === 'es' ? 'Todas las industrias' : 'All industries'}</option>
             {industries.map((ind) => (
-              <option key={ind} value={ind}>{ind}</option>
+              <option key={ind} value={ind}>{translateIndustry(ind, lang)}</option>
             ))}
           </select>
         </div>
@@ -251,7 +252,7 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
                       {company.name}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {[company.industry, company.location].filter(Boolean).join(' · ')}
+                      {[company.industry ? translateIndustry(company.industry, lang) : null, company.location].filter(Boolean).join(' · ')}
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-4 text-sm text-gray-500 dark:text-gray-400">

@@ -5,6 +5,7 @@ import type { MemberProfile } from '@/types/member';
 import { CompanyLogo } from '@/components/shared/CompanyLogo';
 import { CompanyMemberCard } from './CompanyMemberCard';
 import { getCompanyMembers } from '@/lib/companies/members';
+import { translateIndustry } from '@/lib/companies/industry-i18n';
 
 interface Props {
   company: Company | null;
@@ -81,7 +82,7 @@ export const CompanyDrawer: React.FC<Props> = ({
               </h2>
               {company.industry && (
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {company.industry}
+                  {translateIndustry(company.industry, lang)}
                 </p>
               )}
             </div>
