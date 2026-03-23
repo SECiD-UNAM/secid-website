@@ -835,47 +835,22 @@ export const MemberShowcase: React.FC<MemberShowcaseProps> = ({
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 p-6">
-      {/* Header: title + subtitle + toggle */}
-      <div className="mb-6 flex flex-col items-center text-center">
+      <div className="flex flex-col items-center text-center">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
           {t.title}
         </h2>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           {t.subtitle}
         </p>
-        <div className="mt-4">
-          <TabSwitcher
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            labels={{ current: t.current, historical: t.historical }}
-          />
-        </div>
-      </div>
-
-      {/* Landscape grid */}
-      <DesktopLandscape
-        industryGroups={industryGroups}
-        tab={activeTab}
-        mode={mode}
-        lang={lang}
-        t={t}
-      />
-      <MobileLandscape
-        industryGroups={industryGroups}
-        tab={activeTab}
-        mode={mode}
-        lang={lang}
-        t={t}
-      />
-
-      {/* Stats footer */}
-      <div className="mt-6">
-        <StatsFooter
-          companyCount={displayCompanies.length}
-          industryCount={uniqueIndustries}
-          memberCount={totalMembers}
-          t={t}
-        />
+        <a
+          href={`/${lang}/companies`}
+          className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+        >
+          {lang === 'es' ? 'Ver Red de Empresas' : 'View Company Network'}
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          </svg>
+        </a>
       </div>
     </div>
   );

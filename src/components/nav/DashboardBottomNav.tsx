@@ -119,7 +119,7 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
       icon: 'fas fa-briefcase',
     },
     {
-      href: `/${lang}/companies`,
+      href: `/${lang}/dashboard/companies`,
       label: lang === 'es' ? 'Empresas' : 'Companies',
       icon: 'fas fa-building',
     },

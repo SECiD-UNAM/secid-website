@@ -67,8 +67,23 @@ export const InsightsTab: React.FC<InsightsTabProps> = ({
 
   return (
     <div className="space-y-8">
-      {/* Company Grid */}
-      <CompanyGrid companies={companies} title={t.companyTitle} lang={lang} />
+      {/* Company link — full visualization at /companies */}
+      <SectionCard title={t.companyTitle}>
+        <div className="flex flex-col items-center py-4 text-center">
+          <p className="mb-3 text-sm text-gray-500 dark:text-gray-400">
+            {companies.length} {lang === 'es' ? 'empresas registradas' : 'registered companies'}
+          </p>
+          <a
+            href={`/${lang}/dashboard/companies`}
+            className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+          >
+            {lang === 'es' ? 'Ver Red de Empresas' : 'View Company Network'}
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </a>
+        </div>
+      </SectionCard>
 
       {/* Skills Distribution */}
       <HorizontalBarSection

@@ -104,7 +104,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     },
     {
       name: lang === 'es' ? 'Red de Empresas' : 'Company Network',
-      href: `/${lang}/companies`,
+      href: `/${lang}/dashboard/companies`,
       icon: BuildingOffice2Icon,
       requireVerified: true,
     },
