@@ -10,6 +10,7 @@ import { pricingTranslations } from './pricing';
 import { resourcesTranslations } from './resources-translations';
 import { mentorshipTranslations } from './mentorship-translations';
 import { forumTranslations } from './forum-translations';
+import { companyTranslations } from './company-translations';
 
 export type Language = 'es' | 'en';
 
@@ -327,6 +328,53 @@ export interface Translations {
       [key: string]: string;
     };
   };
+  companies: {
+    loading: string;
+    loadingCompanies: string;
+    notFound: string;
+    loadError: string;
+    loadListError: string;
+    retry: string;
+    backToDirectory: string;
+    website: string;
+    connections: string;
+    members: string;
+    signInToView: string;
+    viewProfile: string;
+    viewFullProfile: string;
+    close: string;
+    present: string;
+    nowAt: string;
+    tabCurrent: string;
+    tabAlumni: string;
+    tabRoles: string;
+    noCurrentMembers: string;
+    noFormerMembers: string;
+    noRoles: string;
+    noCompaniesFound: string;
+    networkTitle: string;
+    networkDescription: string;
+    statsCompanies: string;
+    statsActiveMembers: string;
+    statsIndustries: string;
+    searchPlaceholder: string;
+    allIndustries: string;
+    listView: string;
+    list: string;
+    industryMap: string;
+    map: string;
+    companiesFound: string;
+    currentMembersCount: (count: number) => string;
+    formerMembersCount: (count: number) => string;
+    ecosystemTitle: string;
+    ecosystemSubtitle: string;
+    statsConnections: string;
+    statsDataScience: string;
+    filterCurrent: string;
+    filterFullHistory: string;
+    legendCurrent: string;
+    legendFormer: string;
+  };
   forum: {
     title: string;
     topics: string;
@@ -426,6 +474,7 @@ export const translations: Record<Language, Translations> = {
     ...resourcesTranslations.es,
     ...mentorshipTranslations.es,
     ...forumTranslations.es,
+    ...companyTranslations.es,
   },
   en: {
     ...commonTranslations.en,
@@ -434,6 +483,7 @@ export const translations: Record<Language, Translations> = {
     ...resourcesTranslations.en,
     ...mentorshipTranslations.en,
     ...forumTranslations.en,
+    ...companyTranslations.en,
   },
 };
 

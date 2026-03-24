@@ -1,5 +1,6 @@
 import React from 'react';
 import type { MemberProfile } from '@/types/member';
+import { getCompanyTranslations } from '@/i18n/company-translations';
 
 interface Props {
   member: MemberProfile;
@@ -57,6 +58,8 @@ export const CompanyMemberCard: React.FC<Props> = ({
   isVerified,
   lang = 'es',
 }) => {
+  const t = getCompanyTranslations(lang);
+
   if (!isVerified) {
     return (
       <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50">
@@ -66,7 +69,7 @@ export const CompanyMemberCard: React.FC<Props> = ({
           <div className="mt-1 h-3 w-16 rounded bg-gray-200 dark:bg-gray-700" />
         </div>
         <span className="text-xs text-gray-400 dark:text-gray-500">
-          {lang === 'es' ? 'Inicia sesion para ver' : 'Sign in to view'}
+          {t.signInToView}
         </span>
       </div>
     );
@@ -110,12 +113,12 @@ export const CompanyMemberCard: React.FC<Props> = ({
         {role.startDate && (
           <p className="text-xs text-gray-400 dark:text-gray-500">
             {formatDate(role.startDate, lang)}
-            {role.endDate ? ` – ${formatDate(role.endDate, lang)}` : isAlumni ? '' : ` – ${lang === 'es' ? 'Presente' : 'Present'}`}
+            {role.endDate ? ` – ${formatDate(role.endDate, lang)}` : isAlumni ? '' : ` – ${t.present}`}
           </p>
         )}
         {isAlumni && nowAt && (
           <span className="mt-1 inline-block rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-            {lang === 'es' ? 'Ahora en' : 'Now at'}: {nowAt}
+            {t.nowAt}: {nowAt}
           </span>
         )}
       </div>
@@ -138,7 +141,7 @@ export const CompanyMemberCard: React.FC<Props> = ({
         <a
           href={profileUrl}
           className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-gray-700 dark:hover:text-primary-400"
-          title={lang === 'es' ? 'Ver perfil' : 'View profile'}
+          title={t.viewProfile}
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />

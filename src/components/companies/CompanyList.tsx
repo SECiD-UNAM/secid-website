@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import type { Company } from '@/types/company';
 import { getCompanies } from '@/lib/companies';
 import { translateIndustry } from '@/lib/companies/industry-i18n';
+import { getCompanyTranslations } from '@/i18n/company-translations';
 import { CompanyLogo } from '@/components/shared/CompanyLogo';
 import { CompanyDrawer } from './CompanyDrawer';
 import { EcosystemMap } from '@/components/shared/EcosystemMap';
@@ -52,6 +53,7 @@ interface Props {
 }
 
 export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
+  const t = getCompanyTranslations(lang);
   const { isVerified } = useAuth();
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -71,7 +73,7 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
     () => [
       {
         key: 'industry',
-        label: lang === 'es' ? 'Industria' : 'Industry',
+        label: t.statsIndustries,
         type: 'select',
         options: KNOWN_INDUSTRIES.map((ind) => ({
           value: ind,
@@ -115,8 +117,8 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-        <span title={lang === 'es' ? 'Miembros' : 'Members'}>
-          {company.memberCount} {lang === 'es' ? 'miembros' : 'members'}
+        <span title={t.tabCurrent}>
+          {company.memberCount} {t.members}
         </span>
         <svg
           className="h-5 w-5 text-gray-300 dark:text-gray-600"
@@ -140,12 +142,10 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
       {/* Page header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          {lang === 'es' ? 'Red de Empresas SECiD' : 'SECiD Company Network'}
+          {t.networkTitle}
         </h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
-          {lang === 'es'
-            ? 'Descubre donde trabajan los miembros de SECiD y conecta con tu red profesional.'
-            : 'Discover where SECiD members work and connect with your professional network.'}
+          {t.networkDescription}
         </p>
       </div>
 
@@ -168,7 +168,7 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
           <button
             type="button"
             onClick={() => setShowLandscape((v) => !v)}
-            title={lang === 'es' ? 'Mapa de industrias' : 'Industry map'}
+            title={t.industryMap}
             className={`rounded-lg border p-2 transition-colors ${
               showLandscape
                 ? 'border-primary-600 bg-primary-600 text-white'

@@ -8,6 +8,7 @@ import { getCompanyMembers } from '@/lib/companies/members';
 import { CompanyLogo } from '@/components/shared/CompanyLogo';
 import { CompanyMemberCard } from './CompanyMemberCard';
 import { translateIndustry } from '@/lib/companies/industry-i18n';
+import { getCompanyTranslations } from '@/i18n/company-translations';
 
 interface Props {
   slug: string;
@@ -30,6 +31,7 @@ export const CompanyProfile: React.FC<Props> = ({
   slug: propSlug,
   lang = 'es',
 }) => {
+  const t = getCompanyTranslations(lang);
   const { isVerified } = useAuth();
   const [company, setCompany] = useState<Company | null>(null);
   const [current, setCurrent] = useState<MemberProfile[]>([]);
@@ -42,7 +44,7 @@ export const CompanyProfile: React.FC<Props> = ({
 
   useEffect(() => {
     if (!slug) {
-      setError(lang === 'es' ? 'Empresa no encontrada' : 'Company not found');
+      setError(t.notFound);
       setLoading(false);
       return;
     }
@@ -55,7 +57,7 @@ export const CompanyProfile: React.FC<Props> = ({
         const comp = await getCompanyBySlug(slug!);
         if (cancelled) return;
         if (!comp) {
-          setError(lang === 'es' ? 'Empresa no encontrada' : 'Company not found');
+          setError(t.notFound);
           return;
         }
         setCompany(comp);
@@ -67,7 +69,7 @@ export const CompanyProfile: React.FC<Props> = ({
       } catch (err) {
         if (cancelled) return;
         console.error('Error loading company:', err);
-        setError(lang === 'es' ? 'Error al cargar la empresa' : 'Error loading company');
+        setError(t.loadError);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -100,7 +102,7 @@ export const CompanyProfile: React.FC<Props> = ({
         <div className="text-center">
           <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-primary-600" />
           <p className="text-gray-600 dark:text-gray-400">
-            {lang === 'es' ? 'Cargando...' : 'Loading...'}
+            {t.loading}
           </p>
         </div>
       </div>
@@ -113,13 +115,13 @@ export const CompanyProfile: React.FC<Props> = ({
         <div className="text-center">
           <div className="mb-4 text-6xl">:(</div>
           <h2 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
-            {error || (lang === 'es' ? 'Empresa no encontrada' : 'Company not found')}
+            {error || t.notFound}
           </h2>
           <a
             href={`/${lang}/companies`}
             className="mt-4 inline-flex items-center rounded-lg bg-primary-600 px-4 py-2 text-white hover:bg-primary-700"
           >
-            {lang === 'es' ? 'Volver al directorio' : 'Back to directory'}
+            {t.backToDirectory}
           </a>
         </div>
       </div>
@@ -131,17 +133,17 @@ export const CompanyProfile: React.FC<Props> = ({
   const tabs: { key: Tab; label: string; count: number }[] = [
     {
       key: 'current',
-      label: lang === 'es' ? 'Miembros actuales' : 'Current members',
+      label: t.tabCurrent,
       count: current.length,
     },
     {
       key: 'alumni',
-      label: lang === 'es' ? 'Anteriores' : 'Former',
+      label: t.tabAlumni,
       count: alumni.length,
     },
     {
       key: 'roles',
-      label: lang === 'es' ? 'Roles' : 'Roles',
+      label: t.tabRoles,
       count: rolesBreakdown.length,
     },
   ];
@@ -154,7 +156,7 @@ export const CompanyProfile: React.FC<Props> = ({
         className="mb-6 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400"
       >
         <ArrowLeftIcon className="h-4 w-4" />
-        {lang === 'es' ? 'Volver al directorio' : 'Back to directory'}
+        {t.backToDirectory}
       </a>
 
       {/* Company header */}
@@ -179,12 +181,12 @@ export const CompanyProfile: React.FC<Props> = ({
                 className="flex items-center gap-1 text-primary-600 hover:underline dark:text-primary-400"
               >
                 <GlobeAltIcon className="h-4 w-4" />
-                {lang === 'es' ? 'Sitio web' : 'Website'}
+                {t.website}
               </a>
             )}
           </div>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            {totalConnections} {lang === 'es' ? 'conexiones SECiD' : 'SECiD connections'}
+            {totalConnections} {t.connections}
           </p>
         </div>
       </div>
@@ -226,7 +228,7 @@ export const CompanyProfile: React.FC<Props> = ({
             ))
           ) : (
             <p className="py-8 text-center text-gray-400 dark:text-gray-500">
-              {lang === 'es' ? 'Sin miembros actuales registrados' : 'No current members registered'}
+              {t.noCurrentMembers}
             </p>
           )}
         </div>
@@ -247,7 +249,7 @@ export const CompanyProfile: React.FC<Props> = ({
             ))
           ) : (
             <p className="py-8 text-center text-gray-400 dark:text-gray-500">
-              {lang === 'es' ? 'Sin miembros anteriores registrados' : 'No former members registered'}
+              {t.noFormerMembers}
             </p>
           )}
         </div>
@@ -269,7 +271,7 @@ export const CompanyProfile: React.FC<Props> = ({
             ))
           ) : (
             <p className="py-8 text-center text-gray-400 dark:text-gray-500">
-              {lang === 'es' ? 'Sin roles registrados' : 'No roles registered'}
+              {t.noRoles}
             </p>
           )}
         </div>

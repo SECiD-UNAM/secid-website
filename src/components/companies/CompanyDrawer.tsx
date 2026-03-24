@@ -6,6 +6,7 @@ import { CompanyLogo } from '@/components/shared/CompanyLogo';
 import { CompanyMemberCard } from './CompanyMemberCard';
 import { getCompanyMembers } from '@/lib/companies/members';
 import { translateIndustry } from '@/lib/companies/industry-i18n';
+import { getCompanyTranslations } from '@/i18n/company-translations';
 
 interface Props {
   company: Company | null;
@@ -22,6 +23,7 @@ export const CompanyDrawer: React.FC<Props> = ({
   isVerified,
   lang = 'es',
 }) => {
+  const t = getCompanyTranslations(lang);
   const [current, setCurrent] = useState<MemberProfile[]>([]);
   const [alumni, setAlumni] = useState<MemberProfile[]>([]);
   const [loading, setLoading] = useState(false);
@@ -90,7 +92,7 @@ export const CompanyDrawer: React.FC<Props> = ({
           <button
             onClick={onClose}
             className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
-            aria-label={lang === 'es' ? 'Cerrar' : 'Close'}
+            aria-label={t.close}
           >
             <XMarkIcon className="h-5 w-5" />
           </button>
@@ -116,7 +118,7 @@ export const CompanyDrawer: React.FC<Props> = ({
                 className="flex items-center gap-1 text-primary-600 hover:underline dark:text-primary-400"
               >
                 <GlobeAltIcon className="h-4 w-4" />
-                {lang === 'es' ? 'Sitio web' : 'Website'}
+                {t.website}
               </a>
             )}
           </div>
@@ -133,7 +135,7 @@ export const CompanyDrawer: React.FC<Props> = ({
               {/* Current Members */}
               <div className="mb-6">
                 <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  {lang === 'es' ? `Miembros actuales (${current.length})` : `Current members (${current.length})`}
+                  {t.currentMembersCount(current.length)}
                 </h3>
                 {current.length > 0 ? (
                   <div className="space-y-2">
@@ -149,7 +151,7 @@ export const CompanyDrawer: React.FC<Props> = ({
                   </div>
                 ) : (
                   <p className="text-sm text-gray-400 dark:text-gray-500">
-                    {lang === 'es' ? 'Sin miembros actuales registrados' : 'No current members registered'}
+                    {t.noCurrentMembers}
                   </p>
                 )}
               </div>
@@ -158,7 +160,7 @@ export const CompanyDrawer: React.FC<Props> = ({
               {alumni.length > 0 && (
                 <div className="mb-6">
                   <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                    {lang === 'es' ? `Anteriores (${alumni.length})` : `Former (${alumni.length})`}
+                    {t.formerMembersCount(alumni.length)}
                   </h3>
                   <div className="space-y-2">
                     {alumni.map((m) => (
@@ -184,7 +186,7 @@ export const CompanyDrawer: React.FC<Props> = ({
             href={`/${lang}/companies/${company.slug}`}
             className="block w-full rounded-lg bg-primary-600 py-2.5 text-center font-medium text-white transition-colors hover:bg-primary-700"
           >
-            {lang === 'es' ? 'Ver perfil completo' : 'View full profile'}
+            {t.viewFullProfile}
           </a>
         </div>
       </div>

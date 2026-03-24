@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import type { Company } from '@/types/company';
 import { CompanyLogo } from '@/components/shared/CompanyLogo';
 import { translateIndustry } from '@/lib/companies/industry-i18n';
+import { getCompanyTranslations } from '@/i18n/company-translations';
 
 interface EcosystemMapProps {
   companies: Company[];
@@ -44,6 +45,7 @@ export const EcosystemMap: React.FC<EcosystemMapProps> = ({
   onCompanyClick,
   lang = 'es',
 }) => {
+  const t = getCompanyTranslations(lang);
   const [filter, setFilter] = useState<'current' | 'all'>('current');
   const [hoveredCompany, setHoveredCompany] = useState<Company | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -72,23 +74,19 @@ export const EcosystemMap: React.FC<EcosystemMapProps> = ({
       {/* Header card */}
       <div className="mb-6 rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-slate-800">
         <h2 className="mb-1 text-xl font-extrabold text-gray-900 dark:text-gray-50" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>
-          {lang === 'es'
-            ? '¿Dónde trabajan los miembros de SECiD?'
-            : 'Where do SECiD members work?'}
+          {t.ecosystemTitle}
         </h2>
         <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
-          {lang === 'es'
-            ? 'Empresas donde nuestros egresados generan impacto'
-            : 'Companies where our graduates make an impact'}
+          {t.ecosystemSubtitle}
         </p>
 
         {/* Stats grid */}
         <div className="grid grid-cols-4 gap-3 text-center">
           {[
-            { value: String(displayed.length), label: lang === 'es' ? 'Empresas' : 'Companies' },
-            { value: String(sortedGroups.length), label: lang === 'es' ? 'Industrias' : 'Industries' },
-            { value: String(totalMembers), label: lang === 'es' ? 'Conexiones' : 'Connections' },
-            { value: 'UNAM', label: lang === 'es' ? 'Ciencia de Datos' : 'Data Science' },
+            { value: String(displayed.length), label: t.statsCompanies },
+            { value: String(sortedGroups.length), label: t.statsIndustries },
+            { value: String(totalMembers), label: t.statsConnections },
+            { value: 'UNAM', label: t.statsDataScience },
           ].map(({ value, label }) => (
             <div key={label} className="rounded-xl bg-gray-50 px-2 py-2.5 dark:bg-slate-900">
               <div className="text-xl font-bold text-primary-600 dark:text-primary-400">{value}</div>
@@ -108,7 +106,7 @@ export const EcosystemMap: React.FC<EcosystemMapProps> = ({
                   : 'bg-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
               }`}
             >
-              {lang === 'es' ? 'Actuales' : 'Current'}
+              {t.filterCurrent}
             </button>
             <button
               onClick={() => setFilter('all')}
@@ -118,7 +116,7 @@ export const EcosystemMap: React.FC<EcosystemMapProps> = ({
                   : 'bg-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
               }`}
             >
-              {lang === 'es' ? 'Historial completo' : 'Full history'}
+              {t.filterFullHistory}
             </button>
           </div>
         </div>
@@ -197,11 +195,11 @@ export const EcosystemMap: React.FC<EcosystemMapProps> = ({
           <div className="mt-2 flex items-center justify-center gap-4 text-[11px]">
             <span className="flex items-center gap-1">
               <span className="inline-block h-2.5 w-3.5 rounded-sm bg-gray-800 dark:bg-gray-200" />
-              {lang === 'es' ? 'Actuales' : 'Current'}
+              {t.legendCurrent}
             </span>
             <span className="flex items-center gap-1 opacity-50">
               <span className="inline-block h-2.5 w-3.5 rounded-sm bg-gray-800 dark:bg-gray-200" />
-              {lang === 'es' ? 'Anteriores' : 'Former'}
+              {t.legendFormer}
             </span>
           </div>
         )}
@@ -231,7 +229,7 @@ export const EcosystemMap: React.FC<EcosystemMapProps> = ({
           <div className="flex gap-3 text-[11px] text-gray-500 dark:text-gray-400">
             {hoveredCompany.location && <span>📍 {hoveredCompany.location}</span>}
             <span className="font-semibold text-primary-600 dark:text-primary-400">
-              {hoveredCompany.memberCount} {lang === 'es' ? 'miembros' : 'members'}
+              {hoveredCompany.memberCount} {t.members}
             </span>
           </div>
           {hoveredCompany.website && (
