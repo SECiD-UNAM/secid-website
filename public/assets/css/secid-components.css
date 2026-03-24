@@ -2513,7 +2513,19 @@ body {
   color: var(--color-text-secondary);
 }
 
+[data-theme='dark'] .secid-initiatives {
+  background: var(--section-bg-alt);
+}
+
+[data-theme='dark'] .secid-initiatives__title {
+  color: var(--color-text-primary);
+}
+
 /* Features & CTA Section Dark Mode Contrast Fixes */
+[data-theme='dark'] .secid-features {
+  background: var(--section-bg-primary);
+}
+
 [data-theme='dark'] .secid-features__title {
   color: var(--color-text-primary);
 }
