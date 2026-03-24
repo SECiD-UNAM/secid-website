@@ -154,6 +154,16 @@ describe('filterByLocale', () => {
     expect(filtered).toHaveLength(1);
   });
 
+  it('excludes foreign original when a target-locale translation claims it via translationOf', () => {
+    const posts = [
+      makePost({ slug: 'en-original', lang: 'en' }), // no translationOf
+      makePost({ slug: 'es-traduccion', lang: 'es', translationOf: 'en-original' }),
+    ];
+    const filtered = filterByLocale(posts, 'es');
+    expect(filtered).toHaveLength(1);
+    expect(filtered[0].slug).toBe('es-traduccion');
+  });
+
   it('returns only target-locale posts when all foreign posts have translations', () => {
     const posts = [
       makePost({ slug: 'hola', lang: 'es' }),
