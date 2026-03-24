@@ -76,6 +76,7 @@
     "i18next": "^23.8.2",
     "jspdf": "^4.2.1",
     "lucide-react": "^0.323.0",
+    "marked": "^17.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.50.0",

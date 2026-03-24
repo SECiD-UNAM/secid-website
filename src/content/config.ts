@@ -4,7 +4,9 @@ const blog = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
-    slug: z.string(),
+    // Astro 5 derives the file-system slug automatically; this field stores a
+    // canonical slug that overrides the file-based one when present.
+    slug: z.string().optional(),
     excerpt: z.string(),
     author: z.string(),
     category: z.enum(['Tendencias', 'Tutorial', 'Carrera', 'Investigación', 'Opinión']),
