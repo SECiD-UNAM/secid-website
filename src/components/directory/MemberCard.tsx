@@ -113,26 +113,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     }
   };
 
-  const formatLastSeen = (date: Date): string => {
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const minutes = Math.floor(diff / (1000 * 60));
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-
-    if (member.isOnline) {
-      return lang === 'es' ? 'En línea' : 'Online';
-    } else if (minutes < 60) {
-      return lang === 'es' ? `Hace ${minutes} min` : `${minutes} min ago`;
-    } else if (hours < 24) {
-      return lang === 'es' ? `Hace ${hours}h` : `${hours}h ago`;
-    } else if (days < 7) {
-      return lang === 'es' ? `Hace ${days}d` : `${days}d ago`;
-    } else {
-      return date.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US');
-    }
-  };
-
   const getExperienceLevelLabel = (level: string): string => {
     const labels: Record<string, Record<string, string>> = {
       junior: { es: 'Junior', en: 'Junior' },
@@ -206,13 +186,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-sm font-semibold text-white">
               {member.initials}
             </div>
-            {visibility.showOnlineStatus && (
-              <div
-                className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white dark:border-gray-800 ${
-                  member.isOnline ? 'bg-green-500' : 'bg-gray-400'
-                }`}
-              ></div>
-            )}
             {member.isPremium && (
               <div className="absolute -right-1 -top-1">
                 <StarIcon className="h-4 w-4 fill-current text-yellow-500" />
@@ -259,13 +232,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-base font-semibold text-white sm:h-16 sm:w-16 sm:text-lg">
                 {member.initials}
               </div>
-              {visibility.showOnlineStatus && (
-                <div
-                  className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white dark:border-gray-800 sm:h-5 sm:w-5 ${
-                    member.isOnline ? 'bg-green-500' : 'bg-gray-400'
-                  }`}
-                ></div>
-              )}
             </div>
 
             {/* Member info */}
@@ -312,9 +278,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                         <AcademicCapIcon className="mr-1 h-3 w-3" />
                         Gen. {member.profile.graduationYear}
                       </div>
-                    )}
-                    {visibility.showLastSeen && (
-                      <span>{formatLastSeen(member.lastSeen)}</span>
                     )}
                   </div>
                 </div>
@@ -469,13 +432,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-lg font-semibold text-white sm:h-20 sm:w-20 sm:text-xl">
             {member.initials}
           </div>
-          {visibility.showOnlineStatus && (
-            <div
-              className={`sm:border-3 absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-2 border-white dark:border-gray-800 sm:h-6 sm:w-6 ${
-                member.isOnline ? 'bg-green-500' : 'bg-gray-400'
-              }`}
-            ></div>
-          )}
         </div>
 
         <h3 className="mb-1 text-base font-semibold text-gray-900 dark:text-white sm:text-lg">
@@ -520,12 +476,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           )}
         </div>
 
-        {/* Last seen */}
-        {visibility.showLastSeen && (
-          <p className="mb-3 text-xs text-gray-600 dark:text-gray-400">
-            {formatLastSeen(member.lastSeen)}
-          </p>
-        )}
       </div>
 
       {/* Bio */}

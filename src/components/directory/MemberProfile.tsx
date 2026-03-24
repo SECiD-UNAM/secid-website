@@ -126,29 +126,6 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
     });
   };
 
-  const formatLastSeen = (date: Date): string => {
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(hours / 24);
-
-    if (member.isOnline) {
-      return lang === 'es' ? 'En linea ahora' : 'Online now';
-    } else if (hours < 24) {
-      return lang === 'es'
-        ? `Activo hace ${hours} horas`
-        : `Active ${hours} hours ago`;
-    } else if (days < 7) {
-      return lang === 'es'
-        ? `Activo hace ${days} dias`
-        : `Active ${days} days ago`;
-    } else {
-      return lang === 'es'
-        ? `Ultimo acceso ${formatJoinDate(date)}`
-        : `Last seen ${formatJoinDate(date)}`;
-    }
-  };
-
   const getExperienceLevelLabel = (level: string): string => {
     const labels: Record<string, Record<string, string>> = {
       junior: { es: 'Junior', en: 'Junior' },
@@ -363,23 +340,6 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                   {member.initials}
                 </div>
               )}
-              {visibility.showOnlineStatus && (
-                <span
-                  className={`absolute bottom-2 right-2 h-5 w-5 rounded-full border-[3px] border-white dark:border-gray-800 md:h-6 md:w-6 ${
-                    member.isOnline ? 'bg-green-500' : 'bg-gray-400'
-                  }`}
-                  role="status"
-                  aria-label={
-                    member.isOnline
-                      ? lang === 'es'
-                        ? 'En linea'
-                        : 'Online'
-                      : lang === 'es'
-                        ? 'Desconectado'
-                        : 'Offline'
-                  }
-                />
-              )}
               {isOwnProfile && (
                 <button
                   type="button"
@@ -455,15 +415,6 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                     {formatJoinDate(member.joinedAt)}
                   </time>
                 </span>
-                {visibility.showLastSeen && (
-                  <span className="flex items-center">
-                    <ClockIcon
-                      className="mr-1 h-4 w-4 text-green-500"
-                      aria-hidden="true"
-                    />
-                    {formatLastSeen(member.lastSeen)}
-                  </span>
-                )}
               </div>
             </div>
 

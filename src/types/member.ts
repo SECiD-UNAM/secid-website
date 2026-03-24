@@ -37,8 +37,8 @@ export interface MemberProfile extends UserProfile {
   displayName: string;
   slug: string;
   initials: string;
-  isOnline: boolean;
-  lastSeen: Date;
+  isOnline?: boolean;
+  lastSeen?: Date;
   joinedAt: Date;
 
   // Extended profile information

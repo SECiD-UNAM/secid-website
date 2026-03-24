@@ -122,8 +122,6 @@ export function mapUserDocToMemberProfile(
     displayName,
     slug,
     initials,
-    isOnline: data.isOnline || false,
-    lastSeen: data.updatedAt?.toDate?.() || data.updatedAt || new Date(),
     joinedAt: data.createdAt?.toDate?.() || data.createdAt || new Date(),
     profile: data.profile || {
       firstName,
@@ -252,8 +250,6 @@ export const createMockMemberProfile = (index: number): MemberProfile => ({
   displayName: `Member ${index}`,
   slug: `member-${index}`,
   initials: `M${index}`,
-  isOnline: Math.random() > 0.5,
-  lastSeen: new Date(Date.now() - Math.random() * 86400000 * 7),
   joinedAt: new Date(2023, 0, index),
   profile: {
     firstName: `Member`,
