@@ -4,8 +4,10 @@ import ModernLayout from '../../../layouts/ModernLayout.astro';
 import Navigation from '../../../components/Navigation.astro';
 import Footer from '../../../components/Footer.astro';
 import BlogPostPage from '../../../components/wrappers/BlogPostPage';
+import { getContentCollectionPost } from '../../../lib/blog-server';
 
 const { slug } = Astro.params;
+const initialPost = slug ? await getContentCollectionPost(slug) : null;
 ---
 
 <ModernLayout
@@ -18,7 +20,7 @@ const { slug } = Astro.params;
   <main>
     <section class="secid-section">
       <div class="secid-container">
-        <BlogPostPage client:load slug={slug} lang="es" />
+        <BlogPostPage client:load slug={slug} lang="es" initialPost={initialPost} />
       </div>
     </section>
   </main>

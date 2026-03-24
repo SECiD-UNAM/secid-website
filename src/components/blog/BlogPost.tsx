@@ -5,6 +5,7 @@ import { sanitizeHtml } from '@/lib/validation/sanitization';
 interface Props {
   slug: string;
   lang?: 'es' | 'en';
+  initialPost?: BlogPostType | null;
 }
 
 const translations = {
@@ -18,6 +19,9 @@ const translations = {
     category: 'Categoría',
     tags: 'Etiquetas',
     shareTitle: 'Compartir',
+    readInOtherLang: 'Read in English',
+    articleInEnglish: 'Este artículo está en inglés',
+    articleInSpanish: 'Este artículo está en español',
   },
   en: {
     backToList: 'Back to blog',
@@ -30,6 +34,9 @@ const translations = {
     category: 'Category',
     tags: 'Tags',
     shareTitle: 'Share',
+    readInOtherLang: 'Leer en Español',
+    articleInEnglish: 'This article is in English',
+    articleInSpanish: 'This article is in Spanish',
   },
 };
 
@@ -50,7 +57,7 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
-export default function BlogPost({ slug, lang = 'es' }: Props) {
+export default function BlogPost({ slug, lang = 'es', initialPost = null }: Props) {
   const t = translations[lang];
   const [post, setPost] = useState<BlogPostType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -58,6 +65,11 @@ export default function BlogPost({ slug, lang = 'es' }: Props) {
 
   useEffect(() => {
     async function fetchPost() {
+      if (initialPost) {
+        setPost(initialPost);
+        setLoading(false);
+        return;
+      }
       if (!slug) {
         setNotFound(true);
         setLoading(false);
@@ -79,7 +91,7 @@ export default function BlogPost({ slug, lang = 'es' }: Props) {
       }
     }
     fetchPost();
-  }, [slug]);
+  }, [slug, initialPost]);
 
   if (loading) {
     return (
@@ -160,6 +172,25 @@ export default function BlogPost({ slug, lang = 'es' }: Props) {
           </div>
         </div>
       </header>
+
+      {/* Translation toggle — works in both directions */}
+      {(post.translationOf || post.translationSlug) && (
+        <a
+          href={`/${lang === 'es' ? 'en' : 'es'}/blog/${post.translationOf || post.translationSlug}`}
+          className="blog-post__translation-link"
+        >
+          <i className="fas fa-language" />{' '}
+          {t.readInOtherLang}
+        </a>
+      )}
+
+      {/* Fallback language notice */}
+      {post.lang && post.lang !== lang && (
+        <div className="blog-post__lang-notice">
+          <i className="fas fa-info-circle" />{' '}
+          {post.lang === 'en' ? t.articleInEnglish : t.articleInSpanish}
+        </div>
+      )}
 
       {/* Featured Image */}
       {post.featuredImage && (
@@ -374,6 +405,35 @@ export default function BlogPost({ slug, lang = 'es' }: Props) {
         .blog-post__footer {
           text-align: center;
           padding: var(--space-2xl) 0;
+        }
+        .blog-post__translation-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: var(--secid-primary);
+          text-decoration: none;
+          font-weight: 500;
+          padding: var(--space-sm) var(--space-md);
+          border: 1px solid var(--secid-primary);
+          border-radius: var(--radius-md);
+          margin-bottom: var(--space-xl);
+          transition: all var(--transition-base);
+        }
+        .blog-post__translation-link:hover {
+          background: var(--secid-primary);
+          color: white;
+        }
+        .blog-post__lang-notice {
+          background: #fef3c7;
+          border: 1px solid #f59e0b;
+          color: #92400e;
+          padding: var(--space-sm) var(--space-md);
+          border-radius: var(--radius-md);
+          font-size: 0.875rem;
+          margin-bottom: var(--space-xl);
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
         }
         @media (max-width: 768px) {
           .blog-post__title {
