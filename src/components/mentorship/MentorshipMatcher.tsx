@@ -1,21 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { useAuthContext } from '../../contexts/AuthContext';
-import { useTranslations } from '../../hooks/useTranslations';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { useTranslations } from '@/hooks/useTranslations';
 import type {
   MentorProfile,
   MenteeProfile,
-  MentorshipMatch,
   MentorshipRequest,
-} from '../../types';
+} from '@/types';
 import {
   getMentorProfiles,
   getMenteeProfile,
   calculateMatchScore,
-  createMentorshipRequest,
   getMentorshipRequests,
-} from '../../lib/mentorship';
+} from '@/lib/mentorship';
+import { UniversalListing } from '@components/listing';
+import { ClientSideAdapter } from '@lib/listing/adapters/ClientSideAdapter';
+import type { FilterDefinition, ViewMode } from '@lib/listing/types';
 
-interface MatchResult {
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+export interface MatchResult {
+  /** Flattened from MentorProfile.id — used by the adapter as the record key */
+  id: string;
   mentor: MentorProfile;
   score: number;
   reasons: string[];
@@ -26,270 +33,539 @@ interface MatchResult {
     language: number;
     experience: number;
   };
-}
-
-interface FilterOptions {
-  minRating: number;
+  // Flat fields for ClientSideAdapter filtering and sorting
+  rating: number;
+  yearsInField: number;
+  hoursPerWeek: number;
+  experienceLevel: 'junior' | 'mid' | 'senior';
   expertiseAreas: string[];
   mentorshipStyles: string[];
   languages: string[];
-  availability: {
-    hoursPerWeek: number;
-    preferredDays: string[];
-  };
-  experienceLevel: 'any' | 'junior' | 'mid' | 'senior';
 }
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function getExperienceLevel(years: number): 'junior' | 'mid' | 'senior' {
+  if (years < 3) return 'junior';
+  if (years < 7) return 'mid';
+  return 'senior';
+}
+
+function getCompatibilityColor(score: number): string {
+  if (score >= 0.8) return 'text-green-600';
+  if (score >= 0.6) return 'text-blue-600';
+  if (score >= 0.4) return 'text-yellow-600';
+  return 'text-red-500';
+}
+
+function buildMatchResults(
+  mentors: MentorProfile[],
+  scores: Map<
+    string,
+    { score: number; reasons: string[]; compatibility: MatchResult['compatibility'] }
+  >
+): MatchResult[] {
+  return mentors
+    .filter((m) => m.isActive && m.currentMentees < m.maxMentees)
+    .map((mentor) => {
+      const data = scores.get(mentor.id) ?? {
+        score: 0,
+        reasons: [],
+        compatibility: {
+          skills: 0,
+          availability: 0,
+          style: 0,
+          language: 0,
+          experience: 0,
+        },
+      };
+      return {
+        id: mentor.id,
+        mentor,
+        score: data.score,
+        reasons: data.reasons,
+        compatibility: data.compatibility,
+        // Flat projection for adapter
+        rating: mentor.rating,
+        yearsInField: mentor.experience.yearsInField,
+        hoursPerWeek: mentor.availability.hoursPerWeek,
+        experienceLevel: getExperienceLevel(mentor.experience.yearsInField),
+        expertiseAreas: mentor.expertiseAreas,
+        mentorshipStyles: mentor.mentorshipStyle,
+        languages: mentor.languages,
+      };
+    });
+}
+
+function buildFilterDefinitions(t: ReturnType<typeof useTranslations>): FilterDefinition[] {
+  return [
+    {
+      key: 'experienceLevel',
+      label: t?.mentorship?.matcher?.experienceLevel ?? 'Experience Level',
+      type: 'select',
+      placeholder: t?.mentorship?.matcher?.anyExperience ?? 'Any',
+      options: [
+        { value: 'junior', label: t?.mentorship?.matcher?.juniorLevel ?? 'Junior (1–3 yrs)' },
+        { value: 'mid', label: t?.mentorship?.matcher?.midLevel ?? 'Mid (3–7 yrs)' },
+        { value: 'senior', label: t?.mentorship?.matcher?.seniorLevel ?? 'Senior (7+ yrs)' },
+      ],
+    },
+    {
+      key: 'mentorshipStyles',
+      label: t?.mentorship?.matcher?.style ?? 'Mentorship Style',
+      type: 'multiselect',
+      options: [
+        { value: 'hands-on', label: 'Hands-on' },
+        { value: 'structured', label: 'Structured' },
+        { value: 'exploratory', label: 'Exploratory' },
+        { value: 'coaching', label: 'Coaching' },
+      ],
+    },
+    {
+      key: 'languages',
+      label: t?.mentorship?.matcher?.language ?? 'Languages',
+      type: 'multiselect',
+      options: [
+        { value: 'es', label: 'Español' },
+        { value: 'en', label: 'English' },
+        { value: 'pt', label: 'Português' },
+        { value: 'fr', label: 'Français' },
+      ],
+    },
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// Match card subcomponent
+// ---------------------------------------------------------------------------
+
+interface MatchCardProps {
+  result: MatchResult;
+  rank: number;
+  hasPendingRequest: boolean;
+  onRequestMentorship: (mentor: MentorProfile) => void;
+  t: ReturnType<typeof useTranslations>;
+}
+
+function MatchCard({
+  result,
+  rank,
+  hasPendingRequest,
+  onRequestMentorship,
+  t,
+}: MatchCardProps) {
+  const scorePercent = Math.round(result.score * 100);
+  const scoreColor = getCompatibilityColor(result.score);
+
+  return (
+    <div className="match-card rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+      {/* Ranking & Score */}
+      <div className="mb-4 flex items-center justify-between">
+        <span className="text-sm font-medium text-gray-500">#{rank}</span>
+        <span className={`text-2xl font-bold ${scoreColor}`}>
+          {scorePercent}%
+        </span>
+      </div>
+
+      {/* Mentor Info */}
+      <div className="mb-4 flex items-start gap-3">
+        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
+          {result.mentor.profileImage ? (
+            <img
+              src={result.mentor.profileImage}
+              alt={result.mentor.displayName}
+              className="h-12 w-12 rounded-full object-cover"
+            />
+          ) : (
+            <i className="fas fa-user text-gray-400" />
+          )}
+        </div>
+        <div>
+          <h3 className="font-semibold text-gray-900 dark:text-white">
+            {result.mentor.displayName}
+          </h3>
+          <p className="text-sm text-gray-500">
+            {result.mentor.experience.currentPosition} &mdash;{' '}
+            {result.mentor.experience.currentCompany}
+          </p>
+          <p className="text-xs text-gray-400">
+            {result.mentor.experience.yearsInField}{' '}
+            {t?.mentorship?.matcher?.yearsExperience ?? 'years'}
+          </p>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="mb-4 flex gap-4 text-sm">
+        <span>
+          <span className="font-semibold">{result.mentor.rating.toFixed(1)}</span>{' '}
+          <span className="text-yellow-400">&#9733;</span>
+        </span>
+        <span>
+          <span className="font-semibold">{result.mentor.totalSessions}</span>{' '}
+          {t?.mentorship?.matcher?.sessions ?? 'sessions'}
+        </span>
+        <span>
+          <span className="font-semibold">
+            {result.mentor.currentMentees}/{result.mentor.maxMentees}
+          </span>{' '}
+          {t?.mentorship?.matcher?.mentees ?? 'mentees'}
+        </span>
+      </div>
+
+      {/* Compatibility Breakdown */}
+      <div className="mb-4">
+        <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+          {t?.mentorship?.matcher?.compatibilityBreakdown ?? 'Compatibility'}
+        </h4>
+        {(
+          [
+            ['skills', result.compatibility.skills],
+            ['availability', result.compatibility.availability],
+            ['style', result.compatibility.style],
+            ['language', result.compatibility.language],
+          ] as const
+        ).map(([key, value]) => (
+          <div key={key} className="mb-1 flex items-center gap-2 text-xs">
+            <span className="w-20 text-gray-500 capitalize">
+              {t?.mentorship?.matcher?.[key] ?? key}
+            </span>
+            <div className="h-1.5 flex-1 rounded-full bg-gray-100 dark:bg-gray-700">
+              <div
+                className="h-1.5 rounded-full bg-blue-500"
+                style={{ width: `${Math.round(value * 100)}%` }}
+              />
+            </div>
+            <span className="w-8 text-right text-gray-500">
+              {Math.round(value * 100)}%
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Match Reasons */}
+      {result.reasons.length > 0 && (
+        <div className="mb-4">
+          <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            {t?.mentorship?.matcher?.whyThisMatch ?? 'Why this match'}
+          </h4>
+          <ul className="space-y-0.5 text-xs text-gray-600 dark:text-gray-400">
+            {result.reasons.slice(0, 3).map((reason, idx) => (
+              <li key={idx}>{reason}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Expertise Tags */}
+      <div className="mb-4 flex flex-wrap gap-1">
+        {result.mentor.expertiseAreas.slice(0, 4).map((area, idx) => (
+          <span
+            key={idx}
+            className="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+          >
+            {area}
+          </span>
+        ))}
+        {result.mentor.expertiseAreas.length > 4 && (
+          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+            +{result.mentor.expertiseAreas.length - 4}
+          </span>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300"
+        >
+          {t?.mentorship?.matcher?.viewProfile ?? 'View Profile'}
+        </button>
+
+        {hasPendingRequest ? (
+          <button
+            type="button"
+            disabled
+            className="flex-1 cursor-not-allowed rounded-md bg-gray-100 px-3 py-2 text-sm text-gray-400 dark:bg-gray-700"
+          >
+            {t?.mentorship?.matcher?.requestPending ?? 'Request Pending'}
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="flex-1 rounded-md bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
+            onClick={() => onRequestMentorship(result.mentor)}
+          >
+            {t?.mentorship?.matcher?.requestMentorship ?? 'Request Mentorship'}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Request modal subcomponent
+// ---------------------------------------------------------------------------
+
+interface RequestModalProps {
+  mentor: MentorProfile;
+  menteeGoals: string[];
+  onClose: () => void;
+  onConfirm: () => void;
+  t: ReturnType<typeof useTranslations>;
+}
+
+function RequestModal({ mentor, menteeGoals, onClose, onConfirm, t }: RequestModalProps) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="mx-4 w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-gray-800">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {t?.mentorship?.matcher?.requestMentorship ?? 'Request Mentorship'}
+          </h2>
+          <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <i className="fas fa-times" />
+          </button>
+        </div>
+
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+            {mentor.profileImage ? (
+              <img src={mentor.profileImage} alt={mentor.displayName} className="h-10 w-10 rounded-full" />
+            ) : (
+              <i className="fas fa-user text-gray-400" />
+            )}
+          </div>
+          <div>
+            <p className="font-medium text-gray-900 dark:text-white">{mentor.displayName}</p>
+            <p className="text-sm text-gray-500">
+              {mentor.experience.currentPosition} at {mentor.experience.currentCompany}
+            </p>
+          </div>
+        </div>
+
+        <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+          {t?.mentorship?.matcher?.requestModalDescription ?? 'Send a request to this mentor'}
+        </p>
+
+        {menteeGoals.length > 0 && (
+          <div className="mb-4">
+            <h4 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              {t?.mentorship?.matcher?.yourGoals ?? 'Your Goals'}
+            </h4>
+            <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+              {menteeGoals.slice(0, 3).map((goal, idx) => (
+                <li key={idx}>{goal}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300"
+          >
+            {t?.common?.cancel ?? 'Cancel'}
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="flex-1 rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+          >
+            {t?.mentorship?.matcher?.continueRequest ?? 'Continue'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main component
+// ---------------------------------------------------------------------------
 
 export default function MentorshipMatcher() {
   const { user } = useAuthContext();
   const t = useTranslations();
 
-  const [menteeProfile, setMenteeProfile] = useState<MenteeProfile | null>(
-    null
-  );
-  const [allMentors, setAllMentors] = useState<MentorProfile[]>([]);
+  const [menteeProfile, setMenteeProfile] = useState<MenteeProfile | null>(null);
   const [matchResults, setMatchResults] = useState<MatchResult[]>([]);
-  const [filteredResults, setFilteredResults] = useState<MatchResult[]>([]);
-  const [existingRequests, setExistingRequests] = useState<MentorshipRequest[]>(
-    []
-  );
-
+  const [existingRequests, setExistingRequests] = useState<MentorshipRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [calculating, setCalculating] = useState(false);
-  const [filters, setFilters] = useState<FilterOptions>({
-    minRating: 0,
-    expertiseAreas: [],
-    mentorshipStyles: [],
-    languages: [],
-    availability: {
-      hoursPerWeek: 1,
-      preferredDays: [],
-    },
-    experienceLevel: 'any',
-  });
 
-  const [showFilters, setShowFilters] = useState(false);
-  const [sortBy, setSortBy] = useState<'score' | 'rating' | 'experience'>(
-    'score'
-  );
-  const [selectedMentor, setSelectedMentor] = useState<MentorProfile | null>(
-    null
-  );
+  const [selectedMentor, setSelectedMentor] = useState<MentorProfile | null>(null);
   const [showRequestModal, setShowRequestModal] = useState(false);
 
+  // Load mentors, mentee profile, and requests
   useEffect(() => {
     if (!user) return;
 
-    const loadData = async () => {
-      try {
-        setLoading(true);
+    const userId = user.uid;
+    let cancelled = false;
 
+    async function loadData() {
+      setLoading(true);
+      try {
         const [menteeData, mentorsData, requestsData] = await Promise.all([
-          getMenteeProfile(user.uid),
+          getMenteeProfile(userId),
           getMentorProfiles(),
-          getMentorshipRequests({ menteeId: user.uid }),
+          getMentorshipRequests({ menteeId: userId }),
         ]);
 
+        if (cancelled) return;
+
         if (!menteeData) {
-          // Redirect to create mentee profile
+          setLoading(false);
           return;
         }
 
         setMenteeProfile(menteeData);
-        setAllMentors(
-          mentorsData.filter(
-            (m) => m.isActive && m.currentMentees < m.maxMentees
-          )
-        );
         setExistingRequests(requestsData);
 
-        // Calculate initial matches
-        await calculateMatches(
-          menteeData,
-          mentorsData.filter(
-            (m) => m.isActive && m.currentMentees < m.maxMentees
-          )
+        const activeMentors = mentorsData.filter(
+          (m) => m.isActive && m.currentMentees < m.maxMentees
         );
-      } catch (error) {
-        console.error('Error loading matcher data:', error);
+
+        const scoreMap = new Map<
+          string,
+          { score: number; reasons: string[]; compatibility: MatchResult['compatibility'] }
+        >();
+
+        await Promise.all(
+          activeMentors.map(async (mentor) => {
+            const result = await calculateMatchScore(menteeData, mentor);
+            scoreMap.set(mentor.id, result);
+          })
+        );
+
+        if (cancelled) return;
+
+        const results = buildMatchResults(activeMentors, scoreMap);
+        results.sort((a, b) => b.score - a.score);
+        setMatchResults(results);
+      } catch (err) {
+        console.error('Error loading mentorship matcher data:', err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
-    };
+    }
 
     loadData();
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
-  useEffect(() => {
-    applyFilters();
-  }, [filters, matchResults]);
+  // Build adapter when results change (small collection — client-side is appropriate)
+  const adapter = useMemo(
+    () =>
+      new ClientSideAdapter<MatchResult>({
+        initialData: matchResults,
+        searchFields: ['id'],
+        getId: (r) => r.id,
+        toSearchable: (r) =>
+          [
+            r.mentor.displayName,
+            r.mentor.experience.currentPosition,
+            r.mentor.experience.currentCompany,
+            r.mentor.bio,
+            r.mentor.expertiseAreas.join(' '),
+            r.mentor.languages.join(' '),
+          ]
+            .filter(Boolean)
+            .join(' '),
+      }),
+    [matchResults]
+  );
 
-  const calculateMatches = async (
-    mentee: MenteeProfile,
-    mentors: MentorProfile[]
-  ) => {
-    setCalculating(true);
+  const filterDefinitions = useMemo(() => buildFilterDefinitions(t), [t]);
 
-    try {
-      const results: MatchResult[] = [];
+  const sortOptions = useMemo(
+    () => [
+      {
+        value: 'score-desc',
+        label: t?.mentorship?.matcher?.compatibility ?? 'Compatibility',
+        field: 'score',
+        direction: 'desc' as const,
+      },
+      {
+        value: 'rating-desc',
+        label: t?.mentorship?.matcher?.rating ?? 'Rating',
+        field: 'rating',
+        direction: 'desc' as const,
+      },
+      {
+        value: 'yearsInField-desc',
+        label: t?.mentorship?.matcher?.experience ?? 'Experience',
+        field: 'yearsInField',
+        direction: 'desc' as const,
+      },
+    ],
+    [t]
+  );
 
-      for (const mentor of mentors) {
-        const matchData = await calculateMatchScore(mentee, mentor);
-
-        results.push({
-          mentor,
-          score: matchData.score,
-          reasons: matchData.reasons,
-          compatibility: matchData.compatibility,
-        });
-      }
-
-      // Sort by score descending
-      results.sort((a, b) => b.score - a.score);
-
-      setMatchResults(results);
-      setFilteredResults(results);
-    } catch (error) {
-      console.error('Error calculating matches:', error);
-    } finally {
-      setCalculating(false);
-    }
-  };
-
-  const applyFilters = () => {
-    let filtered = [...matchResults];
-
-    // Filter by minimum rating
-    if (filters.minRating > 0) {
-      filtered = filtered.filter(
-        (result) => result?.mentor?.rating >= filters.minRating
-      );
-    }
-
-    // Filter by expertise areas
-    if (filters.expertiseAreas.length > 0) {
-      filtered = filtered.filter((result) =>
-        filters.expertiseAreas.some((area) =>
-          result?.mentor?.expertiseAreas.includes(area)
-        )
-      );
-    }
-
-    // Filter by mentorship styles
-    if (filters.mentorshipStyles.length > 0) {
-      filtered = filtered.filter((result) =>
-        filters.mentorshipStyles.some((style) =>
-          result?.mentor?.mentorshipStyle.includes(style)
-        )
-      );
-    }
-
-    // Filter by languages
-    if (filters.languages.length > 0) {
-      filtered = filtered.filter((result) =>
-        filters.languages.some((lang) =>
-          result?.mentor?.languages.includes(lang)
-        )
-      );
-    }
-
-    // Filter by availability
-    if (filters.availability.hoursPerWeek > 1) {
-      filtered = filtered.filter(
-        (result) =>
-          result?.mentor?.availability.hoursPerWeek >=
-          filters.availability.hoursPerWeek
-      );
-    }
-
-    if (filters.availability.preferredDays.length > 0) {
-      filtered = filtered.filter((result) =>
-        filters.availability.preferredDays.some((day) =>
-          result?.mentor?.availability.preferredDays.includes(day)
-        )
-      );
-    }
-
-    // Filter by experience level
-    if (filters.experienceLevel !== 'any') {
-      const experienceMap: Record<string, [number, number]> = {
-        junior: [1, 3],
-        mid: [3, 7],
-        senior: [7, 50],
-      };
-
-      const [minYears, maxYears] = experienceMap[filters.experienceLevel] || [
-        0, 100,
-      ];
-      filtered = filtered.filter(
-        (result) =>
-          result?.mentor?.experience.yearsInField >= minYears &&
-          result?.mentor?.experience.yearsInField <= maxYears
-      );
-    }
-
-    // Apply sorting
-    if (sortBy === 'rating') {
-      filtered.sort((a, b) => b.mentor.rating - a.mentor.rating);
-    } else if (sortBy === 'experience') {
-      filtered.sort(
-        (a, b) =>
-          b.mentor.experience.yearsInField - a.mentor.experience.yearsInField
-      );
-    } else {
-      filtered.sort((a, b) => b.score - a.score);
-    }
-
-    setFilteredResults(filtered);
-  };
-
-  const hasExistingRequest = (mentorId: string) => {
-    return existingRequests.some(
-      (req) => req.mentorId === mentorId && req.status === 'pending'
-    );
-  };
+  const pendingMentorIds = useMemo(
+    () =>
+      new Set(
+        existingRequests
+          .filter((r) => r.status === 'pending')
+          .map((r) => r.mentorId)
+      ),
+    [existingRequests]
+  );
 
   const handleRequestMentorship = (mentor: MentorProfile) => {
     setSelectedMentor(mentor);
     setShowRequestModal(true);
   };
 
-  const getCompatibilityColor = (score: number) => {
-    if (score >= 0.8) return 'excellent';
-    if (score >= 0.6) return 'good';
-    if (score >= 0.4) return 'fair';
-    return 'poor';
+  const handleModalClose = () => {
+    setShowRequestModal(false);
+    setSelectedMentor(null);
   };
 
-  const getScoreLabel = (score: number) => {
-    if (score >= 0.9) return t.mentorship.matcher.excellent;
-    if (score >= 0.75) return t.mentorship.matcher.veryGood;
-    if (score >= 0.6) return t.mentorship.matcher.good;
-    if (score >= 0.4) return t.mentorship.matcher.fair;
-    return t.mentorship.matcher.poor;
+  const handleModalConfirm = () => {
+    setShowRequestModal(false);
+    setSelectedMentor(null);
   };
 
+  // Guard: loading
   if (loading) {
     return (
-      <div className="mentorship-matcher loading">
-        <div className="loading-spinner">
-          <i className="fas fa-spinner fa-spin"></i>
-          <p>{t.mentorship.matcher.loading}</p>
+      <div className="mentorship-matcher loading flex items-center justify-center py-12">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <i className="fas fa-spinner fa-spin text-2xl text-blue-500" />
+          <p className="text-gray-600 dark:text-gray-400">
+            {t?.mentorship?.matcher?.loading ?? 'Loading...'}
+          </p>
         </div>
       </div>
     );
   }
 
+  // Guard: no mentee profile
   if (!menteeProfile) {
     return (
-      <div className="mentorship-matcher no-profile">
-        <div className="empty-state">
-          <i className="fas fa-user-plus fa-3x"></i>
-          <h2>{t.mentorship.matcher.createProfile}</h2>
-          <p>{t.mentorship.matcher.createProfileDescription}</p>
-          <button className="btn btn-primary">
-            <i className="fas fa-plus"></i>
-            {t.mentorship.matcher.createMenteeProfile}
+      <div className="mentorship-matcher no-profile flex items-center justify-center py-12">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <i className="fas fa-user-plus text-4xl text-gray-400" />
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            {t?.mentorship?.matcher?.createProfile ?? 'Create Your Profile'}
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            {t?.mentorship?.matcher?.createProfileDescription ?? ''}
+          </p>
+          <button
+            type="button"
+            className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+          >
+            {t?.mentorship?.matcher?.createMenteeProfile ?? 'Create Mentee Profile'}
           </button>
         </div>
       </div>
@@ -298,472 +574,45 @@ export default function MentorshipMatcher() {
 
   return (
     <div className="mentorship-matcher">
-      {/* Header */}
-      <div className="matcher-header">
-        <div className="header-content">
-          <h1>{t.mentorship.matcher.title}</h1>
-          <p>{t.mentorship.matcher.description}</p>
-        </div>
+      <UniversalListing<MatchResult>
+        adapter={adapter}
+        defaultViewMode="grid"
+        availableViewModes={['grid', 'list']}
+        paginationMode="offset"
+        defaultPageSize={12}
+        defaultSort={{ field: 'score', direction: 'desc' }}
+        filterDefinitions={filterDefinitions}
+        filterMode="collapsible"
+        sortOptions={sortOptions}
+        lang="es"
+        renderItem={(result: MatchResult, _viewMode: ViewMode) => {
+          // Rank from the current page is not directly available here.
+          // We compute it from the results array (pre-sort by score desc).
+          const rank = matchResults.findIndex((r) => r.id === result.id) + 1;
+          return (
+            <MatchCard
+              result={result}
+              rank={rank}
+              hasPendingRequest={pendingMentorIds.has(result.mentor.id)}
+              onRequestMentorship={handleRequestMentorship}
+              t={t}
+            />
+          );
+        }}
+        keyExtractor={(result: MatchResult) => result.id}
+        emptyTitle={t?.mentorship?.matcher?.noMatches ?? 'No Matches'}
+        emptyDescription={t?.mentorship?.matcher?.noMatchesDescription ?? ''}
+        className="mentorship-listing"
+      />
 
-        <div className="header-stats">
-          <div className="stat">
-            <span className="value">{allMentors.length}</span>
-            <span className="label">
-              {t.mentorship.matcher.availableMentors}
-            </span>
-          </div>
-          <div className="stat">
-            <span className="value">{filteredResults.length}</span>
-            <span className="label">{t.mentorship.matcher.matches}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Controls */}
-      <div className="matcher-controls">
-        <div className="controls-left">
-          <button
-            className={`btn btn-outline ${showFilters ? 'active' : ''}`}
-            onClick={() => setShowFilters(!showFilters)}
-          >
-            <i className="fas fa-filter"></i>
-            {t.mentorship.matcher.filters}
-          </button>
-
-          <div className="sort-control">
-            <label htmlFor="sortBy">{t.mentorship.matcher.sortBy}:</label>
-            <select
-              id="sortBy"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            >
-              <option value="score">
-                {t.mentorship.matcher.compatibility}
-              </option>
-              <option value="rating">{t.mentorship.matcher.rating}</option>
-              <option value="experience">
-                {t.mentorship.matcher.experience}
-              </option>
-            </select>
-          </div>
-        </div>
-
-        <div className="controls-right">
-          <button
-            className="btn btn-ghost"
-            onClick={() => calculateMatches(menteeProfile, allMentors)}
-            disabled={calculating}
-          >
-            {calculating ? (
-              <>
-                <i className="fas fa-spinner fa-spin"></i>
-                {t.mentorship.matcher.calculating}
-              </>
-            ) : (
-              <>
-                <i className="fas fa-sync"></i>
-                {t.mentorship.matcher.recalculate}
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Filters Panel */}
-      {showFilters && (
-        <div className="filters-panel">
-          <div className="filters-content">
-            <h3>{t.mentorship.matcher.filterOptions}</h3>
-
-            <div className="filter-group">
-              <label>{t.mentorship.matcher.minimumRating}</label>
-              <input
-                type="range"
-                min="0"
-                max="5"
-                step="0.5"
-                value={filters.minRating}
-                onChange={(e) =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    minRating: parseFloat(e.target.value),
-                  }))
-                }
-              />
-              <span>
-                {filters.minRating} {t.mentorship.matcher.stars}
-              </span>
-            </div>
-
-            <div className="filter-group">
-              <label>{t.mentorship.matcher.experienceLevel}</label>
-              <select
-                value={filters.experienceLevel}
-                onChange={(e) =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    experienceLevel: e.target
-                      .value as FilterOptions['experienceLevel'],
-                  }))
-                }
-              >
-                <option value="any">
-                  {t.mentorship.matcher.anyExperience}
-                </option>
-                <option value="junior">
-                  {t.mentorship.matcher.juniorLevel}
-                </option>
-                <option value="mid">{t.mentorship.matcher.midLevel}</option>
-                <option value="senior">
-                  {t.mentorship.matcher.seniorLevel}
-                </option>
-              </select>
-            </div>
-
-            <div className="filter-group">
-              <label>{t.mentorship.matcher.minimumHours}</label>
-              <input
-                type="number"
-                min="1"
-                max="20"
-                value={filters.availability.hoursPerWeek}
-                onChange={(e) =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    availability: {
-                      ...prev.availability,
-                      hoursPerWeek: parseInt(e.target.value) || 1,
-                    },
-                  }))
-                }
-              />
-              <span>{t.mentorship.matcher.hoursPerWeek}</span>
-            </div>
-
-            <button
-              className="btn btn-ghost btn-sm"
-              onClick={() =>
-                setFilters({
-                  minRating: 0,
-                  expertiseAreas: [],
-                  mentorshipStyles: [],
-                  languages: [],
-                  availability: {
-                    hoursPerWeek: 1,
-                    preferredDays: [],
-                  },
-                  experienceLevel: 'any',
-                })
-              }
-            >
-              {t.mentorship.matcher.clearFilters}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Results */}
-      <div className="matcher-results">
-        {calculating ? (
-          <div className="calculating-matches">
-            <div className="calculating-animation">
-              <i className="fas fa-brain fa-2x"></i>
-              <div className="calculating-text">
-                <h3>{t.mentorship.matcher.analyzingProfiles}</h3>
-                <p>{t.mentorship.matcher.calculatingCompatibility}</p>
-              </div>
-            </div>
-          </div>
-        ) : filteredResults.length === 0 ? (
-          <div className="no-matches">
-            <i className="fas fa-search fa-3x"></i>
-            <h3>{t.mentorship.matcher.noMatches}</h3>
-            <p>{t.mentorship.matcher.noMatchesDescription}</p>
-            <button
-              className="btn btn-outline"
-              onClick={() => setShowFilters(true)}
-            >
-              {t.mentorship.matcher.adjustFilters}
-            </button>
-          </div>
-        ) : (
-          <div className="matches-list">
-            {filteredResults.map((result, index) => (
-              <div key={result?.mentor?.id} className="match-card">
-                {/* Match Ranking */}
-                <div className="match-ranking">
-                  <span className="rank">#{index + 1}</span>
-                  <div
-                    className={`compatibility-score ${getCompatibilityColor(result.score)}`}
-                  >
-                    <span className="score">
-                      {Math.round(result.score * 100)}%
-                    </span>
-                    <span className="label">{getScoreLabel(result.score)}</span>
-                  </div>
-                </div>
-
-                {/* Mentor Info */}
-                <div className="mentor-info">
-                  <div className="mentor-avatar">
-                    {result?.mentor?.profileImage ? (
-                      <img
-                        src={result?.mentor?.profileImage}
-                        alt={result?.mentor?.displayName}
-                      />
-                    ) : (
-                      <div className="avatar-placeholder">
-                        <i className="fas fa-user"></i>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mentor-details">
-                    <h3>{result?.mentor?.displayName}</h3>
-                    <p className="mentor-title">
-                      {result?.mentor?.experience.currentPosition} at{' '}
-                      {result?.mentor?.experience.currentCompany}
-                    </p>
-                    <p className="mentor-experience">
-                      {result?.mentor?.experience.yearsInField}{' '}
-                      {t.mentorship.matcher.yearsExperience}
-                    </p>
-
-                    <div className="mentor-stats">
-                      <div className="stat">
-                        <span className="value">
-                          {result?.mentor?.rating.toFixed(1)}
-                        </span>
-                        <div className="stars">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <i
-                              key={star}
-                              className={`fas fa-star ${star <= result?.mentor?.rating ? 'filled' : ''}`}
-                            ></i>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="stat">
-                        <span className="value">
-                          {result?.mentor?.totalSessions}
-                        </span>
-                        <span className="label">
-                          {t.mentorship.matcher.sessions}
-                        </span>
-                      </div>
-                      <div className="stat">
-                        <span className="value">
-                          {result?.mentor?.currentMentees}/
-                          {result?.mentor?.maxMentees}
-                        </span>
-                        <span className="label">
-                          {t.mentorship.matcher.mentees}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Compatibility Breakdown */}
-                <div className="compatibility-breakdown">
-                  <h4>{t.mentorship.matcher.compatibilityBreakdown}</h4>
-                  <div className="compatibility-bars">
-                    <div className="compatibility-item">
-                      <span className="label">
-                        {t.mentorship.matcher.skills}
-                      </span>
-                      <div className="progress-bar">
-                        <div
-                          className="progress-fill"
-                          style={{
-                            width: `${result?.compatibility?.skills * 100}%`,
-                          }}
-                        ></div>
-                      </div>
-                      <span className="value">
-                        {Math.round(result?.compatibility?.skills * 100)}%
-                      </span>
-                    </div>
-
-                    <div className="compatibility-item">
-                      <span className="label">
-                        {t.mentorship.matcher.availability}
-                      </span>
-                      <div className="progress-bar">
-                        <div
-                          className="progress-fill"
-                          style={{
-                            width: `${result?.compatibility?.availability * 100}%`,
-                          }}
-                        ></div>
-                      </div>
-                      <span className="value">
-                        {Math.round(result?.compatibility?.availability * 100)}%
-                      </span>
-                    </div>
-
-                    <div className="compatibility-item">
-                      <span className="label">
-                        {t.mentorship.matcher.style}
-                      </span>
-                      <div className="progress-bar">
-                        <div
-                          className="progress-fill"
-                          style={{
-                            width: `${result?.compatibility?.style * 100}%`,
-                          }}
-                        ></div>
-                      </div>
-                      <span className="value">
-                        {Math.round(result?.compatibility?.style * 100)}%
-                      </span>
-                    </div>
-
-                    <div className="compatibility-item">
-                      <span className="label">
-                        {t.mentorship.matcher.language}
-                      </span>
-                      <div className="progress-bar">
-                        <div
-                          className="progress-fill"
-                          style={{
-                            width: `${result?.compatibility?.language * 100}%`,
-                          }}
-                        ></div>
-                      </div>
-                      <span className="value">
-                        {Math.round(result?.compatibility?.language * 100)}%
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Match Reasons */}
-                <div className="match-reasons">
-                  <h4>{t.mentorship.matcher.whyThisMatch}</h4>
-                  <ul>
-                    {result?.reasons?.slice(0, 3).map((reason, idx) => (
-                      <li key={idx}>{reason}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Expertise Preview */}
-                <div className="expertise-preview">
-                  <h4>{t.mentorship.matcher.expertise}</h4>
-                  <div className="tags-list">
-                    {result?.mentor?.expertiseAreas
-                      .slice(0, 4)
-                      .map((area: string, idx: number) => (
-                        <span key={idx} className="tag">
-                          {area}
-                        </span>
-                      ))}
-                    {result?.mentor?.expertiseAreas.length > 4 && (
-                      <span className="tag more">
-                        +{result?.mentor?.expertiseAreas.length - 4}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="match-actions">
-                  <button className="btn btn-outline">
-                    <i className="fas fa-eye"></i>
-                    {t.mentorship.matcher.viewProfile}
-                  </button>
-
-                  {hasExistingRequest(result?.mentor?.id) ? (
-                    <button className="btn btn-disabled" disabled>
-                      <i className="fas fa-clock"></i>
-                      {t.mentorship.matcher.requestPending}
-                    </button>
-                  ) : (
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => handleRequestMentorship(result.mentor)}
-                    >
-                      <i className="fas fa-paper-plane"></i>
-                      {t.mentorship.matcher.requestMentorship}
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Request Modal */}
-      {showRequestModal && selectedMentor && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h2>{t.mentorship.matcher.requestMentorship}</h2>
-              <button
-                className="modal-close"
-                onClick={() => setShowRequestModal(false)}
-              >
-                <i className="fas fa-times"></i>
-              </button>
-            </div>
-
-            <div className="modal-body">
-              <div className="selected-mentor-info">
-                <div className="mentor-avatar">
-                  {selectedMentor.profileImage ? (
-                    <img
-                      src={selectedMentor.profileImage}
-                      alt={selectedMentor.displayName}
-                    />
-                  ) : (
-                    <div className="avatar-placeholder">
-                      <i className="fas fa-user"></i>
-                    </div>
-                  )}
-                </div>
-                <div className="mentor-details">
-                  <h3>{selectedMentor.displayName}</h3>
-                  <p>
-                    {selectedMentor.experience.currentPosition} at{' '}
-                    {selectedMentor.experience.currentCompany}
-                  </p>
-                </div>
-              </div>
-
-              <p>{t.mentorship.matcher.requestModalDescription}</p>
-
-              <div className="request-preview">
-                <h4>{t.mentorship.matcher.yourGoals}</h4>
-                <ul>
-                  {menteeProfile.goals.slice(0, 3).map((goal, idx) => (
-                    <li key={idx}>{goal}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <div className="modal-actions">
-              <button
-                className="btn btn-outline"
-                onClick={() => setShowRequestModal(false)}
-              >
-                {t.common.cancel}
-              </button>
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  // This would open the full request form
-                  setShowRequestModal(false);
-                }}
-              >
-                <i className="fas fa-arrow-right"></i>
-                {t.mentorship.matcher.continueRequest}
-              </button>
-            </div>
-          </div>
-        </div>
+      {showRequestModal && selectedMentor && menteeProfile && (
+        <RequestModal
+          mentor={selectedMentor}
+          menteeGoals={menteeProfile.goals}
+          onClose={handleModalClose}
+          onConfirm={handleModalConfirm}
+          t={t}
+        />
       )}
     </div>
   );
