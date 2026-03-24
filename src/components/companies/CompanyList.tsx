@@ -5,7 +5,7 @@ import type { Company } from '@/types/company';
 import { getCompanies } from '@/lib/companies';
 import { CompanyLogo } from '@/components/shared/CompanyLogo';
 import { CompanyDrawer } from './CompanyDrawer';
-import { CompanyLandscape } from './CompanyLandscape';
+import { EcosystemMap } from '@/components/shared/EcosystemMap';
 import { translateIndustry } from '@/lib/companies/industry-i18n';
 
 type ViewMode = 'list' | 'landscape';
@@ -197,7 +197,7 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
 
       {/* Content */}
       {viewMode === 'landscape' ? (
-        <CompanyLandscape
+        <EcosystemMap
           companies={filtered}
           onCompanyClick={openDrawer}
           lang={lang}
