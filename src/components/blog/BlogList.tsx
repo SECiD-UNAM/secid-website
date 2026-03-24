@@ -1,5 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { getBlogPosts, mergeBlogPosts, filterByLocale, type BlogPost, type BlogFilters } from '@/lib/blog';
+import React, { useMemo } from 'react';
+import {
+  getBlogPosts,
+  mergeBlogPosts,
+  filterByLocale,
+  type BlogPost,
+} from '@/lib/blog';
+import { useUniversalListing } from '@/hooks/useUniversalListing';
+import { ClientSideAdapter } from '@lib/listing/adapters/ClientSideAdapter';
+import {
+  ListingSearch,
+  ListingPagination,
+  ListingEmpty,
+  ListingLoading,
+} from '@components/listing';
 
 interface Props {
   lang?: 'es' | 'en';
@@ -16,14 +29,7 @@ const translations = {
       Investigación: 'Investigación',
       Opinión: 'Opinión',
     },
-    searchPlaceholder: 'Buscar artículos...',
     featuredBadge: 'Artículo Destacado',
-    readMore: 'Leer más',
-    loadMore: 'Cargar más artículos',
-    noResults: 'No se encontraron artículos.',
-    noResultsSub: 'Intenta con otros filtros o términos de búsqueda.',
-    loading: 'Cargando artículos...',
-    readSuffix: 'lectura',
     newsletterTitle: '¿Te gusta nuestro contenido?',
     newsletterDesc:
       'Suscríbete a nuestro newsletter y recibe los mejores artículos directamente en tu inbox',
@@ -40,14 +46,7 @@ const translations = {
       Investigación: 'Research',
       Opinión: 'Opinion',
     },
-    searchPlaceholder: 'Search articles...',
     featuredBadge: 'Featured Article',
-    readMore: 'Read more',
-    loadMore: 'Load more articles',
-    noResults: 'No articles found.',
-    noResultsSub: 'Try different filters or search terms.',
-    loading: 'Loading articles...',
-    readSuffix: 'read',
     newsletterTitle: 'Do you like our content?',
     newsletterDesc:
       'Subscribe to our newsletter and receive the best articles directly in your inbox',
@@ -65,6 +64,7 @@ const CATEGORY_KEYS = [
   'Investigación',
   'Opinión',
 ] as const;
+
 const POSTS_PER_PAGE = 6;
 
 function formatDate(date: Date, lang: string): string {
@@ -84,64 +84,75 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
+function buildAdapter(
+  initialPosts: BlogPost[],
+  lang: 'es' | 'en'
+): ClientSideAdapter<BlogPost> {
+  return new ClientSideAdapter<BlogPost>({
+    fetchAll: async () => {
+      try {
+        const firestoreData = await getBlogPosts({ status: 'published' });
+        const merged = mergeBlogPosts(initialPosts, firestoreData);
+        return filterByLocale(merged, lang);
+      } catch {
+        return filterByLocale(initialPosts, lang);
+      }
+    },
+    searchFields: ['title', 'excerpt', 'content', 'authorName', 'category'],
+    getId: (post) => post.id,
+  });
+}
+
 export default function BlogList({ lang = 'es', initialPosts = [] }: Props) {
   const t = translations[lang];
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE);
 
-  const fetchPosts = useCallback(async () => {
-    setLoading(true);
-    try {
-      const filters: BlogFilters = { status: 'published' };
-      if (activeCategory !== 'all') {
-        filters.category = activeCategory;
-      }
-      if (searchQuery.trim()) {
-        filters.search = searchQuery.trim();
-      }
-      const firestoreData = await getBlogPosts(filters);
-      const merged = mergeBlogPosts(initialPosts, firestoreData);
-      const localized = filterByLocale(merged, lang);
-      setPosts(localized);
-    } catch (error) {
-      console.error('Error loading blog posts:', error);
-      // Graceful degradation: show initialPosts even if Firestore fails
-      const localized = filterByLocale(initialPosts, lang);
-      setPosts(localized);
-    } finally {
-      setLoading(false);
+  const adapter = useMemo(
+    () => buildAdapter(initialPosts, lang),
+    // Rebuilding the adapter when lang or initial post identity changes is intentional.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [lang, initialPosts.length]
+  );
+
+  const {
+    items,
+    loading,
+    query,
+    setQuery,
+    activeFilters,
+    setFilter,
+    clearFilters,
+    hasMore,
+    loadMore,
+  } = useUniversalListing<BlogPost>({
+    adapter,
+    defaultViewMode: 'grid',
+    paginationMode: 'cursor',
+    defaultPageSize: POSTS_PER_PAGE,
+    defaultSort: { field: 'publishedAt', direction: 'desc' },
+    lang,
+  });
+
+  const activeCategory = (activeFilters['category'] as string) ?? 'all';
+
+  const handleCategoryChange = (key: string) => {
+    if (key === 'all') {
+      clearFilters();
+    } else {
+      setFilter('category', key);
     }
-  }, [activeCategory, searchQuery, initialPosts, lang]);
+    setQuery('');
+  };
 
-  useEffect(() => {
-    fetchPosts();
-  }, [fetchPosts]);
+  const featuredPost =
+    activeCategory === 'all' && !query
+      ? items.find((p) => p.featured)
+      : undefined;
 
-  useEffect(() => {
-    setVisibleCount(POSTS_PER_PAGE);
-  }, [activeCategory, searchQuery]);
+  const regularPosts = featuredPost
+    ? items.filter((p) => !p.featured)
+    : items;
 
-  const featuredPost = posts.find((p) => p.featured);
-  const regularPosts = posts.filter((p) => !p.featured);
-  const visiblePosts = regularPosts.slice(0, visibleCount);
-  const hasMore = visibleCount < regularPosts.length;
-
-  if (loading) {
-    return (
-      <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-        <i
-          className="fas fa-spinner fa-spin"
-          style={{ fontSize: '2rem', color: 'var(--secid-primary)' }}
-        />
-        <p style={{ marginTop: '1rem', color: 'var(--color-text-secondary)' }}>
-          {t.loading}
-        </p>
-      </div>
-    );
-  }
+  const hasActiveFilters = activeCategory !== 'all' || !!query;
 
   return (
     <div>
@@ -152,26 +163,23 @@ export default function BlogList({ lang = 'es', initialPosts = [] }: Props) {
             <button
               key={key}
               className={`secid-blog__category ${activeCategory === key ? 'active' : ''}`}
-              onClick={() => setActiveCategory(key)}
+              onClick={() => handleCategoryChange(key)}
             >
               {t.categories[key as keyof typeof t.categories] || key}
             </button>
           ))}
         </div>
         <div className="secid-blog__search">
-          <input
-            type="search"
-            placeholder={t.searchPlaceholder}
-            className="secid-form__input secid-form__input--search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+          <ListingSearch
+            query={query}
+            onQueryChange={setQuery}
+            lang={lang}
           />
-          <i className="fas fa-search" />
         </div>
       </div>
 
       {/* Featured Post */}
-      {featuredPost && activeCategory === 'all' && !searchQuery && (
+      {featuredPost && (
         <div style={{ marginBottom: 'var(--space-3xl)' }}>
           <div className="secid-blog__featured">
             <div className="secid-blog__featured-image">
@@ -209,36 +217,22 @@ export default function BlogList({ lang = 'es', initialPosts = [] }: Props) {
         </div>
       )}
 
+      {/* Loading state */}
+      {loading && <ListingLoading viewMode="grid" count={POSTS_PER_PAGE} />}
+
       {/* No results */}
-      {posts.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-          <i
-            className="fas fa-search"
-            style={{
-              fontSize: '3rem',
-              color: 'var(--color-text-tertiary)',
-              marginBottom: '1rem',
-              display: 'block',
-            }}
-          />
-          <h3
-            style={{
-              color: 'var(--color-text-primary)',
-              marginBottom: '0.5rem',
-            }}
-          >
-            {t.noResults}
-          </h3>
-          <p style={{ color: 'var(--color-text-secondary)' }}>
-            {t.noResultsSub}
-          </p>
-        </div>
+      {!loading && items.length === 0 && (
+        <ListingEmpty
+          lang={lang}
+          hasActiveFilters={hasActiveFilters}
+          onClearFilters={clearFilters}
+        />
       )}
 
       {/* Blog Grid */}
-      {visiblePosts.length > 0 && (
+      {!loading && regularPosts.length > 0 && (
         <div className="secid-blog__grid">
-          {visiblePosts.map((post) => (
+          {regularPosts.map((post) => (
             <article key={post.id} className="secid-blog__card">
               <div className="secid-blog__card-image">
                 <span className="secid-blog__category-badge">
@@ -277,16 +271,16 @@ export default function BlogList({ lang = 'es', initialPosts = [] }: Props) {
       )}
 
       {/* Load More */}
-      {hasMore && (
-        <div className="secid-blog__load-more">
-          <button
-            className="secid-button secid-button--outline secid-button--lg"
-            onClick={() => setVisibleCount((prev) => prev + POSTS_PER_PAGE)}
-          >
-            <i className="fas fa-plus" /> {t.loadMore}
-          </button>
-        </div>
-      )}
+      <ListingPagination
+        page={1}
+        totalPages={1}
+        hasMore={hasMore}
+        paginationMode="cursor"
+        onPageChange={() => {}}
+        onLoadMore={loadMore}
+        loading={loading}
+        lang={lang}
+      />
 
       {/* Newsletter CTA */}
       <div
@@ -334,19 +328,8 @@ export default function BlogList({ lang = 'es', initialPosts = [] }: Props) {
           color: white;
         }
         .secid-blog__search {
-          position: relative;
           max-width: 300px;
-        }
-        .secid-blog__search input {
-          padding-right: var(--space-3xl);
-        }
-        .secid-blog__search i {
-          position: absolute;
-          right: var(--space-lg);
-          top: 50%;
-          transform: translateY(-50%);
-          color: var(--color-text-tertiary);
-          pointer-events: none;
+          width: 100%;
         }
         .secid-blog__featured {
           display: grid;
@@ -500,10 +483,6 @@ export default function BlogList({ lang = 'es', initialPosts = [] }: Props) {
         .secid-blog__author-name {
           font-weight: 600;
           color: var(--color-text-primary);
-        }
-        .secid-blog__load-more {
-          text-align: center;
-          margin-top: var(--space-3xl);
         }
         .secid-blog__newsletter {
           text-align: center;
