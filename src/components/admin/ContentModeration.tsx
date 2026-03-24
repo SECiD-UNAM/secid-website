@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase';
+import PendingBlogPosts from '@/components/admin/PendingBlogPosts';
 import { useTranslations } from '@/hooks/useTranslations';
 import {
   collection,
@@ -88,7 +89,7 @@ export const ContentModeration: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'content' | 'reports'>('content');
+  const [activeTab, setActiveTab] = useState<'content' | 'reports' | 'blog'>('content');
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [filters, setFilters] = useState({
     type: 'all',
@@ -664,6 +665,16 @@ export const ContentModeration: React.FC = () => {
               </span>
             )}
           </button>
+          <button
+            onClick={() => setActiveTab('blog')}
+            className={`border-b-2 px-1 py-2 text-sm font-medium ${
+              activeTab === 'blog'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+            }`}
+          >
+            {language === 'es' ? 'Blog' : 'Blog'}
+          </button>
         </nav>
       </div>
 
@@ -1030,6 +1041,22 @@ export const ContentModeration: React.FC = () => {
                 </p>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Blog Tab */}
+      {activeTab === 'blog' && (
+        <div className="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+          <div className="border-b border-gray-200 p-6 dark:border-gray-700">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              {language === 'es'
+                ? 'Artículos Pendientes de Revisión'
+                : 'Pending Blog Posts'}
+            </h2>
+          </div>
+          <div className="p-6">
+            <PendingBlogPosts lang={language === 'es' ? 'es' : 'en'} />
           </div>
         </div>
       )}
