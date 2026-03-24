@@ -612,3 +612,6 @@ export {
 } from "./rbac/resolvePermissions";
 export { seedRbacGroups } from "./rbac/seedGroups";
 export { backfillRbacUsers } from "./rbac/backfillUsers";
+
+// RBAC: Express-style middleware for Cloud Function HTTP endpoints (Layer 2)
+export { requirePermission } from "./rbac/middleware";

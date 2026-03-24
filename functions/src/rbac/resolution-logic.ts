@@ -248,6 +248,158 @@ function groupBy(
 }
 
 // ---------------------------------------------------------------------------
+// Reverse Maps (abbrev -> full name, for decoding)
+// ---------------------------------------------------------------------------
+
+const RESOURCE_FROM_ABBREV: Record<string, string> = Object.fromEntries(
+  Object.entries(RESOURCE_ABBREV).map(([full, abbrev]) => [abbrev, full]),
+);
+
+const OP_FROM_ABBREV: Record<string, string> = Object.fromEntries(
+  Object.entries(OP_ABBREV).map(([full, abbrev]) => [abbrev, full]),
+);
+
+const SCOPE_FROM_ABBREV: Record<string, string> = Object.fromEntries(
+  Object.entries(SCOPE_ABBREV).map(([full, abbrev]) => [abbrev, full]),
+);
+
+// ---------------------------------------------------------------------------
+// Decoded Permission Token
+// ---------------------------------------------------------------------------
+
+export interface DecodedToken {
+  resource: string; // full name or "*"
+  operation: string; // full name or "*"
+  scope: "own" | "all";
+  effect: "allow" | "deny";
+}
+
+// ---------------------------------------------------------------------------
+// Decoding
+// ---------------------------------------------------------------------------
+
+/**
+ * Decodes a compressed claims permission string back into structured tokens.
+ *
+ * Each comma-separated token has format: [!]{resource}:{op}.{scope}
+ * where resource/op can be abbreviations or "*" for wildcards.
+ */
+export function decodeClaimsPermissions(encoded: string): DecodedToken[] {
+  if (!encoded) return [];
+
+  const tokens = encoded.split(",");
+  const results: DecodedToken[] = [];
+
+  for (const token of tokens) {
+    const trimmed = token.trim();
+    if (!trimmed) continue;
+
+    const isDeny = trimmed.startsWith("!");
+    const body = isDeny ? trimmed.slice(1) : trimmed;
+
+    // Format: {resource}:{op}.{scope}
+    const colonIdx = body.indexOf(":");
+    if (colonIdx === -1) continue;
+
+    const resourceAbbrev = body.slice(0, colonIdx);
+    const remainder = body.slice(colonIdx + 1);
+
+    const dotIdx = remainder.indexOf(".");
+    if (dotIdx === -1) continue;
+
+    const opAbbrev = remainder.slice(0, dotIdx);
+    const scopeAbbrev = remainder.slice(dotIdx + 1);
+
+    const resource =
+      resourceAbbrev === "*"
+        ? "*"
+        : RESOURCE_FROM_ABBREV[resourceAbbrev] ?? resourceAbbrev;
+    const operation =
+      opAbbrev === "*" ? "*" : OP_FROM_ABBREV[opAbbrev] ?? opAbbrev;
+    const scope = (SCOPE_FROM_ABBREV[scopeAbbrev] ?? scopeAbbrev) as
+      | "own"
+      | "all";
+
+    results.push({
+      resource,
+      operation,
+      scope,
+      effect: isDeny ? "deny" : "allow",
+    });
+  }
+
+  return results;
+}
+
+// ---------------------------------------------------------------------------
+// Permission Check
+// ---------------------------------------------------------------------------
+
+/**
+ * Result of checking a specific permission against decoded tokens.
+ */
+export interface PermissionCheckResult {
+  allowed: boolean;
+  scope: "own" | "all" | null;
+  denied: boolean;
+}
+
+/**
+ * Checks whether a specific resource:operation is allowed by the decoded tokens.
+ *
+ * Algorithm (deny-first pattern from OpenMetadata):
+ * 1. Scan all tokens for denies matching the resource:operation (including wildcards).
+ * 2. If any deny matches, return denied.
+ * 3. Scan all tokens for allows matching the resource:operation (including wildcards).
+ * 4. If any allow matches, return allowed with the broadest scope.
+ * 5. Otherwise, return not allowed.
+ */
+export function checkPermission(
+  tokens: DecodedToken[],
+  resource: string,
+  operation: string,
+): PermissionCheckResult {
+  // Phase 1: Check denies
+  for (const token of tokens) {
+    if (token.effect !== "deny") continue;
+    if (tokenMatchesTarget(token, resource, operation)) {
+      return { allowed: false, scope: null, denied: true };
+    }
+  }
+
+  // Phase 2: Check allows, track broadest scope
+  let bestScope: "own" | "all" | null = null;
+
+  for (const token of tokens) {
+    if (token.effect !== "allow") continue;
+    if (tokenMatchesTarget(token, resource, operation)) {
+      if (token.scope === "all") {
+        bestScope = "all";
+      } else if (bestScope === null) {
+        bestScope = "own";
+      }
+    }
+  }
+
+  if (bestScope !== null) {
+    return { allowed: true, scope: bestScope, denied: false };
+  }
+
+  return { allowed: false, scope: null, denied: false };
+}
+
+function tokenMatchesTarget(
+  token: DecodedToken,
+  resource: string,
+  operation: string,
+): boolean {
+  const resourceMatch = token.resource === "*" || token.resource === resource;
+  const operationMatch =
+    token.operation === "*" || token.operation === operation;
+  return resourceMatch && operationMatch;
+}
+
+// ---------------------------------------------------------------------------
 // Claims Payload Builder
 // ---------------------------------------------------------------------------
 
