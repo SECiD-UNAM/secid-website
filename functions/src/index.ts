@@ -8,7 +8,7 @@ import {
   AuthBlockingEvent,
 } from "firebase-functions/v2/identity";
 import * as functionsV1 from "firebase-functions/v1";
-import * as admin from "firebase-admin";
+import { admin } from "./init"; // Must be first — initializes Firebase before other imports
 import { sendEmail, generateJobMatchEmail } from "./email-service";
 import {
   addMemberToGroup,
@@ -29,8 +29,7 @@ import { onMergeRequestApproved } from "./merge-engine";
 import { completeRegistration } from "./complete-registration";
 import { submitPublicJob } from "./public-job-submit";
 
-// Initialize Firebase Admin
-admin.initializeApp();
+// Firebase Admin initialized in ./init.ts (imported above)
 
 // User creation trigger - set up initial user profile
 export const onUserCreate = beforeUserCreated(
@@ -604,7 +603,8 @@ export {
 } from "./linkedin-auth";
 
 // LinkedIn PDF Parser: extract text from a base64-encoded LinkedIn PDF export
-export { parseLinkedInPdf } from "./parse-linkedin-pdf";
+// Disabled — pdf-parse module not installed
+// export { parseLinkedInPdf } from "./parse-linkedin-pdf";
 
 // Salary stats: aggregated compensation analytics with tiered privacy enforcement
 export { getSalaryStats } from "./get-salary-stats";
