@@ -25,7 +25,11 @@ import type {
 } from '@/types/member';
 import type { DirectoryStats } from '@/types/admin';
 import type { MemberStatus } from '@/types/member';
-import { mapUserDocToMemberProfile, createMockMemberProfile } from './mapper';
+import {
+  mapUserDocToMemberProfile,
+  createMockMemberProfile,
+  slugify,
+} from './mapper';
 
 const COLLECTIONS = {
   MEMBERS: 'users',
@@ -209,6 +213,7 @@ export async function getMemberProfile(
  */
 async function getMemberBySlug(slug: string): Promise<MemberProfile | null> {
   try {
+    // Try direct slug field match first
     const q = query(
       collection(db, COLLECTIONS.MEMBERS),
       where('slug', '==', slug),
@@ -219,6 +224,25 @@ async function getMemberBySlug(slug: string): Promise<MemberProfile | null> {
     const d = snapshot.docs[0];
     if (d) {
       return mapUserDocToMemberProfile(d.id, d.data());
+    }
+
+    // Fallback: scan visible members and match computed slug from displayName.
+    // This handles users who don't have a slug field stored in Firestore yet.
+    const allQuery = query(
+      collection(db, COLLECTIONS.MEMBERS),
+      where('role', 'in', ['member', 'admin']),
+      limit(200)
+    );
+    const allSnapshot = await getDocs(allQuery);
+
+    for (const memberDoc of allSnapshot.docs) {
+      const data = memberDoc.data();
+      const displayName =
+        data.displayName ||
+        `${data.firstName || data.profile?.firstName || ''} ${data.lastName || data.profile?.lastName || ''}`.trim();
+      if (displayName && slugify(displayName) === slug) {
+        return mapUserDocToMemberProfile(memberDoc.id, data);
+      }
     }
 
     return null;
