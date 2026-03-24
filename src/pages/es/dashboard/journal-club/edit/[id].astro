@@ -1,0 +1,57 @@
+---
+export const prerender = false;
+
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import JournalClubFormPage from '@/components/wrappers/JournalClubFormPage';
+
+const { id } = Astro.params;
+---
+
+<DashboardLayout
+  title="Editar Sesión - Journal Club SECiD"
+  description="Actualiza la información de la sesión del Journal Club"
+  lang="es"
+>
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+          Editar Sesión
+        </h1>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">
+          Actualiza la información y configuración de la sesión
+        </p>
+      </div>
+      <div class="flex space-x-3">
+        <a
+          href={`/es/dashboard/journal-club/${id}`}
+          class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
+          Ver Sesión
+        </a>
+        <a
+          href="/es/dashboard/journal-club"
+          class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
+          <svg
+            class="-ml-1 mr-2 h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Volver a Journal Club
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <JournalClubFormPage client:only="react" lang="es" sessionId={id} />
+</DashboardLayout>
