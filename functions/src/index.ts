@@ -595,12 +595,8 @@ export { completeRegistration };
 // Jobs: public anonymous job submission callable CF
 export { submitPublicJob };
 
-// LinkedIn OAuth: custom OAuth flow (avoids Identity Platform OIDC charges)
-export {
-  linkedinAuthRedirect,
-  linkedinAuthCallback,
-  exchangeLinkedInCode,
-} from "./linkedin-auth";
+// LinkedIn OAuth: disabled — requires LINKEDIN_CLIENT_ID secret in Secret Manager
+// export { linkedinAuthRedirect, linkedinAuthCallback, exchangeLinkedInCode } from "./linkedin-auth";
 
 // LinkedIn PDF Parser: extract text from a base64-encoded LinkedIn PDF export
 // Disabled — pdf-parse module not installed
