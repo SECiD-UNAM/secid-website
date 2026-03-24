@@ -100,8 +100,8 @@ function DirectionSection({
   lang: 'es' | 'en';
   boardMemberName: string;
 }) {
-  const color = directionColors[directionId];
-  const label = parentLabels[directionId][lang];
+  const color = directionColors[directionId] ?? '#888';
+  const label = parentLabels[directionId]?.[lang] ?? directionId;
   const commissions = directiveCommissions.filter((c) => c.parent === directionId);
 
   return (

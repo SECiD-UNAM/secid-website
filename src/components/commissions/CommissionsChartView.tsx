@@ -44,15 +44,15 @@ export default function CommissionsChartView({ lang }: CommissionsChartViewProps
     const members = boardMembers[lang];
 
     const boardNodes: Node[] = members.map((member, index) => {
-      const direction = BOARD_DIRECTIONS[index];
+      const direction = BOARD_DIRECTIONS[index]!;
       return {
-        id: BOARD_NODE_IDS[direction],
+        id: BOARD_NODE_IDS[direction]!,
         type: 'board',
-        position: { x: BOARD_X_POSITIONS[index], y: BOARD_Y },
+        position: { x: BOARD_X_POSITIONS[index] ?? 0, y: BOARD_Y },
         data: {
           role: member.role,
           name: member.name,
-          color: directionColors[direction],
+          color: directionColors[direction] ?? '#888',
         },
       };
     });
@@ -60,7 +60,7 @@ export default function CommissionsChartView({ lang }: CommissionsChartViewProps
     const directiveNodes: Node[] = directiveCommissions.map((commission, index) => ({
       id: `commission-${commission.id}`,
       type: 'commission',
-      position: { x: DIRECTIVE_X_POSITIONS[index], y: DIRECTIVE_Y },
+      position: { x: DIRECTIVE_X_POSITIONS[index] ?? 0, y: DIRECTIVE_Y },
       data: {
         name: commission.name[lang],
         description: commission.description[lang],
@@ -87,8 +87,8 @@ export default function CommissionsChartView({ lang }: CommissionsChartViewProps
     return directiveCommissions
       .filter((commission) => commission.parent !== undefined)
       .map((commission) => {
-        const boardId = BOARD_NODE_IDS[commission.parent!];
-        const directionColor = directionColors[commission.parent!];
+        const boardId = BOARD_NODE_IDS[commission.parent!]!;
+        const directionColor = directionColors[commission.parent!] ?? '#888';
 
         return {
           id: `edge-${boardId}-commission-${commission.id}`,
