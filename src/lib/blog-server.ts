@@ -59,9 +59,9 @@ export async function getContentCollectionPosts(lang?: 'es' | 'en'): Promise<Blo
   const allEntries = await getCollection('blog');
   const translationMap = buildTranslationMap(allEntries);
 
-  const entries = lang ? allEntries.filter((e) => e.data.lang === lang) : allEntries;
+  const entries = lang ? allEntries.filter((e: { data: { lang?: string } }) => e.data.lang === lang) : allEntries;
 
-  const posts = entries.map((entry) => {
+  const posts = entries.map((entry: { id: string; data: Record<string, unknown>; body?: string }) => {
     const post = entryToPost(entry);
     // Populate reverse translation link for original posts
     if (!post.translationOf && translationMap.has(post.slug)) {
@@ -70,12 +70,12 @@ export async function getContentCollectionPosts(lang?: 'es' | 'en'): Promise<Blo
     return post;
   });
 
-  return posts.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
+  return posts.sort((a: BlogPost, b: BlogPost) => b.publishedAt.getTime() - a.publishedAt.getTime());
 }
 
 export async function getContentCollectionPost(slug: string): Promise<BlogPost | null> {
   const allEntries = await getCollection('blog');
-  const entry = allEntries.find((e) => {
+  const entry = allEntries.find((e: { id: string; data: { slug?: string } }) => {
     const entrySlug = e.data.slug ?? e.id.split('/').pop() ?? e.id;
     return entrySlug === slug;
   });
