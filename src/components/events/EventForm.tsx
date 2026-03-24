@@ -12,6 +12,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
+import RequirePermission from '@/components/rbac/RequirePermission';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -510,19 +511,25 @@ export const EventForm: React.FC<EventFormProps> = ({
       </fieldset>
 
       {/* Submit */}
-      <div className="flex justify-end">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="inline-flex items-center rounded-lg bg-primary-600 px-8 py-3 font-medium text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isSubmitting
-            ? t('saving', lang)
-            : isEdit
-              ? t('update', lang)
-              : t('submit', lang)}
-        </button>
-      </div>
+      <RequirePermission
+        resource="events"
+        operation={isEdit ? 'edit' : 'create'}
+        fallback={null}
+      >
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="inline-flex items-center rounded-lg bg-primary-600 px-8 py-3 font-medium text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isSubmitting
+              ? t('saving', lang)
+              : isEdit
+                ? t('update', lang)
+                : t('submit', lang)}
+          </button>
+        </div>
+      </RequirePermission>
     </form>
   );
 };
