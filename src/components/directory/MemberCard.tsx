@@ -158,7 +158,14 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   };
 
   const downloadVCard = () => {
-    const lines = ['BEGIN:VCARD', 'VERSION:3.0', `FN:${member.displayName}`];
+    const firstName = member.profile.firstName || member.displayName.split(' ')[0] || '';
+    const lastName = member.profile.lastName || member.displayName.split(' ').slice(1).join(' ') || '';
+    const lines = [
+      'BEGIN:VCARD',
+      'VERSION:3.0',
+      `N:${lastName};${firstName};;;`,
+      `FN:${member.displayName}`,
+    ];
     if (member.email) lines.push(`EMAIL:${member.email}`);
     if (member.profile.company) lines.push(`ORG:${member.profile.company}`);
     if (member.profile.position) lines.push(`TITLE:${member.profile.position}`);
