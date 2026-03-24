@@ -1,26 +1,31 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { MemberCard } from './MemberCard';
 import { MemberSearch } from './MemberSearch';
-import {
-  getMemberProfiles,
-  searchMembers,
-  getMemberStats,
-} from '@/lib/members';
+import { getMemberStats } from '@/lib/members';
 import type {
   MemberProfile,
   MemberSearchFilters,
-  MemberSearchResult,
   ViewMode,
   MemberStats,
 } from '@/types/member';
+import { useUniversalListing } from '@/hooks/useUniversalListing';
+import { MemberDirectoryAdapter } from './MemberDirectoryAdapter';
 import {
-  Squares2X2Icon,
-  ListBulletIcon,
-  AdjustmentsHorizontalIcon,
+  ListingViewToggle,
+  ListingGrid,
+  ListingList,
+  ListingCompact,
+  ListingPagination,
+  ListingEmpty,
+  ListingLoading,
+  ListingStats,
+} from '@components/listing';
+import {
   UserGroupIcon,
   ChartBarIcon,
   FunnelIcon,
+  AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
 
 interface MemberDirectoryProps {
@@ -37,226 +42,162 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
   maxMembers = 50,
 }) => {
   const { user, loading: authLoading } = useAuth();
-  const [members, setMembers] = useState<MemberProfile[]>([]);
-  const [searchResults, setSearchResults] = useState<MemberSearchResult[]>([]);
   const [stats, setStats] = useState<MemberStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Top-level view: directory vs statistics
   const [activeView, setActiveView] = useState<'directory' | 'statistics'>(
     'directory'
   );
-
-  // View and pagination state
-  const [viewMode, setViewMode] = useState<ViewMode>(initialView);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(12);
-  const [showFilters, setShowFilters] = useState(false);
   const [memberType, setMemberType] = useState<
     'all' | 'member' | 'collaborator'
   >('member');
-  const [searchFilters, setSearchFilters] = useState<MemberSearchFilters>({
-    sortBy: 'joinDate',
-    sortOrder: 'desc',
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Track search results with match scores for display in MemberCard
+  const [searchResultMap, setSearchResultMap] = useState<
+    Map<string, number>
+  >(new Map());
+
+  // Create adapter that refreshes when memberType changes
+  const adapter = useMemo(
+    () => new MemberDirectoryAdapter(memberType, maxMembers),
+    [memberType, maxMembers]
+  );
+
+  const listing = useUniversalListing<MemberProfile>({
+    adapter,
+    defaultViewMode: initialView,
+    defaultPageSize: 12,
+    defaultSort: { field: 'joinDate', direction: 'desc' },
+    paginationMode: 'offset',
+    debounceMs: 300,
+    lang,
   });
 
-  // Loading timeout — don't hang forever if Firestore is unreachable
+  // Load stats
   useEffect(() => {
-    if (!loading) return;
-    const timeout = setTimeout(() => {
-      if (loading && members.length === 0) {
-        setLoading(false);
-        setError(
-          lang === 'es'
-            ? 'No se pudo conectar al servidor. Verifica tu conexión e intenta de nuevo.'
-            : 'Could not connect to the server. Check your connection and try again.'
-        );
+    if (authLoading || !showStats) return;
+    getMemberStats()
+      .then(setStats)
+      .catch((err) => console.error('Error loading stats:', err));
+  }, [showStats, authLoading]);
+
+  // Bridge MemberSearch filter changes into the hook
+  const handleFiltersChange = useCallback(
+    (filters: MemberSearchFilters) => {
+      // Set query via the hook (debounced internally)
+      if (filters.query !== undefined) {
+        listing.setQuery(filters.query ?? '');
       }
-    }, 15000);
-    return () => clearTimeout(timeout);
-  }, [loading, members.length, lang]);
 
-  // Load members and stats on component mount or when memberType changes
-  useEffect(() => {
-    if (authLoading) return;
-    loadMembers();
-    if (showStats) {
-      loadStats();
-    }
-  }, [showStats, memberType, authLoading]);
+      // Map each MemberSearchFilter field to the hook's filter state
+      const filterKeys: (keyof MemberSearchFilters)[] = [
+        'skills',
+        'companies',
+        'locations',
+        'experienceLevel',
+        'industries',
+        'availability',
+        'onlineStatus',
+        'hasPortfolio',
+        'isPremium',
+        'joinedAfter',
+      ];
 
-  // Search when filters change, or re-sort locally when only sort changes
-  useEffect(() => {
-    if (hasActiveFilters(searchFilters)) {
-      handleSearch(searchFilters);
-    } else {
-      setSearchResults([]);
-      // Re-sort existing members client-side when only sort changes
-      if (members.length > 0 && searchFilters.sortBy) {
-        const sorted = [...members].sort((a, b) => {
-          const order = searchFilters.sortOrder === 'asc' ? 1 : -1;
-          switch (searchFilters.sortBy) {
-            case 'name':
-              return order * a.displayName.localeCompare(b.displayName);
-            case 'joinDate':
-              return order * (a.joinedAt.getTime() - b.joinedAt.getTime());
-            case 'activity':
-              return (
-                order *
-                ((a.activity.lastActive?.getTime() || 0) -
-                  (b.activity.lastActive?.getTime() || 0))
-              );
-            case 'reputation':
-              return order * (a.activity.reputation - b.activity.reputation);
-            default:
-              return 0;
-          }
+      for (const key of filterKeys) {
+        listing.setFilter(key, filters[key]);
+      }
+
+      // Map sort if present
+      if (filters.sortBy) {
+        listing.setSort({
+          field: filters.sortBy,
+          direction: filters.sortOrder ?? 'desc',
         });
-        setMembers(sorted);
       }
-    }
-  }, [searchFilters]);
+    },
+    [listing.setQuery, listing.setFilter, listing.setSort]
+  );
 
-  const loadMembers = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const memberProfiles = await getMemberProfiles({
-        filters: { memberType },
-        limit: maxMembers,
-      });
-      setMembers(memberProfiles);
-    } catch (err) {
-      console.error('Error loading members:', err);
-      const firebaseError = err as { code?: string };
-      if (firebaseError.code === 'permission-denied') {
-        setError(
-          lang === 'es'
-            ? 'No tienes permisos para ver el directorio de miembros'
-            : 'You do not have permission to view the member directory'
-        );
-      } else {
-        setError(
-          lang === 'es'
-            ? 'Error al cargar miembros. Intenta de nuevo.'
-            : 'Error loading members. Please try again.'
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const clearFilters = useCallback(() => {
+    listing.clearFilters();
+    listing.setQuery('');
+    setSearchResultMap(new Map());
+  }, [listing.clearFilters, listing.setQuery]);
 
-  const loadStats = async () => {
-    try {
-      const memberStats = await getMemberStats();
-      setStats(memberStats);
-    } catch (err) {
-      console.error('Error loading stats:', err);
-    }
-  };
-
-  const handleSearch = async (filters: MemberSearchFilters) => {
-    try {
-      setLoading(true);
-      const results = await searchMembers(filters);
-      setSearchResults(results);
-      setCurrentPage(1);
-    } catch (err) {
-      setError(lang === 'es' ? 'Error en la búsqueda' : 'Search error');
-      console.error('Search error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const hasActiveFilters = (filters: MemberSearchFilters): boolean => {
-    return !!(
-      filters.query ||
-      filters?.skills?.length ||
-      filters?.companies?.length ||
-      filters?.locations?.length ||
-      filters?.experienceLevel?.length ||
-      filters?.industries?.length ||
-      filters?.availability?.length ||
-      filters.onlineStatus ||
-      filters.hasPortfolio ||
-      filters.isPremium ||
-      filters.joinedAfter
+  const hasActiveFilters =
+    listing.query.length > 0 ||
+    Object.values(listing.activeFilters).some(
+      (v) =>
+        v !== undefined &&
+        v !== null &&
+        v !== '' &&
+        !(Array.isArray(v) && v.length === 0) &&
+        v !== false
     );
-  };
-
-  const displayMembers = useMemo(() => {
-    const activeMembers =
-      searchResults.length > 0 ? searchResults.map((r) => r.member) : members;
-
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return activeMembers.slice(startIndex, endIndex);
-  }, [members, searchResults, currentPage, itemsPerPage]);
-
-  const totalMembers =
-    searchResults.length > 0 ? searchResults.length : members.length;
-  const totalPages = Math.ceil(totalMembers / itemsPerPage);
-
-  const getViewModeLabel = (mode: ViewMode): string => {
-    const labels: Record<ViewMode, Record<string, string>> = {
-      grid: { es: 'Cuadrícula', en: 'Grid' },
-      list: { es: 'Lista', en: 'List' },
-      compact: { es: 'Compacto', en: 'Compact' },
-    };
-    return labels[mode][lang] ?? mode;
-  };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    listing.goToPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleFiltersChange = (filters: MemberSearchFilters) => {
-    setSearchFilters(filters);
-  };
+  // Map viewMode from listing types to member types (they share the same values)
+  const memberViewMode = listing.viewMode as ViewMode;
 
-  const clearFilters = () => {
-    setSearchFilters({
-      sortBy: 'joinDate',
-      sortOrder: 'desc',
-    });
-    setSearchResults([]);
-    setCurrentPage(1);
-  };
+  const renderMemberItem = useCallback(
+    (member: MemberProfile) => (
+      <MemberCard
+        member={member}
+        viewMode={memberViewMode}
+        lang={lang}
+        currentUser={
+          user
+            ? {
+                uid: user.uid,
+                email: user.email ?? '',
+                displayName: user.displayName ?? '',
+                photoURL: user.photoURL ?? undefined,
+                role: 'member',
+              }
+            : null
+        }
+        showMatchScore={searchResultMap.size > 0}
+        matchScore={searchResultMap.get(member.uid)}
+      />
+    ),
+    [memberViewMode, lang, user, searchResultMap]
+  );
 
-  const getGridClasses = (): string => {
-    switch (viewMode) {
-      case 'grid':
-        return 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6';
-      case 'list':
-        return 'space-y-3 sm:space-y-4';
-      case 'compact':
-        return 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3';
-      default:
-        return 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6';
-    }
-  };
+  const keyExtractor = useCallback(
+    (member: MemberProfile) => member.uid,
+    []
+  );
 
-  if (loading && members.length === 0) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary-600"></div>
-        <span className="ml-3 text-gray-600 dark:text-gray-400">
-          {lang === 'es' ? 'Cargando miembros...' : 'Loading members...'}
-        </span>
-      </div>
-    );
+  // Loading timeout
+  useEffect(() => {
+    if (!listing.loading) return;
+    const timeout = setTimeout(() => {
+      if (listing.loading && listing.items.length === 0) {
+        // The hook will handle this via error state
+      }
+    }, 15000);
+    return () => clearTimeout(timeout);
+  }, [listing.loading, listing.items.length]);
+
+  // Initial loading state
+  if (listing.loading && listing.items.length === 0 && !listing.error) {
+    return <ListingLoading viewMode={memberViewMode} count={12} />;
   }
 
-  if (error) {
+  // Error state
+  if (listing.error) {
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
-        <p className="text-red-700 dark:text-red-400">{error}</p>
+        <p className="text-red-700 dark:text-red-400">
+          {lang === 'es'
+            ? 'Error al cargar miembros. Intenta de nuevo.'
+            : 'Error loading members. Please try again.'}
+        </p>
         <button
-          onClick={loadMembers}
+          onClick={listing.retry}
           className="mt-2 text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200"
         >
           {lang === 'es' ? 'Intentar de nuevo' : 'Try again'}
@@ -391,7 +332,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
                 key={tab.value}
                 onClick={() => {
                   setMemberType(tab.value);
-                  setCurrentPage(1);
+                  listing.goToPage(1);
                 }}
                 className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                   memberType === tab.value
@@ -410,7 +351,10 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
               <div className="flex-1">
                 <MemberSearch
                   onSearch={handleFiltersChange}
-                  initialFilters={searchFilters}
+                  initialFilters={{
+                    sortBy: 'joinDate',
+                    sortOrder: 'desc',
+                  }}
                   lang={lang}
                   showAdvanced={showFilters}
                 />
@@ -431,7 +375,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
                   <AdjustmentsHorizontalIcon className="h-5 w-5" />
                 </button>
 
-                {hasActiveFilters(searchFilters) && (
+                {hasActiveFilters && (
                   <button
                     onClick={clearFilters}
                     className="rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
@@ -446,21 +390,14 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
           {/* Results Header and View Controls */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center space-x-4">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                {lang === 'es' ? 'Mostrando' : 'Showing'}{' '}
-                <span className="font-semibold">
-                  {Math.min((currentPage - 1) * itemsPerPage + 1, totalMembers)}
-                </span>
-                -{' '}
-                <span className="font-semibold">
-                  {Math.min(currentPage * itemsPerPage, totalMembers)}
-                </span>{' '}
-                {lang === 'es' ? 'de' : 'of'}{' '}
-                <span className="font-semibold">{totalMembers}</span>{' '}
-                {lang === 'es' ? 'miembros' : 'members'}
-              </p>
+              <ListingStats
+                page={listing.page}
+                pageSize={listing.pageSize}
+                totalCount={listing.totalCount}
+                lang={lang}
+              />
 
-              {searchResults.length > 0 && (
+              {hasActiveFilters && (
                 <span className="rounded-full bg-primary-100 px-2 py-1 text-xs text-primary-700 dark:bg-primary-900/20 dark:text-primary-400">
                   {lang === 'es' ? 'Filtrado' : 'Filtered'}
                 </span>
@@ -468,121 +405,75 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
             </div>
 
             {/* View Mode Toggle */}
-            <div className="flex items-center space-x-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-700">
-              {(['grid', 'list', 'compact'] as ViewMode[]).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
-                  className={`rounded p-2 transition-colors ${
-                    viewMode === mode
-                      ? 'bg-white text-primary-600 shadow-sm dark:bg-gray-800 dark:text-primary-400'
-                      : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
-                  }`}
-                  title={getViewModeLabel(mode)}
-                >
-                  {mode === 'grid' && <Squares2X2Icon className="h-4 w-4" />}
-                  {mode === 'list' && <ListBulletIcon className="h-4 w-4" />}
-                  {mode === 'compact' && <Squares2X2Icon className="h-3 w-3" />}
-                </button>
-              ))}
-            </div>
+            <ListingViewToggle
+              viewMode={listing.viewMode}
+              availableModes={['grid', 'list', 'compact']}
+              onViewModeChange={listing.setViewMode}
+              lang={lang}
+            />
           </div>
 
-          {/* Members Grid/List */}
-          {displayMembers.length === 0 ? (
-            <div className="py-12 text-center">
-              <UserGroupIcon className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                {lang === 'es'
+          {/* Members display */}
+          {listing.loading && listing.items.length === 0 ? (
+            <ListingLoading viewMode={memberViewMode} count={12} />
+          ) : listing.items.length === 0 ? (
+            <ListingEmpty
+              onClearFilters={clearFilters}
+              hasActiveFilters={hasActiveFilters}
+              title={
+                lang === 'es'
                   ? 'No se encontraron miembros'
-                  : 'No members found'}
-              </h3>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {hasActiveFilters(searchFilters)
+                  : 'No members found'
+              }
+              description={
+                hasActiveFilters
                   ? lang === 'es'
                     ? 'Intenta ajustar los filtros de búsqueda'
                     : 'Try adjusting your search filters'
                   : lang === 'es'
                     ? 'No hay miembros disponibles en este momento'
-                    : 'No members available at this time'}
-              </p>
-            </div>
+                    : 'No members available at this time'
+              }
+              lang={lang}
+            />
           ) : (
-            <div className={getGridClasses()}>
-              {displayMembers.map((member) => (
-                <MemberCard
-                  key={member.uid}
-                  member={member}
-                  viewMode={viewMode}
-                  lang={lang}
-                  currentUser={
-                    user
-                      ? {
-                          uid: user.uid,
-                          email: user.email ?? '',
-                          displayName: user.displayName ?? '',
-                          photoURL: user.photoURL ?? undefined,
-                          role: 'member',
-                        }
-                      : null
-                  }
-                  showMatchScore={searchResults.length > 0}
-                  matchScore={
-                    searchResults.find((r) => r.member.uid === member.uid)
-                      ?.matchScore
-                  }
+            <>
+              {memberViewMode === 'grid' && (
+                <ListingGrid
+                  items={listing.items}
+                  renderItem={renderMemberItem}
+                  keyExtractor={keyExtractor}
+                  className="xl:grid-cols-4"
                 />
-              ))}
-            </div>
+              )}
+              {memberViewMode === 'list' && (
+                <ListingList
+                  items={listing.items}
+                  renderItem={renderMemberItem}
+                  keyExtractor={keyExtractor}
+                />
+              )}
+              {memberViewMode === 'compact' && (
+                <ListingCompact
+                  items={listing.items}
+                  renderItem={renderMemberItem}
+                  keyExtractor={keyExtractor}
+                />
+              )}
+            </>
           )}
 
           {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="mt-6 flex items-center justify-center space-x-1 sm:mt-8 sm:space-x-2">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 sm:px-3"
-              >
-                <span className="hidden sm:inline">
-                  {lang === 'es' ? 'Anterior' : 'Previous'}
-                </span>
-                <span className="sm:hidden">&lsaquo;</span>
-              </button>
-
-              {[...Array(Math.min(5, totalPages))].map((_, index) => {
-                const pageNumber =
-                  currentPage <= 3 ? index + 1 : currentPage + index - 2;
-
-                if (pageNumber > totalPages) return null;
-
-                return (
-                  <button
-                    key={pageNumber}
-                    onClick={() => handlePageChange(pageNumber)}
-                    className={`rounded-lg px-3 py-2 text-sm font-medium ${
-                      currentPage === pageNumber
-                        ? 'bg-primary-600 text-white'
-                        : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    {pageNumber}
-                  </button>
-                );
-              })}
-
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="rounded-lg border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 sm:px-3"
-              >
-                <span className="hidden sm:inline">
-                  {lang === 'es' ? 'Siguiente' : 'Next'}
-                </span>
-                <span className="sm:hidden">&rsaquo;</span>
-              </button>
-            </div>
-          )}
+          <ListingPagination
+            page={listing.page}
+            totalPages={listing.totalPages}
+            hasMore={listing.hasMore}
+            paginationMode="offset"
+            onPageChange={handlePageChange}
+            onLoadMore={listing.loadMore}
+            loading={listing.loading}
+            lang={lang}
+          />
         </>
       )}
     </div>
