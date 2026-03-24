@@ -95,8 +95,10 @@ export function sanitizeHtml(
     return DOMPurify.sanitize(html, { ALLOWED_TAGS: [] });
   }
 
+  // DOMPurify types are narrower than the actual API supports
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: allowedTags,
+    ALLOWED_TAGS: [...allowedTags],
     ALLOWED_ATTR: Object.values(allowedAttributes).flat(),
     ALLOWED_URI_REGEXP:
       /^(?:(?:(?:f|ht)tps?|mailto):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
@@ -116,7 +118,8 @@ export function sanitizeHtml(
     RETURN_DOM: false,
     RETURN_DOM_FRAGMENT: false,
     WHOLE_DOCUMENT: false,
-  });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any);
 }
 
 /**
@@ -339,7 +342,7 @@ export function createSanitizationSchema<T extends z.ZodRawShape>(
     sanitizeUrls?: boolean;
     stripHtml?: boolean;
   } = {}
-): z.ZodObject<T> {
+) {
   const {
     sanitizeHtml = true,
     sanitizeUrls = true,
