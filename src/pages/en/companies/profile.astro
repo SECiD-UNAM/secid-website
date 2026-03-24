@@ -1,0 +1,22 @@
+---
+import ModernLayout from '../../../layouts/ModernLayout.astro';
+import Navigation from '../../../components/Navigation.astro';
+import Footer from '../../../components/Footer.astro';
+import CompanyProfilePage from '../../../components/wrappers/CompanyProfilePage';
+---
+
+<ModernLayout
+  title="Company - SECiD"
+  description="Company profile in the SECiD network - Data Science Alumni Society UNAM"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <section class="secid-section">
+    <div class="secid-container">
+      <CompanyProfilePage client:load lang="en" />
+    </div>
+  </section>
+
+  <Footer lang="en" />
+</ModernLayout>

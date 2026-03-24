@@ -1,0 +1,195 @@
+---
+interface Props {
+  lang?: 'es' | 'en';
+}
+
+const { lang = 'es' } = Astro.props as Props;
+
+const t = {
+  es: {
+    footer: {
+      description:
+        'La red de egresados en Ciencia de Datos más grande de México. Conectamos talento, oportunidades y conocimiento.',
+      platform: 'Plataforma',
+      community: 'Comunidad',
+      support: 'Soporte',
+      jobs: 'Empleos',
+      members: 'Miembros',
+      events: 'Eventos',
+      resources: 'Recursos',
+      blog: 'Blog',
+      newsletter: 'Newsletter',
+      help: 'Centro de Ayuda',
+      contact: 'Contacto',
+      faq: 'FAQ',
+      status: 'Status',
+      privacy: 'Privacidad',
+      terms: 'Términos',
+      cookies: 'Cookies',
+      copyright:
+        '© 2024 SECiD - Sociedad de Egresados en Ciencia de Datos UNAM',
+    },
+  },
+  en: {
+    footer: {
+      description:
+        'The largest Data Science alumni network in Mexico. We connect talent, opportunities, and knowledge.',
+      platform: 'Platform',
+      community: 'Community',
+      support: 'Support',
+      jobs: 'Jobs',
+      members: 'Members',
+      events: 'Events',
+      resources: 'Resources',
+      blog: 'Blog',
+      newsletter: 'Newsletter',
+      help: 'Help Center',
+      contact: 'Contact',
+      faq: 'FAQ',
+      status: 'Status',
+      privacy: 'Privacy',
+      terms: 'Terms',
+      cookies: 'Cookies',
+      copyright: '© 2024 SECiD - UNAM Data Science Alumni Society',
+    },
+  },
+}[lang];
+---
+
+<footer class="secid-footer">
+  <div class="secid-footer__container">
+    <div class="secid-footer__content">
+      <div class="secid-footer__brand">
+        <a href={`/${lang}/`} class="secid-footer__logo">
+          <div class="secid-footer__logo-icon">
+            <i class="fas fa-chart-line" aria-hidden="true"></i>
+          </div>
+          SECiD
+        </a>
+        <p class="secid-footer__description">
+          {t.footer.description}
+        </p>
+        <div class="secid-footer__social">
+          <a
+            href="https://www.linkedin.com/company/sociedad-de-egresados-en-ciencia-de-datos-secid"
+            class="secid-footer__social-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn"
+          >
+            <i class="fab fa-linkedin" aria-hidden="true"></i>
+          </a>
+          <a
+            href="https://twitter.com/secid_unam"
+            class="secid-footer__social-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Twitter"
+          >
+            <i class="fab fa-twitter" aria-hidden="true"></i>
+          </a>
+          <a
+            href="https://github.com/secid-unam"
+            class="secid-footer__social-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+          >
+            <i class="fab fa-github" aria-hidden="true"></i>
+          </a>
+          <a
+            href="https://www.instagram.com/secid_unam"
+            class="secid-footer__social-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram"
+          >
+            <i class="fab fa-instagram" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="secid-footer__column">
+        <h3 class="secid-footer__heading">{t.footer.platform}</h3>
+        <ul class="secid-footer__links">
+          <li>
+            <a href={`/${lang}/jobs`} class="secid-footer__link"
+              >{t.footer.jobs}</a
+            >
+          </li>
+          <li>
+            <a href={`/${lang}/members`} class="secid-footer__link"
+              >{t.footer.members}</a
+            >
+          </li>
+          <li>
+            <a href={`/${lang}/events`} class="secid-footer__link"
+              >{t.footer.events}</a
+            >
+          </li>
+          <li>
+            <a href={`/${lang}/resources`} class="secid-footer__link"
+              >{t.footer.resources}</a
+            >
+          </li>
+        </ul>
+      </div>
+
+      <div class="secid-footer__column">
+        <h3 class="secid-footer__heading">{t.footer.community}</h3>
+        <ul class="secid-footer__links">
+          <li>
+            <a href={`/${lang}/newsletter`} class="secid-footer__link"
+              >{t.footer.newsletter}</a
+            >
+          </li>
+          <li>
+            <a href={`/${lang}/blog`} class="secid-footer__link"
+              >{t.footer.blog}</a
+            >
+          </li>
+        </ul>
+      </div>
+
+      <div class="secid-footer__column">
+        <h3 class="secid-footer__heading">{t.footer.support}</h3>
+        <ul class="secid-footer__links">
+          <li>
+            <a href={`/${lang}/help`} class="secid-footer__link"
+              >{t.footer.help}</a
+            >
+          </li>
+          <li>
+            <a href={`/${lang}/contact`} class="secid-footer__link"
+              >{t.footer.contact}</a
+            >
+          </li>
+          <li>
+            <a href={`/${lang}/faq`} class="secid-footer__link"
+              >{t.footer.faq}</a
+            >
+          </li>
+          <li>
+            <a
+              href="https://status.secid.mx"
+              class="secid-footer__link"
+              target="_blank"
+              rel="noopener noreferrer">{t.footer.status}</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="secid-footer__bottom">
+      <p class="secid-footer__copyright">
+        {t.footer.copyright}
+      </p>
+      <div class="secid-footer__legal">
+        <a href={`/${lang}/privacy`}>{t.footer.privacy}</a>
+        <a href={`/${lang}/terms`}>{t.footer.terms}</a>
+        <a href={`/${lang}/cookies`}>{t.footer.cookies}</a>
+      </div>
+    </div>
+  </div>
+</footer>

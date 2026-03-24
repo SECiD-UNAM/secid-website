@@ -1,0 +1,17 @@
+---
+export const prerender = false;
+
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import EventDetailPage from '@/components/wrappers/EventDetailPage';
+
+const { id } = Astro.params;
+if (!id) return Astro.redirect('/es/dashboard/events');
+---
+
+<DashboardLayout
+  title="Detalle del Evento - SECiD"
+  description="Ver detalles y registrarse para este evento"
+  lang="es"
+>
+  <EventDetailPage client:only="react" eventId={id} lang="es" />
+</DashboardLayout>

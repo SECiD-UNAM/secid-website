@@ -1,0 +1,621 @@
+---
+import AuthNavButtons from './auth/AuthNavButtons';
+import DashboardBottomNav from './nav/DashboardBottomNav';
+
+interface Props {
+  lang?: 'es' | 'en';
+}
+
+const { lang = 'es' } = Astro.props as Props;
+
+// Translation object
+const t = {
+  es: {
+    nav: {
+      home: 'Inicio',
+      jobs: 'Empleos',
+      community: 'Comunidad',
+      about: 'Nosotros',
+      login: 'Iniciar Sesión',
+      register: 'Registrarse',
+      theme: 'Tema',
+      language: 'Idioma',
+      // Community dropdown items
+      members: 'Miembros',
+      events: 'Eventos',
+      mentorship: 'Mentoría',
+      resources: 'Recursos',
+      blog: 'Blog',
+      commissions: 'Comisiones',
+      spotlights: 'Historias de Éxito',
+      journalClub: 'Journal Club',
+      newsletter: 'Newsletter',
+    },
+  },
+  en: {
+    nav: {
+      home: 'Home',
+      jobs: 'Jobs',
+      community: 'Community',
+      about: 'About Us',
+      login: 'Login',
+      register: 'Register',
+      theme: 'Theme',
+      language: 'Language',
+      // Community dropdown items
+      members: 'Members',
+      events: 'Events',
+      mentorship: 'Mentorship',
+      resources: 'Resources',
+      blog: 'Blog',
+      commissions: 'Commissions',
+      spotlights: 'Success Stories',
+      journalClub: 'Journal Club',
+      newsletter: 'Newsletter',
+    },
+  },
+}[lang];
+
+// Top-level navigation links
+const navLinks = [
+  { href: `/${lang}/`, label: t.nav.home },
+  { href: `/${lang}/jobs`, label: t.nav.jobs },
+  { href: `/${lang}/about-us`, label: t.nav.about },
+];
+
+// Community dropdown links
+const communityLinks = [
+  { href: `/${lang}/members`, label: t.nav.members, icon: 'fas fa-users' },
+  { href: `/${lang}/events`, label: t.nav.events, icon: 'fas fa-calendar-alt' },
+  {
+    href: `/${lang}/mentorship`,
+    label: t.nav.mentorship,
+    icon: 'fas fa-chalkboard-teacher',
+  },
+  {
+    href: `/${lang}/resources`,
+    label: t.nav.resources,
+    icon: 'fas fa-book-open',
+  },
+  { href: `/${lang}/blog`, label: t.nav.blog, icon: 'fas fa-newspaper' },
+  {
+    href: `/${lang}/commissions`,
+    label: t.nav.commissions,
+    icon: 'fas fa-project-diagram',
+  },
+  { href: `/${lang}/spotlights`, label: t.nav.spotlights, icon: 'fas fa-star' },
+  {
+    href: `/${lang}/journal-club`,
+    label: t.nav.journalClub,
+    icon: 'fas fa-flask',
+  },
+];
+
+// All links for mobile menu
+const allMobileLinks = [...navLinks, ...communityLinks];
+
+// Get current path to highlight active link
+const currentPath = Astro.url.pathname;
+
+// Check if current path is within community section
+const isCommunityActive = communityLinks.some((link) =>
+  currentPath.startsWith(link.href)
+);
+
+// Regex pattern for language paths
+const langPathRegex = /^\/(es|en)/;
+---
+
+<!-- Skip to main content link for accessibility -->
+<a href="#main" class="secid-skip-link">
+  {lang === 'es' ? 'Saltar al contenido principal' : 'Skip to main content'}
+</a>
+
+<nav
+  class="secid-navbar"
+  role="navigation"
+  aria-label={lang === 'es' ? 'Navegación principal' : 'Main navigation'}
+>
+  <div class="secid-navbar__container">
+    <a href={`/${lang}/`} class="secid-navbar__logo">
+      <img
+        src="/images/logo.png"
+        alt="SECiD Logo"
+        class="secid-navbar__logo-img"
+        width="40"
+        height="40"
+      />
+      <span class="secid-navbar__logo-text">SECiD</span>
+    </a>
+
+    <div class="secid-navbar__nav">
+      {
+        navLinks.slice(0, 2).map((link) => (
+          <a
+            href={link.href}
+            class={`secid-navbar__link ${currentPath === link.href ? 'secid-navbar__link--active' : ''}`}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+
+      <!-- Community Dropdown -->
+      <div class="secid-navbar__dropdown" data-dropdown>
+        <button
+          class={`secid-navbar__link secid-navbar__dropdown-toggle ${isCommunityActive ? 'secid-navbar__link--active' : ''}`}
+          aria-expanded="false"
+          aria-haspopup="true"
+        >
+          {t.nav.community}
+          <i
+            class="fas fa-chevron-down secid-navbar__dropdown-icon"
+            aria-hidden="true"></i>
+        </button>
+        <div class="secid-navbar__dropdown-menu" role="menu">
+          {
+            communityLinks.map((link) => (
+              <a
+                href={link.href}
+                class={`secid-navbar__dropdown-item ${currentPath.startsWith(link.href) ? 'secid-navbar__dropdown-item--active' : ''}`}
+                role="menuitem"
+              >
+                <i
+                  class={`${link.icon} secid-navbar__dropdown-item-icon`}
+                  aria-hidden="true"
+                />
+                {link.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      {
+        navLinks.slice(2).map((link) => (
+          <a
+            href={link.href}
+            class={`secid-navbar__link ${currentPath === link.href ? 'secid-navbar__link--active' : ''}`}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </div>
+
+    <div class="secid-navbar__actions">
+      <!-- Language Selector -->
+      <div class="secid-navbar__lang-selector">
+        <button
+          class="secid-navbar__lang-btn"
+          aria-label={`${t.nav.language}. ${lang === 'es' ? 'Idioma actual: Español' : 'Current language: English'}`}
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          id="language-selector"
+        >
+          <i class="fas fa-globe" aria-hidden="true"></i>
+          <span>{lang.toUpperCase()}</span>
+        </button>
+        <div
+          class="secid-navbar__lang-dropdown"
+          role="listbox"
+          aria-labelledby="language-selector"
+        >
+          <a
+            href={`/es${Astro.url.pathname.replace(langPathRegex, '')}`}
+            class={`secid-navbar__lang-option ${lang === 'es' ? 'active' : ''}`}
+            role="option"
+            aria-selected={lang === 'es' ? 'true' : 'false'}
+            hreflang="es"
+          >
+            <span class="sr-only"
+              >{
+                lang === 'es'
+                  ? 'Cambiar a español (actual)'
+                  : 'Switch to Spanish'
+              }</span
+            >
+            ES - Español
+          </a>
+          <a
+            href={`/en${Astro.url.pathname.replace(langPathRegex, '')}`}
+            class={`secid-navbar__lang-option ${lang === 'en' ? 'active' : ''}`}
+            role="option"
+            aria-selected={lang === 'en' ? 'true' : 'false'}
+            hreflang="en"
+          >
+            <span class="sr-only"
+              >{
+                lang === 'en'
+                  ? 'Cambiar a inglés'
+                  : 'Switch to English (current)'
+              }</span
+            >
+            EN - English
+          </a>
+        </div>
+      </div>
+
+      <!-- Theme Toggle -->
+      <button
+        class="secid-navbar__theme-toggle"
+        aria-label={`${t.nav.theme}. ${lang === 'es' ? 'Cambiar a tema oscuro' : 'Switch to dark theme'}`}
+        title={`${t.nav.theme}`}
+      >
+        <i class="fas fa-sun" data-theme-icon="light" aria-hidden="true"></i>
+        <i class="fas fa-moon" data-theme-icon="dark" aria-hidden="true"></i>
+      </button>
+
+      <AuthNavButtons
+        client:only="react"
+        lang={lang}
+        loginLabel={t.nav.login}
+        registerLabel={t.nav.register}
+      />
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button
+      class="secid-navbar__mobile-toggle"
+      aria-label={`${lang === 'es' ? 'Abrir menú de navegación' : 'Open navigation menu'}`}
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <!-- Mobile Menu (for tablets) -->
+  <div
+    class="secid-navbar__mobile-menu"
+    id="mobile-menu"
+    role="menu"
+    aria-hidden="true"
+  >
+    <nav class="secid-navbar__mobile-nav">
+      <!-- Public site section header -->
+      <div class="secid-navbar__mobile-section-header">
+        <i class="fas fa-globe" aria-hidden="true"></i>
+        {lang === 'es' ? 'Sitio Público' : 'Public Site'}
+      </div>
+
+      <!-- Top-level links -->
+      {
+        navLinks.slice(0, 2).map((link) => (
+          <a
+            href={link.href}
+            class={`secid-navbar__link secid-navbar__link--sub ${currentPath === link.href ? 'secid-navbar__link--active' : ''}`}
+          >
+            <i
+              class={link.href.includes('jobs') ? 'fas fa-briefcase' : 'fas fa-home'}
+              aria-hidden="true"
+              style="width: 1.25rem; text-align: center;"
+            />
+            {link.label}
+          </a>
+        ))
+      }
+
+      <!-- Community section header -->
+      <div class="secid-navbar__mobile-section-header">
+        <i class="fas fa-users" aria-hidden="true"></i>
+        {t.nav.community}
+      </div>
+
+      <!-- Community links -->
+      {
+        communityLinks.map((link) => (
+          <a
+            href={link.href}
+            class={`secid-navbar__link secid-navbar__link--sub ${currentPath.startsWith(link.href) ? 'secid-navbar__link--active' : ''}`}
+          >
+            <i
+              class={link.icon}
+              aria-hidden="true"
+              style="width: 1.25rem; text-align: center;"
+            />
+            {link.label}
+          </a>
+        ))
+      }
+
+      <!-- About -->
+      {
+        navLinks.slice(2).map((link) => (
+          <a
+            href={link.href}
+            class={`secid-navbar__link secid-navbar__link--sub ${currentPath === link.href ? 'secid-navbar__link--active' : ''}`}
+          >
+            <i class="fas fa-info-circle" aria-hidden="true" style="width: 1.25rem; text-align: center;" />
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+    <div class="secid-navbar__mobile-actions">
+      <!-- Mobile Language Selector -->
+      <div class="secid-navbar__mobile-controls">
+        <a
+          href={`/es${Astro.url.pathname.replace(langPathRegex, '')}`}
+          class={`secid-navbar__mobile-lang ${lang === 'es' ? 'active' : ''}`}
+          aria-label={lang === 'es'
+            ? 'Español (idioma actual)'
+            : 'Cambiar a español'}
+          hreflang="es">ES</a
+        >
+        <span class="secid-navbar__mobile-divider" aria-hidden="true">|</span>
+        <a
+          href={`/en${Astro.url.pathname.replace(langPathRegex, '')}`}
+          class={`secid-navbar__mobile-lang ${lang === 'en' ? 'active' : ''}`}
+          aria-label={lang === 'en'
+            ? 'English (current language)'
+            : 'Switch to English'}
+          hreflang="en">EN</a
+        >
+        <button
+          class="secid-navbar__theme-toggle secid-navbar__theme-toggle--mobile"
+          aria-label={t.nav.theme}
+        >
+          <i class="fas fa-sun" data-theme-icon="light"></i>
+          <i class="fas fa-moon" data-theme-icon="dark"></i>
+        </button>
+      </div>
+      <!-- Auth buttons (React) with static fallback -->
+      <div class="secid-navbar__mobile-auth">
+        <AuthNavButtons
+          client:only="react"
+          lang={lang}
+          loginLabel={t.nav.login}
+          registerLabel={t.nav.register}
+        />
+      </div>
+      <!-- Static fallback shown before React loads -->
+      <noscript>
+        <div class="secid-navbar__mobile-auth-fallback">
+          <a href={`/${lang}/login`} class="secid-button secid-button--outline secid-button--sm">{t.nav.login}</a>
+          <a href={`/${lang}/signup`} class="secid-button secid-button--primary secid-button--sm">{t.nav.register}</a>
+        </div>
+      </noscript>
+    </div>
+  </div>
+</nav>
+
+<!-- Bottom Navigation: only renders for logged-in members on mobile/tablet -->
+<DashboardBottomNav client:only="react" lang={lang} />
+
+<style>
+  /* Community dropdown styles */
+  .secid-navbar__dropdown {
+    position: relative;
+  }
+
+  .secid-navbar__dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    padding: inherit;
+  }
+
+  .secid-navbar__dropdown-icon {
+    font-size: 0.625rem;
+    transition: transform 0.2s ease;
+  }
+
+  .secid-navbar__dropdown[data-open] .secid-navbar__dropdown-icon {
+    transform: rotate(180deg);
+  }
+
+  .secid-navbar__dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 0.75rem;
+    min-width: 220px;
+    background: var(--card-bg, white);
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: var(--radius-xl, 12px);
+    box-shadow: var(--shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.1));
+    padding: 0.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 100;
+  }
+
+  .secid-navbar__dropdown[data-open] .secid-navbar__dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .secid-navbar__dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+    color: var(--color-text-primary, #1f2937);
+    text-decoration: none;
+    border-radius: var(--radius-lg, 8px);
+    font-size: 0.9rem;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .secid-navbar__dropdown-item:hover {
+    background: var(--color-surface-alt, #f3f4f6);
+  }
+
+  .secid-navbar__dropdown-item--active {
+    color: var(--secid-primary, #003b5c);
+    font-weight: 600;
+    background: rgba(0, 59, 92, 0.05);
+  }
+
+  .secid-navbar__dropdown-item-icon {
+    width: 1.25rem;
+    text-align: center;
+    color: var(--color-text-tertiary, #9ca3af);
+    font-size: 0.875rem;
+  }
+
+  .secid-navbar__dropdown-item:hover .secid-navbar__dropdown-item-icon,
+  .secid-navbar__dropdown-item--active .secid-navbar__dropdown-item-icon {
+    color: var(--secid-primary, #003b5c);
+  }
+
+  /* Mobile section header */
+  .secid-navbar__mobile-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-tertiary, #9ca3af);
+    border-top: 1px solid var(--color-border, #e5e7eb);
+    margin-top: 0.5rem;
+  }
+
+  .secid-navbar__link--sub {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-left: 1.5rem !important;
+    font-size: 0.9rem;
+  }
+
+  /* Community drawer for bottom nav */
+  .secid-bottom-nav__drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card-bg, white);
+    border-top: 1px solid var(--color-border, #e5e7eb);
+    border-radius: var(--radius-xl, 12px) var(--radius-xl, 12px) 0 0;
+    box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    z-index: 999;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .secid-bottom-nav__drawer[data-open] {
+    transform: translateY(0);
+  }
+
+  .secid-bottom-nav__drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    font-size: 1.125rem;
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+  }
+
+  .secid-bottom-nav__drawer-header button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-tertiary, #9ca3af);
+    font-size: 1.25rem;
+    padding: 0.25rem;
+  }
+
+  .secid-bottom-nav__drawer-links {
+    padding: 0.5rem;
+  }
+
+  .secid-bottom-nav__drawer-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1rem;
+    color: var(--color-text-primary, #1f2937);
+    text-decoration: none;
+    border-radius: var(--radius-lg, 8px);
+    font-size: 1rem;
+    transition: background 0.15s ease;
+  }
+
+  .secid-bottom-nav__drawer-link:hover {
+    background: var(--color-surface-alt, #f3f4f6);
+  }
+
+  .secid-bottom-nav__drawer-link i {
+    width: 1.5rem;
+    text-align: center;
+    color: var(--secid-primary, #003b5c);
+  }
+</style>
+
+<script>
+  // Community dropdown toggle (desktop)
+  document.querySelectorAll('[data-dropdown]').forEach((dropdown) => {
+    const toggle = dropdown.querySelector('.secid-navbar__dropdown-toggle');
+    if (!toggle) return;
+
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = dropdown.hasAttribute('data-open');
+      // Close all dropdowns
+      document
+        .querySelectorAll('[data-dropdown]')
+        .forEach((d) => d.removeAttribute('data-open'));
+      if (!isOpen) {
+        dropdown.setAttribute('data-open', '');
+        toggle.setAttribute('aria-expanded', 'true');
+      } else {
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
+
+  // Close dropdown on outside click
+  document.addEventListener('click', () => {
+    document.querySelectorAll('[data-dropdown]').forEach((d) => {
+      d.removeAttribute('data-open');
+      const toggle = d.querySelector('.secid-navbar__dropdown-toggle');
+      if (toggle) toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // Community drawer toggle (mobile)
+  const communityBtn = document.querySelector('[data-bottom-nav-community]');
+  const drawer = document.querySelector('[data-community-drawer]');
+  const closeBtn = document.querySelector('[data-close-drawer]');
+
+  if (communityBtn && drawer) {
+    communityBtn.addEventListener('click', () => {
+      const isOpen = drawer.hasAttribute('data-open');
+      if (isOpen) {
+        drawer.removeAttribute('data-open');
+        drawer.setAttribute('aria-hidden', 'true');
+        drawer.setAttribute('inert', '');
+      } else {
+        drawer.setAttribute('data-open', '');
+        drawer.setAttribute('aria-hidden', 'false');
+        drawer.removeAttribute('inert');
+      }
+    });
+  }
+
+  if (closeBtn && drawer) {
+    closeBtn.addEventListener('click', () => {
+      drawer.removeAttribute('data-open');
+      drawer.setAttribute('aria-hidden', 'true');
+      drawer.setAttribute('inert', '');
+    });
+  }
+</script>

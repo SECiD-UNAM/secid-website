@@ -1,0 +1,102 @@
+---
+export const prerender = false;
+
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import SkillAssessment from '@/components/assessment/SkillAssessment';
+
+const { id } = Astro.params;
+
+// Map skill IDs to skill categories
+const skillMap: Record<string, any> = {
+  python: 'python',
+  sql: 'sql',
+  'machine-learning': 'machine_learning',
+  'aprendizaje-automatico': 'machine_learning',
+  estadistica: 'statistics',
+  statistics: 'statistics',
+  'visualizacion-datos': 'data_visualization',
+  'data-visualization': 'data_visualization',
+  'big-data': 'big_data',
+  'deep-learning': 'deep_learning',
+  'aprendizaje-profundo': 'deep_learning',
+  'ingenieria-datos': 'data_engineering',
+  'data-engineering': 'data_engineering',
+  'inteligencia-negocios': 'business_intelligence',
+  'business-intelligence': 'business_intelligence',
+  excel: 'excel',
+  r: 'r',
+  tableau: 'tableau',
+  'power-bi': 'power_bi',
+  spark: 'spark',
+  aws: 'aws',
+  azure: 'azure',
+  gcp: 'gcp',
+  docker: 'docker',
+  git: 'git',
+  linux: 'linux',
+  apis: 'apis',
+  etl: 'etl',
+  'bases-datos': 'databases',
+  databases: 'databases',
+  mongodb: 'mongodb',
+  hadoop: 'hadoop',
+};
+
+const skillCategory = skillMap[id as string] || 'python';
+
+// Spanish skill titles
+const skillTitlesES: Record<string, string> = {
+  python: 'Python',
+  sql: 'SQL',
+  'machine-learning': 'Aprendizaje Automático',
+  'aprendizaje-automatico': 'Aprendizaje Automático',
+  estadistica: 'Estadística',
+  statistics: 'Estadística',
+  'visualizacion-datos': 'Visualización de Datos',
+  'data-visualization': 'Visualización de Datos',
+  'big-data': 'Big Data',
+  'deep-learning': 'Aprendizaje Profundo',
+  'aprendizaje-profundo': 'Aprendizaje Profundo',
+  'ingenieria-datos': 'Ingeniería de Datos',
+  'data-engineering': 'Ingeniería de Datos',
+  'inteligencia-negocios': 'Inteligencia de Negocios',
+  'business-intelligence': 'Inteligencia de Negocios',
+  excel: 'Excel',
+  r: 'R',
+  tableau: 'Tableau',
+  'power-bi': 'Power BI',
+  spark: 'Spark',
+  aws: 'AWS',
+  azure: 'Azure',
+  gcp: 'GCP',
+  docker: 'Docker',
+  git: 'Git',
+  linux: 'Linux',
+  apis: 'APIs',
+  etl: 'ETL',
+  'bases-datos': 'Bases de Datos',
+  databases: 'Bases de Datos',
+  mongodb: 'MongoDB',
+  hadoop: 'Hadoop',
+};
+
+const skillTitle = skillTitlesES[id as string] || 'Python';
+---
+
+<DashboardLayout
+  title={`Evaluaciones de ${skillTitle} - SECiD`}
+  description={`Evalúa y certifica tus habilidades en ${skillTitle}`}
+  lang="es"
+>
+  <SkillAssessment
+    client:load
+    skillCategory={skillCategory}
+    userId="user123"
+    onStartAssessment={(assessmentId) => {
+      window.location.href = `/es/dashboard/evaluaciones/realizar/${assessmentId}`;
+    }}
+    onViewCertificate={(certificateId) => {
+      window.location.href = `/es/dashboard/evaluaciones/certificados/${certificateId}`;
+    }}
+  />
+</DashboardLayout>

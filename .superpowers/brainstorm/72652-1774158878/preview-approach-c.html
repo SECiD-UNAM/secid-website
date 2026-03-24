@@ -1,0 +1,187 @@
+<h2>Approach C — Company Profiles + Reference System</h2>
+<p class="subtitle">Dedicated company pages with current/former members and reference request flow</p>
+
+<div class="split">
+  <!-- Left: Company List Page -->
+  <div class="mockup">
+    <div class="mockup-header">/es/companies (List)</div>
+    <div class="mockup-body" style="padding: 0; background: #f9fafb; min-height: 550px;">
+      <!-- Header -->
+      <div style="padding: 24px; background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 100%); color: white;">
+        <h3 style="margin: 0; font-size: 22px;">Empresas de la Red SECiD</h3>
+        <p style="margin: 4px 0 0; font-size: 13px; opacity: 0.85;">20 empresas donde trabajan y han trabajado nuestros miembros</p>
+        <div style="margin-top: 16px; display: flex; gap: 8px;">
+          <div style="flex: 1; padding: 8px 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; color: rgba(255,255,255,0.7); font-size: 12px;">🔍 Buscar empresa...</div>
+          <div style="padding: 8px 16px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; font-size: 12px;">Todas las industrias ▾</div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div style="display: flex; gap: 1px; background: #e5e7eb;">
+        <div style="flex: 1; background: white; padding: 12px; text-align: center;">
+          <div style="font-size: 20px; font-weight: 700; color: #1e3a5f;">20</div>
+          <div style="font-size: 10px; color: #6b7280;">Empresas</div>
+        </div>
+        <div style="flex: 1; background: white; padding: 12px; text-align: center;">
+          <div style="font-size: 20px; font-weight: 700; color: #059669;">29</div>
+          <div style="font-size: 10px; color: #6b7280;">Miembros activos</div>
+        </div>
+        <div style="flex: 1; background: white; padding: 12px; text-align: center;">
+          <div style="font-size: 20px; font-weight: 700; color: #d97706;">8</div>
+          <div style="font-size: 10px; color: #6b7280;">Industrias</div>
+        </div>
+      </div>
+
+      <!-- Company list -->
+      <div style="padding: 16px;">
+        <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden;">
+          <div style="display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: background 0.15s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+            <div style="width: 44px; height: 44px; border-radius: 10px; background: #1e40af; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 15px;">B</div>
+            <div style="flex: 1; margin-left: 12px;">
+              <div style="font-weight: 600; font-size: 14px; color: #111;">BBVA</div>
+              <div style="font-size: 11px; color: #6b7280;">Finanzas · Ciudad de México</div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span style="padding: 3px 8px; background: #dbeafe; color: #1e40af; border-radius: 12px; font-size: 10px; font-weight: 500;">3 actuales</span>
+              <span style="padding: 3px 8px; background: #fef3c7; color: #92400e; border-radius: 12px; font-size: 10px; font-weight: 500;">2 alumni</span>
+              <span style="color: #d1d5db; font-size: 14px;">→</span>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid #f3f4f6; cursor: pointer;">
+            <div style="width: 44px; height: 44px; border-radius: 10px; background: #dc2626; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 15px;">U</div>
+            <div style="flex: 1; margin-left: 12px;">
+              <div style="font-weight: 600; font-size: 14px; color: #111;">Uber</div>
+              <div style="font-size: 11px; color: #6b7280;">Tecnología · Global</div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span style="padding: 3px 8px; background: #dbeafe; color: #1e40af; border-radius: 12px; font-size: 10px; font-weight: 500;">1 actual</span>
+              <span style="padding: 3px 8px; background: #fef3c7; color: #92400e; border-radius: 12px; font-size: 10px; font-weight: 500;">1 alumni</span>
+              <span style="color: #d1d5db; font-size: 14px;">→</span>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; padding: 14px 16px; cursor: pointer;">
+            <div style="width: 44px; height: 44px; border-radius: 10px; background: #059669; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 15px;">M</div>
+            <div style="flex: 1; margin-left: 12px;">
+              <div style="font-weight: 600; font-size: 14px; color: #111;">Microsoft</div>
+              <div style="font-size: 11px; color: #6b7280;">Tecnología · Global</div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span style="padding: 3px 8px; background: #dbeafe; color: #1e40af; border-radius: 12px; font-size: 10px; font-weight: 500;">1 actual</span>
+              <span style="color: #d1d5db; font-size: 14px;">→</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Company Profile Page -->
+  <div class="mockup">
+    <div class="mockup-header">/es/companies/bbva (Profile)</div>
+    <div class="mockup-body" style="padding: 0; background: #f9fafb; min-height: 550px;">
+      <!-- Company Header -->
+      <div style="padding: 24px; background: white; border-bottom: 1px solid #e5e7eb;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <div style="width: 64px; height: 64px; border-radius: 14px; background: #1e40af; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px;">B</div>
+          <div style="flex: 1;">
+            <h3 style="margin: 0; font-size: 22px; color: #111;">BBVA</h3>
+            <p style="margin: 2px 0; font-size: 13px; color: #6b7280;">Finanzas · Ciudad de México</p>
+            <a href="#" style="font-size: 12px; color: #3b82f6; text-decoration: none;">🌐 bbva.com ↗</a>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 28px; font-weight: 700; color: #1e3a5f;">5</div>
+            <div style="font-size: 11px; color: #6b7280;">Conexiones SECiD</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div style="display: flex; gap: 0; border-bottom: 1px solid #e5e7eb; background: white;">
+        <div style="padding: 10px 20px; font-size: 13px; font-weight: 500; color: #3b82f6; border-bottom: 2px solid #3b82f6;">Miembros (3)</div>
+        <div style="padding: 10px 20px; font-size: 13px; color: #6b7280;">Alumni (2)</div>
+        <div style="padding: 10px 20px; font-size: 13px; color: #6b7280;">Roles</div>
+      </div>
+
+      <!-- Current Members -->
+      <div style="padding: 16px;">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; display: flex; align-items: center; gap: 12px;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #6366f1; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: 600;">EG</div>
+            <div style="flex: 1;">
+              <div style="font-weight: 600; font-size: 14px; color: #111;">Eduardo Garduño</div>
+              <div style="font-size: 12px; color: #6b7280;">Data Scientist</div>
+              <div style="font-size: 11px; color: #9ca3af;">Desde ago 2022 · Gen 2020</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <a href="#" style="padding: 5px 12px; background: #eff6ff; color: #3b82f6; border-radius: 6px; font-size: 11px; text-decoration: none; text-align: center;">in LinkedIn</a>
+              <a href="#" style="padding: 5px 12px; background: #f0fdf4; color: #059669; border-radius: 6px; font-size: 11px; text-decoration: none; text-align: center;">🤝 Referencia</a>
+            </div>
+          </div>
+
+          <div style="background: white; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px; display: flex; align-items: center; gap: 12px;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #ec4899; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: 600;">IP</div>
+            <div style="flex: 1;">
+              <div style="font-weight: 600; font-size: 14px; color: #111;">Ingrid Pamela Ruíz</div>
+              <div style="font-size: 12px; color: #6b7280;">ML Engineer</div>
+              <div style="font-size: 11px; color: #9ca3af;">Desde ene 2023 · Gen 2021</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <a href="#" style="padding: 5px 12px; background: #eff6ff; color: #3b82f6; border-radius: 6px; font-size: 11px; text-decoration: none; text-align: center;">in LinkedIn</a>
+              <a href="#" style="padding: 5px 12px; background: #f0fdf4; color: #059669; border-radius: 6px; font-size: 11px; text-decoration: none; text-align: center;">🤝 Referencia</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reference request banner -->
+        <div style="margin-top: 16px; padding: 14px 16px; background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #bfdbfe; border-radius: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 24px;">🎯</span>
+            <div>
+              <div style="font-weight: 600; font-size: 13px; color: #1e40af;">¿Buscas entrar a BBVA?</div>
+              <div style="font-size: 12px; color: #3b82f6;">3 miembros de SECiD pueden darte una referencia</div>
+            </div>
+            <button style="margin-left: auto; padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: pointer;">Solicitar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top: 1.5rem;">Approach C: Company list (left) links to dedicated company profile pages (right) with member tabs and reference requests</p>
+
+<div style="margin-top: 2rem;">
+  <h3>Which approach do you prefer?</h3>
+  <div class="options">
+    <div class="option" data-choice="a" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>Cards + Drawer</h3>
+        <p>Simple, fast, single page</p>
+      </div>
+    </div>
+    <div class="option" data-choice="b" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>Network Graph</h3>
+        <p>Visual wow-factor, timeline</p>
+      </div>
+    </div>
+    <div class="option" data-choice="c" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content">
+        <h3>Company Profiles</h3>
+        <p>Most complete, reference system</p>
+      </div>
+    </div>
+    <div class="option" data-choice="ac" onclick="toggleSelect(this)">
+      <div class="letter">A+C</div>
+      <div class="content">
+        <h3>Hybrid</h3>
+        <p>Card grid with full company pages on click</p>
+      </div>
+    </div>
+  </div>
+</div>

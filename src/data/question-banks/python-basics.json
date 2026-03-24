@@ -1,0 +1,402 @@
+{
+  "id": "python_basics_bank",
+  "name": "Python Fundamentals Question Bank",
+  "description": "Questions covering basic Python programming concepts including data types, control structures, functions, and basic object-oriented programming.",
+  "category": "python",
+  "language": "es",
+  "version": "1.0",
+  "created_at": "2024-01-01",
+  "questions": [
+    {
+      "id": "py_basic_001",
+      "type": "single_choice",
+      "category": "python",
+      "difficulty": "beginner",
+      "title": "Tipos de Datos en Python",
+      "description": "¿Cuál de los siguientes es un tipo de dato mutable en Python?",
+      "points": 10,
+      "timeLimit": 60,
+      "options": [
+        {
+          "id": "a",
+          "text": "tuple",
+          "isCorrect": false,
+          "explanation": "Las tuplas son inmutables en Python."
+        },
+        {
+          "id": "b",
+          "text": "string",
+          "isCorrect": false,
+          "explanation": "Las cadenas de texto son inmutables en Python."
+        },
+        {
+          "id": "c",
+          "text": "list",
+          "isCorrect": true,
+          "explanation": "Las listas son mutables, lo que significa que pueden modificarse después de su creación."
+        },
+        {
+          "id": "d",
+          "text": "int",
+          "isCorrect": false,
+          "explanation": "Los enteros son inmutables en Python."
+        }
+      ],
+      "explanation": "En Python, las listas son estructuras de datos mutables que permiten modificar, agregar o eliminar elementos después de su creación. Los tipos tuple, string e int son inmutables.",
+      "resources": [
+        {
+          "title": "Python Data Types Documentation",
+          "url": "https://docs.python.org/3/library/stdtypes.html",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["tipos-datos", "mutabilidad", "listas"]
+    },
+    {
+      "id": "py_basic_002",
+      "type": "coding_challenge",
+      "category": "python",
+      "difficulty": "beginner",
+      "title": "Función para Calcular Factorial",
+      "description": "Escribe una función que calcule el factorial de un número entero positivo.",
+      "points": 20,
+      "timeLimit": 300,
+      "codingChallenge": {
+        "starterCode": "def factorial(n):\n    \"\"\"\n    Calcula el factorial de n\n    Args:\n        n (int): Número entero positivo\n    Returns:\n        int: Factorial de n\n    \"\"\"\n    # Tu código aquí\n    pass",
+        "language": "python",
+        "testCases": [
+          {
+            "input": 0,
+            "expectedOutput": 1,
+            "description": "Factorial de 0 debe ser 1",
+            "isVisible": true
+          },
+          {
+            "input": 1,
+            "expectedOutput": 1,
+            "description": "Factorial de 1 debe ser 1",
+            "isVisible": true
+          },
+          {
+            "input": 5,
+            "expectedOutput": 120,
+            "description": "Factorial de 5 debe ser 120",
+            "isVisible": true
+          },
+          {
+            "input": 10,
+            "expectedOutput": 3628800,
+            "description": "Factorial de 10 debe ser 3628800",
+            "isVisible": false
+          }
+        ],
+        "timeLimit": 5
+      },
+      "explanation": "El factorial de un número n (representado como n!) es el producto de todos los números enteros positivos menores o iguales a n. Por definición, 0! = 1.",
+      "resources": [
+        {
+          "title": "Python Functions Tutorial",
+          "url": "https://docs.python.org/3/tutorial/controlflow.html#defining-functions",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["funciones", "factorial", "recursion", "loops"]
+    },
+    {
+      "id": "py_basic_003",
+      "type": "multiple_choice",
+      "category": "python",
+      "difficulty": "intermediate",
+      "title": "Comprensiones de Lista",
+      "description": "¿Cuáles de las siguientes comprensiones de lista son válidas en Python? (Selecciona todas las correctas)",
+      "points": 15,
+      "timeLimit": 90,
+      "options": [
+        {
+          "id": "a",
+          "text": "[x for x in range(10) if x % 2 == 0]",
+          "isCorrect": true,
+          "explanation": "Esta es una comprensión válida que crea una lista de números pares del 0 al 8."
+        },
+        {
+          "id": "b",
+          "text": "[x**2 for x in range(5)]",
+          "isCorrect": true,
+          "explanation": "Esta comprensión calcula los cuadrados de números del 0 al 4."
+        },
+        {
+          "id": "c",
+          "text": "[x, y for x in range(3) for y in range(2)]",
+          "isCorrect": false,
+          "explanation": "Esta sintaxis es incorrecta. Debería ser [(x, y) for x in range(3) for y in range(2)]."
+        },
+        {
+          "id": "d",
+          "text": "[word.upper() for word in ['hello', 'world']]",
+          "isCorrect": true,
+          "explanation": "Esta comprensión convierte todas las palabras a mayúsculas."
+        }
+      ],
+      "explanation": "Las comprensiones de lista en Python siguen la sintaxis [expresión for item in iterable if condición]. Son una forma concisa de crear listas.",
+      "resources": [
+        {
+          "title": "List Comprehensions",
+          "url": "https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["list-comprehensions", "sintaxis", "iterables"]
+    },
+    {
+      "id": "py_basic_004",
+      "type": "true_false",
+      "category": "python",
+      "difficulty": "beginner",
+      "title": "Indentación en Python",
+      "description": "En Python, la indentación es obligatoria y se usa para definir bloques de código.",
+      "points": 5,
+      "timeLimit": 30,
+      "correctAnswer": true,
+      "explanation": "Correcto. En Python, la indentación es sintácticamente significativa y se usa para definir bloques de código, a diferencia de otros lenguajes que usan llaves {}.",
+      "resources": [
+        {
+          "title": "Python Indentation",
+          "url": "https://docs.python.org/3/tutorial/introduction.html#first-steps-towards-programming",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["indentacion", "sintaxis", "bloques"]
+    },
+    {
+      "id": "py_basic_005",
+      "type": "fill_blank",
+      "category": "python",
+      "difficulty": "beginner",
+      "title": "Métodos de String",
+      "description": "Completa el código para convertir la cadena 'hello world' a título (primera letra de cada palabra en mayúscula):",
+      "points": 10,
+      "timeLimit": 60,
+      "fillBlanks": ["title"],
+      "explanation": "El método title() convierte la primera letra de cada palabra a mayúscula. El código completo sería: text = 'hello world'.title()",
+      "resources": [
+        {
+          "title": "String Methods",
+          "url": "https://docs.python.org/3/library/stdtypes.html#string-methods",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["strings", "metodos", "formateo"]
+    },
+    {
+      "id": "py_basic_006",
+      "type": "single_choice",
+      "category": "python",
+      "difficulty": "intermediate",
+      "title": "Diccionarios en Python",
+      "description": "¿Cuál es la forma correcta de acceder al valor de una clave en un diccionario de manera segura (sin generar error si la clave no existe)?",
+      "points": 10,
+      "timeLimit": 60,
+      "options": [
+        {
+          "id": "a",
+          "text": "dict['key']",
+          "isCorrect": false,
+          "explanation": "Esto generará un KeyError si la clave no existe."
+        },
+        {
+          "id": "b",
+          "text": "dict.get('key')",
+          "isCorrect": true,
+          "explanation": "El método get() retorna None si la clave no existe, evitando errores."
+        },
+        {
+          "id": "c",
+          "text": "dict.key",
+          "isCorrect": false,
+          "explanation": "Esta sintaxis no es válida para acceder a elementos de diccionario."
+        },
+        {
+          "id": "d",
+          "text": "dict->key",
+          "isCorrect": false,
+          "explanation": "Esta sintaxis no existe en Python."
+        }
+      ],
+      "explanation": "El método get() es la forma más segura de acceder a valores en un diccionario, ya que retorna None (o un valor por defecto) si la clave no existe.",
+      "resources": [
+        {
+          "title": "Python Dictionaries",
+          "url": "https://docs.python.org/3/tutorial/datastructures.html#dictionaries",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["diccionarios", "get", "acceso-seguro"]
+    },
+    {
+      "id": "py_basic_007",
+      "type": "coding_challenge",
+      "category": "python",
+      "difficulty": "intermediate",
+      "title": "Filtrar Lista de Números",
+      "description": "Escribe una función que tome una lista de números y retorne solo los números positivos mayores a 10.",
+      "points": 20,
+      "timeLimit": 240,
+      "codingChallenge": {
+        "starterCode": "def filter_numbers(numbers):\n    \"\"\"\n    Filtra números positivos mayores a 10\n    Args:\n        numbers (list): Lista de números\n    Returns:\n        list: Lista con números positivos > 10\n    \"\"\"\n    # Tu código aquí\n    pass",
+        "language": "python",
+        "testCases": [
+          {
+            "input": [1, 15, -5, 25, 8, 12],
+            "expectedOutput": [15, 25, 12],
+            "description": "Filtrar números positivos > 10",
+            "isVisible": true
+          },
+          {
+            "input": [-10, -5, 0, 5, 10],
+            "expectedOutput": [],
+            "description": "No hay números > 10",
+            "isVisible": true
+          },
+          {
+            "input": [11, 20, 30],
+            "expectedOutput": [11, 20, 30],
+            "description": "Todos los números cumplen la condición",
+            "isVisible": false
+          }
+        ],
+        "timeLimit": 4
+      },
+      "explanation": "Para filtrar una lista, puedes usar list comprehension: [x for x in numbers if x > 10] o la función filter().",
+      "resources": [
+        {
+          "title": "Python Filter Function",
+          "url": "https://docs.python.org/3/library/functions.html#filter",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["filtros", "listas", "condiciones"]
+    },
+    {
+      "id": "py_basic_008",
+      "type": "single_choice",
+      "category": "python",
+      "difficulty": "advanced",
+      "title": "Decoradores en Python",
+      "description": "¿Cuál es el propósito principal de los decoradores en Python?",
+      "points": 15,
+      "timeLimit": 90,
+      "options": [
+        {
+          "id": "a",
+          "text": "Cambiar el tipo de datos de una variable",
+          "isCorrect": false,
+          "explanation": "Los decoradores no se usan para cambiar tipos de datos."
+        },
+        {
+          "id": "b",
+          "text": "Modificar o extender el comportamiento de funciones o clases",
+          "isCorrect": true,
+          "explanation": "Los decoradores permiten modificar o extender la funcionalidad de funciones o clases de manera elegante."
+        },
+        {
+          "id": "c",
+          "text": "Crear nuevos tipos de datos",
+          "isCorrect": false,
+          "explanation": "Los decoradores no se usan para crear tipos de datos."
+        },
+        {
+          "id": "d",
+          "text": "Optimizar el rendimiento del código automáticamente",
+          "isCorrect": false,
+          "explanation": "Los decoradores no optimizan automáticamente el código."
+        }
+      ],
+      "explanation": "Los decoradores son una característica poderosa de Python que permite modificar o extender el comportamiento de funciones o clases sin cambiar su código fuente.",
+      "resources": [
+        {
+          "title": "Python Decorators",
+          "url": "https://docs.python.org/3/glossary.html#term-decorator",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["decoradores", "funciones", "metaprogramacion"]
+    },
+    {
+      "id": "py_basic_009",
+      "type": "practical_scenario",
+      "category": "python",
+      "difficulty": "intermediate",
+      "title": "Análisis de Datos de Ventas",
+      "description": "Tienes una lista de diccionarios que representa datos de ventas: [{'producto': 'A', 'precio': 100, 'cantidad': 5}, {'producto': 'B', 'precio': 50, 'cantidad': 10}]. Describe cómo calcularías el total de ingresos y cuál sería el código Python para hacerlo.",
+      "points": 25,
+      "timeLimit": 300,
+      "requiresPeerReview": true,
+      "reviewCriteria": [
+        "Comprensión del problema",
+        "Correctitud del enfoque",
+        "Calidad del código propuesto",
+        "Explicación clara del proceso"
+      ],
+      "explanation": "Una solución sería: total = sum(item['precio'] * item['cantidad'] for item in ventas). Esto usa una expresión generadora para calcular el ingreso de cada producto y sum() para obtener el total.",
+      "resources": [
+        {
+          "title": "Working with Lists of Dictionaries",
+          "url": "https://realpython.com/python-dicts/",
+          "type": "article"
+        }
+      ],
+      "tags": ["diccionarios", "analisis-datos", "sum", "generadores"]
+    },
+    {
+      "id": "py_basic_010",
+      "type": "multiple_choice",
+      "category": "python",
+      "difficulty": "beginner",
+      "title": "Estructuras de Control",
+      "description": "¿Cuáles de las siguientes son estructuras de control válidas en Python? (Selecciona todas las correctas)",
+      "points": 12,
+      "timeLimit": 75,
+      "options": [
+        {
+          "id": "a",
+          "text": "if-elif-else",
+          "isCorrect": true,
+          "explanation": "Esta es la estructura condicional estándar en Python."
+        },
+        {
+          "id": "b",
+          "text": "for loop",
+          "isCorrect": true,
+          "explanation": "Los bucles for son fundamentales para iterar en Python."
+        },
+        {
+          "id": "c",
+          "text": "switch-case",
+          "isCorrect": false,
+          "explanation": "Python no tiene switch-case (aunque se agregó match-case en Python 3.10)."
+        },
+        {
+          "id": "d",
+          "text": "while loop",
+          "isCorrect": true,
+          "explanation": "Los bucles while se usan para repetir código mientras una condición sea verdadera."
+        },
+        {
+          "id": "e",
+          "text": "try-except",
+          "isCorrect": true,
+          "explanation": "Esta estructura se usa para manejo de excepciones."
+        }
+      ],
+      "explanation": "Python incluye estructuras de control como if-elif-else, for, while, y try-except. No tiene switch-case tradicional.",
+      "resources": [
+        {
+          "title": "Python Control Flow",
+          "url": "https://docs.python.org/3/tutorial/controlflow.html",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["control-flow", "if", "loops", "excepciones"]
+    }
+  ]
+}

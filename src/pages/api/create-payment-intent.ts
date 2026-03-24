@@ -1,0 +1,123 @@
+import {
+  createPaymentIntent,
+  SUBSCRIPTION_PLANS,
+  calculateMexicanTaxes,
+} from '../../lib/stripe/stripe-client';
+import {
+  verifyRequest,
+  unauthorizedResponse,
+} from '../../lib/auth/verify-request';
+
+import type { APIRoute } from 'astro';
+
+interface PaymentIntentRequest {
+  currency?: string;
+  planId?: keyof typeof SUBSCRIPTION_PLANS;
+  billingCycle?: 'monthly' | 'yearly';
+  commissionType?: string;
+  customerId?: string;
+  metadata?: Record<string, string>;
+}
+
+export const POST: APIRoute = async ({ request }) => {
+  // Verify authentication (defense-in-depth, also enforced by middleware)
+  const auth = verifyRequest(request);
+  if (!auth.authenticated) {
+    return unauthorizedResponse();
+  }
+
+  try {
+    const body: PaymentIntentRequest = await request.json();
+
+    const currency = body.currency || 'mxn';
+    const customerId = body.customerId;
+
+    // Amount is always derived server-side from planId — never trust client
+    if (!body.planId) {
+      return new Response(JSON.stringify({ error: 'Plan ID is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const plan = SUBSCRIPTION_PLANS[body['planId']];
+    if (!plan) {
+      return new Response(JSON.stringify({ error: 'Invalid plan ID' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    let planPrice = plan.price;
+
+    // Apply yearly discount if applicable
+    if (body.billingCycle === 'yearly') {
+      planPrice = planPrice * 12 * 0.83; // 17% discount
+    }
+
+    // Calculate Mexican taxes
+    const taxCalculation = calculateMexicanTaxes(planPrice);
+    const amount = taxCalculation.total;
+
+    // Prepare metadata
+    const metadata: Record<string, string> = {
+      ...body.metadata,
+      platform: 'secid',
+    };
+
+    if (body['planId']) {
+      metadata['planId'] = body['planId'];
+    }
+
+    if (body['billingCycle']) {
+      metadata['billingCycle'] = body['billingCycle'];
+    }
+
+    if (body['commissionType']) {
+      metadata['commissionType'] = body['commissionType'];
+    }
+
+    // Create payment intent
+    const paymentIntent = await createPaymentIntent(
+      amount,
+      currency,
+      customerId,
+      metadata
+    );
+
+    return new Response(
+      JSON.stringify({
+        clientSecret: paymentIntent.client_secret,
+        amount: paymentIntent.amount,
+        currency: paymentIntent.currency,
+        id: paymentIntent.id,
+      }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  } catch (error) {
+    console.error('Error creating payment intent:', error);
+
+    return new Response(
+      JSON.stringify({
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to create payment intent',
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
+};
+
+export const GET: APIRoute = () => {
+  return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+    status: 405,
+    headers: { 'Content-Type': 'application/json' },
+  });
+};
