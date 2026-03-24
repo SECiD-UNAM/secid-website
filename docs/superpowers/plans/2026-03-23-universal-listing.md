@@ -462,9 +462,7 @@ export interface ClientSideAdapterConfig<T> {
   toSearchable?: (item: T) => string;
 }
 
-export class ClientSideAdapter<T extends Record<string, unknown>>
-  implements DataAdapter<T>
-{
+export class ClientSideAdapter<T extends object> implements DataAdapter<T> {
   private config: ClientSideAdapterConfig<T>;
   private cache: T[] | null = null;
 
@@ -533,8 +531,9 @@ export class ClientSideAdapter<T extends Record<string, unknown>>
           .toLowerCase()
           .includes(lowerQuery);
       }
+      const record = item as Record<string, unknown>;
       return this.config.searchFields.some((field) => {
-        const value = item[field];
+        const value = record[field];
         if (typeof value === 'string') {
           return value.toLowerCase().includes(lowerQuery);
         }
@@ -544,10 +543,11 @@ export class ClientSideAdapter<T extends Record<string, unknown>>
   }
 
   private applyFilters(items: T[], filters: Record<string, unknown>): T[] {
-    return items.filter((item) =>
-      Object.entries(filters).every(([key, value]) => {
+    return items.filter((item) => {
+      const record = item as Record<string, unknown>;
+      return Object.entries(filters).every(([key, value]) => {
         if (value === undefined || value === null || value === '') return true;
-        const itemValue = item[key];
+        const itemValue = record[key];
         if (Array.isArray(value)) {
           if (value.length === 0) return true;
           if (Array.isArray(itemValue)) {
@@ -556,14 +556,16 @@ export class ClientSideAdapter<T extends Record<string, unknown>>
           return value.includes(itemValue);
         }
         return itemValue === value;
-      })
-    );
+      });
+    });
   }
 
   private applySort(items: T[], sort: SortConfig): T[] {
     return [...items].sort((a, b) => {
-      const aVal = a[sort.field];
-      const bVal = b[sort.field];
+      const aRec = a as Record<string, unknown>;
+      const bRec = b as Record<string, unknown>;
+      const aVal = aRec[sort.field];
+      const bVal = bRec[sort.field];
       let comparison = 0;
       if (typeof aVal === 'string' && typeof bVal === 'string') {
         comparison = aVal.localeCompare(bVal);
@@ -912,7 +914,7 @@ git commit -m "feat(listing): add FirestoreAdapter with query building and clien
 // tests/unit/hooks/useUniversalListing.test.ts
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useUniversalListing } from '@hooks/useUniversalListing';
+import { useUniversalListing } from '@/hooks/useUniversalListing';
 import type { DataAdapter } from '@lib/listing/adapters/types';
 
 interface TestItem {
@@ -1771,12 +1773,14 @@ Expected: PASS
 // src/components/listing/ListingActiveFilters.tsx
 import React from 'react';
 import type { FilterDefinition } from '@lib/listing/types';
+import { getListingTranslations, type ListingLang } from '@lib/listing/i18n';
 
 interface ListingActiveFiltersProps {
   definitions: FilterDefinition[];
   activeFilters: Record<string, unknown>;
   onFilterChange: (key: string, value: unknown) => void;
   onClearAll: () => void;
+  lang?: ListingLang;
   className?: string;
 }
 
@@ -1785,8 +1789,10 @@ export function ListingActiveFilters({
   activeFilters,
   onFilterChange,
   onClearAll,
+  lang = 'es',
   className = '',
 }: ListingActiveFiltersProps) {
+  const t = getListingTranslations(lang);
   const activePairs = Object.entries(activeFilters).filter(
     ([, v]) =>
       v !== undefined &&
@@ -1828,7 +1834,7 @@ export function ListingActiveFilters({
         onClick={onClearAll}
         className="text-xs text-gray-500 underline hover:text-gray-700 dark:text-gray-400"
       >
-        Clear all
+        {t.filters.clearAll}
       </button>
     </div>
   );
@@ -2940,7 +2946,7 @@ import React from 'react';
 import {
   useUniversalListing,
   type UseUniversalListingConfig,
-} from '@hooks/useUniversalListing';
+} from '@/hooks/useUniversalListing';
 import type {
   ViewMode,
   FilterDefinition,
@@ -3233,9 +3239,9 @@ Replace the component body with:
 import React, { useMemo } from 'react';
 import { UniversalListing } from '@components/listing';
 import { ClientSideAdapter } from '@lib/listing/adapters/ClientSideAdapter';
-import { getSpotlights } from '@lib/spotlight';
+import { getSpotlights } from '@/lib/spotlights';
 import SpotlightCard from './SpotlightCard';
-import type { Spotlight } from '@/types/spotlight';
+import type { AlumniSpotlight } from '@/types/spotlight';
 
 interface SpotlightListProps {
   lang?: 'es' | 'en';
@@ -3244,7 +3250,7 @@ interface SpotlightListProps {
 export default function SpotlightList({ lang = 'es' }: SpotlightListProps) {
   const adapter = useMemo(
     () =>
-      new ClientSideAdapter<Spotlight>({
+      new ClientSideAdapter<AlumniSpotlight>({
         fetchAll: getSpotlights,
         searchFields: ['name', 'story', 'program', 'graduationYear'],
         getId: (item) => item.id,
@@ -3316,7 +3322,7 @@ CompanyList is more complex than SpotlightList — it has a CompanyDrawer and la
 ```tsx
 // src/components/companies/CompanyList.tsx
 import React, { useState, useMemo } from 'react';
-import { useUniversalListing } from '@hooks/useUniversalListing';
+import { useUniversalListing } from '@/hooks/useUniversalListing';
 import { ClientSideAdapter } from '@lib/listing/adapters/ClientSideAdapter';
 import {
   ListingSearch,
@@ -3622,14 +3628,13 @@ const memberFilterDefs: FilterDefinition[] = [
 
 - [ ] **Step 3: Rewrite MemberDirectory using hook + building blocks**
 
-The MemberDirectory uses `getMemberProfiles()` which returns all members — this is a good candidate for `ClientSideAdapter` despite the spec saying Firestore. Check actual data volume. If under 500 members, use ClientSideAdapter. If larger, use FirestoreAdapter with `searchMembers()`.
-
-For the migration, use ClientSideAdapter initially (simpler, validates the pattern). Switch to FirestoreAdapter later if needed for scale.
+The MemberDirectory uses FirestoreAdapter per the spec. This is the key migration that validates the Firestore path. Use `FirestoreAdapter` with the `users` collection, mapping filters to Firestore `where()` clauses via `filterMap`. Text search is applied client-side after fetch (matching the existing pattern).
 
 ```tsx
 // High-level structure — adapt to actual imports and types after reading files
-import { useUniversalListing } from '@hooks/useUniversalListing';
-import { ClientSideAdapter } from '@lib/listing/adapters/ClientSideAdapter';
+import { useUniversalListing } from '@/hooks/useUniversalListing';
+import { FirestoreAdapter } from '@lib/listing/adapters/FirestoreAdapter';
+import { where } from 'firebase/firestore';
 import {
   ListingSearch,
   ListingFilters,
