@@ -275,25 +275,25 @@ Optional props to hide sections: `showSearch`, `showFilters`, `showSort`, `showV
 
 ## Per-Listing Configuration
 
-| Listing         | Adapter    | Default View | Pagination | Available Views     | Filter Mode |
-| --------------- | ---------- | ------------ | ---------- | ------------------- | ----------- |
-| MemberDirectory | Firestore  | compact      | offset     | compact, list, grid | collapsible |
-| CompanyList     | ClientSide | grid         | offset     | grid, list          | collapsible |
-| JobBoard        | Firestore  | list         | cursor     | list, grid          | collapsible |
-| EventList       | ClientSide | grid         | offset     | grid, list          | visible     |
+| Listing           | Adapter               | Default View | Pagination | Available Views     | Filter Mode |
+| ----------------- | --------------------- | ------------ | ---------- | ------------------- | ----------- |
+| MemberDirectory   | Firestore             | compact      | offset     | compact, list, grid | collapsible |
+| CompanyList       | ClientSide            | grid         | offset     | grid, list          | collapsible |
+| JobBoard          | Firestore             | list         | cursor     | list, grid          | collapsible |
+| EventList         | ClientSide            | grid         | offset     | grid, list          | visible     |
+| ForumSearch       | Hook only (custom UI) | list         | cursor     | —                   | custom tabs |
+| MentorshipMatcher | ClientSide            | grid         | offset     | grid, list          | collapsible |
+| BlogList          | ClientSide            | grid         | cursor     | grid                | collapsible |
+| SpotlightList     | ClientSide            | grid         | offset     | grid                | none        |
+| ResourceLibrary   | ClientSide            | grid         | offset     | grid, list          | collapsible |
+| UserManagement    | Firestore             | table        | offset     | table, compact      | visible     |
+| AdminMembersTable | Firestore             | table        | offset     | table, compact      | visible     |
+| SalaryAdminTable  | Firestore             | table        | offset     | table               | visible     |
 
 **View mode migration notes:**
 
 - **EventList** currently has a `'calendar'` view mode. Calendar view is domain-specific and stays as custom rendering outside the universal system. The migrated EventList uses the hook for search/filter/sort state but renders its calendar tab via custom code, similar to how ForumSearch uses the hook with custom UI.
 - **CompanyList** currently has a `'landscape'` (industry map) view mode. This maps conceptually to grid view in the universal system. The landscape view is domain-specific visualization and stays as a custom tab outside the universal component, rendered alongside the standard grid/list views.
-  | ForumSearch | Hook only (custom UI) | list | cursor | — | custom tabs |
-  | MentorshipMatcher | ClientSide | grid | offset | grid, list | collapsible |
-  | BlogList | ClientSide | grid | cursor | grid | collapsible |
-  | SpotlightList | ClientSide | grid | offset | grid | none |
-  | ResourceLibrary | ClientSide | grid | offset | grid, list | collapsible |
-  | UserManagement | Firestore | table | offset | table, compact | visible |
-  | AdminMembersTable | Firestore | table | offset | table, compact | visible |
-  | SalaryAdminTable | Firestore | table | offset | table | visible |
 
 ---
 
