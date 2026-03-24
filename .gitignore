@@ -18,6 +18,9 @@ build/
 .astro/
 out/
 
+# worktrees
+.worktrees/
+
 # misc
 .DS_Store
 *.pem
@@ -153,3 +156,4 @@ scripts/update-artemio-profile.mjs
 
 # Claude worktrees
 .claude/worktrees/
+.superpowers/
