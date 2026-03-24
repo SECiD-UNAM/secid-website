@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Universal Listing System — Task 5**: Created `src/hooks/useUniversalListing.ts` — a headless React hook that provides all listing state management: paginated/cursor data fetching via any `DataAdapter<T>`, debounced query with 300ms default, per-key filters with clear, sort config, offset and cursor pagination modes, view mode toggle, error state with retry, and stale-result cancellation via cleanup flag. Adapter is accessed through a ref to avoid stale closures and prevent unintended refetches on re-renders. 8 unit tests passing (TC covers: initial fetch, query debounce, filters, sort, page navigation, view mode, error handling, retry).
+
 - **Universal Listing System — Task 3**: Created `src/lib/listing/adapters/ClientSideAdapter.ts` — an in-memory data adapter for small collections (events, blog, spotlights, companies). Loads all data once via `fetchAll` or `initialData`, caches results, and applies text search across configurable fields, exact-match filtering (scalar and array), sort (string/number, asc/desc), and offset-based pagination. Cache is invalidated via `invalidate()`. 11 unit tests cover all paths including the compose case (filter+sort+pagination) and cache invalidation.
 
 - **Universal Listing System — Task 1**: Created `src/lib/listing/types.ts` with shared type contracts (`ViewMode`, `SortConfig`, `FilterDefinition`, `ColumnDefinition<T>`, `FetchParams`, `FetchResult<T>`, `CountParams`, and `isViewMode` type guard) and `src/lib/listing/adapters/types.ts` with the `DataAdapter<T>` interface. These are the foundational contracts for all subsequent Universal Listing System tasks.
