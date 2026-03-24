@@ -27,6 +27,11 @@ export interface BlogPost {
   featured: boolean;
   featuredImage?: string;
   status: 'draft' | 'published';
+  lang: 'es' | 'en';
+  translationOf?: string;
+  translationSlug?: string;
+  moderationStatus?: 'pending' | 'approved' | 'rejected' | 'auto-approved';
+  source?: 'content-collection' | 'firestore';
 }
 
 export interface BlogFilters {
@@ -34,6 +39,7 @@ export interface BlogFilters {
   tag?: string;
   search?: string;
   status?: 'draft' | 'published';
+  lang?: 'es' | 'en';
   limit?: number;
 }
 
@@ -54,6 +60,8 @@ const mockBlogPosts: BlogPost[] = [
     featured: true,
     featuredImage: '/images/blog-1.jpg',
     status: 'published',
+    lang: 'es',
+    source: 'firestore',
   },
   {
     id: 'blog-2',
@@ -70,6 +78,8 @@ const mockBlogPosts: BlogPost[] = [
     category: 'Tutorial',
     featured: false,
     status: 'published',
+    lang: 'es',
+    source: 'firestore',
   },
   {
     id: 'blog-3',
@@ -86,6 +96,8 @@ const mockBlogPosts: BlogPost[] = [
     category: 'Carrera',
     featured: false,
     status: 'published',
+    lang: 'es',
+    source: 'firestore',
   },
   {
     id: 'blog-4',
@@ -102,6 +114,8 @@ const mockBlogPosts: BlogPost[] = [
     category: 'Investigación',
     featured: false,
     status: 'published',
+    lang: 'es',
+    source: 'firestore',
   },
   {
     id: 'blog-5',
@@ -118,6 +132,8 @@ const mockBlogPosts: BlogPost[] = [
     category: 'Opinión',
     featured: false,
     status: 'published',
+    lang: 'es',
+    source: 'firestore',
   },
   {
     id: 'blog-6',
@@ -134,6 +150,8 @@ const mockBlogPosts: BlogPost[] = [
     category: 'Tutorial',
     featured: false,
     status: 'published',
+    lang: 'es',
+    source: 'firestore',
   },
 ];
 
@@ -235,4 +253,65 @@ export async function updateBlogPost(
 ): Promise<void> {
   const docRef = doc(db, 'blog', id);
   await updateDoc(docRef, { ...updates, updatedAt: serverTimestamp() });
+}
+
+/**
+ * Merges blog posts from content collection (git) and Firestore (web editor).
+ *
+ * - Filters out Firestore posts with pending/rejected moderation status
+ * - Content-collection posts win on slug collisions (deduplication)
+ * - Result is sorted by publishedAt descending
+ * - Optional limit truncates the final result
+ */
+export function mergeBlogPosts(
+  collectionPosts: BlogPost[],
+  firestorePosts: BlogPost[],
+  limit?: number
+): BlogPost[] {
+  const visibleFirestore = firestorePosts.filter(
+    (p) =>
+      !p.moderationStatus ||
+      p.moderationStatus === 'approved' ||
+      p.moderationStatus === 'auto-approved'
+  );
+
+  const slugSet = new Set(collectionPosts.map((p) => p.slug));
+  const uniqueFirestore = visibleFirestore.filter((p) => !slugSet.has(p.slug));
+
+  const merged = [...collectionPosts, ...uniqueFirestore].sort(
+    (a, b) => b.publishedAt.getTime() - a.publishedAt.getTime()
+  );
+
+  return limit ? merged.slice(0, limit) : merged;
+}
+
+/**
+ * Filters posts for a target locale with translation-aware fallback.
+ *
+ * - Always includes posts in the target locale
+ * - Includes foreign-language posts that have no translation in the target locale
+ * - Excludes foreign-language posts that are translations of a target-locale original
+ * - Excludes foreign-language originals when a translation exists in the target locale
+ */
+export function filterByLocale(posts: BlogPost[], locale: 'es' | 'en'): BlogPost[] {
+  const otherLocale = locale === 'es' ? 'en' : 'es';
+
+  // Build set of original slugs that have been translated into the target locale
+  const translatedOriginalSlugs = new Set(
+    posts
+      .filter((p) => p.lang === locale && p.translationOf)
+      .map((p) => p.translationOf!)
+  );
+
+  return posts.filter((p) => {
+    if (p.lang === locale) return true;
+
+    // Exclude foreign posts that are translations of a target-locale original
+    if (p.lang === otherLocale && p.translationOf) return false;
+
+    // Exclude foreign originals whose slug is the target of a target-locale translation
+    if (p.lang === otherLocale && translatedOriginalSlugs.has(p.slug)) return false;
+
+    return true;
+  });
 }
