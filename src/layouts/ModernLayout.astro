@@ -53,6 +53,7 @@ const schemaOrgJson = JSON.stringify({
     addressLocality: 'Ciudad de México',
   },
 });
+import FeedbackFAB from '../components/feedback/FeedbackFAB.tsx';
 ---
 
 <!doctype html>
@@ -327,7 +328,7 @@ const schemaOrgJson = JSON.stringify({
       <slot />
     </main>
 
-    <!-- FeedbackFAB removed — lucide-react breaks build -->
+    <FeedbackFAB client:only="react" />
 
     <!-- Modern JavaScript Only -->
     <script>
