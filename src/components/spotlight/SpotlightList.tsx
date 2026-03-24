@@ -1,60 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
+import { UniversalListing } from '@components/listing';
+import { ClientSideAdapter } from '@lib/listing/adapters/ClientSideAdapter';
 import { getSpotlights } from '@/lib/spotlights';
-import type { AlumniSpotlight } from '@/types/spotlight';
 import SpotlightCard from './SpotlightCard';
+import type { AlumniSpotlight } from '@/types/spotlight';
 
-interface Props {
+interface SpotlightListProps {
   lang?: 'es' | 'en';
 }
 
-export default function SpotlightList({ lang = 'es' }: Props) {
-  const [spotlights, setSpotlights] = useState<AlumniSpotlight[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const t = {
-    es: {
-      loading: 'Cargando historias...',
-      empty: 'No hay historias disponibles aún.',
-    },
-    en: {
-      loading: 'Loading stories...',
-      empty: 'No stories available yet.',
-    },
-  }[lang];
-
-  useEffect(() => {
-    getSpotlights()
-      .then(setSpotlights)
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) {
-    return (
-      <div style={{ textAlign: 'center', padding: '3rem' }}>
-        <p>{t.loading}</p>
-      </div>
-    );
-  }
-
-  if (spotlights.length === 0) {
-    return (
-      <div style={{ textAlign: 'center', padding: '3rem' }}>
-        <p>{t.empty}</p>
-      </div>
-    );
-  }
+export default function SpotlightList({ lang = 'es' }: SpotlightListProps) {
+  const adapter = useMemo(
+    () =>
+      new ClientSideAdapter<AlumniSpotlight>({
+        fetchAll: getSpotlights,
+        searchFields: ['name', 'title', 'company', 'excerpt'],
+        getId: (item) => item.id,
+      }),
+    []
+  );
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-        gap: '1.5rem',
-      }}
-    >
-      {spotlights.map((spotlight) => (
-        <SpotlightCard key={spotlight.id} spotlight={spotlight} lang={lang} />
-      ))}
-    </div>
+    <UniversalListing
+      adapter={adapter}
+      renderItem={(spotlight) => (
+        <SpotlightCard spotlight={spotlight} lang={lang} />
+      )}
+      keyExtractor={(s) => s.id}
+      defaultViewMode="grid"
+      availableViewModes={['grid']}
+      showFilters={false}
+      showSort={false}
+      showViewToggle={false}
+      paginationMode="offset"
+      defaultPageSize={12}
+      lang={lang}
+    />
   );
 }
