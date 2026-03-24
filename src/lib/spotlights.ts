@@ -79,6 +79,29 @@ const mockSpotlights: AlumniSpotlight[] = [
   },
 ];
 
+export async function getAllSpotlights(): Promise<AlumniSpotlight[]> {
+  if (isUsingMockAPI()) {
+    return [...mockSpotlights];
+  }
+
+  try {
+    const q = query(
+      collection(db, 'spotlights'),
+      orderBy('publishedAt', 'desc'),
+      limit(100)
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+      publishedAt: d.data().publishedAt?.toDate() || new Date(),
+    })) as AlumniSpotlight[];
+  } catch (error) {
+    console.error('Error fetching all spotlights:', error);
+    return [...mockSpotlights];
+  }
+}
+
 export async function getSpotlights(): Promise<AlumniSpotlight[]> {
   if (isUsingMockAPI()) {
     return mockSpotlights.filter((s) => s.status === 'published');

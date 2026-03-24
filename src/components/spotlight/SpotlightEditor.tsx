@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
-import { createSpotlight } from '@/lib/spotlights';
+import React, { useState, useEffect } from 'react';
+import {
+  createSpotlight,
+  updateSpotlight,
+  getSpotlight,
+} from '@/lib/spotlights';
 
 interface Props {
   lang?: 'es' | 'en';
+  spotlightId?: string;
 }
 
-export default function SpotlightEditor({ lang = 'es' }: Props) {
+export default function SpotlightEditor({ lang = 'es', spotlightId }: Props) {
+  const isEditMode = Boolean(spotlightId);
+
   const [name, setName] = useState('');
   const [title, setTitle] = useState('');
   const [company, setCompany] = useState('');
@@ -19,39 +26,51 @@ export default function SpotlightEditor({ lang = 'es' }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [loadingExisting, setLoadingExisting] = useState(isEditMode);
 
   const t = {
     es: {
-      pageTitle: 'Publicar Historia de Egresado',
-      pageDescription:
-        'Comparte la historia de éxito de un egresado de la comunidad SECiD.',
+      pageTitle: isEditMode
+        ? 'Editar Historia de Egresado'
+        : 'Publicar Historia de Egresado',
+      pageDescription: isEditMode
+        ? 'Actualiza la historia de exito de un egresado de la comunidad SECiD.'
+        : 'Comparte la historia de exito de un egresado de la comunidad SECiD.',
       name: 'Nombre completo',
-      namePlaceholder: 'Ej. María García López',
-      title: 'Puesto / Título',
+      namePlaceholder: 'Ej. Maria Garcia Lopez',
+      title: 'Puesto / Titulo',
       titlePlaceholder: 'Ej. Senior Data Scientist',
       company: 'Empresa',
       companyPlaceholder: 'Ej. Google',
-      graduationYear: 'Año de generación',
+      graduationYear: 'Ano de generacion',
       excerpt: 'Resumen corto',
-      excerptPlaceholder: 'Una oración que resuma la historia...',
+      excerptPlaceholder: 'Una oracion que resuma la historia...',
       story: 'Historia (HTML permitido)',
-      storyPlaceholder: '<h2>Mi camino</h2><p>Escribe la historia aquí...</p>',
+      storyPlaceholder: '<h2>Mi camino</h2><p>Escribe la historia aqui...</p>',
       tags: 'Etiquetas (separadas por comas)',
       tagsPlaceholder: 'Ej. Machine Learning, Google, Liderazgo',
       featured: 'Marcar como destacada',
-      submit: 'Publicar Historia',
-      submitting: 'Publicando...',
-      success: 'Historia publicada exitosamente.',
-      error: 'Error al publicar la historia. Intenta de nuevo.',
+      submit: isEditMode ? 'Actualizar Historia' : 'Publicar Historia',
+      submitting: isEditMode ? 'Actualizando...' : 'Publicando...',
+      success: isEditMode
+        ? 'Historia actualizada exitosamente.'
+        : 'Historia publicada exitosamente.',
+      error: isEditMode
+        ? 'Error al actualizar la historia. Intenta de nuevo.'
+        : 'Error al publicar la historia. Intenta de nuevo.',
+      errorLoading: 'Error al cargar la historia.',
       back: 'Volver a historias',
       required: 'Este campo es obligatorio.',
     },
     en: {
-      pageTitle: 'Publish Alumni Story',
-      pageDescription:
-        'Share the success story of a SECiD alumni community member.',
+      pageTitle: isEditMode
+        ? 'Edit Alumni Story'
+        : 'Publish Alumni Story',
+      pageDescription: isEditMode
+        ? 'Update the success story of a SECiD alumni community member.'
+        : 'Share the success story of a SECiD alumni community member.',
       name: 'Full name',
-      namePlaceholder: 'E.g. María García López',
+      namePlaceholder: 'E.g. Maria Garcia Lopez',
       title: 'Position / Title',
       titlePlaceholder: 'E.g. Senior Data Scientist',
       company: 'Company',
@@ -64,14 +83,53 @@ export default function SpotlightEditor({ lang = 'es' }: Props) {
       tags: 'Tags (comma-separated)',
       tagsPlaceholder: 'E.g. Machine Learning, Google, Leadership',
       featured: 'Mark as featured',
-      submit: 'Publish Story',
-      submitting: 'Publishing...',
-      success: 'Story published successfully.',
-      error: 'Error publishing the story. Please try again.',
+      submit: isEditMode ? 'Update Story' : 'Publish Story',
+      submitting: isEditMode ? 'Updating...' : 'Publishing...',
+      success: isEditMode
+        ? 'Story updated successfully.'
+        : 'Story published successfully.',
+      error: isEditMode
+        ? 'Error updating the story. Please try again.'
+        : 'Error publishing the story. Please try again.',
+      errorLoading: 'Error loading the story.',
       back: 'Back to stories',
       required: 'This field is required.',
     },
   }[lang];
+
+  useEffect(() => {
+    if (!spotlightId) return;
+
+    let cancelled = false;
+
+    async function loadSpotlight() {
+      try {
+        const existing = await getSpotlight(spotlightId!);
+        if (cancelled) return;
+        if (!existing) {
+          setError(t.errorLoading);
+          return;
+        }
+        setName(existing.name);
+        setTitle(existing.title);
+        setCompany(existing.company);
+        setGraduationYear(existing.graduationYear);
+        setStory(existing.story);
+        setExcerpt(existing.excerpt);
+        setTagsInput(existing.tags.join(', '));
+        setFeatured(existing.featured);
+      } catch {
+        if (!cancelled) setError(t.errorLoading);
+      } finally {
+        if (!cancelled) setLoadingExisting(false);
+      }
+    }
+
+    loadSpotlight();
+    return () => {
+      cancelled = true;
+    };
+  }, [spotlightId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,29 +148,48 @@ export default function SpotlightEditor({ lang = 'es' }: Props) {
         .map((tag) => tag.trim())
         .filter(Boolean);
 
-      await createSpotlight({
-        name,
-        title,
-        company,
-        graduationYear,
-        story,
-        excerpt,
-        tags,
-        featured,
-        status: 'published',
-      });
+      if (isEditMode && spotlightId) {
+        await updateSpotlight(spotlightId, {
+          name,
+          title,
+          company,
+          graduationYear,
+          story,
+          excerpt,
+          tags,
+          featured,
+        });
+      } else {
+        await createSpotlight({
+          name,
+          title,
+          company,
+          graduationYear,
+          story,
+          excerpt,
+          tags,
+          featured,
+          status: 'published',
+        });
+      }
 
       setSuccess(true);
-      setName('');
-      setTitle('');
-      setCompany('');
-      setGraduationYear(new Date().getFullYear());
-      setStory('');
-      setExcerpt('');
-      setTagsInput('');
-      setFeatured(false);
+
+      if (!isEditMode) {
+        setName('');
+        setTitle('');
+        setCompany('');
+        setGraduationYear(new Date().getFullYear());
+        setStory('');
+        setExcerpt('');
+        setTagsInput('');
+        setFeatured(false);
+      }
     } catch (err) {
-      console.error('Error creating spotlight:', err);
+      console.error(
+        isEditMode ? 'Error updating spotlight:' : 'Error creating spotlight:',
+        err
+      );
       setError(t.error);
     } finally {
       setSubmitting(false);
@@ -142,10 +219,26 @@ export default function SpotlightEditor({ lang = 'es' }: Props) {
     marginBottom: '1.5rem',
   };
 
+  if (loadingExisting) {
+    return (
+      <div style={{ maxWidth: '700px', margin: '0 auto' }}>
+        <div
+          style={{
+            padding: '2rem',
+            textAlign: 'center',
+            color: 'var(--color-text-secondary)',
+          }}
+        >
+          {lang === 'es' ? 'Cargando historia...' : 'Loading story...'}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ maxWidth: '700px', margin: '0 auto' }}>
       <a
-        href={`/${lang}/spotlights`}
+        href={`/${lang}/dashboard/spotlights`}
         style={{
           color: 'var(--secid-primary)',
           display: 'inline-block',
