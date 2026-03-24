@@ -93,8 +93,8 @@ function getNestedValue(obj, path) {
  */
 exports.onMergeRequestApproved = (0, firestore_1.onDocumentUpdated)({
     document: "merge_requests/{requestId}",
-    timeoutSeconds: 540,
-    memory: "512MiB",
+    timeoutSeconds: 120,
+    memory: "256MiB",
 }, async (event) => {
     var _a, _b, _c;
     const beforeData = (_a = event.data) === null || _a === void 0 ? void 0 : _a.before.data();
