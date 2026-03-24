@@ -2,6 +2,7 @@
 import ModernLayout from '../../layouts/ModernLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
+import CommissionsListView from '../../components/commissions/CommissionsListView';
 import { getTranslations } from '../../i18n/translations';
 
 const t = getTranslations('es');
@@ -119,48 +120,18 @@ const t = getTranslations('es');
     </div>
   </section>
 
-  <!-- Board Section -->
+  <!-- Organization Structure -->
   <section class="secid-section">
     <div class="secid-container">
-      <h2 class="secid-section__title">Nuestra Mesa Directiva</h2>
-
-      <div class="secid-grid secid-grid--3">
-        <div class="secid-board-member">
-          <div class="secid-board-member__icon">
-            <i class="fas fa-user-tie"></i>
-          </div>
-          <h3 class="secid-board-member__title">Presidente</h3>
-          <p class="secid-board-member__name">Jorge Alejandro Ramirez Bondi</p>
-        </div>
-
-        <div class="secid-board-member">
-          <div class="secid-board-member__icon">
-            <i class="fas fa-file-signature"></i>
-          </div>
-          <h3 class="secid-board-member__title">Secretario</h3>
-          <p class="secid-board-member__name">
-            Artemio Santiago Padilla Robles
-          </p>
-        </div>
-
-        <div class="secid-board-member">
-          <div class="secid-board-member__icon">
-            <i class="fas fa-coins"></i>
-          </div>
-          <h3 class="secid-board-member__title">Tesorera</h3>
-          <p class="secid-board-member__name">Sara Kenia Cisneros</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Leaders Section -->
-  <section class="secid-section secid-bg-cream">
-    <div class="secid-container">
-      <h2 class="secid-section__title">Nuestros Líderes</h2>
-      <div class="secid-content">
-        <h3 class="secid-subsection__title">Jefes de Comité</h3>
-        <p class="secid-text-center"><em><strong>Por definir</strong></em></p>
+      <CommissionsListView lang="es" client:load />
+      <div style="text-align:center; margin-top:2rem;">
+        <a
+          href="/es/commissions"
+          class="secid-button secid-button--outline"
+        >
+          <i class="fas fa-sitemap"></i>
+          Ver organigrama interactivo
+        </a>
       </div>
     </div>
   </section>
@@ -269,58 +240,6 @@ const t = getTranslations('es');
     height: auto;
   }
 
-  .secid-board-member {
-    text-align: center;
-    padding: 2rem;
-    background: white;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    transition: all 0.3s ease;
-  }
-
-  .secid-board-member:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
-  }
-
-  .secid-board-member__icon {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 1.5rem;
-    background: linear-gradient(
-      135deg,
-      var(--secid-primary) 0%,
-      var(--secid-secondary) 100%
-    );
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    color: white;
-  }
-
-  .secid-board-member__title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--secid-secondary);
-    margin-bottom: 0.5rem;
-  }
-
-  .secid-board-member__name {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--secid-dark-blue);
-  }
-
-  .secid-subsection__title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--secid-dark-blue);
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-
   .secid-value-card {
     padding: 2rem;
     text-align: center;
@@ -373,19 +292,6 @@ const t = getTranslations('es');
     color: var(--color-text-primary) !important;
   }
 
-  :global([data-theme='dark']) .secid-board-member {
-    background: var(--card-bg);
-    border: 1px solid var(--color-border);
-  }
-
-  :global([data-theme='dark']) .secid-board-member__title {
-    color: var(--secid-primary);
-  }
-
-  :global([data-theme='dark']) .secid-board-member__name {
-    color: var(--color-text-primary);
-  }
-
   :global([data-theme='dark']) .secid-value-card {
     background: var(--card-bg);
     border: 1px solid var(--color-border);
@@ -401,10 +307,6 @@ const t = getTranslations('es');
 
   :global([data-theme='dark']) .secid-value-card__icon {
     background: var(--color-surface-alt);
-  }
-
-  :global([data-theme='dark']) .secid-subsection__title {
-    color: var(--color-text-primary);
   }
 
   :global([data-theme='dark']) .secid-section__title {
