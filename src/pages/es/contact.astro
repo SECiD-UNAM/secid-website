@@ -267,21 +267,22 @@ const t = getTranslations('es');
   }
 
   .secid-contact-form {
-    background: white;
+    background: var(--card-bg);
     padding: 2rem;
     border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
     box-shadow: var(--shadow-md);
   }
 
   .secid-contact-form h2 {
     font-size: 1.75rem;
-    color: var(--secid-dark-blue);
+    color: var(--color-text-primary);
     margin-bottom: 2rem;
   }
 
   .secid-contact-info h2 {
     font-size: 1.75rem;
-    color: var(--secid-dark-blue);
+    color: var(--color-text-primary);
     margin-bottom: 2rem;
   }
 
@@ -294,7 +295,7 @@ const t = getTranslations('es');
   .secid-contact-info__icon {
     width: 50px;
     height: 50px;
-    background: var(--secid-gray-100);
+    background: var(--color-surface-alt, var(--secid-gray-100));
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -306,27 +307,28 @@ const t = getTranslations('es');
 
   .secid-contact-info__content h3 {
     font-size: 1.125rem;
-    color: var(--secid-dark-blue);
+    color: var(--color-text-primary);
     margin-bottom: 0.5rem;
   }
 
   .secid-contact-info__content p {
-    color: var(--secid-gray-700);
+    color: var(--color-text-secondary);
     margin: 0;
   }
 
   .secid-contact-info__content a {
-    color: var(--secid-secondary);
+    color: var(--secid-primary);
     text-decoration: none;
     transition: color 0.3s ease;
   }
 
   .secid-contact-info__content a:hover {
-    color: var(--secid-primary);
+    color: var(--secid-secondary);
   }
 
   .secid-contact-info__box {
-    background: var(--secid-cream);
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
     padding: 2rem;
     border-radius: var(--radius-lg);
     margin-top: 2rem;
@@ -334,7 +336,7 @@ const t = getTranslations('es');
 
   .secid-contact-info__box h3 {
     font-size: 1.25rem;
-    color: var(--secid-dark-blue);
+    color: var(--color-text-primary);
     margin-bottom: 1rem;
   }
 
@@ -349,7 +351,7 @@ const t = getTranslations('es');
   }
 
   .secid-contact-info__links a {
-    color: var(--secid-secondary);
+    color: var(--secid-primary);
     text-decoration: none;
     transition: color 0.3s ease;
     display: inline-flex;
@@ -357,7 +359,7 @@ const t = getTranslations('es');
   }
 
   .secid-contact-info__links a:hover {
-    color: var(--secid-primary);
+    color: var(--secid-secondary);
   }
 
   .secid-contact-info__links a::before {
@@ -374,7 +376,8 @@ const t = getTranslations('es');
   .secid-faq__item {
     margin-bottom: 2rem;
     padding: 2rem;
-    background: white;
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
   }
@@ -382,12 +385,12 @@ const t = getTranslations('es');
   .secid-faq__question {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--secid-dark-blue);
+    color: var(--color-text-primary);
     margin-bottom: 1rem;
   }
 
   .secid-faq__answer {
-    color: var(--secid-gray-700);
+    color: var(--color-text-secondary);
     line-height: 1.6;
     margin: 0;
   }
