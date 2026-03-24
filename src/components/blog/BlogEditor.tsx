@@ -53,6 +53,11 @@ const translations = {
     backToBlog: 'Volver al blog',
     backHref: '/es/blog',
     blogLink: '/es/blog/',
+    langLabel: 'Idioma del artículo',
+    langEs: 'Español',
+    langEn: 'Inglés',
+    pendingNotice:
+      'Tu artículo será revisado por un moderador antes de ser publicado.',
   },
   en: {
     pageTitle: 'Create New Article',
@@ -98,6 +103,11 @@ const translations = {
     backToBlog: 'Back to blog',
     backHref: '/en/blog',
     blogLink: '/en/blog/',
+    langLabel: 'Article language',
+    langEs: 'Spanish',
+    langEn: 'English',
+    pendingNotice:
+      'Your article will be reviewed by a moderator before being published.',
   },
 };
 
@@ -131,6 +141,7 @@ export default function BlogEditor({ lang = 'es' }: Props) {
   const [tagsInput, setTagsInput] = useState('');
   const [featuredImage, setFeaturedImage] = useState('');
   const [featured, setFeatured] = useState(false);
+  const [postLang, setPostLang] = useState<'es' | 'en'>(lang);
   const [status, setStatus] = useState<'draft' | 'published'>('draft');
   const [showPreview, setShowPreview] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -186,6 +197,11 @@ export default function BlogEditor({ lang = 'es' }: Props) {
         tags,
         featured,
         status: submitStatus,
+        lang: postLang,
+        moderationStatus: userProfile?.trustedContributor
+          ? 'auto-approved'
+          : 'pending',
+        source: 'firestore' as const,
         authorId: userProfile?.uid || 'anonymous',
         authorName:
           userProfile?.displayName ||
@@ -462,6 +478,19 @@ export default function BlogEditor({ lang = 'es' }: Props) {
             )}
           </div>
 
+          {/* Language */}
+          <div className="blog-editor__field">
+            <label className="blog-editor__label">{t.langLabel}</label>
+            <select
+              className="secid-form__input"
+              value={postLang}
+              onChange={(e) => setPostLang(e.target.value as 'es' | 'en')}
+            >
+              <option value="es">{t.langEs}</option>
+              <option value="en">{t.langEn}</option>
+            </select>
+          </div>
+
           {/* Tags */}
           <div className="blog-editor__field">
             <label className="blog-editor__label">{t.tagsLabel}</label>
@@ -497,6 +526,13 @@ export default function BlogEditor({ lang = 'es' }: Props) {
               {t.featuredLabel}
             </label>
           </div>
+
+          {/* Moderation notice */}
+          {!userProfile?.trustedContributor && (
+            <div className="blog-editor__moderation-notice">
+              <i className="fas fa-info-circle" /> {t.pendingNotice}
+            </div>
+          )}
 
           {/* Actions */}
           <div className="blog-editor__actions">
@@ -565,6 +601,17 @@ export default function BlogEditor({ lang = 'es' }: Props) {
           display: flex;
           align-items: center;
           gap: 0.5rem;
+        }
+        .blog-editor__moderation-notice {
+          background: #eff6ff;
+          border: 1px solid #3b82f6;
+          color: #1d4ed8;
+          padding: var(--space-md) var(--space-lg);
+          border-radius: var(--radius-md);
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.9rem;
         }
         .blog-editor__toggle {
           display: flex;

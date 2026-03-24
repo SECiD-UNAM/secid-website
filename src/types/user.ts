@@ -47,6 +47,7 @@ export interface UserProfile {
   securityEvents?: SecurityEvent[];
   linkedinVerified?: boolean;
   linkedinVerifiedAt?: Date;
+  trustedContributor?: boolean;
   // Profile merge detection
   potentialMergeMatch?: {
     matchedUid: string;
