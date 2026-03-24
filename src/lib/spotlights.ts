@@ -6,6 +6,7 @@ import {
   getDoc,
   addDoc,
   updateDoc,
+  deleteDoc,
   query,
   orderBy,
   limit,
@@ -141,4 +142,9 @@ export async function updateSpotlight(
   updates: Partial<AlumniSpotlight>
 ): Promise<void> {
   await updateDoc(doc(db, 'spotlights', id), updates);
+}
+
+export async function deleteSpotlight(id: string): Promise<void> {
+  const docRef = doc(db, 'spotlights', id);
+  await deleteDoc(docRef);
 }
