@@ -24,6 +24,7 @@ The codebase has 12+ listing components (MemberDirectory, CompanyList, JobBoard,
 - Real-time / live-updating listings
 - Drag-and-drop reordering
 - Bulk actions (remain in admin components, outside the universal system)
+- URL state synchronization (syncing search/filter/page to URL params) — future enhancement, currently only ForumSearch does this
 
 ---
 
@@ -67,6 +68,30 @@ src/components/listing/
 
 ---
 
+## Shared Types
+
+These types are defined in `src/lib/listing/types.ts` and supersede any module-local definitions (e.g., `ViewMode` in `src/types/member.ts`, `CompanyList.tsx`, `EventList.tsx`). During migration, existing local `ViewMode` types are replaced with imports from this module.
+
+```typescript
+type ViewMode = 'grid' | 'list' | 'compact' | 'table';
+
+interface SortConfig {
+  field: string;
+  direction: 'asc' | 'desc';
+}
+
+interface ColumnDefinition<T> {
+  key: string;
+  label: string;
+  accessor: (item: T) => React.ReactNode;
+  sortable?: boolean;
+  width?: string;
+  align?: 'left' | 'center' | 'right';
+}
+```
+
+---
+
 ## Core Hook: `useUniversalListing<T>`
 
 ### Configuration
@@ -74,10 +99,9 @@ src/components/listing/
 ```typescript
 interface UseUniversalListingConfig<T> {
   adapter: DataAdapter<T>;
-  defaultViewMode?: 'grid' | 'list' | 'compact' | 'table';
+  defaultViewMode?: ViewMode;
   defaultPageSize?: number;
   defaultSort?: SortConfig;
-  searchableFields?: string[];
   filterDefinitions?: FilterDefinition[];
   paginationMode?: 'offset' | 'cursor';
   debounceMs?: number; // default 300
@@ -97,6 +121,7 @@ interface UseUniversalListingReturn<T> {
   // State
   loading: boolean;
   error: string | null;
+  retry: () => void;
 
   // Search
   query: string;
@@ -166,9 +191,9 @@ interface FetchResult<T> {
 
 For small collections (under ~500 items): events, blog posts, spotlights, mentors, companies, resources.
 
-- Constructor takes `fetchAll: () => Promise<T[]>` and `searchFields: string[]`
+- Constructor takes `fetchAll: () => Promise<T[]>` (or `initialData: T[]` to skip initial fetch), `searchFields: string[]`, and an optional `toSearchable: (item: T) => string` mapper
 - Fetches the full dataset once, caches it
-- Applies search using the existing `src/lib/search/search-engine.ts` (fuzzy matching, typo tolerance, bilingual support)
+- Applies search using the existing `src/lib/search/search-engine.ts` (fuzzy matching, typo tolerance, bilingual support). The adapter transforms items to `IndexedContent` internally using `searchFields` to extract text and `toSearchable` for custom extraction. Results are mapped back to `T[]` via ID matching.
 - Applies filters, sort, and pagination in-memory
 - Re-fetches on cache invalidation (optional TTL or manual `invalidate()`)
 
@@ -180,7 +205,7 @@ For large collections: members, jobs, admin user tables.
 - Translates filters to Firestore `where()` clauses
 - Translates sort to `orderBy()`
 - Uses `startAfter(lastDoc)` for cursor pagination
-- Falls back to client-side post-filtering for conditions Firestore can't handle natively (multiple `array-contains`, complex text search)
+- **Text search strategy:** Firestore has no native full-text search. The adapter fetches documents matching the active filters and sort order, then applies text search client-side using the search engine. For cursor-paginated queries, the adapter over-fetches (2x pageSize) to compensate for client-side filtering reducing the result set. This matches the existing pattern in `JobBoard.tsx`.
 
 ### Custom Adapters
 
@@ -193,7 +218,7 @@ Any object implementing `DataAdapter<T>` works. Future integrations (Algolia, Ty
 ### Rendering
 
 - **ListingGrid, ListingList, ListingCompact** accept `renderItem: (item: T, viewMode: ViewMode) => ReactNode`. Existing card components (JobCard, MemberCard, etc.) are reused as renderItem functions — they are not replaced.
-- **ListingTable** accepts `columns: ColumnDefinition[]` with label, accessor, sortable flag, and optional cell renderer.
+- **ListingTable** accepts `columns: ColumnDefinition<T>[]` (see Shared Types section for full definition).
 
 ### ListingFilters
 
@@ -250,20 +275,25 @@ Optional props to hide sections: `showSearch`, `showFilters`, `showSort`, `showV
 
 ## Per-Listing Configuration
 
-| Listing           | Adapter               | Default View | Pagination | Available Views     | Filter Mode |
-| ----------------- | --------------------- | ------------ | ---------- | ------------------- | ----------- |
-| MemberDirectory   | Firestore             | compact      | offset     | compact, list, grid | collapsible |
-| CompanyList       | ClientSide            | grid         | offset     | grid, list          | collapsible |
-| JobBoard          | Firestore             | list         | cursor     | list, grid          | collapsible |
-| EventList         | ClientSide            | grid         | offset     | grid, list          | visible     |
-| ForumSearch       | Hook only (custom UI) | list         | cursor     | —                   | custom tabs |
-| MentorshipMatcher | ClientSide            | grid         | offset     | grid, list          | collapsible |
-| BlogList          | ClientSide            | grid         | cursor     | grid                | collapsible |
-| SpotlightList     | ClientSide            | grid         | offset     | grid                | none        |
-| ResourceLibrary   | ClientSide            | grid         | offset     | grid, list          | collapsible |
-| UserManagement    | Firestore             | table        | offset     | table, compact      | visible     |
-| AdminMembersTable | Firestore             | table        | offset     | table, compact      | visible     |
-| SalaryAdminTable  | Firestore             | table        | offset     | table               | visible     |
+| Listing         | Adapter    | Default View | Pagination | Available Views     | Filter Mode |
+| --------------- | ---------- | ------------ | ---------- | ------------------- | ----------- |
+| MemberDirectory | Firestore  | compact      | offset     | compact, list, grid | collapsible |
+| CompanyList     | ClientSide | grid         | offset     | grid, list          | collapsible |
+| JobBoard        | Firestore  | list         | cursor     | list, grid          | collapsible |
+| EventList       | ClientSide | grid         | offset     | grid, list          | visible     |
+
+**View mode migration notes:**
+
+- **EventList** currently has a `'calendar'` view mode. Calendar view is domain-specific and stays as custom rendering outside the universal system. The migrated EventList uses the hook for search/filter/sort state but renders its calendar tab via custom code, similar to how ForumSearch uses the hook with custom UI.
+- **CompanyList** currently has a `'landscape'` (industry map) view mode. This maps conceptually to grid view in the universal system. The landscape view is domain-specific visualization and stays as a custom tab outside the universal component, rendered alongside the standard grid/list views.
+  | ForumSearch | Hook only (custom UI) | list | cursor | — | custom tabs |
+  | MentorshipMatcher | ClientSide | grid | offset | grid, list | collapsible |
+  | BlogList | ClientSide | grid | cursor | grid | collapsible |
+  | SpotlightList | ClientSide | grid | offset | grid | none |
+  | ResourceLibrary | ClientSide | grid | offset | grid, list | collapsible |
+  | UserManagement | Firestore | table | offset | table, compact | visible |
+  | AdminMembersTable | Firestore | table | offset | table, compact | visible |
+  | SalaryAdminTable | Firestore | table | offset | table | visible |
 
 ---
 
