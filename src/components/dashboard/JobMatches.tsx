@@ -60,7 +60,7 @@ export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
         const snapshot = await getDocs(jobsQuery);
         const fetchedJobs = snapshot['docs'].map((doc) => {
           const data = doc['data']();
-          // Calculate a mock match score based on user skills
+          // Calculate match score based on user skills overlap with job requirements
           const userSkills = userProfile?.skills || [];
           const jobRequirements = data.requirements || [];
           const matchingSkills = userSkills.filter((skill: string) =>
@@ -73,7 +73,7 @@ export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
             Math.round(
               (matchingSkills.length / Math.max(jobRequirements.length, 1)) *
                 100
-            ) + Math.floor(Math.random() * 20)
+            )
           );
 
           return {

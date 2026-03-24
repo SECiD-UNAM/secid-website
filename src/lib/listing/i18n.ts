@@ -99,8 +99,8 @@ const translations = {
   },
 } as const;
 
-export type ListingTranslations = (typeof translations)['en'];
+export type ListingTranslations = (typeof translations)[ListingLang];
 
-export function getListingTranslations(lang: ListingLang): ListingTranslations {
+export function getListingTranslations(lang: ListingLang) {
   return translations[lang];
 }

@@ -36,9 +36,8 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({ className = '' }) => {
     Record<string, 'helpful' | 'not-helpful' | null>
   >({});
 
-  // Mock data - replace with actual API calls
   useEffect(() => {
-    const mockCategories: HelpCategory[] = [
+    const helpCategories: HelpCategory[] = [
       {
         id: 'getting-started',
         name: 'Getting Started',
@@ -97,7 +96,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({ className = '' }) => {
       },
     ];
 
-    const mockArticles: HelpArticle[] = [
+    const helpArticles: HelpArticle[] = [
       {
         id: 'welcome-guide',
         title: 'Welcome to SECiD - Your Complete Getting Started Guide',
@@ -305,8 +304,8 @@ Remember: Job searching is a skill that improves with practice!
       },
     ];
 
-    setCategories(mockCategories);
-    setArticles(mockArticles);
+    setCategories(helpCategories);
+    setArticles(helpArticles);
     setLoading(false);
   }, []);
 

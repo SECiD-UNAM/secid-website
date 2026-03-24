@@ -32,46 +32,9 @@ import type {
   SearchHistoryItem,
 } from '@/types/search';
 
-// Recent searches mock data (would come from localStorage/Firebase)
-const MOCK_RECENT_SEARCHES: SearchHistoryItem[] = [
-  {
-    id: '1',
-    query: 'data scientist jobs',
-    filters: { contentTypes: ['jobs'], language: 'es' } as SearchFilters,
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-    resultCount: 15,
-    clickedResults: [],
-    sessionId: 'session1',
-  },
-  {
-    id: '2',
-    query: 'machine learning workshop',
-    filters: { contentTypes: ['events'], language: 'es' } as SearchFilters,
-    timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-    resultCount: 8,
-    clickedResults: [],
-    sessionId: 'session2',
-  },
-];
+const INITIAL_RECENT_SEARCHES: SearchHistoryItem[] = [];
 
-// Popular searches mock data
-const MOCK_POPULAR_SEARCHES: PopularSearch[] = [
-  {
-    query: 'remote data science jobs',
-    count: 145,
-    period: 'week',
-    trending: true,
-  },
-  { query: 'python developer', count: 98, period: 'week', trending: false },
-  { query: 'AI workshop', count: 76, period: 'week', trending: true },
-  { query: 'data analyst Mexico', count: 67, period: 'week', trending: false },
-  {
-    query: 'machine learning course',
-    count: 54,
-    period: 'week',
-    trending: true,
-  },
-];
+const INITIAL_POPULAR_SEARCHES: PopularSearch[] = [];
 
 // Content type configurations
 const CONTENT_TYPE_CONFIG: Record<
@@ -148,8 +111,8 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
   const [showFilters, setShowFilters] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [recentSearches, setRecentSearches] =
-    useState<SearchHistoryItem[]>(MOCK_RECENT_SEARCHES);
-  const [popularSearches] = useState<PopularSearch[]>(MOCK_POPULAR_SEARCHES);
+    useState<SearchHistoryItem[]>(INITIAL_RECENT_SEARCHES);
+  const [popularSearches] = useState<PopularSearch[]>(INITIAL_POPULAR_SEARCHES);
   const [selectedResult, setSelectedResult] = useState(-1);
 
   const { t } = useTranslations();

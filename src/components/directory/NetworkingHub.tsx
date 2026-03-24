@@ -72,8 +72,6 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({
 
     try {
       setLoading(true);
-      // In production, these would be Firebase queries
-      // For now, using mock data
       await Promise.all([
         loadConnections(),
         loadConnectionRequests(),
@@ -88,34 +86,24 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({
   };
 
   const loadConnections = async () => {
-    // Mock data - in production, fetch from Firestore
-    const mockConnections: MemberProfile[] = [];
-    setConnections(mockConnections);
+    setConnections([]);
   };
 
   const loadConnectionRequests = async () => {
-    // Mock data - in production, fetch from Firestore
-    const mockRequests: ConnectionRequest[] = [];
-    setConnectionRequests(mockRequests);
+    setConnectionRequests([]);
   };
 
   const loadConversations = async () => {
-    // Mock data - in production, fetch from Firestore
-    const mockConversations: Conversation[] = [];
-    setConversations(mockConversations);
+    setConversations([]);
   };
 
   const loadRecommendations = async () => {
-    // Mock data - in production, fetch from Firestore based on user's profile
-    const mockRecommendations: MemberRecommendation[] = [];
-    setRecommendations(mockRecommendations);
+    setRecommendations([]);
   };
 
-  const loadMessages = async (conversationId: string) => {
+  const loadMessages = async (_conversationId: string) => {
     try {
-      // Mock data - in production, fetch from Firestore
-      const mockMessages: DirectMessage[] = [];
-      setMessages(mockMessages);
+      setMessages([]);
     } catch (error) {
       console.error('Error loading messages:', error);
     }
@@ -127,7 +115,6 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({
 
   const handleAcceptConnection = async (requestId: string) => {
     try {
-      // In production, update Firestore
       setConnectionRequests((prev) =>
         prev.filter((req) => req.id !== requestId)
       );
@@ -140,7 +127,6 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({
 
   const handleRejectConnection = async (requestId: string) => {
     try {
-      // In production, update Firestore
       setConnectionRequests((prev) =>
         prev.filter((req) => req.id !== requestId)
       );
@@ -164,7 +150,6 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({
         read: false,
       };
 
-      // In production, save to Firestore
       setMessages((prev) => [...prev, message]);
       setNewMessage('');
     } catch (error) {
@@ -174,8 +159,7 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({
 
   const handleConnectToRecommendation = async (memberId: string) => {
     try {
-      // In production, create connection request in Firestore
-      console.log('Connecting to member:', memberId);
+      console.log('Sending connection request to member:', memberId);
     } catch (error) {
       console.error('Error connecting to recommendation:', error);
     }

@@ -134,7 +134,7 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
       const providers = await getLinkedOAuthProviders(user.uid);
       setLinkedProviders(providers);
 
-      // Load mock active sessions and login history
+      // Load active sessions and login history
       await loadActiveSessions(user.uid);
       await loadLoginHistory(user.uid);
     } catch (error) {
@@ -144,52 +144,14 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
     }
   };
 
-  const loadActiveSessions = async (uid: string) => {
-    // Mock active sessions - in production, implement proper session tracking
-    const mockSessions: ActiveSession[] = [
-      {
-        id: 'current',
-        deviceName: 'Chrome on Windows',
-        ipAddress: '192.168.1.100',
-        location: 'Mexico City, Mexico',
-        lastActivity: new Date(),
-        current: true,
-      },
-      {
-        id: 'session-2',
-        deviceName: 'Safari on iPhone',
-        ipAddress: '192.168.1.101',
-        location: 'Mexico City, Mexico',
-        lastActivity: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-        current: false,
-      },
-    ];
-    setActiveSessions(mockSessions);
+  const loadActiveSessions = async (_uid: string) => {
+    // Session tracking not yet implemented -- returns empty until backend support is added
+    setActiveSessions([]);
   };
 
-  const loadLoginHistory = async (uid: string) => {
-    // Mock login history - in production, load from Firestore
-    const mockHistory: LoginHistory[] = [
-      {
-        id: '1',
-        timestamp: new Date(),
-        ipAddress: '192.168.1.100',
-        userAgent: 'Chrome 120.0.0.0',
-        location: 'Mexico City, Mexico',
-        provider: 'email',
-        success: true,
-      },
-      {
-        id: '2',
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-        ipAddress: '192.168.1.101',
-        userAgent: 'Safari 17.0',
-        location: 'Mexico City, Mexico',
-        provider: 'google',
-        success: true,
-      },
-    ];
-    setLoginHistory(mockHistory);
+  const loadLoginHistory = async (_uid: string) => {
+    // Login history not yet implemented -- returns empty until backend support is added
+    setLoginHistory([]);
   };
 
   const handlePasswordChange = async (data: PasswordChangeFormData) => {
@@ -711,59 +673,75 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
                 </p>
               </div>
 
-              <div className="space-y-4">
-                {activeSessions.map((session) => (
-                  <div
-                    key={session.id}
-                    className="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700"
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div className="rounded-lg bg-gray-100 p-2 dark:bg-gray-700">
-                        <Smartphone className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                      </div>
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <h3 className="font-medium text-gray-900 dark:text-white">
-                            {session.deviceName}
-                          </h3>
-                          {session.current && (
-                            <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800 dark:bg-green-900 dark:text-green-300">
-                              {lang === 'es' ? 'Actual' : 'Current'}
-                            </span>
-                          )}
+              {activeSessions.length === 0 ? (
+                <div className="rounded-lg border border-gray-200 p-8 text-center dark:border-gray-700">
+                  <Clock className="mx-auto h-10 w-10 text-gray-400 dark:text-gray-500" />
+                  <h3 className="mt-3 text-sm font-medium text-gray-900 dark:text-white">
+                    {lang === 'es'
+                      ? 'Seguimiento de sesiones disponible pronto'
+                      : 'Session tracking coming soon'}
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    {lang === 'es'
+                      ? 'Estamos trabajando en el seguimiento de sesiones activas.'
+                      : 'We are working on active session tracking.'}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {activeSessions.map((session) => (
+                    <div
+                      key={session.id}
+                      className="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+                    >
+                      <div className="flex items-start space-x-3">
+                        <div className="rounded-lg bg-gray-100 p-2 dark:bg-gray-700">
+                          <Smartphone className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {session.ipAddress}
-                        </p>
-                        {session.location && (
-                          <div className="mt-1 flex items-center space-x-1">
-                            <MapPin className="h-3 w-3 text-gray-400" />
-                            <span className="text-xs text-gray-500 dark:text-gray-400">
-                              {session.location}
-                            </span>
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <h3 className="font-medium text-gray-900 dark:text-white">
+                              {session.deviceName}
+                            </h3>
+                            {session.current && (
+                              <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800 dark:bg-green-900 dark:text-green-300">
+                                {lang === 'es' ? 'Actual' : 'Current'}
+                              </span>
+                            )}
                           </div>
-                        )}
-                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                          {lang === 'es'
-                            ? 'Última actividad: '
-                            : 'Last activity: '}
-                          {formatTimeAgo(session.lastActivity)}
-                        </p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {session.ipAddress}
+                          </p>
+                          {session.location && (
+                            <div className="mt-1 flex items-center space-x-1">
+                              <MapPin className="h-3 w-3 text-gray-400" />
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
+                                {session.location}
+                              </span>
+                            </div>
+                          )}
+                          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            {lang === 'es'
+                              ? 'Ultima actividad: '
+                              : 'Last activity: '}
+                            {formatTimeAgo(session.lastActivity)}
+                          </p>
+                        </div>
                       </div>
+                      {!session.current && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleRevokeSession(session.id)}
+                        >
+                          <LogOut className="mr-2 h-4 w-4" />
+                          {lang === 'es' ? 'Revocar' : 'Revoke'}
+                        </Button>
+                      )}
                     </div>
-                    {!session.current && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleRevokeSession(session.id)}
-                      >
-                        <LogOut className="mr-2 h-4 w-4" />
-                        {lang === 'es' ? 'Revocar' : 'Revoke'}
-                      </Button>
-                    )}
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -783,65 +761,81 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
                 </p>
               </div>
 
-              <div className="space-y-3">
-                {loginHistory.map((entry) => (
-                  <div
-                    key={entry.id}
-                    className="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700"
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div
-                        className={`rounded-lg p-2 ${
-                          entry.success
-                            ? 'bg-green-100 dark:bg-green-900'
-                            : 'bg-red-100 dark:bg-red-900'
-                        }`}
-                      >
-                        {entry.success ? (
-                          <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
-                        ) : (
-                          <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
-                        )}
-                      </div>
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <h3 className="font-medium text-gray-900 dark:text-white">
-                            {entry.success
-                              ? lang === 'es'
-                                ? 'Inicio exitoso'
-                                : 'Successful login'
-                              : lang === 'es'
-                                ? 'Intento fallido'
-                                : 'Failed attempt'}
-                          </h3>
-                          <span className="rounded bg-gray-100 px-2 py-1 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300">
-                            {entry.provider}
-                          </span>
+              {loginHistory.length === 0 ? (
+                <div className="rounded-lg border border-gray-200 p-8 text-center dark:border-gray-700">
+                  <History className="mx-auto h-10 w-10 text-gray-400 dark:text-gray-500" />
+                  <h3 className="mt-3 text-sm font-medium text-gray-900 dark:text-white">
+                    {lang === 'es'
+                      ? 'Historial de acceso disponible pronto'
+                      : 'Login history coming soon'}
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    {lang === 'es'
+                      ? 'Estamos trabajando en el registro del historial de acceso.'
+                      : 'We are working on login history logging.'}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {loginHistory.map((entry) => (
+                    <div
+                      key={entry.id}
+                      className="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+                    >
+                      <div className="flex items-start space-x-3">
+                        <div
+                          className={`rounded-lg p-2 ${
+                            entry.success
+                              ? 'bg-green-100 dark:bg-green-900'
+                              : 'bg-red-100 dark:bg-red-900'
+                          }`}
+                        >
+                          {entry.success ? (
+                            <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                          ) : (
+                            <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                          )}
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {entry.userAgent} • {entry.ipAddress}
-                        </p>
-                        {entry.location && (
-                          <div className="mt-1 flex items-center space-x-1">
-                            <MapPin className="h-3 w-3 text-gray-400" />
-                            <span className="text-xs text-gray-500 dark:text-gray-400">
-                              {entry.location}
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <h3 className="font-medium text-gray-900 dark:text-white">
+                              {entry.success
+                                ? lang === 'es'
+                                  ? 'Inicio exitoso'
+                                  : 'Successful login'
+                                : lang === 'es'
+                                  ? 'Intento fallido'
+                                  : 'Failed attempt'}
+                            </h3>
+                            <span className="rounded bg-gray-100 px-2 py-1 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+                              {entry.provider}
                             </span>
                           </div>
-                        )}
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {entry.userAgent} • {entry.ipAddress}
+                          </p>
+                          {entry.location && (
+                            <div className="mt-1 flex items-center space-x-1">
+                              <MapPin className="h-3 w-3 text-gray-400" />
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
+                                {entry.location}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm text-gray-900 dark:text-white">
+                          {formatTimeAgo(entry['timestamp'])}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {entry['timestamp'].toLocaleDateString()}
+                        </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-900 dark:text-white">
-                        {formatTimeAgo(entry['timestamp'])}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {entry['timestamp'].toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
