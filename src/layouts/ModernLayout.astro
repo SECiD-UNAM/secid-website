@@ -53,8 +53,7 @@ const schemaOrgJson = JSON.stringify({
     addressLocality: 'Ciudad de México',
   },
 });
-// FeedbackFAB disabled — lucide-react breaks Astro static build
-// import FeedbackFAB from '../components/feedback/FeedbackFAB.tsx';
+import FeedbackFAB from '../components/feedback/FeedbackFAB.tsx';
 ---
 
 <!doctype html>
@@ -329,8 +328,7 @@ const schemaOrgJson = JSON.stringify({
       <slot />
     </main>
 
-    <!-- Feedback FAB disabled — lucide-react breaks Astro static build -->
-    <!-- <FeedbackFAB client:only="react" /> -->
+    <FeedbackFAB client:only="react" />
 
     <!-- Modern JavaScript Only -->
     <script>

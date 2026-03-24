@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Bug, Lightbulb, MessageSquare } from 'lucide-react';
 
 const REPO_URL = 'https://github.com/SECiD-UNAM/secid-website';
 
 interface FeedbackOption {
   key: string;
-  icon: React.ReactNode;
+  iconClass: string;
+  iconColor: string;
   label: string;
   description: string;
   template: string;
@@ -14,30 +14,33 @@ interface FeedbackOption {
 const options: FeedbackOption[] = [
   {
     key: 'bug',
-    icon: <Bug className="h-5 w-5 text-red-500" />,
-    label: 'Report a Bug',
-    description: "Something isn't working",
+    iconClass: 'fas fa-bug',
+    iconColor: '#ef4444',
+    label: 'Reportar un Bug',
+    description: 'Algo no funciona correctamente',
     template: 'bug_report.yml',
   },
   {
     key: 'feature',
-    icon: <Lightbulb className="h-5 w-5 text-amber-500" />,
-    label: 'Request a Feature',
-    description: 'Suggest an improvement',
+    iconClass: 'fas fa-lightbulb',
+    iconColor: '#f59e0b',
+    label: 'Solicitar Funcionalidad',
+    description: 'Sugiere una mejora',
     template: 'feature_request.yml',
   },
   {
     key: 'feedback',
-    icon: <MessageSquare className="h-5 w-5 text-blue-500" />,
-    label: 'General Feedback',
-    description: 'Share your thoughts',
+    iconClass: 'fas fa-comment',
+    iconColor: '#3b82f6',
+    label: 'Retroalimentacion',
+    description: 'Comparte tu opinion',
     template: 'general_feedback.yml',
   },
 ];
 
 function buildIssueUrl(template: string): string {
-  const pageUrl = window.location.href;
-  const browser = navigator.userAgent;
+  const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const browser = typeof navigator !== 'undefined' ? navigator.userAgent : '';
 
   const params = new URLSearchParams({
     template,
@@ -54,7 +57,10 @@ export default function FeedbackFAB() {
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -80,45 +86,123 @@ export default function FeedbackFAB() {
   }
 
   return (
-    <div ref={containerRef} className="fixed bottom-6 right-6 z-90">
+    <div
+      ref={containerRef}
+      style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 90 }}
+    >
       {/* Popover menu */}
       <div
-        className={`absolute bottom-16 right-0 w-72 origin-bottom-right transition-all duration-200 ${
-          isOpen
-            ? 'scale-100 opacity-100'
-            : 'pointer-events-none scale-95 opacity-0'
-        }`}
+        style={{
+          position: 'absolute',
+          bottom: 64,
+          right: 0,
+          width: 280,
+          transformOrigin: 'bottom right',
+          transition: 'all 200ms ease',
+          transform: isOpen ? 'scale(1)' : 'scale(0.95)',
+          opacity: isOpen ? 1 : 0,
+          pointerEvents: isOpen ? 'auto' : 'none',
+        }}
         role="menu"
         aria-label="Feedback options"
       >
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800">
-          {/* Header */}
-          <div className="border-b border-gray-100 px-4 py-3 dark:border-gray-700">
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              How can we help?
+        <div
+          style={{
+            background: 'var(--card-bg, white)',
+            border: '1px solid var(--color-border, #e5e7eb)',
+            borderRadius: 12,
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              padding: '12px 16px',
+              borderBottom: '1px solid var(--color-border, #e5e7eb)',
+            }}
+          >
+            <p
+              style={{
+                margin: 0,
+                fontSize: 14,
+                fontWeight: 600,
+                color: 'var(--color-text-primary, #111)',
+              }}
+            >
+              ¿Como podemos ayudarte?
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Choose a category to open a GitHub issue
+            <p
+              style={{
+                margin: '2px 0 0',
+                fontSize: 12,
+                color: 'var(--color-text-secondary, #666)',
+              }}
+            >
+              Abre un issue en GitHub
             </p>
           </div>
 
-          {/* Options */}
-          <div className="p-1.5">
+          <div style={{ padding: 6 }}>
             {options.map((opt) => (
               <button
                 key={opt.key}
                 role="menuitem"
                 onClick={() => handleOptionClick(opt.template)}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  width: '100%',
+                  padding: '10px 12px',
+                  border: 'none',
+                  borderRadius: 8,
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  transition: 'background 150ms',
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background =
+                    'var(--color-surface-alt, #f3f4f6)')
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.background = 'transparent')
+                }
               >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700">
-                  {opt.icon}
+                <span
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 8,
+                    background: 'var(--color-surface-alt, #f3f4f6)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    color: opt.iconColor,
+                    fontSize: 16,
+                  }}
+                >
+                  <i className={opt.iconClass} />
                 </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                <div>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: 'var(--color-text-primary, #111)',
+                    }}
+                  >
                     {opt.label}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: 12,
+                      color: 'var(--color-text-secondary, #666)',
+                    }}
+                  >
                     {opt.description}
                   </p>
                 </div>
@@ -131,17 +215,26 @@ export default function FeedbackFAB() {
       {/* FAB button */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        aria-label={isOpen ? 'Close feedback menu' : 'Send feedback'}
+        aria-label={isOpen ? 'Cerrar menu' : 'Enviar retroalimentacion'}
         aria-expanded={isOpen}
         aria-haspopup="menu"
-        className="group flex h-[52px] w-[52px] items-center justify-center rounded-full bg-primary-500 text-white shadow-lg shadow-primary-500/30 transition-all duration-200 hover:bg-primary-600 hover:shadow-xl hover:shadow-primary-500/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 active:scale-95 dark:focus-visible:ring-offset-gray-900"
+        style={{
+          width: 52,
+          height: 52,
+          borderRadius: '50%',
+          border: 'none',
+          background: 'var(--secid-primary, #F65425)',
+          color: 'white',
+          cursor: 'pointer',
+          boxShadow: '0 4px 20px rgba(246,84,37,0.4)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 22,
+          transition: 'all 200ms ease',
+        }}
       >
-        <MessageCircle
-          className={`h-6 w-6 transition-all duration-200 ${isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}`}
-        />
-        <X
-          className={`absolute h-6 w-6 transition-all duration-200 ${isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}
-        />
+        <i className={isOpen ? 'fas fa-times' : 'fas fa-comment-dots'} />
       </button>
     </div>
   );
