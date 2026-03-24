@@ -3,6 +3,9 @@ import ModernLayout from '../../layouts/ModernLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
 import BlogListPage from '../../components/wrappers/BlogListPage';
+import { getContentCollectionPosts } from '../../lib/blog-server';
+
+const initialPosts = await getContentCollectionPosts('en');
 ---
 
 <ModernLayout
@@ -26,7 +29,7 @@ import BlogListPage from '../../components/wrappers/BlogListPage';
 
     <section class="secid-section">
       <div class="secid-container">
-        <BlogListPage client:load lang="en" />
+        <BlogListPage client:load lang="en" initialPosts={initialPosts} />
       </div>
     </section>
   </main>

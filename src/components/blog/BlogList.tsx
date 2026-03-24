@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { getBlogPosts, type BlogPost, type BlogFilters } from '@/lib/blog';
+import { getBlogPosts, mergeBlogPosts, filterByLocale, type BlogPost, type BlogFilters } from '@/lib/blog';
 
 interface Props {
   lang?: 'es' | 'en';
+  initialPosts?: BlogPost[];
 }
 
 const translations = {
@@ -83,7 +84,7 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
-export default function BlogList({ lang = 'es' }: Props) {
+export default function BlogList({ lang = 'es', initialPosts = [] }: Props) {
   const t = translations[lang];
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,14 +102,19 @@ export default function BlogList({ lang = 'es' }: Props) {
       if (searchQuery.trim()) {
         filters.search = searchQuery.trim();
       }
-      const data = await getBlogPosts(filters);
-      setPosts(data);
+      const firestoreData = await getBlogPosts(filters);
+      const merged = mergeBlogPosts(initialPosts, firestoreData);
+      const localized = filterByLocale(merged, lang);
+      setPosts(localized);
     } catch (error) {
       console.error('Error loading blog posts:', error);
+      // Graceful degradation: show initialPosts even if Firestore fails
+      const localized = filterByLocale(initialPosts, lang);
+      setPosts(localized);
     } finally {
       setLoading(false);
     }
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, searchQuery, initialPosts, lang]);
 
   useEffect(() => {
     fetchPosts();
