@@ -6,7 +6,7 @@ on:
   pull_request_review_comment:
     types: [created]
   issues:
-    types: [opened, labeled]
+    types: [opened]
 
 permissions:
   contents: write
@@ -39,11 +39,11 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: "--max-turns 25 --dangerously-skip-permissions"
 
-  # Auto-triage new issues: assign labels, route to correct branch
-  claude-triage:
+  # Auto-handle new issues: triage, implement, and open PR
+  claude-issue:
     if: github.event_name == 'issues' && github.event.action == 'opened'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,41 +55,50 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Claude Code — Triage Issue
+      - name: Claude Code — Handle Issue
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: "--max-turns 10 --dangerously-skip-permissions"
+          claude_args: "--max-turns 30 --dangerously-skip-permissions"
           prompt: |
-            You are the issue triage bot for SECiD (secid.org / beta.secid.mx).
+            You are the automated developer for SECiD (secid.org / beta.secid.mx).
+            A new issue has been opened. Handle it end-to-end:
 
-            A new issue has been opened. Your job:
+            ## Step 1: Triage
 
-            1. READ the issue title and body carefully.
-
-            2. DETERMINE the environment from the "Environment" form field:
+            1. Read the issue title and body carefully.
+            2. Determine the environment from the "Environment" form field:
                - "Beta (beta.secid.mx)" → add label `env:beta`, target branch is `feature/hub`
                - "Production (secid.org)" → add label `env:production`, target branch is `main`
-               - "Not sure" / "Both" → add label `env:unknown`
+               - "Not sure" / "Both" → add label `env:unknown`, default to `feature/hub`
+            3. Add relevant area labels:
+               - `area:auth`, `area:dashboard`, `area:jobs`, `area:events`, `area:forums`,
+                 `area:mentorship`, `area:payments`, `area:admin`, `area:mobile`, `area:i18n`, `area:infra`
+            4. Post a comment acknowledging the issue and explaining your plan.
 
-            3. ADD relevant area labels based on the issue content:
-               - `area:auth` — authentication, login, OAuth
-               - `area:dashboard` — member dashboard, profile
-               - `area:jobs` — job board, job postings
-               - `area:events` — events, registration
-               - `area:forums` — community forums
-               - `area:mentorship` — mentor/mentee matching
-               - `area:payments` — Stripe, subscriptions, invoices
-               - `area:admin` — admin panel, user management
-               - `area:mobile` — mobile experience, responsive
-               - `area:i18n` — translations, localization
-               - `area:infra` — deployment, CI/CD, Firebase
+            ## Step 2: Investigate & Implement
 
-            4. POST a brief triage comment:
-               - Acknowledge the report
-               - Confirm which environment it targets
-               - Mention the target branch (feature/hub or main)
-               - If it's a bug with clear reproduction steps, note it's ready for investigation
-               - If information is missing, politely ask for what's needed
+            1. Read CLAUDE.md for project conventions.
+            2. Explore the codebase to understand the relevant code.
+            3. Create a new branch from the target branch: `fix/issue-<number>` or `feat/issue-<number>`.
+            4. Implement the fix or feature. Follow project conventions:
+               - TypeScript, Astro 4.x, React 18, Tailwind CSS
+               - Functions <30 lines, meaningful names, no hardcoded values
+               - Run `npm run lint:fix` and `npm run format` before committing
+            5. If the issue is a bug, try to add or update a test.
+            6. Commit with conventional commits referencing the issue: `fix: description (closes #N)`.
 
-            Use the GitHub CLI (`gh`) for all operations. Do NOT create PRs or make code changes.
+            ## Step 3: Open a Pull Request
+
+            1. Push the branch and create a PR targeting the correct branch (feature/hub or main).
+            2. Reference the issue in the PR body.
+            3. Add a clear description of what was changed and why.
+
+            ## Guardrails
+
+            - If the issue is unclear or needs more information, post a comment asking for clarification instead of implementing. Add the `question` label.
+            - If the fix requires secret changes, environment config, or infrastructure changes, post a comment explaining what's needed manually. Add the `needs:manual` label.
+            - Do NOT modify .env files, Firebase config, or Stripe keys.
+            - If you cannot confidently implement the fix, explain what you found and suggest an approach.
+
+            Use `gh` CLI for all GitHub operations (labels, comments, PRs).
