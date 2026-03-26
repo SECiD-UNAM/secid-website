@@ -5,6 +5,8 @@ on:
     types: [created]
   pull_request_review_comment:
     types: [created]
+  pull_request:
+    types: [opened, synchronize]
   issues:
     types: [opened]
 
@@ -38,6 +40,57 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           claude_args: "--max-turns 25 --dangerously-skip-permissions"
+
+  # Auto-review new and updated PRs
+  claude-review:
+    if: |
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.user.login != 'claude[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Claude Code — Review PR
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--max-turns 15 --dangerously-skip-permissions"
+          prompt: |
+            You are the code reviewer for SECiD (secid.org / beta.secid.mx).
+            Review this pull request thoroughly.
+
+            ## Review Checklist
+
+            1. Read CLAUDE.md for project conventions and standards.
+            2. Review all changed files in the PR diff.
+            3. Check for:
+               - **Correctness**: Logic errors, edge cases, off-by-one errors
+               - **Security**: XSS, injection, hardcoded secrets, OWASP Top 10
+               - **TypeScript**: Type safety, proper typing, no `any` abuse
+               - **React**: Hook rules, missing deps, memory leaks, key props
+               - **Performance**: Unnecessary re-renders, missing memoization, N+1 queries
+               - **Conventions**: Conventional commits, file organization, naming
+               - **i18n**: Hardcoded Spanish/English strings that should use translations
+               - **Tests**: Missing test coverage for new logic
+
+            4. Post a review using `gh pr review` with:
+               - APPROVE if the code is solid with at most minor nits
+               - REQUEST_CHANGES if there are bugs, security issues, or significant problems
+               - COMMENT for suggestions and observations that don't block merging
+
+            5. For specific issues, use inline review comments on the relevant lines.
+
+            Be constructive and concise. Focus on what matters — don't nitpick formatting
+            if Prettier handles it. Don't flag things that are clearly intentional.
 
   # Auto-handle new issues: triage, implement, and open PR
   claude-issue:
