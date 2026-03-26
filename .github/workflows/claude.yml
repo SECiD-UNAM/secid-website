@@ -6,90 +6,45 @@ on:
   pull_request_review_comment:
     types: [created]
   issues:
-    types: [opened, labeled]
-
-permissions:
-  contents: write
-  pull-requests: write
-  issues: write
-  id-token: write
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
-  # Respond to @claude mentions in issue/PR comments
-  claude-mention:
+  claude:
     if: |
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude'))
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
+      actions: read # Required for Claude to read CI results on PRs
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Claude Code
+      - name: Run Claude Code
+        id: claude
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: "--max-turns 25 --dangerously-skip-permissions"
 
-  # Auto-triage new issues: assign labels, route to correct branch
-  claude-triage:
-    if: github.event_name == 'issues' && github.event.action == 'opened'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+          # This is an optional setting that allows Claude to read CI results on PRs
+          additional_permissions: |
+            actions: read
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+          # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
+          # prompt: 'Update the pull request description to include a summary of changes.'
 
-      - name: Claude Code — Triage Issue
-        uses: anthropics/claude-code-action@v1
-        with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: "--max-turns 10 --dangerously-skip-permissions"
-          prompt: |
-            You are the issue triage bot for SECiD (secid.org / beta.secid.mx).
+          # Optional: Add claude_args to customize behavior and configuration
+          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
+          # or https://code.claude.com/docs/en/cli-reference for available options
+          # claude_args: '--allowed-tools Bash(gh pr:*)'
 
-            A new issue has been opened. Your job:
-
-            1. READ the issue title and body carefully.
-
-            2. DETERMINE the environment from the "Environment" form field:
-               - "Beta (beta.secid.mx)" → add label `env:beta`, target branch is `feature/hub`
-               - "Production (secid.org)" → add label `env:production`, target branch is `main`
-               - "Not sure" / "Both" → add label `env:unknown`
-
-            3. ADD relevant area labels based on the issue content:
-               - `area:auth` — authentication, login, OAuth
-               - `area:dashboard` — member dashboard, profile
-               - `area:jobs` — job board, job postings
-               - `area:events` — events, registration
-               - `area:forums` — community forums
-               - `area:mentorship` — mentor/mentee matching
-               - `area:payments` — Stripe, subscriptions, invoices
-               - `area:admin` — admin panel, user management
-               - `area:mobile` — mobile experience, responsive
-               - `area:i18n` — translations, localization
-               - `area:infra` — deployment, CI/CD, Firebase
-
-            4. POST a brief triage comment:
-               - Acknowledge the report
-               - Confirm which environment it targets
-               - Mention the target branch (feature/hub or main)
-               - If it's a bug with clear reproduction steps, note it's ready for investigation
-               - If information is missing, politely ask for what's needed
-
-            Use the GitHub CLI (`gh`) for all operations. Do NOT create PRs or make code changes.
