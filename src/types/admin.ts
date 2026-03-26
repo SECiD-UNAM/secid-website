@@ -482,6 +482,10 @@ export interface AdminUser {
   };
 }
 
+/**
+ * @deprecated Use Resource + Operation from src/lib/rbac/types.ts instead.
+ * This type will be removed when legacy role checks are fully replaced by RBAC (Phase 5).
+ */
 export type AdminPermission =
   | 'users.view'
   | 'users.edit'
