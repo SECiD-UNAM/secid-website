@@ -334,9 +334,25 @@ describe('searchMembers', () => {
     expect(result.map((m) => m.uid)).toEqual(['1']);
   });
 
-  it('matches by email', () => {
+  it('does not match by email for non-admin when showEmail is false', () => {
     const result = searchMembers(members, 'acme.com');
+    expect(result).toEqual([]);
+  });
+
+  it('matches by email for admin regardless of showEmail', () => {
+    const result = searchMembers(members, 'acme.com', true);
     expect(result.map((m) => m.uid)).toEqual(['2']);
+  });
+
+  it('matches by email for non-admin when showEmail is true', () => {
+    const visible = createMockMember({
+      uid: '3',
+      displayName: 'Carlos Ruiz',
+      email: 'carlos@visible.com',
+      privacy: { showEmail: true },
+    });
+    const result = searchMembers([...members, visible], 'visible.com');
+    expect(result.map((m) => m.uid)).toEqual(['3']);
   });
 
   it('matches by company and skills case-insensitively', () => {

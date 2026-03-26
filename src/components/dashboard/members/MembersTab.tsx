@@ -116,14 +116,16 @@ function getStringValue(m: MemberProfile, column: SortColumn): string {
 
 export function searchMembers(
   members: MemberProfile[],
-  query: string
+  query: string,
+  isAdmin = false
 ): MemberProfile[] {
   const q = query.trim().toLowerCase();
   if (!q) return members;
   return members.filter((m) => {
     return (
       m.displayName.toLowerCase().includes(q) ||
-      (m.email ?? '').toLowerCase().includes(q) ||
+      ((isAdmin || m.privacy?.showEmail) &&
+        (m.email ?? '').toLowerCase().includes(q)) ||
       (m.profile.company ?? '').toLowerCase().includes(q) ||
       m.profile.skills.some((s) => s.toLowerCase().includes(q))
     );
@@ -467,8 +469,8 @@ export const MembersTab: React.FC<MembersTabProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
 
   const searched = useMemo(
-    () => searchMembers(members, searchQuery),
-    [members, searchQuery]
+    () => searchMembers(members, searchQuery, isAdmin),
+    [members, searchQuery, isAdmin]
   );
   const filtered = useMemo(
     () => filterMembers(searched, filters),
@@ -498,7 +500,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
       <div className="relative">
         <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
         <input
-          type="search"
+          type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={t.searchPlaceholder}
