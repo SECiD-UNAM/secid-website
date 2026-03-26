@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   getMemberProfiles,
@@ -9,6 +9,8 @@ import {
 import type { MemberProfile, MemberStatus } from '@/types/member';
 import type { VerificationStatus } from '@/types/user';
 import { PencilIcon } from '@heroicons/react/24/outline';
+import { db } from '@/lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 import { useUniversalListing } from '@/hooks/useUniversalListing';
 import { ClientSideAdapter } from '@lib/listing/adapters/ClientSideAdapter';
 import {
@@ -133,6 +135,22 @@ interface Props {
 
 export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
   const { user, isAdmin } = useAuth();
+
+  /* ---- RBAC group assignments per user ---- */
+  const [userGroups, setUserGroups] = useState<Map<string, string[]>>(new Map());
+
+  useEffect(() => {
+    getDocs(collection(db, 'rbac_user_groups'))
+      .then((snap) => {
+        const map = new Map<string, string[]>();
+        snap.forEach((doc) => {
+          const data = doc.data();
+          if (data.groups) map.set(doc.id, data.groups);
+        });
+        setUserGroups(map);
+      })
+      .catch(() => {/* ignore — groups column will be empty */});
+  }, []);
 
   /* ---- inline editing state (not managed by listing) ---- */
   const [savingRows, setSavingRows] = useState<Set<string>>(new Set());
@@ -510,6 +528,29 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
                 </option>
               ))}
             </select>
+          );
+        },
+      },
+      {
+        key: 'groups',
+        label: tr(lang, 'Grupos', 'Groups'),
+        accessor: (member) => {
+          const groups = userGroups.get(member.uid);
+          if (!groups || groups.length === 0) {
+            return <span className="text-xs text-gray-400">—</span>;
+          }
+          return (
+            <div className="flex flex-wrap gap-1">
+              {groups.map((g) => (
+                <a
+                  key={g}
+                  href={`/${lang}/dashboard/admin/groups/${g}`}
+                  className="inline-flex rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50"
+                >
+                  {g}
+                </a>
+              ))}
+            </div>
           );
         },
       },
