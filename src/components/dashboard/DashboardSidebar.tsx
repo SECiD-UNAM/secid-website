@@ -216,7 +216,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         (other) =>
           other !== href &&
           other.startsWith(target + '/') &&
-          path.startsWith(other.replace(/\/$/, '')),
+          path.startsWith(other.replace(/\/$/, ''))
       );
     }
     return false;
@@ -253,7 +253,9 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           <span>{item['name']}</span>
           {!accessible && item.requireVerified && (
             <span className="ml-2 text-xs text-yellow-600 dark:text-yellow-400">
-              {lang === 'es' ? '(Verificación requerida)' : '(Verification Required)'}
+              {lang === 'es'
+                ? '(Verificación requerida)'
+                : '(Verification Required)'}
             </span>
           )}
         </div>
@@ -284,7 +286,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
   const sidebarContent = (
     <>
-      <div className="space-y-1 px-4 pt-4">
+      <div className="space-y-1 px-4 pt-4 pb-24">
         {/* Main menu items */}
         <div className="space-y-1">{menuItems.map(renderMenuItem)}</div>
 
