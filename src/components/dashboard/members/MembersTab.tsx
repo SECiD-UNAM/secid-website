@@ -35,7 +35,9 @@ const labels = {
     showing: 'Mostrando',
     of: 'de',
     membersLabel: 'miembros',
-    searchPlaceholder: 'Buscar por nombre, empresa o habilidad...',
+    searchPlaceholder: 'Buscar por nombre, correo, empresa o habilidad...',
+    searchAriaLabel: 'Buscar miembros',
+    clearSearchAriaLabel: 'Limpiar búsqueda',
     name: 'Nombre',
     company: 'Empresa',
     campus: 'Campus',
@@ -59,7 +61,9 @@ const labels = {
     showing: 'Showing',
     of: 'of',
     membersLabel: 'members',
-    searchPlaceholder: 'Search by name, company, or skill...',
+    searchPlaceholder: 'Search by name, email, company, or skill...',
+    searchAriaLabel: 'Search members',
+    clearSearchAriaLabel: 'Clear search',
     name: 'Name',
     company: 'Company',
     campus: 'Campus',
@@ -498,6 +502,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={t.searchPlaceholder}
+          aria-label={t.searchAriaLabel}
           className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-9 text-sm text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500 dark:focus:border-primary-400"
         />
         {searchQuery && (
@@ -505,7 +510,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
             type="button"
             onClick={() => setSearchQuery('')}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-            aria-label="Clear search"
+            aria-label={t.clearSearchAriaLabel}
           >
             <XMarkIcon className="h-4 w-4" />
           </button>

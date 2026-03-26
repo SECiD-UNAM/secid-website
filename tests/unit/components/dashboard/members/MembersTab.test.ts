@@ -6,6 +6,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import {
+  searchMembers,
   sortMembers,
   type SortColumn,
   type SortDirection,
@@ -304,5 +305,42 @@ describe('sortMembers', () => {
       expect(skillCounts[2]).toBe(0);
       expect(skillCounts[0]).toBe(2);
     });
+  });
+});
+
+describe('searchMembers', () => {
+  const alice = createMockMember({
+    uid: '1',
+    displayName: 'Alice Zaragoza',
+    email: 'alice@example.com',
+    profile: { company: 'Xignify', skills: ['Python', 'ML'] },
+  });
+
+  const bob = createMockMember({
+    uid: '2',
+    displayName: 'Bob Alvarado',
+    email: 'bob@acme.com',
+    profile: { company: 'Acme Corp', skills: ['R', 'Statistics'] },
+  });
+
+  const members = [alice, bob];
+
+  it('returns all members for empty query', () => {
+    expect(searchMembers(members, '   ')).toEqual(members);
+  });
+
+  it('matches by display name', () => {
+    const result = searchMembers(members, 'alice');
+    expect(result.map((m) => m.uid)).toEqual(['1']);
+  });
+
+  it('matches by email', () => {
+    const result = searchMembers(members, 'acme.com');
+    expect(result.map((m) => m.uid)).toEqual(['2']);
+  });
+
+  it('matches by company and skills case-insensitively', () => {
+    expect(searchMembers(members, 'xignify').map((m) => m.uid)).toEqual(['1']);
+    expect(searchMembers(members, 'python').map((m) => m.uid)).toEqual(['1']);
   });
 });
