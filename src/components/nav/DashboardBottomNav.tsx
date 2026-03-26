@@ -151,37 +151,44 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
   const canViewSettings = can('settings', 'view');
   const canManageUsers = can('users', 'edit');
   const canManageCompanies = can('companies', 'edit');
-  const showAdminSection = canViewSettings || canManageUsers || canManageCompanies;
+  const canManageGroups = can('groups', 'view');
+  const canViewReports = can('reports', 'view');
+  const canManageJournalClub = can('journal-club', 'view');
+  const canManageNewsletter = can('newsletter', 'view');
+  const canManageSpotlights = can('spotlights', 'view');
+  const showAdminSection = canViewSettings || canManageUsers || canManageCompanies || canManageGroups || canViewReports;
+  const showContentSection = canManageJournalClub || canManageNewsletter || canManageSpotlights;
+
+  const contentManagementItems = showContentSection
+    ? [
+        ...(canManageJournalClub
+          ? [{ href: `/${lang}/dashboard/journal-club`, label: 'Journal Club', icon: 'fas fa-book-reader' }]
+          : []),
+        ...(canManageNewsletter
+          ? [{ href: `/${lang}/dashboard/newsletter`, label: 'Newsletter', icon: 'fas fa-newspaper' }]
+          : []),
+        ...(canManageSpotlights
+          ? [{ href: `/${lang}/dashboard/spotlights`, label: lang === 'es' ? 'Destacados' : 'Spotlights', icon: 'fas fa-star' }]
+          : []),
+      ]
+    : [];
 
   const adminItems = showAdminSection
     ? [
         ...(canViewSettings
-          ? [
-              {
-                href: `/${lang}/dashboard/admin`,
-                label: 'Admin Panel',
-                icon: 'fas fa-shield-alt',
-              },
-            ]
+          ? [{ href: `/${lang}/dashboard/admin`, label: 'Admin Panel', icon: 'fas fa-shield-alt' }]
           : []),
         ...(canManageUsers
-          ? [
-              {
-                href: `/${lang}/dashboard/admin/members`,
-                label: lang === 'es' ? 'Gestionar Miembros' : 'Manage Members',
-                icon: 'fas fa-user-cog',
-              },
-            ]
+          ? [{ href: `/${lang}/dashboard/admin/members`, label: lang === 'es' ? 'Gestionar Miembros' : 'Manage Members', icon: 'fas fa-user-cog' }]
           : []),
         ...(canManageCompanies
-          ? [
-              {
-                href: `/${lang}/dashboard/admin/companies`,
-                label:
-                  lang === 'es' ? 'Gestionar Empresas' : 'Manage Companies',
-                icon: 'fas fa-building',
-              },
-            ]
+          ? [{ href: `/${lang}/dashboard/admin/companies`, label: lang === 'es' ? 'Gestionar Empresas' : 'Manage Companies', icon: 'fas fa-building' }]
+          : []),
+        ...(canManageGroups
+          ? [{ href: `/${lang}/dashboard/admin/groups`, label: lang === 'es' ? 'Grupos' : 'Groups', icon: 'fas fa-layer-group' }]
+          : []),
+        ...(canViewReports
+          ? [{ href: `/${lang}/dashboard/admin/reports`, label: lang === 'es' ? 'Reportes' : 'Reports', icon: 'fas fa-chart-bar' }]
           : []),
       ]
     : [];
@@ -360,6 +367,54 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
             </a>
           ))}
         </div>
+
+        {/* Content management section */}
+        {contentManagementItems.length > 0 && (
+          <>
+            <div
+              style={{
+                padding: '4px 16px 8px',
+                fontSize: 10,
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                color: 'var(--color-text-secondary, #64748b)',
+              }}
+            >
+              {lang === 'es' ? 'Contenido' : 'Content'}
+            </div>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: 8,
+                padding: '0 16px 12px',
+              }}
+            >
+              {contentManagementItems.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setSheetOpen(false)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: 12,
+                    borderRadius: 8,
+                    background: 'var(--color-background, #0f172a)',
+                    textDecoration: 'none',
+                    color: 'var(--color-text-primary, #e2e8f0)',
+                    fontSize: 13,
+                  }}
+                >
+                  <i className={item.icon} style={{ width: 18, textAlign: 'center', fontSize: 14 }} />
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Admin section */}
         {adminItems.length > 0 && (
