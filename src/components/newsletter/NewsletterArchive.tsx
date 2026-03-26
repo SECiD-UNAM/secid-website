@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   getNewsletterArchive,
   type NewsletterIssue,
-} from '@/lib/newsletter-archive';
+} from '@/lib/newsletter';
 
 interface Props {
   lang?: 'es' | 'en';
