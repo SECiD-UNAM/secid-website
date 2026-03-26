@@ -5,8 +5,8 @@ import {
   type User,
   type Unsubscribe,
 } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
+import { usePermissions } from '@/lib/rbac/hooks';
 
 interface Props {
   lang?: 'es' | 'en';
@@ -37,24 +37,14 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
   const [ready, setReady] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [userRole, setUserRole] = useState<string>('member');
+  const { can } = usePermissions();
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
     auth.authStateReady().then(() => {
-      unsubscribe = onAuthStateChanged(auth, async (u) => {
+      unsubscribe = onAuthStateChanged(auth, (u) => {
         setUser(u);
         setReady(true);
-        if (u) {
-          try {
-            const snap = await getDoc(doc(db, 'users', u.uid));
-            if (snap.exists()) {
-              setUserRole((snap.data().role as string) || 'member');
-            }
-          } catch {
-            // ignore — default to member
-          }
-        }
       });
     });
     return () => {
@@ -158,25 +148,41 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
     },
   ];
 
-  const isAdmin = userRole === 'admin' || userRole === 'moderator';
+  const canViewSettings = can('settings', 'view');
+  const canManageUsers = can('users', 'edit');
+  const canManageCompanies = can('companies', 'edit');
+  const showAdminSection = canViewSettings || canManageUsers || canManageCompanies;
 
-  const adminItems = isAdmin
+  const adminItems = showAdminSection
     ? [
-        {
-          href: `/${lang}/dashboard/admin`,
-          label: 'Admin Panel',
-          icon: 'fas fa-shield-alt',
-        },
-        {
-          href: `/${lang}/dashboard/admin/members`,
-          label: lang === 'es' ? 'Gestionar Miembros' : 'Manage Members',
-          icon: 'fas fa-user-cog',
-        },
-        {
-          href: `/${lang}/dashboard/admin/companies`,
-          label: lang === 'es' ? 'Gestionar Empresas' : 'Manage Companies',
-          icon: 'fas fa-building',
-        },
+        ...(canViewSettings
+          ? [
+              {
+                href: `/${lang}/dashboard/admin`,
+                label: 'Admin Panel',
+                icon: 'fas fa-shield-alt',
+              },
+            ]
+          : []),
+        ...(canManageUsers
+          ? [
+              {
+                href: `/${lang}/dashboard/admin/members`,
+                label: lang === 'es' ? 'Gestionar Miembros' : 'Manage Members',
+                icon: 'fas fa-user-cog',
+              },
+            ]
+          : []),
+        ...(canManageCompanies
+          ? [
+              {
+                href: `/${lang}/dashboard/admin/companies`,
+                label:
+                  lang === 'es' ? 'Gestionar Empresas' : 'Manage Companies',
+                icon: 'fas fa-building',
+              },
+            ]
+          : []),
       ]
     : [];
 

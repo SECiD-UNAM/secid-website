@@ -604,3 +604,14 @@ export { submitPublicJob };
 
 // Salary stats: aggregated compensation analytics with tiered privacy enforcement
 export { getSalaryStats } from "./get-salary-stats";
+
+// RBAC: permission resolution triggers + admin callable functions
+export {
+  onUserGroupWrite,
+  onGroupWrite,
+} from "./rbac/resolvePermissions";
+export { seedRbacGroups } from "./rbac/seedGroups";
+export { backfillRbacUsers } from "./rbac/backfillUsers";
+
+// RBAC: Express-style middleware for Cloud Function HTTP endpoints (Layer 2)
+export { requirePermission } from "./rbac/middleware";

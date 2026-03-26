@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   collection,
   query,
@@ -6,8 +6,11 @@ import {
   orderBy,
   limit,
   getDocs,
+  deleteDoc,
+  doc,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { usePermissions } from '@/lib/rbac/hooks';
 import {
   CalendarIcon,
   MapPinIcon,
@@ -18,6 +21,9 @@ import {
   SparklesIcon,
   ChevronRightIcon,
   ArrowRightIcon,
+  PlusIcon,
+  PencilSquareIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline';
 import { useUniversalListing } from '@/hooks/useUniversalListing';
 import { ClientSideAdapter } from '@lib/listing/adapters/ClientSideAdapter';
@@ -171,6 +177,10 @@ const TRANSLATIONS = {
     },
     calendarPlaceholder: 'Vista de calendario próximamente',
     viewDetails: 'Ver detalles',
+    newEvent: 'Nuevo Evento',
+    edit: 'Editar',
+    delete: 'Eliminar',
+    confirmDelete: 'Estas seguro de que deseas eliminar este evento?',
   },
   en: {
     timeFilter: {
@@ -193,6 +203,10 @@ const TRANSLATIONS = {
     },
     calendarPlaceholder: 'Calendar view coming soon',
     viewDetails: 'View details',
+    newEvent: 'New Event',
+    edit: 'Edit',
+    delete: 'Delete',
+    confirmDelete: 'Are you sure you want to delete this event?',
   },
 } as const;
 
@@ -259,12 +273,20 @@ function buildAdapter(): ClientSideAdapter<Event> {
 // Rendering sub-components
 // ---------------------------------------------------------------------------
 
+interface EventCardActions {
+  canEdit: boolean;
+  canDelete: boolean;
+  onDelete: (event: Event) => void;
+}
+
 function EventCardGrid({
   event,
   lang,
+  actions,
 }: {
   event: Event;
   lang: 'es' | 'en';
+  actions: EventCardActions;
 }) {
   const t = TRANSLATIONS[lang];
   return (
@@ -288,9 +310,30 @@ function EventCardGrid({
           >
             {getEventTypeLabel(event.type, lang)}
           </span>
-          {event.featured && (
-            <SparklesIcon className="h-5 w-5 text-yellow-500" />
-          )}
+          <div className="flex items-center gap-1">
+            {event.featured && (
+              <SparklesIcon className="h-5 w-5 text-yellow-500" />
+            )}
+            {actions.canEdit && (
+              <a
+                href={`/${lang}/dashboard/events/edit/${event.id}`}
+                title={t.edit}
+                className="rounded p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-primary-400"
+              >
+                <PencilSquareIcon className="h-4 w-4" />
+              </a>
+            )}
+            {actions.canDelete && (
+              <button
+                type="button"
+                onClick={() => actions.onDelete(event)}
+                title={t.delete}
+                className="rounded p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-red-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-red-400"
+              >
+                <TrashIcon className="h-4 w-4" />
+              </button>
+            )}
+          </div>
         </div>
 
         <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
@@ -361,9 +404,11 @@ function EventCardGrid({
 function EventCardList({
   event,
   lang,
+  actions,
 }: {
   event: Event;
   lang: 'es' | 'en';
+  actions: EventCardActions;
 }) {
   const t = TRANSLATIONS[lang];
   return (
@@ -415,13 +460,34 @@ function EventCardList({
           </div>
         </div>
 
-        <a
-          href={`/${lang}/dashboard/events/${event.id}`}
-          className="ml-4 inline-flex items-center rounded-lg bg-primary-600 px-4 py-2 font-medium text-white transition-colors hover:bg-primary-700"
-        >
-          {lang === 'es' ? 'Ver' : 'View'}
-          <ArrowRightIcon className="ml-2 h-4 w-4" />
-        </a>
+        <div className="ml-4 flex items-center gap-2">
+          {actions.canEdit && (
+            <a
+              href={`/${lang}/dashboard/events/edit/${event.id}`}
+              title={t.edit}
+              className="rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-primary-400"
+            >
+              <PencilSquareIcon className="h-4 w-4" />
+            </a>
+          )}
+          {actions.canDelete && (
+            <button
+              type="button"
+              onClick={() => actions.onDelete(event)}
+              title={t.delete}
+              className="rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-red-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-red-400"
+            >
+              <TrashIcon className="h-4 w-4" />
+            </button>
+          )}
+          <a
+            href={`/${lang}/dashboard/events/${event.id}`}
+            className="inline-flex items-center rounded-lg bg-primary-600 px-4 py-2 font-medium text-white transition-colors hover:bg-primary-700"
+          >
+            {lang === 'es' ? 'Ver' : 'View'}
+            <ArrowRightIcon className="ml-2 h-4 w-4" />
+          </a>
+        </div>
       </div>
     </div>
   );
@@ -433,11 +499,17 @@ function EventCardList({
 
 export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
   const t = TRANSLATIONS[lang];
+  const { can } = usePermissions();
+
+  const canCreate = can('events', 'create');
+  const canEdit = can('events', 'edit');
+  const canDelete = can('events', 'delete');
 
   const [calendarMode, setCalendarMode] = useState(false);
   const [timeFilter, setTimeFilter] = useState<'all' | 'upcoming' | 'past'>(
     'upcoming'
   );
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
   const adapter = useMemo(() => buildAdapter(), []);
 
@@ -471,14 +543,33 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
     lang,
   });
 
+  const handleDelete = useCallback(
+    async (event: Event) => {
+      if (!confirm(t.confirmDelete)) return;
+      try {
+        await deleteDoc(doc(db, 'events', event.id));
+        setDeletedIds((prev) => new Set(prev).add(event.id));
+      } catch (err) {
+        console.error('Error deleting event:', err);
+      }
+    },
+    [t.confirmDelete]
+  );
+
+  const cardActions: EventCardActions = useMemo(
+    () => ({ canEdit, canDelete, onDelete: handleDelete }),
+    [canEdit, canDelete, handleDelete]
+  );
+
   // Time filter applied post-hook (requires date comparison against now)
   const displayedItems = useMemo(() => {
-    if (timeFilter === 'all') return items;
+    let result = items.filter((e) => !deletedIds.has(e.id));
+    if (timeFilter === 'all') return result;
     const now = new Date();
     return timeFilter === 'upcoming'
-      ? items.filter((e) => e.startDate >= now)
-      : items.filter((e) => e.startDate < now);
-  }, [items, timeFilter]);
+      ? result.filter((e) => e.startDate >= now)
+      : result.filter((e) => e.startDate < now);
+  }, [items, timeFilter, deletedIds]);
 
   const hasActiveFilters =
     timeFilter !== 'upcoming' ||
@@ -495,6 +586,19 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
 
   return (
     <div>
+      {/* Header with New Event button */}
+      {canCreate && (
+        <div className="mb-4 flex justify-end">
+          <a
+            href={`/${lang}/dashboard/events/new`}
+            className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+          >
+            <PlusIcon className="h-4 w-4" />
+            {t.newEvent}
+          </a>
+        </div>
+      )}
+
       {/* Top tab bar: Listing vs Calendar */}
       <div className="mb-4 flex gap-2 border-b border-gray-200 dark:border-gray-700">
         <button
@@ -626,7 +730,7 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
           {!loading && displayedItems.length > 0 && viewMode === 'grid' && (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {displayedItems.map((event) => (
-                <EventCardGrid key={event.id} event={event} lang={lang} />
+                <EventCardGrid key={event.id} event={event} lang={lang} actions={cardActions} />
               ))}
             </div>
           )}
@@ -635,7 +739,7 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
           {!loading && displayedItems.length > 0 && viewMode === 'list' && (
             <div className="space-y-4">
               {displayedItems.map((event) => (
-                <EventCardList key={event.id} event={event} lang={lang} />
+                <EventCardList key={event.id} event={event} lang={lang} actions={cardActions} />
               ))}
             </div>
           )}

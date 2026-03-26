@@ -46,7 +46,42 @@ service cloud.firestore {
       // Basic rate limiting - can be enhanced with custom claims
       return true; // Implement with Cloud Functions if needed
     }
-    
+
+    // =========================================================================
+    // RBAC Permission Helpers
+    // Comma-anchored regex with wildcard support.
+    // Claims format: "resource:op.scope" comma-separated in request.auth.token.rbac.p
+    // Scope: "o" = own, "a" = all. Deny prefix: "!"
+    // Wildcards: "*:op.scope", "resource:*.scope", "*:*.scope"
+    // =========================================================================
+
+    function hasRBACAllow(resource, op) {
+      return request.auth.token.rbac != null && (
+        request.auth.token.rbac.p.matches('(^|.*,)' + resource + ':' + op + '\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)\\*:' + op + '\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)' + resource + ':\\*\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)\\*:\\*\\.(o|a)(,.*|$)')
+      );
+    }
+
+    function hasRBACAllowAll(resource, op) {
+      return request.auth.token.rbac != null && (
+        request.auth.token.rbac.p.matches('(^|.*,)' + resource + ':' + op + '\\.a(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)\\*:' + op + '\\.a(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)' + resource + ':\\*\\.a(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)\\*:\\*\\.a(,.*|$)')
+      );
+    }
+
+    function hasRBACDeny(resource, op) {
+      return request.auth.token.rbac != null && (
+        request.auth.token.rbac.p.matches('(^|.*,)!' + resource + ':' + op + '\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)!\\*:' + op + '\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)!' + resource + ':\\*\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)!\\*:\\*\\.(o|a)(,.*|$)')
+      );
+    }
+
     function validateUserData() {
       return request.resource.data.keys().hasAll(['email', 'firstName', 'lastName']) &&
              request.resource.data.email is string &&
@@ -223,23 +258,34 @@ service cloud.firestore {
       }
     }
     
-    // Events collection with enhanced permissions
+    // Events collection — RBAC + legacy fallback (dual-mode)
     match /events/{eventId} {
+      // Phase 4: all authenticated users can read events (existing behavior).
+      // Phase 5 TODO: replace with hasRBACAllow('ev', 'v') && !hasRBACDeny('ev', 'v')
       allow read: if isAuthenticated();
-      
-      allow create: if isAuthenticated() && 
-                       canModerate() &&
-                       validateEventData() &&
-                       request.resource.data.createdBy == request.auth.uid &&
-                       request.resource.data.createdAt == request.time;
-      
-      allow update: if isAuthenticated() && 
-                       (isOwner(resource.data.createdBy) || canModerate()) &&
-                       validateEventData() &&
-                       request.resource.data.updatedAt == request.time;
-      
-      allow delete: if isAuthenticated() && 
-                       (isOwner(resource.data.createdBy) || canAdminister());
+
+      allow create: if isAuthenticated() && (
+        (hasRBACAllow('ev', 'c') && !hasRBACDeny('ev', 'c')) || canModerate()
+      ) && validateEventData()
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if isAuthenticated() && (
+        (!hasRBACDeny('ev', 'e') && (
+          hasRBACAllowAll('ev', 'e') ||
+          (hasRBACAllow('ev', 'e') && resource.data.createdBy == request.auth.uid)
+        )) ||
+        (isOwner(resource.data.createdBy) || canModerate())
+      ) && validateEventData()
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if isAuthenticated() && (
+        (!hasRBACDeny('ev', 'd') && (
+          hasRBACAllowAll('ev', 'd') ||
+          (hasRBACAllow('ev', 'd') && resource.data.createdBy == request.auth.uid)
+        )) ||
+        canAdminister()
+      );
       
       // Event registrations subcollection
       match /registrations/{registrationId} {
@@ -473,13 +519,24 @@ service cloud.firestore {
     }
 
     // ============================================
-    // Phase A: Newsletter Archive
+    // Phase A: Newsletter Archive (upgraded with RBAC)
     // ============================================
 
-    // Newsletter archive (public read for published, admin write)
+    // Newsletter archive — public read for published, RBAC + legacy fallback for management
     match /newsletter_archive/{issueId} {
-      allow read: if true;
-      allow create, update, delete: if isAuthenticated() && canAdminister();
+      allow read: if resource.data.status == 'published' ||
+        (isAuthenticated() && (hasRBACAllow('nl', 'v') || canAdminister()));
+      allow create: if isAuthenticated() &&
+        (hasRBACAllow('nl', 'c') || canAdminister())
+        && request.resource.data.createdBy == request.auth.uid;
+      allow update: if isAuthenticated() && (
+        (hasRBACAllowAll('nl', 'e') || canAdminister()) ||
+        (hasRBACAllow('nl', 'e') && resource.data.createdBy == request.auth.uid)
+      ) && !hasRBACDeny('nl', 'e');
+      allow delete: if isAuthenticated() && (
+        (hasRBACAllowAll('nl', 'd') || canAdminister()) ||
+        (hasRBACAllow('nl', 'd') && resource.data.createdBy == request.auth.uid)
+      ) && !hasRBACDeny('nl', 'd');
     }
 
     // ============================================
@@ -678,12 +735,21 @@ service cloud.firestore {
     // Phase C: Spotlights, Commissions, Mail
     // ============================================
 
-    // Alumni spotlights (public read for published, admin write)
+    // Alumni spotlights — public read for published, RBAC + legacy fallback for management
     match /spotlights/{spotlightId} {
-      allow read: if true;
-      allow create: if isAuthenticated() && canModerate();
-      allow update: if isAuthenticated() && canModerate();
-      allow delete: if isAuthenticated() && canAdminister();
+      allow read: if resource.data.status == 'published' ||
+        (isAuthenticated() && (hasRBACAllow('sp', 'v') || canModerate()));
+      allow create: if isAuthenticated() &&
+        (hasRBACAllow('sp', 'c') || canModerate())
+        && request.resource.data.createdBy == request.auth.uid;
+      allow update: if isAuthenticated() && (
+        (hasRBACAllowAll('sp', 'e') || canModerate()) ||
+        (hasRBACAllow('sp', 'e') && resource.data.createdBy == request.auth.uid)
+      ) && !hasRBACDeny('sp', 'e');
+      allow delete: if isAuthenticated() && (
+        (hasRBACAllowAll('sp', 'd') || canAdminister()) ||
+        (hasRBACAllow('sp', 'd') && resource.data.createdBy == request.auth.uid)
+      ) && !hasRBACDeny('sp', 'd');
     }
 
     // Commissions (public read, admin write)
@@ -755,6 +821,53 @@ service cloud.firestore {
     match /public_job_submissions/{submissionId} {
       allow create: if false;
       allow read, update, delete: if isAuthenticated() && canAdminister();
+    }
+
+    // =========================================================================
+    // RBAC Collections
+    // =========================================================================
+
+    // RBAC groups: permission group definitions
+    match /rbac_groups/{groupId} {
+      allow read: if isAuthenticated() && (hasRBACAllow('gr', 'v') || canModerate());
+      allow create: if isAuthenticated() && (hasRBACAllow('gr', 'c') || canAdminister());
+      allow update: if isAuthenticated() && (hasRBACAllow('gr', 'e') || canAdminister());
+      allow delete: if isAuthenticated() && (hasRBACAllow('gr', 'd') || canAdminister())
+        && !resource.data.isSystem;
+    }
+
+    // RBAC user-group assignments: maps users to their groups
+    match /rbac_user_groups/{userId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == userId || hasRBACAllow('gr', 'a') || canModerate()
+      );
+      allow write: if isAuthenticated() && (hasRBACAllow('gr', 'a') || canAdminister());
+    }
+
+    // RBAC audit log: immutable, server-written only
+    match /rbac_audit_log/{logId} {
+      allow read: if isAuthenticated() && (hasRBACAllow('gr', 'v') || canAdminister());
+      allow write: if false;
+    }
+
+    // =========================================================================
+    // Journal Club (new collection — replacing hardcoded data)
+    // =========================================================================
+
+    match /journal_club_sessions/{sessionId} {
+      // Public read for published sessions; authenticated + RBAC for drafts
+      allow read: if resource.data.status == 'published' ||
+        (isAuthenticated() && (hasRBACAllow('jc', 'v') || canModerate()));
+      allow create: if isAuthenticated() && (hasRBACAllow('jc', 'c') || canModerate())
+        && request.resource.data.createdBy == request.auth.uid;
+      allow update: if isAuthenticated() && (
+        (hasRBACAllowAll('jc', 'e') || canModerate()) ||
+        (hasRBACAllow('jc', 'e') && resource.data.createdBy == request.auth.uid)
+      ) && !hasRBACDeny('jc', 'e');
+      allow delete: if isAuthenticated() && (
+        (hasRBACAllowAll('jc', 'd') || canAdminister()) ||
+        (hasRBACAllow('jc', 'd') && resource.data.createdBy == request.auth.uid)
+      ) && !hasRBACDeny('jc', 'd');
     }
 
     // LinkedIn auth codes: server-only (Admin SDK). Deny all client access.

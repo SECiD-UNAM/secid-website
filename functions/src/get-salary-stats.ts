@@ -1,5 +1,6 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import { decodeClaimsPermissions, checkPermission } from "./rbac/resolution-logic";
 
 const db = admin.firestore();
 
@@ -66,12 +67,27 @@ export const getSalaryStats = onCall(
 
     const callerUid = request.auth.uid;
 
-    // Get caller's user doc for role check
+    // --- RBAC permission check with legacy role fallback ---
+    const rbacClaims = request.auth.token?.rbac as { p?: string } | undefined;
     const callerDoc = await db.collection("users").doc(callerUid).get();
     const callerData = callerDoc.data();
     const callerRole = callerData?.role || "member";
-    const isAdmin = callerRole === "admin"; // Only admin gets raw data, NOT moderator
-    const isVerified = callerData?.isVerified === true || isAdmin || callerRole === "moderator";
+
+    let isAdmin: boolean;
+    let isVerified: boolean;
+
+    if (rbacClaims?.p) {
+      // RBAC claims present — use permission-based checks
+      const tokens = decodeClaimsPermissions(rbacClaims.p);
+      const exportCheck = checkPermission(tokens, "salary-insights", "export");
+      isAdmin = exportCheck.allowed && exportCheck.scope === "all";
+      const viewCheck = checkPermission(tokens, "salary-insights", "view");
+      isVerified = viewCheck.allowed;
+    } else {
+      // Fallback: legacy role-based check (backward compatibility)
+      isAdmin = callerRole === "admin";
+      isVerified = callerData?.isVerified === true || isAdmin || callerRole === "moderator";
+    }
 
     if (!isVerified) {
       return {

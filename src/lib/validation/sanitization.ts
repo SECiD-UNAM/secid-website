@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Lightweight HTML sanitizer (replaces isomorphic-dompurify to avoid build issues)
 const DOMPurify = {
-  sanitize(html: string, options?: { ALLOWED_TAGS?: string[]; ALLOWED_ATTR?: string[] }): string {
+  sanitize(html: string, options?: Record<string, unknown> & { ALLOWED_TAGS?: string[]; ALLOWED_ATTR?: string[] }): string {
     if (!options?.ALLOWED_TAGS || options.ALLOWED_TAGS.length === 0) {
       // Strip all HTML tags
       return html.replace(/<[^>]*>/g, '');
@@ -98,7 +98,7 @@ export function sanitizeHtml(
   // DOMPurify types are narrower than the actual API supports
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: [...allowedTags],
+    ALLOWED_TAGS: allowedTags as string[],
     ALLOWED_ATTR: Object.values(allowedAttributes).flat(),
     ALLOWED_URI_REGEXP:
       /^(?:(?:(?:f|ht)tps?|mailto):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
@@ -342,7 +342,7 @@ export function createSanitizationSchema<T extends z.ZodRawShape>(
     sanitizeUrls?: boolean;
     stripHtml?: boolean;
   } = {}
-) {
+): z.ZodEffects<z.ZodObject<T>> {
   const {
     sanitizeHtml = true,
     sanitizeUrls = true,

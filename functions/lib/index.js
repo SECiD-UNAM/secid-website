@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.submitPublicJob = exports.completeRegistration = exports.onMergeRequestApproved = exports.onUserNumeroCuentaChange = exports.onMemberCompanyChange = exports.getMemberGroupList = exports.updateMemberGroups = exports.syncGroupMembership = exports.onMemberStatusChange = exports.onUserDocCreated = exports.onNewJobPosted = exports.onUserDelete = exports.matchJobsForUser = exports.verifyUnamEmail = exports.onUserCreate = void 0;
+exports.backfillRbacUsers = exports.seedRbacGroups = exports.onGroupWrite = exports.onUserGroupWrite = exports.getSalaryStats = exports.exchangeLinkedInCode = exports.linkedinAuthCallback = exports.linkedinAuthRedirect = exports.submitPublicJob = exports.completeRegistration = exports.onMergeRequestApproved = exports.onUserNumeroCuentaChange = exports.onMemberCompanyChange = exports.getMemberGroupList = exports.updateMemberGroups = exports.syncGroupMembership = exports.onMemberStatusChange = exports.onUserDocCreated = exports.onNewJobPosted = exports.onUserDelete = exports.matchJobsForUser = exports.verifyUnamEmail = exports.onUserCreate = void 0;
 const firestore_1 = require("firebase-functions/v2/firestore");
 const https_1 = require("firebase-functions/v2/https");
 const identity_1 = require("firebase-functions/v2/identity");
 const functionsV1 = require("firebase-functions/v1");
-const admin = require("firebase-admin");
+const init_1 = require("./init"); // Must be first — initializes Firebase before other imports
 const email_service_1 = require("./email-service");
 const google_admin_1 = require("./google-admin");
 const group_config_1 = require("./group-config");
@@ -17,8 +17,7 @@ const complete_registration_1 = require("./complete-registration");
 Object.defineProperty(exports, "completeRegistration", { enumerable: true, get: function () { return complete_registration_1.completeRegistration; } });
 const public_job_submit_1 = require("./public-job-submit");
 Object.defineProperty(exports, "submitPublicJob", { enumerable: true, get: function () { return public_job_submit_1.submitPublicJob; } });
-// Initialize Firebase Admin
-admin.initializeApp();
+// Firebase Admin initialized in ./init.ts (imported above)
 // User creation trigger - set up initial user profile
 exports.onUserCreate = (0, identity_1.beforeUserCreated)(async (event) => {
     const user = event.data;
@@ -29,7 +28,7 @@ exports.onUserCreate = (0, identity_1.beforeUserCreated)(async (event) => {
     const { uid, email, displayName, photoURL } = user;
     // Create user profile document — default to collaborator role
     // Users start as collaborators; membership requires admin approval
-    await admin
+    await init_1.admin
         .firestore()
         .collection("users")
         .doc(uid)
@@ -48,9 +47,9 @@ exports.onUserCreate = (0, identity_1.beforeUserCreated)(async (event) => {
         skills: [],
         lifecycle: {
             status: "collaborator",
-            statusChangedAt: admin.firestore.FieldValue.serverTimestamp(),
+            statusChangedAt: init_1.admin.firestore.FieldValue.serverTimestamp(),
             statusHistory: [],
-            lastActiveDate: admin.firestore.FieldValue.serverTimestamp(),
+            lastActiveDate: init_1.admin.firestore.FieldValue.serverTimestamp(),
         },
         privacySettings: {
             profileVisible: true,
@@ -65,8 +64,8 @@ exports.onUserCreate = (0, identity_1.beforeUserCreated)(async (event) => {
             events: true,
             forums: true,
         },
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: init_1.admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: init_1.admin.firestore.FieldValue.serverTimestamp(),
         profileCompleteness: 20,
     });
     console.log(`User profile created for ${uid}`);
@@ -83,26 +82,10 @@ exports.verifyUnamEmail = (0, https_1.onCall)(async (request) => {
         !unamEmail.includes("@unam.mx")) {
         throw new https_1.HttpsError("invalid-argument", "Email must be from UNAM domain");
     }
-    // In production, this would call UNAM's verification API
-    // For now, we'll simulate verification
-    const isValid = true; // Mock verification
-    if (isValid) {
-        await admin
-            .firestore()
-            .collection("users")
-            .doc(userId)
-            .update({
-            isVerified: true,
-            unamEmail,
-            studentId: studentId || "",
-            graduationYear: graduationYear || 0,
-            verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
-        return { success: true, message: "UNAM verification completed" };
-    }
-    else {
-        throw new https_1.HttpsError("invalid-argument", "UNAM verification failed");
-    }
+    // UNAM verification API not yet integrated — block auto-approval
+    // to prevent privilege escalation. Admin can manually verify members
+    // via the admin panel until the real API is connected.
+    throw new https_1.HttpsError("unimplemented", "UNAM email verification is not yet available. Contact an administrator for manual verification.");
 });
 // Job matching algorithm
 exports.matchJobsForUser = (0, firestore_1.onDocumentUpdated)("users/{userId}", async (event) => {
@@ -121,7 +104,7 @@ exports.matchJobsForUser = (0, firestore_1.onDocumentUpdated)("users/{userId}", 
         return null;
     }
     // Find matching jobs
-    const jobsSnapshot = await admin
+    const jobsSnapshot = await init_1.admin
         .firestore()
         .collection("jobs")
         .where("status", "==", "active")
@@ -146,7 +129,7 @@ exports.matchJobsForUser = (0, firestore_1.onDocumentUpdated)("users/{userId}", 
     matches.sort((a, b) => b.matchScore - a.matchScore);
     // Store top matches
     if (matches.length > 0) {
-        await admin
+        await init_1.admin
             .firestore()
             .collection("users")
             .doc(userId)
@@ -154,7 +137,7 @@ exports.matchJobsForUser = (0, firestore_1.onDocumentUpdated)("users/{userId}", 
             .doc("latest")
             .set({
             matches: matches.slice(0, 10),
-            generatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            generatedAt: init_1.admin.firestore.FieldValue.serverTimestamp(),
         });
     }
     return { matchesFound: matches.length };
@@ -163,14 +146,14 @@ exports.matchJobsForUser = (0, firestore_1.onDocumentUpdated)("users/{userId}", 
 exports.onUserDelete = functionsV1.auth.user().onDelete(async (user) => {
     const { uid } = user;
     // Delete user profile
-    await admin.firestore().collection("users").doc(uid).delete();
+    await init_1.admin.firestore().collection("users").doc(uid).delete();
     // Clean up user's job applications
-    const applicationsSnapshot = await admin
+    const applicationsSnapshot = await init_1.admin
         .firestore()
         .collectionGroup("applications")
         .where("applicantId", "==", uid)
         .get();
-    const batch = admin.firestore().batch();
+    const batch = init_1.admin.firestore().batch();
     applicationsSnapshot.forEach((doc) => {
         batch.delete(doc.ref);
     });
@@ -190,7 +173,7 @@ exports.onNewJobPosted = (0, firestore_1.onDocumentCreated)("jobs/{jobId}", asyn
     if (jobData.status === "draft") {
         const posterUid = jobData.postedBy;
         if (posterUid) {
-            const posterDoc = await admin
+            const posterDoc = await init_1.admin
                 .firestore()
                 .collection("users")
                 .doc(posterUid)
@@ -198,7 +181,7 @@ exports.onNewJobPosted = (0, firestore_1.onDocumentCreated)("jobs/{jobId}", asyn
             if (((_a = posterDoc.data()) === null || _a === void 0 ? void 0 : _a.role) === "company") {
                 await ((_b = event.data) === null || _b === void 0 ? void 0 : _b.ref.update({
                     status: "active",
-                    approvedAt: admin.firestore.FieldValue.serverTimestamp(),
+                    approvedAt: init_1.admin.firestore.FieldValue.serverTimestamp(),
                 }));
                 // Continue to send notifications since job is now active
             }
@@ -215,7 +198,7 @@ exports.onNewJobPosted = (0, firestore_1.onDocumentCreated)("jobs/{jobId}", asyn
     }
     try {
         // Find users with job match notifications enabled
-        const usersSnapshot = await admin
+        const usersSnapshot = await init_1.admin
             .firestore()
             .collection("users")
             .where("notificationSettings.jobMatches", "==", true)
@@ -301,7 +284,7 @@ exports.onMemberStatusChange = (0, firestore_1.onDocumentUpdated)("users/{userId
     // Skip during registration to prevent unintended group changes for recruiters
     if (afterData._skipGroupSync) {
         await ((_c = event.data) === null || _c === void 0 ? void 0 : _c.after.ref.update({
-            _skipGroupSync: admin.firestore.FieldValue.delete(),
+            _skipGroupSync: init_1.admin.firestore.FieldValue.delete(),
         }));
         return;
     }
@@ -350,7 +333,7 @@ exports.syncGroupMembership = (0, https_1.onCall)(async (request) => {
         throw new https_1.HttpsError("unauthenticated", "User must be authenticated");
     }
     // Verify admin role
-    const userDoc = await admin
+    const userDoc = await init_1.admin
         .firestore()
         .collection("users")
         .doc(request.auth.uid)
@@ -391,7 +374,7 @@ exports.updateMemberGroups = (0, https_1.onCall)(async (request) => {
         throw new https_1.HttpsError("unauthenticated", "User must be authenticated");
     }
     // Verify admin role
-    const userDoc = await admin
+    const userDoc = await init_1.admin
         .firestore()
         .collection("users")
         .doc(request.auth.uid)
@@ -447,7 +430,7 @@ exports.getMemberGroupList = (0, https_1.onCall)(async (request) => {
         throw new https_1.HttpsError("unauthenticated", "User must be authenticated");
     }
     // Verify admin role
-    const userDoc = await admin
+    const userDoc = await init_1.admin
         .firestore()
         .collection("users")
         .doc(request.auth.uid)
@@ -465,4 +448,23 @@ exports.getMemberGroupList = (0, https_1.onCall)(async (request) => {
 });
 var companies_1 = require("./companies");
 Object.defineProperty(exports, "onMemberCompanyChange", { enumerable: true, get: function () { return companies_1.onMemberCompanyChange; } });
+// LinkedIn OAuth: custom OAuth flow (avoids Identity Platform OIDC charges)
+var linkedin_auth_1 = require("./linkedin-auth");
+Object.defineProperty(exports, "linkedinAuthRedirect", { enumerable: true, get: function () { return linkedin_auth_1.linkedinAuthRedirect; } });
+Object.defineProperty(exports, "linkedinAuthCallback", { enumerable: true, get: function () { return linkedin_auth_1.linkedinAuthCallback; } });
+Object.defineProperty(exports, "exchangeLinkedInCode", { enumerable: true, get: function () { return linkedin_auth_1.exchangeLinkedInCode; } });
+// LinkedIn PDF Parser: extract text from a base64-encoded LinkedIn PDF export
+// Disabled — pdf-parse module not installed
+// export { parseLinkedInPdf } from "./parse-linkedin-pdf";
+// Salary stats: aggregated compensation analytics with tiered privacy enforcement
+var get_salary_stats_1 = require("./get-salary-stats");
+Object.defineProperty(exports, "getSalaryStats", { enumerable: true, get: function () { return get_salary_stats_1.getSalaryStats; } });
+// RBAC: permission resolution triggers + admin callable functions
+var resolvePermissions_1 = require("./rbac/resolvePermissions");
+Object.defineProperty(exports, "onUserGroupWrite", { enumerable: true, get: function () { return resolvePermissions_1.onUserGroupWrite; } });
+Object.defineProperty(exports, "onGroupWrite", { enumerable: true, get: function () { return resolvePermissions_1.onGroupWrite; } });
+var seedGroups_1 = require("./rbac/seedGroups");
+Object.defineProperty(exports, "seedRbacGroups", { enumerable: true, get: function () { return seedGroups_1.seedRbacGroups; } });
+var backfillUsers_1 = require("./rbac/backfillUsers");
+Object.defineProperty(exports, "backfillRbacUsers", { enumerable: true, get: function () { return backfillUsers_1.backfillRbacUsers; } });
 //# sourceMappingURL=index.js.map

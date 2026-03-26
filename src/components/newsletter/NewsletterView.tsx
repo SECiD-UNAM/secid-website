@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getNewsletter, type NewsletterIssue } from '@/lib/newsletter-archive';
+import { getNewsletter, type NewsletterIssue } from '@/lib/newsletter';
 import { sanitizeHtml } from '@/lib/validation/sanitization';
 
 interface Props {

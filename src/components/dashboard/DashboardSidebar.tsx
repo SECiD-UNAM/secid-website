@@ -20,6 +20,9 @@ import {
   XMarkIcon,
   BuildingOffice2Icon,
   CurrencyDollarIcon,
+  NewspaperIcon,
+  StarIcon,
+  RectangleGroupIcon,
 } from '@heroicons/react/24/outline';
 
 interface DashboardSidebarProps {
@@ -117,6 +120,27 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     },
   ];
 
+  const contentItems: MenuItem[] = [
+    {
+      name: lang === 'es' ? 'Journal Club' : 'Journal Club',
+      href: `/${lang}/dashboard/journal-club`,
+      icon: BookOpenIcon,
+      requireRole: ['admin', 'moderator', 'collaborator'],
+    },
+    {
+      name: lang === 'es' ? 'Newsletter' : 'Newsletter',
+      href: `/${lang}/dashboard/newsletter`,
+      icon: NewspaperIcon,
+      requireRole: ['admin', 'moderator', 'collaborator'],
+    },
+    {
+      name: lang === 'es' ? 'Destacados' : 'Spotlights',
+      href: `/${lang}/dashboard/spotlights`,
+      icon: StarIcon,
+      requireRole: ['admin', 'moderator', 'collaborator'],
+    },
+  ];
+
   const adminItems: MenuItem[] = [
     {
       name: lang === 'es' ? 'Panel Admin' : 'Admin Panel',
@@ -135,6 +159,12 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       href: `/${lang}/dashboard/admin/companies`,
       icon: BriefcaseIcon,
       requireRole: ['admin', 'moderator'],
+    },
+    {
+      name: lang === 'es' ? 'Grupos' : 'Groups',
+      href: `/${lang}/dashboard/admin/groups`,
+      icon: RectangleGroupIcon,
+      requireRole: ['admin'],
     },
     {
       name: lang === 'es' ? 'Reportes' : 'Reports',
@@ -169,9 +199,12 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     return true;
   };
 
-  const allHrefs = [...menuItems, ...adminItems, ...bottomItems].map(
-    (i) => i.href,
-  );
+  const allHrefs = [
+    ...menuItems,
+    ...contentItems,
+    ...adminItems,
+    ...bottomItems,
+  ].map((i) => i.href);
 
   const isItemActive = (href: string): boolean => {
     const path = currentPath.replace(/\/$/, '');
@@ -254,6 +287,24 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       <div className="space-y-1 px-4 pt-4">
         {/* Main menu items */}
         <div className="space-y-1">{menuItems.map(renderMenuItem)}</div>
+
+        {/* Content management section */}
+        {contentItems.some(isItemAccessible) && (
+          <>
+            <div className="my-4 border-t border-gray-200 dark:border-gray-700"></div>
+            <div className="space-y-1">
+              <p className="px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                {lang === 'es' ? 'Contenido' : 'Content'}
+              </p>
+              {contentItems.map((item) => {
+                if (isItemAccessible(item)) {
+                  return renderMenuItem(item);
+                }
+                return null;
+              })}
+            </div>
+          </>
+        )}
 
         {/* Admin section */}
         {(isAdmin || isModerator) && (
