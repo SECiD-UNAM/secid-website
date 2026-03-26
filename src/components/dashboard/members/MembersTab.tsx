@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import type { MemberProfile } from '@/types/member';
 import { MemberFilters, filterMembers } from './MemberFilters';
 import type { FilterState } from './MemberFilters';
-import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -35,6 +35,9 @@ const labels = {
     showing: 'Mostrando',
     of: 'de',
     membersLabel: 'miembros',
+    searchPlaceholder: 'Buscar por nombre, correo, empresa o habilidad...',
+    searchAriaLabel: 'Buscar miembros',
+    clearSearchAriaLabel: 'Limpiar búsqueda',
     name: 'Nombre',
     company: 'Empresa',
     campus: 'Campus',
@@ -58,6 +61,9 @@ const labels = {
     showing: 'Showing',
     of: 'of',
     membersLabel: 'members',
+    searchPlaceholder: 'Search by name, email, company, or skill...',
+    searchAriaLabel: 'Search members',
+    clearSearchAriaLabel: 'Clear search',
     name: 'Name',
     company: 'Company',
     campus: 'Campus',
@@ -106,6 +112,24 @@ function getStringValue(m: MemberProfile, column: SortColumn): string {
     default:
       return '';
   }
+}
+
+export function searchMembers(
+  members: MemberProfile[],
+  query: string,
+  isAdmin = false
+): MemberProfile[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return members;
+  return members.filter((m) => {
+    return (
+      m.displayName.toLowerCase().includes(q) ||
+      ((isAdmin || m.privacy?.showEmail) &&
+        (m.email ?? '').toLowerCase().includes(q)) ||
+      (m.profile.company ?? '').toLowerCase().includes(q) ||
+      m.profile.skills.some((s) => s.toLowerCase().includes(q))
+    );
+  });
 }
 
 export function sortMembers(
@@ -442,10 +466,15 @@ export const MembersTab: React.FC<MembersTabProps> = ({
   const [sortColumn, setSortColumn] = useState<SortColumn>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [expandedUid, setExpandedUid] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
+  const searched = useMemo(
+    () => searchMembers(members, searchQuery, isAdmin),
+    [members, searchQuery, isAdmin]
+  );
   const filtered = useMemo(
-    () => filterMembers(members, filters),
-    [members, filters]
+    () => filterMembers(searched, filters),
+    [searched, filters]
   );
   const sorted = useMemo(
     () => sortMembers(filtered, sortColumn, sortDirection),
@@ -467,6 +496,29 @@ export const MembersTab: React.FC<MembersTabProps> = ({
 
   return (
     <div className="space-y-4">
+      {/* Search */}
+      <div className="relative">
+        <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder={t.searchPlaceholder}
+          aria-label={t.searchAriaLabel}
+          className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-9 text-sm text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500 dark:focus:border-primary-400"
+        />
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={() => setSearchQuery('')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            aria-label={t.clearSearchAriaLabel}
+          >
+            <XMarkIcon className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
       {/* Filters */}
       <MemberFilters
         members={members}
