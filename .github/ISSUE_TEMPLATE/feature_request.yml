@@ -1,0 +1,81 @@
+name: "\U0001F4A1 Feature Request"
+description: Suggest an improvement or new feature
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have an idea to make SECiD better? We'd love to hear it!
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Target environment
+      description: Is this about something on beta or production?
+      options:
+        - "Beta (beta.secid.mx) — pre-release"
+        - "Production (secid.org) — stable release"
+        - "Both / Not sure"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or motivation
+      description: What problem does this feature solve? Why is it needed?
+      placeholder: I'm frustrated when... / It would be great if...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe what you'd like to happen.
+      placeholder: I'd like to see...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Have you considered any alternative solutions or workarounds?
+      placeholder: I've tried...
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of the platform does this relate to?
+      options:
+        - Dashboard / Profile
+        - Job Board
+        - Events
+        - Forums
+        - Mentorship
+        - Payments / Membership
+        - Admin Panel
+        - Authentication
+        - Mobile Experience
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: How important is this to you?
+      options:
+        - Nice to have
+        - Would improve my experience
+        - Important for my workflow
+        - Critical — blocking my use of the platform
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Any mockups, screenshots, or references that help illustrate your idea.

@@ -1,0 +1,59 @@
+name: "\U0001F4AC General Feedback"
+description: Share your thoughts, questions, or suggestions
+title: "[Feedback]: "
+labels: ["feedback", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Your feedback helps us improve SECiD. Share anything on your mind!
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: Which version of the site is this about?
+      options:
+        - "Beta (beta.secid.mx) — pre-release"
+        - "Production (secid.org) — stable release"
+        - "Both / Not sure"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What kind of feedback is this?
+      options:
+        - General suggestion
+        - User experience
+        - Content / Documentation
+        - Performance
+        - Accessibility
+        - Question
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: feedback
+    attributes:
+      label: Your feedback
+      description: Tell us what's on your mind.
+      placeholder: I think...
+    validations:
+      required: true
+
+  - type: input
+    id: page-url
+    attributes:
+      label: Related page
+      description: If your feedback is about a specific page, paste the URL here.
+      placeholder: https://secid.mx/...
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Anything else you'd like to add — screenshots, links, examples.
