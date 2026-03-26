@@ -1,10 +1,6 @@
 ---
-export const prerender = false;
-
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import EventForm from '@/components/events/EventForm';
-
-const { id } = Astro.params;
+import EventEditPage from '@/components/wrappers/EventEditPage';
 ---
 
 <DashboardLayout
@@ -20,16 +16,10 @@ const { id } = Astro.params;
           Editar Evento
         </h1>
         <p class="mt-2 text-gray-600 dark:text-gray-400">
-          Actualiza la información y configuración del evento
+          Actualiza la informacion y configuracion del evento
         </p>
       </div>
       <div class="flex space-x-3">
-        <a
-          href={`/es/dashboard/events/${id}`}
-          class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-        >
-          Ver Evento
-        </a>
         <a
           href="/es/dashboard/events"
           class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -53,5 +43,5 @@ const { id } = Astro.params;
     </div>
   </div>
 
-  <EventForm client:load lang="es" eventId={id} />
+  <EventEditPage client:only="react" lang="es" />
 </DashboardLayout>

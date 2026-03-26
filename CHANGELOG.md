@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned
 
+### Fixed
+
+- **Firebase Hosting dynamic route 404s**: Converted all dashboard `[id].astro` SSR pages to static pages with Firebase Hosting rewrites. Created `useRouteId` / `useRouteIdBySegment` hooks (`src/hooks/use-route-id.ts`) for client-side ID extraction from URL pathname. Updated 8 wrapper components to fall back to URL-based ID when no prop is provided. Renamed `[id].astro` files to `detail.astro` / `edit/index.astro` across `es/` and `en/` locales for groups, journal-club, newsletter, spotlights, events, and jobs. Added 20 Firebase Hosting rewrite rules to `firebase.json`.
+
 ### Changed
 
 - **Universal Listing System — Task 15: ResourceLibrary migration**: Migrated `src/components/resources/ResourceLibrary.tsx` to use `useUniversalListing` hook with `ClientSideAdapter`. The adapter's `fetchAll` calls `searchResources` with optional `initialCategory` constraint, loads up to 100 resources, and returns them for client-side processing. Category, type, and difficulty filters defined as `FilterDefinition[]` and wired to `ListingFilters` in collapsible mode. Custom domain features preserved: bookmarks tab (client-side filter by `bookmarkedIds` Set), popular/recent tabs (change `setSort` via `handleTabChange`), category grid (hidden once a filter is active), stats bar, and upload flow. `lang` prop added. Default config: `defaultViewMode: 'grid'`, `paginationMode: 'offset'`, `filterMode: 'collapsible'`. Adds full-text search across title, description, summary, tags, searchKeywords, and author name. 19 unit tests, all passing.

@@ -4,6 +4,78 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
+        "source": "/es/dashboard/admin/groups/edit/*",
+        "destination": "/es/dashboard/admin/groups/edit/index.html"
+      },
+      {
+        "source": "/en/dashboard/admin/groups/edit/*",
+        "destination": "/en/dashboard/admin/groups/edit/index.html"
+      },
+      {
+        "source": "/es/dashboard/admin/groups/*",
+        "destination": "/es/dashboard/admin/groups/detail/index.html"
+      },
+      {
+        "source": "/en/dashboard/admin/groups/*",
+        "destination": "/en/dashboard/admin/groups/detail/index.html"
+      },
+      {
+        "source": "/es/dashboard/journal-club/edit/*",
+        "destination": "/es/dashboard/journal-club/edit/index.html"
+      },
+      {
+        "source": "/en/dashboard/journal-club/edit/*",
+        "destination": "/en/dashboard/journal-club/edit/index.html"
+      },
+      {
+        "source": "/es/dashboard/journal-club/*",
+        "destination": "/es/dashboard/journal-club/detail/index.html"
+      },
+      {
+        "source": "/en/dashboard/journal-club/*",
+        "destination": "/en/dashboard/journal-club/detail/index.html"
+      },
+      {
+        "source": "/es/dashboard/newsletter/edit/*",
+        "destination": "/es/dashboard/newsletter/edit/index.html"
+      },
+      {
+        "source": "/en/dashboard/newsletter/edit/*",
+        "destination": "/en/dashboard/newsletter/edit/index.html"
+      },
+      {
+        "source": "/es/dashboard/spotlights/edit/*",
+        "destination": "/es/dashboard/spotlights/edit/index.html"
+      },
+      {
+        "source": "/en/dashboard/spotlights/edit/*",
+        "destination": "/en/dashboard/spotlights/edit/index.html"
+      },
+      {
+        "source": "/es/dashboard/events/edit/*",
+        "destination": "/es/dashboard/events/edit/index.html"
+      },
+      {
+        "source": "/en/dashboard/events/edit/*",
+        "destination": "/en/dashboard/events/edit/index.html"
+      },
+      {
+        "source": "/es/dashboard/events/*",
+        "destination": "/es/dashboard/events/detail/index.html"
+      },
+      {
+        "source": "/en/dashboard/events/*",
+        "destination": "/en/dashboard/events/detail/index.html"
+      },
+      {
+        "source": "/es/dashboard/jobs/*",
+        "destination": "/es/dashboard/jobs/detail/index.html"
+      },
+      {
+        "source": "/en/dashboard/jobs/*",
+        "destination": "/en/dashboard/jobs/detail/index.html"
+      },
+      {
         "source": "/es/members/*/cv",
         "destination": "/es/cv/index.html"
       },

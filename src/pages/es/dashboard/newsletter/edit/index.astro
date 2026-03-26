@@ -1,39 +1,27 @@
 ---
-export const prerender = false;
-
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import GroupDetailPage from '@/components/wrappers/GroupDetailPage';
-
-const { id } = Astro.params;
-if (!id) return Astro.redirect('/es/dashboard/admin/groups');
+import NewsletterFormPage from '@/components/wrappers/NewsletterFormPage';
 ---
 
 <DashboardLayout
-  title="Detalle de Grupo - SECiD"
-  description="Ver detalles del grupo de permisos"
+  title="Editar Newsletter - SECiD"
+  description="Actualiza la informacion del newsletter"
   lang="es"
-  requireRole={['admin', 'moderator']}
 >
   <!-- Header -->
   <div class="mb-8">
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-          Detalle del Grupo
+          Editar Newsletter
         </h1>
         <p class="mt-2 text-gray-600 dark:text-gray-400">
-          Informacion completa del grupo y sus permisos
+          Actualiza el contenido y configuracion del newsletter
         </p>
       </div>
       <div class="flex space-x-3">
         <a
-          href={`/es/dashboard/admin/groups/edit/${id}`}
-          class="inline-flex items-center rounded-lg border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700"
-        >
-          Editar Grupo
-        </a>
-        <a
-          href="/es/dashboard/admin/groups"
+          href="/es/dashboard/newsletter"
           class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           <svg
@@ -49,11 +37,11 @@ if (!id) return Astro.redirect('/es/dashboard/admin/groups');
               stroke-width="2"
               d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
           </svg>
-          Volver a Grupos
+          Volver a Newsletter
         </a>
       </div>
     </div>
   </div>
 
-  <GroupDetailPage client:only="react" lang="es" groupId={id} />
+  <NewsletterFormPage client:only="react" lang="es" />
 </DashboardLayout>

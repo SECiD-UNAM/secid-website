@@ -1,38 +1,27 @@
 ---
-export const prerender = false;
-
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import JournalClubFormPage from '@/components/wrappers/JournalClubFormPage';
-
-const { id } = Astro.params;
-if (!id) return Astro.redirect('/es/dashboard/journal-club');
+import EventEditPage from '@/components/wrappers/EventEditPage';
 ---
 
 <DashboardLayout
-  title="Detalle de Sesión - Journal Club SECiD"
-  description="Ver detalles de la sesión del Journal Club"
-  lang="es"
+  title="Edit Event - SECiD"
+  description="Edit event details and configuration"
+  lang="en"
 >
   <!-- Header -->
   <div class="mb-8">
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-          Detalle de Sesión
+          Edit Event
         </h1>
         <p class="mt-2 text-gray-600 dark:text-gray-400">
-          Información completa de la sesión del Journal Club
+          Update event information and configuration
         </p>
       </div>
       <div class="flex space-x-3">
         <a
-          href={`/es/dashboard/journal-club/edit/${id}`}
-          class="inline-flex items-center rounded-lg border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700"
-        >
-          Editar Sesión
-        </a>
-        <a
-          href="/es/dashboard/journal-club"
+          href="/en/dashboard/events"
           class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           <svg
@@ -48,11 +37,11 @@ if (!id) return Astro.redirect('/es/dashboard/journal-club');
               stroke-width="2"
               d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
           </svg>
-          Volver a Journal Club
+          Back to Events
         </a>
       </div>
     </div>
   </div>
 
-  <JournalClubFormPage client:only="react" lang="es" sessionId={id} />
+  <EventEditPage client:only="react" lang="en" />
 </DashboardLayout>

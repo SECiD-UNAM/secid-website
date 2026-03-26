@@ -1,14 +1,14 @@
 import React from 'react';
 import { AuthProvider } from '@/contexts/AuthContext';
-import EventDetail from '@/components/events/EventDetail';
+import EventForm from '@/components/events/EventForm';
 import { useRouteIdBySegment } from '@/hooks/use-route-id';
 
 interface Props {
-  eventId?: string;
   lang?: 'es' | 'en';
+  eventId?: string;
 }
 
-export default function EventDetailPage({ eventId, lang = 'es' }: Props) {
+export default function EventEditPage({ lang = 'es', eventId }: Props) {
   const routeId = useRouteIdBySegment('events');
   const effectiveId = eventId || routeId;
 
@@ -22,7 +22,7 @@ export default function EventDetailPage({ eventId, lang = 'es' }: Props) {
 
   return (
     <AuthProvider>
-      <EventDetail eventId={effectiveId} lang={lang} />
+      <EventForm lang={lang} eventId={effectiveId} />
     </AuthProvider>
   );
 }

@@ -1,15 +1,11 @@
 ---
-export const prerender = false;
-
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
 import JournalClubFormPage from '@/components/wrappers/JournalClubFormPage';
-
-const { id } = Astro.params;
 ---
 
 <DashboardLayout
-  title="Editar Sesión - Journal Club SECiD"
-  description="Actualiza la información de la sesión del Journal Club"
+  title="Detalle de Sesion - Journal Club SECiD"
+  description="Ver detalles de la sesion del Journal Club"
   lang="es"
 >
   <!-- Header -->
@@ -17,19 +13,13 @@ const { id } = Astro.params;
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-          Editar Sesión
+          Detalle de Sesion
         </h1>
         <p class="mt-2 text-gray-600 dark:text-gray-400">
-          Actualiza la información y configuración de la sesión
+          Informacion completa de la sesion del Journal Club
         </p>
       </div>
       <div class="flex space-x-3">
-        <a
-          href={`/es/dashboard/journal-club/${id}`}
-          class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-        >
-          Ver Sesión
-        </a>
         <a
           href="/es/dashboard/journal-club"
           class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -53,5 +43,5 @@ const { id } = Astro.params;
     </div>
   </div>
 
-  <JournalClubFormPage client:only="react" lang="es" sessionId={id} />
+  <JournalClubFormPage client:only="react" lang="es" />
 </DashboardLayout>

@@ -1,37 +1,28 @@
 ---
-export const prerender = false;
-
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import NewsletterFormPage from '@/components/wrappers/NewsletterFormPage';
-
-const { id } = Astro.params;
+import GroupFormPage from '@/components/wrappers/GroupFormPage';
 ---
 
 <DashboardLayout
-  title="Editar Newsletter - SECiD"
-  description="Actualiza la informacion del newsletter"
-  lang="es"
+  title="Edit Group - SECiD"
+  description="Update RBAC group configuration and permissions"
+  lang="en"
+  requireRole={['admin', 'moderator']}
 >
   <!-- Header -->
   <div class="mb-8">
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-          Editar Newsletter
+          Edit Group
         </h1>
         <p class="mt-2 text-gray-600 dark:text-gray-400">
-          Actualiza el contenido y configuracion del newsletter
+          Update permissions and group configuration
         </p>
       </div>
       <div class="flex space-x-3">
         <a
-          href={`/es/dashboard/newsletter/${id}`}
-          class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-        >
-          Ver Newsletter
-        </a>
-        <a
-          href="/es/dashboard/newsletter"
+          href="/en/dashboard/admin/groups"
           class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           <svg
@@ -47,11 +38,11 @@ const { id } = Astro.params;
               stroke-width="2"
               d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
           </svg>
-          Volver a Newsletter
+          Back to Groups
         </a>
       </div>
     </div>
   </div>
 
-  <NewsletterFormPage client:only="react" lang="es" newsletterId={id} />
+  <GroupFormPage client:only="react" lang="en" />
 </DashboardLayout>

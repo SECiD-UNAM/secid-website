@@ -1,31 +1,27 @@
 ---
-export const prerender = false;
-
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import SpotlightEditorPage from '@/components/wrappers/SpotlightEditorPage';
-
-const { id } = Astro.params;
+import NewsletterFormPage from '@/components/wrappers/NewsletterFormPage';
 ---
 
 <DashboardLayout
-  title="Editar Historia - SECiD"
-  description="Actualiza la historia de un egresado destacado"
-  lang="es"
+  title="Edit Newsletter - SECiD"
+  description="Update Newsletter issue information"
+  lang="en"
 >
   <!-- Header -->
   <div class="mb-8">
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-          Editar Historia
+          Edit Newsletter
         </h1>
         <p class="mt-2 text-gray-600 dark:text-gray-400">
-          Actualiza la informacion de la historia del egresado
+          Update the content and settings for this newsletter
         </p>
       </div>
       <div class="flex space-x-3">
         <a
-          href="/es/dashboard/spotlights"
+          href="/en/dashboard/newsletter"
           class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           <svg
@@ -41,11 +37,11 @@ const { id } = Astro.params;
               stroke-width="2"
               d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
           </svg>
-          Volver a Historias
+          Back to Newsletter
         </a>
       </div>
     </div>
   </div>
 
-  <SpotlightEditorPage client:only="react" lang="es" spotlightId={id} />
+  <NewsletterFormPage client:only="react" lang="en" />
 </DashboardLayout>
