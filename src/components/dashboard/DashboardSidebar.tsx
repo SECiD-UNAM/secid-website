@@ -285,8 +285,8 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   };
 
   const sidebarContent = (
-    <>
-      <div className="space-y-1 px-4 pt-4 pb-24">
+    <div className="flex h-full flex-col">
+      <div className="flex-1 space-y-1 overflow-y-auto px-4 pt-4 pb-4">
         {/* Main menu items */}
         <div className="space-y-1">{menuItems.map(renderMenuItem)}</div>
 
@@ -327,8 +327,8 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         )}
       </div>
 
-      {/* Bottom section */}
-      <div className="absolute bottom-0 left-0 right-0 border-t border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-800">
+      {/* Bottom section — sticky, never overlaps */}
+      <div className="shrink-0 border-t border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-800">
         {bottomItems.map(renderMenuItem)}
         <button
           onClick={handleSignOut}
@@ -338,14 +338,14 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           <span>{lang === 'es' ? 'Cerrar Sesión' : 'Sign Out'}</span>
         </button>
       </div>
-    </>
+    </div>
   );
 
   return (
     <>
       {/* Desktop sidebar */}
       <aside
-        className={`fixed bottom-0 left-0 z-30 hidden w-64 overflow-y-auto border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:block ${isBeta ? 'top-24' : 'top-16'}`}
+        className={`fixed bottom-0 left-0 z-30 hidden w-64 border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:block ${isBeta ? 'top-24' : 'top-16'}`}
       >
         {sidebarContent}
       </aside>
@@ -358,7 +358,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             onClick={onClose}
           />
           <aside
-            className={`fixed bottom-0 left-0 z-50 w-64 overflow-y-auto border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:hidden ${isBeta ? 'top-24' : 'top-16'}`}
+            className={`fixed bottom-0 left-0 z-50 w-64 border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:hidden ${isBeta ? 'top-24' : 'top-16'}`}
           >
             <div className="flex items-center justify-end px-4 py-2">
               <button
