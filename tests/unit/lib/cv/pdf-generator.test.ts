@@ -32,13 +32,16 @@ const mockJsPDFInstance = {
   setTextColor: mockSetTextColor,
   setFont: mockSetFont,
   setDrawColor: mockSetDrawColor,
+  setFillColor: vi.fn(),
   setLineWidth: mockSetLineWidth,
   line: mockLine,
+  circle: vi.fn(),
   setPage: mockSetPage,
   setProperties: mockSetProperties,
   splitTextToSize: mockSplitTextToSize,
   getTextWidth: mockGetTextWidth,
   getNumberOfPages: mockGetNumberOfPages,
+  internal: { getNumberOfPages: mockGetNumberOfPages },
 };
 
 vi.mock('jspdf', () => ({
@@ -46,6 +49,11 @@ vi.mock('jspdf', () => ({
 }));
 
 import { generateCvPdf } from '@/lib/cv/pdf-generator';
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  mockGetNumberOfPages.mockReturnValue(1);
+});
 import type { CVData } from '@/types/cv';
 
 function createTestCvData(overrides: Partial<CVData> = {}): CVData {
@@ -366,9 +374,9 @@ describe('generateCvPdf', () => {
 
       expect(sectionHeaders).toEqual(
         expect.arrayContaining([
-          'Summary',
-          'Professional Experience',
-          'Education',
+          'PROFESSIONAL SUMMARY',
+          'PROFESSIONAL EXPERIENCE',
+          'EDUCATION',
         ])
       );
     });
@@ -386,9 +394,9 @@ describe('generateCvPdf', () => {
 
       expect(sectionHeaders).toEqual(
         expect.arrayContaining([
-          'Resumen',
-          'Experiencia Profesional',
-          'Educacion',
+          'RESUMEN PROFESIONAL',
+          'EXPERIENCIA PROFESIONAL',
+          'EDUCACION',
         ])
       );
     });

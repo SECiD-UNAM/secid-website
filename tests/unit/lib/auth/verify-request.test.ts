@@ -52,7 +52,7 @@ describe('verifyRequest', () => {
 
     expect(result.authenticated).toBe(false);
     expect(result.userId).toBeNull();
-    expect(result.error).toBe('Session not validated');
+    expect(result.error).toBe('Invalid or expired token');
   });
 
   it('returns authenticated=false when session exists but has no userId', () => {
@@ -66,7 +66,7 @@ describe('verifyRequest', () => {
 
     expect(result.authenticated).toBe(false);
     expect(result.userId).toBeNull();
-    expect(result.error).toBe('Session not validated');
+    expect(result.error).toBe('Invalid or expired token');
   });
 });
 
