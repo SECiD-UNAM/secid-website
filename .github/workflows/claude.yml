@@ -1,0 +1,104 @@
+name: Claude Code
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  # Respond to @claude mentions in issue/PR comments
+  claude-mention:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Claude Code
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--max-turns 25 --dangerously-skip-permissions"
+
+  # Auto-handle new issues: triage, implement, and open PR
+  claude-issue:
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Claude Code — Handle Issue
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: "--max-turns 30 --dangerously-skip-permissions"
+          prompt: |
+            You are the automated developer for SECiD (secid.org / beta.secid.mx).
+            A new issue has been opened. Handle it end-to-end:
+
+            ## Step 1: Triage
+
+            1. Read the issue title and body carefully.
+            2. Determine the environment from the "Environment" form field:
+               - "Beta (beta.secid.mx)" → add label `env:beta`, target branch is `feature/hub`
+               - "Production (secid.org)" → add label `env:production`, target branch is `main`
+               - "Not sure" / "Both" → add label `env:unknown`, default to `feature/hub`
+            3. Add relevant area labels:
+               - `area:auth`, `area:dashboard`, `area:jobs`, `area:events`, `area:forums`,
+                 `area:mentorship`, `area:payments`, `area:admin`, `area:mobile`, `area:i18n`, `area:infra`
+            4. Post a comment acknowledging the issue and explaining your plan.
+
+            ## Step 2: Investigate & Implement
+
+            1. Read CLAUDE.md for project conventions.
+            2. Explore the codebase to understand the relevant code.
+            3. Create a new branch from the target branch: `fix/issue-<number>` or `feat/issue-<number>`.
+            4. Implement the fix or feature. Follow project conventions:
+               - TypeScript, Astro 4.x, React 18, Tailwind CSS
+               - Functions <30 lines, meaningful names, no hardcoded values
+               - Run `npm run lint:fix` and `npm run format` before committing
+            5. If the issue is a bug, try to add or update a test.
+            6. Commit with conventional commits referencing the issue: `fix: description (closes #N)`.
+
+            ## Step 3: Open a Pull Request
+
+            1. Push the branch and create a PR targeting the correct branch (feature/hub or main).
+            2. Reference the issue in the PR body.
+            3. Add a clear description of what was changed and why.
+
+            ## Guardrails
+
+            - If the issue is unclear or needs more information, post a comment asking for clarification instead of implementing. Add the `question` label.
+            - If the fix requires secret changes, environment config, or infrastructure changes, post a comment explaining what's needed manually. Add the `needs:manual` label.
+            - Do NOT modify .env files, Firebase config, or Stripe keys.
+            - If you cannot confidently implement the fix, explain what you found and suggest an approach.
+
+            Use `gh` CLI for all GitHub operations (labels, comments, PRs).
