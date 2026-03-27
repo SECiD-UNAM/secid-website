@@ -59,7 +59,7 @@ function buildHistogram(values: number[], binCount = 12) {
 }
 
 export const getSalaryStats = onCall(
-  { region: "us-central1" },
+  { region: "us-central1", invoker: "public" },
   async (request) => {
     if (!request.auth) {
       throw new HttpsError("unauthenticated", "Authentication required");
