@@ -5,7 +5,8 @@ import {
   type User,
   type Unsubscribe,
 } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import { usePermissions } from '@/lib/rbac/hooks';
 
 interface Props {
@@ -37,7 +38,8 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
   const [ready, setReady] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const { can } = usePermissions();
+  const [userRole, setUserRole] = useState<string>('member');
+  const { can, loading: rbacLoading } = usePermissions();
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
@@ -58,6 +60,16 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
   }, []);
+
+  // Fetch user role from Firestore as fallback when RBAC claims aren't set
+  useEffect(() => {
+    if (!user) return;
+    getDoc(doc(db, 'users', user.uid))
+      .then((snap) => {
+        if (snap.exists()) setUserRole(snap.data().role || 'member');
+      })
+      .catch(() => {});
+  }, [user]);
 
   useEffect(() => {
     if (ready && user && isMobile) {
@@ -148,14 +160,19 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
     },
   ];
 
-  const canViewSettings = can('settings', 'view');
-  const canManageUsers = can('users', 'edit');
-  const canManageCompanies = can('companies', 'edit');
-  const canManageGroups = can('groups', 'view');
-  const canViewReports = can('reports', 'view');
-  const canManageJournalClub = can('journal-club', 'view');
-  const canManageNewsletter = can('newsletter', 'view');
-  const canManageSpotlights = can('spotlights', 'view');
+  // Dual-mode: use RBAC claims if available, fall back to role-based check
+  const isAdminOrMod = userRole === 'admin' || userRole === 'moderator';
+  const isAdminRole = userRole === 'admin';
+  const hasRBAC = !rbacLoading && can('groups', 'view'); // if this works, RBAC claims exist
+
+  const canViewSettings = hasRBAC ? can('settings', 'view') : isAdminRole;
+  const canManageUsers = hasRBAC ? can('users', 'edit') : isAdminOrMod;
+  const canManageCompanies = hasRBAC ? can('companies', 'edit') : isAdminOrMod;
+  const canManageGroups = hasRBAC ? can('groups', 'view') : isAdminRole;
+  const canViewReports = hasRBAC ? can('reports', 'view') : isAdminOrMod;
+  const canManageJournalClub = hasRBAC ? can('journal-club', 'view') : isAdminOrMod;
+  const canManageNewsletter = hasRBAC ? can('newsletter', 'view') : isAdminOrMod;
+  const canManageSpotlights = hasRBAC ? can('spotlights', 'view') : isAdminOrMod;
   const showAdminSection = canViewSettings || canManageUsers || canManageCompanies || canManageGroups || canViewReports;
   const showContentSection = canManageJournalClub || canManageNewsletter || canManageSpotlights;
 
