@@ -59,7 +59,7 @@ function buildHistogram(values: number[], binCount = 12) {
 }
 
 export const getSalaryStats = onCall(
-  { region: "us-central1", invoker: "public" },
+  { region: "us-central1", invoker: "public", cors: [/beta\.secid\.mx$/, /secid\.org$/, /localhost/] },
   async (request) => {
     if (!request.auth) {
       throw new HttpsError("unauthenticated", "Authentication required");
