@@ -191,6 +191,12 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       requireRole: ['admin'],
     },
     {
+      name: lang === 'es' ? 'Salarios (Admin)' : 'Salary Data',
+      href: `/${lang}/dashboard/admin/salary`,
+      icon: CurrencyDollarIcon,
+      requireRole: ['admin'],
+    },
+    {
       name: lang === 'es' ? 'Reportes' : 'Reports',
       href: `/${lang}/dashboard/admin/reports`,
       icon: DocumentTextIcon,

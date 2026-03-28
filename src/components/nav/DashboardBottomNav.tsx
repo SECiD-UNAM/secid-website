@@ -228,6 +228,9 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
         ...(canManageGroups
           ? [{ href: `/${lang}/dashboard/admin/groups`, label: lang === 'es' ? 'Grupos' : 'Groups', icon: 'fas fa-layer-group' }]
           : []),
+        ...(canViewSettings
+          ? [{ href: `/${lang}/dashboard/admin/salary`, label: lang === 'es' ? 'Salarios (Admin)' : 'Salary Data', icon: 'fas fa-dollar-sign' }]
+          : []),
         ...(canViewReports
           ? [{ href: `/${lang}/dashboard/admin/reports`, label: lang === 'es' ? 'Reportes' : 'Reports', icon: 'fas fa-chart-bar' }]
           : []),
