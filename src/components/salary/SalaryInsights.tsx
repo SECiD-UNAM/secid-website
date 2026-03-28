@@ -19,7 +19,7 @@ import { SalaryByIndustry, type IndustryRow } from './SalaryByIndustry';
 import { BenefitsHeatmap, type BenefitRow } from './BenefitsHeatmap';
 import { CompensationBreakdown, type BreakdownStats } from './CompensationBreakdown';
 import { SalaryDistribution, type DistributionBin } from './SalaryDistribution';
-import { SalaryAdminTable, type AdminRawRow } from './SalaryAdminTable';
+import type { AdminRawRow } from './SalaryAdminTable';
 
 interface SalaryStatsResponse {
   tier: 'public' | 'member' | 'contributor' | 'admin';
@@ -374,10 +374,35 @@ export function SalaryInsights({ lang = 'es' }: Props) {
         )}
       </div>
 
-      {/* Admin raw data table */}
-      {tier === 'admin' && stats?.rawData ? (
-        <SalaryAdminTable rawData={stats.rawData} lang={lang} />
-      ) : null}
+      {/* Admin: link to dedicated admin salary page */}
+      {tier === 'admin' && stats?.rawData && stats.rawData.length > 0 && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800/40 dark:bg-amber-900/10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <svg className="h-5 w-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+              </svg>
+              <div>
+                <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                  {lang === 'es' ? `${stats.rawData.length} registros individuales disponibles` : `${stats.rawData.length} individual records available`}
+                </p>
+                <p className="text-xs text-amber-600 dark:text-amber-400">
+                  {lang === 'es' ? 'Acceso admin — datos con información personal' : 'Admin access — data with personal information'}
+                </p>
+              </div>
+            </div>
+            <a
+              href={`/${lang}/dashboard/admin/salary`}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700"
+            >
+              {lang === 'es' ? 'Ver datos' : 'View data'}
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

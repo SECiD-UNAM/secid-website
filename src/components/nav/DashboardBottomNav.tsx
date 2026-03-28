@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   onAuthStateChanged,
   signOut as firebaseSignOut,
@@ -40,6 +40,30 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
   const [isMobile, setIsMobile] = useState(false);
   const [userRole, setUserRole] = useState<string>('member');
   const { can, loading: rbacLoading } = usePermissions();
+
+  // Secret admin mode: synced with sidebar via sessionStorage
+  const [adminMode, setAdminMode] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return sessionStorage.getItem('secid-admin-mode') === 'true';
+  });
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const onSettingsPointerDown = useCallback(() => {
+    longPressTimer.current = setTimeout(() => {
+      setAdminMode((prev) => {
+        const next = !prev;
+        sessionStorage.setItem('secid-admin-mode', String(next));
+        return next;
+      });
+    }, 5000);
+  }, []);
+
+  const onSettingsPointerUp = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
@@ -362,31 +386,40 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
             padding: '0 16px 12px',
           }}
         >
-          {sheetItems.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              onClick={() => setSheetOpen(false)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                padding: 12,
-                borderRadius: 8,
-                background: 'var(--color-background, #0f172a)',
-                textDecoration: 'none',
-                color: 'var(--color-text-primary, #e2e8f0)',
-                fontSize: 13,
-              }}
-            >
-              <i className={item.icon} style={{ width: 18, textAlign: 'center', fontSize: 14 }} />
-              {item.label}
-            </a>
-          ))}
+          {sheetItems.map((item) => {
+            const isSettings = item.href.includes('/settings');
+            return (
+              <a
+                key={item.href}
+                href={item.href}
+                onClick={() => setSheetOpen(false)}
+                onPointerDown={isSettings ? onSettingsPointerDown : undefined}
+                onPointerUp={isSettings ? onSettingsPointerUp : undefined}
+                onPointerLeave={isSettings ? onSettingsPointerUp : undefined}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  padding: 12,
+                  borderRadius: 8,
+                  background: 'var(--color-background, #0f172a)',
+                  textDecoration: 'none',
+                  color: 'var(--color-text-primary, #e2e8f0)',
+                  fontSize: 13,
+                }}
+              >
+                <i className={item.icon} style={{ width: 18, textAlign: 'center', fontSize: 14 }} />
+                {item.label}
+                {isSettings && adminMode && (
+                  <span style={{ marginLeft: 'auto', width: 8, height: 8, borderRadius: '50%', background: '#f59e0b' }} />
+                )}
+              </a>
+            );
+          })}
         </div>
 
         {/* Content management section */}
-        {contentManagementItems.length > 0 && (
+        {adminMode && contentManagementItems.length > 0 && (
           <>
             <div
               style={{
@@ -434,7 +467,7 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
         )}
 
         {/* Admin section */}
-        {adminItems.length > 0 && (
+        {adminMode && adminItems.length > 0 && (
           <>
             <div
               style={{

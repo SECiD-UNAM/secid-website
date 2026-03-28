@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useBeta } from '@/hooks/useBeta';
@@ -55,6 +55,30 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   const { userProfile, isVerified, isAdmin, isModerator, signOut } = useAuth();
   const t = useTranslations(lang);
   const isBeta = useBeta();
+
+  // Secret admin mode: long-press Settings for 5s to toggle
+  const [adminMode, setAdminMode] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return sessionStorage.getItem('secid-admin-mode') === 'true';
+  });
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const onSettingsPointerDown = useCallback(() => {
+    longPressTimer.current = setTimeout(() => {
+      setAdminMode((prev) => {
+        const next = !prev;
+        sessionStorage.setItem('secid-admin-mode', String(next));
+        return next;
+      });
+    }, 5000);
+  }, []);
+
+  const onSettingsPointerUp = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
 
   const currentPath =
     typeof window !== 'undefined' ? window.location.pathname : '';
@@ -290,8 +314,8 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         {/* Main menu items */}
         <div className="space-y-1">{menuItems.map(renderMenuItem)}</div>
 
-        {/* Content management section */}
-        {contentItems.some(isItemAccessible) && (
+        {/* Content management section (hidden until admin mode activated) */}
+        {adminMode && contentItems.some(isItemAccessible) && (
           <>
             <div className="my-4 border-t border-gray-200 dark:border-gray-700"></div>
             <div className="space-y-1">
@@ -308,8 +332,8 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           </>
         )}
 
-        {/* Admin section */}
-        {(isAdmin || isModerator) && (
+        {/* Admin section (hidden until admin mode activated) */}
+        {adminMode && (isAdmin || isModerator) && (
           <>
             <div className="my-4 border-t border-gray-200 dark:border-gray-700"></div>
             <div className="space-y-1">
@@ -329,7 +353,26 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
       {/* Bottom section — sticky, never overlaps */}
       <div className="shrink-0 border-t border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-800">
-        {bottomItems.map(renderMenuItem)}
+        {bottomItems.map((item) => (
+          <a
+            key={item.href}
+            href={item.href}
+            onPointerDown={onSettingsPointerDown}
+            onPointerUp={onSettingsPointerUp}
+            onPointerLeave={onSettingsPointerUp}
+            className={`flex items-center rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+              isItemActive(item.href)
+                ? 'bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400'
+                : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+            }`}
+          >
+            <item.icon className="mr-3 h-5 w-5" />
+            <span>{item.name}</span>
+            {adminMode && (
+              <span className="ml-auto h-2 w-2 rounded-full bg-amber-500" title="Admin mode" />
+            )}
+          </a>
+        ))}
         <button
           onClick={handleSignOut}
           className="mt-1 flex w-full items-center rounded-lg px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
