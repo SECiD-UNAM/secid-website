@@ -2,7 +2,9 @@ import { onRequest } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { decodeClaimsPermissions, checkPermission } from "./rbac/resolution-logic";
 
-const db = admin.firestore();
+function getDb() {
+  return admin.firestore();
+}
 
 // Privacy: minimum data points per group
 const MIN_GROUP_SIZE = 3;
@@ -113,6 +115,7 @@ export const getSalaryStats = onRequest(
 
     // --- RBAC permission check with legacy role fallback ---
     const rbacClaims = decodedToken.rbac as { p?: string } | undefined;
+    const db = getDb();
     const callerDoc = await db.collection("users").doc(callerUid).get();
     const callerData = callerDoc.data();
     const callerRole = callerData?.role || "member";
