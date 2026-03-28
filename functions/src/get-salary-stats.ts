@@ -1,4 +1,4 @@
-import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { onRequest } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { decodeClaimsPermissions, checkPermission } from "./rbac/resolution-logic";
 
@@ -6,6 +6,19 @@ const db = admin.firestore();
 
 // Privacy: minimum data points per group
 const MIN_GROUP_SIZE = 3;
+
+const ALLOWED_ORIGINS = [
+  "https://beta.secid.mx",
+  "https://secid.org",
+  "https://www.secid.org",
+  "http://localhost:4321",
+  "http://localhost:3000",
+];
+
+function getCorsOrigin(requestOrigin: string | undefined): string | null {
+  if (!requestOrigin) return null;
+  return ALLOWED_ORIGINS.includes(requestOrigin) ? requestOrigin : null;
+}
 
 interface SalaryDataPoint {
   monthlyGross: number;
@@ -58,17 +71,48 @@ function buildHistogram(values: number[], binCount = 12) {
   });
 }
 
-export const getSalaryStats = onCall(
-  { region: "us-central1", invoker: "public", cors: [/beta\.secid\.mx$/, /secid\.org$/, /localhost/] },
-  async (request) => {
-    if (!request.auth) {
-      throw new HttpsError("unauthenticated", "Authentication required");
+export const getSalaryStats = onRequest(
+  { region: "us-central1" },
+  async (req, res) => {
+    // CORS handling
+    const origin = getCorsOrigin(req.headers.origin);
+    if (origin) {
+      res.set("Access-Control-Allow-Origin", origin);
+      res.set("Vary", "Origin");
+    }
+    res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.set("Access-Control-Max-Age", "3600");
+
+    if (req.method === "OPTIONS") {
+      res.status(204).send("");
+      return;
     }
 
-    const callerUid = request.auth.uid;
+    if (req.method !== "POST") {
+      res.status(405).json({ error: "Method not allowed" });
+      return;
+    }
+
+    // Verify Firebase Auth token
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith("Bearer ")) {
+      res.status(401).json({ error: { message: "Authentication required", status: "UNAUTHENTICATED" } });
+      return;
+    }
+
+    let decodedToken: admin.auth.DecodedIdToken;
+    try {
+      decodedToken = await admin.auth().verifyIdToken(authHeader.split("Bearer ")[1]!);
+    } catch {
+      res.status(401).json({ error: { message: "Invalid token", status: "UNAUTHENTICATED" } });
+      return;
+    }
+
+    const callerUid = decodedToken.uid;
 
     // --- RBAC permission check with legacy role fallback ---
-    const rbacClaims = request.auth.token?.rbac as { p?: string } | undefined;
+    const rbacClaims = decodedToken.rbac as { p?: string } | undefined;
     const callerDoc = await db.collection("users").doc(callerUid).get();
     const callerData = callerDoc.data();
     const callerRole = callerData?.role || "member";
@@ -90,16 +134,19 @@ export const getSalaryStats = onCall(
     }
 
     if (!isVerified) {
-      return {
-        tier: "public",
-        overview: null,
-        distribution: null,
-        byExperience: null,
-        byIndustry: null,
-        benefits: null,
-        breakdown: null,
-        rawData: null,
-      };
+      res.json({
+        result: {
+          tier: "public",
+          overview: null,
+          distribution: null,
+          byExperience: null,
+          byIndustry: null,
+          benefits: null,
+          breakdown: null,
+          rawData: null,
+        },
+      });
+      return;
     }
 
     // Check if caller has contributed
@@ -117,16 +164,19 @@ export const getSalaryStats = onCall(
     const compSnap = await db.collectionGroup("compensation").get();
 
     if (compSnap.empty) {
-      return {
-        tier,
-        overview: null,
-        distribution: null,
-        byExperience: null,
-        byIndustry: null,
-        benefits: null,
-        breakdown: null,
-        rawData: null,
-      };
+      res.json({
+        result: {
+          tier,
+          overview: null,
+          distribution: null,
+          byExperience: null,
+          byIndustry: null,
+          benefits: null,
+          breakdown: null,
+          rawData: null,
+        },
+      });
+      return;
     }
 
     // Extract userId from each doc path: users/{userId}/compensation/{entryId}
@@ -208,16 +258,19 @@ export const getSalaryStats = onCall(
     }
 
     if (dataPoints.length === 0) {
-      return {
-        tier,
-        overview: null,
-        distribution: null,
-        byExperience: null,
-        byIndustry: null,
-        benefits: null,
-        breakdown: null,
-        rawData: null,
-      };
+      res.json({
+        result: {
+          tier,
+          overview: null,
+          distribution: null,
+          byExperience: null,
+          byIndustry: null,
+          benefits: null,
+          breakdown: null,
+          rawData: null,
+        },
+      });
+      return;
     }
 
     // --- Compute aggregates ---
@@ -345,15 +398,17 @@ export const getSalaryStats = onCall(
       }));
     }
 
-    return {
-      tier,
-      overview,
-      distribution,
-      byExperience: byExperience.length > 0 ? byExperience : null,
-      byIndustry,
-      benefits,
-      breakdown,
-      rawData,
-    };
+    res.json({
+      result: {
+        tier,
+        overview,
+        distribution,
+        byExperience: byExperience.length > 0 ? byExperience : null,
+        byIndustry,
+        benefits,
+        breakdown,
+        rawData,
+      },
+    });
   }
 );

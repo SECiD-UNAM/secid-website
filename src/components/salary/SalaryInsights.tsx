@@ -11,8 +11,7 @@
  * blurring needed. Instead, a "share to unlock" card is shown in place of null sections.
  */
 import React, { useEffect, useState } from 'react';
-import { httpsCallable } from 'firebase/functions';
-import { functions } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
 import { SalaryOverview, type OverviewStats } from './SalaryOverview';
 import { SalaryByExperience, type ExperienceRow } from './SalaryByExperience';
@@ -132,13 +131,23 @@ export function SalaryInsights({ lang = 'es' }: Props) {
 
     async function loadStats() {
       try {
-        const getSalaryStatsFn = httpsCallable<void, SalaryStatsResponse>(
-          functions,
-          'getSalaryStats'
+        const token = await auth.currentUser?.getIdToken();
+        if (!token) throw new Error('Not authenticated');
+        const resp = await fetch(
+          'https://us-central1-secid-org.cloudfunctions.net/getSalaryStats',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ data: {} }),
+          }
         );
-        const result = await getSalaryStatsFn();
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const json = await resp.json();
         if (!cancelled) {
-          setStats(result.data);
+          setStats(json.result);
         }
       } catch {
         if (!cancelled) setError(t.errorFetch);
