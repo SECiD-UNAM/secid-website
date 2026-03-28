@@ -4,6 +4,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardSidebar } from './DashboardSidebar';
 import { MergeNotificationBanner } from '@/components/merge/MergeNotificationBanner';
 import { Bars3Icon } from '@heroicons/react/24/outline';
+import { useBeta } from '@/hooks/useBeta';
 
 interface DashboardShellProps {
   lang?: 'es' | 'en';
@@ -25,6 +26,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
   children,
 }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const isBeta = useBeta();
 
   return (
     <AuthProvider>
@@ -33,7 +35,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
         requireVerified={requireVerified}
         requireRole={requireRole}
       >
-        <div className="min-h-screen bg-gray-50 pt-16 dark:bg-gray-900">
+        <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 ${isBeta ? 'pt-24' : 'pt-16'}`}>
           {/* Sidebar toggle — hidden on mobile (bottom nav) and desktop (sidebar visible) */}
           <button
             onClick={() => setMobileOpen(true)}
