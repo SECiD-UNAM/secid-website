@@ -53,9 +53,37 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
       setAdminMode((prev) => {
         const next = !prev;
         sessionStorage.setItem('secid-admin-mode', String(next));
+        try {
+          const ctx = new AudioContext();
+          if (next) {
+            [440, 660].forEach((freq, i) => {
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.type = 'sine';
+              osc.frequency.value = freq;
+              gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.12);
+              gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.3);
+              osc.connect(gain).connect(ctx.destination);
+              osc.start(ctx.currentTime + i * 0.12);
+              osc.stop(ctx.currentTime + i * 0.12 + 0.3);
+            });
+          } else {
+            [660, 440].forEach((freq, i) => {
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.type = 'sine';
+              osc.frequency.value = freq;
+              gain.gain.setValueAtTime(0.12, ctx.currentTime + i * 0.12);
+              gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.25);
+              osc.connect(gain).connect(ctx.destination);
+              osc.start(ctx.currentTime + i * 0.12);
+              osc.stop(ctx.currentTime + i * 0.12 + 0.25);
+            });
+          }
+        } catch { /* ignore */ }
         return next;
       });
-    }, 5000);
+    }, 3000);
   }, []);
 
   const onSettingsPointerUp = useCallback(() => {
