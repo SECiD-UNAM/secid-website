@@ -450,7 +450,7 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
         </div>
 
         {/* Content management section */}
-        {adminMode && contentManagementItems.length > 0 && (
+        {contentManagementItems.length > 0 && (
           <>
             <div
               style={{

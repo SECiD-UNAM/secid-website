@@ -351,8 +351,8 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         {/* Main menu items */}
         <div className="space-y-1">{menuItems.map(renderMenuItem)}</div>
 
-        {/* Content management section (hidden until admin mode activated) */}
-        {adminMode && contentItems.some(isItemAccessible) && (
+        {/* Content management section (visible to authorized roles) */}
+        {contentItems.some(isItemAccessible) && (
           <>
             <div className="my-4 border-t border-gray-200 dark:border-gray-700"></div>
             <div className="space-y-1">
