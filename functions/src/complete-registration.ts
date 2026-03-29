@@ -75,6 +75,13 @@ async function handleMemberRegistration(
     );
   }
 
+  if (!/^\d{9}$/.test(data.numeroCuenta)) {
+    throw new HttpsError(
+      "invalid-argument",
+      "numeroCuenta must be exactly 9 digits"
+    );
+  }
+
   const updateData: Record<string, any> = {
     registrationType: "member",
     verificationStatus: "pending",

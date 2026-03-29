@@ -9,7 +9,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from 'firebase/auth';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { httpsCallable } from 'firebase/functions';
 import { auth, db, storage, functions } from '@/lib/firebase';
@@ -41,7 +41,7 @@ const signUpSchema = z
 
 // Step 3: UNAM verification schema
 const unamVerificationSchema = z.object({
-  numeroCuenta: z.string().min(5, 'Número de cuenta is required'),
+  numeroCuenta: z.string().regex(/^\d{9}$/, 'El número de cuenta debe ser exactamente 9 dígitos / Account number must be exactly 9 digits'),
   academicLevel: z.enum(['licenciatura', 'posgrado', 'curso']),
   campus: z.string().min(1, 'Campus is required'),
   generation: z.string().optional(),
@@ -264,24 +264,40 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         displayName: `${data.firstName} ${data['lastName']}`,
       });
 
-      // Update firstName/lastName in Firestore (Cloud Function creates the doc)
-      // Small delay to ensure Cloud Function has created the document
-      setTimeout(async () => {
-        try {
-          const userRef = doc(db, 'users', userCredential.user.uid);
-          await updateDoc(userRef, {
-            firstName: data.firstName,
-            lastName: data['lastName'],
-          });
-        } catch {
-          // Document may not be ready yet, will be updated later
-        }
-      }, 2000);
+      // Wait for Cloud Function to create the user document
+      const userRef = doc(db, 'users', userCredential.user.uid);
+      await new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          unsubscribe();
+          reject(new Error('PROFILE_TIMEOUT'));
+        }, 10000);
+
+        const unsubscribe = onSnapshot(userRef, (snap) => {
+          if (snap.exists()) {
+            clearTimeout(timeout);
+            unsubscribe();
+            // Update firstName/lastName now that doc exists
+            updateDoc(userRef, {
+              firstName: data.firstName,
+              lastName: data['lastName'],
+            }).catch(() => {});
+            resolve();
+          }
+        });
+      });
 
       setStep('type');
     } catch (err: any) {
-      console.error('SignUp error:', err.code, err.message, err);
-      setError(getSignUpErrorMessage(err));
+      if (err?.message === 'PROFILE_TIMEOUT') {
+        setError(
+          lang === 'es'
+            ? 'Tu cuenta fue creada pero la configuración del perfil está tardando. Recarga la página o contacta soporte.'
+            : 'Your account was created but profile setup is taking longer than expected. Please refresh or contact support.'
+        );
+      } else {
+        console.error('SignUp error:', err.code, err.message, err);
+        setError(getSignUpErrorMessage(err));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -317,12 +333,17 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       setIsLoading(true);
       try {
         await callCompleteRegistration({ registrationType: 'collaborator' });
+        setStep('done');
       } catch (err) {
-        console.warn('completeRegistration failed for collaborator:', err);
+        console.error('completeRegistration failed for collaborator:', err);
+        setError(
+          lang === 'es'
+            ? 'Error al completar el registro. Inténtalo de nuevo.'
+            : 'Error completing registration. Please try again.'
+        );
       } finally {
         setIsLoading(false);
       }
-      setStep('done');
     }
   };
 
