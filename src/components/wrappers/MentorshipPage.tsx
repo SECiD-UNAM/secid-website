@@ -9,7 +9,7 @@ interface Props {
 export default function MentorshipPage({ lang = 'es' }: Props) {
   return (
     <AuthProvider>
-      <MentorshipDashboard userRole="both" />
+      <MentorshipDashboard />
     </AuthProvider>
   );
 }
