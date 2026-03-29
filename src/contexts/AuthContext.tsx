@@ -12,44 +12,8 @@ import {
 } from 'firebase/auth';
 import { auth, db, isEmulatorMode } from '@/lib/firebase';
 import { doc, onSnapshot, getDoc, type Unsubscribe } from 'firebase/firestore';
-
-export interface UserProfile {
-  uid: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  displayName: string;
-  role: 'member' | 'admin' | 'moderator' | 'company' | 'collaborator';
-  isVerified: boolean;
-  isActive: boolean;
-  membershipTier: 'free' | 'premium' | 'corporate';
-  unamEmail?: string;
-  studentId?: string;
-  graduationYear?: number;
-  program?: string;
-  currentPosition?: string;
-  currentCompany?: string;
-  phoneNumber?: string;
-  skills?: string[];
-  experience?: string[];
-  education?: string[];
-  linkedinUrl?: string;
-  githubUrl?: string;
-  portfolioUrl?: string;
-  profileCompleteness?: number;
-  photoURL?: string;
-  onboardingCompleted?: boolean;
-  trustedContributor?: boolean;
-  createdAt?: any;
-  updatedAt?: any;
-  // Profile merge detection
-  potentialMergeMatch?: {
-    matchedUid: string;
-    numeroCuenta: string;
-    detectedAt: any;
-    dismissed: boolean;
-  };
-}
+import type { UserProfile } from '@/types/user';
+export type { UserProfile };
 
 interface AuthContextType {
   user: User | null;

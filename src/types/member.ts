@@ -35,6 +35,8 @@ export interface StatusChange {
 export interface MemberProfile extends UserProfile {
   uid: string;
   displayName: string;
+  // Re-declare profile as required — member profiles always have nested profile data
+  profile: NonNullable<UserProfile['profile']>;
   slug: string;
   initials: string;
   isOnline?: boolean;

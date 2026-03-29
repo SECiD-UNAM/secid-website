@@ -119,7 +119,7 @@ function MemberProfileInner({ memberId: propMemberId, lang = 'es' }: Props) {
       ? {
           uid: user.uid,
           email: userProfile.email,
-          displayName: userProfile.displayName,
+          displayName: userProfile.displayName || '',
           photoURL: userProfile.photoURL,
           role: userProfile.role,
         }

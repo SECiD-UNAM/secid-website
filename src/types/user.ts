@@ -7,19 +7,53 @@ export type VerificationStatus = 'none' | 'pending' | 'approved' | 'rejected';
 export type AcademicLevel = 'licenciatura' | 'posgrado' | 'curso';
 
 export interface UserProfile {
+  // Core identity
+  uid?: string;
   email: string;
   role: 'member' | 'admin' | 'moderator' | 'collaborator' | 'company';
-  createdAt: Date;
+  createdAt?: any; // Firestore Timestamp or Date
+  updatedAt?: any; // Firestore Timestamp or Date
+
+  // Flat convenience fields (written by beforeUserCreated Cloud Function)
+  displayName?: string;
+  firstName?: string;
+  lastName?: string;
+  photoURL?: string;
+  isVerified?: boolean;
+  isActive?: boolean;
+  membershipTier?: 'free' | 'premium' | 'corporate';
+  profileCompleteness?: number;
+
+  // Registration & verification
   registrationType?: RegistrationType;
   verificationStatus?: VerificationStatus;
   verificationDocumentUrl?: string;
+
   // UNAM-specific fields
   numeroCuenta?: string; // UNAM student account number
   academicLevel?: AcademicLevel;
   campus?: string; // Sede de estudios
   generation?: string; // Generación / cohort
+  unamEmail?: string;
+  studentId?: string;
+  graduationYear?: number;
+  program?: string;
+
+  // Professional fields (flat)
+  currentPosition?: string;
+  currentCompany?: string;
+  phoneNumber?: string;
+  skills?: string[];
+  experience?: any; // string[] in flat docs, structured object in MemberProfile
+  education?: string[];
+  linkedinUrl?: string;
+  githubUrl?: string;
+  portfolioUrl?: string;
+
   onboardingCompleted?: boolean;
-  profile: {
+
+  // Nested profile (legacy — some docs use flat fields instead)
+  profile?: {
     firstName: string;
     lastName: string;
     bio: string;
@@ -34,31 +68,50 @@ export interface UserProfile {
     degree?: string;
     specialization?: string;
   };
+
   settings?: {
     emailNotifications: boolean;
     profileVisibility: 'public' | 'members' | 'private';
     language: 'es' | 'en';
   };
+
+  // Lifecycle tracking
+  lifecycle?: {
+    status: string;
+    statusChangedAt?: any; // Firestore Timestamp or Date
+    statusChangedBy?: string;
+    statusReason?: string;
+    statusHistory?: Array<{
+      from: string;
+      to: string;
+      changedBy: string;
+      changedAt: any;
+      reason?: string;
+    }>;
+    lastActiveDate?: any; // Firestore Timestamp or Date
+  };
+
   // Authentication & Security
   twoFactor?: TwoFactorSettings;
   linkedAccounts?: LinkedAccount[];
-  lastLogin?: Date;
+  lastLogin?: any; // Firestore Timestamp or Date
   lastLoginProvider?: string;
   securityEvents?: SecurityEvent[];
   linkedinVerified?: boolean;
-  linkedinVerifiedAt?: Date;
+  linkedinVerifiedAt?: any; // Firestore Timestamp or Date
   trustedContributor?: boolean;
+
   // Profile merge detection
   potentialMergeMatch?: {
     matchedUid: string;
     numeroCuenta: string;
-    detectedAt: Date;
+    detectedAt: any; // Firestore Timestamp or Date
     dismissed: boolean;
   };
   numeroCuentaConflict?: {
     existingUid: string;
     numeroCuenta: string;
-    detectedAt: Date;
+    detectedAt: any; // Firestore Timestamp or Date
   };
 }
 
