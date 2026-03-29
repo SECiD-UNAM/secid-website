@@ -6,6 +6,11 @@ import type { ProjectShowcase } from '@/types/member';
 import { EntryCard } from '../shared/EntryCard';
 import { TagInput } from '../shared/TagInput';
 import { SUGGESTED_SKILLS } from '../profile-edit-types';
+import {
+  extractGitHubUsername,
+  fetchGitHubRepositories,
+  mapGitHubRepositoryToProject,
+} from '@/lib/github-projects';
 
 interface PortfolioTabProps {
   formData: FormData;
@@ -78,6 +83,8 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
 }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draftEntry, setDraftEntry] = useState<ProjectShowcase | null>(null);
+  const [importingGitHub, setImportingGitHub] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
 
   const sortedProjects = sortProjects(formData.projects);
 
@@ -140,6 +147,77 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
     setDraftEntry({ ...draftEntry, ...updates });
   };
 
+  const handleGitHubImport = async () => {
+    const username = extractGitHubUsername(formData.githubUrl);
+    if (!username) {
+      setImportError(
+        lang === 'es'
+          ? 'Agrega una URL o usuario de GitHub valido en la pestaña Carrera.'
+          : 'Add a valid GitHub URL or username in the Career tab.'
+      );
+      return;
+    }
+
+    setImportingGitHub(true);
+    setImportError(null);
+
+    try {
+      const repos = await fetchGitHubRepositories(username, 6);
+      const imported = repos.map(mapGitHubRepositoryToProject);
+      const byGitHubUrl = new Set(
+        formData.projects.map((project) => project.githubUrl).filter(Boolean)
+      );
+      const deduped = imported.filter(
+        (project) => !project.githubUrl || !byGitHubUrl.has(project.githubUrl)
+      );
+
+      if (deduped.length === 0) {
+        setImportError(
+          lang === 'es'
+            ? 'No hay repositorios nuevos para importar.'
+            : 'There are no new repositories to import.'
+        );
+        return;
+      }
+
+      const availableSlots = Math.max(0, MAX_PROJECTS - formData.projects.length);
+      if (availableSlots === 0) {
+        setImportError(
+          lang === 'es'
+            ? 'Ya alcanzaste el maximo de proyectos permitidos.'
+            : 'You already reached the maximum number of projects.'
+        );
+        return;
+      }
+
+      const next = deduped.slice(0, availableSlots);
+      updateProjects((entries) => [...next, ...entries]);
+    } catch (error) {
+      const code = error instanceof Error ? error.message : 'fetch_failed';
+      if (code === 'user_not_found') {
+        setImportError(
+          lang === 'es'
+            ? 'No encontramos ese usuario en GitHub.'
+            : 'We could not find that GitHub user.'
+        );
+      } else if (code === 'rate_limited') {
+        setImportError(
+          lang === 'es'
+            ? 'GitHub alcanzo su limite temporal. Intenta de nuevo mas tarde.'
+            : 'GitHub rate limit reached. Please try again later.'
+        );
+      } else {
+        setImportError(
+          lang === 'es'
+            ? 'No fue posible importar proyectos de GitHub.'
+            : 'Could not import projects from GitHub.'
+        );
+      }
+    } finally {
+      setImportingGitHub(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -152,21 +230,50 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({
       </div>
 
       {formData.projects.length < MAX_PROJECTS && !editingId && (
-        <button
-          type="button"
-          onClick={handleAddProject}
-          className={
-            'flex items-center gap-2 rounded-lg border-2 border-dashed ' +
-            'border-gray-300 px-4 py-3 text-sm font-medium text-gray-600 ' +
-            'hover:border-primary-400 hover:text-primary-600 ' +
-            'dark:border-gray-600 dark:text-gray-400 ' +
-            'dark:hover:border-primary-500 dark:hover:text-primary-400 ' +
-            'w-full justify-center transition-colors'
-          }
-        >
-          <PlusIcon className="h-5 w-5" />
-          {lang === 'es' ? 'Agregar Proyecto' : 'Add Project'}
-        </button>
+        <div className="space-y-3">
+          <button
+            type="button"
+            onClick={handleGitHubImport}
+            disabled={importingGitHub}
+            className={
+              'w-full rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium ' +
+              'text-gray-700 hover:border-primary-400 hover:text-primary-600 ' +
+              'disabled:cursor-not-allowed disabled:opacity-60 ' +
+              'dark:border-gray-600 dark:text-gray-200 dark:hover:border-primary-500 ' +
+              'dark:hover:text-primary-400'
+            }
+          >
+            {importingGitHub
+              ? lang === 'es'
+                ? 'Importando desde GitHub...'
+                : 'Importing from GitHub...'
+              : lang === 'es'
+                ? 'Importar proyectos desde GitHub'
+                : 'Import projects from GitHub'}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleAddProject}
+            className={
+              'flex items-center gap-2 rounded-lg border-2 border-dashed ' +
+              'border-gray-300 px-4 py-3 text-sm font-medium text-gray-600 ' +
+              'hover:border-primary-400 hover:text-primary-600 ' +
+              'dark:border-gray-600 dark:text-gray-400 ' +
+              'dark:hover:border-primary-500 dark:hover:text-primary-400 ' +
+              'w-full justify-center transition-colors'
+            }
+          >
+            <PlusIcon className="h-5 w-5" />
+            {lang === 'es' ? 'Agregar Proyecto' : 'Add Project'}
+          </button>
+        </div>
+      )}
+
+      {importError && (
+        <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300">
+          {importError}
+        </p>
       )}
 
       {/* Editing entry (full width) */}
