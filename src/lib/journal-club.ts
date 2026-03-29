@@ -116,6 +116,17 @@ export async function getJournalClubSession(
 }
 
 // ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Strip undefined values — Firestore rejects them */
+function clean<T extends Record<string, unknown>>(obj: T): T {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== undefined)
+  ) as T;
+}
+
+// ---------------------------------------------------------------------------
 // Write operations
 // ---------------------------------------------------------------------------
 
@@ -132,7 +143,7 @@ export async function createJournalClubSession(
   userId: string
 ): Promise<string> {
   const docRef = await addDoc(collection(db, 'journal_club_sessions'), {
-    ...data,
+    ...clean(data as Record<string, unknown>),
     createdBy: userId,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
@@ -150,7 +161,7 @@ export async function updateJournalClubSession(
   userId: string
 ): Promise<void> {
   await updateDoc(doc(db, 'journal_club_sessions', id), {
-    ...data,
+    ...clean(data as Record<string, unknown>),
     updatedAt: serverTimestamp(),
   });
 }

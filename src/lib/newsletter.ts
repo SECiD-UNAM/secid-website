@@ -85,12 +85,18 @@ export async function getNewsletter(
   }
 }
 
+function clean<T extends Record<string, unknown>>(obj: T): T {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== undefined)
+  ) as T;
+}
+
 export async function createNewsletter(
   data: Omit<NewsletterIssue, 'id' | 'createdAt' | 'updatedAt'>,
   userId: string
 ): Promise<string> {
   const docRef = await addDoc(collection(db, 'newsletter_archive'), {
-    ...data,
+    ...clean(data as Record<string, unknown>),
     createdBy: userId,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
@@ -105,7 +111,7 @@ export async function updateNewsletter(
 ): Promise<void> {
   const docRef = doc(db, 'newsletter_archive', id);
   await updateDoc(docRef, {
-    ...data,
+    ...clean(data as Record<string, unknown>),
     updatedBy: userId,
     updatedAt: serverTimestamp(),
   });

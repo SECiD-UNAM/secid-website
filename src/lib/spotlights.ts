@@ -74,11 +74,17 @@ export async function getSpotlight(
   }
 }
 
+function clean<T extends Record<string, unknown>>(obj: T): T {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== undefined)
+  ) as T;
+}
+
 export async function createSpotlight(
   spotlight: Omit<AlumniSpotlight, 'id' | 'publishedAt'>
 ): Promise<string> {
   const docRef = await addDoc(collection(db, 'spotlights'), {
-    ...spotlight,
+    ...clean(spotlight as Record<string, unknown>),
     publishedAt: serverTimestamp(),
   });
   return docRef.id;
@@ -88,7 +94,7 @@ export async function updateSpotlight(
   id: string,
   updates: Partial<AlumniSpotlight>
 ): Promise<void> {
-  await updateDoc(doc(db, 'spotlights', id), updates);
+  await updateDoc(doc(db, 'spotlights', id), clean(updates as Record<string, unknown>));
 }
 
 export async function deleteSpotlight(id: string): Promise<void> {
