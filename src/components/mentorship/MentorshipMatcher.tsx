@@ -1,11 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useTranslations } from '@/hooks/useTranslations';
-import type {
-  MentorProfile,
-  MenteeProfile,
-  MentorshipRequest,
-} from '@/types';
+import type { MentorProfile, MenteeProfile, MentorshipRequest } from '@/types';
 import {
   getMentorProfiles,
   getMenteeProfile,
@@ -64,7 +60,11 @@ function buildMatchResults(
   mentors: MentorProfile[],
   scores: Map<
     string,
-    { score: number; reasons: string[]; compatibility: MatchResult['compatibility'] }
+    {
+      score: number;
+      reasons: string[];
+      compatibility: MatchResult['compatibility'];
+    }
   >
 ): MatchResult[] {
   return mentors
@@ -99,7 +99,9 @@ function buildMatchResults(
     });
 }
 
-function buildFilterDefinitions(t: ReturnType<typeof useTranslations>): FilterDefinition[] {
+function buildFilterDefinitions(
+  t: ReturnType<typeof useTranslations>
+): FilterDefinition[] {
   return [
     {
       key: 'experienceLevel',
@@ -107,9 +109,18 @@ function buildFilterDefinitions(t: ReturnType<typeof useTranslations>): FilterDe
       type: 'select',
       placeholder: t?.mentorship?.matcher?.anyExperience ?? 'Any',
       options: [
-        { value: 'junior', label: t?.mentorship?.matcher?.juniorLevel ?? 'Junior (1–3 yrs)' },
-        { value: 'mid', label: t?.mentorship?.matcher?.midLevel ?? 'Mid (3–7 yrs)' },
-        { value: 'senior', label: t?.mentorship?.matcher?.seniorLevel ?? 'Senior (7+ yrs)' },
+        {
+          value: 'junior',
+          label: t?.mentorship?.matcher?.juniorLevel ?? 'Junior (1–3 yrs)',
+        },
+        {
+          value: 'mid',
+          label: t?.mentorship?.matcher?.midLevel ?? 'Mid (3–7 yrs)',
+        },
+        {
+          value: 'senior',
+          label: t?.mentorship?.matcher?.seniorLevel ?? 'Senior (7+ yrs)',
+        },
       ],
     },
     {
@@ -200,7 +211,9 @@ function MatchCard({
       {/* Stats */}
       <div className="mb-4 flex gap-4 text-sm">
         <span>
-          <span className="font-semibold">{result.mentor.rating.toFixed(1)}</span>{' '}
+          <span className="font-semibold">
+            {result.mentor.rating.toFixed(1)}
+          </span>{' '}
           <span className="text-yellow-400">&#9733;</span>
         </span>
         <span>
@@ -229,7 +242,7 @@ function MatchCard({
           ] as const
         ).map(([key, value]) => (
           <div key={key} className="mb-1 flex items-center gap-2 text-xs">
-            <span className="w-20 text-gray-500 capitalize">
+            <span className="w-20 capitalize text-gray-500">
               {t?.mentorship?.matcher?.[key] ?? key}
             </span>
             <div className="h-1.5 flex-1 rounded-full bg-gray-100 dark:bg-gray-700">
@@ -319,7 +332,13 @@ interface RequestModalProps {
   t: ReturnType<typeof useTranslations>;
 }
 
-function RequestModal({ mentor, menteeGoals, onClose, onConfirm, t }: RequestModalProps) {
+function RequestModal({
+  mentor,
+  menteeGoals,
+  onClose,
+  onConfirm,
+  t,
+}: RequestModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="mx-4 w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-gray-800">
@@ -327,7 +346,11 @@ function RequestModal({ mentor, menteeGoals, onClose, onConfirm, t }: RequestMod
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             {t?.mentorship?.matcher?.requestMentorship ?? 'Request Mentorship'}
           </h2>
-          <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
             <i className="fas fa-times" />
           </button>
         </div>
@@ -335,21 +358,29 @@ function RequestModal({ mentor, menteeGoals, onClose, onConfirm, t }: RequestMod
         <div className="mb-4 flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
             {mentor.profileImage ? (
-              <img src={mentor.profileImage} alt={mentor.displayName} className="h-10 w-10 rounded-full" />
+              <img
+                src={mentor.profileImage}
+                alt={mentor.displayName}
+                className="h-10 w-10 rounded-full"
+              />
             ) : (
               <i className="fas fa-user text-gray-400" />
             )}
           </div>
           <div>
-            <p className="font-medium text-gray-900 dark:text-white">{mentor.displayName}</p>
+            <p className="font-medium text-gray-900 dark:text-white">
+              {mentor.displayName}
+            </p>
             <p className="text-sm text-gray-500">
-              {mentor.experience.currentPosition} at {mentor.experience.currentCompany}
+              {mentor.experience.currentPosition} at{' '}
+              {mentor.experience.currentCompany}
             </p>
           </div>
         </div>
 
         <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-          {t?.mentorship?.matcher?.requestModalDescription ?? 'Send a request to this mentor'}
+          {t?.mentorship?.matcher?.requestModalDescription ??
+            'Send a request to this mentor'}
         </p>
 
         {menteeGoals.length > 0 && (
@@ -390,16 +421,24 @@ function RequestModal({ mentor, menteeGoals, onClose, onConfirm, t }: RequestMod
 // Main component
 // ---------------------------------------------------------------------------
 
-export default function MentorshipMatcher() {
+export default function MentorshipMatcher({
+  onCreateProfile,
+}: { onCreateProfile?: () => void } = {}) {
   const { user } = useAuthContext();
   const t = useTranslations();
 
-  const [menteeProfile, setMenteeProfile] = useState<MenteeProfile | null>(null);
+  const [menteeProfile, setMenteeProfile] = useState<MenteeProfile | null>(
+    null
+  );
   const [matchResults, setMatchResults] = useState<MatchResult[]>([]);
-  const [existingRequests, setExistingRequests] = useState<MentorshipRequest[]>([]);
+  const [existingRequests, setExistingRequests] = useState<MentorshipRequest[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
 
-  const [selectedMentor, setSelectedMentor] = useState<MentorProfile | null>(null);
+  const [selectedMentor, setSelectedMentor] = useState<MentorProfile | null>(
+    null
+  );
   const [showRequestModal, setShowRequestModal] = useState(false);
 
   // Load mentors, mentee profile, and requests
@@ -434,7 +473,11 @@ export default function MentorshipMatcher() {
 
         const scoreMap = new Map<
           string,
-          { score: number; reasons: string[]; compatibility: MatchResult['compatibility'] }
+          {
+            score: number;
+            reasons: string[];
+            compatibility: MatchResult['compatibility'];
+          }
         >();
 
         await Promise.all(
@@ -563,9 +606,11 @@ export default function MentorshipMatcher() {
           </p>
           <button
             type="button"
+            onClick={onCreateProfile}
             className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
           >
-            {t?.mentorship?.matcher?.createMenteeProfile ?? 'Create Mentee Profile'}
+            {t?.mentorship?.matcher?.createMenteeProfile ??
+              'Create Mentee Profile'}
           </button>
         </div>
       </div>

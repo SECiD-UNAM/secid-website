@@ -61,8 +61,7 @@ function MentorBrowseTab({ menteeProfile, onSwitchTab }: MentorBrowseTabProps) {
     return <NeedProfileState onCreateProfile={() => onSwitchTab('profile')} />;
   }
 
-  // TODO: Pass onCreateProfile prop once MentorshipMatcher is updated (Task 6)
-  return <MentorshipMatcher />;
+  return <MentorshipMatcher onCreateProfile={() => onSwitchTab('profile')} />;
 }
 
 export default MentorBrowseTab;
