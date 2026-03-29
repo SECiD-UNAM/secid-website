@@ -69,20 +69,9 @@ import SpotlightListPage from '../../components/wrappers/SpotlightListPage';
   .secid-spotlights__cta {
     text-align: center;
     padding: var(--space-3xl);
-    background: linear-gradient(
-      135deg,
-      var(--secid-cream),
-      rgba(244, 239, 224, 0.5)
-    );
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--color-border, #e2e8f0);
     border-radius: var(--radius-xl);
-  }
-
-  [data-theme='dark'] .secid-spotlights__cta {
-    background: linear-gradient(
-      135deg,
-      var(--secid-gray-800),
-      var(--secid-gray-700)
-    );
   }
 
   .secid-spotlights__cta-icon {
