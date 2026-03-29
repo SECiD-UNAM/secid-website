@@ -1,0 +1,156 @@
+/**
+ * CompensationBreakdown — Donut chart showing average compensation
+ * composition: Base Salary vs Bonus vs Stock vs Sign-On.
+ * Only renders if at least some entries have non-base compensation.
+ */
+import React from 'react';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
+
+export interface BreakdownStats {
+  base: number;
+  bonus: number;
+  stock: number;
+  signOn: number;
+}
+
+interface Props {
+  breakdown: BreakdownStats;
+  lang?: 'es' | 'en';
+}
+
+interface BreakdownSlice {
+  name: string;
+  value: number;
+  color: string;
+}
+
+const COLORS = {
+  base: '#3B82F6',   // blue-500
+  bonus: '#10B981',  // emerald-500
+  stock: '#F59E0B',  // amber-500
+  signOn: '#A855F7', // purple-500
+};
+
+function buildSlices(breakdown: BreakdownStats, lang: 'es' | 'en'): BreakdownSlice[] | null {
+  const hasNonBase = breakdown.bonus > 0 || breakdown.stock > 0 || breakdown.signOn > 0;
+  if (!hasNonBase) return null;
+
+  const labels =
+    lang === 'es'
+      ? { base: 'Salario Base', bonus: 'Bono', stock: 'Stock', signOn: 'Sign-On' }
+      : { base: 'Base Salary', bonus: 'Bonus', stock: 'Stock', signOn: 'Sign-On' };
+
+  const slices: BreakdownSlice[] = [
+    { name: labels.base, value: Math.round(breakdown.base), color: COLORS.base },
+  ];
+  if (breakdown.bonus > 0)
+    slices.push({ name: labels.bonus, value: Math.round(breakdown.bonus), color: COLORS.bonus });
+  if (breakdown.stock > 0)
+    slices.push({ name: labels.stock, value: Math.round(breakdown.stock), color: COLORS.stock });
+  if (breakdown.signOn > 0)
+    slices.push({ name: labels.signOn, value: Math.round(breakdown.signOn), color: COLORS.signOn });
+
+  return slices;
+}
+
+interface TooltipPayload {
+  name: string;
+  value: number;
+  payload: BreakdownSlice;
+}
+
+function CustomTooltip({
+  active,
+  payload,
+  total,
+  lang,
+}: {
+  active?: boolean;
+  payload?: TooltipPayload[];
+  total: number;
+  lang: 'es' | 'en';
+}) {
+  if (!active || !payload?.length) return null;
+  const slice = payload[0]!;
+  const pct = total > 0 ? Math.round((slice.value / total) * 100) : 0;
+  return (
+    <div className="rounded-lg bg-gray-900 px-3 py-2 text-white shadow-lg">
+      <p className="text-sm font-semibold">{slice.name}</p>
+      <p className="text-sm">{pct}%</p>
+    </div>
+  );
+}
+
+export function CompensationBreakdown({ breakdown, lang = 'es' }: Props) {
+  const slices = buildSlices(breakdown, lang);
+
+  const noDataLabel =
+    lang === 'es'
+      ? 'Solo hay datos de salario base. Agrega bonos o stock para ver la composición.'
+      : 'Only base salary data available. Add bonuses or stock to see the breakdown.';
+
+  if (!slices) {
+    return (
+      <p className="text-sm text-gray-500 dark:text-gray-400">{noDataLabel}</p>
+    );
+  }
+
+  const total = slices.reduce((s, sl) => s + sl.value, 0);
+
+  return (
+    <div className="flex flex-col items-center gap-4 sm:flex-row">
+      <ResponsiveContainer width={160} height={160}>
+        <PieChart>
+          <Pie
+            data={slices}
+            cx="50%"
+            cy="50%"
+            innerRadius={48}
+            outerRadius={72}
+            dataKey="value"
+            strokeWidth={0}
+          >
+            {slices.map((slice) => (
+              <Cell key={slice.name} fill={slice.color} />
+            ))}
+          </Pie>
+          <Tooltip
+            content={
+              <CustomTooltip
+                total={total}
+                lang={lang}
+              />
+            }
+          />
+        </PieChart>
+      </ResponsiveContainer>
+
+      {/* Legend */}
+      <div className="flex flex-col gap-2">
+        {slices.map((slice) => {
+          const pct = total > 0 ? Math.round((slice.value / total) * 100) : 0;
+          return (
+            <div key={slice.name} className="flex items-center gap-2">
+              <span
+                className="inline-block h-3 w-3 rounded-full"
+                style={{ backgroundColor: slice.color }}
+              />
+              <span className="text-sm text-gray-700 dark:text-gray-300">
+                {slice.name}
+              </span>
+              <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                {pct}%
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

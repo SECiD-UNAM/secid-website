@@ -1,0 +1,35 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import ResourceLibraryPage from '../../components/wrappers/ResourceLibraryPage';
+---
+
+<ModernLayout
+  title="Recursos - SECiD"
+  description="Recursos educativos, herramientas y datasets para profesionales en ciencia de datos"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <main>
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Centro de Recursos</h1>
+          <p class="secid-hero__subtitle">
+            Todo lo que necesitas para crecer en ciencia de datos
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="secid-section">
+      <div class="secid-container">
+        <ResourceLibraryPage client:load lang="es" />
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="es" />
+</ModernLayout>

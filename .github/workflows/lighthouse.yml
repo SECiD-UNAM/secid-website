@@ -1,0 +1,267 @@
+name: Lighthouse CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'Specific URL to test (optional)'
+        required: false
+        default: ''
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20.17.0'
+
+jobs:
+  lighthouse:
+    name: Lighthouse Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.13.x
+
+      - name: Run Lighthouse CI
+        id: lighthouse
+        run: |
+          # Start the preview server
+          npm run preview &
+          SERVER_PID=$!
+
+          # Wait for server to be ready
+          npx wait-on http://localhost:4321 --timeout 60000
+
+          # Run Lighthouse CI
+          lhci autorun --config=lighthouserc.js || LHCI_EXIT_CODE=$?
+
+          # Stop the server
+          kill $SERVER_PID 2>/dev/null || true
+
+          # Exit with the Lighthouse CI exit code
+          exit ${LHCI_EXIT_CODE:-0}
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          LHCI_BUILD_CONTEXT__CURRENT_HASH: ${{ github.sha }}
+          LHCI_BUILD_CONTEXT__COMMIT_TIME: ${{ github.event.head_commit.timestamp }}
+          LHCI_BUILD_CONTEXT__CURRENT_BRANCH: ${{ github.ref_name }}
+          LHCI_BUILD_CONTEXT__COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+
+      - name: Upload Lighthouse Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-results-${{ github.sha }}
+          path: .lighthouseci/
+          retention-days: 30
+
+      - name: Parse Lighthouse Results
+        id: parse
+        if: always()
+        run: |
+          # Find the latest manifest
+          MANIFEST=$(find .lighthouseci -name "manifest.json" | head -1)
+
+          if [ -f "$MANIFEST" ]; then
+            # Extract scores using jq
+            PERFORMANCE=$(cat "$MANIFEST" | jq -r '.[0].summary.performance * 100 | floor')
+            ACCESSIBILITY=$(cat "$MANIFEST" | jq -r '.[0].summary.accessibility * 100 | floor')
+            BEST_PRACTICES=$(cat "$MANIFEST" | jq -r '.[0].summary["best-practices"] * 100 | floor')
+            SEO=$(cat "$MANIFEST" | jq -r '.[0].summary.seo * 100 | floor')
+
+            echo "performance=$PERFORMANCE" >> $GITHUB_OUTPUT
+            echo "accessibility=$ACCESSIBILITY" >> $GITHUB_OUTPUT
+            echo "best_practices=$BEST_PRACTICES" >> $GITHUB_OUTPUT
+            echo "seo=$SEO" >> $GITHUB_OUTPUT
+
+            # Set badge colors based on scores
+            if [ "$PERFORMANCE" -ge 90 ]; then echo "perf_color=brightgreen" >> $GITHUB_OUTPUT
+            elif [ "$PERFORMANCE" -ge 70 ]; then echo "perf_color=yellow" >> $GITHUB_OUTPUT
+            else echo "perf_color=red" >> $GITHUB_OUTPUT; fi
+
+            if [ "$ACCESSIBILITY" -ge 90 ]; then echo "a11y_color=brightgreen" >> $GITHUB_OUTPUT
+            elif [ "$ACCESSIBILITY" -ge 70 ]; then echo "a11y_color=yellow" >> $GITHUB_OUTPUT
+            else echo "a11y_color=red" >> $GITHUB_OUTPUT; fi
+          else
+            echo "performance=0" >> $GITHUB_OUTPUT
+            echo "accessibility=0" >> $GITHUB_OUTPUT
+            echo "best_practices=0" >> $GITHUB_OUTPUT
+            echo "seo=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Summary
+        if: always()
+        run: |
+          echo "## 🚦 Lighthouse Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Category | Score |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🚀 Performance | ${{ steps.parse.outputs.performance }}% |" >> $GITHUB_STEP_SUMMARY
+          echo "| ♿ Accessibility | ${{ steps.parse.outputs.accessibility }}% |" >> $GITHUB_STEP_SUMMARY
+          echo "| ✅ Best Practices | ${{ steps.parse.outputs.best_practices }}% |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔍 SEO | ${{ steps.parse.outputs.seo }}% |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 [View full report in artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const performance = '${{ steps.parse.outputs.performance }}';
+            const accessibility = '${{ steps.parse.outputs.accessibility }}';
+            const bestPractices = '${{ steps.parse.outputs.best_practices }}';
+            const seo = '${{ steps.parse.outputs.seo }}';
+
+            const getEmoji = (score) => {
+              if (score >= 90) return '🟢';
+              if (score >= 70) return '🟡';
+              return '🔴';
+            };
+
+            const body = `## 🚦 Lighthouse Report
+
+            | Category | Score | Status |
+            |----------|-------|--------|
+            | 🚀 Performance | ${performance}% | ${getEmoji(performance)} |
+            | ♿ Accessibility | ${accessibility}% | ${getEmoji(accessibility)} |
+            | ✅ Best Practices | ${bestPractices}% | ${getEmoji(bestPractices)} |
+            | 🔍 SEO | ${seo}% | ${getEmoji(seo)} |
+
+            <details>
+            <summary>Score Thresholds</summary>
+
+            - 🟢 **90-100**: Excellent
+            - 🟡 **70-89**: Needs Improvement
+            - 🔴 **0-69**: Poor
+
+            </details>
+
+            📊 [View detailed report](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+            `;
+
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existingComment = comments.find(c =>
+              c.user.login === 'github-actions[bot]' &&
+              c.body.includes('🚦 Lighthouse Report')
+            );
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+      - name: Check Accessibility Score
+        if: always()
+        run: |
+          ACCESSIBILITY=${{ steps.parse.outputs.accessibility }}
+          if [ "$ACCESSIBILITY" -lt 95 ]; then
+            echo "::error::Accessibility score ($ACCESSIBILITY%) is below the required threshold (95%)"
+            exit 1
+          fi
+          echo "✅ Accessibility score ($ACCESSIBILITY%) meets the threshold"
+
+      - name: Check Best Practices Score
+        if: always()
+        run: |
+          BEST_PRACTICES=${{ steps.parse.outputs.best_practices }}
+          if [ "$BEST_PRACTICES" -lt 95 ]; then
+            echo "::error::Best Practices score ($BEST_PRACTICES%) is below the required threshold (95%)"
+            exit 1
+          fi
+          echo "✅ Best Practices score ($BEST_PRACTICES%) meets the threshold"
+
+  # Mobile Lighthouse Test
+  lighthouse-mobile:
+    name: Lighthouse Mobile Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Run Lighthouse Mobile
+        run: |
+          npm install -g @lhci/cli@0.13.x
+
+          # Start the preview server
+          npm run preview &
+          npx wait-on http://localhost:4321 --timeout 60000
+
+          # Run mobile-specific audit
+          npx lighthouse http://localhost:4321/es/ \
+            --output=json \
+            --output=html \
+            --output-path=./lighthouse-mobile \
+            --preset=perf \
+            --form-factor=mobile \
+            --screenEmulation.mobile=true \
+            --screenEmulation.width=375 \
+            --screenEmulation.height=667 \
+            --chrome-flags="--headless --no-sandbox --disable-gpu"
+
+      - name: Upload Mobile Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-mobile-results-${{ github.sha }}
+          path: lighthouse-mobile*
+          retention-days: 30

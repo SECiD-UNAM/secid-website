@@ -1,0 +1,30 @@
+---
+interface Props {
+  skills: string[];
+  lang: 'es' | 'en';
+}
+
+const { skills, lang } = Astro.props;
+
+const sectionTitle =
+  lang === 'es' ? 'Habilidades Tecnicas' : 'Technical Skills';
+---
+
+<section
+  id="skills"
+  class="border-t border-gray-200 py-10 dark:border-gray-800"
+>
+  <h2 class="mb-8 text-2xl font-bold text-gray-900 dark:text-white">
+    {sectionTitle}
+  </h2>
+
+  <div class="flex flex-wrap gap-2">
+    {
+      skills.map((skill) => (
+        <span class="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-primary-300 hover:text-primary-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-primary-600 dark:hover:text-primary-400">
+          {skill}
+        </span>
+      ))
+    }
+  </div>
+</section>

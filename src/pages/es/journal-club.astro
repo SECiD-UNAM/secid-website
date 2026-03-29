@@ -1,0 +1,166 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import JournalClubPublicListPage from '@/components/wrappers/JournalClubPublicListPage';
+---
+
+<ModernLayout
+  title="Journal Club - SECiD"
+  description="SECiD Journal Club - Un grupo de lectura que explora temas de NLP y modelos de lenguaje. Miércoles a las 6pm, desde marzo 2026."
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <!-- Hero Section -->
+  <section class="secid-hero secid-hero--journal-club">
+    <div class="secid-hero__container">
+      <div class="secid-hero__content">
+        <h1 class="secid-hero__title">Journal Club</h1>
+        <p class="secid-hero__subtitle">
+          Explora los fundamentos y la frontera del Procesamiento de Lenguaje
+          Natural y los Modelos de Lenguaje
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Intro -->
+  <section class="secid-section">
+    <div class="secid-container">
+      <div class="secid-content">
+        <div class="secid-logo-container">
+          <img
+            src="/images/logo.png"
+            alt="SECiD - Sociedad de Egresados en Ciencia de Datos logo"
+            class="secid-logo-image"
+            width="200"
+            height="200"
+          />
+        </div>
+
+        <p class="secid-lead">
+          El SECiD Journal Club es un grupo de lectura donde exploramos temas
+          fundamentales y de vanguardia en Procesamiento de Lenguaje Natural
+          (NLP) y Modelos de Lenguaje (LLMs). Cada sesión es presentada por un
+          miembro de la comunidad, seguida de una discusión abierta.
+        </p>
+        <p class="secid-jc-schedule-highlight">
+          <i class="fas fa-calendar-alt"></i>
+          <strong>Miércoles a las 6pm</strong> &mdash; A partir de marzo 2026
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Schedule -->
+  <section class="secid-section secid-bg-cream">
+    <div class="secid-container">
+      <h2 class="secid-section__title">Calendario de Sesiones</h2>
+      <JournalClubPublicListPage client:only="react" lang="es" />
+    </div>
+  </section>
+
+  <!-- Join CTA -->
+  <section class="secid-section">
+    <div class="secid-container">
+      <div class="secid-content">
+        <h2 class="secid-section__title">Participa</h2>
+        <p class="secid-section__description">
+          ¿Estudiaste Ciencia de Datos en la UNAM? Regístrate como miembro para
+          participar en el Journal Club y otras iniciativas de SECiD.
+        </p>
+        <div class="secid-section__actions">
+          <a
+            href="/registro"
+            class="secid-button secid-button--primary secid-button--lg"
+          >
+            <i class="fas fa-users secid-button__icon"></i>
+            Regístrate Ahora
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer lang="es" />
+</ModernLayout>
+
+<style>
+  .secid-hero--journal-club {
+    background: linear-gradient(
+      135deg,
+      var(--secid-dark-blue) 0%,
+      var(--secid-secondary) 100%
+    );
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .secid-hero--journal-club .secid-hero__title {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .secid-hero--journal-club .secid-hero__subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .secid-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .secid-content p {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    color: var(--secid-gray-700);
+  }
+
+  .secid-lead {
+    font-size: 1.25rem !important;
+    font-weight: 500;
+    color: var(--secid-dark-blue) !important;
+    text-align: center;
+  }
+
+  .secid-logo-container {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .secid-logo-image {
+    max-width: 200px;
+    height: auto;
+  }
+
+  .secid-jc-schedule-highlight {
+    text-align: center;
+    font-size: 1.25rem !important;
+    color: var(--secid-primary) !important;
+  }
+
+  .secid-jc-schedule-highlight i {
+    margin-right: 0.5rem;
+  }
+
+  /* Dark Mode */
+  :global([data-theme='dark']) .secid-content p {
+    color: var(--color-text-secondary);
+  }
+
+  :global([data-theme='dark']) .secid-lead {
+    color: var(--color-text-primary) !important;
+  }
+
+  :global([data-theme='dark']) .secid-section__title {
+    color: var(--color-text-primary);
+  }
+
+  :global([data-theme='dark']) .secid-section__description {
+    color: var(--color-text-secondary);
+  }
+</style>

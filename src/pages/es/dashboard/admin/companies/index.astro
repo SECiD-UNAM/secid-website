@@ -1,0 +1,22 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import CompanyManagementPage from '@/components/wrappers/CompanyManagementPage';
+---
+
+<DashboardLayout
+  title="Gestion de Empresas - SECiD"
+  description="Administracion de empresas de miembros"
+  lang="es"
+  requireVerified={true}
+  requireRole={['admin', 'moderator']}
+>
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+      Gestion de Empresas
+    </h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">
+      Administra las empresas de los miembros de SECiD
+    </p>
+  </div>
+  <CompanyManagementPage client:only="react" lang="es" />
+</DashboardLayout>

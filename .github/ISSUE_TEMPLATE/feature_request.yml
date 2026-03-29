@@ -8,18 +8,6 @@ body:
       value: |
         Have an idea to make SECiD better? We'd love to hear it!
 
-  - type: dropdown
-    id: environment
-    attributes:
-      label: Target environment
-      description: Is this about something on beta or production?
-      options:
-        - "Beta (beta.secid.mx) — pre-release"
-        - "Production (secid.org) — stable release"
-        - "Both / Not sure"
-    validations:
-      required: true
-
   - type: textarea
     id: problem
     attributes:

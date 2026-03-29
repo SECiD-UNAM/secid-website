@@ -1,0 +1,878 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions for role-based access control
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getCurrentUser() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+    
+    function getUserRole() {
+      return getCurrentUser().data.role;
+    }
+    
+    function isVerified() {
+      return getCurrentUser().data.isVerified == true;
+    }
+    
+    function isActive() {
+      return getCurrentUser().data.isActive == true;
+    }
+    
+    function hasRole(role) {
+      return getUserRole() == role;
+    }
+    
+    function hasAnyRole(roles) {
+      return getUserRole() in roles;
+    }
+    
+    function isOwner(resourceUserId) {
+      return request.auth.uid == resourceUserId;
+    }
+    
+    function canModerate() {
+      return hasAnyRole(['admin', 'moderator']);
+    }
+    
+    function canAdminister() {
+      return hasRole('admin');
+    }
+    
+    function rateLimitCheck() {
+      // Basic rate limiting - can be enhanced with custom claims
+      return true; // Implement with Cloud Functions if needed
+    }
+
+    // =========================================================================
+    // RBAC Permission Helpers
+    // Comma-anchored regex with wildcard support.
+    // Claims format: "resource:op.scope" comma-separated in request.auth.token.rbac.p
+    // Scope: "o" = own, "a" = all. Deny prefix: "!"
+    // Wildcards: "*:op.scope", "resource:*.scope", "*:*.scope"
+    // =========================================================================
+
+    function hasRBACAllow(resource, op) {
+      return request.auth.token.rbac != null && (
+        request.auth.token.rbac.p.matches('(^|.*,)' + resource + ':' + op + '\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)\\*:' + op + '\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)' + resource + ':\\*\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)\\*:\\*\\.(o|a)(,.*|$)')
+      );
+    }
+
+    function hasRBACAllowAll(resource, op) {
+      return request.auth.token.rbac != null && (
+        request.auth.token.rbac.p.matches('(^|.*,)' + resource + ':' + op + '\\.a(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)\\*:' + op + '\\.a(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)' + resource + ':\\*\\.a(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)\\*:\\*\\.a(,.*|$)')
+      );
+    }
+
+    function hasRBACDeny(resource, op) {
+      return request.auth.token.rbac != null && (
+        request.auth.token.rbac.p.matches('(^|.*,)!' + resource + ':' + op + '\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)!\\*:' + op + '\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)!' + resource + ':\\*\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)!\\*:\\*\\.(o|a)(,.*|$)')
+      );
+    }
+
+    function validateUserData() {
+      return request.resource.data.keys().hasAll(['email', 'firstName', 'lastName']) &&
+             request.resource.data.email is string &&
+             request.resource.data.firstName is string &&
+             request.resource.data.lastName is string &&
+             request.resource.data.email.size() > 0 &&
+             request.resource.data.firstName.size() > 0 &&
+             request.resource.data.lastName.size() > 0;
+    }
+    
+    function validateJobData() {
+      return request.resource.data.keys().hasAll(['title', 'company', 'description']) &&
+             request.resource.data.title is string &&
+             request.resource.data.company is string &&
+             request.resource.data.description is string &&
+             request.resource.data.title.size() >= 5 &&
+             request.resource.data.title.size() <= 100 &&
+             request.resource.data.company.size() >= 2 &&
+             request.resource.data.description.size() >= 50;
+    }
+    
+    function validateEventData() {
+      return request.resource.data.keys().hasAll(['title', 'description', 'startDate']) &&
+             request.resource.data.title is string &&
+             request.resource.data.description is string &&
+             request.resource.data.startDate is timestamp &&
+             request.resource.data.title.size() >= 5 &&
+             request.resource.data.description.size() >= 50;
+    }
+    
+    // Users collection with enhanced security
+    match /users/{userId} {
+      // Own profile: always readable
+      // Other profiles: only by verified members, moderators, or admins
+      allow read: if isAuthenticated() &&
+                     (isOwner(userId) || isVerified() || canModerate());
+      
+      allow create: if isAuthenticated() &&
+                       isOwner(userId) &&
+                       request.resource.data.role in ['member', 'collaborator'];
+
+      allow update: if isAuthenticated() &&
+                       isOwner(userId) &&
+                       request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['firstName', 'lastName', 'displayName', 'bio', 'skills',
+                                  'interests', 'currentTitle', 'company', 'phone',
+                                  'profileImage', 'photoURL', 'socialMedia', 'preferences',
+                                  'updatedAt', 'lastLogin', 'lastLoginProvider', 'profile',
+                                  'settings', 'email',
+                                  'registrationType', 'verificationStatus', 'verificationDocumentUrl',
+                                  'numeroCuenta', 'academicLevel', 'campus', 'generation',
+                                  'graduationYear', 'lifecycle',
+                                  'networking', 'activity',
+                                  'potentialMergeMatch',
+                                  'slug',
+                                  'cvVisibility']);
+
+      // Allow authenticated members to update networking fields on other users
+      // (connection requests, follow/unfollow, accept connections)
+      allow update: if isAuthenticated() &&
+                       request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['networking', 'activity']);
+      
+      // Admin-only operations
+      allow update: if isAuthenticated() &&
+                       canAdminister();
+      
+      allow delete: if isAuthenticated() && canAdminister();
+      
+      // User activity logs subcollection
+      match /activity/{activityId} {
+        allow read: if isAuthenticated() && 
+                      (isOwner(userId) || canModerate());
+        allow write: if false; // Only server can write activity logs
+      }
+      
+      // User notifications subcollection
+      match /notifications/{notificationId} {
+        allow read: if isAuthenticated() && isOwner(userId);
+        allow update: if isAuthenticated() && isOwner(userId) &&
+                        request.resource.data.diff(resource.data).affectedKeys()
+                          .hasOnly(['read', 'readAt']);
+        allow delete: if isAuthenticated() && isOwner(userId);
+      }
+
+      // Compensation sub-collection: owner + admin read/write
+      match /compensation/{entryId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+        allow read: if isAuthenticated() && canModerate();
+      }
+    }
+
+    // Companies collection (public read for logo display)
+    match /companies/{companyId} {
+      allow read: if true;
+
+      allow create: if isAuthenticated() &&
+        (isVerified() || canModerate()) &&
+        request.resource.data.pendingReview == true &&
+        request.resource.data.keys().hasOnly([
+          'name', 'domain', 'slug', 'logoUrl', 'industry', 'location',
+          'website', 'description', 'memberCount', 'createdBy', 'createdAt',
+          'updatedAt', 'pendingReview'
+        ]);
+
+      allow update: if isAuthenticated() && (
+        ((isVerified() || canModerate()) &&
+          resource.data.createdBy == request.auth.uid &&
+          request.resource.data.pendingReview == true &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['name', 'domain', 'slug', 'logoUrl', 'industry', 'location',
+                      'website', 'description', 'memberCount', 'updatedAt', 'pendingReview']))
+        || canModerate()
+      );
+
+      allow delete: if canModerate();
+    }
+
+    // Jobs collection with enhanced validation
+    match /jobs/{jobId} {
+      allow read: if isAuthenticated();
+      
+      allow create: if isAuthenticated() && 
+                       isVerified() && 
+                       isActive() &&
+                       validateJobData() &&
+                       request.resource.data.postedBy == request.auth.uid &&
+                       request.resource.data.createdAt == request.time &&
+                       request.resource.data.status == 'draft';
+      
+      allow update: if isAuthenticated() && 
+                       isActive() &&
+                       (isOwner(resource.data.postedBy) || canModerate()) &&
+                       validateJobData() &&
+                       request.resource.data.updatedAt == request.time &&
+                       // Prevent changing ownership
+                       request.resource.data.postedBy == resource.data.postedBy;
+      
+      allow delete: if isAuthenticated() && 
+                       (isOwner(resource.data.postedBy) || canAdminister());
+      
+      // Job applications subcollection
+      match /applications/{applicationId} {
+        allow read: if isAuthenticated() && 
+                      (isOwner(resource.data.applicantId) ||
+                       isOwner(get(/databases/$(database)/documents/jobs/$(jobId)).data.postedBy) ||
+                       canModerate());
+        
+        allow create: if isAuthenticated() && 
+                        isVerified() &&
+                        isActive() &&
+                        request.resource.data.applicantId == request.auth.uid &&
+                        request.resource.data.jobId == jobId &&
+                        request.resource.data.createdAt == request.time &&
+                        request.resource.data.status == 'submitted';
+        
+        allow update: if isAuthenticated() && 
+                        isActive() &&
+                        (isOwner(resource.data.applicantId) ||
+                         isOwner(get(/databases/$(database)/documents/jobs/$(jobId)).data.postedBy) ||
+                         canModerate()) &&
+                        request.resource.data.updatedAt == request.time;
+        
+        allow delete: if isAuthenticated() && 
+                        (isOwner(resource.data.applicantId) || canAdminister());
+      }
+      
+      // Job analytics subcollection (read-only for job owners)
+      match /analytics/{analyticsId} {
+        allow read: if isAuthenticated() && 
+                      (isOwner(get(/databases/$(database)/documents/jobs/$(jobId)).data.postedBy) ||
+                       canModerate());
+        allow write: if false; // Only server can write analytics
+      }
+    }
+    
+    // Events collection — RBAC + legacy fallback (dual-mode)
+    match /events/{eventId} {
+      // Phase 4: all authenticated users can read events (existing behavior).
+      // Phase 5 TODO: replace with hasRBACAllow('ev', 'v') && !hasRBACDeny('ev', 'v')
+      allow read: if isAuthenticated();
+
+      allow create: if isAuthenticated() && (
+        (hasRBACAllow('ev', 'c') && !hasRBACDeny('ev', 'c')) || canModerate()
+      ) && validateEventData()
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+
+      // Deny is outermost — explicit RBAC deny always wins, even over legacy roles
+      allow update: if isAuthenticated() && !hasRBACDeny('ev', 'e') && (
+        hasRBACAllowAll('ev', 'e') ||
+        (hasRBACAllow('ev', 'e') && resource.data.createdBy == request.auth.uid) ||
+        isOwner(resource.data.createdBy) || canModerate()
+      ) && validateEventData()
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if isAuthenticated() && !hasRBACDeny('ev', 'd') && (
+        hasRBACAllowAll('ev', 'd') ||
+        (hasRBACAllow('ev', 'd') && resource.data.createdBy == request.auth.uid) ||
+        canAdminister()
+      );
+      
+      // Event registrations subcollection
+      match /registrations/{registrationId} {
+        allow read: if isAuthenticated() && 
+                      (isOwner(resource.data.userId) ||
+                       isOwner(get(/databases/$(database)/documents/events/$(eventId)).data.createdBy) ||
+                       canModerate());
+        
+        allow create: if isAuthenticated() && 
+                        isVerified() &&
+                        isActive() &&
+                        request.resource.data.userId == request.auth.uid &&
+                        request.resource.data.eventId == eventId &&
+                        request.resource.data.registeredAt == request.time;
+        
+        allow update: if isAuthenticated() && 
+                        (isOwner(resource.data.userId) ||
+                         isOwner(get(/databases/$(database)/documents/events/$(eventId)).data.createdBy) ||
+                         canModerate()) &&
+                        request.resource.data.updatedAt == request.time;
+        
+        allow delete: if isAuthenticated() && 
+                        (isOwner(resource.data.userId) || canAdminister());
+      }
+    }
+    
+    // Forums collection with content moderation
+    match /forums/{forumId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated() && canModerate();
+      
+      // Forum posts with content validation
+      match /posts/{postId} {
+        allow read: if isAuthenticated();
+        
+        allow create: if isAuthenticated() && 
+                        isVerified() &&
+                        isActive() &&
+                        request.resource.data.authorId == request.auth.uid &&
+                        request.resource.data.forumId == forumId &&
+                        request.resource.data.createdAt == request.time &&
+                        request.resource.data.content is string &&
+                        request.resource.data.content.size() >= 10 &&
+                        request.resource.data.content.size() <= 5000;
+        
+        allow update: if isAuthenticated() && 
+                        isActive() &&
+                        (isOwner(resource.data.authorId) || canModerate()) &&
+                        request.resource.data.updatedAt == request.time &&
+                        // Prevent changing authorship
+                        request.resource.data.authorId == resource.data.authorId;
+        
+        allow delete: if isAuthenticated() && 
+                        (isOwner(resource.data.authorId) || canModerate());
+        
+        // Post replies subcollection
+        match /replies/{replyId} {
+          allow read: if isAuthenticated();
+          
+          allow create: if isAuthenticated() && 
+                          isVerified() &&
+                          isActive() &&
+                          request.resource.data.authorId == request.auth.uid &&
+                          request.resource.data.postId == postId &&
+                          request.resource.data.createdAt == request.time;
+          
+          allow update: if isAuthenticated() && 
+                          (isOwner(resource.data.authorId) || canModerate()) &&
+                          request.resource.data.updatedAt == request.time;
+          
+          allow delete: if isAuthenticated() && 
+                          (isOwner(resource.data.authorId) || canModerate());
+        }
+      }
+    }
+    
+    // Mentorship system with privacy controls
+    match /mentorship/{matchId} {
+      allow read: if isAuthenticated() && 
+                     (isOwner(resource.data.mentorId) || 
+                      isOwner(resource.data.menteeId) ||
+                      canModerate());
+      
+      allow create: if isAuthenticated() && 
+                       isVerified() &&
+                       isActive() &&
+                       (request.resource.data.mentorId == request.auth.uid ||
+                        request.resource.data.menteeId == request.auth.uid) &&
+                       request.resource.data.createdAt == request.time;
+      
+      allow update: if isAuthenticated() && 
+                       (isOwner(resource.data.mentorId) || 
+                        isOwner(resource.data.menteeId) ||
+                        canModerate()) &&
+                       request.resource.data.updatedAt == request.time;
+      
+      allow delete: if isAuthenticated() && 
+                       (isOwner(resource.data.mentorId) || 
+                        isOwner(resource.data.menteeId) ||
+                        canAdminister());
+    }
+    
+    // Top-level applications collection (queried by dashboard stats)
+    match /applications/{applicationId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.applicantId) || canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       isActive() &&
+                       request.resource.data.applicantId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.applicantId) || canModerate());
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.applicantId) || canAdminister());
+    }
+
+    // Top-level eventRegistrations collection (queried by dashboard stats)
+    match /eventRegistrations/{registrationId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.userId) || canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       isActive() &&
+                       request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.userId) || canModerate());
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.userId) || canAdminister());
+    }
+
+    // Connection requests
+    match /connectionRequests/{requestId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.from) ||
+                      isOwner(resource.data.to) ||
+                      canModerate());
+      allow create: if isAuthenticated() &&
+                       request.resource.data.from == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.to) || canModerate());
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Conversations (direct messaging)
+    match /conversations/{conversationId} {
+      allow read: if isAuthenticated() &&
+                     (request.auth.uid in resource.data.participants ||
+                      canModerate());
+      allow create: if isAuthenticated() &&
+                       request.auth.uid in request.resource.data.participants;
+      allow update: if isAuthenticated() &&
+                       request.auth.uid in resource.data.participants;
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Direct messages
+    match /messages/{messageId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.from) ||
+                      isOwner(resource.data.to) ||
+                      canModerate());
+      allow create: if isAuthenticated() &&
+                       request.resource.data.from == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.from) ||
+                        isOwner(resource.data.to));
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Admin-only collections
+    match /admin/{document=**} {
+      allow read, write: if isAuthenticated() && canAdminister();
+    }
+    
+    // System logs (read-only for admins)
+    match /logs/{logId} {
+      allow read: if isAuthenticated() && canAdminister();
+      allow write: if false; // Only server can write logs
+    }
+    
+    // Reports collection for content moderation
+    match /reports/{reportId} {
+      allow read: if isAuthenticated() && canModerate();
+      
+      allow create: if isAuthenticated() && 
+                       isVerified() &&
+                       request.resource.data.reportedBy == request.auth.uid &&
+                       request.resource.data.createdAt == request.time &&
+                       request.resource.data.reason is string &&
+                       request.resource.data.description is string;
+      
+      allow update: if isAuthenticated() && canModerate();
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+    
+    // Rate limiting collection (server-managed)
+    match /rate_limits/{limitId} {
+      allow read: if isAuthenticated() && canAdminister();
+      allow write: if false; // Only server can manage rate limits
+    }
+    
+    // Analytics collections (admin access only)
+    match /analytics/{document=**} {
+      allow read: if isAuthenticated() && canModerate();
+      allow write: if false; // Only server can write analytics
+    }
+
+    // Newsletter subscriptions (public write, admin read)
+    match /newsletter/{subscriptionId} {
+      allow read: if isAuthenticated() && canModerate();
+      allow create: if request.resource.data.keys().hasAll(['email', 'name', 'subscribedAt']) &&
+                       request.resource.data.email is string &&
+                       request.resource.data.email.size() > 0 &&
+                       request.resource.data.name is string &&
+                       request.resource.data.subscribedAt == request.time;
+      allow update, delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Contact messages (public write, admin read)
+    match /contactMessages/{messageId} {
+      allow read: if isAuthenticated() && canModerate();
+      allow create: if request.resource.data.keys().hasAll(['name', 'email', 'subject', 'message', 'sentAt']) &&
+                       request.resource.data.email is string &&
+                       request.resource.data.email.size() > 0 &&
+                       request.resource.data.name is string &&
+                       request.resource.data.name.size() > 0 &&
+                       request.resource.data.message is string &&
+                       request.resource.data.message.size() >= 10 &&
+                       request.resource.data.sentAt == request.time;
+      allow update, delete: if isAuthenticated() && canAdminister();
+    }
+
+    // ============================================
+    // Phase A: Newsletter Archive (upgraded with RBAC)
+    // ============================================
+
+    // Newsletter archive — public read for published, RBAC + legacy fallback for management
+    match /newsletter_archive/{issueId} {
+      allow read: if resource.data.status == 'published' ||
+        (isAuthenticated() && (hasRBACAllow('nl', 'v') || canAdminister()));
+      allow create: if isAuthenticated() &&
+        (hasRBACAllow('nl', 'c') || canAdminister())
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+      allow update: if isAuthenticated() && (
+        (hasRBACAllowAll('nl', 'e') || canAdminister()) ||
+        (hasRBACAllow('nl', 'e') && resource.data.createdBy == request.auth.uid)
+      ) && !hasRBACDeny('nl', 'e');
+      allow delete: if isAuthenticated() && (
+        (hasRBACAllowAll('nl', 'd') || canAdminister()) ||
+        (hasRBACAllow('nl', 'd') && resource.data.createdBy == request.auth.uid)
+      ) && !hasRBACDeny('nl', 'd');
+    }
+
+    // ============================================
+    // Phase B: Resources, Blog, Mentorship
+    // ============================================
+
+    // Resources collection
+    match /resources/{resourceId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       isActive() &&
+                       request.resource.data.uploadedBy == request.auth.uid &&
+                       request.resource.data.createdAt == request.time;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.uploadedBy) || canModerate()) &&
+                       request.resource.data.updatedAt == request.time;
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.uploadedBy) || canAdminister());
+    }
+
+    // Resource reviews
+    match /resource_reviews/{reviewId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.reviewerId == request.auth.uid &&
+                       request.resource.data.createdAt == request.time;
+      allow update: if isAuthenticated() &&
+                       isOwner(resource.data.reviewerId) &&
+                       request.resource.data.updatedAt == request.time;
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.reviewerId) || canModerate());
+    }
+
+    // Resource bookmarks (user-specific)
+    match /resource_bookmarks/{bookmarkId} {
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() &&
+                       request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+
+    // Resource collections
+    match /resource_collections/{collectionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.createdBy == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       isOwner(resource.data.createdBy);
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.createdBy) || canAdminister());
+    }
+
+    // Resource downloads (tracking)
+    match /resource_downloads/{downloadId} {
+      allow read: if isAuthenticated() && canModerate();
+      allow create: if isAuthenticated();
+    }
+
+    // Resource activities (tracking)
+    match /resource_activities/{activityId} {
+      allow read: if isAuthenticated() && canModerate();
+      allow create: if isAuthenticated();
+    }
+
+    // Blog collection (public read for published, admin write)
+    match /blog/{postId} {
+      allow read: if true;
+      allow create: if isAuthenticated() &&
+                       canModerate() &&
+                       request.resource.data.authorId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.authorId) || canModerate());
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Mentorship: Mentors collection
+    match /mentors/{mentorId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       isOwner(mentorId);
+      allow update: if isAuthenticated() &&
+                       (isOwner(mentorId) || canModerate());
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Mentorship: Mentees collection
+    match /mentees/{menteeId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(menteeId) || canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       isOwner(menteeId);
+      allow update: if isAuthenticated() &&
+                       (isOwner(menteeId) || canModerate());
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Mentorship matches
+    match /mentorship_matches/{matchId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.mentorId) ||
+                      isOwner(resource.data.menteeId) ||
+                      canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       (request.resource.data.mentorId == request.auth.uid ||
+                        request.resource.data.menteeId == request.auth.uid);
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.mentorId) ||
+                        isOwner(resource.data.menteeId) ||
+                        canModerate());
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Mentorship sessions
+    match /mentorship_sessions/{sessionId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.mentorId) ||
+                      isOwner(resource.data.menteeId) ||
+                      canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       (request.resource.data.mentorId == request.auth.uid ||
+                        request.resource.data.menteeId == request.auth.uid);
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.mentorId) ||
+                        isOwner(resource.data.menteeId) ||
+                        canModerate());
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Mentorship requests
+    match /mentorship_requests/{requestId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.fromUserId) ||
+                      isOwner(resource.data.toUserId) ||
+                      canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.fromUserId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.fromUserId) ||
+                        isOwner(resource.data.toUserId) ||
+                        canModerate());
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.fromUserId) || canAdminister());
+    }
+
+    // Mentorship feedback
+    match /mentorship_feedback/{feedbackId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.fromUserId) ||
+                      isOwner(resource.data.toUserId) ||
+                      canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.fromUserId == request.auth.uid;
+      allow update: if false; // Feedback is immutable
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Mentorship goals
+    match /mentorship_goals/{goalId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.menteeId) ||
+                      isOwner(resource.data.mentorId) ||
+                      canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.menteeId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.menteeId) ||
+                        isOwner(resource.data.mentorId));
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.menteeId) || canAdminister());
+    }
+
+    // Mentorship resources (shared between mentor/mentee)
+    match /mentorship_resources/{resourceId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.sharedBy) || canModerate());
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.sharedBy == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       isOwner(resource.data.sharedBy);
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.sharedBy) || canAdminister());
+    }
+
+    // ============================================
+    // Phase C: Spotlights, Commissions, Mail
+    // ============================================
+
+    // Alumni spotlights — public read for published, RBAC + legacy fallback for management
+    match /spotlights/{spotlightId} {
+      allow read: if resource.data.status == 'published' ||
+        (isAuthenticated() && (hasRBACAllow('sp', 'v') || canModerate()));
+      allow create: if isAuthenticated() &&
+        (hasRBACAllow('sp', 'c') || canModerate())
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+      allow update: if isAuthenticated() && (
+        (hasRBACAllowAll('sp', 'e') || canModerate()) ||
+        (hasRBACAllow('sp', 'e') && resource.data.createdBy == request.auth.uid)
+      ) && !hasRBACDeny('sp', 'e');
+      allow delete: if isAuthenticated() && (
+        (hasRBACAllowAll('sp', 'd') || canAdminister()) ||
+        (hasRBACAllow('sp', 'd') && resource.data.createdBy == request.auth.uid)
+      ) && !hasRBACDeny('sp', 'd');
+    }
+
+    // Commissions (public read, admin write)
+    match /commissions/{commissionId} {
+      allow read: if true;
+      allow create, update: if isAuthenticated() && canModerate();
+      allow delete: if isAuthenticated() && canAdminister();
+    }
+
+    // Commission members
+    match /commission_members/{memberId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.userId) || canModerate());
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.userId) || canAdminister());
+    }
+
+    // Mail collection (for Firebase Trigger Email extension)
+    match /mail/{mailId} {
+      allow read: if isAuthenticated() && canAdminister();
+      allow create: if false; // Only server (Cloud Functions) can write
+      allow update, delete: if false;
+    }
+
+    // Member status change log (written by Cloud Functions, read by admins)
+    match /member_status_log/{logId} {
+      allow read: if isAuthenticated() && canModerate();
+      allow write: if false; // Only Cloud Functions can write
+    }
+
+    // =========================================================================
+    // Profile Merge System
+    // =========================================================================
+
+    // numero_cuenta_index: read-only for authenticated users
+    // Cloud Functions use Admin SDK (bypasses rules) to write
+    match /numero_cuenta_index/{numeroCuenta} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // merge_requests: users create their own, admins create and manage
+    match /merge_requests/{requestId} {
+      // Users can create pending requests for themselves
+      allow create: if isAuthenticated()
+        && request.resource.data.targetUid == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.initiatedBy == 'user';
+      // Admins can create requests with any status (including pre-approved)
+      allow create: if isAuthenticated() && canAdminister();
+      allow read: if isAuthenticated()
+        && (resource.data.targetUid == request.auth.uid
+            || resource.data.sourceUid == request.auth.uid
+            || canAdminister());
+      allow update: if isAuthenticated() && canAdminister();
+      allow delete: if false;
+    }
+
+    // archived_users: admin only
+    match /archived_users/{userId} {
+      allow read, write: if isAuthenticated() && canAdminister();
+    }
+
+    // Public job submissions: server writes only (callable CF uses Admin SDK)
+    match /public_job_submissions/{submissionId} {
+      allow create: if false;
+      allow read, update, delete: if isAuthenticated() && canAdminister();
+    }
+
+    // =========================================================================
+    // RBAC Collections
+    // =========================================================================
+
+    // RBAC groups: permission group definitions
+    match /rbac_groups/{groupId} {
+      allow read: if isAuthenticated() && !hasRBACDeny('gr', 'v') && (hasRBACAllow('gr', 'v') || canModerate());
+      allow create: if isAuthenticated() && !hasRBACDeny('gr', 'c') && (hasRBACAllow('gr', 'c') || canAdminister());
+      allow update: if isAuthenticated() && !hasRBACDeny('gr', 'e') && (hasRBACAllow('gr', 'e') || canAdminister());
+      allow delete: if isAuthenticated() && !hasRBACDeny('gr', 'd') && (hasRBACAllow('gr', 'd') || canAdminister())
+        && !resource.data.isSystem;
+    }
+
+    // RBAC user-group assignments: maps users to their groups
+    match /rbac_user_groups/{userId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == userId || hasRBACAllow('gr', 'a') || canModerate()
+      );
+      allow write: if isAuthenticated() && (hasRBACAllow('gr', 'a') || canAdminister());
+    }
+
+    // RBAC audit log: immutable, server-written only
+    match /rbac_audit_log/{logId} {
+      allow read: if isAuthenticated() && (hasRBACAllow('gr', 'v') || canAdminister());
+      allow write: if false;
+    }
+
+    // =========================================================================
+    // Journal Club (new collection — replacing hardcoded data)
+    // =========================================================================
+
+    match /journal_club_sessions/{sessionId} {
+      // Public read for published sessions; authenticated + RBAC for drafts
+      allow read: if resource.data.status == 'published' ||
+        (isAuthenticated() && (hasRBACAllow('jc', 'v') || canModerate()));
+      allow create: if isAuthenticated() && (hasRBACAllow('jc', 'c') || canModerate())
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+      allow update: if isAuthenticated() && (
+        (hasRBACAllowAll('jc', 'e') || canModerate()) ||
+        (hasRBACAllow('jc', 'e') && resource.data.createdBy == request.auth.uid)
+      ) && !hasRBACDeny('jc', 'e');
+      allow delete: if isAuthenticated() && (
+        (hasRBACAllowAll('jc', 'd') || canAdminister()) ||
+        (hasRBACAllow('jc', 'd') && resource.data.createdBy == request.auth.uid)
+      ) && !hasRBACDeny('jc', 'd');
+    }
+
+    // LinkedIn auth codes: server-only (Admin SDK). Deny all client access.
+    match /linkedin_auth_codes/{codeId} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,203 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('en');
+---
+
+<ModernLayout title={t.site.title} description={t.site.description} lang="en">
+  <Navigation lang="en" />
+
+  <!-- Hero Section -->
+  <section class="secid-hero">
+    <div class="secid-hero__content">
+      <header class="secid-hero__header">
+        <h1 class="secid-hero__title">{t.hero.title}</h1>
+        <p class="secid-hero__subtitle">{t.hero.subtitle}</p>
+      </header>
+      <p class="secid-hero__description">{t.hero.description}</p>
+      <div class="secid-hero__actions">
+        <a
+          href="/en/join"
+          class="secid-button secid-button--primary secid-button--large"
+        >
+          {t.hero.joinButton}
+        </a>
+        <a
+          href="/en/jobs"
+          class="secid-button secid-button--secondary secid-button--large"
+        >
+          {t.hero.jobsButton}
+        </a>
+      </div>
+    </div>
+    <div class="secid-hero__image">
+      <img
+        src="/images/logo.png"
+        alt="SECiD Logo"
+        width="2048"
+        height="2048"
+        loading="lazy"
+      />
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="secid-features">
+    <header class="secid-features__header">
+      <h2 class="secid-features__title">{t.features.title}</h2>
+    </header>
+    <div class="secid-features__grid">
+      <article class="secid-feature-card">
+        <span class="secid-feature-card__icon">
+          <i class="fas fa-gem"></i>
+        </span>
+        <div class="secid-feature-card__content">
+          <h3 class="secid-feature-card__title">
+            {t.features.networking.title}
+          </h3>
+          <p class="secid-feature-card__description">
+            {t.features.networking.description}
+          </p>
+        </div>
+      </article>
+      <article class="secid-feature-card">
+        <span class="secid-feature-card__icon">
+          <i class="fas fa-paper-plane"></i>
+        </span>
+        <div class="secid-feature-card__content">
+          <h3 class="secid-feature-card__title">{t.features.jobs.title}</h3>
+          <p class="secid-feature-card__description">
+            {t.features.jobs.description}
+          </p>
+        </div>
+      </article>
+      <article class="secid-feature-card">
+        <span class="secid-feature-card__icon">
+          <i class="fas fa-rocket"></i>
+        </span>
+        <div class="secid-feature-card__content">
+          <h3 class="secid-feature-card__title">{t.features.growth.title}</h3>
+          <p class="secid-feature-card__description">
+            {t.features.growth.description}
+          </p>
+        </div>
+      </article>
+      <article class="secid-feature-card">
+        <span class="secid-feature-card__icon">
+          <i class="fas fa-signal"></i>
+        </span>
+        <div class="secid-feature-card__content">
+          <h3 class="secid-feature-card__title">
+            {t.features.community.title}
+          </h3>
+          <p class="secid-feature-card__description">
+            {t.features.community.description}
+          </p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- Initiatives Section -->
+  <section class="secid-initiatives">
+    <header class="secid-initiatives__header">
+      <h2 class="secid-initiatives__title">{t.initiatives.title}</h2>
+    </header>
+    <div class="secid-initiatives__grid">
+      <article class="secid-initiative-card">
+        <h3 class="secid-initiative-card__title">
+          {t.initiatives.talentMatcher.title}
+        </h3>
+        <p class="secid-initiative-card__description">
+          {t.initiatives.talentMatcher.description}
+        </p>
+        <p class="secid-initiative-card__cta">
+          <a href="/en/jobs">{t.initiatives.talentMatcher.cta}</a>
+        </p>
+      </article>
+      <article class="secid-initiative-card">
+        <h3 class="secid-initiative-card__title">
+          {t.initiatives.consulting.title}
+        </h3>
+        <p class="secid-initiative-card__description">
+          {t.initiatives.consulting.description}
+        </p>
+        <p class="secid-initiative-card__cta">
+          <a href="mailto:contacto@secid.mx">{t.initiatives.consulting.cta}</a>
+        </p>
+      </article>
+      <article class="secid-initiative-card">
+        <h3 class="secid-initiative-card__title">
+          {t.initiatives.hackathons.title}
+        </h3>
+        <p class="secid-initiative-card__description">
+          {t.initiatives.hackathons.description}
+        </p>
+        <p class="secid-initiative-card__cta">
+          <a href="mailto:contacto@secid.mx">{t.initiatives.hackathons.cta}</a>
+        </p>
+      </article>
+      <article class="secid-initiative-card">
+        <h3 class="secid-initiative-card__title">
+          {t.initiatives.workshops.title}
+        </h3>
+        <p class="secid-initiative-card__description">
+          {t.initiatives.workshops.description}
+        </p>
+        <p class="secid-initiative-card__cta">
+          <em>{t.initiatives.workshops.cta}</em>
+        </p>
+      </article>
+      <article class="secid-initiative-card">
+        <h3 class="secid-initiative-card__title">
+          {t.initiatives.seminars.title}
+        </h3>
+        <p class="secid-initiative-card__description">
+          {t.initiatives.seminars.description}
+        </p>
+        <p class="secid-initiative-card__cta">
+          <em>{t.initiatives.seminars.cta}</em>
+        </p>
+      </article>
+      <article class="secid-initiative-card">
+        <h3 class="secid-initiative-card__title">
+          {t.initiatives.mentoring.title}
+        </h3>
+        <p class="secid-initiative-card__description">
+          {t.initiatives.mentoring.description}
+        </p>
+        <p class="secid-initiative-card__cta">
+          <em>{t.initiatives.mentoring.cta}</em>
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="secid-cta">
+    <header class="secid-cta__header">
+      <h2 class="secid-cta__title">{t.cta.title}</h2>
+    </header>
+    <div class="secid-cta__grid">
+      <article class="secid-cta-card">
+        <h3 class="secid-cta-card__title">{t.cta.jobs.title}</h3>
+        <p class="secid-cta-card__description">{t.cta.jobs.description}</p>
+        <a href="/en/jobs" class="secid-button secid-button--primary">
+          {t.cta.jobs.button}
+        </a>
+      </article>
+      <article class="secid-cta-card">
+        <h3 class="secid-cta-card__title">{t.cta.register.title}</h3>
+        <p class="secid-cta-card__description">{t.cta.register.description}</p>
+        <a href="/en/join" class="secid-button secid-button--secondary">
+          {t.cta.register.button}
+        </a>
+      </article>
+    </div>
+  </section>
+
+  <Footer lang="en" />
+</ModernLayout>

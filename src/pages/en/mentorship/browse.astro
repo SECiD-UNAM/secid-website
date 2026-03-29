@@ -1,0 +1,37 @@
+---
+export const prerender = false;
+
+import ModernLayout from '../../../layouts/ModernLayout.astro';
+import Navigation from '../../../components/Navigation.astro';
+import Footer from '../../../components/Footer.astro';
+import MentorBrowsePage from '../../../components/wrappers/MentorBrowsePage';
+---
+
+<ModernLayout
+  title="Find Mentors - SECiD"
+  description="Find the ideal mentor for your professional development in data science"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <main>
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Find Mentors</h1>
+          <p class="secid-hero__subtitle">
+            Find your ideal mentor based on your interests and goals
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="secid-section">
+      <div class="secid-container">
+        <MentorBrowsePage client:load lang="en" />
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</ModernLayout>

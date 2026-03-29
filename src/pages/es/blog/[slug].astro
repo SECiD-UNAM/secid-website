@@ -1,0 +1,29 @@
+---
+export const prerender = false;
+import ModernLayout from '../../../layouts/ModernLayout.astro';
+import Navigation from '../../../components/Navigation.astro';
+import Footer from '../../../components/Footer.astro';
+import BlogPostPage from '../../../components/wrappers/BlogPostPage';
+import { getContentCollectionPost } from '../../../lib/blog-server';
+
+const { slug } = Astro.params;
+const initialPost = slug ? await getContentCollectionPost(slug) : null;
+---
+
+<ModernLayout
+  title="Blog - SECiD"
+  description="Artículo del blog SECiD"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <main>
+    <section class="secid-section">
+      <div class="secid-container">
+        <BlogPostPage client:load slug={slug} lang="es" initialPost={initialPost} />
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="es" />
+</ModernLayout>
