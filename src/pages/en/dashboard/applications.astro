@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import ApplicationTrackerPage from '@/components/wrappers/ApplicationTrackerPage';
+---
+
+<DashboardLayout
+  title="My Applications - SECiD"
+  description="Manage and track your job applications"
+  lang="en"
+>
+  <ApplicationTrackerPage client:only="react" lang="en" />
+</DashboardLayout>

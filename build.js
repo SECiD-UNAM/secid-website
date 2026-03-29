@@ -12,16 +12,16 @@ const path = require('path');
 const environments = {
   development: {
     SITE_URL: 'http://localhost:3000',
-    ENVIRONMENT: 'development'
+    ENVIRONMENT: 'development',
   },
   staging: {
     SITE_URL: 'https://staging-secid.github.io',
-    ENVIRONMENT: 'staging'
+    ENVIRONMENT: 'staging',
   },
   production: {
     SITE_URL: 'https://secid.mx',
-    ENVIRONMENT: 'production'
-  }
+    ENVIRONMENT: 'production',
+  },
 };
 
 // Get environment from command line argument or default to production
@@ -30,7 +30,9 @@ const config = environments[env];
 
 if (!config) {
   console.error(`❌ Unknown environment: ${env}`);
-  console.error(`Available environments: ${Object.keys(environments).join(', ')}`);
+  console.error(
+    `Available environments: ${Object.keys(environments).join(', ')}`
+  );
   process.exit(1);
 }
 
@@ -45,7 +47,7 @@ function processTemplate(templatePath, outputPath, variables) {
   }
 
   let content = fs.readFileSync(templatePath, 'utf8');
-  
+
   // Replace all template variables
   Object.entries(variables).forEach(([key, value]) => {
     const regex = new RegExp(`{{${key}}}`, 'g');
@@ -64,7 +66,7 @@ function processHTMLTemplate(filePath, variables) {
   }
 
   let content = fs.readFileSync(filePath, 'utf8');
-  
+
   // Replace canonical URLs
   content = content.replace(
     /(<link rel="canonical" href=")([^"]+)(")/g,
@@ -94,13 +96,12 @@ try {
   processTemplate('sitemap.xml.template', 'sitemap.xml', config);
 
   // Process HTML files with environment-specific URLs
-  const htmlFiles = ['index.html', 'aboutus.html', 'job-submission.html', 'journal-club.html', 'members-projects.html'];
-  htmlFiles.forEach(file => {
+  const htmlFiles = ['index.html', 'aboutus.html', 'job-submission.html', 'journal-club.html'];
+  htmlFiles.forEach((file) => {
     processHTMLTemplate(file, config);
   });
 
   console.log(`🎉 Build completed successfully for ${env} environment!`);
-  
 } catch (error) {
   console.error('❌ Build failed:', error.message);
   process.exit(1);

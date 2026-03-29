@@ -1,0 +1,12 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import CvPageWrapper from '../../components/wrappers/CvPageWrapper';
+---
+
+<ModernLayout
+  title="CV - SECiD"
+  description="Curriculum Vitae de miembro de la comunidad SECiD"
+  lang="es"
+>
+  <CvPageWrapper client:only="react" lang="es" />
+</ModernLayout>

@@ -1,0 +1,268 @@
+import React, { useState } from 'react';
+import type { SupportedProvider } from '@/types/user';
+import { signInWithProvider } from '@/lib/auth';
+import { signInWithLinkedIn } from '@/lib/auth/linkedin-auth';
+import { useTranslations } from '@/hooks/useTranslations';
+import toast from 'react-hot-toast';
+import { AccountMergePrompt } from './AccountMergePrompt';
+import { handleAccountExistsError, completeMerge, type PendingMerge } from '@/lib/auth/auto-merge';
+
+interface SocialLoginButtonsProps {
+  onSuccess?: () => void;
+  onError?: (error: string) => void;
+  lang?: 'es' | 'en';
+  mode?: 'signin' | 'signup';
+  disabled?: boolean;
+  className?: string;
+}
+
+interface ProviderConfig {
+  id: SupportedProvider;
+  name: string;
+  icon: React.ReactNode;
+  bgColor: string;
+  hoverColor: string;
+  textColor: string;
+}
+
+export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
+  onSuccess,
+  onError,
+  lang = 'es',
+  mode = 'signin',
+  disabled = false,
+  className = '',
+}) => {
+  const t = useTranslations(lang);
+  const [loading, setLoading] = useState<SupportedProvider | null>(null);
+  const [pendingMerge, setPendingMerge] = useState<PendingMerge | null>(null);
+  const [merging, setMerging] = useState(false);
+
+  const providers: ProviderConfig[] = [
+    {
+      id: 'google',
+      name: 'Google',
+      bgColor: 'bg-white border border-gray-300 hover:bg-gray-50',
+      hoverColor: 'hover:bg-gray-50',
+      textColor: 'text-gray-700',
+      icon: (
+        <svg className="h-5 w-5" viewBox="0 0 24 24">
+          <path
+            fill="#4285F4"
+            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+          />
+          <path
+            fill="#34A853"
+            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+          />
+          <path
+            fill="#FBBC05"
+            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+          />
+          <path
+            fill="#EA4335"
+            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+          />
+        </svg>
+      ),
+    },
+    {
+      id: 'linkedin' as SupportedProvider,
+      name: 'LinkedIn',
+      bgColor: 'bg-[#0A66C2] hover:bg-[#004182]',
+      hoverColor: 'hover:bg-[#004182]',
+      textColor: 'text-white',
+      icon: (
+        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+        </svg>
+      ),
+    },
+    {
+      id: 'github' as SupportedProvider,
+      name: 'GitHub',
+      bgColor: 'bg-gray-900 hover:bg-gray-800',
+      hoverColor: 'hover:bg-gray-800',
+      textColor: 'text-white',
+      icon: (
+        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+        </svg>
+      ),
+    },
+  ];
+
+  // LinkedIn OAuth is not yet deployed — hide the button
+  const LINKEDIN_ENABLED = !!import.meta.env.PUBLIC_LINKEDIN_AUTH_ENABLED;
+  const activeProviders = providers.filter(
+    (p) => p.id !== 'linkedin' || LINKEDIN_ENABLED
+  );
+
+  const handleProviderSignIn = async (providerId: SupportedProvider) => {
+    if (disabled || loading) return;
+    setLoading(providerId);
+
+    try {
+      if (providerId === 'linkedin') {
+        await signInWithLinkedIn();
+        return; // Page will redirect
+      }
+
+      const result = await signInWithProvider(providerId);
+
+      if (result.isNewUser) {
+        toast.success(
+          lang === 'es'
+            ? '¡Bienvenido! Tu cuenta ha sido creada exitosamente.'
+            : 'Welcome! Your account has been created successfully.'
+        );
+      } else {
+        toast.success(
+          lang === 'es' ? '¡Bienvenido de vuelta!' : 'Welcome back!'
+        );
+      }
+
+      onSuccess?.();
+    } catch (error: any) {
+      // Check for account-exists-with-different-credential before generic handling
+      const merge = await handleAccountExistsError(error);
+      if (merge) {
+        setPendingMerge(merge);
+        setLoading(null);
+        return;
+      }
+
+      const errorCode = error.code || '';
+      let errorMessage: string;
+
+      if (errorCode === 'auth/configuration-not-found') {
+        errorMessage =
+          lang === 'es'
+            ? 'El servicio de autenticación no está configurado. Contacta al administrador.'
+            : 'Authentication service is not configured. Contact the administrator.';
+      } else if (errorCode === 'auth/unauthorized-domain') {
+        errorMessage =
+          lang === 'es'
+            ? 'Este dominio no está autorizado para iniciar sesión. Contacta al administrador.'
+            : 'This domain is not authorized for sign-in. Contact the administrator.';
+      } else if (errorCode === 'auth/popup-closed-by-user') {
+        errorMessage =
+          lang === 'es' ? 'Inicio de sesión cancelado' : 'Sign in cancelled';
+      } else {
+        errorMessage =
+          error.message ||
+          (lang === 'es' ? 'Error al iniciar sesión' : 'Sign in error');
+      }
+
+      toast['error'](errorMessage);
+      onError?.(errorMessage);
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const getButtonText = (providerName: string) => {
+    if (mode === 'signup') {
+      return lang === 'es'
+        ? `Crear cuenta con ${providerName}`
+        : `Sign up with ${providerName}`;
+    }
+    return lang === 'es'
+      ? `Continuar con ${providerName}`
+      : `Continue with ${providerName}`;
+  };
+
+  return (
+    <div className={`space-y-3 ${className}`}>
+      {pendingMerge && (
+        <AccountMergePrompt
+          email={pendingMerge.email}
+          existingProvider={pendingMerge.existingProvider}
+          lang={lang}
+          loading={merging}
+          onSignInWithExisting={async () => {
+            setMerging(true);
+            try {
+              await completeMerge(
+                pendingMerge.existingProvider as Exclude<SupportedProvider, 'linkedin'>,
+                pendingMerge.pendingCredential
+              );
+              setPendingMerge(null);
+              toast.success(
+                lang === 'es' ? '¡Cuentas vinculadas exitosamente!' : 'Accounts linked successfully!'
+              );
+              onSuccess?.();
+            } catch {
+              toast.error(
+                lang === 'es' ? 'Error al vincular cuentas' : 'Failed to link accounts'
+              );
+            } finally {
+              setMerging(false);
+            }
+          }}
+          onCancel={() => setPendingMerge(null)}
+        />
+      )}
+
+      {activeProviders.map((provider) => (
+        <button
+          key={provider.id}
+          type="button"
+          className={`
+            inline-flex w-full items-center justify-center
+            rounded-lg px-6 py-3 text-lg font-medium
+            ${provider.bgColor}
+            ${provider.textColor}
+            shadow-sm transition-all
+            duration-200 hover:shadow-md
+            focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
+            disabled:cursor-not-allowed disabled:opacity-50
+          `}
+          onClick={() => handleProviderSignIn(provider.id)}
+          disabled={disabled || loading !== null}
+        >
+          {loading === provider.id ? (
+            <svg
+              className="-ml-1 mr-2 h-5 w-5 animate-spin text-current"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+          ) : (
+            <span className="mr-3 flex-shrink-0">{provider.icon}</span>
+          )}
+          <span>{getButtonText(provider.name)}</span>
+        </button>
+      ))}
+
+      {activeProviders.length > 0 && (
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-white px-2 text-gray-500 dark:bg-gray-900 dark:text-gray-400">
+              {lang === 'es' ? 'o' : 'or'}
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SocialLoginButtons;

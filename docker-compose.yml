@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  # Development environment
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: secid-dev
+    ports:
+      - "4321:4321"  # Astro dev server
+      - "4322:4322"  # Astro preview server
+    volumes:
+      # Mount source code for hot reload
+      - .:/app
+      - /app/node_modules  # Preserve node_modules
+      - /app/.astro       # Preserve Astro cache
+    environment:
+      - NODE_ENV=development
+      - PUBLIC_FIREBASE_API_KEY=${PUBLIC_FIREBASE_API_KEY}
+      - PUBLIC_FIREBASE_AUTH_DOMAIN=${PUBLIC_FIREBASE_AUTH_DOMAIN}
+      - PUBLIC_FIREBASE_PROJECT_ID=${PUBLIC_FIREBASE_PROJECT_ID}
+      - PUBLIC_FIREBASE_STORAGE_BUCKET=${PUBLIC_FIREBASE_STORAGE_BUCKET}
+      - PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${PUBLIC_FIREBASE_MESSAGING_SENDER_ID}
+      - PUBLIC_FIREBASE_APP_ID=${PUBLIC_FIREBASE_APP_ID}
+      - PUBLIC_FIREBASE_MEASUREMENT_ID=${PUBLIC_FIREBASE_MEASUREMENT_ID}
+      - PUBLIC_USE_EMULATORS=${PUBLIC_USE_EMULATORS:-false}
+      - PUBLIC_DEBUG_MODE=${PUBLIC_DEBUG_MODE:-false}
+    networks:
+      - secid-network
+    restart: unless-stopped
+
+  # Production build
+  prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    container_name: secid-prod
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - secid-network
+    restart: unless-stopped
+
+  # Firebase emulators (optional)
+  firebase-emulators:
+    image: spine3/firebase-emulator
+    container_name: secid-firebase-emulators
+    ports:
+      - "9099:9099"  # Auth
+      - "8080:8080"  # Firestore
+      - "9199:9199"  # Storage
+      - "5001:5001"  # Functions
+      - "4000:4000"  # Emulator UI
+    volumes:
+      - ./firebase.json:/app/firebase.json
+      - ./firestore.rules:/app/firestore.rules
+      - ./storage.rules:/app/storage.rules
+    environment:
+      - FIRESTORE_EMULATOR_HOST=0.0.0.0:8080
+      - FIREBASE_AUTH_EMULATOR_HOST=0.0.0.0:9099
+    networks:
+      - secid-network
+    profiles:
+      - emulators
+
+  # Test runner
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: secid-test
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=test
+      - CI=true
+    command: npm run test
+    networks:
+      - secid-network
+    profiles:
+      - test
+
+  # Nginx reverse proxy (optional)
+  nginx:
+    image: nginx:alpine
+    container_name: secid-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./dist:/usr/share/nginx/html:ro
+    depends_on:
+      - dev
+    networks:
+      - secid-network
+    profiles:
+      - proxy
+
+networks:
+  secid-network:
+    driver: bridge
+
+volumes:
+  node_modules:
+  astro_cache:

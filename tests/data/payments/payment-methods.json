@@ -1,0 +1,536 @@
+{
+  "validCards": {
+    "visa": {
+      "number": "4242424242424242",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Visa - Success",
+      "country": "US",
+      "currency": "USD"
+    },
+    "visaDebit": {
+      "number": "4000056655665556",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Visa (debit) - Success",
+      "country": "US",
+      "currency": "USD"
+    },
+    "mastercard": {
+      "number": "5555555555554444",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Mastercard - Success",
+      "country": "US",
+      "currency": "USD"
+    },
+    "mastercardDebit": {
+      "number": "5200828282828210",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Mastercard (debit) - Success",
+      "country": "US",
+      "currency": "USD"
+    },
+    "amex": {
+      "number": "378282246310005",
+      "exp": "12/25",
+      "cvc": "1234",
+      "description": "American Express - Success",
+      "country": "US",
+      "currency": "USD"
+    },
+    "amexCorporate": {
+      "number": "378734493671000",
+      "exp": "12/25",
+      "cvc": "1234",
+      "description": "American Express Corporate - Success",
+      "country": "US",
+      "currency": "USD"
+    },
+    "discover": {
+      "number": "6011111111111117",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Discover - Success",
+      "country": "US",
+      "currency": "USD"
+    },
+    "dinersClub": {
+      "number": "30569309025904",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Diners Club - Success",
+      "country": "US",
+      "currency": "USD"
+    },
+    "jcb": {
+      "number": "3530111333300000",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "JCB - Success",
+      "country": "JP",
+      "currency": "JPY"
+    },
+    "unionPay": {
+      "number": "6200000000000005",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "UnionPay - Success",
+      "country": "CN",
+      "currency": "CNY"
+    }
+  },
+  "testScenarios": {
+    "declined": {
+      "number": "4000000000000002",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Card declined",
+      "errorCode": "card_declined"
+    },
+    "insufficientFunds": {
+      "number": "4000000000009995",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Insufficient funds",
+      "errorCode": "insufficient_funds"
+    },
+    "lostCard": {
+      "number": "4000000000009987",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Lost card",
+      "errorCode": "lost_card"
+    },
+    "stolenCard": {
+      "number": "4000000000009979",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Stolen card",
+      "errorCode": "stolen_card"
+    },
+    "expired": {
+      "number": "4000000000000069",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Expired card",
+      "errorCode": "expired_card"
+    },
+    "incorrectCvc": {
+      "number": "4000000000000127",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Incorrect CVC",
+      "errorCode": "incorrect_cvc"
+    },
+    "processingError": {
+      "number": "4000000000000119",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Processing error",
+      "errorCode": "processing_error"
+    },
+    "incorrectNumber": {
+      "number": "4242424242424241",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Incorrect number",
+      "errorCode": "incorrect_number"
+    },
+    "requires3DS": {
+      "number": "4000002500003155",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "3D Secure authentication required - Success",
+      "requires3DS": true,
+      "authenticationFlow": "success"
+    },
+    "requires3DSAlwaysFails": {
+      "number": "4000008400001629",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "3D Secure authentication required - Failure",
+      "requires3DS": true,
+      "authenticationFlow": "failure"
+    },
+    "requires3DSNotSupported": {
+      "number": "4000007560000009",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "3D Secure not supported",
+      "requires3DS": false,
+      "errorCode": "authentication_required"
+    }
+  },
+  "mexicanCards": {
+    "banamex": {
+      "number": "5204164200319013",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Banamex test card",
+      "country": "MX",
+      "currency": "MXN",
+      "bank": "Banamex"
+    },
+    "bancomer": {
+      "number": "4152313569878533",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "BBVA test card",
+      "country": "MX",
+      "currency": "MXN",
+      "bank": "BBVA"
+    },
+    "santander": {
+      "number": "4000000000003055",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Santander Mexico test card",
+      "country": "MX",
+      "currency": "MXN",
+      "bank": "Santander"
+    },
+    "banorte": {
+      "number": "5555555555554444",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Banorte test card",
+      "country": "MX",
+      "currency": "MXN",
+      "bank": "Banorte"
+    },
+    "hsbc": {
+      "number": "4000000000000077",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "HSBC Mexico test card",
+      "country": "MX",
+      "currency": "MXN",
+      "bank": "HSBC"
+    }
+  },
+  "internationalCards": {
+    "visaCanada": {
+      "number": "4000001240000000",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Visa - Canada",
+      "country": "CA",
+      "currency": "CAD"
+    },
+    "mastercardBrazil": {
+      "number": "5555555555554444",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Mastercard - Brazil",
+      "country": "BR",
+      "currency": "BRL"
+    },
+    "visaEurope": {
+      "number": "4000000760000002",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Visa - Europe",
+      "country": "FR",
+      "currency": "EUR"
+    },
+    "mastercardUK": {
+      "number": "5555555555554444",
+      "exp": "12/25",
+      "cvc": "123",
+      "description": "Mastercard - UK",
+      "country": "GB",
+      "currency": "GBP"
+    }
+  },
+  "oxxoPayment": {
+    "minimumAmount": 10,
+    "maximumAmount": 10000,
+    "currency": "MXN",
+    "description": "OXXO convenience store payment",
+    "instructions": {
+      "es": "Presenta el código de barras en cualquier tienda OXXO y paga en efectivo",
+      "en": "Present the barcode at any OXXO store and pay in cash"
+    },
+    "expirationHours": 72,
+    "testReference": "OXXO123456789",
+    "testBarcode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+  },
+  "speiPayment": {
+    "minimumAmount": 1,
+    "maximumAmount": 100000,
+    "currency": "MXN",
+    "description": "SPEI bank transfer payment",
+    "bankAccount": {
+      "bank": "STP",
+      "clabe": "646180157000000004",
+      "accountNumber": "157000000004",
+      "bankName": "Sistema de Transferencias y Pagos"
+    },
+    "instructions": {
+      "es": "Realiza una transferencia SPEI a la cuenta indicada usando la referencia proporcionada",
+      "en": "Make a SPEI transfer to the indicated account using the provided reference"
+    },
+    "testReference": "SPEI987654321"
+  },
+  "currencies": {
+    "MXN": {
+      "code": "MXN",
+      "name": "Mexican Peso",
+      "symbol": "$",
+      "decimalPlaces": 2,
+      "taxRate": 0.16,
+      "taxName": "IVA"
+    },
+    "USD": {
+      "code": "USD",
+      "name": "US Dollar",
+      "symbol": "$",
+      "decimalPlaces": 2,
+      "taxRate": 0.0,
+      "taxName": null
+    },
+    "EUR": {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "decimalPlaces": 2,
+      "taxRate": 0.21,
+      "taxName": "VAT"
+    }
+  },
+  "promoCodes": {
+    "SAVE20": {
+      "code": "SAVE20",
+      "type": "percentage",
+      "value": 20,
+      "description": "20% discount",
+      "active": true,
+      "expiryDate": "2025-12-31",
+      "usageLimit": 1000,
+      "minAmount": 100
+    },
+    "FIRST50": {
+      "code": "FIRST50",
+      "type": "fixed",
+      "value": 50,
+      "currency": "MXN",
+      "description": "50 MXN off first subscription",
+      "active": true,
+      "expiryDate": "2025-12-31",
+      "usageLimit": 500,
+      "firstTimeOnly": true
+    },
+    "STUDENT30": {
+      "code": "STUDENT30",
+      "type": "percentage",
+      "value": 30,
+      "description": "30% student discount",
+      "active": true,
+      "expiryDate": "2025-12-31",
+      "usageLimit": 2000,
+      "requiresVerification": true
+    },
+    "EXPIRED": {
+      "code": "EXPIRED",
+      "type": "percentage",
+      "value": 15,
+      "description": "Expired promotion",
+      "active": false,
+      "expiryDate": "2024-01-01"
+    },
+    "INVALID": {
+      "code": "INVALID",
+      "type": "percentage",
+      "value": 25,
+      "description": "Invalid promo code for testing",
+      "active": false,
+      "error": "invalid_code"
+    }
+  },
+  "subscriptionTiers": {
+    "free": {
+      "id": "free",
+      "name": "Free",
+      "price": 0,
+      "currency": "MXN",
+      "features": [
+        "Access to basic courses",
+        "Limited downloads",
+        "Community support"
+      ],
+      "limits": {
+        "courses": 3,
+        "downloads": 10,
+        "support": "community"
+      }
+    },
+    "premium": {
+      "monthly": {
+        "id": "premium-monthly",
+        "name": "Premium",
+        "price": 299,
+        "currency": "MXN",
+        "interval": "month",
+        "features": [
+          "Access to all courses",
+          "Unlimited downloads",
+          "Priority support",
+          "Advanced analytics"
+        ],
+        "limits": {
+          "courses": "unlimited",
+          "downloads": "unlimited",
+          "support": "priority"
+        }
+      },
+      "yearly": {
+        "id": "premium-yearly",
+        "name": "Premium",
+        "price": 2990,
+        "currency": "MXN",
+        "interval": "year",
+        "features": [
+          "Access to all courses",
+          "Unlimited downloads",
+          "Priority support",
+          "Advanced analytics",
+          "20% savings"
+        ],
+        "limits": {
+          "courses": "unlimited",
+          "downloads": "unlimited",
+          "support": "priority"
+        },
+        "savings": 598
+      }
+    },
+    "corporate": {
+      "monthly": {
+        "id": "corporate-monthly",
+        "name": "Corporate",
+        "price": 999,
+        "currency": "MXN",
+        "interval": "month",
+        "features": [
+          "Everything in Premium",
+          "Team management",
+          "Admin dashboard",
+          "Custom reporting",
+          "Dedicated support"
+        ],
+        "limits": {
+          "courses": "unlimited",
+          "downloads": "unlimited",
+          "support": "dedicated",
+          "teamMembers": 25
+        }
+      },
+      "yearly": {
+        "id": "corporate-yearly",
+        "name": "Corporate",
+        "price": 9990,
+        "currency": "MXN",
+        "interval": "year",
+        "features": [
+          "Everything in Premium",
+          "Team management",
+          "Admin dashboard",
+          "Custom reporting",
+          "Dedicated support",
+          "20% savings"
+        ],
+        "limits": {
+          "courses": "unlimited",
+          "downloads": "unlimited",
+          "support": "dedicated",
+          "teamMembers": 25
+        },
+        "savings": 1998
+      }
+    }
+  },
+  "testBillingAddresses": {
+    "mexican": {
+      "firstName": "Juan",
+      "lastName": "Pérez",
+      "email": "juan.perez@test.com",
+      "company": "Empresa de Prueba S.A. de C.V.",
+      "address": "Av. Reforma 123",
+      "city": "Ciudad de México",
+      "state": "CDMX",
+      "postalCode": "06600",
+      "country": "MX",
+      "taxId": "XAXX010101000",
+      "rfc": "XAXX010101000",
+      "curp": "PERJ800101HDFRXN09",
+      "fiscalRegime": "601",
+      "cfdiUse": "G03"
+    },
+    "us": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@test.com",
+      "company": "Test Company Inc.",
+      "address": "123 Main St",
+      "city": "San Francisco",
+      "state": "CA",
+      "postalCode": "94105",
+      "country": "US",
+      "taxId": "12-3456789"
+    },
+    "international": {
+      "firstName": "Marie",
+      "lastName": "Dubois",
+      "email": "marie.dubois@test.com",
+      "address": "123 Rue de la Paix",
+      "city": "Paris",
+      "state": "IDF",
+      "postalCode": "75001",
+      "country": "FR",
+      "taxId": "FR12345678901"
+    }
+  },
+  "webhookEvents": {
+    "invoice.payment_succeeded": {
+      "description": "Payment succeeded webhook",
+      "testData": {
+        "amount": 29900,
+        "currency": "mxn",
+        "status": "paid"
+      }
+    },
+    "invoice.payment_failed": {
+      "description": "Payment failed webhook",
+      "testData": {
+        "amount": 29900,
+        "currency": "mxn",
+        "status": "open",
+        "attemptCount": 1
+      }
+    },
+    "customer.subscription.created": {
+      "description": "Subscription created webhook",
+      "testData": {
+        "status": "active",
+        "currentPeriodStart": 1640995200,
+        "currentPeriodEnd": 1643673600
+      }
+    },
+    "customer.subscription.updated": {
+      "description": "Subscription updated webhook",
+      "testData": {
+        "status": "active",
+        "cancelAtPeriodEnd": false
+      }
+    },
+    "customer.subscription.deleted": {
+      "description": "Subscription cancelled webhook",
+      "testData": {
+        "status": "canceled",
+        "canceledAt": 1640995200
+      }
+    }
+  }
+}

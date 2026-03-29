@@ -9,18 +9,6 @@ body:
         Your feedback helps us improve SECiD. Share anything on your mind!
 
   - type: dropdown
-    id: environment
-    attributes:
-      label: Environment
-      description: Which version of the site is this about?
-      options:
-        - "Beta (beta.secid.mx) — pre-release"
-        - "Production (secid.org) — stable release"
-        - "Both / Not sure"
-    validations:
-      required: true
-
-  - type: dropdown
     id: category
     attributes:
       label: Category

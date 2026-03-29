@@ -1,0 +1,31 @@
+---
+export const prerender = false;
+
+import ModernLayout from '../../../layouts/ModernLayout.astro';
+import Navigation from '../../../components/Navigation.astro';
+import Footer from '../../../components/Footer.astro';
+import ForumPost from '../../../components/forums/ForumPost';
+import { getLanguageFromUrl } from '../../../i18n/translations';
+
+const language = getLanguageFromUrl(Astro.url);
+const url = new URL(Astro.request.url);
+const categorySlug = url.searchParams.get('categoria');
+
+// Auth is handled client-side by ForumPost via Firebase Auth.
+// The component checks authentication and shows login prompt if needed.
+---
+
+<ModernLayout
+  title="Nuevo Tema - Foro - SECiD"
+  description="Crear un nuevo tema en el foro SECiD"
+  lang="es"
+>
+  <Navigation lang="es" />
+  <ForumPost
+    mode="create-topic"
+    language={language}
+    categorySlug={categorySlug ?? undefined}
+    client:load
+  />
+  <Footer lang="es" />
+</ModernLayout>
