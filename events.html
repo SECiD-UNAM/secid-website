@@ -1,0 +1,609 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html lang="en">
+	<head>
+		<title>SECiD - Events</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta name="description" content="SECiD upcoming events including Journal Club sessions, hackathons, workshops and more." />
+		<meta name="keywords" content="events, journal club, hackathon, workshop, data science, UNAM, SECiD, calendar" />
+
+		<!-- Open Graph Meta Tags -->
+		<meta property="og:title" content="Events - SECiD" />
+		<meta property="og:description" content="SECiD upcoming events including Journal Club sessions, hackathons, workshops and more." />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="http://localhost:3000events.html" />
+		<meta property="og:image" content="https://secid.mx/images/logo.png" />
+		<meta property="og:site_name" content="SECiD" />
+		<meta property="og:locale" content="en_US" />
+
+		<!-- Twitter Card Meta Tags -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content="Events - SECiD" />
+		<meta name="twitter:description" content="SECiD upcoming events including Journal Club sessions, hackathons, workshops and more." />
+		<meta name="twitter:image" content="https://secid.mx/images/logo.png" />
+
+		<!-- Canonical URL -->
+		<link rel="canonical" href="http://localhost:3000events.html" />
+
+		<!-- Resource Hints and Font Optimization -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link rel="preload" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;1,400;1,600&family=Roboto+Slab:wght@400;700&display=swap" as="style">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;1,400;1,600&family=Roboto+Slab:wght@400;700&display=swap">
+
+		<link rel="stylesheet" href="assets/css/main.css" />
+
+		<!-- Favicon and PWA -->
+		<link rel="icon" type="image/x-icon" href="images/favicon.ico">
+		<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="192x192" href="images/icon.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="images/icon.png">
+		<link rel="manifest" href="manifest.json">
+		<meta name="theme-color" content="#2c3e50">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="default">
+		<script src="https://cdn.amplitude.com/libs/analytics-browser-2.11.1-min.js.gz"></script>
+		<script src="https://cdn.amplitude.com/libs/plugin-session-replay-browser-1.8.0-min.js.gz"></script>
+		<script>window.amplitude.add(window.sessionReplay.plugin({ sampleRate: 1 })); window.amplitude.init('f69e4c213e7b958cf01b29bbd18ea2fa', { "autocapture": { "elementInteractions": true } });</script>
+
+		<style>
+			/* Events Calendar Styles */
+			.events-calendar {
+				margin-bottom: 2em;
+			}
+			.calendar-nav {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				margin-bottom: 0.75em;
+			}
+			.calendar-nav button {
+				background: none;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				cursor: pointer;
+				font-size: 1.1em;
+				padding: 0.3em 0.7em;
+				color: inherit;
+			}
+			.calendar-nav button:hover {
+				background-color: #f0f0f0;
+			}
+			.calendar-nav h3 {
+				margin: 0;
+				font-size: 1.1em;
+			}
+			.calendar-grid {
+				width: 100%;
+				border-collapse: collapse;
+			}
+			.calendar-grid th {
+				text-align: center;
+				padding: 0.4em 0;
+				font-size: 0.85em;
+				color: #666;
+				font-weight: 600;
+			}
+			.calendar-grid td {
+				text-align: center;
+				padding: 0.3em;
+				border: 1px solid #eee;
+				vertical-align: top;
+				min-width: 2.2em;
+				height: 2.8em;
+				cursor: default;
+			}
+			.calendar-grid td.other-month {
+				color: #ccc;
+			}
+			.calendar-grid td.today {
+				background-color: #f4f4f4;
+				font-weight: 600;
+			}
+			.calendar-grid td.has-event {
+				cursor: pointer;
+			}
+			.calendar-grid td.has-event:hover {
+				background-color: #f9f4ff;
+			}
+			.calendar-day-number {
+				display: block;
+				font-size: 0.9em;
+			}
+			.event-dots {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				gap: 2px;
+				margin-top: 2px;
+			}
+			.event-dot {
+				display: inline-block;
+				width: 7px;
+				height: 7px;
+				border-radius: 50%;
+			}
+			.event-dot.journal-club {
+				background-color: #6c63ff;
+			}
+			.event-dot.hackathon {
+				background-color: #e74c3c;
+			}
+			.event-dot.workshop {
+				background-color: #27ae60;
+			}
+			.event-dot.other {
+				background-color: #f39c12;
+			}
+			/* Event type badge */
+			.event-type-badge {
+				display: inline-block;
+				font-size: 0.72em;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 0.04em;
+				padding: 0.15em 0.55em;
+				border-radius: 3px;
+				color: #fff;
+				vertical-align: middle;
+				margin-right: 0.4em;
+			}
+			.event-type-badge.journal-club {
+				background-color: #6c63ff;
+			}
+			.event-type-badge.hackathon {
+				background-color: #e74c3c;
+			}
+			.event-type-badge.workshop {
+				background-color: #27ae60;
+			}
+			.event-type-badge.other {
+				background-color: #f39c12;
+			}
+			/* Upcoming events list */
+			.upcoming-events-list {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+			}
+			.upcoming-events-list li {
+				border-left: 4px solid #6c63ff;
+				padding: 0.7em 1em;
+				margin-bottom: 0.8em;
+				background: #fafafa;
+			}
+			.upcoming-events-list li.journal-club {
+				border-left-color: #6c63ff;
+			}
+			.upcoming-events-list li.hackathon {
+				border-left-color: #e74c3c;
+			}
+			.upcoming-events-list li.workshop {
+				border-left-color: #27ae60;
+			}
+			.upcoming-events-list li.other {
+				border-left-color: #f39c12;
+			}
+			.event-list-date {
+				font-size: 0.85em;
+				color: #888;
+				display: block;
+				margin-bottom: 0.2em;
+			}
+			.event-list-title {
+				font-weight: 700;
+				font-size: 1em;
+			}
+			.event-list-presenter {
+				font-size: 0.88em;
+				color: #555;
+				margin-top: 0.2em;
+			}
+			.no-upcoming {
+				color: #888;
+				font-style: italic;
+			}
+			/* Legend */
+			.calendar-legend {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 1em;
+				margin-top: 0.75em;
+				font-size: 0.85em;
+			}
+			.legend-item {
+				display: flex;
+				align-items: center;
+				gap: 0.4em;
+			}
+		</style>
+	</head>
+	<body class="is-preload">
+		<!-- Skip Navigation Links -->
+		<a href="#main" class="sr-only sr-only-focusable">Skip to main content</a>
+		<a href="#menu" class="sr-only sr-only-focusable">Skip to navigation</a>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+								<header id="header">
+									<a href="index.html" class="logo"><strong>SECiD</strong> Events</a>
+									<ul class="icons">
+										<li><a href="https://www.linkedin.com/company/sociedad-de-egresados-en-ciencia-de-datos-secid" target="_blank" rel="noopener noreferrer" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
+									</ul>
+								</header>
+
+							<!-- Content -->
+								<section>
+									<header class="main">
+										<h1>Events</h1>
+									</header>
+
+									<p>Stay up to date with all SECiD community events, including our <a href="journal-club.html">Journal Club</a> sessions, hackathons, workshops, and more.</p>
+
+									<hr class="major" />
+
+									<h2>Calendar</h2>
+									<div class="events-calendar">
+										<div class="calendar-nav">
+											<button id="cal-prev" aria-label="Previous month">&#8249;</button>
+											<h3 id="cal-month-label">Month Year</h3>
+											<button id="cal-next" aria-label="Next month">&#8250;</button>
+										</div>
+										<table class="calendar-grid" aria-label="Events calendar">
+											<thead>
+												<tr>
+													<th scope="col" abbr="Sunday">Su</th>
+													<th scope="col" abbr="Monday">Mo</th>
+													<th scope="col" abbr="Tuesday">Tu</th>
+													<th scope="col" abbr="Wednesday">We</th>
+													<th scope="col" abbr="Thursday">Th</th>
+													<th scope="col" abbr="Friday">Fr</th>
+													<th scope="col" abbr="Saturday">Sa</th>
+												</tr>
+											</thead>
+											<tbody id="cal-body">
+											</tbody>
+										</table>
+										<div class="calendar-legend">
+											<span class="legend-item"><span class="event-dot journal-club"></span> Journal Club</span>
+										</div>
+									</div>
+
+									<hr class="major" />
+
+									<h2>Upcoming Events</h2>
+									<div id="upcoming-events-container">
+										<p class="no-upcoming">Loading events&hellip;</p>
+									</div>
+
+									<hr class="major" />
+
+									<h2>All Events</h2>
+									<div class="table-wrapper">
+										<table id="all-events-table">
+											<thead>
+												<tr>
+													<th>Date</th>
+													<th>Type</th>
+													<th>Topic / Title</th>
+													<th>Presenter</th>
+												</tr>
+											</thead>
+											<tbody id="all-events-body">
+											</tbody>
+										</table>
+									</div>
+
+								</section>
+
+						</div>
+					</div>
+
+
+				<!-- Sidebar -->
+				<div id="sidebar">
+					<div class="inner">
+
+						<!-- Menu -->
+							<nav id="menu">
+								<header class="major">
+									<h2>Menu</h2>
+								</header>
+								<ul>
+									<li><a href="index.html">Homepage</a></li>
+									<li><a href="aboutus.html">About Us</a></li>
+									<li><a href="events.html">Events</a></li>
+									<li><a href="journal-club.html">Journal Club</a></li>
+									<li><a href="registro.html" target="_blank">Register as Member</a></li>
+									<li><a href="job-submission.html">Submit your job and find top talent</a></li>
+								</ul>
+							</nav>
+
+						<!-- Section -->
+							<section>
+								<header class="major">
+									<h2>Sites of Interest</h2>
+								</header>
+								<div class="mini-posts">
+									<article>
+										<a href="https://www.iimas.unam.mx/ciencia-de-datos/" target="_blank">UNAM Data Science Undergraduate Program</a>
+									</article>
+									<article>
+										<a href="https://docencia.tic.unam.mx/diplomado-en-ciencia-de-datos" target="_blank" rel="noopener noreferrer">UNAM Data Science Diploma</a>
+									</article>
+									<article>
+										<a href="https://www.iimas.unam.mx/" target="_blank">Instituto de Investigaciones en Matem&aacute;ticas Aplicadas y en Sistemas (IIMAS)</a>
+									</article>
+								</div>
+							</section>
+
+						<!-- Section -->
+							<section>
+								<header class="major">
+									<h2>Get in touch</h2>
+								</header>
+								<p>Do you have something to say? Send us an email.</p>
+								<ul class="contact">
+									<li class="icon solid fa-envelope"><a href="mailto:contacto@secid.mx">contacto@secid.mx</a></li>
+								</ul>
+							</section>
+
+						<!-- Footer -->
+							<footer id="footer">
+								<p class="copyright">&copy; SECiD. All rights reserved. </p>
+								<p class="copyright">Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+							</footer>
+
+					</div>
+				</div>
+
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="assets/js/events-data.js"></script>
+			<script>
+			(function () {
+				'use strict';
+
+				var MONTH_NAMES = [
+					'January', 'February', 'March', 'April', 'May', 'June',
+					'July', 'August', 'September', 'October', 'November', 'December'
+				];
+
+				var TYPE_LABELS = {
+					'journal-club': 'Journal Club',
+					'hackathon': 'Hackathon',
+					'workshop': 'Workshop'
+				};
+
+				// Parse "YYYY-MM-DD" without timezone conversion
+				function parseDate(str) {
+					var parts = str.split('-');
+					return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+				}
+
+				function formatDateLong(dateStr) {
+					var d = parseDate(dateStr);
+					return MONTH_NAMES[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+				}
+
+				function getTypeLabel(type) {
+					return TYPE_LABELS[type] || (type.charAt(0).toUpperCase() + type.slice(1));
+				}
+
+				// Build a map: "YYYY-MM-DD" -> [events]
+				function buildEventMap(events) {
+					var map = {};
+					events.forEach(function (ev) {
+						if (!map[ev.date]) { map[ev.date] = []; }
+						map[ev.date].push(ev);
+					});
+					return map;
+				}
+
+				// ---- Calendar ----
+				var calYear, calMonth;
+
+				function initCalendar() {
+					var today = new Date();
+					// Start on the first month that has events, or today's month
+					var eventsWithDates = SECID_EVENTS.filter(function (e) { return e.date; });
+					if (eventsWithDates.length > 0) {
+						eventsWithDates.sort(function (a, b) { return a.date.localeCompare(b.date); });
+						var firstFuture = eventsWithDates.find(function (e) {
+							return parseDate(e.date) >= new Date(today.getFullYear(), today.getMonth(), 1);
+						});
+						var startEvent = firstFuture || eventsWithDates[0];
+						var d = parseDate(startEvent.date);
+						calYear = d.getFullYear();
+						calMonth = d.getMonth();
+					} else {
+						calYear = today.getFullYear();
+						calMonth = today.getMonth();
+					}
+					renderCalendar(calYear, calMonth);
+				}
+
+				function renderCalendar(year, month) {
+					var eventMap = buildEventMap(SECID_EVENTS);
+					var today = new Date();
+					var todayStr = today.getFullYear() + '-'
+						+ String(today.getMonth() + 1).padStart(2, '0') + '-'
+						+ String(today.getDate()).padStart(2, '0');
+
+					document.getElementById('cal-month-label').textContent = MONTH_NAMES[month] + ' ' + year;
+
+					var firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+					var daysInMonth = new Date(year, month + 1, 0).getDate();
+					var daysInPrevMonth = new Date(year, month, 0).getDate();
+
+					var calBody = document.getElementById('cal-body');
+					calBody.innerHTML = '';
+
+					var dayCount = 1;
+					var nextMonthDay = 1;
+					var totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+
+					for (var cell = 0; cell < totalCells; cell++) {
+						if (cell % 7 === 0) {
+							var row = document.createElement('tr');
+							calBody.appendChild(row);
+						}
+						var currentRow = calBody.lastChild;
+						var td = document.createElement('td');
+
+						var dateStr, dayNum, isOtherMonth;
+						if (cell < firstDay) {
+							// Previous month days
+							dayNum = daysInPrevMonth - firstDay + cell + 1;
+							isOtherMonth = true;
+							dateStr = (month === 0 ? year - 1 : year) + '-'
+								+ String(month === 0 ? 12 : month).padStart(2, '0') + '-'
+								+ String(dayNum).padStart(2, '0');
+						} else if (dayCount <= daysInMonth) {
+							dayNum = dayCount++;
+							isOtherMonth = false;
+							dateStr = year + '-'
+								+ String(month + 1).padStart(2, '0') + '-'
+								+ String(dayNum).padStart(2, '0');
+						} else {
+							dayNum = nextMonthDay++;
+							isOtherMonth = true;
+							dateStr = (month === 11 ? year + 1 : year) + '-'
+								+ String(month === 11 ? 1 : month + 2).padStart(2, '0') + '-'
+								+ String(dayNum).padStart(2, '0');
+						}
+
+						if (isOtherMonth) { td.classList.add('other-month'); }
+						if (dateStr === todayStr) { td.classList.add('today'); }
+
+						var span = document.createElement('span');
+						span.className = 'calendar-day-number';
+						span.textContent = dayNum;
+						td.appendChild(span);
+
+						var eventsOnDay = eventMap[dateStr];
+						if (eventsOnDay && eventsOnDay.length > 0) {
+							td.classList.add('has-event');
+							var dotsDiv = document.createElement('div');
+							dotsDiv.className = 'event-dots';
+							eventsOnDay.forEach(function (ev) {
+								var dot = document.createElement('span');
+								dot.className = 'event-dot ' + (ev.type || 'other');
+								dot.setAttribute('title', ev.title);
+								dotsDiv.appendChild(dot);
+							});
+							td.appendChild(dotsDiv);
+							// Click to scroll to event in upcoming list
+							(function (ds) {
+								td.addEventListener('click', function () {
+									var target = document.getElementById('event-' + ds);
+									if (target) {
+										target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+										target.style.outline = '2px solid #6c63ff';
+										setTimeout(function () { target.style.outline = ''; }, 2000);
+									}
+								});
+							}(dateStr));
+						}
+
+						currentRow.appendChild(td);
+					}
+				}
+
+				// ---- Upcoming Events List ----
+				function renderUpcomingEvents() {
+					var today = new Date();
+					today.setHours(0, 0, 0, 0);
+					var upcoming = SECID_EVENTS
+						.filter(function (e) { return parseDate(e.date) >= today; })
+						.sort(function (a, b) { return a.date.localeCompare(b.date); });
+
+					var container = document.getElementById('upcoming-events-container');
+					if (upcoming.length === 0) {
+						container.innerHTML = '<p class="no-upcoming">No upcoming events scheduled. Check back soon!</p>';
+						return;
+					}
+					var ul = document.createElement('ul');
+					ul.className = 'upcoming-events-list';
+					upcoming.forEach(function (ev) {
+						var li = document.createElement('li');
+						li.className = ev.type || 'other';
+						li.id = 'event-' + ev.date;
+						var badge = '<span class="event-type-badge ' + (ev.type || 'other') + '">' + getTypeLabel(ev.type) + '</span>';
+						var dateSpan = '<span class="event-list-date">' + formatDateLong(ev.date) + (ev.time ? ' &mdash; ' + ev.time : '') + '</span>';
+						var titlePart = ev.link
+							? '<a href="' + ev.link + '" class="event-list-title">' + ev.title + '</a>'
+							: '<span class="event-list-title">' + ev.title + '</span>';
+						var presenterPart = ev.presenter
+							? '<div class="event-list-presenter">Presenter: ' + ev.presenter + '</div>'
+							: '';
+						li.innerHTML = dateSpan + badge + titlePart + presenterPart;
+						ul.appendChild(li);
+					});
+					container.innerHTML = '';
+					container.appendChild(ul);
+				}
+
+				// ---- All Events Table ----
+				function renderAllEventsTable() {
+					var sorted = SECID_EVENTS.slice().sort(function (a, b) { return a.date.localeCompare(b.date); });
+					var tbody = document.getElementById('all-events-body');
+					if (sorted.length === 0) {
+						var tr = document.createElement('tr');
+						var td = document.createElement('td');
+						td.setAttribute('colspan', '4');
+						td.textContent = 'No events scheduled.';
+						tr.appendChild(td);
+						tbody.appendChild(tr);
+						return;
+					}
+					sorted.forEach(function (ev) {
+						var tr = document.createElement('tr');
+						tr.innerHTML =
+							'<td>' + formatDateLong(ev.date) + '</td>' +
+							'<td><span class="event-type-badge ' + (ev.type || 'other') + '">' + getTypeLabel(ev.type) + '</span></td>' +
+							'<td>' + (ev.link ? '<a href="' + ev.link + '">' + ev.title + '</a>' : ev.title) + '</td>' +
+							'<td>' + (ev.presenter || '&mdash;') + '</td>';
+						tbody.appendChild(tr);
+					});
+				}
+
+				// ---- Navigation ----
+				document.getElementById('cal-prev').addEventListener('click', function () {
+					calMonth--;
+					if (calMonth < 0) { calMonth = 11; calYear--; }
+					renderCalendar(calYear, calMonth);
+				});
+				document.getElementById('cal-next').addEventListener('click', function () {
+					calMonth++;
+					if (calMonth > 11) { calMonth = 0; calYear++; }
+					renderCalendar(calYear, calMonth);
+				});
+
+				// ---- Init ----
+				initCalendar();
+				renderUpcomingEvents();
+				renderAllEventsTable();
+			}());
+			</script>
+
+	</body>
+</html>
