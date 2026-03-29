@@ -270,20 +270,17 @@ service cloud.firestore {
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.createdAt == request.time;
 
-      allow update: if isAuthenticated() && (
-        (!hasRBACDeny('ev', 'e') && (
-          hasRBACAllowAll('ev', 'e') ||
-          (hasRBACAllow('ev', 'e') && resource.data.createdBy == request.auth.uid)
-        )) ||
-        (isOwner(resource.data.createdBy) || canModerate())
+      // Deny is outermost — explicit RBAC deny always wins, even over legacy roles
+      allow update: if isAuthenticated() && !hasRBACDeny('ev', 'e') && (
+        hasRBACAllowAll('ev', 'e') ||
+        (hasRBACAllow('ev', 'e') && resource.data.createdBy == request.auth.uid) ||
+        isOwner(resource.data.createdBy) || canModerate()
       ) && validateEventData()
         && request.resource.data.updatedAt == request.time;
 
-      allow delete: if isAuthenticated() && (
-        (!hasRBACDeny('ev', 'd') && (
-          hasRBACAllowAll('ev', 'd') ||
-          (hasRBACAllow('ev', 'd') && resource.data.createdBy == request.auth.uid)
-        )) ||
+      allow delete: if isAuthenticated() && !hasRBACDeny('ev', 'd') && (
+        hasRBACAllowAll('ev', 'd') ||
+        (hasRBACAllow('ev', 'd') && resource.data.createdBy == request.auth.uid) ||
         canAdminister()
       );
       

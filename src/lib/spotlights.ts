@@ -92,9 +92,14 @@ export async function createSpotlight(
 
 export async function updateSpotlight(
   id: string,
-  updates: Partial<AlumniSpotlight>
+  updates: Partial<AlumniSpotlight>,
+  userId?: string
 ): Promise<void> {
-  await updateDoc(doc(db, 'spotlights', id), clean(updates as Record<string, unknown>));
+  await updateDoc(doc(db, 'spotlights', id), {
+    ...clean(updates as Record<string, unknown>),
+    ...(userId ? { updatedBy: userId } : {}),
+    updatedAt: serverTimestamp(),
+  });
 }
 
 export async function deleteSpotlight(id: string): Promise<void> {

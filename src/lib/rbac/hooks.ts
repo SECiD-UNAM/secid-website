@@ -20,7 +20,7 @@ export function usePermissions() {
     }
 
     user
-      .getIdTokenResult(true)
+      .getIdTokenResult()
       .then((result) => {
         const rbac = result.claims.rbac as { p?: string } | undefined;
         if (rbac?.p) {

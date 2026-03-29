@@ -162,6 +162,7 @@ export async function updateJournalClubSession(
 ): Promise<void> {
   await updateDoc(doc(db, 'journal_club_sessions', id), {
     ...clean(data as Record<string, unknown>),
+    updatedBy: userId,
     updatedAt: serverTimestamp(),
   });
 }
