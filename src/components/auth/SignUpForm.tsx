@@ -8,6 +8,7 @@ import {
   updateProfile,
   signInWithPopup,
   GoogleAuthProvider,
+  sendEmailVerification,
 } from 'firebase/auth';
 import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -17,6 +18,17 @@ import Button from '@/components/ui/Button';
 import { useTranslations } from '@/hooks/useTranslations';
 import { checkNumeroCuentaMatch, setPotentialMergeMatch } from '@/lib/merge/mutations';
 import { Building2 } from 'lucide-react';
+
+function getReturnUrl(lang: string): string {
+  const defaultUrl = `/${lang}/dashboard`;
+  try {
+    const stored = sessionStorage.getItem('secid_returnUrl');
+    sessionStorage.removeItem('secid_returnUrl');
+    return stored && stored.startsWith('/') && !stored.startsWith('//') ? stored : defaultUrl;
+  } catch {
+    return defaultUrl;
+  }
+}
 
 // Step 1: Account creation schema
 const signUpSchema = z
@@ -264,6 +276,11 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         displayName: `${data.firstName} ${data['lastName']}`,
       });
 
+      // Send email verification (non-blocking)
+      sendEmailVerification(userCredential.user).catch((err) =>
+        console.warn('Failed to send verification email:', err)
+      );
+
       // Wait for Cloud Function to create the user document
       const userRef = doc(db, 'users', userCredential.user.uid);
       await new Promise<void>((resolve, reject) => {
@@ -461,7 +478,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
     if (onSuccess) {
       onSuccess();
     } else {
-      window.location.href = `/${lang}/dashboard`;
+      window.location.href = getReturnUrl(lang);
     }
   };
 

@@ -12,6 +12,21 @@ import { useTranslations } from '@/hooks/useTranslations';
 import { Eye, EyeOff, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+function getReturnUrl(lang: string): string {
+  const defaultUrl = `/${lang}/dashboard`;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const paramUrl = params.get('returnUrl') || params.get('redirect');
+    const stored = sessionStorage.getItem('secid_returnUrl');
+    const url = paramUrl || stored || defaultUrl;
+    sessionStorage.removeItem('secid_returnUrl');
+    // Only allow relative paths (prevent open redirect)
+    return url.startsWith('/') && !url.startsWith('//') ? url : defaultUrl;
+  } catch {
+    return defaultUrl;
+  }
+}
+
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -168,7 +183,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       if (onSuccess) {
         onSuccess();
       } else {
-        window.location.href = `/${lang}/dashboard`;
+        window.location.href = getReturnUrl(lang);
       }
     } catch (err: any) {
       const errorMessage = getErrorMessage(err.code || err['message']);
@@ -254,7 +269,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     if (onSuccess) {
       onSuccess();
     } else {
-      window.location.href = `/${lang}/dashboard`;
+      window.location.href = getReturnUrl(lang);
     }
   };
 
@@ -268,7 +283,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     if (onSuccess) {
       onSuccess();
     } else {
-      window.location.href = `/${lang}/dashboard`;
+      window.location.href = getReturnUrl(lang);
     }
   };
 

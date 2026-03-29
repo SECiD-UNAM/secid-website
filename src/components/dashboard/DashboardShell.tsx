@@ -3,6 +3,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { DashboardSidebar } from './DashboardSidebar';
 import { MergeNotificationBanner } from '@/components/merge/MergeNotificationBanner';
+import { EmailVerificationBanner } from '@/components/auth/EmailVerificationBanner';
 import { Bars3Icon } from '@heroicons/react/24/outline';
 import { useBeta } from '@/hooks/useBeta';
 
@@ -53,6 +54,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
 
           <main className="flex-1 lg:ml-64">
             <div className="px-4 py-8 pb-24 sm:px-6 md:pb-8 lg:px-8">
+              <EmailVerificationBanner lang={lang} />
               <MergeNotificationBanner lang={lang} />
               {children}
             </div>

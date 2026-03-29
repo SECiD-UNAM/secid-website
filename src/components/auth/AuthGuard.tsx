@@ -27,6 +27,9 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
       setLoading(false);
 
       if (!user && redirectTo) {
+        try {
+          sessionStorage.setItem('secid_returnUrl', window.location.pathname + window.location.search);
+        } catch {}
         window.location.href = redirectTo;
       }
     });
