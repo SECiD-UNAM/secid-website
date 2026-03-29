@@ -16,7 +16,7 @@
 		<meta property="og:title" content="Journal Club - SECiD" />
 		<meta property="og:description" content="SECiD Journal Club - A reading group exploring NLP and large language models. Join us Wednesdays at 6pm starting March 2026." />
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content="http://localhost:3000journal-club.html" />
+		<meta property="og:url" content="http://localhost:3000/journal-club.html" />
 		<meta property="og:image" content="https://secid.mx/images/logo.png" />
 		<meta property="og:site_name" content="SECiD" />
 		<meta property="og:locale" content="en_US" />
@@ -28,7 +28,7 @@
 		<meta name="twitter:image" content="https://secid.mx/images/logo.png" />
 
 		<!-- Canonical URL -->
-		<link rel="canonical" href="http://localhost:3000journal-club.html" />
+		<link rel="canonical" href="http://localhost:3000/journal-club.html" />
 
 		<!-- Resource Hints and Font Optimization -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -88,7 +88,7 @@
 
 									<h2>Schedule</h2>
 									<div class="table-wrapper">
-										<table>
+										<table id="journal-club-schedule">
 											<thead>
 												<tr>
 													<th>Date</th>
@@ -96,7 +96,7 @@
 													<th>Presenter</th>
 												</tr>
 											</thead>
-											<tbody>
+											<tbody id="journal-club-schedule-body">
 												<tr>
 													<td>March 18, 2026</td>
 													<td>NLP Foundations</td>
@@ -120,12 +120,12 @@
 												<tr>
 													<td>August 12, 2026</td>
 													<td>LLaMA</td>
-													<td>Eduardo Garduño</td>
+													<td>Eduardo Gardu&ntilde;o</td>
 												</tr>
 												<tr>
 													<td>September 9, 2026</td>
 													<td>DeepSeek</td>
-													<td>Iv&aacute;n Barón</td>
+													<td>Iv&aacute;n Bar&oacute;n</td>
 												</tr>
 											</tbody>
 										</table>
@@ -161,6 +161,7 @@
 								<ul>
 									<li><a href="index.html">Homepage</a></li>
 									<li><a href="aboutus.html">About Us</a></li>
+									<li><a href="events.html">Events</a></li>
 									<li><a href="journal-club.html">Journal Club</a></li>
 									<li><a href="registro.html" target="_blank">Register as Member</a></li>
 									<li><a href="job-submission.html">Submit your job and find top talent</a></li>
@@ -214,6 +215,41 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script src="assets/js/events-data.js"></script>
+			<script>
+			(function () {
+				'use strict';
+				var MONTH_NAMES = [
+					'January', 'February', 'March', 'April', 'May', 'June',
+					'July', 'August', 'September', 'October', 'November', 'December'
+				];
+				function parseDate(str) {
+					var parts = str.split('-');
+					return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+				}
+				function formatDateLong(dateStr) {
+					var d = parseDate(dateStr);
+					return MONTH_NAMES[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+				}
+				var tbody = document.getElementById('journal-club-schedule-body');
+				if (tbody && typeof SECID_EVENTS !== 'undefined') {
+					var jcEvents = SECID_EVENTS
+						.filter(function (e) { return e.type === 'journal-club'; })
+						.sort(function (a, b) { return a.date.localeCompare(b.date); });
+					if (jcEvents.length > 0) {
+						tbody.innerHTML = '';
+						jcEvents.forEach(function (ev) {
+							var tr = document.createElement('tr');
+							tr.innerHTML =
+								'<td>' + formatDateLong(ev.date) + '</td>' +
+								'<td>' + ev.title + '</td>' +
+								'<td>' + (ev.presenter || '&mdash;') + '</td>';
+							tbody.appendChild(tr);
+						});
+					}
+				}
+			}());
+			</script>
 
 	</body>
 </html>

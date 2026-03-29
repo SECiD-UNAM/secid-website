@@ -65,16 +65,20 @@ function processHTMLTemplate(filePath, variables) {
 
   let content = fs.readFileSync(filePath, 'utf8');
   
+  // Compute the page path relative to site root (index.html → '', others → /filename.html)
+  const pageSlug = filePath.replace('index.html', '');
+  const pageUrl = pageSlug ? `${variables.SITE_URL}/${pageSlug}` : `${variables.SITE_URL}/`;
+
   // Replace canonical URLs
   content = content.replace(
     /(<link rel="canonical" href=")([^"]+)(")/g,
-    `$1${variables.SITE_URL}${filePath.replace('.html', '.html').replace('index.html', '')}$3`
+    `$1${pageUrl}$3`
   );
 
   // Replace Open Graph URLs
   content = content.replace(
     /(<meta property="og:url" content=")([^"]+)(")/g,
-    `$1${variables.SITE_URL}${filePath.replace('.html', '.html').replace('index.html', '')}$3`
+    `$1${pageUrl}$3`
   );
 
   // Replace Schema.org URLs in JSON-LD
@@ -94,7 +98,7 @@ try {
   processTemplate('sitemap.xml.template', 'sitemap.xml', config);
 
   // Process HTML files with environment-specific URLs
-  const htmlFiles = ['index.html', 'aboutus.html', 'job-submission.html', 'journal-club.html'];
+  const htmlFiles = ['index.html', 'aboutus.html', 'job-submission.html', 'journal-club.html', 'events.html'];
   htmlFiles.forEach(file => {
     processHTMLTemplate(file, config);
   });
