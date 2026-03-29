@@ -419,14 +419,50 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
         >
           {sheetItems.map((item) => {
             const isSettings = item.href.includes('/settings');
+            if (isSettings) {
+              return (
+                <div
+                  key={item.href}
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSheetOpen(false);
+                    window.location.href = item.href;
+                  }}
+                  onTouchStart={onSettingsPointerDown}
+                  onTouchEnd={onSettingsPointerUp}
+                  onTouchCancel={onSettingsPointerUp}
+                  onContextMenu={(e) => e.preventDefault()}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: 12,
+                    borderRadius: 8,
+                    background: 'var(--color-background, #0f172a)',
+                    textDecoration: 'none',
+                    color: 'var(--color-text-primary, #e2e8f0)',
+                    fontSize: 13,
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                    WebkitUserSelect: 'none',
+                    WebkitTouchCallout: 'none',
+                  } as React.CSSProperties}
+                >
+                  <i className={item.icon} style={{ width: 18, textAlign: 'center', fontSize: 14 }} />
+                  {item.label}
+                  {adminMode && (
+                    <span style={{ marginLeft: 'auto', width: 8, height: 8, borderRadius: '50%', background: '#f59e0b' }} />
+                  )}
+                </div>
+              );
+            }
             return (
               <a
                 key={item.href}
                 href={item.href}
                 onClick={() => setSheetOpen(false)}
-                onPointerDown={isSettings ? onSettingsPointerDown : undefined}
-                onPointerUp={isSettings ? onSettingsPointerUp : undefined}
-                onPointerLeave={isSettings ? onSettingsPointerUp : undefined}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -441,9 +477,6 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
               >
                 <i className={item.icon} style={{ width: 18, textAlign: 'center', fontSize: 14 }} />
                 {item.label}
-                {isSettings && adminMode && (
-                  <span style={{ marginLeft: 'auto', width: 8, height: 8, borderRadius: '50%', background: '#f59e0b' }} />
-                )}
               </a>
             );
           })}
