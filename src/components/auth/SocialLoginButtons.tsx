@@ -92,6 +92,12 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
     },
   ];
 
+  // LinkedIn OAuth is not yet deployed — hide the button
+  const LINKEDIN_ENABLED = !!import.meta.env.PUBLIC_LINKEDIN_AUTH_ENABLED;
+  const activeProviders = providers.filter(
+    (p) => p.id !== 'linkedin' || LINKEDIN_ENABLED
+  );
+
   const handleProviderSignIn = async (providerId: SupportedProvider) => {
     if (disabled || loading) return;
     setLoading(providerId);
@@ -198,7 +204,7 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
         />
       )}
 
-      {providers.map((provider) => (
+      {activeProviders.map((provider) => (
         <button
           key={provider.id}
           type="button"
@@ -243,7 +249,7 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
         </button>
       ))}
 
-      {providers.length > 0 && (
+      {activeProviders.length > 0 && (
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-300 dark:border-gray-600" />
