@@ -6,6 +6,10 @@
 
 /* Sidebar */
 
+	:root {
+		--topbar-height: 0px;
+	}
+
 	#search {
 		form {
 			@include icon(false, solid);
@@ -87,6 +91,7 @@
 			@include vendor('transition', 'left 0.5s ease');
 			-webkit-tap-highlight-color: rgba(255,255,255,0);
 			border: 0;
+			cursor: pointer;
 			display: block;
 			height: 7.5em;
 			left: _size(sidebar-width);
@@ -96,6 +101,7 @@
 			position: absolute;
 			text-align: center;
 			text-indent: -15em;
+			touch-action: manipulation;
 			white-space: nowrap;
 			top: 0;
 			width: 6em;
@@ -153,11 +159,11 @@
 
 		@include breakpoint('<=large') {
 			box-shadow: 0 0 5em 0 rgba(0, 0, 0, 0.175);
-			height: 100%;
+			height: calc(100% - var(--topbar-height, 0px));
 			left: 0;
 			position: fixed;
-			top: 0;
-			z-index: _misc(z-index-base);
+			top: var(--topbar-height, 0px);
+			z-index: _misc(z-index-base) + 1;
 
 			&.inactive {
 				box-shadow: none;

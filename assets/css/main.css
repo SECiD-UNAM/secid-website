@@ -1879,6 +1879,9 @@ button,
         padding: 3em 0 1em 0 ; } }
 
 /* Sidebar */
+:root {
+  --topbar-height: 0px; }
+
 #search form {
   text-decoration: none;
   position: relative; }
@@ -1961,6 +1964,7 @@ button,
     transition: left 0.5s ease;
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
     border: 0;
+    cursor: pointer;
     display: block;
     height: 7.5em;
     left: 26em;
@@ -1970,6 +1974,7 @@ button,
     position: absolute;
     text-align: center;
     text-indent: -15em;
+    touch-action: manipulation;
     white-space: nowrap;
     top: 0;
     width: 6em;
@@ -2020,11 +2025,11 @@ button,
   @media screen and (max-width: 1280px) {
     #sidebar {
       box-shadow: 0 0 5em 0 rgba(0, 0, 0, 0.175);
-      height: 100%;
+      height: calc(100% - var(--topbar-height, 0px));
       left: 0;
       position: fixed;
-      top: 0;
-      z-index: 10000; }
+      top: var(--topbar-height, 0px);
+      z-index: 10001; }
       #sidebar.inactive {
         box-shadow: none; }
       #sidebar > .inner {
