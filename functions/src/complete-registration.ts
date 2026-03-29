@@ -107,6 +107,11 @@ async function handleMemberRegistration(
     updateData.lastName = data.lastName;
   }
 
+  // Calculate updated profile completeness
+  const currentDoc = await db.collection("users").doc(uid).get();
+  const merged = { ...currentDoc.data(), ...updateData };
+  updateData.profileCompleteness = calculateProfileCompleteness(merged);
+
   await db.collection("users").doc(uid).update(updateData);
 
   return { success: true, registrationType: "member" };
@@ -177,6 +182,17 @@ async function handleRecruiterRegistration(
       }
     }
 
+    // Calculate profile completeness for recruiter
+    const currentUserDoc = await transaction.get(db.collection("users").doc(uid));
+    const currentData = currentUserDoc.data() || {};
+    const mergedData = {
+      ...currentData,
+      role: "company",
+      registrationType: "recruiter",
+      profile: { ...currentData.profile, company: data.companyName!.trim(), position: data.companyPosition },
+    };
+    const completeness = calculateProfileCompleteness(mergedData);
+
     // Update user doc
     transaction.update(db.collection("users").doc(uid), {
       role: "company",
@@ -187,10 +203,49 @@ async function handleRecruiterRegistration(
       "profile.position": data.companyPosition,
       "lifecycle.status": "active",
       "lifecycle.statusChangedAt": admin.firestore.FieldValue.serverTimestamp(),
+      profileCompleteness: completeness,
       _skipGroupSync: true,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
   });
 
+  // Alert admins about new recruiter registration
+  try {
+    await db.collection("admin_alerts").add({
+      type: "new_recruiter_registration",
+      userId: uid,
+      companyName: data.companyName,
+      companyPosition: data.companyPosition,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      read: false,
+    });
+  } catch (alertErr) {
+    // Non-blocking: alert failure shouldn't break registration
+    console.warn("Failed to create admin alert:", alertErr);
+  }
+
   return { success: true, registrationType: "recruiter", companyId };
+}
+
+function calculateProfileCompleteness(userData: Record<string, any>): number {
+  let score = 0;
+  // Name (10%)
+  if (userData.firstName || userData.profile?.firstName) score += 5;
+  if (userData.lastName || userData.profile?.lastName) score += 5;
+  // Photo (10%)
+  if (userData.photoURL || userData.profile?.photoURL) score += 10;
+  // Registration type completed (20%)
+  if (userData.registrationType && userData.registrationType !== "collaborator") score += 20;
+  if (userData.registrationType === "collaborator") score += 10;
+  // Education (15%)
+  if (userData.academicLevel || userData.profile?.degree) score += 15;
+  // Career (15%)
+  if (userData.profile?.position || userData.profile?.company) score += 15;
+  // Skills (10%)
+  const skills = userData.profile?.skills || userData.skills || [];
+  if (skills.length >= 3) score += 10;
+  else if (skills.length > 0) score += 5;
+  // Bio/headline (10%)
+  if (userData.profile?.bio) score += 10;
+  return Math.min(score, 100);
 }
