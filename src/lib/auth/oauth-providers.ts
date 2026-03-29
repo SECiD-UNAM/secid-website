@@ -107,14 +107,23 @@ export async function signInWithOAuth(
     const userDoc = await getDoc(doc(db, 'users', user.uid));
     const isNewUser = !userDoc.exists();
 
+    // Only sync the OAuth provider's photo if the user doesn't already have a profile photo
+    const existingPhotoURL = userDoc.exists()
+      ? (userDoc.data()?.photoURL ?? '')
+      : '';
+
     // Update last login and provider info
-    await updateUserOAuthInfo(user.uid, {
-      uid: user.uid,
-      email: user['email'] || '',
-      displayName: user.displayName || '',
-      photoURL: user.photoURL || undefined,
-      providerId,
-    });
+    await updateUserOAuthInfo(
+      user.uid,
+      {
+        uid: user.uid,
+        email: user['email'] || '',
+        displayName: user.displayName || '',
+        photoURL: user.photoURL || undefined,
+        providerId,
+      },
+      !existingPhotoURL
+    );
 
     return { user, credential, isNewUser };
   } catch (error: any) {
@@ -194,20 +203,29 @@ export async function getLinkedProviders(
 }
 
 /**
- * Update user's OAuth information
+ * Update user's OAuth information.
+ * @param syncPhoto - When true, writes the provider's photoURL only if the
+ *   caller has determined that the user does not already have a profile photo.
  */
 async function updateUserOAuthInfo(
   uid: string,
-  oauthInfo: OAuthUserInfo
+  oauthInfo: OAuthUserInfo,
+  syncPhoto: boolean = true
 ): Promise<void> {
   try {
     const userRef = doc(db, 'users', uid);
-    await updateDoc(userRef, {
+    const updateData: Record<string, unknown> = {
       lastLogin: new Date(),
       lastLoginProvider: oauthInfo.providerId,
-      photoURL: oauthInfo.photoURL || null,
       updatedAt: new Date(),
-    });
+    };
+
+    // Only write the provider photo when the user has no existing profile photo
+    if (syncPhoto && oauthInfo.photoURL) {
+      updateData.photoURL = oauthInfo.photoURL;
+    }
+
+    await updateDoc(userRef, updateData);
   } catch (error) {
     console.warn('Failed to update OAuth info:', error);
   }
