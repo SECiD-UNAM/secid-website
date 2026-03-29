@@ -11,13 +11,8 @@ const language = getLanguageFromUrl(Astro.url);
 const url = new URL(Astro.request.url);
 const categorySlug = url.searchParams.get('categoria');
 
-// Check if user is authenticated (this would be replaced with actual auth logic)
-const currentUser = undefined; // Replace with actual user from auth context
-
-// Redirect if not authenticated
-if (!currentUser) {
-  return Astro.redirect('/es/login?redirect=/es/forum/new-topic');
-}
+// Auth is handled client-side by ForumPost via Firebase Auth.
+// The component checks authentication and shows login prompt if needed.
 ---
 
 <ModernLayout
@@ -30,7 +25,6 @@ if (!currentUser) {
     mode="create-topic"
     language={language}
     categorySlug={categorySlug ?? undefined}
-    currentUser={currentUser}
     client:load
   />
   <Footer lang="es" />

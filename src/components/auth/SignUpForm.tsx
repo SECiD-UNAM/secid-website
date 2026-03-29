@@ -478,7 +478,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
     if (onSuccess) {
       onSuccess();
     } else {
-      window.location.href = getReturnUrl(lang);
+      const base = getReturnUrl(lang);
+      const separator = base.includes('?') ? '&' : '?';
+      window.location.href = `${base}${separator}onboarding=true`;
     }
   };
 

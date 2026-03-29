@@ -33,7 +33,7 @@ interface ForumPostProps {
   topicId?: string;
   postId?: string;
   categorySlug?: string;
-  currentUser: {
+  currentUser?: {
     id: string;
     name: string;
     email: string;
