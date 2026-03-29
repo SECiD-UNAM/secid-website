@@ -39,10 +39,10 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [userRole, setUserRole] = useState<string>('member');
-  const { can, loading: rbacLoading } = usePermissions();
+  const { can, loading: rbacLoading, permissions } = usePermissions();
 
-  // Secret admin mode: synced with sidebar via sessionStorage
-  const [adminMode, setAdminMode] = useState(() => {
+  // Display-only toggle for hiding admin nav during demos. No security function.
+  const [showAdminNav, setShowAdminNav] = useState(() => {
     if (typeof window === 'undefined') return false;
     return sessionStorage.getItem('secid-admin-mode') === 'true';
   });
@@ -50,7 +50,7 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
 
   const onSettingsPointerDown = useCallback(() => {
     longPressTimer.current = setTimeout(() => {
-      setAdminMode((prev) => {
+      setShowAdminNav((prev) => {
         const next = !prev;
         sessionStorage.setItem('secid-admin-mode', String(next));
         try {
@@ -215,7 +215,7 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
   // Dual-mode: use RBAC claims if available, fall back to role-based check
   const isAdminOrMod = userRole === 'admin' || userRole === 'moderator';
   const isAdminRole = userRole === 'admin';
-  const hasRBAC = !rbacLoading && can('groups', 'view'); // if this works, RBAC claims exist
+  const hasRBAC = !rbacLoading && permissions !== null;
 
   const canViewSettings = hasRBAC ? can('settings', 'view') : isAdminRole;
   const canManageUsers = hasRBAC ? can('users', 'edit') : isAdminOrMod;
@@ -452,7 +452,7 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
                 >
                   <i className={item.icon} style={{ width: 18, textAlign: 'center', fontSize: 14 }} />
                   {item.label}
-                  {adminMode && (
+                  {showAdminNav && (
                     <span style={{ marginLeft: 'auto', width: 8, height: 8, borderRadius: '50%', background: '#f59e0b' }} />
                   )}
                 </div>
@@ -531,7 +531,7 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
         )}
 
         {/* Admin section */}
-        {adminMode && adminItems.length > 0 && (
+        {showAdminNav && adminItems.length > 0 && (
           <>
             <div
               style={{

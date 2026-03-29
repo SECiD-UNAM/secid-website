@@ -525,7 +525,8 @@ service cloud.firestore {
         (isAuthenticated() && (hasRBACAllow('nl', 'v') || canAdminister()));
       allow create: if isAuthenticated() &&
         (hasRBACAllow('nl', 'c') || canAdminister())
-        && request.resource.data.createdBy == request.auth.uid;
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
       allow update: if isAuthenticated() && (
         (hasRBACAllowAll('nl', 'e') || canAdminister()) ||
         (hasRBACAllow('nl', 'e') && resource.data.createdBy == request.auth.uid)
@@ -738,7 +739,8 @@ service cloud.firestore {
         (isAuthenticated() && (hasRBACAllow('sp', 'v') || canModerate()));
       allow create: if isAuthenticated() &&
         (hasRBACAllow('sp', 'c') || canModerate())
-        && request.resource.data.createdBy == request.auth.uid;
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
       allow update: if isAuthenticated() && (
         (hasRBACAllowAll('sp', 'e') || canModerate()) ||
         (hasRBACAllow('sp', 'e') && resource.data.createdBy == request.auth.uid)
@@ -826,10 +828,10 @@ service cloud.firestore {
 
     // RBAC groups: permission group definitions
     match /rbac_groups/{groupId} {
-      allow read: if isAuthenticated() && (hasRBACAllow('gr', 'v') || canModerate());
-      allow create: if isAuthenticated() && (hasRBACAllow('gr', 'c') || canAdminister());
-      allow update: if isAuthenticated() && (hasRBACAllow('gr', 'e') || canAdminister());
-      allow delete: if isAuthenticated() && (hasRBACAllow('gr', 'd') || canAdminister())
+      allow read: if isAuthenticated() && !hasRBACDeny('gr', 'v') && (hasRBACAllow('gr', 'v') || canModerate());
+      allow create: if isAuthenticated() && !hasRBACDeny('gr', 'c') && (hasRBACAllow('gr', 'c') || canAdminister());
+      allow update: if isAuthenticated() && !hasRBACDeny('gr', 'e') && (hasRBACAllow('gr', 'e') || canAdminister());
+      allow delete: if isAuthenticated() && !hasRBACDeny('gr', 'd') && (hasRBACAllow('gr', 'd') || canAdminister())
         && !resource.data.isSystem;
     }
 
@@ -856,7 +858,8 @@ service cloud.firestore {
       allow read: if resource.data.status == 'published' ||
         (isAuthenticated() && (hasRBACAllow('jc', 'v') || canModerate()));
       allow create: if isAuthenticated() && (hasRBACAllow('jc', 'c') || canModerate())
-        && request.resource.data.createdBy == request.auth.uid;
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
       allow update: if isAuthenticated() && (
         (hasRBACAllowAll('jc', 'e') || canModerate()) ||
         (hasRBACAllow('jc', 'e') && resource.data.createdBy == request.auth.uid)

@@ -49,6 +49,14 @@ const labels: Record<string, Record<'es' | 'en', string>> = {
     en: 'You do not have permission to manage group members.',
     es: 'No tienes permiso para gestionar miembros del grupo.',
   },
+  errorAddUser: {
+    en: 'Failed to add user to group. Please try again.',
+    es: 'Error al agregar usuario al grupo. Intenta de nuevo.',
+  },
+  errorRemoveUser: {
+    en: 'Failed to remove user from group. Please try again.',
+    es: 'Error al quitar usuario del grupo. Intenta de nuevo.',
+  },
 };
 
 function t(key: string, lang: 'es' | 'en'): string {
@@ -95,6 +103,7 @@ export default function GroupMemberManager({
   const [members, setMembers] = useState<AssignedUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [operationError, setOperationError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searching, setSearching] = useState(false);
@@ -198,6 +207,7 @@ export default function GroupMemberManager({
   const handleAddUser = useCallback(
     async (userToAdd: SearchResult) => {
       if (!user) return;
+      setOperationError(null);
       try {
         const assignmentRef = doc(db, 'rbac_user_groups', userToAdd.uid);
         const snap = await getDoc(assignmentRef);
@@ -232,6 +242,7 @@ export default function GroupMemberManager({
         setSearchResults((prev) => prev.filter((r) => r.uid !== userToAdd.uid));
       } catch (err) {
         console.error('Error adding user to group:', err);
+        setOperationError(t('errorAddUser', lang));
       }
     },
     [groupId, user]
@@ -243,6 +254,7 @@ export default function GroupMemberManager({
       if (!user) return;
       if (!confirm(t('confirmRemove', lang))) return;
 
+      setOperationError(null);
       try {
         await updateDoc(doc(db, 'rbac_user_groups', uid), {
           groups: arrayRemove(groupId),
@@ -258,6 +270,7 @@ export default function GroupMemberManager({
         });
       } catch (err) {
         console.error('Error removing user from group:', err);
+        setOperationError(t('errorRemoveUser', lang));
       }
     },
     [groupId, user, lang]
@@ -356,6 +369,13 @@ export default function GroupMemberManager({
           </p>
         )}
       </div>
+
+      {/* Operation error feedback */}
+      {operationError && (
+        <div className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700 dark:border-red-700 dark:bg-red-900/20 dark:text-red-400">
+          {operationError}
+        </div>
+      )}
 
       {/* Current members list */}
       {loading ? (

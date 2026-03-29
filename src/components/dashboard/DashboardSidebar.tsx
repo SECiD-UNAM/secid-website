@@ -56,8 +56,8 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   const t = useTranslations(lang);
   const isBeta = useBeta();
 
-  // Secret admin mode: long-press Settings for 5s to toggle
-  const [adminMode, setAdminMode] = useState(() => {
+  // Display-only toggle for hiding admin nav during demos. No security function.
+  const [showAdminNav, setShowAdminNav] = useState(() => {
     if (typeof window === 'undefined') return false;
     return sessionStorage.getItem('secid-admin-mode') === 'true';
   });
@@ -65,7 +65,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
   const onSettingsPointerDown = useCallback(() => {
     longPressTimer.current = setTimeout(() => {
-      setAdminMode((prev) => {
+      setShowAdminNav((prev) => {
         const next = !prev;
         sessionStorage.setItem('secid-admin-mode', String(next));
         // Play toggle sound
@@ -370,7 +370,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         )}
 
         {/* Admin section (hidden until admin mode activated) */}
-        {adminMode && (isAdmin || isModerator) && (
+        {showAdminNav && (isAdmin || isModerator) && (
           <>
             <div className="my-4 border-t border-gray-200 dark:border-gray-700"></div>
             <div className="space-y-1">
@@ -405,7 +405,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           >
             <item.icon className="mr-3 h-5 w-5" />
             <span>{item.name}</span>
-            {adminMode && (
+            {showAdminNav && (
               <span className="ml-auto h-2 w-2 rounded-full bg-amber-500" title="Admin mode" />
             )}
           </a>

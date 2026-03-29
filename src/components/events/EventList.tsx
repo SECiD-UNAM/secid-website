@@ -546,11 +546,18 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
   const handleDelete = useCallback(
     async (event: Event) => {
       if (!confirm(t.confirmDelete)) return;
+      // Optimistically hide the event
+      setDeletedIds((prev) => new Set(prev).add(event.id));
       try {
         await deleteDoc(doc(db, 'events', event.id));
-        setDeletedIds((prev) => new Set(prev).add(event.id));
       } catch (err) {
         console.error('Error deleting event:', err);
+        // Rollback: remove the ID so the event reappears
+        setDeletedIds((prev) => {
+          const next = new Set(prev);
+          next.delete(event.id);
+          return next;
+        });
       }
     },
     [t.confirmDelete]
