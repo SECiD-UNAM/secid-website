@@ -44,11 +44,9 @@ export const onUserGroupWrite = onDocumentWritten(
     if (!afterData) {
       try {
         const currentUser = await admin.auth().getUser(userId);
-        const existingClaims = currentUser.customClaims ?? {};
-        await admin.auth().setCustomUserClaims(userId, {
-          ...existingClaims,
-          rbac: undefined,
-        });
+        const newClaims = { ...(currentUser.customClaims ?? {}) };
+        delete newClaims.rbac;
+        await admin.auth().setCustomUserClaims(userId, newClaims);
         await writeAuditLog(
           "permissions_resolved",
           "system",
@@ -150,6 +148,7 @@ export const onGroupWrite = onDocumentWritten(
       const failed = results.filter((r) => r.status === "rejected").length;
 
       await writeAuditLog("group_updated", "system", groupId, {
+        affectedUserIds: userIds,
         affectedUsers: userIds.length,
         succeeded,
         failed,
@@ -214,6 +213,12 @@ async function resolveUserPermissions(userId: string): Promise<void> {
   await admin.auth().setCustomUserClaims(userId, {
     ...existingClaims,
     ...buildClaimsPayload(groupIds, encoded, existingRole),
+  });
+
+  await writeAuditLog("permissions_resolved", "system", userId, {
+    groups: groupIds,
+    grantCount: resolved.length,
+    trigger: "group_change",
   });
 }
 

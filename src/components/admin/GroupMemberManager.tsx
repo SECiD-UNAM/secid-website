@@ -171,28 +171,44 @@ export default function GroupMemberManager({
 
     setSearching(true);
     try {
-      // Search by email prefix (Firestore range query)
-      const q = query(
+      const lower = trimmed.toLowerCase();
+
+      // Search by email prefix
+      const emailQuery = query(
         collection(db, 'users'),
-        where('email', '>=', trimmed.toLowerCase()),
-        where('email', '<=', trimmed.toLowerCase() + '\uf8ff'),
+        where('email', '>=', lower),
+        where('email', '<=', lower + '\uf8ff'),
         limit(10)
       );
-      const snap = await getDocs(q);
 
-      const results: SearchResult[] = snap.docs
-        .map((d) => {
-          const data = d.data();
-          return {
-            uid: d.id,
-            email: data.email ?? '',
-            displayName: data.displayName,
-            firstName: data.firstName,
-            lastName: data.lastName,
-          };
-        })
-        // Exclude users already in the group
-        .filter((u) => !memberUids.has(u.uid));
+      // Search by displayName prefix (case-sensitive but catches most cases)
+      const nameQuery = query(
+        collection(db, 'users'),
+        where('displayName', '>=', trimmed),
+        where('displayName', '<=', trimmed + '\uf8ff'),
+        limit(10)
+      );
+
+      const [emailSnap, nameSnap] = await Promise.all([
+        getDocs(emailQuery),
+        getDocs(nameQuery),
+      ]);
+
+      // Merge and deduplicate
+      const seen = new Set<string>();
+      const results: SearchResult[] = [];
+      for (const d of [...emailSnap.docs, ...nameSnap.docs]) {
+        if (seen.has(d.id) || memberUids.has(d.id)) continue;
+        seen.add(d.id);
+        const data = d.data();
+        results.push({
+          uid: d.id,
+          email: data.email ?? '',
+          displayName: data.displayName,
+          firstName: data.firstName,
+          lastName: data.lastName,
+        });
+      }
 
       setSearchResults(results);
     } catch (err) {
