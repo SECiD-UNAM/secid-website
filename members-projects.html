@@ -6,29 +6,29 @@
 -->
 <html lang="en">
 	<head>
-		<title>SECiD - Journal Club</title>
+		<title>Member Projects - SECiD</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<meta name="description" content="SECiD Journal Club - A reading group exploring NLP and large language models. Join us Wednesdays at 6pm starting March 2026." />
-		<meta name="keywords" content="journal club, NLP, LLM, data science, UNAM, reading group, BERT, GPT, DeepSeek, LLaMA" />
+		<meta name="description" content="Explore open-source projects created by SECiD members, sourced directly from their GitHub profiles." />
+		<meta name="keywords" content="data science, UNAM, alumni, GitHub, projects, open source, SECiD" />
 
 		<!-- Open Graph Meta Tags -->
-		<meta property="og:title" content="Journal Club - SECiD" />
-		<meta property="og:description" content="SECiD Journal Club - A reading group exploring NLP and large language models. Join us Wednesdays at 6pm starting March 2026." />
+		<meta property="og:title" content="Member Projects - SECiD" />
+		<meta property="og:description" content="Explore open-source projects created by SECiD members, sourced directly from their GitHub profiles." />
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content="http://localhost:3000journal-club.html" />
+		<meta property="og:url" content="http://localhost:3000members-projects.html" />
 		<meta property="og:image" content="https://secid.mx/images/logo.png" />
 		<meta property="og:site_name" content="SECiD" />
 		<meta property="og:locale" content="en_US" />
 
 		<!-- Twitter Card Meta Tags -->
 		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:title" content="Journal Club - SECiD" />
-		<meta name="twitter:description" content="SECiD Journal Club - A reading group exploring NLP and large language models. Join us Wednesdays at 6pm starting March 2026." />
+		<meta name="twitter:title" content="Member Projects - SECiD" />
+		<meta name="twitter:description" content="Explore open-source projects created by SECiD members, sourced directly from their GitHub profiles." />
 		<meta name="twitter:image" content="https://secid.mx/images/logo.png" />
 
 		<!-- Canonical URL -->
-		<link rel="canonical" href="http://localhost:3000journal-club.html" />
+		<link rel="canonical" href="http://localhost:3000members-projects.html" />
 
 		<!-- Resource Hints and Font Optimization -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,6 +37,7 @@
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;1,400;1,600&family=Roboto+Slab:wght@400;700&display=swap">
 
 		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="assets/css/github-projects.css" />
 
 		<!-- Favicon and PWA -->
 		<link rel="icon" type="image/x-icon" href="images/favicon.ico">
@@ -47,6 +48,21 @@
 		<meta name="theme-color" content="#2c3e50">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+		<!-- Schema.org Structured Data -->
+		<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "CollectionPage",
+			"name": "Member Projects - SECiD",
+			"description": "Explore open-source projects created by SECiD members, sourced directly from their GitHub profiles.",
+			"isPartOf": {
+				"@type": "WebSite",
+				"name": "SECiD"
+			}
+		}
+		</script>
+
 		<script src="https://cdn.amplitude.com/libs/analytics-browser-2.11.1-min.js.gz"></script>
 		<script src="https://cdn.amplitude.com/libs/plugin-session-replay-browser-1.8.0-min.js.gz"></script>
 		<script>window.amplitude.add(window.sessionReplay.plugin({ sampleRate: 1 })); window.amplitude.init('f69e4c213e7b958cf01b29bbd18ea2fa', { "autocapture": { "elementInteractions": true } });</script>
@@ -60,13 +76,14 @@
 			<div id="wrapper">
 
 				<!-- Main -->
-					<div id="main">
+					<div id="main" role="main">
 						<div class="inner">
 
 							<!-- Header -->
-								<header id="header">
-									<a href="index.html" class="logo"><strong>SECiD</strong> Journal Club</a>
+								<header id="header" role="banner">
+									<a href="index.html" class="logo"><strong>SECiD</strong> Member Projects</a>
 									<ul class="icons">
+										<li><a href="https://github.com/SECiD-UNAM" target="_blank" rel="noopener noreferrer" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
 										<li><a href="https://www.linkedin.com/company/sociedad-de-egresados-en-ciencia-de-datos-secid" target="_blank" rel="noopener noreferrer" class="icon brands fa-linkedin"><span class="label">LinkedIn</span></a></li>
 									</ul>
 								</header>
@@ -74,67 +91,29 @@
 							<!-- Content -->
 								<section>
 									<header class="main">
-										<h1>Journal Club</h1>
+										<h1>Member Projects</h1>
 									</header>
 
-									<span class="image main"></span>
-										<img src="images/logo.png" alt="SECiD - Sociedad de Egresados en Ciencia de Datos logo"
-										width="200" height="200" style="display: block; margin-left: auto; margin-right: auto;">
+									<p>Discover open-source work from our community. Projects are loaded directly from each member's GitHub profile and updated automatically on every page visit.</p>
 
-									<p>The SECiD Journal Club is a reading group where we explore foundational and cutting-edge topics in Natural Language Processing (NLP) and Large Language Models (LLMs). Each session is led by a community member who presents a key paper or topic, followed by open discussion.</p>
-									<p><strong>Wednesdays at 6pm</strong> &mdash; Starting March 2026.</p>
+									<p>Are you a SECiD member with a GitHub account? <a href="mailto:contacto@secid.mx">Contact us</a> to have your profile linked here.</p>
 
 									<hr class="major" />
 
-									<h2>Schedule</h2>
-									<div class="table-wrapper">
-										<table>
-											<thead>
-												<tr>
-													<th>Date</th>
-													<th>Topic</th>
-													<th>Presenter</th>
-												</tr>
-											</thead>
-											<tbody>
-												<tr>
-													<td>March 18, 2026</td>
-													<td>NLP Foundations</td>
-													<td>Fernando Avitua</td>
-												</tr>
-												<tr>
-													<td>April 8, 2026</td>
-													<td>Attention Is All You Need</td>
-													<td>Fernando Avitua</td>
-												</tr>
-												<tr>
-													<td>May 6, 2026</td>
-													<td>BERT</td>
-													<td>Artemio Padilla</td>
-												</tr>
-												<tr>
-													<td>June 10, 2026</td>
-													<td>GPTs</td>
-													<td>Alejandro Ramirez Bondi</td>
-												</tr>
-												<tr>
-													<td>August 12, 2026</td>
-													<td>LLaMA</td>
-													<td>Eduardo Garduño</td>
-												</tr>
-												<tr>
-													<td>September 9, 2026</td>
-													<td>DeepSeek</td>
-													<td>Iv&aacute;n Barón</td>
-												</tr>
-											</tbody>
-										</table>
+									<!-- Filter controls -->
+									<div id="github-filter-container" class="github-filter-bar" style="display:none;" role="search" aria-label="Filter projects by programming language">
 									</div>
 
-									<hr class="major" />
+									<!-- Loading indicator -->
+									<div id="github-projects-loader" class="github-loader" aria-live="polite" aria-label="Loading member projects">
+										<span class="icon solid fa-spinner github-spinner" aria-hidden="true"></span>
+										Loading member projects&hellip;
+									</div>
 
-									<h2>Join Us</h2>
-									<p>Did you study Data Science at UNAM? <a href="registro.html" target="_blank" rel="noopener noreferrer">Register as a member</a> to participate in the Journal Club and other SECiD initiatives.</p>
+									<!-- Projects rendered here by github-projects.js -->
+									<div id="github-projects-container" role="region" aria-label="Member GitHub projects">
+									</div>
+
 								</section>
 
 						</div>
@@ -144,14 +123,6 @@
 				<!-- Sidebar -->
 				<div id="sidebar">
 					<div class="inner">
-
-						<!-- Search -- >
-							<section id="search" class="alt">
-								<form method="post" action="#">
-									<input type="text" name="query" id="query" placeholder="Search" />
-								</form>
-							</section>
-						-->
 
 						<!-- Menu -->
 							<nav id="menu">
@@ -206,7 +177,6 @@
 					</div>
 				</div>
 
-
 			</div>
 
 		<!-- Scripts -->
@@ -215,6 +185,7 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script src="assets/js/github-projects.js"></script>
 
 	</body>
 </html>

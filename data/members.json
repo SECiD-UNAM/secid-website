@@ -1,0 +1,22 @@
+{
+  "members": [
+    {
+      "name": "Jorge Alejandro Ramirez Bondi",
+      "github": "",
+      "role": "President",
+      "bio": "Data Science alumni, UNAM"
+    },
+    {
+      "name": "Artemio Santiago Padilla Robles",
+      "github": "",
+      "role": "Secretary",
+      "bio": "Data Science alumni, UNAM"
+    },
+    {
+      "name": "Sara Kenia Cisneros",
+      "github": "",
+      "role": "Treasurer",
+      "bio": "Data Science alumni, UNAM"
+    }
+  ]
+}

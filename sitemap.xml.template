@@ -31,6 +31,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>{{SITE_URL}}/members-projects.html</loc>
+    <lastmod>2025-01-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>{{SITE_URL}}/registro.html</loc>
     <lastmod>2025-01-01</lastmod>
     <changefreq>monthly</changefreq>
