@@ -200,60 +200,72 @@ service cloud.firestore {
       allow delete: if canModerate();
     }
 
-    // Jobs collection with enhanced validation
+    // Jobs collection — RBAC-only authorization
     match /jobs/{jobId} {
       allow read: if isAuthenticated();
-      
-      allow create: if isAuthenticated() && 
-                       isVerified() && 
-                       isActive() &&
-                       validateJobData() &&
-                       request.resource.data.postedBy == request.auth.uid &&
-                       request.resource.data.createdAt == request.time &&
-                       request.resource.data.status == 'draft';
-      
-      allow update: if isAuthenticated() && 
-                       isActive() &&
-                       (isOwner(resource.data.postedBy) || canModerate()) &&
-                       validateJobData() &&
-                       request.resource.data.updatedAt == request.time &&
-                       // Prevent changing ownership
-                       request.resource.data.postedBy == resource.data.postedBy;
-      
-      allow delete: if isAuthenticated() && 
-                       (isOwner(resource.data.postedBy) || canAdminister());
-      
+
+      allow create: if isAuthenticated()
+        && isVerified()
+        && isActive()
+        && hasRBACAllow('jo', 'c') && !hasRBACDeny('jo', 'c')
+        && validateJobData()
+        && request.resource.data.postedBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.status == 'draft';
+
+      allow update: if isAuthenticated()
+        && isActive()
+        && !hasRBACDeny('jo', 'e') && (
+          hasRBACAllowAll('jo', 'e') ||
+          (hasRBACAllow('jo', 'e') && resource.data.postedBy == request.auth.uid)
+        )
+        && validateJobData()
+        && request.resource.data.updatedAt == request.time
+        // Prevent changing ownership
+        && request.resource.data.postedBy == resource.data.postedBy;
+
+      allow delete: if isAuthenticated()
+        && !hasRBACDeny('jo', 'd') && (
+          hasRBACAllowAll('jo', 'd') ||
+          (hasRBACAllow('jo', 'd') && resource.data.postedBy == request.auth.uid)
+        );
+
       // Job applications subcollection
       match /applications/{applicationId} {
-        allow read: if isAuthenticated() && 
-                      (isOwner(resource.data.applicantId) ||
-                       isOwner(get(/databases/$(database)/documents/jobs/$(jobId)).data.postedBy) ||
-                       canModerate());
-        
-        allow create: if isAuthenticated() && 
+        allow read: if isAuthenticated() && (
+          isOwner(resource.data.applicantId) ||
+          isOwner(get(/databases/$(database)/documents/jobs/$(jobId)).data.postedBy) ||
+          hasRBACAllowAll('jo', 'v')
+        );
+
+        allow create: if isAuthenticated() &&
                         isVerified() &&
                         isActive() &&
                         request.resource.data.applicantId == request.auth.uid &&
                         request.resource.data.jobId == jobId &&
                         request.resource.data.createdAt == request.time &&
                         request.resource.data.status == 'submitted';
-        
-        allow update: if isAuthenticated() && 
-                        isActive() &&
-                        (isOwner(resource.data.applicantId) ||
-                         isOwner(get(/databases/$(database)/documents/jobs/$(jobId)).data.postedBy) ||
-                         canModerate()) &&
+
+        allow update: if isAuthenticated() &&
+                        isActive() && !hasRBACDeny('jo', 'e') && (
+                          isOwner(resource.data.applicantId) ||
+                          isOwner(get(/databases/$(database)/documents/jobs/$(jobId)).data.postedBy) ||
+                          hasRBACAllowAll('jo', 'e')
+                        ) &&
                         request.resource.data.updatedAt == request.time;
-        
-        allow delete: if isAuthenticated() && 
-                        (isOwner(resource.data.applicantId) || canAdminister());
+
+        allow delete: if isAuthenticated() && !hasRBACDeny('jo', 'd') && (
+          isOwner(resource.data.applicantId) ||
+          hasRBACAllowAll('jo', 'd')
+        );
       }
-      
+
       // Job analytics subcollection (read-only for job owners)
       match /analytics/{analyticsId} {
-        allow read: if isAuthenticated() && 
-                      (isOwner(get(/databases/$(database)/documents/jobs/$(jobId)).data.postedBy) ||
-                       canModerate());
+        allow read: if isAuthenticated() && (
+          isOwner(get(/databases/$(database)/documents/jobs/$(jobId)).data.postedBy) ||
+          hasRBACAllowAll('jo', 'v')
+        );
         allow write: if false; // Only server can write analytics
       }
     }
@@ -305,52 +317,73 @@ service cloud.firestore {
       }
     }
     
-    // Forums collection with content moderation
+    // Forums collection — RBAC-only authorization
     match /forums/{forumId} {
       allow read: if isAuthenticated();
-      allow create, update, delete: if isAuthenticated() && canModerate();
-      
+
+      // Forum-level management (create/edit/delete forums themselves)
+      allow create: if isAuthenticated()
+        && hasRBACAllow('fo', 'c') && !hasRBACDeny('fo', 'c');
+
+      allow update: if isAuthenticated()
+        && !hasRBACDeny('fo', 'e') && hasRBACAllowAll('fo', 'e');
+
+      allow delete: if isAuthenticated()
+        && !hasRBACDeny('fo', 'd') && hasRBACAllowAll('fo', 'd');
+
       // Forum posts with content validation
       match /posts/{postId} {
         allow read: if isAuthenticated();
-        
-        allow create: if isAuthenticated() && 
+
+        allow create: if isAuthenticated() &&
                         isVerified() &&
                         isActive() &&
+                        hasRBACAllow('fo', 'c') && !hasRBACDeny('fo', 'c') &&
                         request.resource.data.authorId == request.auth.uid &&
                         request.resource.data.forumId == forumId &&
                         request.resource.data.createdAt == request.time &&
                         request.resource.data.content is string &&
                         request.resource.data.content.size() >= 10 &&
                         request.resource.data.content.size() <= 5000;
-        
-        allow update: if isAuthenticated() && 
+
+        allow update: if isAuthenticated() &&
                         isActive() &&
-                        (isOwner(resource.data.authorId) || canModerate()) &&
+                        !hasRBACDeny('fo', 'e') && (
+                          hasRBACAllowAll('fo', 'e') ||
+                          (hasRBACAllow('fo', 'e') && resource.data.authorId == request.auth.uid)
+                        ) &&
                         request.resource.data.updatedAt == request.time &&
                         // Prevent changing authorship
                         request.resource.data.authorId == resource.data.authorId;
-        
-        allow delete: if isAuthenticated() && 
-                        (isOwner(resource.data.authorId) || canModerate());
-        
+
+        allow delete: if isAuthenticated() && !hasRBACDeny('fo', 'd') && (
+          hasRBACAllowAll('fo', 'd') ||
+          (hasRBACAllow('fo', 'd') && resource.data.authorId == request.auth.uid)
+        );
+
         // Post replies subcollection
         match /replies/{replyId} {
           allow read: if isAuthenticated();
-          
-          allow create: if isAuthenticated() && 
+
+          allow create: if isAuthenticated() &&
                           isVerified() &&
                           isActive() &&
+                          hasRBACAllow('fo', 'c') && !hasRBACDeny('fo', 'c') &&
                           request.resource.data.authorId == request.auth.uid &&
                           request.resource.data.postId == postId &&
                           request.resource.data.createdAt == request.time;
-          
-          allow update: if isAuthenticated() && 
-                          (isOwner(resource.data.authorId) || canModerate()) &&
+
+          allow update: if isAuthenticated() &&
+                          !hasRBACDeny('fo', 'e') && (
+                            hasRBACAllowAll('fo', 'e') ||
+                            (hasRBACAllow('fo', 'e') && resource.data.authorId == request.auth.uid)
+                          ) &&
                           request.resource.data.updatedAt == request.time;
-          
-          allow delete: if isAuthenticated() && 
-                          (isOwner(resource.data.authorId) || canModerate());
+
+          allow delete: if isAuthenticated() && !hasRBACDeny('fo', 'd') && (
+            hasRBACAllowAll('fo', 'd') ||
+            (hasRBACAllow('fo', 'd') && resource.data.authorId == request.auth.uid)
+          );
         }
       }
     }
@@ -537,22 +570,29 @@ service cloud.firestore {
     // Phase B: Resources, Blog, Mentorship
     // ============================================
 
-    // Resources collection
+    // Resources collection — RBAC-only authorization
     match /resources/{resourceId} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated() &&
-                       isVerified() &&
-                       isActive() &&
-                       request.resource.data.uploadedBy == request.auth.uid &&
-                       request.resource.data.createdAt == request.time;
-      allow update: if isAuthenticated() &&
-                       (isOwner(resource.data.uploadedBy) || canModerate()) &&
-                       request.resource.data.updatedAt == request.time;
-      allow delete: if isAuthenticated() &&
-                       (isOwner(resource.data.uploadedBy) || canAdminister());
+
+      allow create: if isAuthenticated()
+        && isVerified()
+        && isActive()
+        && hasRBACAllow('rs', 'c') && !hasRBACDeny('rs', 'c')
+        && request.resource.data.uploadedBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if isAuthenticated() && !hasRBACDeny('rs', 'e') && (
+        hasRBACAllowAll('rs', 'e') ||
+        (hasRBACAllow('rs', 'e') && resource.data.uploadedBy == request.auth.uid)
+      ) && request.resource.data.updatedAt == request.time;
+
+      allow delete: if isAuthenticated() && !hasRBACDeny('rs', 'd') && (
+        hasRBACAllowAll('rs', 'd') ||
+        (hasRBACAllow('rs', 'd') && resource.data.uploadedBy == request.auth.uid)
+      );
     }
 
-    // Resource reviews
+    // Resource reviews — RBAC-only authorization
     match /resource_reviews/{reviewId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated() &&
@@ -562,8 +602,10 @@ service cloud.firestore {
       allow update: if isAuthenticated() &&
                        isOwner(resource.data.reviewerId) &&
                        request.resource.data.updatedAt == request.time;
-      allow delete: if isAuthenticated() &&
-                       (isOwner(resource.data.reviewerId) || canModerate());
+      allow delete: if isAuthenticated() && !hasRBACDeny('rs', 'd') && (
+        isOwner(resource.data.reviewerId) ||
+        hasRBACAllowAll('rs', 'd')
+      );
     }
 
     // Resource bookmarks (user-specific)
@@ -574,7 +616,7 @@ service cloud.firestore {
       allow delete: if isAuthenticated() && isOwner(resource.data.userId);
     }
 
-    // Resource collections
+    // Resource collections — RBAC-only authorization
     match /resource_collections/{collectionId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated() &&
@@ -582,31 +624,41 @@ service cloud.firestore {
                        request.resource.data.createdBy == request.auth.uid;
       allow update: if isAuthenticated() &&
                        isOwner(resource.data.createdBy);
-      allow delete: if isAuthenticated() &&
-                       (isOwner(resource.data.createdBy) || canAdminister());
+      allow delete: if isAuthenticated() && !hasRBACDeny('rs', 'd') && (
+        isOwner(resource.data.createdBy) ||
+        hasRBACAllowAll('rs', 'd')
+      );
     }
 
-    // Resource downloads (tracking)
+    // Resource downloads (tracking) — RBAC-only authorization
     match /resource_downloads/{downloadId} {
-      allow read: if isAuthenticated() && canModerate();
+      allow read: if isAuthenticated() && hasRBACAllowAll('rs', 'v');
       allow create: if isAuthenticated();
     }
 
-    // Resource activities (tracking)
+    // Resource activities (tracking) — RBAC-only authorization
     match /resource_activities/{activityId} {
-      allow read: if isAuthenticated() && canModerate();
+      allow read: if isAuthenticated() && hasRBACAllowAll('rs', 'v');
       allow create: if isAuthenticated();
     }
 
-    // Blog collection (public read for published, admin write)
+    // Blog collection — RBAC-only authorization (public read)
     match /blog/{postId} {
       allow read: if true;
-      allow create: if isAuthenticated() &&
-                       canModerate() &&
-                       request.resource.data.authorId == request.auth.uid;
-      allow update: if isAuthenticated() &&
-                       (isOwner(resource.data.authorId) || canModerate());
-      allow delete: if isAuthenticated() && canAdminister();
+
+      allow create: if isAuthenticated()
+        && hasRBACAllow('bl', 'c') && !hasRBACDeny('bl', 'c')
+        && request.resource.data.authorId == request.auth.uid;
+
+      allow update: if isAuthenticated() && !hasRBACDeny('bl', 'e') && (
+        hasRBACAllowAll('bl', 'e') ||
+        (hasRBACAllow('bl', 'e') && resource.data.authorId == request.auth.uid)
+      );
+
+      allow delete: if isAuthenticated() && !hasRBACDeny('bl', 'd') && (
+        hasRBACAllowAll('bl', 'd') ||
+        (hasRBACAllow('bl', 'd') && resource.data.authorId == request.auth.uid)
+      );
     }
 
     // Mentorship: Mentors collection
