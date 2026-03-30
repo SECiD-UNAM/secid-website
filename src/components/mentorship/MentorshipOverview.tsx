@@ -14,6 +14,7 @@ interface MentorshipOverviewProps {
   matches: MentorshipMatch[];
   upcomingSessions: MentorshipSession[];
   globalStats: MentorshipStats | null;
+  profileNames?: Map<string, string>;
   onSwitchTab: (tab: string) => void;
 }
 
@@ -141,13 +142,15 @@ function MentorshipOverview({
   matches,
   upcomingSessions,
   globalStats,
+  profileNames = new Map(),
   onSwitchTab,
 }: MentorshipOverviewProps) {
+  const resolveName = (id: string) => profileNames.get(id) || 'Partner';
   const activeMatches = matches.filter((m) => m.status === 'active');
   const pendingMatches = matches.filter((m) => m.status === 'pending');
   const completedSessionsCount = matches.reduce(
     (sum, m) => sum + (m.sessionsCompleted || 0),
-    0,
+    0
   );
   const nextSession = upcomingSessions[0];
   const rating = mentorProfile?.rating || 0;
@@ -275,8 +278,18 @@ function MentorshipOverview({
                   <SessionCard
                     key={session.id}
                     session={session}
-                    partnerName={session.title}
-                    partnerInitials={getInitials(session.title)}
+                    partnerName={resolveName(
+                      session.mentorId === mentorProfile?.userId
+                        ? session.menteeId
+                        : session.mentorId
+                    )}
+                    partnerInitials={getInitials(
+                      resolveName(
+                        session.mentorId === mentorProfile?.userId
+                          ? session.menteeId
+                          : session.mentorId
+                      )
+                    )}
                     compact
                   />
                 ))}
@@ -334,7 +347,11 @@ function MentorshipOverview({
                 {displayedMatches.map((match) => (
                   <MentorCard
                     key={match.id}
-                    displayName={match.mentorId}
+                    displayName={resolveName(
+                      match.mentorId === mentorProfile?.userId
+                        ? match.menteeId
+                        : match.mentorId
+                    )}
                     status={match.status}
                     sessionCount={match.sessionsCompleted}
                     matchScore={match.matchScore}

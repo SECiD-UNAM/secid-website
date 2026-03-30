@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useTranslations } from '@/hooks/useTranslations';
 import type {
@@ -6,6 +6,7 @@ import type {
   MenteeProfile,
   MentorshipMatch,
   MentorshipSession,
+  MentorshipRequest,
   MentorshipStats,
 } from '@/types/mentorship';
 import {
@@ -15,6 +16,8 @@ import {
   getUpcomingSessions,
   getMentorshipStats,
   getMentorshipSessions,
+  subscribeMentorshipRequests,
+  subscribeUpcomingSessions,
 } from '@/lib/mentorship';
 
 import MentorshipOverview from './MentorshipOverview';
@@ -50,7 +53,11 @@ export default function MentorshipDashboard() {
     []
   );
   const [globalStats, setGlobalStats] = useState<MentorshipStats | null>(null);
+  const [profileNames, setProfileNames] = useState<Map<string, string>>(
+    new Map()
+  );
   const [loading, setLoading] = useState(true);
+  const unsubscribeRefs = useRef<(() => void)[]>([]);
 
   const loadData = useCallback(async () => {
     if (!user) return;
@@ -73,6 +80,35 @@ export default function MentorshipDashboard() {
       setSessions(allSessions);
       setGlobalStats(stats);
 
+      // Build a name lookup from loaded profiles and matches
+      const names = new Map<string, string>();
+      if (mentor) names.set(mentor.userId, mentor.displayName);
+      if (mentee) names.set(mentee.userId, mentee.displayName);
+      // Resolve partner names from matches by fetching their profiles
+      const partnerIds = new Set<string>();
+      for (const match of userMatches) {
+        if (!names.has(match.mentorId)) partnerIds.add(match.mentorId);
+        if (!names.has(match.menteeId)) partnerIds.add(match.menteeId);
+      }
+      if (partnerIds.size > 0) {
+        const profileFetches = Array.from(partnerIds).map(async (id) => {
+          try {
+            const mp = await getMentorProfile(id);
+            if (mp) return { id, name: mp.displayName };
+            const me = await getMenteeProfile(id);
+            if (me) return { id, name: me.displayName };
+          } catch {
+            /* ignore */
+          }
+          return null;
+        });
+        const results = await Promise.all(profileFetches);
+        for (const r of results) {
+          if (r) names.set(r.id, r.name);
+        }
+      }
+      setProfileNames(names);
+
       // Force profile tab if no profiles exist
       if (!mentor && !mentee) {
         setActiveTab('profile');
@@ -83,6 +119,37 @@ export default function MentorshipDashboard() {
       setLoading(false);
     }
   }, [user]);
+
+  // Wire real-time subscriptions for requests and sessions
+  useEffect(() => {
+    if (!user) return;
+
+    // Clean up previous subscriptions
+    unsubscribeRefs.current.forEach((unsub) => unsub());
+    unsubscribeRefs.current = [];
+
+    const unsubRequests = subscribeMentorshipRequests(
+      user.uid,
+      (_requests: MentorshipRequest[]) => {
+        // When new requests arrive, refresh all data
+        loadData();
+      }
+    );
+
+    const unsubSessions = subscribeUpcomingSessions(
+      user.uid,
+      (liveSessions: MentorshipSession[]) => {
+        setUpcomingSessions(liveSessions);
+      }
+    );
+
+    unsubscribeRefs.current = [unsubRequests, unsubSessions];
+
+    return () => {
+      unsubscribeRefs.current.forEach((unsub) => unsub());
+      unsubscribeRefs.current = [];
+    };
+  }, [user, loadData]);
 
   useEffect(() => {
     loadData();
@@ -145,6 +212,7 @@ export default function MentorshipDashboard() {
           matches={matches}
           upcomingSessions={upcomingSessions}
           globalStats={globalStats}
+          profileNames={profileNames}
           onSwitchTab={handleSwitchTab}
         />
       )}
