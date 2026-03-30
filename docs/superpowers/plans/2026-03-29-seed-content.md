@@ -4,6 +4,8 @@
 
 **Priority:** Low — cosmetic, no functional impact.
 
+**Status:** COMPLETED (2026-03-26)
+
 ---
 
 ## Newsletter (`newsletter_archive` collection)
@@ -80,3 +82,27 @@ Same approach — Node script with firebase-admin.
 - [ ] `/es/newsletter/archive` shows newsletter cards
 - [ ] `/es/spotlights/` shows spotlight cards
 - [ ] `/en/` variants also work
+
+---
+
+## Execution Log (2026-03-26)
+
+Seeded via Firestore REST API using Firebase CLI credentials.
+
+**Newsletter documents (`newsletter_archive`):**
+| Issue | Title | Doc ID |
+|-------|-------|--------|
+| #1 | SECiD Monthly #1 — Lanzamiento | T7MepG5FQaLvyJINiUg4 |
+| #2 | SECiD Monthly #2 — Journal Club | HuOfFBUA80B6o22ZpM4z |
+| #3 | SECiD Monthly #3 — Bolsa de Trabajo | WgUdIAoPMeGMSgLf2H1s |
+| #4 | SECiD Monthly #4 — Comisiones Tecnicas | 0JS4uPFqrUiwkdgYWwRB |
+
+**Spotlight documents (`spotlights`):**
+| Name | Title | Company | Doc ID |
+|------|-------|---------|--------|
+| Maria Gonzalez | Senior Data Scientist | BBVA Mexico | G4pd2kqF1N2wVvLoEYdF |
+| Carlos Ramirez | ML Engineer | Kavak | 9SNxrvtx24ldcFJZcRY9 |
+| Ana Lopez | Head of Data | Mercado Libre | HgeElExB6daaeqVbKESR |
+| Diego Hernandez | PhD Candidate | MIT CSAIL | uNQi5psnoWbVgv4Ypss2 |
+
+Temporary seed script (`functions/seed-content.cjs`) deleted after execution.
