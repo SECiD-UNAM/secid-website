@@ -57,6 +57,8 @@ describe.sequential('SocialLoginButtons', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Enable LinkedIn in tests
+    vi.stubEnv('PUBLIC_LINKEDIN_AUTH_ENABLED', 'true');
   });
 
   afterEach(() => {

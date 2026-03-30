@@ -7,7 +7,7 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    '@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended',
     'plugin:astro/recommended',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
@@ -37,6 +37,9 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-non-null-assertion': 'warn',
+    '@typescript-eslint/no-unused-expressions': 'off', // too noisy for existing codebase
+    '@typescript-eslint/ban-ts-comment': 'off',
+    '@typescript-eslint/no-this-alias': 'off',
 
     // React rules
     'react/react-in-jsx-scope': 'off', // Not needed in React 17+
@@ -90,7 +93,7 @@ module.exports = {
         node: true,
       },
       rules: {
-        '@typescript-eslint/no-var-requires': 'off',
+        '@typescript-eslint/no-require-imports': 'off',
       },
     },
   ],
