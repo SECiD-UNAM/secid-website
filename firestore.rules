@@ -398,30 +398,32 @@ service cloud.firestore {
       }
     }
     
-    // Mentorship system with privacy controls
+    // Mentorship system with privacy controls — RBAC-migrated (Batch 3, mn)
     match /mentorship/{matchId} {
-      allow read: if isAuthenticated() && 
-                     (isOwner(resource.data.mentorId) || 
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.mentorId) ||
                       isOwner(resource.data.menteeId) ||
-                      canModerate());
-      
-      allow create: if isAuthenticated() && 
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
+
+      allow create: if isAuthenticated() &&
                        isVerified() &&
                        isActive() &&
                        (request.resource.data.mentorId == request.auth.uid ||
                         request.resource.data.menteeId == request.auth.uid) &&
                        request.resource.data.createdAt == request.time;
-      
-      allow update: if isAuthenticated() && 
-                       (isOwner(resource.data.mentorId) || 
+
+      allow update: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'e') &&
+                       (isOwner(resource.data.mentorId) ||
                         isOwner(resource.data.menteeId) ||
-                        canModerate()) &&
+                        hasRBACAllowAll('mn', 'e')) &&
                        request.resource.data.updatedAt == request.time;
-      
-      allow delete: if isAuthenticated() && 
-                       (isOwner(resource.data.mentorId) || 
+
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'd') &&
+                       (isOwner(resource.data.mentorId) ||
                         isOwner(resource.data.menteeId) ||
-                        canAdminister());
+                        hasRBACAllowAll('mn', 'd'));
     }
     
     // Top-level applications collection (queried by dashboard stats)
@@ -671,99 +673,112 @@ service cloud.firestore {
       );
     }
 
-    // Mentorship: Mentors collection
+    // Mentorship: Mentors collection — RBAC-migrated (Batch 3, mn)
     match /mentors/{mentorId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated() &&
                        isVerified() &&
                        isOwner(mentorId);
       allow update: if isAuthenticated() &&
-                       (isOwner(mentorId) || canModerate());
-      allow delete: if isAuthenticated() && canAdminister();
+                       !hasRBACDeny('mn', 'e') &&
+                       (isOwner(mentorId) || hasRBACAllowAll('mn', 'e'));
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'd') && hasRBACAllowAll('mn', 'd');
     }
 
-    // Mentorship: Mentees collection
+    // Mentorship: Mentees collection — RBAC-migrated (Batch 3, mn)
     match /mentees/{menteeId} {
       allow read: if isAuthenticated() &&
-                     (isOwner(menteeId) || canModerate());
+                     (isOwner(menteeId) ||
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
       allow create: if isAuthenticated() &&
                        isVerified() &&
                        isOwner(menteeId);
       allow update: if isAuthenticated() &&
-                       (isOwner(menteeId) || canModerate());
-      allow delete: if isAuthenticated() && canAdminister();
+                       !hasRBACDeny('mn', 'e') &&
+                       (isOwner(menteeId) || hasRBACAllowAll('mn', 'e'));
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'd') && hasRBACAllowAll('mn', 'd');
     }
 
-    // Mentorship matches
+    // Mentorship matches — RBAC-migrated (Batch 3, mn)
     match /mentorship_matches/{matchId} {
       allow read: if isAuthenticated() &&
                      (isOwner(resource.data.mentorId) ||
                       isOwner(resource.data.menteeId) ||
-                      canModerate());
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
       allow create: if isAuthenticated() &&
                        isVerified() &&
                        (request.resource.data.mentorId == request.auth.uid ||
                         request.resource.data.menteeId == request.auth.uid);
       allow update: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'e') &&
                        (isOwner(resource.data.mentorId) ||
                         isOwner(resource.data.menteeId) ||
-                        canModerate());
-      allow delete: if isAuthenticated() && canAdminister();
+                        hasRBACAllowAll('mn', 'e'));
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'd') && hasRBACAllowAll('mn', 'd');
     }
 
-    // Mentorship sessions
+    // Mentorship sessions — RBAC-migrated (Batch 3, mn)
     match /mentorship_sessions/{sessionId} {
       allow read: if isAuthenticated() &&
                      (isOwner(resource.data.mentorId) ||
                       isOwner(resource.data.menteeId) ||
-                      canModerate());
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
       allow create: if isAuthenticated() &&
                        isVerified() &&
                        (request.resource.data.mentorId == request.auth.uid ||
                         request.resource.data.menteeId == request.auth.uid);
       allow update: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'e') &&
                        (isOwner(resource.data.mentorId) ||
                         isOwner(resource.data.menteeId) ||
-                        canModerate());
-      allow delete: if isAuthenticated() && canAdminister();
+                        hasRBACAllowAll('mn', 'e'));
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'd') && hasRBACAllowAll('mn', 'd');
     }
 
-    // Mentorship requests
+    // Mentorship requests — RBAC-migrated (Batch 3, mn)
     match /mentorship_requests/{requestId} {
       allow read: if isAuthenticated() &&
                      (isOwner(resource.data.fromUserId) ||
                       isOwner(resource.data.toUserId) ||
-                      canModerate());
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
       allow create: if isAuthenticated() &&
                        isVerified() &&
                        request.resource.data.fromUserId == request.auth.uid;
       allow update: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'e') &&
                        (isOwner(resource.data.fromUserId) ||
                         isOwner(resource.data.toUserId) ||
-                        canModerate());
+                        hasRBACAllowAll('mn', 'e'));
       allow delete: if isAuthenticated() &&
-                       (isOwner(resource.data.fromUserId) || canAdminister());
+                       !hasRBACDeny('mn', 'd') &&
+                       (isOwner(resource.data.fromUserId) ||
+                        hasRBACAllowAll('mn', 'd'));
     }
 
-    // Mentorship feedback
+    // Mentorship feedback — RBAC-migrated (Batch 3, mn)
     match /mentorship_feedback/{feedbackId} {
       allow read: if isAuthenticated() &&
                      (isOwner(resource.data.fromUserId) ||
                       isOwner(resource.data.toUserId) ||
-                      canModerate());
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
       allow create: if isAuthenticated() &&
                        isVerified() &&
                        request.resource.data.fromUserId == request.auth.uid;
       allow update: if false; // Feedback is immutable
-      allow delete: if isAuthenticated() && canAdminister();
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'd') && hasRBACAllowAll('mn', 'd');
     }
 
-    // Mentorship goals
+    // Mentorship goals — RBAC-migrated (Batch 3, mn)
     match /mentorship_goals/{goalId} {
       allow read: if isAuthenticated() &&
                      (isOwner(resource.data.menteeId) ||
                       isOwner(resource.data.mentorId) ||
-                      canModerate());
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
       allow create: if isAuthenticated() &&
                        isVerified() &&
                        request.resource.data.menteeId == request.auth.uid;
@@ -771,20 +786,25 @@ service cloud.firestore {
                        (isOwner(resource.data.menteeId) ||
                         isOwner(resource.data.mentorId));
       allow delete: if isAuthenticated() &&
-                       (isOwner(resource.data.menteeId) || canAdminister());
+                       !hasRBACDeny('mn', 'd') &&
+                       (isOwner(resource.data.menteeId) ||
+                        hasRBACAllowAll('mn', 'd'));
     }
 
-    // Mentorship resources (shared between mentor/mentee)
+    // Mentorship resources (shared between mentor/mentee) — RBAC-migrated (Batch 3, mn)
     match /mentorship_resources/{resourceId} {
       allow read: if isAuthenticated() &&
-                     (isOwner(resource.data.sharedBy) || canModerate());
+                     (isOwner(resource.data.sharedBy) ||
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
       allow create: if isAuthenticated() &&
                        isVerified() &&
                        request.resource.data.sharedBy == request.auth.uid;
       allow update: if isAuthenticated() &&
                        isOwner(resource.data.sharedBy);
       allow delete: if isAuthenticated() &&
-                       (isOwner(resource.data.sharedBy) || canAdminister());
+                       !hasRBACDeny('mn', 'd') &&
+                       (isOwner(resource.data.sharedBy) ||
+                        hasRBACAllowAll('mn', 'd'));
     }
 
     // ============================================
