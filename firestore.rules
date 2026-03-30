@@ -258,30 +258,26 @@ service cloud.firestore {
       }
     }
     
-    // Events collection — RBAC + legacy fallback (dual-mode)
+    // Events collection — RBAC-only authorization
     match /events/{eventId} {
-      // Phase 4: all authenticated users can read events (existing behavior).
-      // Phase 5 TODO: replace with hasRBACAllow('ev', 'v') && !hasRBACDeny('ev', 'v')
+      // All authenticated users can read events
       allow read: if isAuthenticated();
 
-      allow create: if isAuthenticated() && (
-        (hasRBACAllow('ev', 'c') && !hasRBACDeny('ev', 'c')) || canModerate()
-      ) && validateEventData()
+      allow create: if isAuthenticated()
+        && hasRBACAllow('ev', 'c') && !hasRBACDeny('ev', 'c')
+        && validateEventData()
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.createdAt == request.time;
 
-      // Deny is outermost — explicit RBAC deny always wins, even over legacy roles
       allow update: if isAuthenticated() && !hasRBACDeny('ev', 'e') && (
         hasRBACAllowAll('ev', 'e') ||
-        (hasRBACAllow('ev', 'e') && resource.data.createdBy == request.auth.uid) ||
-        isOwner(resource.data.createdBy) || canModerate()
+        (hasRBACAllow('ev', 'e') && resource.data.createdBy == request.auth.uid)
       ) && validateEventData()
         && request.resource.data.updatedAt == request.time;
 
       allow delete: if isAuthenticated() && !hasRBACDeny('ev', 'd') && (
         hasRBACAllowAll('ev', 'd') ||
-        (hasRBACAllow('ev', 'd') && resource.data.createdBy == request.auth.uid) ||
-        canAdminister()
+        (hasRBACAllow('ev', 'd') && resource.data.createdBy == request.auth.uid)
       );
       
       // Event registrations subcollection
@@ -519,22 +515,22 @@ service cloud.firestore {
     // Phase A: Newsletter Archive (upgraded with RBAC)
     // ============================================
 
-    // Newsletter archive — public read for published, RBAC + legacy fallback for management
+    // Newsletter archive — public read for published, RBAC-only for management
     match /newsletter_archive/{issueId} {
       allow read: if resource.data.status == 'published' ||
-        (isAuthenticated() && (hasRBACAllow('nl', 'v') || canAdminister()));
-      allow create: if isAuthenticated() &&
-        (hasRBACAllow('nl', 'c') || canAdminister())
+        (isAuthenticated() && hasRBACAllow('nl', 'v'));
+      allow create: if isAuthenticated() && hasRBACAllow('nl', 'c')
+        && !hasRBACDeny('nl', 'c')
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.createdAt == request.time;
-      allow update: if isAuthenticated() && (
-        (hasRBACAllowAll('nl', 'e') || canAdminister()) ||
+      allow update: if isAuthenticated() && !hasRBACDeny('nl', 'e') && (
+        hasRBACAllowAll('nl', 'e') ||
         (hasRBACAllow('nl', 'e') && resource.data.createdBy == request.auth.uid)
-      ) && !hasRBACDeny('nl', 'e');
-      allow delete: if isAuthenticated() && (
-        (hasRBACAllowAll('nl', 'd') || canAdminister()) ||
+      );
+      allow delete: if isAuthenticated() && !hasRBACDeny('nl', 'd') && (
+        hasRBACAllowAll('nl', 'd') ||
         (hasRBACAllow('nl', 'd') && resource.data.createdBy == request.auth.uid)
-      ) && !hasRBACDeny('nl', 'd');
+      );
     }
 
     // ============================================
@@ -733,22 +729,22 @@ service cloud.firestore {
     // Phase C: Spotlights, Commissions, Mail
     // ============================================
 
-    // Alumni spotlights — public read for published, RBAC + legacy fallback for management
+    // Alumni spotlights — public read for published, RBAC-only for management
     match /spotlights/{spotlightId} {
       allow read: if resource.data.status == 'published' ||
-        (isAuthenticated() && (hasRBACAllow('sp', 'v') || canModerate()));
-      allow create: if isAuthenticated() &&
-        (hasRBACAllow('sp', 'c') || canModerate())
+        (isAuthenticated() && hasRBACAllow('sp', 'v'));
+      allow create: if isAuthenticated() && hasRBACAllow('sp', 'c')
+        && !hasRBACDeny('sp', 'c')
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.createdAt == request.time;
-      allow update: if isAuthenticated() && (
-        (hasRBACAllowAll('sp', 'e') || canModerate()) ||
+      allow update: if isAuthenticated() && !hasRBACDeny('sp', 'e') && (
+        hasRBACAllowAll('sp', 'e') ||
         (hasRBACAllow('sp', 'e') && resource.data.createdBy == request.auth.uid)
-      ) && !hasRBACDeny('sp', 'e');
-      allow delete: if isAuthenticated() && (
-        (hasRBACAllowAll('sp', 'd') || canAdminister()) ||
+      );
+      allow delete: if isAuthenticated() && !hasRBACDeny('sp', 'd') && (
+        hasRBACAllowAll('sp', 'd') ||
         (hasRBACAllow('sp', 'd') && resource.data.createdBy == request.auth.uid)
-      ) && !hasRBACDeny('sp', 'd');
+      );
     }
 
     // Commissions (public read, admin write)
@@ -828,24 +824,24 @@ service cloud.firestore {
 
     // RBAC groups: permission group definitions
     match /rbac_groups/{groupId} {
-      allow read: if isAuthenticated() && !hasRBACDeny('gr', 'v') && (hasRBACAllow('gr', 'v') || canModerate());
-      allow create: if isAuthenticated() && !hasRBACDeny('gr', 'c') && (hasRBACAllow('gr', 'c') || canAdminister());
-      allow update: if isAuthenticated() && !hasRBACDeny('gr', 'e') && (hasRBACAllow('gr', 'e') || canAdminister());
-      allow delete: if isAuthenticated() && !hasRBACDeny('gr', 'd') && (hasRBACAllow('gr', 'd') || canAdminister())
+      allow read: if isAuthenticated() && !hasRBACDeny('gr', 'v') && hasRBACAllow('gr', 'v');
+      allow create: if isAuthenticated() && !hasRBACDeny('gr', 'c') && hasRBACAllow('gr', 'c');
+      allow update: if isAuthenticated() && !hasRBACDeny('gr', 'e') && hasRBACAllow('gr', 'e');
+      allow delete: if isAuthenticated() && !hasRBACDeny('gr', 'd') && hasRBACAllow('gr', 'd')
         && !resource.data.isSystem;
     }
 
     // RBAC user-group assignments: maps users to their groups
     match /rbac_user_groups/{userId} {
       allow read: if isAuthenticated() && (
-        request.auth.uid == userId || hasRBACAllow('gr', 'a') || canModerate()
+        request.auth.uid == userId || hasRBACAllow('gr', 'a')
       );
-      allow write: if isAuthenticated() && (hasRBACAllow('gr', 'a') || canAdminister());
+      allow write: if isAuthenticated() && hasRBACAllow('gr', 'a');
     }
 
     // RBAC audit log: immutable, server-written only
     match /rbac_audit_log/{logId} {
-      allow read: if isAuthenticated() && (hasRBACAllow('gr', 'v') || canAdminister());
+      allow read: if isAuthenticated() && hasRBACAllow('gr', 'v');
       allow write: if false;
     }
 
@@ -856,18 +852,19 @@ service cloud.firestore {
     match /journal_club_sessions/{sessionId} {
       // Public read for published sessions; authenticated + RBAC for drafts
       allow read: if resource.data.status == 'published' ||
-        (isAuthenticated() && (hasRBACAllow('jc', 'v') || canModerate()));
-      allow create: if isAuthenticated() && (hasRBACAllow('jc', 'c') || canModerate())
+        (isAuthenticated() && hasRBACAllow('jc', 'v'));
+      allow create: if isAuthenticated() && hasRBACAllow('jc', 'c')
+        && !hasRBACDeny('jc', 'c')
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.createdAt == request.time;
-      allow update: if isAuthenticated() && (
-        (hasRBACAllowAll('jc', 'e') || canModerate()) ||
+      allow update: if isAuthenticated() && !hasRBACDeny('jc', 'e') && (
+        hasRBACAllowAll('jc', 'e') ||
         (hasRBACAllow('jc', 'e') && resource.data.createdBy == request.auth.uid)
-      ) && !hasRBACDeny('jc', 'e');
-      allow delete: if isAuthenticated() && (
-        (hasRBACAllowAll('jc', 'd') || canAdminister()) ||
+      );
+      allow delete: if isAuthenticated() && !hasRBACDeny('jc', 'd') && (
+        hasRBACAllowAll('jc', 'd') ||
         (hasRBACAllow('jc', 'd') && resource.data.createdBy == request.auth.uid)
-      ) && !hasRBACDeny('jc', 'd');
+      );
     }
 
     // LinkedIn auth codes: server-only (Admin SDK). Deny all client access.

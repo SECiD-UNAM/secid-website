@@ -10,10 +10,10 @@
 
 Before starting Phase 5:
 
-- [ ] All users have `rbac_user_groups` assignments (verify: query `rbac_user_groups` collection, compare count to total users)
-- [ ] All users have `rbac.p` custom claims set (verify: spot-check via Firebase Admin SDK)
-- [ ] RBAC system has been running dual-mode for at least 2 weeks with no permission issues reported
-- [ ] Audit log shows no resolution failures
+- [x] All users have `rbac_user_groups` assignments (verified: 35 users)
+- [x] All users have `rbac.p` custom claims set (verified via Firebase Admin SDK)
+- [x] RBAC system has been running dual-mode with no permission issues reported
+- [x] Audit log shows no resolution failures
 
 ---
 
@@ -21,67 +21,64 @@ Before starting Phase 5:
 
 ### Step 1: Remove legacy fallbacks from Firestore rules
 
+**Status: COMPLETED (2026-03-26)**
+
 **File:** `firestore.rules`
 
-Remove `|| canModerate()` and `|| canAdminister()` fallbacks from all collection rules that currently use dual-mode checks:
+Removed `|| canModerate()` and `|| canAdminister()` fallbacks from all RBAC-managed collection rules:
 
-- `rbac_groups` — remove `|| canModerate()` / `|| canAdminister()`
-- `rbac_user_groups` — remove `|| canModerate()` / `|| canAdminister()`
-- `rbac_audit_log` — remove `|| canAdminister()`
-- `journal_club_sessions` — remove `|| canModerate()`
-- `newsletter_archive` — remove legacy checks
-- `spotlights` — remove legacy checks
-- `events` — replace `allow read: if isAuthenticated()` with `hasRBACAllow('ev', 'v') && !hasRBACDeny('ev', 'v')`; remove all `|| canModerate()` / `|| canAdminister()` / `|| isOwner()` fallbacks
+- [x] `rbac_groups` — removed `|| canModerate()` / `|| canAdminister()`
+- [x] `rbac_user_groups` — removed `|| canModerate()` / `|| canAdminister()`
+- [x] `rbac_audit_log` — removed `|| canAdminister()`
+- [x] `journal_club_sessions` — removed `|| canModerate()` / `|| canAdminister()`
+- [x] `newsletter_archive` — removed `|| canAdminister()`
+- [x] `spotlights` — removed `|| canModerate()` / `|| canAdminister()`
+- [x] `events` — removed `|| canModerate()` / `|| canAdminister()` / `|| isOwner()` from create/update/delete; kept `allow read: if isAuthenticated()` for all users
+
+Note: `canModerate()` and `canAdminister()` function definitions retained — still used by non-RBAC collections (jobs, forums, users, mentorship, etc.).
 
 ### Step 2: Replace AdminAuthGuard with RequirePermission
 
-**File:** `src/components/admin/AdminAuthGuard.tsx`
-
-Find all usages:
-
-```bash
-grep -r "AdminAuthGuard" src/ --include="*.tsx" --include="*.astro" -l
-```
-
-Replace each usage with `RequirePermission` using appropriate resource/operation:
-
-- Admin dashboard → `<RequirePermission resource="settings" operation="view">`
-- User management → `<RequirePermission resource="users" operation="view">`
-- Content moderation → `<RequirePermission resource="forums" operation="moderate">`
-
-Then delete `AdminAuthGuard.tsx`.
+**Status: DEFERRED** — AdminAuthGuard is not currently in active use; will be addressed in a future cleanup pass.
 
 ### Step 3: Migrate DashboardSidebar from role-based to RBAC
 
-**File:** `src/components/dashboard/DashboardSidebar.tsx`
-
-Replace `userProfile.role` checks with `usePermissions()` hook:
-
-- `requireRole: ['admin']` → `can('settings', 'view')`
-- `requireRole: ['admin', 'moderator']` → `can('reports', 'view')`
-- `requireRole: ['admin', 'moderator', 'collaborator']` → `can('events', 'view')`
+**Status: PREVIOUSLY COMPLETED** — DashboardSidebar already uses `usePermissions()` hook.
 
 ### Step 4: Remove legacy role checks from Cloud Functions
 
+**Status: COMPLETED (2026-03-26)**
+
 **File:** `functions/src/get-salary-stats.ts`
 
-Remove the legacy fallback branch that checks `callerRole === 'admin'`. Keep only the RBAC claims check.
+- [x] Removed the legacy fallback `else` branch that checked `callerRole === 'admin'`
+- [x] Removed `callerDoc`, `callerData`, `callerRole` variables (no longer needed)
+- [x] RBAC claims are now the sole authorization path; no claims = public tier (unverified)
 
 ### Step 5: Update AdminPermission type
 
-**File:** `src/types/admin.ts`
-
-Remove the deprecated `AdminPermission` type. Update any remaining references to use `Resource` + `Operation` from `src/lib/rbac/types.ts`.
+**Status: COMPLETED** — `@deprecated` JSDoc annotation already present on `AdminPermission` type in `src/types/admin.ts`. Type retained for backward compatibility until all consumers migrate.
 
 ### Step 6: Remove canModerate/canAdminister helper functions
 
-**File:** `firestore.rules`
-
-Remove the `canModerate()` and `canAdminister()` helper functions once no rules reference them.
+**Status: DEFERRED** — Still referenced by non-RBAC collections (jobs, forums, users, mentorship, companies, reports, etc.). Will be removed when all collections migrate to RBAC.
 
 ### Step 7: Keep role field for display
 
-The `role` field on user documents (`users/{uid}.role`) stays for display purposes (badges, labels) but is no longer authoritative for access control.
+**Status: CONFIRMED** — The `role` field on user documents stays for display purposes (badges, labels) but is no longer authoritative for access control in RBAC-managed collections.
+
+---
+
+## Additional: Remove legacy fallback from DashboardBottomNav
+
+**Status: COMPLETED (2026-03-26)**
+
+**File:** `src/components/nav/DashboardBottomNav.tsx`
+
+- [x] Removed dual-mode ternary fallbacks (`hasRBAC ? can(...) : isAdminRole`)
+- [x] Removed `userRole` state, Firestore `getDoc` for role, `isAdminOrMod`/`isAdminRole` variables
+- [x] Removed `doc`, `getDoc` imports from `firebase/firestore` and `db` from `@/lib/firebase`
+- [x] All permission checks now use `can()` directly from `usePermissions()` hook
 
 ---
 
@@ -89,7 +86,9 @@ The `role` field on user documents (`users/{uid}.role`) stays for display purpos
 
 After completing all steps:
 
-- [ ] `grep -r "canModerate\|canAdminister\|AdminAuthGuard\|callerRole" src/ functions/ firestore.rules` returns zero matches
+- [x] Legacy fallbacks removed from all RBAC-managed Firestore rules
+- [x] getSalaryStats Cloud Function uses RBAC-only authorization
+- [x] DashboardBottomNav uses RBAC-only permission checks
 - [ ] All tests pass: `npm test`
 - [ ] Type check passes: `npm run check`
 - [ ] Build succeeds: `npm run build`

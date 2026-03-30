@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useTranslations } from '../../hooks/useTranslations';
-import type {
-  MentorProfile,
-  FormState,
-  ValidationError,
-} from '@/types/mentorship';
+import type { MentorProfile, FormState, ValidationError } from '@/types';
 import {
   getMentorProfile,
   createMentorProfile,
@@ -104,6 +100,27 @@ const LANGUAGES = [
   'Japanese',
 ];
 
+const inputClasses =
+  'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-white';
+
+const numberInputClasses =
+  'w-24 rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white';
+
+const labelClasses =
+  'mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300';
+
+function StarIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg
+      className={`h-4 w-4 ${filled ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`}
+      fill="currentColor"
+      viewBox="0 0 20 20"
+    >
+      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+    </svg>
+  );
+}
+
 export default function MentorProfile({
   userId,
   mode = 'view',
@@ -111,7 +128,103 @@ export default function MentorProfile({
   onCancel,
 }: MentorProfileProps) {
   const { user } = useAuthContext();
-  const t = useTranslations();
+  const _t = useTranslations();
+
+  // Fallbacks for missing mentorship translation keys
+  const t = {
+    mentorship: {
+      ..._t.mentorship,
+      errors: {
+        loadProfile: 'Error loading profile',
+        saveProfile: 'Error saving profile. Please try again.',
+        ...((_t.mentorship as Record<string, unknown>)?.errors as Record<
+          string,
+          string
+        >),
+      },
+      validation: {
+        displayNameRequired: 'Display name is required',
+        bioMinLength: 'Bio must be at least 50 characters',
+        expertiseRequired: 'Select at least one area of expertise',
+        positionRequired: 'Current position is required',
+        companyRequired: 'Current company is required',
+        experienceMinimum: 'At least 1 year of experience is required',
+        hoursMinimum: 'At least 1 hour per week is required',
+        daysRequired: 'Select at least one preferred day',
+        styleRequired: 'Select at least one mentorship style',
+        ...((_t.mentorship as Record<string, unknown>)?.validation as Record<
+          string,
+          string
+        >),
+      },
+      profile: {
+        yearsExperience: 'years of experience',
+        rating: 'Rating',
+        totalSessions: 'Sessions',
+        mentees: 'Mentees',
+        requestMentorship: 'Request Mentorship',
+        sendMessage: 'Send Message',
+        about: 'About',
+        expertise: 'Expertise',
+        skills: 'Skills',
+        mentorshipStyle: 'Mentorship Style',
+        availability: 'Availability',
+        hoursPerWeek: 'hours/week',
+        experience: 'Experience',
+        current: 'Current',
+        languages: 'Languages',
+        createProfile: 'Create Mentor Profile',
+        editProfile: 'Edit Mentor Profile',
+        formDescription: 'Fill in your details to set up your mentor profile.',
+        saveSuccess: 'Profile saved successfully!',
+        basicInfo: 'Basic Information',
+        profileImage: 'Profile Image',
+        changeImage: 'Change Photo',
+        displayName: 'Display Name',
+        displayNamePlaceholder: 'Your display name',
+        bio: 'Bio',
+        bioPlaceholder:
+          'Tell mentees about yourself, your background, and your approach to mentoring...',
+        characters: 'characters (min 50)',
+        currentPosition: 'Current Position',
+        positionPlaceholder: 'e.g. Senior Data Scientist',
+        currentCompany: 'Current Company',
+        companyPlaceholder: 'e.g. Google',
+        yearsInField: 'Years in Field',
+        previousRoles: 'Previous Roles',
+        addRole: '+ Add Role',
+        expertiseAreas: 'Areas of Expertise',
+        skillsLabel: 'Skills',
+        addSkill: '+ Add Skill',
+        skillPlaceholder: 'Type a skill and press Enter',
+        mentorshipStyleLabel: 'Mentorship Style',
+        maxMentees: 'Maximum Mentees',
+        availabilitySection: 'Availability',
+        hoursPerWeekLabel: 'Hours per week',
+        preferredDays: 'Preferred Days',
+        meetingTimes: 'Preferred Meeting Times',
+        languagesLabel: 'Languages',
+        save: 'Save Profile',
+        saving: 'Saving...',
+        cancel: 'Cancel',
+        jobTitle: 'Job Title',
+        company: 'Company',
+        duration: 'Duration',
+        additionalSkills: 'Additional Skills',
+        addSkillPlaceholder: 'Type a skill and press Add',
+        preferredStyle: 'Preferred Style',
+        maxMenteesHelp:
+          'Maximum number of mentees you can support simultaneously',
+        timezone: 'Timezone',
+        preferredMeetingTimes: 'Preferred Meeting Times',
+        spokenLanguages: 'Spoken Languages',
+        ...((_t.mentorship as Record<string, unknown>)?.profile as Record<
+          string,
+          string
+        >),
+      },
+    },
+  };
 
   const [profile, setProfile] = useState<MentorProfile | null>(null);
   const [formData, setFormData] = useState<MentorProfileForm>({
@@ -173,7 +286,15 @@ export default function MentorProfile({
           expertiseAreas: profileData.expertiseAreas,
           skills: profileData.skills,
           experience: profileData.experience,
-          availability: profileData.availability,
+          availability: {
+            hoursPerWeek: profileData.availability.hoursPerWeek,
+            preferredDays: profileData.availability.preferredDays,
+            timezone:
+              profileData.availability.timezone ||
+              Intl.DateTimeFormat().resolvedOptions().timeZone,
+            preferredMeetingTimes:
+              profileData.availability.preferredMeetingTimes || [],
+          },
           mentorshipStyle: profileData.mentorshipStyle,
           maxMentees: profileData.maxMentees,
           languages: profileData.languages,
@@ -298,14 +419,14 @@ export default function MentorProfile({
         profileImageUrl = await uploadProfileImage(targetUserId, profileImage);
       }
 
-      const profileData: Partial<MentorProfile> = {
+      const profileData = {
         ...formData,
         userId: targetUserId,
         email: user?.email || '',
         profileImage: profileImageUrl,
         isActive: true,
         updatedAt: new Date(),
-      };
+      } as unknown as Partial<MentorProfile>;
 
       let savedProfile: MentorProfile;
 
@@ -399,164 +520,321 @@ export default function MentorProfile({
     }
   };
 
+  // ---------- VIEW MODE ----------
   if (mode === 'view' && profile) {
     return (
-      <div className="mentor-profile-view">
-        <div className="profile-header">
-          <div className="profile-avatar">
-            {profile.profileImage ? (
-              <img src={profile.profileImage} alt={profile.displayName} />
-            ) : (
-              <div className="avatar-placeholder">
-                <i className="fas fa-user"></i>
-              </div>
-            )}
-          </div>
+      <div className="space-y-6">
+        {/* Header card */}
+        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+          <div className="bg-gradient-to-r from-primary-50 to-amber-50 px-6 py-8 dark:from-primary-900/10 dark:to-amber-900/10">
+            <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
+              {/* Avatar */}
+              {profile.profileImage ? (
+                <img
+                  src={profile.profileImage}
+                  alt={profile.displayName}
+                  className="h-24 w-24 rounded-full object-cover ring-4 ring-white dark:ring-gray-800"
+                />
+              ) : (
+                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-amber-400 ring-4 ring-white dark:ring-gray-800">
+                  <svg
+                    className="h-10 w-10 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
+              )}
 
-          <div className="profile-info">
-            <h1>{profile.displayName}</h1>
-            <p className="profile-title">
-              {profile?.experience?.currentPosition} at{' '}
-              {profile?.experience?.currentCompany}
-            </p>
-            <p className="profile-experience">
-              {profile?.experience?.yearsInField}{' '}
-              {t.mentorship.profile.yearsExperience}
-            </p>
+              {/* Info */}
+              <div className="flex-1 text-center sm:text-left">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {profile.displayName}
+                </h1>
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                  {profile?.experience?.currentPosition} at{' '}
+                  {profile?.experience?.currentCompany}
+                </p>
+                <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-500">
+                  {profile?.experience?.yearsInField}{' '}
+                  {t.mentorship.profile.yearsExperience}
+                </p>
 
-            <div className="profile-stats">
-              <div className="stat">
-                <span className="value">{profile?.rating?.toFixed(1)}</span>
-                <span className="label">{t.mentorship.profile.rating}</span>
-                <div className="stars">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <i
-                      key={star}
-                      className={`fas fa-star ${star <= profile.rating ? 'filled' : ''}`}
-                    ></i>
-                  ))}
+                {/* Stats row */}
+                <div className="mt-4 flex flex-wrap justify-center gap-6 sm:justify-start">
+                  <div className="text-center">
+                    <span className="text-lg font-bold text-primary-600 dark:text-primary-400">
+                      {profile?.rating?.toFixed(1)}
+                    </span>
+                    <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">
+                      {t.mentorship.profile.rating}
+                    </span>
+                    <div className="mt-0.5 flex">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <StarIcon key={star} filled={star <= profile.rating} />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                      {profile.totalSessions}
+                    </span>
+                    <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">
+                      {t.mentorship.profile.totalSessions}
+                    </span>
+                  </div>
+                  <div className="text-center">
+                    <span className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                      {profile.currentMentees}/{profile.maxMentees}
+                    </span>
+                    <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">
+                      {t.mentorship.profile.mentees}
+                    </span>
+                  </div>
                 </div>
               </div>
-              <div className="stat">
-                <span className="value">{profile.totalSessions}</span>
-                <span className="label">
-                  {t.mentorship.profile.totalSessions}
-                </span>
-              </div>
-              <div className="stat">
-                <span className="value">
-                  {profile.currentMentees}/{profile.maxMentees}
-                </span>
-                <span className="label">{t.mentorship.profile.mentees}</span>
+
+              {/* Action buttons */}
+              <div className="flex flex-col gap-2">
+                <button className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                    />
+                  </svg>
+                  {t.mentorship.profile.requestMentorship}
+                </button>
+                <button className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                  {t.mentorship.profile.sendMessage}
+                </button>
               </div>
             </div>
           </div>
-
-          <div className="profile-actions">
-            <button className="btn btn-primary">
-              <i className="fas fa-paper-plane"></i>
-              {t.mentorship.profile.requestMentorship}
-            </button>
-            <button className="btn btn-outline">
-              <i className="fas fa-envelope"></i>
-              {t.mentorship.profile.sendMessage}
-            </button>
-          </div>
         </div>
 
-        <div className="profile-content">
-          <section className="profile-section">
-            <h2>{t.mentorship.profile.about}</h2>
-            <p className="profile-bio">{profile.bio}</p>
+        {/* Content sections */}
+        <div className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+          {/* About */}
+          <section>
+            <h2 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">
+              {t.mentorship.profile.about}
+            </h2>
+            <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">
+              {profile.bio}
+            </p>
           </section>
 
-          <section className="profile-section">
-            <h2>{t.mentorship.profile.expertise}</h2>
-            <div className="tags-list">
+          {/* Expertise */}
+          <section>
+            <h2 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">
+              {t.mentorship.profile.expertise}
+            </h2>
+            <div className="flex flex-wrap gap-2">
               {profile?.expertiseAreas?.map((area, index) => (
-                <span key={index} className="tag expertise">
+                <span
+                  key={index}
+                  className="rounded-full bg-primary-50 px-3 py-1 text-xs font-medium text-primary-700 dark:bg-primary-900/20 dark:text-primary-300"
+                >
                   {area}
                 </span>
               ))}
             </div>
           </section>
 
-          <section className="profile-section">
-            <h2>{t.mentorship.profile.skills}</h2>
-            <div className="tags-list">
+          {/* Skills */}
+          <section>
+            <h2 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">
+              {t.mentorship.profile.skills}
+            </h2>
+            <div className="flex flex-wrap gap-2">
               {profile?.skills?.map((skill, index) => (
-                <span key={index} className="tag skill">
+                <span
+                  key={index}
+                  className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/20 dark:text-blue-300"
+                >
                   {skill}
                 </span>
               ))}
             </div>
           </section>
 
-          <section className="profile-section">
-            <h2>{t.mentorship.profile.mentorshipStyle}</h2>
-            <div className="tags-list">
+          {/* Mentorship Style */}
+          <section>
+            <h2 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">
+              {t.mentorship.profile.mentorshipStyle}
+            </h2>
+            <div className="flex flex-wrap gap-2">
               {profile?.mentorshipStyle?.map((style, index) => (
-                <span key={index} className="tag style">
+                <span
+                  key={index}
+                  className="rounded-full bg-purple-50 px-3 py-1 text-xs font-medium text-purple-700 dark:bg-purple-900/20 dark:text-purple-300"
+                >
                   {style}
                 </span>
               ))}
             </div>
           </section>
 
-          <section className="profile-section">
-            <h2>{t.mentorship.profile.availability}</h2>
-            <div className="availability-info">
-              <div className="availability-item">
-                <i className="fas fa-clock"></i>
+          {/* Availability */}
+          <section>
+            <h2 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">
+              {t.mentorship.profile.availability}
+            </h2>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <svg
+                  className="h-4 w-4 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
                 <span>
                   {profile?.availability?.hoursPerWeek}{' '}
                   {t.mentorship.profile.hoursPerWeek}
                 </span>
               </div>
-              <div className="availability-item">
-                <i className="fas fa-calendar"></i>
+              <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <svg
+                  className="h-4 w-4 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
                 <span>{profile?.availability?.preferredDays.join(', ')}</span>
               </div>
-              <div className="availability-item">
-                <i className="fas fa-globe"></i>
+              <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <svg
+                  className="h-4 w-4 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
                 <span>{profile?.availability?.timezone}</span>
               </div>
-              <div className="availability-item">
-                <i className="fas fa-clock"></i>
+              <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <svg
+                  className="h-4 w-4 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
                 <span>
-                  {profile?.availability?.preferredMeetingTimes.join(', ')}
+                  {profile?.availability?.preferredMeetingTimes?.join(', ')}
                 </span>
               </div>
             </div>
           </section>
 
-          {profile?.experience?.previousRoles.length > 0 && (
-            <section className="profile-section">
-              <h2>{t.mentorship.profile.experience}</h2>
-              <div className="experience-list">
-                <div className="experience-item current">
-                  <h3>{profile?.experience?.currentPosition}</h3>
-                  <p>{profile?.experience?.currentCompany}</p>
-                  <span className="duration">
-                    {t.mentorship.profile.current}
-                  </span>
-                </div>
-                {profile?.experience?.previousRoles.map((role, index) => (
-                  <div key={index} className="experience-item">
-                    <h3>{role.title}</h3>
-                    <p>{role.company}</p>
-                    <span className="duration">{role.duration}</span>
+          {/* Experience history */}
+          {profile?.experience?.previousRoles &&
+            profile.experience.previousRoles.length > 0 && (
+              <section>
+                <h2 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">
+                  {t.mentorship.profile.experience}
+                </h2>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between rounded-lg bg-primary-50 px-4 py-3 dark:bg-primary-900/10">
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                        {profile?.experience?.currentPosition}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {profile?.experience?.currentCompany}
+                      </p>
+                    </div>
+                    <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/20 dark:text-green-400">
+                      {t.mentorship.profile.current}
+                    </span>
                   </div>
-                ))}
-              </div>
-            </section>
-          )}
+                  {profile?.experience?.previousRoles.map((role, index) => (
+                    <div
+                      key={index}
+                      className="rounded-lg bg-gray-50 px-4 py-3 dark:bg-gray-700/40"
+                    >
+                      <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                        {role.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {role.company}
+                      </p>
+                      {role.duration && (
+                        <span className="text-xs text-gray-400">
+                          {role.duration}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
-          <section className="profile-section">
-            <h2>{t.mentorship.profile.languages}</h2>
-            <div className="tags-list">
+          {/* Languages */}
+          <section>
+            <h2 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">
+              {t.mentorship.profile.languages}
+            </h2>
+            <div className="flex flex-wrap gap-2">
               {profile?.languages?.map((language, index) => (
-                <span key={index} className="tag language">
+                <span
+                  key={index}
+                  className="rounded-full bg-green-50 px-3 py-1 text-xs font-medium text-green-700 dark:bg-green-900/20 dark:text-green-300"
+                >
                   {language}
                 </span>
               ))}
@@ -567,22 +845,38 @@ export default function MentorProfile({
     );
   }
 
+  // ---------- EDIT / CREATE MODE ----------
   return (
-    <div className="mentor-profile-form">
-      <div className="form-header">
-        <h1>
+    <div>
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">
           {mode === 'create'
             ? t.mentorship.profile.createProfile
             : t.mentorship.profile.editProfile}
         </h1>
-        <p>{t.mentorship.profile.formDescription}</p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          {t.mentorship.profile.formDescription}
+        </p>
       </div>
 
       {formState.errors.length > 0 && (
-        <div className="form-errors">
+        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
           {formState.errors.map((error, index) => (
-            <p key={index} className="error-message">
-              <i className="fas fa-exclamation-circle"></i>
+            <p
+              key={index}
+              className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400"
+            >
+              <svg
+                className="h-4 w-4 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
               {error['message']}
             </p>
           ))}
@@ -590,39 +884,66 @@ export default function MentorProfile({
       )}
 
       {formState.success && (
-        <div className="form-success">
-          <p>
-            <i className="fas fa-check-circle"></i>
+        <div className="mb-6 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+          <p className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+            <svg
+              className="h-4 w-4 flex-shrink-0"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clipRule="evenodd"
+              />
+            </svg>
             {t.mentorship.profile.saveSuccess}
           </p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="profile-form">
+      <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Information */}
-        <section className="form-section">
-          <h2>{t.mentorship.profile.basicInfo}</h2>
+        <section>
+          <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+            {t.mentorship.profile.basicInfo}
+          </h3>
 
           {/* Profile Image */}
-          <div className="form-group">
-            <label>{t.mentorship.profile.profileImage}</label>
-            <div className="image-upload-section">
-              <div className="current-image">
-                {imagePreview ? (
-                  <img src={imagePreview} alt="Profile preview" />
-                ) : (
-                  <div className="image-placeholder">
-                    <i className="fas fa-user"></i>
-                  </div>
-                )}
-              </div>
-              <div className="image-upload-controls">
+          <div className="mb-4">
+            <label className={labelClasses}>
+              {t.mentorship.profile.profileImage}
+            </label>
+            <div className="mt-2 flex items-center gap-4">
+              {imagePreview ? (
+                <img
+                  src={imagePreview}
+                  alt="Profile preview"
+                  className="h-20 w-20 rounded-full object-cover ring-2 ring-primary-100 dark:ring-primary-900/30"
+                />
+              ) : (
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-100 text-gray-400 dark:bg-gray-700">
+                  <svg
+                    className="h-8 w-8"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
+              )}
+              <div>
                 <button
                   type="button"
-                  className="btn btn-outline"
+                  className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                   onClick={() => setShowImageUpload(!showImageUpload)}
                 >
-                  <i className="fas fa-camera"></i>
                   {t.mentorship.profile.changeImage}
                 </button>
                 {showImageUpload && (
@@ -630,7 +951,7 @@ export default function MentorProfile({
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
-                    className="file-input"
+                    className="mt-2 text-sm"
                   />
                 )}
               </div>
@@ -638,8 +959,8 @@ export default function MentorProfile({
           </div>
 
           {/* Display Name */}
-          <div className="form-group">
-            <label htmlFor="displayName">
+          <div className="mb-4">
+            <label htmlFor="displayName" className={labelClasses}>
               {t.mentorship.profile.displayName} *
             </label>
             <input
@@ -653,13 +974,16 @@ export default function MentorProfile({
                 }))
               }
               placeholder={t.mentorship.profile.displayNamePlaceholder}
+              className={inputClasses}
               required
             />
           </div>
 
           {/* Bio */}
-          <div className="form-group">
-            <label htmlFor="bio">{t.mentorship.profile.bio} *</label>
+          <div className="mb-4">
+            <label htmlFor="bio" className={labelClasses}>
+              {t.mentorship.profile.bio} *
+            </label>
             <textarea
               id="bio"
               value={formData.bio}
@@ -672,21 +996,24 @@ export default function MentorProfile({
               placeholder={t.mentorship.profile.bioPlaceholder}
               rows={4}
               minLength={50}
+              className={`${inputClasses} resize-none`}
               required
             />
-            <small>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {formData.bio.length}/500 {t.mentorship.profile.characters}
-            </small>
+            </p>
           </div>
         </section>
 
         {/* Experience */}
-        <section className="form-section">
-          <h2>{t.mentorship.profile.experience}</h2>
+        <section>
+          <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+            {t.mentorship.profile.experience}
+          </h3>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="currentPosition">
+          <div className="mb-4 grid gap-4 sm:grid-cols-2">
+            <div>
+              <label htmlFor="currentPosition" className={labelClasses}>
                 {t.mentorship.profile.currentPosition} *
               </label>
               <input
@@ -702,12 +1029,13 @@ export default function MentorProfile({
                     },
                   }))
                 }
+                className={inputClasses}
                 required
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="currentCompany">
+            <div>
+              <label htmlFor="currentCompany" className={labelClasses}>
                 {t.mentorship.profile.currentCompany} *
               </label>
               <input
@@ -723,13 +1051,14 @@ export default function MentorProfile({
                     },
                   }))
                 }
+                className={inputClasses}
                 required
               />
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="yearsInField">
+          <div className="mb-4">
+            <label htmlFor="yearsInField" className={labelClasses}>
               {t.mentorship.profile.yearsInField} *
             </label>
             <input
@@ -747,129 +1076,161 @@ export default function MentorProfile({
                   },
                 }))
               }
+              className={numberInputClasses}
               required
             />
           </div>
 
           {/* Previous Roles */}
-          <div className="form-group">
-            <label>{t.mentorship.profile.previousRoles}</label>
+          <div className="mb-4">
+            <label className={labelClasses}>
+              {t.mentorship.profile.previousRoles}
+            </label>
 
-            {formData.experience.previousRoles.map((role, index) => (
-              <div key={index} className="previous-role-item">
-                <div className="role-info">
-                  <strong>{role.title}</strong> at {role.company}
-                  {role.duration && <span> ({role.duration})</span>}
-                </div>
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-sm"
-                  onClick={() => removePreviousRole(index)}
-                >
-                  <i className="fas fa-times"></i>
-                </button>
+            {formData.experience.previousRoles.length > 0 && (
+              <div className="mb-3 space-y-2">
+                {formData.experience.previousRoles.map((role, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-700/40"
+                  >
+                    <div className="text-sm">
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        {role.title}
+                      </span>
+                      <span className="text-gray-500"> at {role.company}</span>
+                      {role.duration && (
+                        <span className="text-gray-400">
+                          {' '}
+                          ({role.duration})
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      className="text-gray-400 hover:text-red-500"
+                      onClick={() => removePreviousRole(index)}
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
 
-            <div className="add-role-form">
-              <div className="form-row">
-                <input
-                  type="text"
-                  placeholder={t.mentorship.profile.jobTitle}
-                  value={newRole.title}
-                  onChange={(e) =>
-                    setNewRole((prev) => ({
-                      ...prev,
-                      title: e.target.value,
-                    }))
-                  }
-                />
-                <input
-                  type="text"
-                  placeholder={t.mentorship.profile.company}
-                  value={newRole.company}
-                  onChange={(e) =>
-                    setNewRole((prev) => ({
-                      ...prev,
-                      company: e.target.value,
-                    }))
-                  }
-                />
-                <input
-                  type="text"
-                  placeholder={t.mentorship.profile.duration}
-                  value={newRole.duration}
-                  onChange={(e) =>
-                    setNewRole((prev) => ({
-                      ...prev,
-                      duration: e.target.value,
-                    }))
-                  }
-                />
-                <button
-                  type="button"
-                  className="btn btn-outline btn-sm"
-                  onClick={addPreviousRole}
-                  disabled={!newRole.title.trim() || !newRole.company.trim()}
-                >
-                  <i className="fas fa-plus"></i>
-                </button>
-              </div>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <input
+                type="text"
+                placeholder={t.mentorship.profile.jobTitle}
+                value={newRole.title}
+                onChange={(e) =>
+                  setNewRole((prev) => ({
+                    ...prev,
+                    title: e.target.value,
+                  }))
+                }
+                className={`flex-1 ${inputClasses}`}
+              />
+              <input
+                type="text"
+                placeholder={t.mentorship.profile.company}
+                value={newRole.company}
+                onChange={(e) =>
+                  setNewRole((prev) => ({
+                    ...prev,
+                    company: e.target.value,
+                  }))
+                }
+                className={`flex-1 ${inputClasses}`}
+              />
+              <input
+                type="text"
+                placeholder={t.mentorship.profile.duration}
+                value={newRole.duration}
+                onChange={(e) =>
+                  setNewRole((prev) => ({
+                    ...prev,
+                    duration: e.target.value,
+                  }))
+                }
+                className={`w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:w-32`}
+              />
+              <button
+                type="button"
+                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-400"
+                onClick={addPreviousRole}
+                disabled={!newRole.title.trim() || !newRole.company.trim()}
+              >
+                +
+              </button>
             </div>
           </div>
         </section>
 
         {/* Expertise */}
-        <section className="form-section">
-          <h2>{t.mentorship.profile.expertise}</h2>
+        <section>
+          <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+            {t.mentorship.profile.expertise}
+          </h3>
 
-          <div className="form-group">
-            <label>{t.mentorship.profile.expertiseAreas} *</label>
-            <div className="checkbox-grid">
+          <div className="mb-4">
+            <label className={labelClasses}>
+              {t.mentorship.profile.expertiseAreas} *
+            </label>
+            <div className="flex flex-wrap gap-2">
               {EXPERTISE_AREAS.map((area) => (
-                <label key={area} className="checkbox-item">
-                  <input
-                    type="checkbox"
-                    checked={formData.expertiseAreas.includes(area)}
-                    onChange={() =>
-                      toggleArrayValue(
-                        formData.expertiseAreas,
-                        area,
-                        (newAreas) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            expertiseAreas: newAreas,
-                          }))
-                      )
-                    }
-                  />
-                  <span>{area}</span>
-                </label>
+                <button
+                  key={area}
+                  type="button"
+                  onClick={() =>
+                    toggleArrayValue(
+                      formData.expertiseAreas,
+                      area,
+                      (newAreas) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          expertiseAreas: newAreas,
+                        }))
+                    )
+                  }
+                  className={
+                    formData.expertiseAreas.includes(area)
+                      ? 'rounded-full border border-primary-500 bg-primary-50 px-3 py-1.5 text-sm font-medium text-primary-700 dark:border-primary-400 dark:bg-primary-900/20 dark:text-primary-300'
+                      : 'rounded-full border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:border-gray-300 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-500'
+                  }
+                >
+                  {area}
+                </button>
               ))}
             </div>
           </div>
 
-          <div className="form-group">
-            <label>{t.mentorship.profile.additionalSkills}</label>
+          <div className="mb-4">
+            <label className={labelClasses}>
+              {t.mentorship.profile.additionalSkills}
+            </label>
 
             {formData.skills.length > 0 && (
-              <div className="skills-list">
+              <div className="mb-3 flex flex-wrap gap-2">
                 {formData.skills.map((skill, index) => (
-                  <span key={index} className="skill-tag">
+                  <span
+                    key={index}
+                    className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2.5 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-900/20 dark:text-primary-300"
+                  >
                     {skill}
                     <button
                       type="button"
                       onClick={() => removeSkill(skill)}
-                      className="remove-skill"
+                      className="ml-0.5 text-primary-400 hover:text-primary-600"
                     >
-                      <i className="fas fa-times"></i>
+                      &times;
                     </button>
                   </span>
                 ))}
               </div>
             )}
 
-            <div className="add-skill-form">
+            <div className="flex gap-2">
               <input
                 type="text"
                 placeholder={t.mentorship.profile.addSkillPlaceholder}
@@ -878,51 +1239,60 @@ export default function MentorProfile({
                 onKeyPress={(e) =>
                   e.key === 'Enter' && (e.preventDefault(), addSkill())
                 }
+                className={`flex-1 ${inputClasses}`}
               />
               <button
                 type="button"
-                className="btn btn-outline btn-sm"
+                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:text-gray-400"
                 onClick={addSkill}
                 disabled={!newSkill.trim()}
               >
-                <i className="fas fa-plus"></i>
+                +
               </button>
             </div>
           </div>
         </section>
 
         {/* Mentorship Style */}
-        <section className="form-section">
-          <h2>{t.mentorship.profile.mentorshipStyle}</h2>
+        <section>
+          <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+            {t.mentorship.profile.mentorshipStyle}
+          </h3>
 
-          <div className="form-group">
-            <label>{t.mentorship.profile.preferredStyle} *</label>
-            <div className="checkbox-grid">
+          <div className="mb-4">
+            <label className={labelClasses}>
+              {t.mentorship.profile.preferredStyle} *
+            </label>
+            <div className="flex flex-wrap gap-2">
               {MENTORSHIP_STYLES.map((style) => (
-                <label key={style} className="checkbox-item">
-                  <input
-                    type="checkbox"
-                    checked={formData.mentorshipStyle.includes(style)}
-                    onChange={() =>
-                      toggleArrayValue(
-                        formData.mentorshipStyle,
-                        style,
-                        (newStyles) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            mentorshipStyle: newStyles,
-                          }))
-                      )
-                    }
-                  />
-                  <span>{style}</span>
-                </label>
+                <button
+                  key={style}
+                  type="button"
+                  onClick={() =>
+                    toggleArrayValue(
+                      formData.mentorshipStyle,
+                      style,
+                      (newStyles) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          mentorshipStyle: newStyles,
+                        }))
+                    )
+                  }
+                  className={
+                    formData.mentorshipStyle.includes(style)
+                      ? 'rounded-full border border-primary-500 bg-primary-50 px-3 py-1.5 text-sm font-medium text-primary-700 dark:border-primary-400 dark:bg-primary-900/20 dark:text-primary-300'
+                      : 'rounded-full border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:border-gray-300 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-500'
+                  }
+                >
+                  {style}
+                </button>
               ))}
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="maxMentees">
+          <div className="mb-4">
+            <label htmlFor="maxMentees" className={labelClasses}>
               {t.mentorship.profile.maxMentees}
             </label>
             <input
@@ -937,17 +1307,22 @@ export default function MentorProfile({
                   maxMentees: parseInt(e.target.value) || 1,
                 }))
               }
+              className={numberInputClasses}
             />
-            <small>{t.mentorship.profile.maxMenteesHelp}</small>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {t.mentorship.profile.maxMenteesHelp}
+            </p>
           </div>
         </section>
 
         {/* Availability */}
-        <section className="form-section">
-          <h2>{t.mentorship.profile.availability}</h2>
+        <section>
+          <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+            {t.mentorship.profile.availability}
+          </h3>
 
-          <div className="form-group">
-            <label htmlFor="hoursPerWeek">
+          <div className="mb-4">
+            <label htmlFor="hoursPerWeek" className={labelClasses}>
               {t.mentorship.profile.hoursPerWeek} *
             </label>
             <input
@@ -965,41 +1340,50 @@ export default function MentorProfile({
                   },
                 }))
               }
+              className={numberInputClasses}
               required
             />
           </div>
 
-          <div className="form-group">
-            <label>{t.mentorship.profile.preferredDays} *</label>
-            <div className="checkbox-grid">
+          <div className="mb-4">
+            <label className={labelClasses}>
+              {t.mentorship.profile.preferredDays} *
+            </label>
+            <div className="flex flex-wrap gap-2">
               {DAYS_OF_WEEK.map((day) => (
-                <label key={day} className="checkbox-item">
-                  <input
-                    type="checkbox"
-                    checked={formData.availability.preferredDays.includes(day)}
-                    onChange={() =>
-                      toggleArrayValue(
-                        formData.availability.preferredDays,
-                        day,
-                        (newDays) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            availability: {
-                              ...prev.availability,
-                              preferredDays: newDays,
-                            },
-                          }))
-                      )
-                    }
-                  />
-                  <span>{day}</span>
-                </label>
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() =>
+                    toggleArrayValue(
+                      formData.availability.preferredDays,
+                      day,
+                      (newDays) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          availability: {
+                            ...prev.availability,
+                            preferredDays: newDays,
+                          },
+                        }))
+                    )
+                  }
+                  className={
+                    formData.availability.preferredDays.includes(day)
+                      ? 'rounded-full border border-primary-500 bg-primary-50 px-3 py-1.5 text-sm font-medium text-primary-700 dark:border-primary-400 dark:bg-primary-900/20 dark:text-primary-300'
+                      : 'rounded-full border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:border-gray-300 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-500'
+                  }
+                >
+                  {day}
+                </button>
               ))}
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="timezone">{t.mentorship.profile.timezone}</label>
+          <div className="mb-4">
+            <label htmlFor="timezone" className={labelClasses}>
+              {t.mentorship.profile.timezone}
+            </label>
             <input
               type="text"
               id="timezone"
@@ -1014,97 +1398,129 @@ export default function MentorProfile({
                 }))
               }
               placeholder="UTC-6, EST, PST, etc."
+              className={inputClasses}
             />
           </div>
 
-          <div className="form-group">
-            <label>{t.mentorship.profile.preferredMeetingTimes}</label>
-            <div className="checkbox-grid">
+          <div className="mb-4">
+            <label className={labelClasses}>
+              {t.mentorship.profile.preferredMeetingTimes}
+            </label>
+            <div className="flex flex-wrap gap-2">
               {MEETING_TIMES.map((time) => (
-                <label key={time} className="checkbox-item">
-                  <input
-                    type="checkbox"
-                    checked={formData.availability.preferredMeetingTimes.includes(
-                      time
-                    )}
-                    onChange={() =>
-                      toggleArrayValue(
-                        formData.availability.preferredMeetingTimes,
-                        time,
-                        (newTimes) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            availability: {
-                              ...prev.availability,
-                              preferredMeetingTimes: newTimes,
-                            },
-                          }))
-                      )
-                    }
-                  />
-                  <span>{time}</span>
-                </label>
+                <button
+                  key={time}
+                  type="button"
+                  onClick={() =>
+                    toggleArrayValue(
+                      formData.availability.preferredMeetingTimes,
+                      time,
+                      (newTimes) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          availability: {
+                            ...prev.availability,
+                            preferredMeetingTimes: newTimes,
+                          },
+                        }))
+                    )
+                  }
+                  className={
+                    formData.availability.preferredMeetingTimes.includes(time)
+                      ? 'rounded-full border border-primary-500 bg-primary-50 px-3 py-1.5 text-sm font-medium text-primary-700 dark:border-primary-400 dark:bg-primary-900/20 dark:text-primary-300'
+                      : 'rounded-full border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:border-gray-300 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-500'
+                  }
+                >
+                  {time}
+                </button>
               ))}
             </div>
           </div>
         </section>
 
         {/* Languages */}
-        <section className="form-section">
-          <h2>{t.mentorship.profile.languages}</h2>
+        <section>
+          <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
+            {t.mentorship.profile.languages}
+          </h3>
 
-          <div className="form-group">
-            <label>{t.mentorship.profile.spokenLanguages}</label>
-            <div className="checkbox-grid">
+          <div className="mb-4">
+            <label className={labelClasses}>
+              {t.mentorship.profile.spokenLanguages}
+            </label>
+            <div className="flex flex-wrap gap-2">
               {LANGUAGES.map((language) => (
-                <label key={language} className="checkbox-item">
-                  <input
-                    type="checkbox"
-                    checked={formData.languages.includes(language)}
-                    onChange={() =>
-                      toggleArrayValue(
-                        formData.languages,
-                        language,
-                        (newLanguages) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            languages: newLanguages,
-                          }))
-                      )
-                    }
-                  />
-                  <span>{language}</span>
-                </label>
+                <button
+                  key={language}
+                  type="button"
+                  onClick={() =>
+                    toggleArrayValue(
+                      formData.languages,
+                      language,
+                      (newLanguages) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          languages: newLanguages,
+                        }))
+                    )
+                  }
+                  className={
+                    formData.languages.includes(language)
+                      ? 'rounded-full border border-primary-500 bg-primary-50 px-3 py-1.5 text-sm font-medium text-primary-700 dark:border-primary-400 dark:bg-primary-900/20 dark:text-primary-300'
+                      : 'rounded-full border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:border-gray-300 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-500'
+                  }
+                >
+                  {language}
+                </button>
               ))}
             </div>
           </div>
         </section>
 
         {/* Form Actions */}
-        <div className="form-actions">
+        <div className="flex items-center justify-end gap-3 border-t border-gray-200 pt-6 dark:border-gray-700">
           <button
             type="button"
-            className="btn btn-outline"
+            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
             onClick={onCancel}
             disabled={formState.isSubmitting}
           >
-            {t.common.cancel}
+            {t.mentorship.profile.cancel}
           </button>
 
           <button
             type="submit"
-            className="btn btn-primary"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
             disabled={formState.isSubmitting}
           >
             {formState.isSubmitting ? (
               <>
-                <i className="fas fa-spinner fa-spin"></i>
-                {t.common.saving}
+                <svg
+                  className="h-4 w-4 animate-spin"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                {t.mentorship.profile.saving}
               </>
             ) : (
               <>
-                <i className="fas fa-save"></i>
-                {mode === 'create' ? t.common.create : t.common.save}
+                {mode === 'create'
+                  ? t.mentorship.profile.createProfile
+                  : t.mentorship.profile.save}
               </>
             )}
           </button>

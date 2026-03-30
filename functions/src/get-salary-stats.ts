@@ -113,28 +113,21 @@ export const getSalaryStats = onRequest(
 
     const callerUid = decodedToken.uid;
 
-    // --- RBAC permission check with legacy role fallback ---
+    // --- RBAC permission check (sole authorization mechanism) ---
     const rbacClaims = decodedToken.rbac as { p?: string } | undefined;
     const db = getDb();
-    const callerDoc = await db.collection("users").doc(callerUid).get();
-    const callerData = callerDoc.data();
-    const callerRole = callerData?.role || "member";
 
-    let isAdmin: boolean;
-    let isVerified: boolean;
+    let isAdmin = false;
+    let isVerified = false;
 
     if (rbacClaims?.p) {
-      // RBAC claims present — use permission-based checks
       const tokens = decodeClaimsPermissions(rbacClaims.p);
       const exportCheck = checkPermission(tokens, "salary-insights", "export");
       isAdmin = exportCheck.allowed && exportCheck.scope === "all";
       const viewCheck = checkPermission(tokens, "salary-insights", "view");
       isVerified = viewCheck.allowed;
-    } else {
-      // Fallback: legacy role-based check (backward compatibility)
-      isAdmin = callerRole === "admin";
-      isVerified = callerData?.isVerified === true || isAdmin || callerRole === "moderator";
     }
+    // No RBAC claims → treated as unverified (public tier)
 
     if (!isVerified) {
       res.json({
