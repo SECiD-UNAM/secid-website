@@ -1,11 +1,10 @@
 import { defineCollection, z } from 'astro:content';
+import { glob } from 'astro/loaders';
 
 const blog = defineCollection({
-  type: 'content',
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
   schema: z.object({
     title: z.string(),
-    // Astro 5 derives the file-system slug automatically; this field stores a
-    // canonical slug that overrides the file-based one when present.
     slug: z.string().optional(),
     excerpt: z.string(),
     author: z.string(),
@@ -19,4 +18,4 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { blog };
+export const collections = { blog } as any;
