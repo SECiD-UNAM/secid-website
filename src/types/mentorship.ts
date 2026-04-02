@@ -25,10 +25,17 @@ export interface MentorProfile {
   isVerified: boolean;
   mentorshipStyle: string[];
   languages: string[];
+  skills: string[];
+  email?: string;
   experience: {
     currentPosition: string;
     currentCompany: string;
     yearsInField: number;
+    previousRoles: {
+      title: string;
+      company: string;
+      duration: string;
+    }[];
   };
   joinedAt: Date;
   createdAt: Date;
@@ -76,6 +83,8 @@ export interface MentorAvailability {
   sunday: TimeSlot[];
   hoursPerWeek: number;
   preferredDays: string[];
+  timezone?: string;
+  preferredMeetingTimes?: string[];
 }
 
 export interface TimeSlot {

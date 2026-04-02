@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.backfillRbacUsers = exports.seedRbacGroups = exports.onGroupWrite = exports.onUserGroupWrite = exports.getSalaryStats = exports.exchangeLinkedInCode = exports.linkedinAuthCallback = exports.linkedinAuthRedirect = exports.submitPublicJob = exports.completeRegistration = exports.onMergeRequestApproved = exports.onUserNumeroCuentaChange = exports.onMemberCompanyChange = exports.getMemberGroupList = exports.updateMemberGroups = exports.syncGroupMembership = exports.onMemberStatusChange = exports.onUserDocCreated = exports.onNewJobPosted = exports.onUserDelete = exports.matchJobsForUser = exports.verifyUnamEmail = exports.onUserCreate = void 0;
+exports.requirePermission = exports.backfillRbacUsers = exports.seedRbacGroups = exports.onGroupWrite = exports.onUserGroupWrite = exports.getSalaryStats = exports.submitPublicJob = exports.completeRegistration = exports.onMergeRequestApproved = exports.onUserNumeroCuentaChange = exports.onMemberCompanyChange = exports.getMemberGroupList = exports.updateMemberGroups = exports.syncGroupMembership = exports.onMemberStatusChange = exports.onUserDocCreated = exports.onNewJobPosted = exports.onUserDelete = exports.matchJobsForUser = exports.verifyUnamEmail = exports.onUserCreate = void 0;
 const firestore_1 = require("firebase-functions/v2/firestore");
 const https_1 = require("firebase-functions/v2/https");
 const identity_1 = require("firebase-functions/v2/identity");
@@ -448,11 +448,8 @@ exports.getMemberGroupList = (0, https_1.onCall)(async (request) => {
 });
 var companies_1 = require("./companies");
 Object.defineProperty(exports, "onMemberCompanyChange", { enumerable: true, get: function () { return companies_1.onMemberCompanyChange; } });
-// LinkedIn OAuth: custom OAuth flow (avoids Identity Platform OIDC charges)
-var linkedin_auth_1 = require("./linkedin-auth");
-Object.defineProperty(exports, "linkedinAuthRedirect", { enumerable: true, get: function () { return linkedin_auth_1.linkedinAuthRedirect; } });
-Object.defineProperty(exports, "linkedinAuthCallback", { enumerable: true, get: function () { return linkedin_auth_1.linkedinAuthCallback; } });
-Object.defineProperty(exports, "exchangeLinkedInCode", { enumerable: true, get: function () { return linkedin_auth_1.exchangeLinkedInCode; } });
+// LinkedIn OAuth: disabled — requires LINKEDIN_CLIENT_ID secret in Secret Manager
+// export { linkedinAuthRedirect, linkedinAuthCallback, exchangeLinkedInCode } from "./linkedin-auth";
 // LinkedIn PDF Parser: extract text from a base64-encoded LinkedIn PDF export
 // Disabled — pdf-parse module not installed
 // export { parseLinkedInPdf } from "./parse-linkedin-pdf";
@@ -467,4 +464,7 @@ var seedGroups_1 = require("./rbac/seedGroups");
 Object.defineProperty(exports, "seedRbacGroups", { enumerable: true, get: function () { return seedGroups_1.seedRbacGroups; } });
 var backfillUsers_1 = require("./rbac/backfillUsers");
 Object.defineProperty(exports, "backfillRbacUsers", { enumerable: true, get: function () { return backfillUsers_1.backfillRbacUsers; } });
+// RBAC: Express-style middleware for Cloud Function HTTP endpoints (Layer 2)
+var middleware_1 = require("./rbac/middleware");
+Object.defineProperty(exports, "requirePermission", { enumerable: true, get: function () { return middleware_1.requirePermission; } });
 //# sourceMappingURL=index.js.map

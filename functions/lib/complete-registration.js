@@ -45,6 +45,9 @@ async function handleMemberRegistration(uid, data) {
     if (!data.numeroCuenta) {
         throw new https_1.HttpsError("invalid-argument", "numeroCuenta is required for members");
     }
+    if (!/^\d{9}$/.test(data.numeroCuenta)) {
+        throw new https_1.HttpsError("invalid-argument", "numeroCuenta must be exactly 9 digits");
+    }
     const updateData = {
         registrationType: "member",
         verificationStatus: "pending",
@@ -68,6 +71,10 @@ async function handleMemberRegistration(uid, data) {
     if (data.lastName) {
         updateData.lastName = data.lastName;
     }
+    // Calculate updated profile completeness
+    const currentDoc = await db.collection("users").doc(uid).get();
+    const merged = Object.assign(Object.assign({}, currentDoc.data()), updateData);
+    updateData.profileCompleteness = calculateProfileCompleteness(merged);
     await db.collection("users").doc(uid).update(updateData);
     return { success: true, registrationType: "member" };
 }
@@ -127,6 +134,11 @@ async function handleRecruiterRegistration(uid, data) {
                 });
             }
         }
+        // Calculate profile completeness for recruiter
+        const currentUserDoc = await transaction.get(db.collection("users").doc(uid));
+        const currentData = currentUserDoc.data() || {};
+        const mergedData = Object.assign(Object.assign({}, currentData), { role: "company", registrationType: "recruiter", profile: Object.assign(Object.assign({}, currentData.profile), { company: data.companyName.trim(), position: data.companyPosition }) });
+        const completeness = calculateProfileCompleteness(mergedData);
         // Update user doc
         transaction.update(db.collection("users").doc(uid), {
             role: "company",
@@ -137,10 +149,59 @@ async function handleRecruiterRegistration(uid, data) {
             "profile.position": data.companyPosition,
             "lifecycle.status": "active",
             "lifecycle.statusChangedAt": admin.firestore.FieldValue.serverTimestamp(),
+            profileCompleteness: completeness,
             _skipGroupSync: true,
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
     });
+    // Alert admins about new recruiter registration
+    try {
+        await db.collection("admin_alerts").add({
+            type: "new_recruiter_registration",
+            userId: uid,
+            companyName: data.companyName,
+            companyPosition: data.companyPosition,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            read: false,
+        });
+    }
+    catch (alertErr) {
+        // Non-blocking: alert failure shouldn't break registration
+        console.warn("Failed to create admin alert:", alertErr);
+    }
     return { success: true, registrationType: "recruiter", companyId };
+}
+function calculateProfileCompleteness(userData) {
+    var _a, _b, _c, _d, _e, _f, _g, _h;
+    let score = 0;
+    // Name (10%)
+    if (userData.firstName || ((_a = userData.profile) === null || _a === void 0 ? void 0 : _a.firstName))
+        score += 5;
+    if (userData.lastName || ((_b = userData.profile) === null || _b === void 0 ? void 0 : _b.lastName))
+        score += 5;
+    // Photo (10%)
+    if (userData.photoURL || ((_c = userData.profile) === null || _c === void 0 ? void 0 : _c.photoURL))
+        score += 10;
+    // Registration type completed (20%)
+    if (userData.registrationType && userData.registrationType !== "collaborator")
+        score += 20;
+    if (userData.registrationType === "collaborator")
+        score += 10;
+    // Education (15%)
+    if (userData.academicLevel || ((_d = userData.profile) === null || _d === void 0 ? void 0 : _d.degree))
+        score += 15;
+    // Career (15%)
+    if (((_e = userData.profile) === null || _e === void 0 ? void 0 : _e.position) || ((_f = userData.profile) === null || _f === void 0 ? void 0 : _f.company))
+        score += 15;
+    // Skills (10%)
+    const skills = ((_g = userData.profile) === null || _g === void 0 ? void 0 : _g.skills) || userData.skills || [];
+    if (skills.length >= 3)
+        score += 10;
+    else if (skills.length > 0)
+        score += 5;
+    // Bio/headline (10%)
+    if ((_h = userData.profile) === null || _h === void 0 ? void 0 : _h.bio)
+        score += 10;
+    return Math.min(score, 100);
 }
 //# sourceMappingURL=complete-registration.js.map
