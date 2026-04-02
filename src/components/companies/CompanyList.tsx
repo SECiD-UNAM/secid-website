@@ -57,7 +57,7 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
   const { isVerified } = useAuth();
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [showLandscape, setShowLandscape] = useState(false);
+  const [showLandscape, setShowLandscape] = useState(true);
   const [allCompanies, setAllCompanies] = useState<Company[]>([]);
 
   const adapter = useMemo(
