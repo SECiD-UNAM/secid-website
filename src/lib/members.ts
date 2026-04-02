@@ -15,6 +15,7 @@ export {
   getDirectoryStatsData,
   generateVCard,
   getMemberRecommendations,
+  getEducationEcosystem,
   // Mutations
   updateMemberProfile,
   sendConnectionRequest,
@@ -35,3 +36,4 @@ export {
 } from './members/index';
 
 export type { VisibleFields } from './members/index';
+export type { InstitutionAggregate, EducationEcosystemData } from './members/index';

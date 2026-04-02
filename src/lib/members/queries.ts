@@ -30,6 +30,11 @@ import {
   createMockMemberProfile,
   slugify,
 } from './mapper';
+import {
+  normalizeInstitution,
+  getInstitutionCategory,
+  type InstitutionCategory,
+} from './institution-normalization';
 
 const COLLECTIONS = {
   MEMBERS: 'users',
@@ -773,4 +778,117 @@ function getRelevantSkills(
       skill.toLowerCase().includes(filterSkill.toLowerCase())
     )
   );
+}
+
+// ── Education Ecosystem ──────────────────────────────────────
+
+export interface InstitutionAggregate {
+  name: string;
+  memberCount: number;
+  degrees: string[];
+  category: InstitutionCategory;
+  campus?: string;
+}
+
+export interface EducationEcosystemData {
+  institutions: InstitutionAggregate[];
+  totalEntries: number;
+  categories: Array<{ name: string; count: number }>;
+}
+
+export async function getEducationEcosystem(): Promise<EducationEcosystemData> {
+  const snapshot = await getDocs(collection(db, COLLECTIONS.MEMBERS));
+
+  // key = normalized institution name (or "UNAM — campus" for UNAM sub-groups)
+  const instMap = new Map<
+    string,
+    { members: Set<string>; degrees: Set<string>; category: InstitutionCategory; campus?: string }
+  >();
+
+  const addEntry = (
+    uid: string,
+    rawInstitution: string,
+    degree: string | undefined,
+    campus: string | undefined
+  ) => {
+    const normalized = normalizeInstitution(rawInstitution);
+    const category = getInstitutionCategory(normalized);
+
+    // For UNAM, group by campus
+    const key =
+      category === 'UNAM' && campus
+        ? `UNAM — ${campus}`
+        : normalized;
+
+    if (!instMap.has(key)) {
+      instMap.set(key, {
+        members: new Set(),
+        degrees: new Set(),
+        category,
+        campus: category === 'UNAM' ? campus || undefined : undefined,
+      });
+    }
+    const entry = instMap.get(key)!;
+    entry.members.add(uid);
+    if (degree) entry.degrees.add(degree);
+  };
+
+  let totalEntries = 0;
+
+  snapshot.forEach((d) => {
+    const data = d.data();
+    if (data.role === 'collaborator') return;
+
+    const uid = d.id;
+    const educationHistory = data.educationHistory as
+      | Array<{
+          institution?: string;
+          degree?: string;
+          fieldOfStudy?: string;
+          campus?: string;
+        }>
+      | undefined;
+
+    if (educationHistory && educationHistory.length > 0) {
+      for (const entry of educationHistory) {
+        if (!entry.institution) continue;
+        totalEntries++;
+        addEntry(uid, entry.institution, entry.degree || entry.fieldOfStudy, entry.campus);
+      }
+    } else {
+      // Fallback: build from flat UNAM fields (same as mapper.ts buildAutoEducationEntry)
+      const campus = data.campus as string | undefined;
+      const academicLevel = data.academicLevel as string | undefined;
+      if (campus || academicLevel) {
+        totalEntries++;
+        const degree =
+          academicLevel === 'licenciatura'
+            ? 'Licenciatura en Ciencia de Datos'
+            : academicLevel === 'posgrado'
+              ? 'Posgrado'
+              : academicLevel || 'Ciencia de Datos';
+        addEntry(uid, 'UNAM', degree, campus);
+      }
+    }
+  });
+
+  const institutions: InstitutionAggregate[] = Array.from(instMap.entries())
+    .map(([key, val]) => ({
+      name: key,
+      memberCount: val.members.size,
+      degrees: Array.from(val.degrees),
+      category: val.category,
+      campus: val.campus,
+    }))
+    .sort((a, b) => b.memberCount - a.memberCount);
+
+  const catMap = new Map<string, number>();
+  for (const inst of institutions) {
+    catMap.set(inst.category, (catMap.get(inst.category) || 0) + inst.memberCount);
+  }
+  const categories = Array.from(catMap.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+
+  return { institutions, totalEntries, categories };
 }

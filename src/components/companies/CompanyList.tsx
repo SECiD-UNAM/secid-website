@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Company } from '@/types/company';
 import { getCompanies } from '@/lib/companies';
@@ -7,6 +7,8 @@ import { getCompanyTranslations } from '@/i18n/company-translations';
 import { CompanyLogo } from '@/components/shared/CompanyLogo';
 import { CompanyDrawer } from './CompanyDrawer';
 import { EcosystemMap } from '@/components/shared/EcosystemMap';
+import { EducationMap } from '@/components/shared/EducationMap';
+import { getEducationEcosystem, type EducationEcosystemData } from '@/lib/members';
 import { useUniversalListing } from '@/hooks/useUniversalListing';
 import { ClientSideAdapter } from '@lib/listing/adapters/ClientSideAdapter';
 import type { FilterDefinition } from '@lib/listing/types';
@@ -33,7 +35,6 @@ const KNOWN_INDUSTRIES = [
   'Gobierno',
   'Entretenimiento',
   'Consumo',
-  'Educación',
   'Fitness',
   'Datos',
   'Salud',
@@ -41,10 +42,12 @@ const KNOWN_INDUSTRIES = [
   'Otros',
 ];
 
+const EDUCATION_INDUSTRIES = new Set(['Educación', 'Academia']);
+
 async function fetchApprovedCompanies(): Promise<Company[]> {
   const all = await getCompanies();
   return all
-    .filter((c) => !c.pendingReview)
+    .filter((c) => !c.pendingReview && !EDUCATION_INDUSTRIES.has(c.industry || ''))
     .sort((a, b) => b.memberCount - a.memberCount);
 }
 
@@ -59,6 +62,13 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showLandscape, setShowLandscape] = useState(true);
   const [allCompanies, setAllCompanies] = useState<Company[]>([]);
+  const [educationData, setEducationData] = useState<EducationEcosystemData | null>(null);
+
+  useEffect(() => {
+    getEducationEcosystem()
+      .then(setEducationData)
+      .catch((err: unknown) => console.error('Error loading education data:', err));
+  }, []);
 
   const adapter = useMemo(
     () =>
@@ -216,13 +226,20 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
         className="mb-4"
       />
 
-      {/* Landscape view (domain-specific EcosystemMap) */}
+      {/* Landscape view (domain-specific EcosystemMap + EducationMap) */}
       {showLandscape ? (
-        <EcosystemMap
-          companies={allCompanies}
-          onCompanyClick={openDrawer}
-          lang={lang}
-        />
+        <>
+          <EcosystemMap
+            companies={allCompanies}
+            onCompanyClick={openDrawer}
+            lang={lang}
+          />
+          {educationData && educationData.institutions.length > 0 && (
+            <div className="mt-10">
+              <EducationMap data={educationData} lang={lang} />
+            </div>
+          )}
+        </>
       ) : (
         <>
           {/* Results count */}

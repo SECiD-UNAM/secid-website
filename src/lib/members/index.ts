@@ -13,6 +13,11 @@ export {
   getDirectoryStatsData,
   generateVCard,
   getMemberRecommendations,
+  getEducationEcosystem,
+} from './queries';
+export type {
+  InstitutionAggregate,
+  EducationEcosystemData,
 } from './queries';
 
 // Mutations
