@@ -58,11 +58,16 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showLandscape, setShowLandscape] = useState(false);
+  const [allCompanies, setAllCompanies] = useState<Company[]>([]);
 
   const adapter = useMemo(
     () =>
       new ClientSideAdapter<Company>({
-        fetchAll: fetchApprovedCompanies,
+        fetchAll: async () => {
+          const data = await fetchApprovedCompanies();
+          setAllCompanies(data);
+          return data;
+        },
         searchFields: ['name', 'industry', 'location', 'description'],
         getId: (item) => item.id,
       }),
@@ -214,7 +219,7 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
       {/* Landscape view (domain-specific EcosystemMap) */}
       {showLandscape ? (
         <EcosystemMap
-          companies={listing.items}
+          companies={allCompanies}
           onCompanyClick={openDrawer}
           lang={lang}
         />
