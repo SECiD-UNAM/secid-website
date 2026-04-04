@@ -81,11 +81,43 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
           } as Event;
         });
 
-        // Check registration status for each event
-        // In production, this would be a batch query
-        const eventsWithRegistration = fetchedEvents.map((event) => ({
+        // Also fetch upcoming journal club sessions
+        try {
+          const jcQuery = query(
+            collection(db, 'journal_club_sessions'),
+            where('status', '==', 'published'),
+            where('date', '>=', Timestamp.now()),
+            orderBy('date', 'asc'),
+            limit(3)
+          );
+          const jcSnap = await getDocs(jcQuery);
+          jcSnap.docs.forEach((d) => {
+            const data = d.data();
+            const sessionDate = data['date']?.toDate() ?? new Date();
+            fetchedEvents.push({
+              id: `jc-${d.id}`,
+              title: `Journal Club: ${data['topic'] || ''}`,
+              description: data['description'] || '',
+              type: 'webinar' as Event['type'],
+              startDate: sessionDate,
+              endDate: new Date(sessionDate.getTime() + 90 * 60 * 1000),
+              location: { type: 'virtual', virtualPlatform: 'Google Meet' },
+              registrationRequired: false,
+              maxAttendees: 0,
+              currentAttendees: 0,
+            });
+          });
+        } catch (jcErr) {
+          console.warn('Failed to load journal club for upcoming:', jcErr);
+        }
+
+        // Sort by date and take top 3
+        fetchedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+        const top3 = fetchedEvents.slice(0, 3);
+
+        const eventsWithRegistration = top3.map((event) => ({
           ...event,
-          isRegistered: false, // Would check actual registration status
+          isRegistered: false,
         }));
 
         setEvents(eventsWithRegistration);

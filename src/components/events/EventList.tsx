@@ -47,7 +47,8 @@ interface Event {
     | 'career-fair'
     | 'webinar'
     | 'social'
-    | 'conference';
+    | 'conference'
+    | 'journal-club';
   startDate: Date;
   endDate: Date;
   timezone: string;
@@ -170,6 +171,7 @@ const TRANSLATIONS = {
       webinar: 'Webinars',
       social: 'Sociales',
       conference: 'Conferencias',
+      'journal-club': 'Journal Club',
     },
     viewLabels: {
       listing: 'Lista',
@@ -196,6 +198,7 @@ const TRANSLATIONS = {
       webinar: 'Webinars',
       social: 'Social',
       conference: 'Conferences',
+      'journal-club': 'Journal Club',
     },
     viewLabels: {
       listing: 'List',
@@ -229,6 +232,7 @@ function buildFilterDefinitions(lang: 'es' | 'en'): FilterDefinition[] {
         { value: 'webinar', label: t.typeFilter.webinar },
         { value: 'social', label: t.typeFilter.social },
         { value: 'conference', label: t.typeFilter.conference },
+        { value: 'journal-club', label: t.typeFilter['journal-club'] },
       ],
     },
   ];
@@ -239,24 +243,69 @@ function buildFilterDefinitions(lang: 'es' | 'en'): FilterDefinition[] {
 // ---------------------------------------------------------------------------
 
 async function fetchAllEvents(): Promise<Event[]> {
+  // Fetch regular events
   const eventsQuery = query(
     collection(db, 'events'),
     where('status', '==', 'published'),
     orderBy('startDate', 'asc'),
     limit(50)
   );
-
-  const snapshot = await getDocs(eventsQuery);
-  return snapshot.docs.map((doc) => {
-    const data = doc.data();
+  const eventsSnap = await getDocs(eventsQuery);
+  const events: Event[] = eventsSnap.docs.map((d) => {
+    const data = d.data();
     return {
-      id: doc.id,
+      id: d.id,
       ...data,
       startDate: data['startDate']?.toDate() ?? new Date(),
       endDate: data['endDate']?.toDate() ?? new Date(),
       registrationDeadline: data['registrationDeadline']?.toDate(),
     } as Event;
   });
+
+  // Fetch journal club sessions and transform to Event shape
+  try {
+    const jcQuery = query(
+      collection(db, 'journal_club_sessions'),
+      where('status', '==', 'published'),
+      orderBy('date', 'desc'),
+      limit(50)
+    );
+    const jcSnap = await getDocs(jcQuery);
+    const jcEvents: Event[] = jcSnap.docs.map((d) => {
+      const data = d.data();
+      const sessionDate = data['date']?.toDate() ?? new Date();
+      const endDate = new Date(sessionDate.getTime() + 90 * 60 * 1000); // 90 min default
+      return {
+        id: `jc-${d.id}`,
+        title: `Journal Club: ${data['topic'] || ''}`,
+        description: data['description'] || '',
+        type: 'journal-club' as const,
+        startDate: sessionDate,
+        endDate,
+        timezone: 'America/Mexico_City',
+        duration: 90,
+        location: {
+          type: 'virtual' as const,
+          virtualPlatform: 'Google Meet',
+        },
+        registrationRequired: false,
+        maxAttendees: 0,
+        currentAttendees: 0,
+        registrationFee: 0,
+        tags: data['tags'] || ['journal-club'],
+        organizers: [data['presenter'] || 'SECiD'],
+        status: 'published' as const,
+        featured: false,
+      };
+    });
+    events.push(...jcEvents);
+  } catch (err) {
+    console.warn('Failed to load journal club sessions for events:', err);
+  }
+
+  // Sort all by startDate ascending
+  events.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+  return events;
 }
 
 function buildAdapter(): ClientSideAdapter<Event> {

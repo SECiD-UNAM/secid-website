@@ -52,7 +52,9 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
           {/* Sidebar toggle — hidden on mobile (bottom nav) and desktop (sidebar visible) */}
           <button
             onClick={() => setMobileOpen(true)}
-            className="fixed left-4 top-20 z-40 hidden rounded-lg bg-white p-2 shadow-md dark:bg-gray-800 md:block lg:hidden"
+            className={`fixed left-4 z-40 rounded-lg bg-white p-2 shadow-md dark:bg-gray-800 lg:hidden ${
+              isBeta ? 'top-28' : 'top-20'
+            }`}
             aria-label={lang === 'es' ? 'Abrir menú lateral' : 'Open sidebar'}
           >
             <Bars3Icon className="h-6 w-6 text-gray-600 dark:text-gray-300" />
