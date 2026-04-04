@@ -63,8 +63,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const profileUnsubRef = useRef<Unsubscribe | null>(null);
 
   // Subscribe to user profile changes
-  const subscribeToProfile = (uid: string): Unsubscribe => {
+  const subscribeToProfile = (uid: string, onFirstSnapshot?: () => void): Unsubscribe => {
     const userRef = doc(db, 'users', uid);
+    let firstSnapshot = true;
 
     return onSnapshot(
       userRef,
@@ -80,6 +81,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Profile doesn't exist yet (might be created by Cloud Function)
           setUserProfile(null);
           console.log('User profile not found, waiting for creation...');
+        }
+        if (firstSnapshot) {
+          firstSnapshot = false;
+          onFirstSnapshot?.();
         }
       },
       (err) => {
@@ -162,7 +167,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           if (profileUnsubRef.current) {
             profileUnsubRef.current();
           }
-          profileUnsubRef.current = subscribeToProfile(firebaseUser.uid);
+          // Only clear loading after the first profile snapshot arrives
+          profileUnsubRef.current = subscribeToProfile(firebaseUser.uid, () => {
+            setLoading(false);
+          });
 
           // Show emulator status in development
           if (isEmulatorMode()) {
@@ -172,6 +180,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } else {
           setUser(null);
           setUserProfile(null);
+          setLoading(false);
 
           // Clean up profile subscription
           if (profileUnsubRef.current) {
@@ -179,8 +188,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             profileUnsubRef.current = null;
           }
         }
-
-        setLoading(false);
       });
     });
 
