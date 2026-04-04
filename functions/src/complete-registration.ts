@@ -21,7 +21,9 @@ interface CompleteRegistrationData {
   lastName?: string;
 }
 
-export const completeRegistration = onCall(async (request) => {
+export const completeRegistration = onCall(
+  { cors: [/secid\.mx$/, /secid\.org$/, "localhost"] },
+  async (request) => {
   // 1. Validate caller is authenticated
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Must be authenticated");
