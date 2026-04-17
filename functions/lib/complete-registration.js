@@ -4,7 +4,7 @@ exports.completeRegistration = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 const db = admin.firestore();
-exports.completeRegistration = (0, https_1.onCall)(async (request) => {
+exports.completeRegistration = (0, https_1.onCall)({ cors: [/secid\.mx$/, /secid\.org$/, "localhost"] }, async (request) => {
     var _a;
     // 1. Validate caller is authenticated
     if (!request.auth) {
