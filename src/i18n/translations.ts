@@ -35,6 +35,7 @@ export interface Translations {
     spotlights: string;
     newsletter: string;
     journalClub: string;
+    calendar: string;
   };
   hero: {
     title: string;

@@ -26,6 +26,7 @@ export const commonTranslations = {
       spotlights: 'Historias de Éxito',
       newsletter: 'Newsletter',
       journalClub: 'Journal Club',
+      calendar: 'Calendario',
     },
     hero: {
       title: 'Bienvenidos a SECiD',
@@ -177,6 +178,7 @@ export const commonTranslations = {
       spotlights: 'Success Stories',
       newsletter: 'Newsletter',
       journalClub: 'Journal Club',
+      calendar: 'Calendar',
     },
     hero: {
       title: 'Welcome to SECiD',
