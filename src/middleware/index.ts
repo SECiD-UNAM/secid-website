@@ -4,6 +4,7 @@ import { createSecurityManagerFromEnv } from '../lib/security-config';
 import { createRateLimitMiddleware, KeyGenerators } from '../lib/rate-limiter';
 import { createSessionMiddleware } from '../lib/session-manager';
 import { createCaptchaMiddleware } from '../lib/captcha';
+import { BETA_ROUTES, BETA_FEATURES, isHostBeta } from '../lib/beta';
 
 /**
  * Main middleware configuration for SECiD platform
@@ -21,6 +22,26 @@ try {
   console.warn('Security manager initialization failed:', error);
   console.warn('Some security features may be disabled');
 }
+
+/**
+ * Beta route guard middleware.
+ * Redirects production users who navigate directly to beta-only URLs.
+ */
+const betaRouteGuardMiddleware: MiddlewareHandler = async (context, next) => {
+  const { pathname } = context.url;
+  const host = context.request.headers.get('host') ?? '';
+
+  if (!isHostBeta(host)) {
+    for (const [route, feature] of Object.entries(BETA_ROUTES)) {
+      if (pathname.includes(route) && BETA_FEATURES[feature]) {
+        const lang = pathname.startsWith('/en/') ? 'en' : 'es';
+        return context.redirect(`/${lang}/dashboard`, 302);
+      }
+    }
+  }
+
+  return next();
+};
 
 /**
  * Request logging middleware for development
@@ -304,6 +325,7 @@ const securityLoggingMiddleware: MiddlewareHandler = async (context, next) => {
  */
 export const onRequest = sequence(
   errorHandlingMiddleware,
+  betaRouteGuardMiddleware,
   createEnvironmentSecurityMiddleware(),
   rateLimitingMiddleware,
   sessionValidationMiddleware,
