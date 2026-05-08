@@ -54,17 +54,17 @@ export interface CalendarActivity {
 
 const ACTIVITIES: CalendarActivity[] = [
   // Journal Club sessions
-  { id: 'jc-1', date: '2026-05-22', type: 'journal-club', topic: 'NLP Foundations', presenter: 'Fernando Avitua' },
-  { id: 'jc-2', date: '2026-09-16', type: 'journal-club', topic: 'Attention Is All You Need', presenter: 'Fernando Avitua' },
-  { id: 'jc-3', date: '2026-11-18', type: 'journal-club', topic: 'BERT', presenter: 'Artemio Padilla' },
-  { id: 'jc-4', date: '2027-02-17', type: 'journal-club', topic: 'GPTs', presenter: 'Alejandro Ramirez Bondi' },
-  { id: 'jc-5', date: '2027-04-21', type: 'journal-club', topic: 'LLaMA', presenter: 'Eduardo Garduño' },
+  { id: 'jc-1', date: '2026-05-24', type: 'journal-club', topic: 'NLP Foundations', presenter: 'Fernando Avitua' },
+  { id: 'jc-2', date: '2026-09-18', type: 'journal-club', topic: 'Attention Is All You Need', presenter: 'Fernando Avitua' },
+  { id: 'jc-3', date: '2026-11-20', type: 'journal-club', topic: 'BERT', presenter: 'Artemio Padilla' },
+  { id: 'jc-4', date: '2027-02-19', type: 'journal-club', topic: 'GPTs', presenter: 'Alejandro Ramirez Bondi' },
+  { id: 'jc-5', date: '2027-04-23', type: 'journal-club', topic: 'LLaMA', presenter: 'Eduardo Garduño' },
   // Knowledge Exchange (TBD presenters)
-  { id: 'ke-1', date: '2026-08-19', type: 'knowledge-exchange' },
-  { id: 'ke-2', date: '2026-10-21', type: 'knowledge-exchange' },
-  { id: 'ke-3', date: '2027-01-21', type: 'knowledge-exchange' },
-  { id: 'ke-4', date: '2027-03-17', type: 'knowledge-exchange' },
-  { id: 'ke-5', date: '2027-05-19', type: 'knowledge-exchange' },
+  { id: 'ke-1', date: '2026-08-21', type: 'knowledge-exchange' },
+  { id: 'ke-2', date: '2026-10-23', type: 'knowledge-exchange' },
+  { id: 'ke-3', date: '2027-01-23', type: 'knowledge-exchange' },
+  { id: 'ke-4', date: '2027-03-19', type: 'knowledge-exchange' },
+  { id: 'ke-5', date: '2027-05-21', type: 'knowledge-exchange' },
 ];
 
 // ---------------------------------------------------------------------------
