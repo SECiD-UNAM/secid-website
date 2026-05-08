@@ -66,7 +66,7 @@ const STATIC_SESSIONS: StaticSession[] = [
   // Upcoming Journal Club sessions (curriculum order)
   {
     id: 'jc-1',
-    date: '2026-05-24',
+    date: '2026-05-27',
     topic: 'NLP Foundations',
     presenter: 'Fernando Avitua',
     type: 'journal-club',
@@ -74,7 +74,7 @@ const STATIC_SESSIONS: StaticSession[] = [
   },
   {
     id: 'jc-2',
-    date: '2026-09-18',
+    date: '2026-09-23',
     topic: 'Attention Is All You Need',
     presenter: 'Fernando Avitua',
     type: 'journal-club',
@@ -82,7 +82,7 @@ const STATIC_SESSIONS: StaticSession[] = [
   },
   {
     id: 'jc-3',
-    date: '2026-11-20',
+    date: '2026-11-25',
     topic: 'BERT',
     presenter: 'Artemio Padilla',
     type: 'journal-club',
@@ -90,7 +90,7 @@ const STATIC_SESSIONS: StaticSession[] = [
   },
   {
     id: 'jc-4',
-    date: '2027-02-19',
+    date: '2027-02-24',
     topic: 'GPTs',
     presenter: 'Alejandro Ramirez Bondi',
     type: 'journal-club',
@@ -98,7 +98,7 @@ const STATIC_SESSIONS: StaticSession[] = [
   },
   {
     id: 'jc-5',
-    date: '2027-04-23',
+    date: '2027-04-28',
     topic: 'LLaMA',
     presenter: 'Eduardo Garduño',
     type: 'journal-club',
