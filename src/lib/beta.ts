@@ -2,7 +2,8 @@
  * Beta environment detection and feature flagging.
  *
  * Both secid.mx and beta.secid.mx serve the same static build.
- * Beta detection happens client-side by checking window.location.hostname.
+ * Beta detection happens client-side by checking window.location.hostname,
+ * or server-side by checking the Host request header.
  */
 
 /**
@@ -18,7 +19,18 @@ export const BETA_FEATURES = {
 
 export type BetaFeatureId = keyof typeof BETA_FEATURES;
 
-const BETA_HOSTNAMES = ['beta.secid.mx', 'beta.localhost'];
+export const BETA_HOSTNAMES = ['beta.secid.mx', 'beta.localhost'];
+
+/**
+ * Routes that are restricted to beta environments.
+ * Update this map whenever a new beta-only page is added.
+ * Keys are pathname substrings; values are the corresponding feature flag.
+ */
+export const BETA_ROUTES: Record<string, BetaFeatureId> = {
+  '/dashboard/messages': 'messaging',
+  '/dashboard/progress': 'gamification',
+  '/dashboard/learning': 'learningPaths',
+};
 
 /**
  * Returns true if the current hostname is a beta environment.
@@ -27,6 +39,15 @@ const BETA_HOSTNAMES = ['beta.secid.mx', 'beta.localhost'];
 export function isBetaEnvironment(): boolean {
   if (typeof window === 'undefined') return false;
   return BETA_HOSTNAMES.includes(window.location.hostname);
+}
+
+/**
+ * Server-side beta detection using the Host request header.
+ * Use this in Astro middleware instead of isBetaEnvironment().
+ */
+export function isHostBeta(host: string): boolean {
+  const hostname = host.split(':')[0] ?? host;
+  return BETA_HOSTNAMES.includes(hostname);
 }
 
 /**
