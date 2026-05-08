@@ -365,11 +365,16 @@ const tr = {
   }
 
   // ── Badge update ─────────────────────────────────────────────────────
+  // Count only window-level errors (diag.errors) + explicit console.error calls (diag.console).
+  // These two sources don't overlap: window 'error' events push to diag.errors,
+  // console.error calls push to diag.console. unhandledrejection also goes to diag.errors only.
   W.__secid_updateBadge = function () {
     var badge = document.getElementById('secid-report-badge');
     if (!badge) return;
     var diag = W.__secid_diag;
-    var count = (diag.errors ? diag.errors.length : 0) + (diag.console ? diag.console.filter(function(c){ return c.level === 'error'; }).length : 0);
+    var windowErrors = diag.errors ? diag.errors.length : 0;
+    var consoleErrors = diag.console ? diag.console.filter(function(c){ return c.level === 'error'; }).length : 0;
+    var count = windowErrors + consoleErrors;
     if (count > 0) {
       badge.textContent = count > 99 ? '99+' : String(count);
       badge.classList.remove('hidden');
@@ -380,7 +385,10 @@ const tr = {
     }
   };
 
-  // ── Modal wiring (runs after DOM) ────────────────────────────────────
+  // ── Modal wiring ────────────────────────────────────────────────────
+  // Use DOMContentLoaded. Note: this site does not use Astro ViewTransitions,
+  // so DOMContentLoaded fires on every full page load. If ViewTransitions are
+  // ever added, replace with: document.addEventListener('astro:page-load', ...)
   document.addEventListener('DOMContentLoaded', function () {
     var btn     = document.getElementById('secid-report-btn');
     var modal   = document.getElementById('secid-report-modal');
@@ -467,14 +475,27 @@ const tr = {
       }
     }
 
-    // Copy diagnostics
+    // Copy diagnostics — with fallback for non-HTTPS contexts
     if (copyBtn && copyLabel2) {
       copyBtn.addEventListener('click', function () {
         var text = [envBlock, consBlock, netBlock].map(function(el){ return el ? el.textContent : ''; }).join('\n\n---\n\n');
-        navigator.clipboard.writeText(text).then(function () {
+        function onCopied() {
           copyLabel2.textContent = copiedLabel;
           setTimeout(function(){ copyLabel2.textContent = copyLabel; }, 2000);
-        });
+        }
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(onCopied);
+        } else {
+          // Fallback for HTTP / older browsers
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          try { document.execCommand('copy'); onCopied(); } catch(e) {}
+          document.body.removeChild(ta);
+        }
       });
     }
 
@@ -513,6 +534,8 @@ const tr = {
         body += '\n\n<details>\n<summary>Diagnostics</summary>\n\n' + diagText + '\n</details>';
 
         var labelMap = { bug: 'bug', feature: 'enhancement', question: 'question', translation: 'translation' };
+        // Truncate to ~6500 chars — conservative limit for GitHub URL params.
+        // GitHub supports ~8192 chars but proxies/browsers may cut earlier.
         var params = new URLSearchParams({
           title: title,
           body: body.slice(0, 6500),
