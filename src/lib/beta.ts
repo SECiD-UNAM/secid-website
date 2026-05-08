@@ -11,7 +11,7 @@
  * Set to `false` (or remove) to graduate it to production.
  */
 export const BETA_FEATURES = {
-  hub: true,
+  hub: false,
   gamification: true,
   messaging: true,
   learningPaths: true,
