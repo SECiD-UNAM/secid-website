@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; // useState used by MonthView
 import {
   CalendarIcon,
   BookOpenIcon,
@@ -351,45 +351,17 @@ interface CalendarPageProps {
 }
 
 export default function CalendarPage({ lang = 'es' }: CalendarPageProps) {
-  const [view, setView] = useState<'list' | 'month'>('list');
-
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto max-w-6xl space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <CalendarIcon className="h-7 w-7 text-blue-600 dark:text-blue-400" />
-            {t('title', lang)}
-          </h1>
-          <p className="mt-1 text-gray-600 dark:text-gray-400">
-            {t('subtitle', lang)}
-          </p>
-        </div>
-
-        {/* View toggle */}
-        <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden self-start">
-          <button
-            onClick={() => setView('list')}
-            className={`px-4 py-2 text-sm font-medium transition-colors ${
-              view === 'list'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-            }`}
-          >
-            {t('listView', lang)}
-          </button>
-          <button
-            onClick={() => setView('month')}
-            className={`px-4 py-2 text-sm font-medium transition-colors ${
-              view === 'month'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-            }`}
-          >
-            {t('monthView', lang)}
-          </button>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <CalendarIcon className="h-7 w-7 text-blue-600 dark:text-blue-400" />
+          {t('title', lang)}
+        </h1>
+        <p className="mt-1 text-gray-600 dark:text-gray-400">
+          {t('subtitle', lang)}
+        </p>
       </div>
 
       {/* Legend */}
@@ -404,12 +376,24 @@ export default function CalendarPage({ lang = 'es' }: CalendarPageProps) {
         </div>
       </div>
 
-      {/* View */}
-      {view === 'list' ? (
-        <ListView lang={lang} />
-      ) : (
-        <MonthView lang={lang} />
-      )}
+      {/* Both views side by side on desktop, stacked on mobile */}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
+        {/* Month view */}
+        <div className="rounded-xl bg-white dark:bg-gray-800 shadow p-4">
+          <h2 className="mb-4 text-base font-semibold text-gray-700 dark:text-gray-300">
+            {t('monthView', lang)}
+          </h2>
+          <MonthView lang={lang} />
+        </div>
+
+        {/* List view */}
+        <div className="rounded-xl bg-white dark:bg-gray-800 shadow p-4">
+          <h2 className="mb-4 text-base font-semibold text-gray-700 dark:text-gray-300">
+            {t('listView', lang)}
+          </h2>
+          <ListView lang={lang} />
+        </div>
+      </div>
     </div>
   );
 }
