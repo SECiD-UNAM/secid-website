@@ -148,9 +148,7 @@ export default function BlogList({ lang = 'es', initialPosts = [] }: Props) {
       ? items.find((p) => p.featured)
       : undefined;
 
-  const regularPosts = featuredPost
-    ? items.filter((p) => !p.featured)
-    : items;
+  const regularPosts = featuredPost ? items.filter((p) => !p.featured) : items;
 
   const hasActiveFilters = activeCategory !== 'all' || !!query;
 
@@ -170,11 +168,7 @@ export default function BlogList({ lang = 'es', initialPosts = [] }: Props) {
           ))}
         </div>
         <div className="secid-blog__search">
-          <ListingSearch
-            query={query}
-            onQueryChange={setQuery}
-            lang={lang}
-          />
+          <ListingSearch query={query} onQueryChange={setQuery} lang={lang} />
         </div>
       </div>
 

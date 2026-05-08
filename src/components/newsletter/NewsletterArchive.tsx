@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  getNewsletterArchive,
-  type NewsletterIssue,
-} from '@/lib/newsletter';
+import { getNewsletterArchive, type NewsletterIssue } from '@/lib/newsletter';
 
 interface Props {
   lang?: 'es' | 'en';

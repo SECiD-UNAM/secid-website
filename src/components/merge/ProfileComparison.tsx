@@ -1,6 +1,10 @@
 import React from 'react';
 import { FIELD_GROUPS } from '@/lib/merge/field-groups';
-import type { FieldGroupKey, FieldSelection, FieldSelections } from '@/types/merge';
+import type {
+  FieldGroupKey,
+  FieldSelection,
+  FieldSelections,
+} from '@/types/merge';
 
 interface ProfileComparisonProps {
   sourceProfile: Record<string, any>;

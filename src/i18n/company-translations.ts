@@ -55,8 +55,7 @@ export const companyTranslations = {
 
       // Ecosystem map
       ecosystemTitle: '¿Dónde trabajan los miembros de SECiD?',
-      ecosystemSubtitle:
-        'Empresas donde nuestros egresados generan impacto',
+      ecosystemSubtitle: 'Empresas donde nuestros egresados generan impacto',
       statsConnections: 'Conexiones',
       statsDataScience: 'Ciencia de Datos',
       filterCurrent: 'Actuales',
@@ -117,8 +116,7 @@ export const companyTranslations = {
 
       // Ecosystem map
       ecosystemTitle: 'Where do SECiD members work?',
-      ecosystemSubtitle:
-        'Companies where our graduates make an impact',
+      ecosystemSubtitle: 'Companies where our graduates make an impact',
       statsConnections: 'Connections',
       statsDataScience: 'Data Science',
       filterCurrent: 'Current',
@@ -129,7 +127,8 @@ export const companyTranslations = {
   },
 } as const;
 
-export type CompanyTranslations = (typeof companyTranslations)['es']['companies'];
+export type CompanyTranslations =
+  (typeof companyTranslations)['es']['companies'];
 
 export function getCompanyTranslations(lang: 'es' | 'en') {
   return companyTranslations[lang].companies;

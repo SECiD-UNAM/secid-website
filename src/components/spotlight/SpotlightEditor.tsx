@@ -63,9 +63,7 @@ export default function SpotlightEditor({ lang = 'es', spotlightId }: Props) {
       required: 'Este campo es obligatorio.',
     },
     en: {
-      pageTitle: isEditMode
-        ? 'Edit Alumni Story'
-        : 'Publish Alumni Story',
+      pageTitle: isEditMode ? 'Edit Alumni Story' : 'Publish Alumni Story',
       pageDescription: isEditMode
         ? 'Update the success story of a SECiD alumni community member.'
         : 'Share the success story of a SECiD alumni community member.',

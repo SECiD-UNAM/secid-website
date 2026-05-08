@@ -241,10 +241,7 @@ export async function uploadResource(
     return await runTransaction(db, async (transaction) => {
       // Upload main file
       const safeName = sanitizeUploadFilename(request.file.name);
-      const fileRef = ref(
-        storage,
-        `resources/${Date.now()}_${safeName}`
-      );
+      const fileRef = ref(storage, `resources/${Date.now()}_${safeName}`);
       const fileSnapshot = await uploadBytes(fileRef, request.file, {
         contentType: request.file.type,
       });

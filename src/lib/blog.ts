@@ -293,7 +293,10 @@ export function mergeBlogPosts(
  * - Excludes foreign-language posts that are translations of a target-locale original
  * - Excludes foreign-language originals when a translation exists in the target locale
  */
-export function filterByLocale(posts: BlogPost[], locale: 'es' | 'en'): BlogPost[] {
+export function filterByLocale(
+  posts: BlogPost[],
+  locale: 'es' | 'en'
+): BlogPost[] {
   const otherLocale = locale === 'es' ? 'en' : 'es';
 
   // Build set of original slugs that have been translated into the target locale
@@ -310,7 +313,8 @@ export function filterByLocale(posts: BlogPost[], locale: 'es' | 'en'): BlogPost
     if (p.lang === otherLocale && p.translationOf) return false;
 
     // Exclude foreign originals whose slug is the target of a target-locale translation
-    if (p.lang === otherLocale && translatedOriginalSlugs.has(p.slug)) return false;
+    if (p.lang === otherLocale && translatedOriginalSlugs.has(p.slug))
+      return false;
 
     return true;
   });

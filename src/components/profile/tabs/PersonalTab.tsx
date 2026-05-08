@@ -11,7 +11,10 @@ import {
 import { useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { slugify } from '@/lib/members/mapper';
-import { validateSlugFormat, isSlugAvailable } from '@/lib/members/slug-validation';
+import {
+  validateSlugFormat,
+  isSlugAvailable,
+} from '@/lib/members/slug-validation';
 import type { FormData } from '../profile-edit-types';
 
 interface PersonalTabProps {
@@ -175,7 +178,9 @@ export const PersonalTab: React.FC<PersonalTabProps> = ({
           type="text"
           value={formData.slug}
           onChange={(e) => {
-            const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+            const value = e.target.value
+              .toLowerCase()
+              .replace(/[^a-z0-9-]/g, '');
             setFormData((prev) => ({ ...prev, slug: value }));
             setSlugStatus('idle');
           }}
@@ -184,22 +189,44 @@ export const PersonalTab: React.FC<PersonalTabProps> = ({
           className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
         />
         <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-          secid.org/{lang}/members/<span className="font-medium text-gray-700 dark:text-gray-300">{effectiveSlug}</span>/cv
+          secid.org/{lang}/members/
+          <span className="font-medium text-gray-700 dark:text-gray-300">
+            {effectiveSlug}
+          </span>
+          /cv
         </p>
         {slugStatus === 'checking' && (
-          <p className="mt-1 text-xs text-gray-500">{lang === 'es' ? 'Verificando disponibilidad...' : 'Checking availability...'}</p>
+          <p className="mt-1 text-xs text-gray-500">
+            {lang === 'es'
+              ? 'Verificando disponibilidad...'
+              : 'Checking availability...'}
+          </p>
         )}
         {slugStatus === 'available' && (
-          <p className="mt-1 text-xs text-green-600 dark:text-green-400">{lang === 'es' ? 'Disponible' : 'Available'}</p>
+          <p className="mt-1 text-xs text-green-600 dark:text-green-400">
+            {lang === 'es' ? 'Disponible' : 'Available'}
+          </p>
         )}
         {slugStatus === 'taken' && (
-          <p className="mt-1 text-xs text-red-600 dark:text-red-400">{lang === 'es' ? 'Este slug ya está en uso' : 'This slug is already taken'}</p>
+          <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+            {lang === 'es'
+              ? 'Este slug ya está en uso'
+              : 'This slug is already taken'}
+          </p>
         )}
         {slugStatus === 'invalid' && (
-          <p className="mt-1 text-xs text-red-600 dark:text-red-400">{lang === 'es' ? 'Solo letras minúsculas, números y guiones (3-40 caracteres)' : 'Only lowercase letters, numbers, and hyphens (3-40 chars)'}</p>
+          <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+            {lang === 'es'
+              ? 'Solo letras minúsculas, números y guiones (3-40 caracteres)'
+              : 'Only lowercase letters, numbers, and hyphens (3-40 chars)'}
+          </p>
         )}
         {slugStatus === 'reserved' && (
-          <p className="mt-1 text-xs text-red-600 dark:text-red-400">{lang === 'es' ? 'Esta palabra está reservada' : 'This word is reserved'}</p>
+          <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+            {lang === 'es'
+              ? 'Esta palabra está reservada'
+              : 'This word is reserved'}
+          </p>
         )}
       </div>
 

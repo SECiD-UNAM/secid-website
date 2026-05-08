@@ -74,11 +74,27 @@ describe('deduplicateExperience', () => {
      * Verifies: a batch with both duplicates and new entries is correctly partitioned
      */
     const existing = [
-      { company: 'BBVA', position: 'Data Scientist', id: '1', startDate: new Date(), current: false },
+      {
+        company: 'BBVA',
+        position: 'Data Scientist',
+        id: '1',
+        startDate: new Date(),
+        current: false,
+      },
     ];
     const imported = [
-      { company: 'BBVA', position: 'Data Scientist', startDate: { month: 1, year: 2022 }, current: true },
-      { company: 'Uber', position: 'ML Engineer', startDate: { month: 6, year: 2020 }, current: false },
+      {
+        company: 'BBVA',
+        position: 'Data Scientist',
+        startDate: { month: 1, year: 2022 },
+        current: true,
+      },
+      {
+        company: 'Uber',
+        position: 'ML Engineer',
+        startDate: { month: 6, year: 2020 },
+        current: false,
+      },
     ];
 
     const result = deduplicateExperience(existing, imported);
@@ -94,7 +110,12 @@ describe('deduplicateExperience', () => {
      * Verifies: when profile has no experience, all imports are new entries
      */
     const imported = [
-      { company: 'Google', position: 'Engineer', startDate: { month: 1, year: 2022 }, current: true },
+      {
+        company: 'Google',
+        position: 'Engineer',
+        startDate: { month: 1, year: 2022 },
+        current: true,
+      },
     ];
 
     const result = deduplicateExperience([], imported);
@@ -108,7 +129,13 @@ describe('deduplicateExperience', () => {
      * Verifies: when import is empty both result arrays are empty
      */
     const existing = [
-      { company: 'BBVA', position: 'DS', id: '1', startDate: new Date(), current: false },
+      {
+        company: 'BBVA',
+        position: 'DS',
+        id: '1',
+        startDate: new Date(),
+        current: false,
+      },
     ];
 
     const result = deduplicateExperience(existing, []);
@@ -122,10 +149,21 @@ describe('deduplicateExperience', () => {
      * Verifies: leading/trailing spaces in company or position are trimmed before matching
      */
     const existing = [
-      { company: '  Google  ', position: '  Engineer  ', id: '1', startDate: new Date(), current: false },
+      {
+        company: '  Google  ',
+        position: '  Engineer  ',
+        id: '1',
+        startDate: new Date(),
+        current: false,
+      },
     ];
     const imported = [
-      { company: 'Google', position: 'Engineer', startDate: { month: 3, year: 2021 }, current: false },
+      {
+        company: 'Google',
+        position: 'Engineer',
+        startDate: { month: 3, year: 2021 },
+        current: false,
+      },
     ];
 
     const result = deduplicateExperience(existing, imported);
@@ -141,7 +179,10 @@ describe('deduplicateSkills', () => {
      * Verifies: "python" import does not add duplicate when "Python" exists;
      * new skills ("SQL", "React") are added
      */
-    const result = deduplicateSkills(['Python', 'ML'], ['python', 'SQL', 'ml', 'React']);
+    const result = deduplicateSkills(
+      ['Python', 'ML'],
+      ['python', 'SQL', 'ml', 'React']
+    );
 
     expect(result).toEqual(['Python', 'ML', 'SQL', 'React']);
   });

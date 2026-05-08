@@ -60,7 +60,11 @@ describe('Spotlights Service', () => {
 
       await deleteSpotlight('spotlight-1');
 
-      expect(mockDoc).toHaveBeenCalledWith({ _mockDb: true }, 'spotlights', 'spotlight-1');
+      expect(mockDoc).toHaveBeenCalledWith(
+        { _mockDb: true },
+        'spotlights',
+        'spotlight-1'
+      );
       expect(mockDeleteDoc).toHaveBeenCalledWith(fakeDocRef);
     });
 
@@ -79,7 +83,9 @@ describe('Spotlights Service', () => {
       mockDoc.mockReturnValue({ _path: 'spotlights/bad-id' });
       mockDeleteDoc.mockRejectedValue(new Error('Firestore permission denied'));
 
-      await expect(deleteSpotlight('bad-id')).rejects.toThrow('Firestore permission denied');
+      await expect(deleteSpotlight('bad-id')).rejects.toThrow(
+        'Firestore permission denied'
+      );
     });
   });
 });

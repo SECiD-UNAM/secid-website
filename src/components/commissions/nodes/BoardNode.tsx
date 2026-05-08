@@ -53,7 +53,11 @@ function BoardNode({ data }: BoardNodeProps) {
           {data.name}
         </p>
       </div>
-      <Handle type="source" position={Position.Bottom} style={{ background: data.color }} />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        style={{ background: data.color }}
+      />
     </div>
   );
 }

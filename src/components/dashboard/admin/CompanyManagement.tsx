@@ -96,33 +96,60 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
   const [fetchingLogo, setFetchingLogo] = useState(false);
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
   const [bulkFetching, setBulkFetching] = useState(false);
-  const [bulkProgress, setBulkProgress] = useState({ done: 0, total: 0, success: 0 });
+  const [bulkProgress, setBulkProgress] = useState({
+    done: 0,
+    total: 0,
+    success: 0,
+  });
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkApproving, setBulkApproving] = useState(false);
-  const [creatorProfiles, setCreatorProfiles] = useState<Record<string, { name: string; email: string; role: string; company?: string } | null>>({});
-  const creatorCache = useRef<Record<string, Promise<{ name: string; email: string; role: string; company?: string } | null>>>({});
+  const [creatorProfiles, setCreatorProfiles] = useState<
+    Record<
+      string,
+      { name: string; email: string; role: string; company?: string } | null
+    >
+  >({});
+  const creatorCache = useRef<
+    Record<
+      string,
+      Promise<{
+        name: string;
+        email: string;
+        role: string;
+        company?: string;
+      } | null>
+    >
+  >({});
 
-  const getCreatorProfile = useCallback(async (uid: string) => {
-    if (creatorProfiles[uid] !== undefined) return;
-    if (!creatorCache.current[uid]) {
-      creatorCache.current[uid] = (async () => {
-        try {
-          const snap = await getDoc(doc(db, 'users', uid));
-          if (!snap.exists()) return null;
-          const d = snap.data();
-          return {
-            name: d.displayName || d.firstName ? `${d.firstName || ''} ${d.lastName || ''}`.trim() : d.email || uid,
-            email: d.email || '',
-            role: d.role || 'member',
-            company: d.profile?.company || undefined,
-          };
-        } catch { return null; }
-      })();
-    }
-    const result = await creatorCache.current[uid];
-    setCreatorProfiles((prev) => ({ ...prev, [uid]: result }));
-  }, [creatorProfiles]);
+  const getCreatorProfile = useCallback(
+    async (uid: string) => {
+      if (creatorProfiles[uid] !== undefined) return;
+      if (!creatorCache.current[uid]) {
+        creatorCache.current[uid] = (async () => {
+          try {
+            const snap = await getDoc(doc(db, 'users', uid));
+            if (!snap.exists()) return null;
+            const d = snap.data();
+            return {
+              name:
+                d.displayName || d.firstName
+                  ? `${d.firstName || ''} ${d.lastName || ''}`.trim()
+                  : d.email || uid,
+              email: d.email || '',
+              role: d.role || 'member',
+              company: d.profile?.company || undefined,
+            };
+          } catch {
+            return null;
+          }
+        })();
+      }
+      const result = await creatorCache.current[uid];
+      setCreatorProfiles((prev) => ({ ...prev, [uid]: result }));
+    },
+    [creatorProfiles]
+  );
 
   /* ---- data loading ---- */
 
@@ -301,7 +328,11 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
       } catch (err) {
         console.error(`Failed to fetch logo for ${company.name}:`, err);
       }
-      setBulkProgress({ done: i + 1, total: missing.length, success: successCount });
+      setBulkProgress({
+        done: i + 1,
+        total: missing.length,
+        success: successCount,
+      });
     }
 
     setBulkFetching(false);
@@ -457,7 +488,9 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
       await loadCompanies();
     } catch (err) {
       console.error('Bulk approve error:', err);
-      setError(t(lang, 'Error al aprobar empresas', 'Error approving companies'));
+      setError(
+        t(lang, 'Error al aprobar empresas', 'Error approving companies')
+      );
     } finally {
       setBulkApproving(false);
     }
@@ -527,7 +560,10 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
           </button>
           <button
             onClick={handleBulkFetchLogos}
-            disabled={bulkFetching || companies.filter((c) => !c.logoUrl && c.domain).length === 0}
+            disabled={
+              bulkFetching ||
+              companies.filter((c) => !c.logoUrl && c.domain).length === 0
+            }
             className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
             title={t(lang, 'Obtener logos faltantes', 'Fetch missing logos')}
           >
@@ -624,12 +660,19 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
                     <input
                       type="checkbox"
                       checked={
-                        displayedCompanies.filter((c) => c.pendingReview).length > 0 &&
-                        selectedIds.size === displayedCompanies.filter((c) => c.pendingReview).length
+                        displayedCompanies.filter((c) => c.pendingReview)
+                          .length > 0 &&
+                        selectedIds.size ===
+                          displayedCompanies.filter((c) => c.pendingReview)
+                            .length
                       }
                       onChange={toggleSelectAll}
                       className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
-                      title={t(lang, 'Seleccionar todas pendientes', 'Select all pending')}
+                      title={t(
+                        lang,
+                        'Seleccionar todas pendientes',
+                        'Select all pending'
+                      )}
                     />
                   </th>
                   <Th>{t(lang, 'Empresa', 'Company')}</Th>
@@ -644,178 +687,230 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {displayedCompanies.map((company) => (
                   <React.Fragment key={company.id}>
-                  <tr
-                    className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                  >
-                    {/* Checkbox */}
-                    <td className="px-3 py-3">
-                      {company.pendingReview ? (
-                        <input
-                          type="checkbox"
-                          checked={selectedIds.has(company.id)}
-                          onChange={() => toggleSelect(company.id)}
-                          className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
-                        />
-                      ) : (
-                        <div className="h-4 w-4" />
-                      )}
-                    </td>
-
-                    {/* Logo + Name */}
-                    <td className="whitespace-nowrap px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <CompanyLogo company={company} size="sm" />
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">
-                          {company.name}
-                        </span>
-                      </div>
-                    </td>
-
-                    {/* Domain */}
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                      {company.domain}
-                    </td>
-
-                    {/* Industry */}
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                      {company.industry ?? '-'}
-                    </td>
-
-                    {/* Member count */}
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                      {company.memberCount}
-                    </td>
-
-                    {/* Submitted By */}
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                      {company.createdBy ? (
-                        (() => {
-                          const profile = creatorProfiles[company.createdBy];
-                          if (profile === undefined) {
-                            getCreatorProfile(company.createdBy);
-                            return <span className="text-gray-400">...</span>;
-                          }
-                          if (!profile) return <span className="text-gray-400">-</span>;
-                          return (
-                            <button
-                              onClick={() => setExpandedId(expandedId === company.id ? null : company.id)}
-                              className="text-left hover:text-primary-600 dark:hover:text-primary-400"
-                              title={t(lang, 'Ver contexto', 'View context')}
-                            >
-                              <div className="font-medium text-gray-900 dark:text-white">{profile.name}</div>
-                              <div className="text-xs text-gray-400">{profile.role}</div>
-                            </button>
-                          );
-                        })()
-                      ) : (
-                        <span className="text-gray-400">-</span>
-                      )}
-                    </td>
-
-                    {/* Status badge */}
-                    <td className="whitespace-nowrap px-4 py-3">
-                      <StatusBadge
-                        pending={company.pendingReview}
-                        lang={lang}
-                      />
-                    </td>
-
-                    {/* Actions */}
-                    <td className="whitespace-nowrap px-4 py-3">
-                      <div className="flex items-center gap-1">
-                        {/* Edit */}
-                        <ActionButton
-                          title={t(lang, 'Editar', 'Edit')}
-                          onClick={() => openEditModal(company)}
-                          disabled={actionInProgress === company.id}
-                        >
-                          <PencilIcon className="h-4 w-4" />
-                        </ActionButton>
-
-                        {/* Approve (pending only) */}
-                        {company.pendingReview && (
-                          <ActionButton
-                            title={t(lang, 'Aprobar', 'Approve')}
-                            onClick={() => handleApprove(company.id)}
-                            disabled={actionInProgress === company.id}
-                            className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
-                          >
-                            <CheckIcon className="h-4 w-4" />
-                          </ActionButton>
+                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                      {/* Checkbox */}
+                      <td className="px-3 py-3">
+                        {company.pendingReview ? (
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.has(company.id)}
+                            onChange={() => toggleSelect(company.id)}
+                            className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+                          />
+                        ) : (
+                          <div className="h-4 w-4" />
                         )}
+                      </td>
 
-                        {/* Reject (pending only) */}
-                        {company.pendingReview && (
-                          <ActionButton
-                            title={t(lang, 'Rechazar', 'Reject')}
-                            onClick={() => handleReject(company.id)}
-                            disabled={actionInProgress === company.id}
-                            className="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
-                          >
-                            <XMarkIcon className="h-4 w-4" />
-                          </ActionButton>
-                        )}
+                      {/* Logo + Name */}
+                      <td className="whitespace-nowrap px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <CompanyLogo company={company} size="sm" />
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            {company.name}
+                          </span>
+                        </div>
+                      </td>
 
-                        {/* Delete */}
-                        <ActionButton
-                          title={t(lang, 'Eliminar', 'Delete')}
-                          onClick={() => handleDelete(company.id)}
-                          disabled={actionInProgress === company.id}
-                          className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                        >
-                          <TrashIcon className="h-4 w-4" />
-                        </ActionButton>
-                      </div>
-                    </td>
-                  </tr>
-                  {/* Expandable context row */}
-                  {expandedId === company.id && company.createdBy && (
-                    <tr>
-                      <td colSpan={8} className="bg-gray-50 px-6 py-4 dark:bg-gray-900/50">
-                        {(() => {
-                          const profile = creatorProfiles[company.createdBy];
-                          if (!profile) return null;
-                          return (
-                            <div className="flex flex-col gap-2 text-sm">
-                              <div className="font-semibold text-gray-700 dark:text-gray-300">
-                                {t(lang, 'Contexto de la solicitud', 'Submission Context')}
-                              </div>
-                              <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-gray-600 dark:text-gray-400">
-                                <div>
-                                  <span className="font-medium">{t(lang, 'Solicitante', 'Submitted by')}:</span>{' '}
+                      {/* Domain */}
+                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                        {company.domain}
+                      </td>
+
+                      {/* Industry */}
+                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                        {company.industry ?? '-'}
+                      </td>
+
+                      {/* Member count */}
+                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                        {company.memberCount}
+                      </td>
+
+                      {/* Submitted By */}
+                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                        {company.createdBy ? (
+                          (() => {
+                            const profile = creatorProfiles[company.createdBy];
+                            if (profile === undefined) {
+                              getCreatorProfile(company.createdBy);
+                              return <span className="text-gray-400">...</span>;
+                            }
+                            if (!profile)
+                              return <span className="text-gray-400">-</span>;
+                            return (
+                              <button
+                                onClick={() =>
+                                  setExpandedId(
+                                    expandedId === company.id
+                                      ? null
+                                      : company.id
+                                  )
+                                }
+                                className="text-left hover:text-primary-600 dark:hover:text-primary-400"
+                                title={t(lang, 'Ver contexto', 'View context')}
+                              >
+                                <div className="font-medium text-gray-900 dark:text-white">
                                   {profile.name}
                                 </div>
-                                <div>
-                                  <span className="font-medium">Email:</span>{' '}
-                                  {profile.email}
-                                </div>
-                                <div>
-                                  <span className="font-medium">{t(lang, 'Rol', 'Role')}:</span>{' '}
+                                <div className="text-xs text-gray-400">
                                   {profile.role}
                                 </div>
-                                <div>
-                                  <span className="font-medium">{t(lang, 'Empresa actual', 'Current company')}:</span>{' '}
-                                  {profile.company || '-'}
-                                </div>
-                                <div>
-                                  <span className="font-medium">{t(lang, 'Fecha', 'Date')}:</span>{' '}
-                                  {company.createdAt instanceof Date
-                                    ? company.createdAt.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })
-                                    : '-'}
-                                </div>
-                                <div>
-                                  <span className="font-medium">{t(lang, 'Motivo probable', 'Likely reason')}:</span>{' '}
-                                  {profile.company?.toLowerCase() === company.name.toLowerCase()
-                                    ? t(lang, 'Es su empresa actual', 'This is their current company')
-                                    : t(lang, 'Agregado desde historial laboral', 'Added from work history')}
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })()}
+                              </button>
+                            );
+                          })()
+                        ) : (
+                          <span className="text-gray-400">-</span>
+                        )}
+                      </td>
+
+                      {/* Status badge */}
+                      <td className="whitespace-nowrap px-4 py-3">
+                        <StatusBadge
+                          pending={company.pendingReview}
+                          lang={lang}
+                        />
+                      </td>
+
+                      {/* Actions */}
+                      <td className="whitespace-nowrap px-4 py-3">
+                        <div className="flex items-center gap-1">
+                          {/* Edit */}
+                          <ActionButton
+                            title={t(lang, 'Editar', 'Edit')}
+                            onClick={() => openEditModal(company)}
+                            disabled={actionInProgress === company.id}
+                          >
+                            <PencilIcon className="h-4 w-4" />
+                          </ActionButton>
+
+                          {/* Approve (pending only) */}
+                          {company.pendingReview && (
+                            <ActionButton
+                              title={t(lang, 'Aprobar', 'Approve')}
+                              onClick={() => handleApprove(company.id)}
+                              disabled={actionInProgress === company.id}
+                              className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                            >
+                              <CheckIcon className="h-4 w-4" />
+                            </ActionButton>
+                          )}
+
+                          {/* Reject (pending only) */}
+                          {company.pendingReview && (
+                            <ActionButton
+                              title={t(lang, 'Rechazar', 'Reject')}
+                              onClick={() => handleReject(company.id)}
+                              disabled={actionInProgress === company.id}
+                              className="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
+                            >
+                              <XMarkIcon className="h-4 w-4" />
+                            </ActionButton>
+                          )}
+
+                          {/* Delete */}
+                          <ActionButton
+                            title={t(lang, 'Eliminar', 'Delete')}
+                            onClick={() => handleDelete(company.id)}
+                            disabled={actionInProgress === company.id}
+                            className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </ActionButton>
+                        </div>
                       </td>
                     </tr>
-                  )}
+                    {/* Expandable context row */}
+                    {expandedId === company.id && company.createdBy && (
+                      <tr>
+                        <td
+                          colSpan={8}
+                          className="bg-gray-50 px-6 py-4 dark:bg-gray-900/50"
+                        >
+                          {(() => {
+                            const profile = creatorProfiles[company.createdBy];
+                            if (!profile) return null;
+                            return (
+                              <div className="flex flex-col gap-2 text-sm">
+                                <div className="font-semibold text-gray-700 dark:text-gray-300">
+                                  {t(
+                                    lang,
+                                    'Contexto de la solicitud',
+                                    'Submission Context'
+                                  )}
+                                </div>
+                                <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-gray-600 dark:text-gray-400">
+                                  <div>
+                                    <span className="font-medium">
+                                      {t(lang, 'Solicitante', 'Submitted by')}:
+                                    </span>{' '}
+                                    {profile.name}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Email:</span>{' '}
+                                    {profile.email}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">
+                                      {t(lang, 'Rol', 'Role')}:
+                                    </span>{' '}
+                                    {profile.role}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">
+                                      {t(
+                                        lang,
+                                        'Empresa actual',
+                                        'Current company'
+                                      )}
+                                      :
+                                    </span>{' '}
+                                    {profile.company || '-'}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">
+                                      {t(lang, 'Fecha', 'Date')}:
+                                    </span>{' '}
+                                    {company.createdAt instanceof Date
+                                      ? company.createdAt.toLocaleDateString(
+                                          lang === 'es' ? 'es-MX' : 'en-US',
+                                          {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric',
+                                          }
+                                        )
+                                      : '-'}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">
+                                      {t(
+                                        lang,
+                                        'Motivo probable',
+                                        'Likely reason'
+                                      )}
+                                      :
+                                    </span>{' '}
+                                    {profile.company?.toLowerCase() ===
+                                    company.name.toLowerCase()
+                                      ? t(
+                                          lang,
+                                          'Es su empresa actual',
+                                          'This is their current company'
+                                        )
+                                      : t(
+                                          lang,
+                                          'Agregado desde historial laboral',
+                                          'Added from work history'
+                                        )}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </td>
+                      </tr>
+                    )}
                   </React.Fragment>
                 ))}
               </tbody>

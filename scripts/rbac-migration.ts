@@ -20,7 +20,7 @@ const ADMIN_UID = 'REPLACE_WITH_ADMIN_UID'; // Set before running
 const BATCH_LIMIT = 500; // Firestore batch limit
 
 async function backfillNewsletters(
-  db: FirebaseFirestore.Firestore,
+  db: FirebaseFirestore.Firestore
 ): Promise<void> {
   const snapshot = await db.collection('newsletter_archive').get();
   let batch = db.batch();
@@ -59,7 +59,7 @@ async function backfillNewsletters(
 }
 
 async function backfillSpotlights(
-  db: FirebaseFirestore.Firestore,
+  db: FirebaseFirestore.Firestore
 ): Promise<void> {
   const snapshot = await db.collection('spotlights').get();
   let batch = db.batch();
@@ -98,7 +98,7 @@ async function backfillSpotlights(
 async function main(): Promise<void> {
   if (ADMIN_UID === 'REPLACE_WITH_ADMIN_UID') {
     console.error(
-      'ERROR: Replace ADMIN_UID with an actual admin user ID before running.',
+      'ERROR: Replace ADMIN_UID with an actual admin user ID before running.'
     );
     process.exit(1);
   }

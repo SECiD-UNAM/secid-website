@@ -28,7 +28,12 @@ import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
 import { MergeRequestsQueue } from './MergeRequestsQueue';
 import { ProfileComparison } from '@/components/merge/ProfileComparison';
-import type { FieldSelections, OldDocAction, FieldGroupKey, MergeRequest } from '@/types/merge';
+import type {
+  FieldSelections,
+  OldDocAction,
+  FieldGroupKey,
+  MergeRequest,
+} from '@/types/merge';
 import { Search, Loader2, GitMerge } from 'lucide-react';
 
 const ALL_FIELD_GROUPS: FieldGroupKey[] = [
@@ -64,7 +69,9 @@ interface AdminMergeToolProps {
   lang?: 'es' | 'en';
 }
 
-export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({ lang = 'es' }) => {
+export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({
+  lang = 'es',
+}) => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<TabId>('queue');
 
@@ -75,11 +82,17 @@ export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({ lang = 'es' }) =
   const [searchError, setSearchError] = useState<string | null>(null);
 
   // Role assignment
-  const [sourceProfile, setSourceProfile] = useState<(SearchResult & Record<string, any>) | null>(null);
-  const [targetProfile, setTargetProfile] = useState<(SearchResult & Record<string, any>) | null>(null);
+  const [sourceProfile, setSourceProfile] = useState<
+    (SearchResult & Record<string, any>) | null
+  >(null);
+  const [targetProfile, setTargetProfile] = useState<
+    (SearchResult & Record<string, any>) | null
+  >(null);
 
   // Merge controls
-  const [selections, setSelections] = useState<FieldSelections>(buildDefaultSelections());
+  const [selections, setSelections] = useState<FieldSelections>(
+    buildDefaultSelections()
+  );
   const [migrateReferences, setMigrateReferences] = useState(true);
   const [oldDocAction, setOldDocAction] = useState<OldDocAction>('soft-delete');
   const [reviewNotes, setReviewNotes] = useState('');
@@ -128,17 +141,24 @@ export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({ lang = 'es' }) =
       setSearchResults(results);
 
       if (results.length === 0) {
-        setSearchError(isEs ? 'No se encontraron perfiles.' : 'No profiles found.');
+        setSearchError(
+          isEs ? 'No se encontraron perfiles.' : 'No profiles found.'
+        );
       }
     } catch (err) {
       console.error('AdminMergeTool search error:', err);
-      setSearchError(isEs ? 'Error al buscar perfiles.' : 'Failed to search profiles.');
+      setSearchError(
+        isEs ? 'Error al buscar perfiles.' : 'Failed to search profiles.'
+      );
     } finally {
       setSearching(false);
     }
   };
 
-  const assignRole = (result: SearchResult & Record<string, any>, role: ProfileRole) => {
+  const assignRole = (
+    result: SearchResult & Record<string, any>,
+    role: ProfileRole
+  ) => {
     if (role === 'source') {
       setSourceProfile(result);
       if (targetProfile?.uid === result.uid) setTargetProfile(null);
@@ -164,7 +184,8 @@ export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({ lang = 'es' }) =
   const handleExecuteMerge = async () => {
     if (!sourceProfile || !targetProfile || !user) return;
 
-    const numeroCuenta = sourceProfile.numeroCuenta ?? targetProfile.numeroCuenta ?? '';
+    const numeroCuenta =
+      sourceProfile.numeroCuenta ?? targetProfile.numeroCuenta ?? '';
 
     setExecuting(true);
     setExecuteError(null);
@@ -198,7 +219,9 @@ export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({ lang = 'es' }) =
       resetManual();
     } catch (err) {
       console.error('AdminMergeTool execute error:', err);
-      setExecuteError(isEs ? 'Error al ejecutar la fusión.' : 'Failed to execute merge.');
+      setExecuteError(
+        isEs ? 'Error al ejecutar la fusión.' : 'Failed to execute merge.'
+      );
       setExecuting(false);
     }
   };
@@ -237,9 +260,7 @@ export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({ lang = 'es' }) =
       </div>
 
       {/* Tab content */}
-      {activeTab === 'queue' && (
-        <MergeRequestsQueue lang={lang} />
-      )}
+      {activeTab === 'queue' && <MergeRequestsQueue lang={lang} />}
 
       {activeTab === 'manual' && (
         <div className="space-y-6">
@@ -264,7 +285,11 @@ export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({ lang = 'es' }) =
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  placeholder={isEs ? 'Email o número de cuenta...' : 'Email or account number...'}
+                  placeholder={
+                    isEs
+                      ? 'Email o número de cuenta...'
+                      : 'Email or account number...'
+                  }
                   className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                 />
               </div>
@@ -283,7 +308,9 @@ export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({ lang = 'es' }) =
             </div>
 
             {searchError && (
-              <p className="text-sm text-red-600 dark:text-red-400">{searchError}</p>
+              <p className="text-sm text-red-600 dark:text-red-400">
+                {searchError}
+              </p>
             )}
 
             {/* Search results */}
@@ -312,11 +339,18 @@ export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({ lang = 'es' }) =
                           {result.email}
                           {result.numeroCuenta && ` · ${result.numeroCuenta}`}
                         </p>
-                        <p className="font-mono text-xs text-gray-400">{result.uid}</p>
+                        <p className="font-mono text-xs text-gray-400">
+                          {result.uid}
+                        </p>
                       </div>
                       <div className="ml-3 flex shrink-0 gap-2">
                         <button
-                          onClick={() => assignRole(result as SearchResult & Record<string, any>, 'source')}
+                          onClick={() =>
+                            assignRole(
+                              result as SearchResult & Record<string, any>,
+                              'source'
+                            )
+                          }
                           className={`rounded px-2.5 py-1 text-xs font-medium ${
                             isSource
                               ? 'bg-orange-600 text-white'
@@ -326,7 +360,12 @@ export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({ lang = 'es' }) =
                           {isEs ? 'Antiguo' : 'Old'}
                         </button>
                         <button
-                          onClick={() => assignRole(result as SearchResult & Record<string, any>, 'target')}
+                          onClick={() =>
+                            assignRole(
+                              result as SearchResult & Record<string, any>,
+                              'target'
+                            )
+                          }
                           className={`rounded px-2.5 py-1 text-xs font-medium ${
                             isTarget
                               ? 'bg-green-600 text-white'
@@ -349,15 +388,21 @@ export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({ lang = 'es' }) =
               <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800 dark:border-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
                 {isEs ? (
                   <>
-                    <strong>Origen (Antiguo):</strong> {sourceProfile.displayName ?? sourceProfile.email} ({sourceProfile.uid})
-                    {' · '}
-                    <strong>Destino (Nuevo):</strong> {targetProfile.displayName ?? targetProfile.email} ({targetProfile.uid})
+                    <strong>Origen (Antiguo):</strong>{' '}
+                    {sourceProfile.displayName ?? sourceProfile.email} (
+                    {sourceProfile.uid}){' · '}
+                    <strong>Destino (Nuevo):</strong>{' '}
+                    {targetProfile.displayName ?? targetProfile.email} (
+                    {targetProfile.uid})
                   </>
                 ) : (
                   <>
-                    <strong>Source (Old):</strong> {sourceProfile.displayName ?? sourceProfile.email} ({sourceProfile.uid})
-                    {' · '}
-                    <strong>Target (New):</strong> {targetProfile.displayName ?? targetProfile.email} ({targetProfile.uid})
+                    <strong>Source (Old):</strong>{' '}
+                    {sourceProfile.displayName ?? sourceProfile.email} (
+                    {sourceProfile.uid}){' · '}
+                    <strong>Target (New):</strong>{' '}
+                    {targetProfile.displayName ?? targetProfile.email} (
+                    {targetProfile.uid})
                   </>
                 )}
               </div>
@@ -384,17 +429,30 @@ export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({ lang = 'es' }) =
                     className="rounded border-gray-300 text-blue-600"
                   />
                   <span className="text-gray-700 dark:text-gray-300">
-                    {isEs ? 'Migrar referencias (jobs, events, etc.)' : 'Migrate references (jobs, events, etc.)'}
+                    {isEs
+                      ? 'Migrar referencias (jobs, events, etc.)'
+                      : 'Migrate references (jobs, events, etc.)'}
                   </span>
                 </label>
 
                 <fieldset>
                   <legend className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                    {isEs ? 'Acción para el documento original' : 'Action for old document'}
+                    {isEs
+                      ? 'Acción para el documento original'
+                      : 'Action for old document'}
                   </legend>
                   <div className="flex gap-4">
-                    {(['soft-delete', 'hard-delete', 'archive'] as OldDocAction[]).map((action) => (
-                      <label key={action} className="flex cursor-pointer items-center gap-1.5 text-sm">
+                    {(
+                      [
+                        'soft-delete',
+                        'hard-delete',
+                        'archive',
+                      ] as OldDocAction[]
+                    ).map((action) => (
+                      <label
+                        key={action}
+                        className="flex cursor-pointer items-center gap-1.5 text-sm"
+                      >
                         <input
                           type="radio"
                           name="manualOldDocAction"
@@ -403,7 +461,9 @@ export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({ lang = 'es' }) =
                           onChange={() => setOldDocAction(action)}
                           className="text-blue-600"
                         />
-                        <span className="text-gray-700 dark:text-gray-300">{action}</span>
+                        <span className="text-gray-700 dark:text-gray-300">
+                          {action}
+                        </span>
                       </label>
                     ))}
                   </div>
@@ -418,13 +478,19 @@ export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({ lang = 'es' }) =
                     onChange={(e) => setReviewNotes(e.target.value)}
                     rows={3}
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                    placeholder={isEs ? 'Razón de la fusión manual...' : 'Reason for manual merge...'}
+                    placeholder={
+                      isEs
+                        ? 'Razón de la fusión manual...'
+                        : 'Reason for manual merge...'
+                    }
                   />
                 </div>
               </div>
 
               {executeError && (
-                <p className="text-sm text-red-600 dark:text-red-400">{executeError}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  {executeError}
+                </p>
               )}
 
               <div className="flex gap-3">

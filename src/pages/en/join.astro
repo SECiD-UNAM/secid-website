@@ -5,7 +5,11 @@ import Footer from '@/components/Footer.astro';
 import { JoinPage } from '@/components/auth/JoinPage';
 ---
 
-<ModernLayout title="Join SECiD" description="Choose how you want to participate in the Data Science Alumni Society" lang="en">
+<ModernLayout
+  title="Join SECiD"
+  description="Choose how you want to participate in the Data Science Alumni Society"
+  lang="en"
+>
   <Navigation lang="en" />
   <JoinPage client:load lang="en" />
   <Footer lang="en" />

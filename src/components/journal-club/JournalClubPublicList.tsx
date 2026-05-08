@@ -224,7 +224,7 @@ function FirestoreSessionCard({
   }
 
   return (
-    <article className="rounded-lg bg-white p-6 shadow transition-shadow hover:shadow-md dark:bg-gray-800 border-l-4 border-blue-500">
+    <article className="rounded-lg border-l-4 border-blue-500 bg-white p-6 shadow transition-shadow hover:shadow-md dark:bg-gray-800">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex-1 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
@@ -360,7 +360,7 @@ export default function JournalClubPublicList({
       {/* Firestore sessions (if any published) */}
       {firestoreSessions.length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">
+          <h3 className="border-b pb-2 text-lg font-semibold text-gray-700 dark:text-gray-300">
             {t('liveSessionsTitle', lang)}
           </h3>
           <div className="space-y-4">
@@ -374,7 +374,7 @@ export default function JournalClubPublicList({
       {/* Upcoming static sessions */}
       {upcomingSessions.length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">
+          <h3 className="border-b pb-2 text-lg font-semibold text-gray-700 dark:text-gray-300">
             {lang === 'es' ? 'Próximas Sesiones' : 'Upcoming Sessions'}
           </h3>
           <div className="space-y-3">
@@ -388,7 +388,7 @@ export default function JournalClubPublicList({
       {/* Past static sessions */}
       {pastSessions.length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">
+          <h3 className="border-b pb-2 text-lg font-semibold text-gray-700 dark:text-gray-300">
             {lang === 'es' ? 'Sesiones Pasadas' : 'Past Sessions'}
           </h3>
           <div className="space-y-3">

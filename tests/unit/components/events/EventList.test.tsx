@@ -1,6 +1,12 @@
 // tests/unit/components/events/EventList.test.tsx
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import EventList from '@/components/events/EventList';
 
 // ---------------------------------------------------------------------------
@@ -24,7 +30,9 @@ vi.mock('firebase/firestore', () => ({
   getDocs: vi.fn(),
 }));
 
-vi.mock('clsx', () => ({ clsx: (...args: unknown[]) => args.filter(Boolean).join(' ') }));
+vi.mock('clsx', () => ({
+  clsx: (...args: unknown[]) => args.filter(Boolean).join(' '),
+}));
 
 vi.mock('@heroicons/react/24/outline', () => {
   const stub = () => null;
@@ -126,8 +134,12 @@ describe.sequential('EventList — rendering', () => {
       render(<EventList lang="en" />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'List' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /Calendar/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'List' })
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /Calendar/i })
+        ).toBeInTheDocument();
       });
     });
   });
@@ -214,7 +226,9 @@ describe.sequential('EventList — rendering', () => {
 
       // Switch to list view using the ListingViewToggle radio group
       const listBtn = screen.getByRole('radio', { name: 'List' });
-      act(() => { fireEvent.click(listBtn); });
+      act(() => {
+        fireEvent.click(listBtn);
+      });
 
       expect(screen.getByText('ML Webinar')).toBeInTheDocument();
     });
@@ -228,7 +242,10 @@ describe.sequential('EventList — time filter', () => {
      * Verifies: AC-evt-07 — only upcoming events shown when time filter is "upcoming" (default)
      */
     it('shows upcoming event, hides past event by default', async () => {
-      const upcomingEvent = makeEvent({ id: 'evt-upcoming', title: 'Future Event' });
+      const upcomingEvent = makeEvent({
+        id: 'evt-upcoming',
+        title: 'Future Event',
+      });
       const pastEvent = makePastEvent({ title: 'Ancient Event' });
       mockFirestoreSnapshot([upcomingEvent, pastEvent]);
 
@@ -247,7 +264,10 @@ describe.sequential('EventList — time filter', () => {
      * Verifies: AC-evt-08 — "All" time filter shows all published events
      */
     it('shows all events when All filter selected', async () => {
-      const upcomingEvent = makeEvent({ id: 'evt-future', title: 'Future Conference' });
+      const upcomingEvent = makeEvent({
+        id: 'evt-future',
+        title: 'Future Conference',
+      });
       const pastEvent = makePastEvent({ title: 'Past Workshop' });
       mockFirestoreSnapshot([upcomingEvent, pastEvent]);
 
@@ -274,7 +294,10 @@ describe.sequential('EventList — time filter', () => {
      * Verifies: AC-evt-09 — "Past" time filter shows only past events
      */
     it('shows only past events when Past filter selected', async () => {
-      const upcomingEvent = makeEvent({ id: 'evt-f', title: 'Upcoming Webinar' });
+      const upcomingEvent = makeEvent({
+        id: 'evt-f',
+        title: 'Upcoming Webinar',
+      });
       const pastEvent = makePastEvent({ title: 'Old Webinar' });
       mockFirestoreSnapshot([upcomingEvent, pastEvent]);
 
@@ -360,9 +383,15 @@ describe.sequential('EventList — Spanish translations', () => {
       render(<EventList lang="es" />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Próximos' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Todos' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Pasados' })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'Próximos' })
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'Todos' })
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'Pasados' })
+        ).toBeInTheDocument();
       });
     });
   });

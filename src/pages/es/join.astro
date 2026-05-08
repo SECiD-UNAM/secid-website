@@ -5,7 +5,11 @@ import Footer from '@/components/Footer.astro';
 import { JoinPage } from '@/components/auth/JoinPage';
 ---
 
-<ModernLayout title="Únete a SECiD" description="Elige cómo quieres participar en la Sociedad de Egresados en Ciencia de Datos" lang="es">
+<ModernLayout
+  title="Únete a SECiD"
+  description="Elige cómo quieres participar en la Sociedad de Egresados en Ciencia de Datos"
+  lang="es"
+>
   <Navigation lang="es" />
   <JoinPage client:load lang="es" />
   <Footer lang="es" />

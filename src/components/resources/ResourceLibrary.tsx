@@ -54,13 +54,26 @@ const CATEGORY_OPTIONS: ResourceCategory[] = [
 ];
 
 const TYPE_OPTIONS = [
-  'pdf', 'excel', 'jupyter', 'python', 'r', 'sql',
-  'csv', 'json', 'video', 'audio', 'image', 'zip', 'link',
+  'pdf',
+  'excel',
+  'jupyter',
+  'python',
+  'r',
+  'sql',
+  'csv',
+  'json',
+  'video',
+  'audio',
+  'image',
+  'zip',
+  'link',
 ] as const;
 
 const DIFFICULTY_OPTIONS = ['beginner', 'intermediate', 'advanced'] as const;
 
-function buildFilterDefinitions(t: ReturnType<typeof useTranslations>): FilterDefinition[] {
+function buildFilterDefinitions(
+  t: ReturnType<typeof useTranslations>
+): FilterDefinition[] {
   return [
     {
       key: 'category',
@@ -212,7 +225,9 @@ export default function ResourceLibrary({
   useEffect(() => {
     if (!user) return;
     getUserBookmarks(user.uid)
-      .then((bookmarks) => setBookmarkedIds(new Set(bookmarks.map((r) => r.id))))
+      .then((bookmarks) =>
+        setBookmarkedIds(new Set(bookmarks.map((r) => r.id)))
+      )
       .catch(() => {});
   }, [user]);
 

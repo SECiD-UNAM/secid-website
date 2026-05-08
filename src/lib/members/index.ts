@@ -15,10 +15,7 @@ export {
   getMemberRecommendations,
   getEducationEcosystem,
 } from './queries';
-export type {
-  InstitutionAggregate,
-  EducationEcosystemData,
-} from './queries';
+export type { InstitutionAggregate, EducationEcosystemData } from './queries';
 
 // Mutations
 export {

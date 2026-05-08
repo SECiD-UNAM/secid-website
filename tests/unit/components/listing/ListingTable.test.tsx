@@ -2,7 +2,11 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ListingTable } from '@components/listing/ListingTable';
 
-interface TestItem { id: string; name: string; score: number; }
+interface TestItem {
+  id: string;
+  name: string;
+  score: number;
+}
 
 const items: TestItem[] = [
   { id: '1', name: 'Alice', score: 95 },
@@ -10,13 +14,30 @@ const items: TestItem[] = [
 ];
 
 const columns = [
-  { key: 'name', label: 'Name', accessor: (i: TestItem) => i.name, sortable: true },
-  { key: 'score', label: 'Score', accessor: (i: TestItem) => i.score, sortable: true, align: 'right' as const },
+  {
+    key: 'name',
+    label: 'Name',
+    accessor: (i: TestItem) => i.name,
+    sortable: true,
+  },
+  {
+    key: 'score',
+    label: 'Score',
+    accessor: (i: TestItem) => i.score,
+    sortable: true,
+    align: 'right' as const,
+  },
 ];
 
 describe.sequential('ListingTable', () => {
   it('renders headers and rows', () => {
-    render(<ListingTable items={items} columns={columns} keyExtractor={(i) => i.id} />);
+    render(
+      <ListingTable
+        items={items}
+        columns={columns}
+        keyExtractor={(i) => i.id}
+      />
+    );
     expect(screen.getByText('Name')).toBeInTheDocument();
     expect(screen.getByText('Alice')).toBeInTheDocument();
     expect(screen.getByText('80')).toBeInTheDocument();

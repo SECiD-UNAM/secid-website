@@ -802,7 +802,12 @@ export async function getEducationEcosystem(): Promise<EducationEcosystemData> {
   // key = normalized institution name (or "UNAM — campus" for UNAM sub-groups)
   const instMap = new Map<
     string,
-    { members: Set<string>; degrees: Set<string>; category: InstitutionCategory; campus?: string }
+    {
+      members: Set<string>;
+      degrees: Set<string>;
+      category: InstitutionCategory;
+      campus?: string;
+    }
   >();
 
   const addEntry = (
@@ -815,10 +820,7 @@ export async function getEducationEcosystem(): Promise<EducationEcosystemData> {
     const category = getInstitutionCategory(normalized);
 
     // For UNAM, group by campus
-    const key =
-      category === 'UNAM' && campus
-        ? `UNAM — ${campus}`
-        : normalized;
+    const key = category === 'UNAM' && campus ? `UNAM — ${campus}` : normalized;
 
     if (!instMap.has(key)) {
       instMap.set(key, {
@@ -853,7 +855,12 @@ export async function getEducationEcosystem(): Promise<EducationEcosystemData> {
       for (const entry of educationHistory) {
         if (!entry.institution) continue;
         totalEntries++;
-        addEntry(uid, entry.institution, entry.degree || entry.fieldOfStudy, entry.campus);
+        addEntry(
+          uid,
+          entry.institution,
+          entry.degree || entry.fieldOfStudy,
+          entry.campus
+        );
       }
     } else {
       // Fallback: build from flat UNAM fields (same as mapper.ts buildAutoEducationEntry)
@@ -884,7 +891,10 @@ export async function getEducationEcosystem(): Promise<EducationEcosystemData> {
 
   const catMap = new Map<string, number>();
   for (const inst of institutions) {
-    catMap.set(inst.category, (catMap.get(inst.category) || 0) + inst.memberCount);
+    catMap.set(
+      inst.category,
+      (catMap.get(inst.category) || 0) + inst.memberCount
+    );
   }
   const categories = Array.from(catMap.entries())
     .map(([name, count]) => ({ name, count }))

@@ -20,9 +20,10 @@ describe('parseLinkedInSkills', () => {
 
   it('TC-skills-parser-002: ignores endorsement counts', () => {
     // Verifies: AC-2
-    expect(
-      parseLinkedInSkills('Python · 15 endorsements\nSQL')
-    ).toEqual(['Python', 'SQL']);
+    expect(parseLinkedInSkills('Python · 15 endorsements\nSQL')).toEqual([
+      'Python',
+      'SQL',
+    ]);
   });
 
   it('TC-skills-parser-003: trims whitespace and removes empty lines', () => {

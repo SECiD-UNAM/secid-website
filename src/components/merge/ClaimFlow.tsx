@@ -15,7 +15,12 @@ interface ClaimFlowProps {
   onClose: () => void;
 }
 
-type FlowState = 'loading' | 'comparison' | 'submitting' | 'submitted' | 'error';
+type FlowState =
+  | 'loading'
+  | 'comparison'
+  | 'submitting'
+  | 'submitted'
+  | 'error';
 
 function buildDefaultSelections(): FieldSelections {
   return (Object.keys(FIELD_GROUPS) as FieldGroupKey[]).reduce(
@@ -24,11 +29,18 @@ function buildDefaultSelections(): FieldSelections {
   );
 }
 
-export const ClaimFlow: React.FC<ClaimFlowProps> = ({ lang = 'es', onClose }) => {
+export const ClaimFlow: React.FC<ClaimFlowProps> = ({
+  lang = 'es',
+  onClose,
+}) => {
   const { user, userProfile } = useAuth();
   const [flowState, setFlowState] = useState<FlowState>('loading');
-  const [staleProfile, setStaleProfile] = useState<Record<string, any> | null>(null);
-  const [selections, setSelections] = useState<FieldSelections>(buildDefaultSelections);
+  const [staleProfile, setStaleProfile] = useState<Record<string, any> | null>(
+    null
+  );
+  const [selections, setSelections] = useState<FieldSelections>(
+    buildDefaultSelections
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const match = userProfile?.potentialMergeMatch;
@@ -142,13 +154,17 @@ export const ClaimFlow: React.FC<ClaimFlowProps> = ({ lang = 'es', onClose }) =>
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       role="dialog"
       aria-modal="true"
-      aria-label={lang === 'es' ? 'Reclamar perfil anterior' : 'Claim previous profile'}
+      aria-label={
+        lang === 'es' ? 'Reclamar perfil anterior' : 'Claim previous profile'
+      }
     >
       <div className="relative flex max-h-[90vh] w-full max-w-2xl flex-col rounded-xl bg-white shadow-xl dark:bg-gray-900">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            {lang === 'es' ? 'Reclamar perfil anterior' : 'Claim previous profile'}
+            {lang === 'es'
+              ? 'Reclamar perfil anterior'
+              : 'Claim previous profile'}
           </h2>
           <button
             onClick={onClose}
@@ -165,7 +181,9 @@ export const ClaimFlow: React.FC<ClaimFlowProps> = ({ lang = 'es', onClose }) =>
             <div className="flex flex-col items-center justify-center py-16">
               <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
               <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">
-                {lang === 'es' ? 'Cargando perfil anterior…' : 'Loading previous profile…'}
+                {lang === 'es'
+                  ? 'Cargando perfil anterior…'
+                  : 'Loading previous profile…'}
               </p>
             </div>
           )}

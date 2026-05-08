@@ -65,7 +65,13 @@ function t(key: string, lang: 'es' | 'en'): string {
 // Type badge
 // ---------------------------------------------------------------------------
 
-function TypeBadge({ isSystem, lang }: { isSystem: boolean; lang: 'es' | 'en' }) {
+function TypeBadge({
+  isSystem,
+  lang,
+}: {
+  isSystem: boolean;
+  lang: 'es' | 'en';
+}) {
   if (isSystem) {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
@@ -260,7 +266,8 @@ export default function GroupList({ lang = 'es' }: GroupListProps) {
                   </td>
                   <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
                     <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                      {group.permissions?.length ?? 0} {t('permissionCount', lang)}
+                      {group.permissions?.length ?? 0}{' '}
+                      {t('permissionCount', lang)}
                     </span>
                   </td>
                   <td className="px-4 py-3">

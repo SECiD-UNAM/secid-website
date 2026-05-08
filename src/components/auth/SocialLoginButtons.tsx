@@ -5,7 +5,11 @@ import { signInWithLinkedIn } from '@/lib/auth/linkedin-auth';
 import { useTranslations } from '@/hooks/useTranslations';
 import toast from 'react-hot-toast';
 import { AccountMergePrompt } from './AccountMergePrompt';
-import { handleAccountExistsError, completeMerge, type PendingMerge } from '@/lib/auth/auto-merge';
+import {
+  handleAccountExistsError,
+  completeMerge,
+  type PendingMerge,
+} from '@/lib/auth/auto-merge';
 
 interface SocialLoginButtonsProps {
   onSuccess?: () => void;
@@ -184,17 +188,24 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
             setMerging(true);
             try {
               await completeMerge(
-                pendingMerge.existingProvider as Exclude<SupportedProvider, 'linkedin'>,
+                pendingMerge.existingProvider as Exclude<
+                  SupportedProvider,
+                  'linkedin'
+                >,
                 pendingMerge.pendingCredential
               );
               setPendingMerge(null);
               toast.success(
-                lang === 'es' ? '¡Cuentas vinculadas exitosamente!' : 'Accounts linked successfully!'
+                lang === 'es'
+                  ? '¡Cuentas vinculadas exitosamente!'
+                  : 'Accounts linked successfully!'
               );
               onSuccess?.();
             } catch {
               toast.error(
-                lang === 'es' ? 'Error al vincular cuentas' : 'Failed to link accounts'
+                lang === 'es'
+                  ? 'Error al vincular cuentas'
+                  : 'Failed to link accounts'
               );
             } finally {
               setMerging(false);

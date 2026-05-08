@@ -1,4 +1,8 @@
-import { signInWithPopup, linkWithCredential, OAuthProvider } from 'firebase/auth';
+import {
+  signInWithPopup,
+  linkWithCredential,
+  OAuthProvider,
+} from 'firebase/auth';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import type { SupportedProvider } from '@/types/user';
@@ -16,8 +20,11 @@ export interface PendingMerge {
  *
  * Returns null for any non-merge error, or if required data cannot be extracted.
  */
-export async function handleAccountExistsError(error: any): Promise<PendingMerge | null> {
-  if (error.code !== 'auth/account-exists-with-different-credential') return null;
+export async function handleAccountExistsError(
+  error: any
+): Promise<PendingMerge | null> {
+  if (error.code !== 'auth/account-exists-with-different-credential')
+    return null;
 
   const email = error.customData?.email;
   if (!email) return null;
@@ -31,7 +38,8 @@ export async function handleAccountExistsError(error: any): Promise<PendingMerge
   const snapshot = await getDocs(q);
   if (snapshot.empty) return null;
 
-  const existingProvider = (snapshot.docs[0]!.data().lastLoginProvider || 'google') as SupportedProvider;
+  const existingProvider = (snapshot.docs[0]!.data().lastLoginProvider ||
+    'google') as SupportedProvider;
   return { email, pendingCredential, existingProvider };
 }
 

@@ -261,9 +261,7 @@ export default function PermissionMatrixPicker({
                       {RESOURCE_LABELS[resource][lang]}
                     </td>
                     {OPERATIONS.map((operation) => {
-                      const grant = grantIndex.get(
-                        `${resource}:${operation}`
-                      );
+                      const grant = grantIndex.get(`${resource}:${operation}`);
                       const cellValue = grantToCellValue(grant);
                       return (
                         <MatrixCell

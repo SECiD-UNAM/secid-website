@@ -65,9 +65,12 @@ vi.mock('firebase/firestore', () => {
   return {
     collection: vi.fn(() => ({})),
     doc: vi.fn(() => ({ id: 'new-merge-doc-id' })),
-    getDocs: (...args: any[]) => (globalThis as any).__adminMergeFns.getDocs(...args),
-    setDoc: (...args: any[]) => (globalThis as any).__adminMergeFns.setDoc(...args),
-    updateDoc: (...args: any[]) => (globalThis as any).__adminMergeFns.updateDoc(...args),
+    getDocs: (...args: any[]) =>
+      (globalThis as any).__adminMergeFns.getDocs(...args),
+    setDoc: (...args: any[]) =>
+      (globalThis as any).__adminMergeFns.setDoc(...args),
+    updateDoc: (...args: any[]) =>
+      (globalThis as any).__adminMergeFns.updateDoc(...args),
     serverTimestamp: vi.fn(() => ({ _methodName: 'serverTimestamp' })),
     query: vi.fn((...args: any[]) => args[0]),
     where: vi.fn(() => ({})),

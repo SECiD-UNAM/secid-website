@@ -8,7 +8,10 @@ interface Props {
   initialPosts?: BlogPost[];
 }
 
-export default function BlogListPage({ lang = 'es', initialPosts = [] }: Props) {
+export default function BlogListPage({
+  lang = 'es',
+  initialPosts = [],
+}: Props) {
   return (
     <AuthProvider>
       <BlogList lang={lang} initialPosts={initialPosts} />

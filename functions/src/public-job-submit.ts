@@ -1,5 +1,5 @@
-import { onCall, HttpsError } from "firebase-functions/v2/https";
-import * as admin from "firebase-admin";
+import { onCall, HttpsError } from 'firebase-functions/v2/https';
+import * as admin from 'firebase-admin';
 
 const db = admin.firestore();
 const MAX_FIELD_LENGTH = 10000;
@@ -7,7 +7,10 @@ const MAX_ARRAY_LENGTH = 50;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function sanitize(str: string, maxLen = MAX_FIELD_LENGTH): string {
-  return str.replace(/<[^>]*>/g, "").trim().slice(0, maxLen);
+  return str
+    .replace(/<[^>]*>/g, '')
+    .trim()
+    .slice(0, maxLen);
 }
 
 function sanitizeArray(arr: string[], maxLen = MAX_FIELD_LENGTH): string[] {
@@ -37,27 +40,27 @@ interface PublicJobSubmissionData {
 
 function validateRequiredFields(data: PublicJobSubmissionData): void {
   const requiredFields: (keyof PublicJobSubmissionData)[] = [
-    "title",
-    "company",
-    "description",
-    "contactEmail",
-    "contactName",
+    'title',
+    'company',
+    'description',
+    'contactEmail',
+    'contactName',
   ];
 
   for (const field of requiredFields) {
     const value = data[field];
-    if (!value || (typeof value === "string" && value.trim().length === 0)) {
-      throw new HttpsError(
-        "invalid-argument",
-        `${field} is required`
-      );
+    if (!value || (typeof value === 'string' && value.trim().length === 0)) {
+      throw new HttpsError('invalid-argument', `${field} is required`);
     }
   }
 }
 
 function validateEmailFormat(email: string): void {
   if (!EMAIL_REGEX.test(email)) {
-    throw new HttpsError("invalid-argument", "contactEmail is not a valid email address");
+    throw new HttpsError(
+      'invalid-argument',
+      'contactEmail is not a valid email address'
+    );
   }
 }
 
@@ -70,7 +73,7 @@ function buildSanitizedDocument(
     description: sanitize(data.description),
     contactEmail: sanitize(data.contactEmail, 254),
     contactName: sanitize(data.contactName, 200),
-    status: "pending_review",
+    status: 'pending_review',
     submittedAt: admin.firestore.FieldValue.serverTimestamp(),
   };
 
@@ -86,7 +89,10 @@ function buildSanitizedDocument(
   if (data.salaryPeriod) {
     doc.salaryPeriod = sanitize(data.salaryPeriod, 50);
   }
-  if (Array.isArray(data.responsibilities) && data.responsibilities.length > 0) {
+  if (
+    Array.isArray(data.responsibilities) &&
+    data.responsibilities.length > 0
+  ) {
     doc.responsibilities = sanitizeArray(data.responsibilities);
   }
   if (Array.isArray(data.benefits) && data.benefits.length > 0) {
@@ -119,7 +125,9 @@ export const submitPublicJob = onCall(async (request) => {
 
   const sanitizedDoc = buildSanitizedDocument(data);
 
-  const docRef = await db.collection("public_job_submissions").add(sanitizedDoc);
+  const docRef = await db
+    .collection('public_job_submissions')
+    .add(sanitizedDoc);
 
   return { success: true, submissionId: docRef.id };
 });

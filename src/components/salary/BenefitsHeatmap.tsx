@@ -19,7 +19,7 @@ function getBarColor(percentage: number): string {
   if (percentage >= 75) return '#3B82F6'; // blue-500
   if (percentage >= 50) return '#6366F1'; // indigo-500
   if (percentage >= 25) return '#8B5CF6'; // violet-500
-  return '#A78BFA';                        // violet-400
+  return '#A78BFA'; // violet-400
 }
 
 export function BenefitsHeatmap({ benefits, lang = 'es' }: Props) {

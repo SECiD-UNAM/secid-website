@@ -46,7 +46,11 @@ function formatMoney(v: number, currency: string): string {
 
 export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
   const rows: AdminRow[] = useMemo(
-    () => rawData.map((r) => ({ ...r, label: translateIndustry(r.industry, lang) })),
+    () =>
+      rawData.map((r) => ({
+        ...r,
+        label: translateIndustry(r.industry, lang),
+      })),
     [rawData, lang]
   );
 
@@ -56,7 +60,8 @@ export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
       initialData: rows,
       searchFields: ['memberName', 'memberEmail', 'company', 'position'],
       getId: (r) => `${r.memberEmail}-${r.company}`,
-      toSearchable: (r) => `${r.memberName} ${r.memberEmail} ${r.company} ${r.position}`,
+      toSearchable: (r) =>
+        `${r.memberName} ${r.memberEmail} ${r.company} ${r.position}`,
     });
     return adapter;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,7 +91,9 @@ export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
         sortable: true,
         accessor: (row) => (
           <div>
-            <div className="font-medium text-gray-900 dark:text-white">{row.memberName}</div>
+            <div className="font-medium text-gray-900 dark:text-white">
+              {row.memberName}
+            </div>
             <div className="text-[10px] text-gray-400">{row.memberEmail}</div>
           </div>
         ),
@@ -99,7 +106,9 @@ export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
           <span className="whitespace-nowrap text-gray-700 dark:text-gray-300">
             {row.company}
             {row.current && (
-              <span className="ml-1 text-[10px] text-green-600 dark:text-green-400">●</span>
+              <span className="ml-1 text-[10px] text-green-600 dark:text-green-400">
+                ●
+              </span>
             )}
           </span>
         ),
@@ -109,7 +118,9 @@ export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
         label: lang === 'es' ? 'Puesto' : 'Position',
         sortable: true,
         accessor: (row) => (
-          <span className="whitespace-nowrap text-gray-600 dark:text-gray-400">{row.position}</span>
+          <span className="whitespace-nowrap text-gray-600 dark:text-gray-400">
+            {row.position}
+          </span>
         ),
       },
       {
@@ -117,7 +128,9 @@ export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
         label: lang === 'es' ? 'Industria' : 'Industry',
         sortable: true,
         accessor: (row) => (
-          <span className="whitespace-nowrap text-gray-600 dark:text-gray-400">{row.label}</span>
+          <span className="whitespace-nowrap text-gray-600 dark:text-gray-400">
+            {row.label}
+          </span>
         ),
       },
       {
@@ -125,7 +138,9 @@ export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
         label: lang === 'es' ? 'Pais' : 'Country',
         sortable: true,
         accessor: (row) => (
-          <span className="whitespace-nowrap text-gray-600 dark:text-gray-400">{row.country}</span>
+          <span className="whitespace-nowrap text-gray-600 dark:text-gray-400">
+            {row.country}
+          </span>
         ),
       },
       {
@@ -133,7 +148,9 @@ export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
         label: lang === 'es' ? 'Regimen' : 'Regime',
         sortable: true,
         accessor: (row) => (
-          <span className="whitespace-nowrap text-gray-600 dark:text-gray-400">{row.fiscalRegime}</span>
+          <span className="whitespace-nowrap text-gray-600 dark:text-gray-400">
+            {row.fiscalRegime}
+          </span>
         ),
       },
       {
@@ -152,7 +169,9 @@ export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
         sortable: true,
         accessor: (row) => (
           <span className="whitespace-nowrap text-gray-600 dark:text-gray-400">
-            {row.annualBonus > 0 ? formatMoney(row.annualBonus, row.currency) : '-'}
+            {row.annualBonus > 0
+              ? formatMoney(row.annualBonus, row.currency)
+              : '-'}
           </span>
         ),
       },
@@ -162,7 +181,9 @@ export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
         sortable: true,
         accessor: (row) => (
           <span className="whitespace-nowrap text-gray-600 dark:text-gray-400">
-            {row.stockValue > 0 ? formatMoney(row.stockValue, row.currency) : '-'}
+            {row.stockValue > 0
+              ? formatMoney(row.stockValue, row.currency)
+              : '-'}
           </span>
         ),
       },
@@ -180,7 +201,9 @@ export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
               </span>
             ))}
             {row.benefits.length > 3 && (
-              <span className="text-[10px] text-gray-400">+{row.benefits.length - 3}</span>
+              <span className="text-[10px] text-gray-400">
+                +{row.benefits.length - 3}
+              </span>
             )}
           </div>
         ),
@@ -217,13 +240,17 @@ export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
       {/* Table */}
       {sorted.length === 0 ? (
         <div className="py-8 text-center text-sm text-gray-400">
-          {lang === 'es' ? 'Sin datos salariales registrados.' : 'No salary data recorded.'}
+          {lang === 'es'
+            ? 'Sin datos salariales registrados.'
+            : 'No salary data recorded.'}
         </div>
       ) : (
         <ListingTable<AdminRow>
           items={sorted}
           columns={columns}
-          keyExtractor={(row) => `${row.memberEmail}-${row.company}-${row.position}`}
+          keyExtractor={(row) =>
+            `${row.memberEmail}-${row.company}-${row.position}`
+          }
           sort={sort}
           onSortChange={setSort}
           className="text-xs"

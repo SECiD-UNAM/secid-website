@@ -9,10 +9,9 @@ interface MergeNotificationBannerProps {
   onReviewClick?: () => void;
 }
 
-export const MergeNotificationBanner: React.FC<MergeNotificationBannerProps> = ({
-  lang = 'es',
-  onReviewClick,
-}) => {
+export const MergeNotificationBanner: React.FC<
+  MergeNotificationBannerProps
+> = ({ lang = 'es', onReviewClick }) => {
   const { userProfile, user } = useAuth();
   const [dismissing, setDismissing] = useState(false);
   const [showClaimFlow, setShowClaimFlow] = useState(false);

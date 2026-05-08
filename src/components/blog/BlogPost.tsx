@@ -57,7 +57,11 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
-export default function BlogPost({ slug, lang = 'es', initialPost = null }: Props) {
+export default function BlogPost({
+  slug,
+  lang = 'es',
+  initialPost = null,
+}: Props) {
   const t = translations[lang];
   const [post, setPost] = useState<BlogPostType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -179,8 +183,7 @@ export default function BlogPost({ slug, lang = 'es', initialPost = null }: Prop
           href={`/${lang === 'es' ? 'en' : 'es'}/blog/${post.translationOf || post.translationSlug}`}
           className="blog-post__translation-link"
         >
-          <i className="fas fa-language" />{' '}
-          {t.readInOtherLang}
+          <i className="fas fa-language" /> {t.readInOtherLang}
         </a>
       )}
 

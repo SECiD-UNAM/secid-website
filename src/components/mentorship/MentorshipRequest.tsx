@@ -60,105 +60,244 @@ const FREQUENCY_OPTIONS = [
 /** Inline SVG icons to replace FontAwesome */
 function ArrowRightIcon({ className = 'h-5 w-5' }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M17 8l4 4m0 0l-4 4m4-4H3"
+      />
     </svg>
   );
 }
 
 function ArrowLeftIcon({ className = 'h-5 w-5' }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M7 16l-4-4m0 0l4-4m-4 4h18"
+      />
     </svg>
   );
 }
 
 function CheckIcon({ className = 'h-5 w-5' }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5 13l4 4L19 7"
+      />
     </svg>
   );
 }
 
 function XIcon({ className = 'h-5 w-5' }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M6 18L18 6M6 6l12 12"
+      />
     </svg>
   );
 }
 
 function PaperPlaneIcon({ className = 'h-5 w-5' }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+      />
     </svg>
   );
 }
 
 function SpinnerIcon({ className = 'h-5 w-5' }: { className?: string }) {
   return (
-    <svg className={`animate-spin ${className}`} fill="none" viewBox="0 0 24 24">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    <svg
+      className={`animate-spin ${className}`}
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+      />
     </svg>
   );
 }
 
 function UserIcon({ className = 'h-6 w-6' }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+      />
     </svg>
   );
 }
 
 function PlusIcon({ className = 'h-5 w-5' }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 4v16m8-8H4"
+      />
     </svg>
   );
 }
 
 function ClockIcon({ className = 'h-5 w-5' }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
     </svg>
   );
 }
 
 function CalendarIcon({ className = 'h-5 w-5' }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+      />
     </svg>
   );
 }
 
 function ChatIcon({ className = 'h-5 w-5' }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+      />
     </svg>
   );
 }
 
-function ExclamationCircleIcon({ className = 'h-5 w-5' }: { className?: string }) {
+function ExclamationCircleIcon({
+  className = 'h-5 w-5',
+}: {
+  className?: string;
+}) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
     </svg>
   );
 }
 
 function CheckCircleIcon({ className = 'h-5 w-5' }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
     </svg>
   );
 }
@@ -193,8 +332,10 @@ function getStatusClasses(status: string): string {
 /** Tailwind class constants */
 const inputClass =
   'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-white';
-const labelClass = 'mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300';
-const sectionHeadingClass = 'mb-4 text-lg font-semibold text-gray-900 dark:text-white';
+const labelClass =
+  'mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300';
+const sectionHeadingClass =
+  'mb-4 text-lg font-semibold text-gray-900 dark:text-white';
 const btnPrimary =
   'inline-flex items-center gap-2 rounded-lg bg-primary-600 px-6 py-2 text-sm font-medium text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50';
 const btnOutline =
@@ -242,7 +383,8 @@ export default function MentorshipRequestComponent({
         rejected: 'Rejected',
         // Respond mode
         respondTitle: 'Respond to Request',
-        respondDescription: 'Review this mentorship request and decide whether to accept or decline.',
+        respondDescription:
+          'Review this mentorship request and decide whether to accept or decline.',
         responseSubmitted: 'Your response has been submitted successfully.',
         yearsExperience: 'years of experience',
         theirMessage: 'Their Message',
@@ -253,36 +395,45 @@ export default function MentorshipRequestComponent({
         acceptanceMessage: 'Acceptance Message (optional)',
         rejectionMessage: 'Reason for Declining (optional)',
         acceptancePlaceholder: 'Share any initial thoughts or next steps...',
-        rejectionPlaceholder: 'Briefly explain why you cannot take this mentee...',
+        rejectionPlaceholder:
+          'Briefly explain why you cannot take this mentee...',
         confirmAccept: 'Confirm Accept',
         confirmReject: 'Confirm Decline',
         // Create mode
         createTitle: 'Request Mentorship',
-        introDescription: 'Tell the mentor about yourself and what you hope to achieve.',
+        introDescription:
+          'Tell the mentor about yourself and what you hope to achieve.',
         personalMessage: 'Personal Message',
-        messagePlaceholder: 'Introduce yourself and explain why you would like to be mentored by this person...',
+        messagePlaceholder:
+          'Introduce yourself and explain why you would like to be mentored by this person...',
         characters: 'characters',
         minimumCharacters: 'Minimum 50 characters',
         yourGoals: 'Your Goals',
         addGoalPlaceholder: 'Add a goal...',
         goalsHelp: 'Add specific goals you want to work on with your mentor.',
-        preferencesDescription: 'Set your preferences for the mentorship relationship.',
+        preferencesDescription:
+          'Set your preferences for the mentorship relationship.',
         expectedDuration: 'Expected Duration',
         meetingFrequency: 'Meeting Frequency',
         communicationPreference: 'Communication Preference',
-        commitmentDescription: 'Describe your availability and commitment level.',
+        commitmentDescription:
+          'Describe your availability and commitment level.',
         timeCommitment: 'Time Commitment',
-        timeCommitmentPlaceholder: 'Describe how much time you can dedicate per week...',
+        timeCommitmentPlaceholder:
+          'Describe how much time you can dedicate per week...',
         previousExperience: 'Previous Mentorship Experience',
-        previousExperiencePlaceholder: 'Describe any previous mentorship experience...',
+        previousExperiencePlaceholder:
+          'Describe any previous mentorship experience...',
         expectationsDescription: 'What do you expect from this mentorship?',
         expectations: 'Expectations',
-        expectationsPlaceholder: 'Describe what you expect to gain from this mentorship...',
+        expectationsPlaceholder:
+          'Describe what you expect to gain from this mentorship...',
         summary: 'Summary',
         previous: 'Previous',
         next: 'Next',
         submitRequest: 'Submit Request',
-        submitSuccess: 'Your mentorship request has been submitted successfully!',
+        submitSuccess:
+          'Your mentorship request has been submitted successfully!',
         // Steps
         steps: {
           introduction: 'Introduction',
@@ -310,11 +461,16 @@ export default function MentorshipRequestComponent({
         errorSubmitting: 'Error submitting request. Please try again.',
         errorResponding: 'Error responding to request. Please try again.',
         // Overrides from existing translations
-        ...((_t.mentorship as Record<string, unknown>)?.request as Record<string, string>),
+        ...((_t.mentorship as Record<string, unknown>)?.request as Record<
+          string,
+          string
+        >),
       },
     },
     common: {
-      ...((_t as unknown as Record<string, unknown>).common as Record<string, string> | undefined),
+      ...((_t as unknown as Record<string, unknown>).common as
+        | Record<string, string>
+        | undefined),
       cancel: 'Cancel',
       submitting: 'Submitting...',
     },
@@ -396,9 +552,13 @@ export default function MentorshipRequestComponent({
             setFormData({
               message: request.message,
               goals: request.goals,
-              expectedDuration: (request as unknown as Record<string, string>).expectedDuration ?? '',
-              meetingFrequency: (request.meetingFrequency ?? 'biweekly') as RequestFormData['meetingFrequency'],
-              communicationPreference: (request.communicationPreference ?? 'video') as RequestFormData['communicationPreference'],
+              expectedDuration:
+                (request as unknown as Record<string, string>)
+                  .expectedDuration ?? '',
+              meetingFrequency: (request.meetingFrequency ??
+                'biweekly') as RequestFormData['meetingFrequency'],
+              communicationPreference: (request.communicationPreference ??
+                'video') as RequestFormData['communicationPreference'],
               specificAreas: [],
               timeCommitment: '',
               previousExperience: '',
@@ -652,7 +812,7 @@ export default function MentorshipRequestComponent({
   // ── Participant avatar ──────────────────────────────────────
   const renderAvatar = (
     profile: { profileImage?: string; displayName?: string } | null,
-    gradient: string,
+    gradient: string
   ) => {
     if (profile?.profileImage) {
       return (
@@ -667,7 +827,11 @@ export default function MentorshipRequestComponent({
       <div
         className={`flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br ${gradient} text-lg font-semibold text-white`}
       >
-        {profile?.displayName ? getInitials(profile.displayName) : <UserIcon className="h-6 w-6" />}
+        {profile?.displayName ? (
+          getInitials(profile.displayName)
+        ) : (
+          <UserIcon className="h-6 w-6" />
+        )}
       </div>
     );
   };
@@ -678,7 +842,10 @@ export default function MentorshipRequestComponent({
     return (
       <div className={`${errorBoxClass} mb-4 space-y-1`}>
         {formState.errors.map((error, index) => (
-          <p key={index} className="flex items-center gap-2 text-sm text-red-700 dark:text-red-300">
+          <p
+            key={index}
+            className="flex items-center gap-2 text-sm text-red-700 dark:text-red-300"
+          >
             <ExclamationCircleIcon className="h-4 w-4 shrink-0" />
             {error.message}
           </p>
@@ -713,7 +880,8 @@ export default function MentorshipRequestComponent({
           <span
             className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusClasses(existingRequest.status)}`}
           >
-            {t.mentorship.request.status[existingRequest.status] ?? existingRequest.status}
+            {t.mentorship.request.status[existingRequest.status] ??
+              existingRequest.status}
           </span>
         </div>
 
@@ -726,7 +894,9 @@ export default function MentorshipRequestComponent({
               <span className="text-sm font-medium text-gray-900 dark:text-white">
                 {mentee?.displayName}
               </span>
-              <span className="text-xs text-gray-500">{t.mentorship.request.mentee}</span>
+              <span className="text-xs text-gray-500">
+                {t.mentorship.request.mentee}
+              </span>
             </div>
 
             {/* Arrow */}
@@ -738,7 +908,9 @@ export default function MentorshipRequestComponent({
               <span className="text-sm font-medium text-gray-900 dark:text-white">
                 {mentor?.displayName}
               </span>
-              <span className="text-xs text-gray-500">{t.mentorship.request.mentor}</span>
+              <span className="text-xs text-gray-500">
+                {t.mentorship.request.mentor}
+              </span>
             </div>
           </div>
         </div>
@@ -747,7 +919,9 @@ export default function MentorshipRequestComponent({
         <div className={`${cardClass} space-y-6`}>
           {/* Message */}
           <section>
-            <h3 className={sectionHeadingClass}>{t.mentorship.request.message}</h3>
+            <h3 className={sectionHeadingClass}>
+              {t.mentorship.request.message}
+            </h3>
             <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
               {existingRequest.message}
             </p>
@@ -755,7 +929,9 @@ export default function MentorshipRequestComponent({
 
           {/* Goals */}
           <section>
-            <h3 className={sectionHeadingClass}>{t.mentorship.request.goals}</h3>
+            <h3 className={sectionHeadingClass}>
+              {t.mentorship.request.goals}
+            </h3>
             <div className="flex flex-wrap gap-2">
               {existingRequest.goals.map((goal, index) => (
                 <span
@@ -770,30 +946,44 @@ export default function MentorshipRequestComponent({
 
           {/* Preferences */}
           <section>
-            <h3 className={sectionHeadingClass}>{t.mentorship.request.preferences}</h3>
+            <h3 className={sectionHeadingClass}>
+              {t.mentorship.request.preferences}
+            </h3>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <ClockIcon className="h-4 w-4 text-gray-400" />
                 <span>
-                  <span className="font-medium">{t.mentorship.request.duration}:</span>{' '}
-                  {(existingRequest as unknown as Record<string, string>).expectedDuration ?? '-'}
+                  <span className="font-medium">
+                    {t.mentorship.request.duration}:
+                  </span>{' '}
+                  {(existingRequest as unknown as Record<string, string>)
+                    .expectedDuration ?? '-'}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <CalendarIcon className="h-4 w-4 text-gray-400" />
                 <span>
-                  <span className="font-medium">{t.mentorship.request.frequency}:</span>{' '}
+                  <span className="font-medium">
+                    {t.mentorship.request.frequency}:
+                  </span>{' '}
                   {existingRequest.meetingFrequency
-                    ? ((_t.mentorship as Record<string, Record<string, string>>)?.frequency?.[existingRequest.meetingFrequency] ?? existingRequest.meetingFrequency)
+                    ? ((_t.mentorship as Record<string, Record<string, string>>)
+                        ?.frequency?.[existingRequest.meetingFrequency] ??
+                      existingRequest.meetingFrequency)
                     : '-'}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <ChatIcon className="h-4 w-4 text-gray-400" />
                 <span>
-                  <span className="font-medium">{t.mentorship.request.communication}:</span>{' '}
+                  <span className="font-medium">
+                    {t.mentorship.request.communication}:
+                  </span>{' '}
                   {existingRequest.communicationPreference
-                    ? ((_t.mentorship as Record<string, Record<string, string>>)?.communication?.[existingRequest.communicationPreference] ?? existingRequest.communicationPreference)
+                    ? ((_t.mentorship as Record<string, Record<string, string>>)
+                        ?.communication?.[
+                        existingRequest.communicationPreference
+                      ] ?? existingRequest.communicationPreference)
                     : '-'}
                 </span>
               </div>
@@ -803,7 +993,9 @@ export default function MentorshipRequestComponent({
           {/* Mentor response */}
           {existingRequest.responseMessage && (
             <section>
-              <h3 className={sectionHeadingClass}>{t.mentorship.request.response}</h3>
+              <h3 className={sectionHeadingClass}>
+                {t.mentorship.request.response}
+              </h3>
               <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
                 {existingRequest.responseMessage}
               </p>
@@ -868,8 +1060,11 @@ export default function MentorshipRequestComponent({
                 {mentee?.displayName}
               </h3>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {(_t.mentorship as Record<string, Record<string, string>>)?.level?.[mentee?.currentLevel ?? 'entry'] ?? mentee?.currentLevel}{' '}
-                - {mentee?.background.yearsOfExperience} {t.mentorship.request.yearsExperience}
+                {(_t.mentorship as Record<string, Record<string, string>>)
+                  ?.level?.[mentee?.currentLevel ?? 'entry'] ??
+                  mentee?.currentLevel}{' '}
+                - {mentee?.background.yearsOfExperience}{' '}
+                {t.mentorship.request.yearsExperience}
               </p>
             </div>
           </div>
@@ -904,7 +1099,9 @@ export default function MentorshipRequestComponent({
 
         {/* Response form */}
         <div className={cardClass}>
-          <h3 className={sectionHeadingClass}>{t.mentorship.request.yourResponse}</h3>
+          <h3 className={sectionHeadingClass}>
+            {t.mentorship.request.yourResponse}
+          </h3>
 
           {/* Accept/Reject radio cards */}
           <div className="mb-4 grid grid-cols-2 gap-3">
@@ -997,7 +1194,9 @@ export default function MentorshipRequestComponent({
 
                 <button
                   type="button"
-                  className={responseAction === 'accept' ? btnPrimary : btnDanger}
+                  className={
+                    responseAction === 'accept' ? btnPrimary : btnDanger
+                  }
                   onClick={() => handleRespondToRequest(responseAction)}
                   disabled={formState.isSubmitting || !responseAction}
                 >
@@ -1045,7 +1244,8 @@ export default function MentorshipRequestComponent({
                 {mentor.displayName}
               </h3>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {mentor.experience.currentPosition} at {mentor.experience.currentCompany}
+                {mentor.experience.currentPosition} at{' '}
+                {mentor.experience.currentCompany}
               </p>
             </div>
           </div>
@@ -1107,7 +1307,9 @@ export default function MentorshipRequestComponent({
 
             {/* Goals */}
             <div>
-              <label className={labelClass}>{t.mentorship.request.yourGoals} *</label>
+              <label className={labelClass}>
+                {t.mentorship.request.yourGoals} *
+              </label>
 
               {formData.goals.length > 0 && (
                 <div className="mb-2 flex flex-wrap gap-2">
@@ -1183,7 +1385,10 @@ export default function MentorshipRequestComponent({
                     key={duration}
                     type="button"
                     onClick={() =>
-                      setFormData((prev) => ({ ...prev, expectedDuration: duration }))
+                      setFormData((prev) => ({
+                        ...prev,
+                        expectedDuration: duration,
+                      }))
                     }
                     className={
                       formData.expectedDuration === duration
@@ -1199,7 +1404,9 @@ export default function MentorshipRequestComponent({
 
             {/* Frequency */}
             <div>
-              <label className={labelClass}>{t.mentorship.request.meetingFrequency}</label>
+              <label className={labelClass}>
+                {t.mentorship.request.meetingFrequency}
+              </label>
               <div className="flex flex-wrap gap-2">
                 {FREQUENCY_OPTIONS.map((freq) => (
                   <button
@@ -1208,7 +1415,8 @@ export default function MentorshipRequestComponent({
                     onClick={() =>
                       setFormData((prev) => ({
                         ...prev,
-                        meetingFrequency: freq.value as RequestFormData['meetingFrequency'],
+                        meetingFrequency:
+                          freq.value as RequestFormData['meetingFrequency'],
                       }))
                     }
                     className={
@@ -1236,7 +1444,8 @@ export default function MentorshipRequestComponent({
                     onClick={() =>
                       setFormData((prev) => ({
                         ...prev,
-                        communicationPreference: option.value as RequestFormData['communicationPreference'],
+                        communicationPreference:
+                          option.value as RequestFormData['communicationPreference'],
                       }))
                     }
                     className={`flex flex-col items-center gap-2 ${
@@ -1246,21 +1455,53 @@ export default function MentorshipRequestComponent({
                     }`}
                   >
                     {option.value === 'video' && (
-                      <svg className={`h-6 w-6 ${formData.communicationPreference === option.value ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      <svg
+                        className={`h-6 w-6 ${formData.communicationPreference === option.value ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400'}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                        />
                       </svg>
                     )}
                     {option.value === 'voice' && (
-                      <svg className={`h-6 w-6 ${formData.communicationPreference === option.value ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      <svg
+                        className={`h-6 w-6 ${formData.communicationPreference === option.value ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400'}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                        />
                       </svg>
                     )}
                     {option.value === 'chat' && (
-                      <ChatIcon className={`h-6 w-6 ${formData.communicationPreference === option.value ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400'}`} />
+                      <ChatIcon
+                        className={`h-6 w-6 ${formData.communicationPreference === option.value ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400'}`}
+                      />
                     )}
                     {option.value === 'in-person' && (
-                      <svg className={`h-6 w-6 ${formData.communicationPreference === option.value ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      <svg
+                        className={`h-6 w-6 ${formData.communicationPreference === option.value ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400'}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                        />
                       </svg>
                     )}
                     <span
@@ -1299,7 +1540,10 @@ export default function MentorshipRequestComponent({
                 id="timeCommitment"
                 value={formData.timeCommitment}
                 onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, timeCommitment: e.target.value }))
+                  setFormData((prev) => ({
+                    ...prev,
+                    timeCommitment: e.target.value,
+                  }))
                 }
                 placeholder={t.mentorship.request.timeCommitmentPlaceholder}
                 rows={3}
@@ -1315,7 +1559,10 @@ export default function MentorshipRequestComponent({
                 id="previousExperience"
                 value={formData.previousExperience}
                 onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, previousExperience: e.target.value }))
+                  setFormData((prev) => ({
+                    ...prev,
+                    previousExperience: e.target.value,
+                  }))
                 }
                 placeholder={t.mentorship.request.previousExperiencePlaceholder}
                 rows={3}
@@ -1345,7 +1592,10 @@ export default function MentorshipRequestComponent({
                 id="expectations"
                 value={formData.expectations}
                 onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, expectations: e.target.value }))
+                  setFormData((prev) => ({
+                    ...prev,
+                    expectations: e.target.value,
+                  }))
                 }
                 placeholder={t.mentorship.request.expectationsPlaceholder}
                 rows={4}
@@ -1380,7 +1630,11 @@ export default function MentorshipRequestComponent({
                     {t.mentorship.request.frequency}:
                   </dt>
                   <dd className="text-gray-600 dark:text-gray-400">
-                    {FREQUENCY_OPTIONS.find((f) => f.value === formData.meetingFrequency)?.label}
+                    {
+                      FREQUENCY_OPTIONS.find(
+                        (f) => f.value === formData.meetingFrequency
+                      )?.label
+                    }
                   </dd>
                 </div>
                 <div className="flex gap-2">
@@ -1388,7 +1642,11 @@ export default function MentorshipRequestComponent({
                     {t.mentorship.request.communication}:
                   </dt>
                   <dd className="text-gray-600 dark:text-gray-400">
-                    {COMMUNICATION_OPTIONS.find((c) => c.value === formData.communicationPreference)?.label}
+                    {
+                      COMMUNICATION_OPTIONS.find(
+                        (c) => c.value === formData.communicationPreference
+                      )?.label
+                    }
                   </dd>
                 </div>
               </dl>

@@ -111,11 +111,8 @@ export class MemberDirectoryAdapter implements DataAdapter<MemberProfile> {
           case 'companies': {
             const filterCompanies = value as string[];
             if (
-              !filterCompanies.some(
-                (c) =>
-                  member.profile?.company
-                    ?.toLowerCase()
-                    .includes(c.toLowerCase())
+              !filterCompanies.some((c) =>
+                member.profile?.company?.toLowerCase().includes(c.toLowerCase())
               )
             ) {
               return false;
@@ -125,11 +122,10 @@ export class MemberDirectoryAdapter implements DataAdapter<MemberProfile> {
           case 'locations': {
             const filterLocations = value as string[];
             if (
-              !filterLocations.some(
-                (loc) =>
-                  member.profile?.location
-                    ?.toLowerCase()
-                    .includes(loc.toLowerCase())
+              !filterLocations.some((loc) =>
+                member.profile?.location
+                  ?.toLowerCase()
+                  .includes(loc.toLowerCase())
               )
             ) {
               return false;

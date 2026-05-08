@@ -29,11 +29,17 @@ import {
 
 const labels: Record<string, Record<'es' | 'en', string>> = {
   title: { en: 'Group Members', es: 'Miembros del Grupo' },
-  searchUsers: { en: 'Search users to add...', es: 'Buscar usuarios para agregar...' },
+  searchUsers: {
+    en: 'Search users to add...',
+    es: 'Buscar usuarios para agregar...',
+  },
   search: { en: 'Search', es: 'Buscar' },
   add: { en: 'Add', es: 'Agregar' },
   remove: { en: 'Remove', es: 'Quitar' },
-  noMembers: { en: 'No members assigned to this group yet.', es: 'No hay miembros asignados a este grupo aun.' },
+  noMembers: {
+    en: 'No members assigned to this group yet.',
+    es: 'No hay miembros asignados a este grupo aun.',
+  },
   noResults: { en: 'No users found.', es: 'No se encontraron usuarios.' },
   loading: { en: 'Loading members...', es: 'Cargando miembros...' },
   memberCount: { en: 'members', es: 'miembros' },
@@ -294,7 +300,8 @@ export default function GroupMemberManager({
 
   function displayName(u: AssignedUser | SearchResult): string {
     if (u.displayName) return u.displayName;
-    if (u.firstName || u.lastName) return `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim();
+    if (u.firstName || u.lastName)
+      return `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim();
     return u.email;
   }
 
@@ -397,7 +404,10 @@ export default function GroupMemberManager({
       {loading ? (
         <div className="animate-pulse space-y-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-12 rounded bg-gray-200 dark:bg-gray-700" />
+            <div
+              key={i}
+              className="h-12 rounded bg-gray-200 dark:bg-gray-700"
+            />
           ))}
         </div>
       ) : error ? (

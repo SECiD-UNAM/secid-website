@@ -23,7 +23,11 @@ function CommissionNode({ data }: CommissionNodeProps) {
         padding: '10px 10px 8px',
       }}
     >
-      <Handle type="target" position={Position.Top} style={{ background: data.color }} />
+      <Handle
+        type="target"
+        position={Position.Top}
+        style={{ background: data.color }}
+      />
       <p
         style={{
           margin: 0,

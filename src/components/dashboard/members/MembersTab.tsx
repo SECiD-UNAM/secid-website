@@ -3,7 +3,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import type { MemberProfile } from '@/types/member';
 import { MemberFilters, filterMembers } from './MemberFilters';
 import type { FilterState } from './MemberFilters';
-import { ChevronDownIcon, MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import {
+  ChevronDownIcon,
+  MagnifyingGlassIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
 
 // ---------------------------------------------------------------------------
 // Types

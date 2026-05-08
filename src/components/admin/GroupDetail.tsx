@@ -124,9 +124,10 @@ function GroupDetailInner({ lang, groupId }: GroupDetailInnerProps) {
   function formatTimestamp(ts: unknown): string {
     if (!ts) return '\u2014';
     // Firestore Timestamp has toDate()
-    const dateObj = typeof (ts as { toDate?: () => Date }).toDate === 'function'
-      ? (ts as { toDate: () => Date }).toDate()
-      : new Date(ts as string);
+    const dateObj =
+      typeof (ts as { toDate?: () => Date }).toDate === 'function'
+        ? (ts as { toDate: () => Date }).toDate()
+        : new Date(ts as string);
     return dateObj.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', {
       year: 'numeric',
       month: 'long',
@@ -216,7 +217,10 @@ interface GroupDetailProps {
   groupId: string;
 }
 
-export default function GroupDetail({ lang = 'es', groupId }: GroupDetailProps) {
+export default function GroupDetail({
+  lang = 'es',
+  groupId,
+}: GroupDetailProps) {
   return (
     <RequirePermission resource="groups" operation="view">
       <GroupDetailInner lang={lang} groupId={groupId} />

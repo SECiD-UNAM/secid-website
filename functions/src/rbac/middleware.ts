@@ -9,7 +9,7 @@
  * It has NO direct Firebase-admin dependency — it reads claims from `req.auth.token`
  * which is populated by Firebase's built-in auth middleware.
  */
-import { decodeClaimsPermissions, checkPermission } from "./resolution-logic";
+import { decodeClaimsPermissions, checkPermission } from './resolution-logic';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -54,12 +54,12 @@ export function requirePermission(resource: string, operation: string) {
   return async (
     req: RBACRequest,
     res: RBACResponse,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> => {
     const permissionsString = req.auth?.token?.rbac?.p;
 
     if (!permissionsString) {
-      res.status(403).json({ error: "No permissions assigned" });
+      res.status(403).json({ error: 'No permissions assigned' });
       return;
     }
 
@@ -74,11 +74,9 @@ export function requirePermission(resource: string, operation: string) {
     }
 
     if (!result.allowed) {
-      res
-        .status(403)
-        .json({
-          error: `Insufficient permissions for ${resource}:${operation}`,
-        });
+      res.status(403).json({
+        error: `Insufficient permissions for ${resource}:${operation}`,
+      });
       return;
     }
 

@@ -5,7 +5,10 @@
  * Verifies: calculateNetSalary country routing, calculateTotalCompensation bonus types
  */
 import { describe, it, expect } from 'vitest';
-import { calculateNetSalary, calculateTotalCompensation } from '../../../../src/lib/tax/index';
+import {
+  calculateNetSalary,
+  calculateTotalCompensation,
+} from '../../../../src/lib/tax/index';
 
 describe('calculateNetSalary', () => {
   it('TC-tax-api-001: routes MX country to Mexico ISR calculator', () => {
@@ -79,7 +82,13 @@ describe('calculateTotalCompensation', () => {
 
   it('TC-tax-api-012: includes sign-on bonus and stock in total', () => {
     // base=120000, fixedBonus=10000, signOn=5000, stock=20000
-    const result = calculateTotalCompensation(10000, 10000, 'fixed', 5000, 20000);
+    const result = calculateTotalCompensation(
+      10000,
+      10000,
+      'fixed',
+      5000,
+      20000
+    );
     expect(result).toBe(155000);
   });
 });

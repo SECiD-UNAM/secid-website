@@ -2,7 +2,13 @@ import { z } from 'zod';
 
 // Lightweight HTML sanitizer (replaces isomorphic-dompurify to avoid build issues)
 const DOMPurify = {
-  sanitize(html: string, options?: Record<string, unknown> & { ALLOWED_TAGS?: string[]; ALLOWED_ATTR?: string[] }): string {
+  sanitize(
+    html: string,
+    options?: Record<string, unknown> & {
+      ALLOWED_TAGS?: string[];
+      ALLOWED_ATTR?: string[];
+    }
+  ): string {
     if (!options?.ALLOWED_TAGS || options.ALLOWED_TAGS.length === 0) {
       // Strip all HTML tags
       return html.replace(/<[^>]*>/g, '');

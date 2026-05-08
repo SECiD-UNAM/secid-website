@@ -84,7 +84,8 @@ function sanitizeText(t: string): string {
   s = s
     .split(/ {2,}/)
     .map((chunk) => {
-      if (/^(?:[A-Za-z] ){2,}[A-Za-z]$/.test(chunk)) return chunk.replace(/ /g, '');
+      if (/^(?:[A-Za-z] ){2,}[A-Za-z]$/.test(chunk))
+        return chunk.replace(/ /g, '');
       return chunk;
     })
     .join(' ');
@@ -92,14 +93,18 @@ function sanitizeText(t: string): string {
 }
 
 function fixSpacedOutParagraph(p: string): string {
-  const ratio = (p.match(/\b\w\b/g) || []).length / (p.split(/\s+/).length || 1);
+  const ratio =
+    (p.match(/\b\w\b/g) || []).length / (p.split(/\s+/).length || 1);
   if (/(?:[A-Za-z]\s){15,}[A-Za-z]/.test(p) || ratio > 0.65) {
     return p.replace(/([A-Za-z])\s(?=[A-Za-z])/g, '$1');
   }
   return p;
 }
 
-function formatDate(dateStr: string | undefined | null, presentLabel: string): string {
+function formatDate(
+  dateStr: string | undefined | null,
+  presentLabel: string
+): string {
   if (!dateStr) return presentLabel;
   if (dateStr.includes('-')) {
     const parts = dateStr.split('-');
@@ -129,9 +134,17 @@ function formatDate(dateStr: string | undefined | null, presentLabel: string): s
   return dateStr;
 }
 
-function buildFilename(firstName: string, lastName: string, format: PdfFormat): string {
+function buildFilename(
+  firstName: string,
+  lastName: string,
+  format: PdfFormat
+): string {
   const formatLabel =
-    format === 'full' ? 'CV_Full' : format === 'resume' ? 'Resume_2pg' : 'Resume_1pg';
+    format === 'full'
+      ? 'CV_Full'
+      : format === 'resume'
+        ? 'Resume_2pg'
+        : 'Resume_1pg';
   return `${firstName}_${lastName}_${formatLabel}.pdf`;
 }
 
@@ -189,7 +202,11 @@ export async function generateCvPdf(
 
   // --- Helper functions ---
 
-  function wrapText(text: string, maxWidth: number, fontSize: number): string[] {
+  function wrapText(
+    text: string,
+    maxWidth: number,
+    fontSize: number
+  ): string[] {
     pdf.setFontSize(fontSize);
     const words = text.split(' ');
     const lines: string[] = [];
@@ -231,13 +248,12 @@ export async function generateCvPdf(
     pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(8);
     pdf.setTextColor(...gray);
-    const headerRight = [
-      personal.title,
-      personal.contact.email,
-    ]
+    const headerRight = [personal.title, personal.contact.email]
       .filter(Boolean)
       .join('  •  ');
-    pdf.text(headerRight, pageWidth - rightMargin, topMargin - 6, { align: 'right' });
+    pdf.text(headerRight, pageWidth - rightMargin, topMargin - 6, {
+      align: 'right',
+    });
     pdf.setDrawColor(...lightGray);
     pdf.setLineWidth(0.3);
     pdf.line(leftMargin, topMargin - 4, pageWidth - rightMargin, topMargin - 4);
@@ -344,7 +360,14 @@ export async function generateCvPdf(
     addSectionHeader(labels.summary);
     const cleaned = fixSpacedOutParagraph(sanitizeText(personal.summary));
     const fontSize = format === 'summary' ? 8.5 : 9.1;
-    const h = renderWrappedText(cleaned, leftMargin, yPos, contentWidth, fontSize, lineHeight - 0.3);
+    const h = renderWrappedText(
+      cleaned,
+      leftMargin,
+      yPos,
+      contentWidth,
+      fontSize,
+      lineHeight - 0.3
+    );
     yPos += h + (format === 'summary' ? 1 : 2);
     yPos += format === 'summary' ? 2 : sectionSpacing;
   }
@@ -373,7 +396,11 @@ export async function generateCvPdf(
         ? labels.present
         : formatDate(job.endDate, labels.present);
       const dateText = `${formatDate(job.startDate, '')} - ${endDateText}`;
-      pdf.text(dateText, pageWidth - rightMargin - pdf.getTextWidth(dateText), yPos);
+      pdf.text(
+        dateText,
+        pageWidth - rightMargin - pdf.getTextWidth(dateText),
+        yPos
+      );
       yPos += 4.5;
 
       // Company name in accent color
@@ -401,14 +428,26 @@ export async function generateCvPdf(
       }
 
       // Technologies
-      if (job.technologies && job.technologies.length > 0 && format !== 'summary') {
+      if (
+        job.technologies &&
+        job.technologies.length > 0 &&
+        format !== 'summary'
+      ) {
         pdf.setFont('helvetica', 'italic');
         pdf.setFontSize(8);
         pdf.setTextColor(...gray);
         const techText = job.technologies.join(', ');
-        const techLines = wrapText(sanitizeText(techText), contentWidth - bulletIndent, 8);
+        const techLines = wrapText(
+          sanitizeText(techText),
+          contentWidth - bulletIndent,
+          8
+        );
         techLines.forEach((line, idx) => {
-          pdf.text(line, leftMargin + bulletIndent, yPos + idx * (lineHeight - 0.5));
+          pdf.text(
+            line,
+            leftMargin + bulletIndent,
+            yPos + idx * (lineHeight - 0.5)
+          );
         });
         yPos += techLines.length * (lineHeight - 0.5) + 1;
         pdf.setFont('helvetica', 'normal');
@@ -443,9 +482,15 @@ export async function generateCvPdf(
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(8);
         pdf.setTextColor(...gray);
-        const endLabel = edu.current ? labels.present : formatDate(edu.endDate, labels.present);
+        const endLabel = edu.current
+          ? labels.present
+          : formatDate(edu.endDate, labels.present);
         const eduDateText = `${formatDate(edu.startDate, '')} - ${endLabel}`;
-        pdf.text(eduDateText, pageWidth - rightMargin - pdf.getTextWidth(eduDateText), yPos);
+        pdf.text(
+          eduDateText,
+          pageWidth - rightMargin - pdf.getTextWidth(eduDateText),
+          yPos
+        );
         yPos += 3.5;
         pdf.setFont('helvetica', 'italic');
         pdf.setFontSize(8);
@@ -459,9 +504,15 @@ export async function generateCvPdf(
         pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(9);
         pdf.setTextColor(...gray);
-        const endLabel = edu.current ? labels.present : formatDate(edu.endDate, labels.present);
+        const endLabel = edu.current
+          ? labels.present
+          : formatDate(edu.endDate, labels.present);
         const eduDateText = `${formatDate(edu.startDate, '')} - ${endLabel}`;
-        pdf.text(eduDateText, pageWidth - rightMargin - pdf.getTextWidth(eduDateText), yPos);
+        pdf.text(
+          eduDateText,
+          pageWidth - rightMargin - pdf.getTextWidth(eduDateText),
+          yPos
+        );
         yPos += 5;
         pdf.setFont('helvetica', 'italic');
         pdf.setFontSize(10);
@@ -521,7 +572,11 @@ export async function generateCvPdf(
     // Right column
     if (rightSkills.length > 0) {
       const rightText = rightSkills.join(', ');
-      const rightLines = wrapText(sanitizeText(rightText), colWidth, skillFontSize);
+      const rightLines = wrapText(
+        sanitizeText(rightText),
+        colWidth,
+        skillFontSize
+      );
       rightLines.forEach((line, idx) => {
         pdf.text(line, rightX, rightY + idx * skillLineHeight);
       });
@@ -614,7 +669,9 @@ export async function generateCvPdf(
   }
 
   // ============ PAGE NUMBERS ============
-  const totalPages = (pdf.internal as unknown as { getNumberOfPages: () => number }).getNumberOfPages();
+  const totalPages = (
+    pdf.internal as unknown as { getNumberOfPages: () => number }
+  ).getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
     pdf.setPage(i);
     pdf.setFontSize(9);
@@ -626,7 +683,9 @@ export async function generateCvPdf(
     ) {
       pdf.setFont('helvetica', 'italic');
       pdf.setFontSize(7.5);
-      pdf.text(labels.generated, pageWidth / 2, pageHeight - 10, { align: 'center' });
+      pdf.text(labels.generated, pageWidth / 2, pageHeight - 10, {
+        align: 'center',
+      });
     } else if (format !== 'summary') {
       pdf.text(
         `${labels.page} ${i} / ${totalPages}`,
@@ -645,6 +704,10 @@ export async function generateCvPdf(
     creator: 'SECiD CV Generator',
   });
 
-  const filename = buildFilename(personal.name.first, personal.name.last, format);
+  const filename = buildFilename(
+    personal.name.first,
+    personal.name.last,
+    format
+  );
   pdf.save(filename);
 }

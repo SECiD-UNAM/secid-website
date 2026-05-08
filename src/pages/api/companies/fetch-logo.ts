@@ -36,8 +36,7 @@ async function isAdmin(userId: string): Promise<boolean> {
   return userDoc.data().role === 'admin';
 }
 
-const VALID_DOMAIN_RE =
-  /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z]{2,})+$/i;
+const VALID_DOMAIN_RE = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z]{2,})+$/i;
 
 function isValidDomain(domain: string): boolean {
   if (!VALID_DOMAIN_RE.test(domain)) return false;

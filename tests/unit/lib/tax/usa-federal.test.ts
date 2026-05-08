@@ -84,7 +84,9 @@ describe('calculateUSAMonthlyNet (w2)', () => {
 
   it('TC-tax-us-012: defaults to w2 when regime omitted', () => {
     const monthly = 6000;
-    expect(calculateUSAMonthlyNet(monthly)).toBe(calculateUSAMonthlyNet(monthly, 'w2'));
+    expect(calculateUSAMonthlyNet(monthly)).toBe(
+      calculateUSAMonthlyNet(monthly, 'w2')
+    );
   });
 });
 

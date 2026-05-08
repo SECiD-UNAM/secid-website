@@ -113,9 +113,16 @@ export const POST: APIRoute = async ({ request }) => {
     const invoiceItems: InvoiceLineItem[] = [];
 
     for (const item of body.items) {
-      if (!item.quantity || item.quantity <= 0 || !item.unit_amount || item.unit_amount <= 0) {
+      if (
+        !item.quantity ||
+        item.quantity <= 0 ||
+        !item.unit_amount ||
+        item.unit_amount <= 0
+      ) {
         return new Response(
-          JSON.stringify({ error: 'Each item must have positive quantity and unit_amount' }),
+          JSON.stringify({
+            error: 'Each item must have positive quantity and unit_amount',
+          }),
           { status: 400, headers: { 'Content-Type': 'application/json' } }
         );
       }

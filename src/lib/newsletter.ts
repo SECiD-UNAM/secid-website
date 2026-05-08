@@ -29,14 +29,20 @@ export interface NewsletterIssue {
   updatedAt: Date;
 }
 
-function toIssue(doc: { id: string; data: () => Record<string, unknown> }): NewsletterIssue {
+function toIssue(doc: {
+  id: string;
+  data: () => Record<string, unknown>;
+}): NewsletterIssue {
   const data = doc.data();
   return {
     id: doc.id,
     ...data,
-    publishedAt: (data.publishedAt as { toDate?: () => Date })?.toDate?.() || new Date(),
-    createdAt: (data.createdAt as { toDate?: () => Date })?.toDate?.() || new Date(),
-    updatedAt: (data.updatedAt as { toDate?: () => Date })?.toDate?.() || new Date(),
+    publishedAt:
+      (data.publishedAt as { toDate?: () => Date })?.toDate?.() || new Date(),
+    createdAt:
+      (data.createdAt as { toDate?: () => Date })?.toDate?.() || new Date(),
+    updatedAt:
+      (data.updatedAt as { toDate?: () => Date })?.toDate?.() || new Date(),
   } as NewsletterIssue;
 }
 

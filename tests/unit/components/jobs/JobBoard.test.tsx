@@ -221,7 +221,9 @@ describe.sequential('JobBoard', () => {
         const select = screen.getByRole('combobox');
         expect(select).toBeInTheDocument();
         const options = Array.from(select.querySelectorAll('option'));
-        expect(options.some((o) => o.textContent === 'Más recientes')).toBe(true);
+        expect(options.some((o) => o.textContent === 'Más recientes')).toBe(
+          true
+        );
       });
     });
 
@@ -350,9 +352,7 @@ describe.sequential('JobBoard', () => {
       await waitFor(() => {
         expect(screen.getByText('No jobs found')).toBeInTheDocument();
         expect(
-          screen.getByText(
-            'Try adjusting your filters or search terms'
-          )
+          screen.getByText('Try adjusting your filters or search terms')
         ).toBeInTheDocument();
       });
     });

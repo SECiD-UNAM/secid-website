@@ -35,8 +35,14 @@ function formatCompact(amount: number, lang: 'es' | 'en'): string {
 
 export function SalaryOverview({ overview, lang = 'es' }: Props) {
   const t = {
-    medianGross: lang === 'es' ? 'Salario Bruto Mensual (Mediana)' : 'Median Monthly Gross',
-    medianTotal: lang === 'es' ? 'Comp. Total Anual (Mediana)' : 'Median Annual Total Comp',
+    medianGross:
+      lang === 'es'
+        ? 'Salario Bruto Mensual (Mediana)'
+        : 'Median Monthly Gross',
+    medianTotal:
+      lang === 'es'
+        ? 'Comp. Total Anual (Mediana)'
+        : 'Median Annual Total Comp',
     dataPoints: lang === 'es' ? 'Puntos de Datos' : 'Data Points',
     contributors: lang === 'es' ? 'Perfiles con Datos' : 'Contributors',
     perMonth: lang === 'es' ? '/mes' : '/mo',

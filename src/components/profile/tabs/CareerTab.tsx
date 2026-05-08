@@ -8,8 +8,14 @@ import { CompanyAutocomplete } from '../shared/CompanyAutocomplete';
 import { MonthYearPicker } from '../shared/MonthYearPicker';
 import { TagInput } from '../shared/TagInput';
 import { CompensationFields } from '../shared/CompensationFields';
-import { LinkedInImportModal, type ImportedData } from '@/components/profile/LinkedInImportModal';
-import { deduplicateExperience, deduplicateSkills } from '@/lib/linkedin-parser/deduplication';
+import {
+  LinkedInImportModal,
+  type ImportedData,
+} from '@/components/profile/LinkedInImportModal';
+import {
+  deduplicateExperience,
+  deduplicateSkills,
+} from '@/lib/linkedin-parser/deduplication';
 
 interface CareerTabProps {
   formData: FormData;
@@ -195,12 +201,17 @@ export const CareerTab: React.FC<CareerTabProps> = ({
             position: e.position,
             current: e.current,
           }));
-          const { newEntries } = deduplicateExperience(existingForDedup, importedForDedup);
+          const { newEntries } = deduplicateExperience(
+            existingForDedup,
+            importedForDedup
+          );
           const newWorkEntries = data.experience.filter((e) =>
             newEntries.some(
               (n) =>
-                n.company.trim().toLowerCase() === e.company.trim().toLowerCase() &&
-                n.position.trim().toLowerCase() === e.position.trim().toLowerCase()
+                n.company.trim().toLowerCase() ===
+                  e.company.trim().toLowerCase() &&
+                n.position.trim().toLowerCase() ===
+                  e.position.trim().toLowerCase()
             )
           );
           const available = MAX_WORK_ENTRIES - prev.workHistory.length;
@@ -219,7 +230,10 @@ export const CareerTab: React.FC<CareerTabProps> = ({
         }
 
         if (data.certifications && data.certifications.length > 0) {
-          next.certifications = [...prev.certifications, ...data.certifications];
+          next.certifications = [
+            ...prev.certifications,
+            ...data.certifications,
+          ];
         }
 
         if (data.languages && data.languages.length > 0) {

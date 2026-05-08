@@ -9,7 +9,11 @@ interface Props {
   initialPost?: BlogPostType | null;
 }
 
-export default function BlogPostPage({ slug, lang = 'es', initialPost = null }: Props) {
+export default function BlogPostPage({
+  slug,
+  lang = 'es',
+  initialPost = null,
+}: Props) {
   return (
     <AuthProvider>
       <BlogPost slug={slug || ''} lang={lang} initialPost={initialPost} />

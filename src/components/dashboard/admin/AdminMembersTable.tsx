@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+} from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   getMemberProfiles,
@@ -34,30 +40,80 @@ function tr(lang: 'es' | 'en', es: string, en: string): string {
 
 type MemberRole = 'member' | 'collaborator' | 'admin' | 'moderator';
 
-const ROLE_OPTIONS: MemberRole[] = ['member', 'collaborator', 'admin', 'moderator'];
-const STATUS_OPTIONS: MemberStatus[] = ['active', 'inactive', 'suspended', 'pending', 'alumni'];
-const VERIFICATION_OPTIONS: VerificationStatus[] = ['approved', 'pending', 'rejected', 'none'];
+const ROLE_OPTIONS: MemberRole[] = [
+  'member',
+  'collaborator',
+  'admin',
+  'moderator',
+];
+const STATUS_OPTIONS: MemberStatus[] = [
+  'active',
+  'inactive',
+  'suspended',
+  'pending',
+  'alumni',
+];
+const VERIFICATION_OPTIONS: VerificationStatus[] = [
+  'approved',
+  'pending',
+  'rejected',
+  'none',
+];
 
 type Lang = 'es' | 'en';
 
 const ROLE_LABELS: Record<Lang, Record<MemberRole, string>> = {
-  es: { member: 'Miembro', collaborator: 'Colaborador', admin: 'Admin', moderator: 'Moderador' },
-  en: { member: 'Member', collaborator: 'Collaborator', admin: 'Admin', moderator: 'Moderator' },
+  es: {
+    member: 'Miembro',
+    collaborator: 'Colaborador',
+    admin: 'Admin',
+    moderator: 'Moderador',
+  },
+  en: {
+    member: 'Member',
+    collaborator: 'Collaborator',
+    admin: 'Admin',
+    moderator: 'Moderator',
+  },
 };
 
 const STATUS_LABELS: Record<Lang, Record<string, string>> = {
-  es: { active: 'Activo', inactive: 'Inactivo', suspended: 'Suspendido', pending: 'Pendiente', alumni: 'Alumni' },
-  en: { active: 'Active', inactive: 'Inactive', suspended: 'Suspended', pending: 'Pending', alumni: 'Alumni' },
+  es: {
+    active: 'Activo',
+    inactive: 'Inactivo',
+    suspended: 'Suspendido',
+    pending: 'Pendiente',
+    alumni: 'Alumni',
+  },
+  en: {
+    active: 'Active',
+    inactive: 'Inactive',
+    suspended: 'Suspended',
+    pending: 'Pending',
+    alumni: 'Alumni',
+  },
 };
 
 const VERIFICATION_LABELS: Record<Lang, Record<string, string>> = {
-  es: { approved: 'Aprobado', pending: 'Pendiente', rejected: 'Rechazado', none: 'Sin verificar' },
-  en: { approved: 'Approved', pending: 'Pending', rejected: 'Rejected', none: 'None' },
+  es: {
+    approved: 'Aprobado',
+    pending: 'Pendiente',
+    rejected: 'Rechazado',
+    none: 'Sin verificar',
+  },
+  en: {
+    approved: 'Approved',
+    pending: 'Pending',
+    rejected: 'Rejected',
+    none: 'None',
+  },
 };
 
 const VERIFICATION_BADGE_STYLES: Record<string, string> = {
-  approved: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-  pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+  approved:
+    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+  pending:
+    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
   rejected: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
   none: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
 };
@@ -81,17 +137,23 @@ function getInitials(name: string): string {
 function formatDate(date: Date | undefined | null, lang: string): string {
   if (!date) return '-';
   try {
-    return new Date(date).toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    return new Date(date).toLocaleDateString(
+      lang === 'es' ? 'es-MX' : 'en-US',
+      {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }
+    );
   } catch {
     return '-';
   }
 }
 
-function formatRelativeTime(date: Date | undefined | null, lang: string): string {
+function formatRelativeTime(
+  date: Date | undefined | null,
+  lang: string
+): string {
   if (!date) return '-';
   try {
     const now = Date.now();
@@ -102,18 +164,24 @@ function formatRelativeTime(date: Date | undefined | null, lang: string): string
     const diffDays = Math.floor(diffMs / 86400000);
 
     if (diffMinutes < 1) return lang === 'es' ? 'Justo ahora' : 'Just now';
-    if (diffMinutes < 60) return lang === 'es' ? `Hace ${diffMinutes} min` : `${diffMinutes}m ago`;
-    if (diffHours < 24) return lang === 'es' ? `Hace ${diffHours}h` : `${diffHours}h ago`;
-    if (diffDays < 30) return lang === 'es' ? `Hace ${diffDays}d` : `${diffDays}d ago`;
+    if (diffMinutes < 60)
+      return lang === 'es' ? `Hace ${diffMinutes} min` : `${diffMinutes}m ago`;
+    if (diffHours < 24)
+      return lang === 'es' ? `Hace ${diffHours}h` : `${diffHours}h ago`;
+    if (diffDays < 30)
+      return lang === 'es' ? `Hace ${diffDays}d` : `${diffDays}d ago`;
     return formatDate(date, lang);
   } catch {
     return '-';
   }
 }
 
-function getMemberVerificationStatus(member: MemberProfile): VerificationStatus {
+function getMemberVerificationStatus(
+  member: MemberProfile
+): VerificationStatus {
   return (
-    (member as unknown as { verificationStatus?: VerificationStatus }).verificationStatus ?? 'none'
+    (member as unknown as { verificationStatus?: VerificationStatus })
+      .verificationStatus ?? 'none'
   );
 }
 
@@ -137,7 +205,9 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
   const { user, isAdmin } = useAuth();
 
   /* ---- RBAC group assignments per user ---- */
-  const [userGroups, setUserGroups] = useState<Map<string, string[]>>(new Map());
+  const [userGroups, setUserGroups] = useState<Map<string, string[]>>(
+    new Map()
+  );
 
   useEffect(() => {
     getDocs(collection(db, 'rbac_user_groups'))
@@ -149,12 +219,16 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
         });
         setUserGroups(map);
       })
-      .catch(() => {/* ignore — groups column will be empty */});
+      .catch(() => {
+        /* ignore — groups column will be empty */
+      });
   }, []);
 
   /* ---- inline editing state (not managed by listing) ---- */
   const [savingRows, setSavingRows] = useState<Set<string>>(new Set());
-  const [highlightedRows, setHighlightedRows] = useState<Set<string>>(new Set());
+  const [highlightedRows, setHighlightedRows] = useState<Set<string>>(
+    new Set()
+  );
   const [rowErrors, setRowErrors] = useState<Map<string, string>>(new Map());
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -167,13 +241,17 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
 
   /* ---- multiselect filter state (pill toggles, not managed by listing) ---- */
   const [roleFilter, setRoleFilter] = useState<Set<MemberRole>>(new Set());
-  const [statusFilter, setStatusFilter] = useState<Set<MemberStatus>>(new Set());
-  const [verificationFilter, setVerificationFilter] = useState<Set<VerificationStatus>>(new Set());
+  const [statusFilter, setStatusFilter] = useState<Set<MemberStatus>>(
+    new Set()
+  );
+  const [verificationFilter, setVerificationFilter] = useState<
+    Set<VerificationStatus>
+  >(new Set());
 
   /* ---- local members cache for optimistic updates ---- */
-  const [memberOverrides, setMemberOverrides] = useState<Map<string, Partial<MemberProfile>>>(
-    new Map()
-  );
+  const [memberOverrides, setMemberOverrides] = useState<
+    Map<string, Partial<MemberProfile>>
+  >(new Map());
 
   /* ---- adapter (stable ref, fetchAll loads once then cached) ---- */
   const adapterRef = useRef(
@@ -189,8 +267,10 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
   const extraFilters = useMemo<Record<string, unknown>>(() => {
     const result: Record<string, unknown> = {};
     if (roleFilter.size > 0) result['role'] = Array.from(roleFilter);
-    if (statusFilter.size > 0) result['_lifecycleStatus'] = Array.from(statusFilter);
-    if (verificationFilter.size > 0) result['_verificationStatus'] = Array.from(verificationFilter);
+    if (statusFilter.size > 0)
+      result['_lifecycleStatus'] = Array.from(statusFilter);
+    if (verificationFilter.size > 0)
+      result['_verificationStatus'] = Array.from(verificationFilter);
     return result;
   }, [roleFilter, statusFilter, verificationFilter]);
 
@@ -228,10 +308,14 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
       result = result.filter((m) => roleFilter.has(m.role as MemberRole));
     }
     if (statusFilter.size > 0) {
-      result = result.filter((m) => statusFilter.has(getMemberLifecycleStatus(m)));
+      result = result.filter((m) =>
+        statusFilter.has(getMemberLifecycleStatus(m))
+      );
     }
     if (verificationFilter.size > 0) {
-      result = result.filter((m) => verificationFilter.has(getMemberVerificationStatus(m)));
+      result = result.filter((m) =>
+        verificationFilter.has(getMemberVerificationStatus(m))
+      );
     }
 
     return result;
@@ -271,11 +355,20 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
     async (uid: string, newRole: MemberRole) => {
       setSavingRows((prev) => new Set(prev).add(uid));
       try {
-        await updateMemberProfile(uid, { role: newRole } as Partial<MemberProfile>);
-        setMemberOverrides((prev) => new Map(prev).set(uid, { ...(prev.get(uid) ?? {}), role: newRole }));
+        await updateMemberProfile(uid, {
+          role: newRole,
+        } as Partial<MemberProfile>);
+        setMemberOverrides((prev) =>
+          new Map(prev).set(uid, { ...(prev.get(uid) ?? {}), role: newRole })
+        );
         highlightRow(uid);
       } catch (err) {
-        showRowError(uid, err instanceof Error ? err.message : tr(lang, 'Error al actualizar rol', 'Error updating role'));
+        showRowError(
+          uid,
+          err instanceof Error
+            ? err.message
+            : tr(lang, 'Error al actualizar rol', 'Error updating role')
+        );
       } finally {
         setSavingRows((prev) => {
           const next = new Set(prev);
@@ -313,7 +406,12 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
         });
         highlightRow(uid);
       } catch (err) {
-        showRowError(uid, err instanceof Error ? err.message : tr(lang, 'Error al actualizar estado', 'Error updating status'));
+        showRowError(
+          uid,
+          err instanceof Error
+            ? err.message
+            : tr(lang, 'Error al actualizar estado', 'Error updating status')
+        );
       } finally {
         setSavingRows((prev) => {
           const next = new Set(prev);
@@ -331,26 +429,54 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
 
   const handleBulkRoleChange = useCallback(async () => {
     if (selectedIds.size === 0) return;
-    if (!window.confirm(tr(lang, `¿Cambiar el rol de ${selectedIds.size} miembro(s) a "${ROLE_LABELS[lang][bulkRole]}"?`, `Change role of ${selectedIds.size} member(s) to "${ROLE_LABELS[lang][bulkRole]}"?`))) return;
+    if (
+      !window.confirm(
+        tr(
+          lang,
+          `¿Cambiar el rol de ${selectedIds.size} miembro(s) a "${ROLE_LABELS[lang][bulkRole]}"?`,
+          `Change role of ${selectedIds.size} member(s) to "${ROLE_LABELS[lang][bulkRole]}"?`
+        )
+      )
+    )
+      return;
 
     try {
       const uids = Array.from(selectedIds);
-      await Promise.all(uids.map((uid) => updateMemberProfile(uid, { role: bulkRole } as Partial<MemberProfile>)));
+      await Promise.all(
+        uids.map((uid) =>
+          updateMemberProfile(uid, { role: bulkRole } as Partial<MemberProfile>)
+        )
+      );
       setMemberOverrides((prev) => {
         const next = new Map(prev);
-        uids.forEach((uid) => next.set(uid, { ...(next.get(uid) ?? {}), role: bulkRole }));
+        uids.forEach((uid) =>
+          next.set(uid, { ...(next.get(uid) ?? {}), role: bulkRole })
+        );
         return next;
       });
       uids.forEach(highlightRow);
       setSelectedIds(new Set());
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : tr(lang, 'Error al cambiar roles', 'Error changing roles'));
+      setActionError(
+        err instanceof Error
+          ? err.message
+          : tr(lang, 'Error al cambiar roles', 'Error changing roles')
+      );
     }
   }, [selectedIds, bulkRole, lang, highlightRow]);
 
   const handleBulkStatusChange = useCallback(async () => {
     if (selectedIds.size === 0 || !user?.uid) return;
-    if (!window.confirm(tr(lang, `¿Cambiar el estado de ${selectedIds.size} miembro(s) a "${STATUS_LABELS[lang][bulkStatus]}"?`, `Change status of ${selectedIds.size} member(s) to "${STATUS_LABELS[lang][bulkStatus]}"?`))) return;
+    if (
+      !window.confirm(
+        tr(
+          lang,
+          `¿Cambiar el estado de ${selectedIds.size} miembro(s) a "${STATUS_LABELS[lang][bulkStatus]}"?`,
+          `Change status of ${selectedIds.size} member(s) to "${STATUS_LABELS[lang][bulkStatus]}"?`
+        )
+      )
+    )
+      return;
 
     try {
       const uids = Array.from(selectedIds);
@@ -376,13 +502,26 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
       uids.forEach(highlightRow);
       setSelectedIds(new Set());
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : tr(lang, 'Error al cambiar estados', 'Error changing statuses'));
+      setActionError(
+        err instanceof Error
+          ? err.message
+          : tr(lang, 'Error al cambiar estados', 'Error changing statuses')
+      );
     }
   }, [selectedIds, bulkStatus, user, lang, highlightRow]);
 
   const handleBulkApprove = useCallback(async () => {
     if (selectedIds.size === 0 || !user?.uid) return;
-    if (!window.confirm(tr(lang, `¿Aprobar ${selectedIds.size} miembro(s) seleccionado(s)?`, `Approve ${selectedIds.size} selected member(s)?`))) return;
+    if (
+      !window.confirm(
+        tr(
+          lang,
+          `¿Aprobar ${selectedIds.size} miembro(s) seleccionado(s)?`,
+          `Approve ${selectedIds.size} selected member(s)?`
+        )
+      )
+    )
+      return;
 
     try {
       const uids = Array.from(selectedIds);
@@ -408,7 +547,11 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
       uids.forEach(highlightRow);
       setSelectedIds(new Set());
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : tr(lang, 'Error al aprobar miembros', 'Error approving members'));
+      setActionError(
+        err instanceof Error
+          ? err.message
+          : tr(lang, 'Error al aprobar miembros', 'Error approving members')
+      );
     }
   }, [selectedIds, user, lang, highlightRow]);
 
@@ -486,7 +629,8 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
         accessor: (member) => (
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
-              {(member as unknown as { initials?: string }).initials || getInitials(member.displayName)}
+              {(member as unknown as { initials?: string }).initials ||
+                getInitials(member.displayName)}
             </div>
             <span className="text-sm font-medium text-gray-900 dark:text-white">
               {member.displayName}
@@ -498,7 +642,9 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
         key: 'email',
         label: tr(lang, 'Email', 'Email'),
         accessor: (member) => (
-          <span className="text-sm text-gray-600 dark:text-gray-300">{member.email}</span>
+          <span className="text-sm text-gray-600 dark:text-gray-300">
+            {member.email}
+          </span>
         ),
       },
       {
@@ -506,7 +652,8 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
         label: tr(lang, 'Empresa', 'Company'),
         accessor: (member) => (
           <span className="text-sm text-gray-600 dark:text-gray-300">
-            {(member.profile as { company?: string } | undefined)?.company || '-'}
+            {(member.profile as { company?: string } | undefined)?.company ||
+              '-'}
           </span>
         ),
       },
@@ -518,7 +665,9 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
           return (
             <select
               value={member.role}
-              onChange={(e) => handleRoleChange(member.uid, e.target.value as MemberRole)}
+              onChange={(e) =>
+                handleRoleChange(member.uid, e.target.value as MemberRole)
+              }
               disabled={isSaving}
               className="rounded border-0 bg-transparent py-0.5 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:text-white"
             >
@@ -563,7 +712,9 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
           return (
             <select
               value={lifecycleStatus}
-              onChange={(e) => handleStatusChange(member.uid, e.target.value as MemberStatus)}
+              onChange={(e) =>
+                handleStatusChange(member.uid, e.target.value as MemberStatus)
+              }
               disabled={isSaving}
               className="rounded border-0 bg-transparent py-0.5 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:text-white"
             >
@@ -584,10 +735,12 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
           return (
             <span
               className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                VERIFICATION_BADGE_STYLES[verificationStatus] ?? VERIFICATION_BADGE_STYLES.none
+                VERIFICATION_BADGE_STYLES[verificationStatus] ??
+                VERIFICATION_BADGE_STYLES.none
               }`}
             >
-              {VERIFICATION_LABELS[lang][verificationStatus] ?? verificationStatus}
+              {VERIFICATION_LABELS[lang][verificationStatus] ??
+                verificationStatus}
             </span>
           );
         },
@@ -607,7 +760,11 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
         label: tr(lang, 'Última actividad', 'Last Active'),
         accessor: (member) => (
           <span className="text-sm text-gray-600 dark:text-gray-300">
-            {formatRelativeTime((member.activity as { lastActive?: Date } | undefined)?.lastActive, lang)}
+            {formatRelativeTime(
+              (member.activity as { lastActive?: Date } | undefined)
+                ?.lastActive,
+              lang
+            )}
           </span>
         ),
       },
@@ -627,7 +784,14 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
         ),
       },
     ],
-    [lang, selectedIds, savingRows, toggleSelectRow, handleRoleChange, handleStatusChange]
+    [
+      lang,
+      selectedIds,
+      savingRows,
+      toggleSelectRow,
+      handleRoleChange,
+      handleStatusChange,
+    ]
   );
 
   /* ---------------------------------------------------------------- */
@@ -778,7 +942,9 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
               className="rounded border border-blue-400 bg-blue-700 px-2 py-1 text-xs text-white focus:outline-none focus:ring-1 focus:ring-white"
             >
               {ROLE_OPTIONS.map((r) => (
-                <option key={r} value={r}>{ROLE_LABELS[lang][r]}</option>
+                <option key={r} value={r}>
+                  {ROLE_LABELS[lang][r]}
+                </option>
               ))}
             </select>
             <button
@@ -798,7 +964,9 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
               className="rounded border border-blue-400 bg-blue-700 px-2 py-1 text-xs text-white focus:outline-none focus:ring-1 focus:ring-white"
             >
               {STATUS_OPTIONS.map((s) => (
-                <option key={s} value={s}>{STATUS_LABELS[lang][s]}</option>
+                <option key={s} value={s}>
+                  {STATUS_LABELS[lang][s]}
+                </option>
               ))}
             </select>
             <button

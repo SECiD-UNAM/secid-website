@@ -26,7 +26,10 @@ import {
   type SupportedProvider,
   type LinkedAccount,
 } from './auth/oauth-providers';
-import { signInWithLinkedIn, completeLinkedInSignIn } from './auth/linkedin-auth';
+import {
+  signInWithLinkedIn,
+  completeLinkedInSignIn,
+} from './auth/linkedin-auth';
 export { signInWithLinkedIn, completeLinkedInSignIn };
 
 /**

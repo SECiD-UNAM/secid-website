@@ -386,13 +386,15 @@ Remember: Job searching is a skill that improves with practice!
         <div className="prose prose-lg mb-8 max-w-none">
           <div
             dangerouslySetInnerHTML={{
-              __html: sanitizeHtml(article.content
-                .replace(/\n/g, '<br>')
-                .replace(/#{1,6}\s/g, '<h3>')
-                .replace(
-                  /<h3>/g,
-                  '<h3 class="text-xl font-semibold mt-6 mb-3">'
-                )),
+              __html: sanitizeHtml(
+                article.content
+                  .replace(/\n/g, '<br>')
+                  .replace(/#{1,6}\s/g, '<h3>')
+                  .replace(
+                    /<h3>/g,
+                    '<h3 class="text-xl font-semibold mt-6 mb-3">'
+                  )
+              ),
             }}
           />
         </div>

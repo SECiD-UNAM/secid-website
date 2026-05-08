@@ -1,6 +1,12 @@
 // @ts-nocheck
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup, waitFor, fireEvent } from '@testing-library/react';
+import {
+  render,
+  screen,
+  cleanup,
+  waitFor,
+  fireEvent,
+} from '@testing-library/react';
 
 const mockExistingSpotlight = {
   id: 'sp-edit-1',
@@ -46,7 +52,9 @@ describe.sequential('SpotlightEditor', () => {
     /** Verifies: AC-spotlight-editor-create-mode */
     render(<SpotlightEditor lang="en" />);
 
-    expect(screen.getAllByText('Publish Alumni Story').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Publish Alumni Story').length).toBeGreaterThan(
+      0
+    );
     expect(screen.getAllByText('Publish Story').length).toBeGreaterThan(0);
   });
 
@@ -69,7 +77,9 @@ describe.sequential('SpotlightEditor', () => {
     fireEvent.change(textInputs[3], { target: { value: 'Short summary' } });
     fireEvent.change(textInputs[4], { target: { value: '<p>Story</p>' } });
 
-    const submitBtns = screen.getAllByRole('button', { name: /Publish Story/i });
+    const submitBtns = screen.getAllByRole('button', {
+      name: /Publish Story/i,
+    });
     fireEvent.click(submitBtns[0]);
 
     await waitFor(() => {
@@ -101,10 +111,16 @@ describe.sequential('SpotlightEditor', () => {
 
     await screen.findByDisplayValue('Ana Martinez');
 
-    expect(screen.getAllByDisplayValue('Research Scientist').length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByDisplayValue('Research Scientist').length
+    ).toBeGreaterThan(0);
     expect(screen.getAllByDisplayValue('Meta AI').length).toBeGreaterThan(0);
-    expect(screen.getAllByDisplayValue('NLP researcher at Meta.').length).toBeGreaterThan(0);
-    expect(screen.getAllByDisplayValue('NLP, Research').length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByDisplayValue('NLP researcher at Meta.').length
+    ).toBeGreaterThan(0);
+    expect(screen.getAllByDisplayValue('NLP, Research').length).toBeGreaterThan(
+      0
+    );
   });
 
   it('TC-spotlight-editor-006: shows edit mode titles and labels', async () => {
@@ -130,7 +146,8 @@ describe.sequential('SpotlightEditor', () => {
 
     const submitBtns = screen.getAllByText('Update Story');
     // Filter to just the button element
-    const btn = submitBtns.find(el => el.tagName === 'BUTTON') ?? submitBtns[0];
+    const btn =
+      submitBtns.find((el) => el.tagName === 'BUTTON') ?? submitBtns[0];
     fireEvent.click(btn);
 
     await waitFor(() => {
@@ -163,7 +180,8 @@ describe.sequential('SpotlightEditor', () => {
     await screen.findByDisplayValue('Ana Martinez');
 
     const submitBtns = screen.getAllByText('Update Story');
-    const btn = submitBtns.find(el => el.tagName === 'BUTTON') ?? submitBtns[0];
+    const btn =
+      submitBtns.find((el) => el.tagName === 'BUTTON') ?? submitBtns[0];
     fireEvent.click(btn);
 
     await waitFor(() => {
@@ -171,7 +189,9 @@ describe.sequential('SpotlightEditor', () => {
     });
 
     // Form should still show the data (not cleared)
-    expect(screen.getAllByDisplayValue('Ana Martinez').length).toBeGreaterThan(0);
+    expect(screen.getAllByDisplayValue('Ana Martinez').length).toBeGreaterThan(
+      0
+    );
   });
 
   it('TC-spotlight-editor-010: shows Spanish labels in edit mode', async () => {
@@ -180,7 +200,11 @@ describe.sequential('SpotlightEditor', () => {
 
     await screen.findByDisplayValue('Ana Martinez');
 
-    expect(screen.getAllByText('Editar Historia de Egresado').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Actualizar Historia').length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText('Editar Historia de Egresado').length
+    ).toBeGreaterThan(0);
+    expect(screen.getAllByText('Actualizar Historia').length).toBeGreaterThan(
+      0
+    );
   });
 });

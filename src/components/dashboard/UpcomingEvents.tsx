@@ -112,7 +112,9 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
         }
 
         // Sort by date and take top 3
-        fetchedEvents.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+        fetchedEvents.sort(
+          (a, b) => a.startDate.getTime() - b.startDate.getTime()
+        );
         const top3 = fetchedEvents.slice(0, 3);
 
         const eventsWithRegistration = top3.map((event) => ({

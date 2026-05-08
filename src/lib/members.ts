@@ -36,4 +36,7 @@ export {
 } from './members/index';
 
 export type { VisibleFields } from './members/index';
-export type { InstitutionAggregate, EducationEcosystemData } from './members/index';
+export type {
+  InstitutionAggregate,
+  EducationEcosystemData,
+} from './members/index';

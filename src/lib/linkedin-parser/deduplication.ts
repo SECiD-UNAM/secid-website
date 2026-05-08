@@ -26,7 +26,8 @@ export function deduplicateExperience(
 ): { duplicates: ParsedLinkedInEntry[]; newEntries: ParsedLinkedInEntry[] } {
   const existingSet = new Set(
     existing.map(
-      (e) => `${e.company.trim().toLowerCase()}|${e.position.trim().toLowerCase()}`
+      (e) =>
+        `${e.company.trim().toLowerCase()}|${e.position.trim().toLowerCase()}`
     )
   );
 
@@ -50,7 +51,10 @@ export function deduplicateExperience(
  * case-insensitively while preserving the original casing of the
  * first occurrence (existing entries take precedence over imports).
  */
-export function deduplicateSkills(existing: string[], imported: string[]): string[] {
+export function deduplicateSkills(
+  existing: string[],
+  imported: string[]
+): string[] {
   const seen = new Map<string, string>();
 
   for (const skill of existing) {

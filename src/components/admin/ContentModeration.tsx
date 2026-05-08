@@ -89,7 +89,9 @@ export const ContentModeration: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'content' | 'reports' | 'blog'>('content');
+  const [activeTab, setActiveTab] = useState<'content' | 'reports' | 'blog'>(
+    'content'
+  );
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [filters, setFilters] = useState({
     type: 'all',

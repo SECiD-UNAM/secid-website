@@ -4,13 +4,7 @@
  * Only renders if at least some entries have non-base compensation.
  */
 import React from 'react';
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
 export interface BreakdownStats {
   base: number;
@@ -31,30 +25,60 @@ interface BreakdownSlice {
 }
 
 const COLORS = {
-  base: '#3B82F6',   // blue-500
-  bonus: '#10B981',  // emerald-500
-  stock: '#F59E0B',  // amber-500
+  base: '#3B82F6', // blue-500
+  bonus: '#10B981', // emerald-500
+  stock: '#F59E0B', // amber-500
   signOn: '#A855F7', // purple-500
 };
 
-function buildSlices(breakdown: BreakdownStats, lang: 'es' | 'en'): BreakdownSlice[] | null {
-  const hasNonBase = breakdown.bonus > 0 || breakdown.stock > 0 || breakdown.signOn > 0;
+function buildSlices(
+  breakdown: BreakdownStats,
+  lang: 'es' | 'en'
+): BreakdownSlice[] | null {
+  const hasNonBase =
+    breakdown.bonus > 0 || breakdown.stock > 0 || breakdown.signOn > 0;
   if (!hasNonBase) return null;
 
   const labels =
     lang === 'es'
-      ? { base: 'Salario Base', bonus: 'Bono', stock: 'Stock', signOn: 'Sign-On' }
-      : { base: 'Base Salary', bonus: 'Bonus', stock: 'Stock', signOn: 'Sign-On' };
+      ? {
+          base: 'Salario Base',
+          bonus: 'Bono',
+          stock: 'Stock',
+          signOn: 'Sign-On',
+        }
+      : {
+          base: 'Base Salary',
+          bonus: 'Bonus',
+          stock: 'Stock',
+          signOn: 'Sign-On',
+        };
 
   const slices: BreakdownSlice[] = [
-    { name: labels.base, value: Math.round(breakdown.base), color: COLORS.base },
+    {
+      name: labels.base,
+      value: Math.round(breakdown.base),
+      color: COLORS.base,
+    },
   ];
   if (breakdown.bonus > 0)
-    slices.push({ name: labels.bonus, value: Math.round(breakdown.bonus), color: COLORS.bonus });
+    slices.push({
+      name: labels.bonus,
+      value: Math.round(breakdown.bonus),
+      color: COLORS.bonus,
+    });
   if (breakdown.stock > 0)
-    slices.push({ name: labels.stock, value: Math.round(breakdown.stock), color: COLORS.stock });
+    slices.push({
+      name: labels.stock,
+      value: Math.round(breakdown.stock),
+      color: COLORS.stock,
+    });
   if (breakdown.signOn > 0)
-    slices.push({ name: labels.signOn, value: Math.round(breakdown.signOn), color: COLORS.signOn });
+    slices.push({
+      name: labels.signOn,
+      value: Math.round(breakdown.signOn),
+      color: COLORS.signOn,
+    });
 
   return slices;
 }
@@ -120,14 +144,7 @@ export function CompensationBreakdown({ breakdown, lang = 'es' }: Props) {
               <Cell key={slice.name} fill={slice.color} />
             ))}
           </Pie>
-          <Tooltip
-            content={
-              <CustomTooltip
-                total={total}
-                lang={lang}
-              />
-            }
-          />
+          <Tooltip content={<CustomTooltip total={total} lang={lang} />} />
         </PieChart>
       </ResponsiveContainer>
 

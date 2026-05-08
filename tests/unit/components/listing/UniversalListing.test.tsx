@@ -80,7 +80,9 @@ describe.sequential('UniversalListing', () => {
     );
 
     await waitFor(() => {
-      expect(screen.queryByPlaceholderText('Search...')).not.toBeInTheDocument();
+      expect(
+        screen.queryByPlaceholderText('Search...')
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -90,7 +92,9 @@ describe.sequential('UniversalListing', () => {
      * Verifies: AC-wrapper-04 — empty state is shown when adapter returns zero items
      */
     const emptyAdapter: DataAdapter<TestItem> = {
-      fetch: vi.fn().mockResolvedValue({ items: [], totalCount: 0, hasMore: false }),
+      fetch: vi
+        .fn()
+        .mockResolvedValue({ items: [], totalCount: 0, hasMore: false }),
     };
 
     render(

@@ -39,7 +39,9 @@ const BOARD_NODE_IDS: Record<string, string> = {
 
 const BOARD_DIRECTIONS = ['presidencia', 'secretaria', 'tesoreria'] as const;
 
-export default function CommissionsChartView({ lang }: CommissionsChartViewProps) {
+export default function CommissionsChartView({
+  lang,
+}: CommissionsChartViewProps) {
   const nodes = useMemo<Node[]>(() => {
     const members = boardMembers[lang];
 
@@ -57,28 +59,35 @@ export default function CommissionsChartView({ lang }: CommissionsChartViewProps
       };
     });
 
-    const directiveNodes: Node[] = directiveCommissions.map((commission, index) => ({
-      id: `commission-${commission.id}`,
-      type: 'commission',
-      position: { x: DIRECTIVE_X_POSITIONS[index] ?? 0, y: DIRECTIVE_Y },
-      data: {
-        name: commission.name[lang],
-        description: commission.description[lang],
-        color: commission.color,
-        responsibilities: commission.responsibilities[lang],
-      },
-    }));
+    const directiveNodes: Node[] = directiveCommissions.map(
+      (commission, index) => ({
+        id: `commission-${commission.id}`,
+        type: 'commission',
+        position: { x: DIRECTIVE_X_POSITIONS[index] ?? 0, y: DIRECTIVE_Y },
+        data: {
+          name: commission.name[lang],
+          description: commission.description[lang],
+          color: commission.color,
+          responsibilities: commission.responsibilities[lang],
+        },
+      })
+    );
 
-    const horizontalNodes: Node[] = horizontalCommissions.map((commission, index) => ({
-      id: `horizontal-${commission.id}`,
-      type: 'horizontal',
-      position: { x: HORIZONTAL_X, y: HORIZONTAL_Y_START + index * HORIZONTAL_Y_INCREMENT },
-      data: {
-        name: commission.name[lang],
-        responsibilities: commission.responsibilities[lang],
-        color: commission.color,
-      },
-    }));
+    const horizontalNodes: Node[] = horizontalCommissions.map(
+      (commission, index) => ({
+        id: `horizontal-${commission.id}`,
+        type: 'horizontal',
+        position: {
+          x: HORIZONTAL_X,
+          y: HORIZONTAL_Y_START + index * HORIZONTAL_Y_INCREMENT,
+        },
+        data: {
+          name: commission.name[lang],
+          responsibilities: commission.responsibilities[lang],
+          color: commission.color,
+        },
+      })
+    );
 
     return [...boardNodes, ...directiveNodes, ...horizontalNodes];
   }, [lang]);

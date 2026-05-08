@@ -35,8 +35,7 @@ const STATUS_CONFIG: Record<
   },
   executing: {
     label: { es: 'Ejecutando', en: 'Executing' },
-    color:
-      'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
+    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
     icon: Loader2,
   },
   completed: {
@@ -68,7 +67,9 @@ export const MergeRequestStatusBadge: React.FC<MergeRequestStatusProps> = ({
     <span
       className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${config.color}`}
     >
-      <Icon className={`h-3 w-3 ${status === 'executing' ? 'animate-spin' : ''}`} />
+      <Icon
+        className={`h-3 w-3 ${status === 'executing' ? 'animate-spin' : ''}`}
+      />
       {config.label[lang]}
     </span>
   );

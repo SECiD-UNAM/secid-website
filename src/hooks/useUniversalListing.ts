@@ -1,7 +1,12 @@
 // src/hooks/useUniversalListing.ts
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { DataAdapter } from '@lib/listing/adapters/types';
-import type { ViewMode, SortConfig, FilterDefinition, FetchResult } from '@lib/listing/types';
+import type {
+  ViewMode,
+  SortConfig,
+  FilterDefinition,
+  FetchResult,
+} from '@lib/listing/types';
 
 export interface UseUniversalListingConfig<T> {
   adapter: DataAdapter<T>;
@@ -55,7 +60,9 @@ export function useUniversalListing<T>(
   const [error, setError] = useState<string | null>(null);
   const [query, setQueryRaw] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
-  const [activeFilters, setActiveFilters] = useState<Record<string, unknown>>({});
+  const [activeFilters, setActiveFilters] = useState<Record<string, unknown>>(
+    {}
+  );
   const [sort, setSort] = useState<SortConfig>(defaultSort);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -96,7 +103,10 @@ export function useUniversalListing<T>(
           sort,
           page: paginationMode === 'offset' ? page : undefined,
           pageSize: defaultPageSize,
-          cursor: paginationMode === 'cursor' && page > 1 ? cursorRef.current : undefined,
+          cursor:
+            paginationMode === 'cursor' && page > 1
+              ? cursorRef.current
+              : undefined,
         });
 
         if (cancelled) return;
@@ -124,8 +134,18 @@ export function useUniversalListing<T>(
     }
 
     fetchData();
-    return () => { cancelled = true; };
-  }, [debouncedQuery, activeFilters, sort, page, defaultPageSize, paginationMode, retryCount]);
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    debouncedQuery,
+    activeFilters,
+    sort,
+    page,
+    defaultPageSize,
+    paginationMode,
+    retryCount,
+  ]);
 
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(totalCount / defaultPageSize)),
@@ -136,17 +156,39 @@ export function useUniversalListing<T>(
   const setFilter = useCallback((key: string, value: unknown) => {
     setActiveFilters((prev) => ({ ...prev, [key]: value }));
   }, []);
-  const clearFilters = useCallback(() => { setActiveFilters({}); }, []);
-  const goToPage = useCallback((n: number) => { setPage(n); }, []);
-  const loadMore = useCallback(() => { if (hasMore) setPage((p) => p + 1); }, [hasMore]);
-  const retry = useCallback(() => { setRetryCount((c) => c + 1); }, []);
+  const clearFilters = useCallback(() => {
+    setActiveFilters({});
+  }, []);
+  const goToPage = useCallback((n: number) => {
+    setPage(n);
+  }, []);
+  const loadMore = useCallback(() => {
+    if (hasMore) setPage((p) => p + 1);
+  }, [hasMore]);
+  const retry = useCallback(() => {
+    setRetryCount((c) => c + 1);
+  }, []);
 
   return {
-    items, totalCount, loading, error, retry,
-    query, setQuery,
-    activeFilters, setFilter, clearFilters,
-    sort, setSort,
-    page, pageSize: defaultPageSize, totalPages, hasMore, goToPage, loadMore,
-    viewMode, setViewMode,
+    items,
+    totalCount,
+    loading,
+    error,
+    retry,
+    query,
+    setQuery,
+    activeFilters,
+    setFilter,
+    clearFilters,
+    sort,
+    setSort,
+    page,
+    pageSize: defaultPageSize,
+    totalPages,
+    hasMore,
+    goToPage,
+    loadMore,
+    viewMode,
+    setViewMode,
   };
 }

@@ -22,7 +22,11 @@ export const newsletterFormSchema = z.object({
     .string()
     .min(10, 'Excerpt must be at least 10 characters')
     .max(300),
-  coverImage: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  coverImage: z
+    .string()
+    .url('Must be a valid URL')
+    .optional()
+    .or(z.literal('')),
   status: z.enum(NEWSLETTER_STATUSES),
 });
 

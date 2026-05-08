@@ -25,15 +25,45 @@ interface FormatOption {
 function getFormatOptions(lang: 'es' | 'en'): FormatOption[] {
   if (lang === 'es') {
     return [
-      { key: 'full', label: 'CV Completo', detail: 'Todas las secciones', icon: '\uD83D\uDCC4' },
-      { key: 'resume', label: 'Resumen (2 pag)', detail: 'Top empleos y educacion', icon: '\uD83D\uDCCB' },
-      { key: 'summary', label: 'Resumen (1 pag)', detail: 'Perfil breve y habilidades', icon: '\uD83D\uDCDD' },
+      {
+        key: 'full',
+        label: 'CV Completo',
+        detail: 'Todas las secciones',
+        icon: '\uD83D\uDCC4',
+      },
+      {
+        key: 'resume',
+        label: 'Resumen (2 pag)',
+        detail: 'Top empleos y educacion',
+        icon: '\uD83D\uDCCB',
+      },
+      {
+        key: 'summary',
+        label: 'Resumen (1 pag)',
+        detail: 'Perfil breve y habilidades',
+        icon: '\uD83D\uDCDD',
+      },
     ];
   }
   return [
-    { key: 'full', label: 'Full CV', detail: 'All sections, multi-page', icon: '\uD83D\uDCC4' },
-    { key: 'resume', label: '2-Page Resume', detail: 'Top jobs & education', icon: '\uD83D\uDCCB' },
-    { key: 'summary', label: '1-Page Resume', detail: 'Brief profile & skills', icon: '\uD83D\uDCDD' },
+    {
+      key: 'full',
+      label: 'Full CV',
+      detail: 'All sections, multi-page',
+      icon: '\uD83D\uDCC4',
+    },
+    {
+      key: 'resume',
+      label: '2-Page Resume',
+      detail: 'Top jobs & education',
+      icon: '\uD83D\uDCCB',
+    },
+    {
+      key: 'summary',
+      label: '1-Page Resume',
+      detail: 'Brief profile & skills',
+      icon: '\uD83D\uDCDD',
+    },
   ];
 }
 
@@ -47,7 +77,10 @@ const PRESET_COLORS = [
   { value: '#333333', label: 'Classic' },
 ];
 
-export default function CvPdfDownloader({ cvData, lang }: CvPdfDownloaderProps) {
+export default function CvPdfDownloader({
+  cvData,
+  lang,
+}: CvPdfDownloaderProps) {
   const [open, setOpen] = useState(false);
   const [generating, setGenerating] = useState<PdfFormat | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +92,10 @@ export default function CvPdfDownloader({ cvData, lang }: CvPdfDownloaderProps) 
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setOpen(false);
       }
     }
@@ -110,8 +146,18 @@ export default function CvPdfDownloader({ cvData, lang }: CvPdfDownloaderProps) 
               type="button"
               aria-label={lang === 'es' ? 'Cerrar' : 'Dismiss'}
             >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -181,7 +227,9 @@ export default function CvPdfDownloader({ cvData, lang }: CvPdfDownloaderProps) 
                 <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                   {f.label}
                 </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">{f.detail}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {f.detail}
+                </span>
               </span>
             </button>
           ))}

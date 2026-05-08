@@ -26,8 +26,14 @@ describe.sequential('ListingViewToggle', () => {
         lang="en"
       />
     );
-    expect(screen.getByLabelText('List')).toHaveAttribute('aria-checked', 'true');
-    expect(screen.getByLabelText('Grid')).toHaveAttribute('aria-checked', 'false');
+    expect(screen.getByLabelText('List')).toHaveAttribute(
+      'aria-checked',
+      'true'
+    );
+    expect(screen.getByLabelText('Grid')).toHaveAttribute(
+      'aria-checked',
+      'false'
+    );
   });
 
   it('calls onViewModeChange on click', () => {

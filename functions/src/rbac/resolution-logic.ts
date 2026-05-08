@@ -5,46 +5,46 @@
  * It is imported by the Firestore triggers in resolvePermissions.ts and by
  * the test suite directly.
  */
-import type { PermissionGrant } from "./defaultGroups";
+import type { PermissionGrant } from './defaultGroups';
 
 // ---------------------------------------------------------------------------
 // Abbreviation Maps (mirrors src/lib/rbac/types.ts)
 // ---------------------------------------------------------------------------
 
 const RESOURCE_ABBREV: Record<string, string> = {
-  events: "ev",
-  spotlights: "sp",
-  newsletter: "nl",
-  "journal-club": "jc",
-  jobs: "jo",
-  blog: "bl",
-  forums: "fo",
-  resources: "rs",
-  users: "us",
-  companies: "co",
-  commissions: "cm",
-  mentorship: "mn",
-  settings: "st",
-  analytics: "an",
-  reports: "rp",
-  notifications: "nt",
-  assessments: "as",
-  "salary-insights": "si",
-  groups: "gr",
+  events: 'ev',
+  spotlights: 'sp',
+  newsletter: 'nl',
+  'journal-club': 'jc',
+  jobs: 'jo',
+  blog: 'bl',
+  forums: 'fo',
+  resources: 'rs',
+  users: 'us',
+  companies: 'co',
+  commissions: 'cm',
+  mentorship: 'mn',
+  settings: 'st',
+  analytics: 'an',
+  reports: 'rp',
+  notifications: 'nt',
+  assessments: 'as',
+  'salary-insights': 'si',
+  groups: 'gr',
 };
 
 const OP_ABBREV: Record<string, string> = {
-  view: "v",
-  create: "c",
-  edit: "e",
-  delete: "d",
-  publish: "p",
-  moderate: "m",
-  export: "x",
-  assign: "a",
+  view: 'v',
+  create: 'c',
+  edit: 'e',
+  delete: 'd',
+  publish: 'p',
+  moderate: 'm',
+  export: 'x',
+  assign: 'a',
 };
 
-const SCOPE_ABBREV: Record<string, string> = { own: "o", all: "a" };
+const SCOPE_ABBREV: Record<string, string> = { own: 'o', all: 'a' };
 
 const TOTAL_RESOURCES = Object.keys(RESOURCE_ABBREV).length;
 const TOTAL_OPERATIONS = Object.keys(OP_ABBREV).length;
@@ -90,7 +90,7 @@ export function resolveGroupPermissions(groups: GroupDoc[]): PermissionGrant[] {
         map.set(key, entry);
       }
 
-      if (g.effect === "deny") {
+      if (g.effect === 'deny') {
         entry.denies.add(g.scope);
       } else {
         entry.allows.add(g.scope);
@@ -101,23 +101,23 @@ export function resolveGroupPermissions(groups: GroupDoc[]): PermissionGrant[] {
   const results: PermissionGrant[] = [];
 
   for (const [key, entry] of map.entries()) {
-    const colonIdx = key.indexOf(":");
-    const resource = key.slice(0, colonIdx) as PermissionGrant["resource"];
-    const operation = key.slice(colonIdx + 1) as PermissionGrant["operation"];
+    const colonIdx = key.indexOf(':');
+    const resource = key.slice(0, colonIdx) as PermissionGrant['resource'];
+    const operation = key.slice(colonIdx + 1) as PermissionGrant['operation'];
 
     if (entry.denies.size > 0) {
       results.push({
         resource,
         operation,
-        scope: entry.denies.has("all") ? "all" : "own",
-        effect: "deny",
+        scope: entry.denies.has('all') ? 'all' : 'own',
+        effect: 'deny',
       });
     } else if (entry.allows.size > 0) {
       results.push({
         resource,
         operation,
-        scope: entry.allows.has("all") ? "all" : "own",
-        effect: "allow",
+        scope: entry.allows.has('all') ? 'all' : 'own',
+        effect: 'allow',
       });
     }
   }
@@ -141,21 +141,21 @@ export function resolveGroupPermissions(groups: GroupDoc[]): PermissionGrant[] {
  * - All resources with same op+scope+effect -> `*:{op}.{scope}`
  */
 export function encodeClaimsPermissions(grants: PermissionGrant[]): string {
-  if (grants.length === 0) return "";
+  if (grants.length === 0) return '';
 
-  const allows = grants.filter((g) => g.effect === "allow");
-  const denies = grants.filter((g) => g.effect === "deny");
+  const allows = grants.filter((g) => g.effect === 'allow');
+  const denies = grants.filter((g) => g.effect === 'deny');
 
   const allowTokens = compressGrants(allows, false);
   const denyTokens = compressGrants(denies, true);
 
-  return [...allowTokens, ...denyTokens].join(",");
+  return [...allowTokens, ...denyTokens].join(',');
 }
 
 function compressGrants(grants: PermissionGrant[], isDeny: boolean): string[] {
   if (grants.length === 0) return [];
 
-  const prefix = isDeny ? "!" : "";
+  const prefix = isDeny ? '!' : '';
 
   // Try full wildcard: all resources x all ops, same scope
   const fullWildScope = tryFullWildcard(grants);
@@ -180,7 +180,7 @@ function compressGrants(grants: PermissionGrant[], isDeny: boolean): string[] {
 
     for (const idx of indices) consumed.add(idx);
     tokens.push(
-      `${prefix}${RESOURCE_ABBREV[resource]}:*.${SCOPE_ABBREV[scope]}`,
+      `${prefix}${RESOURCE_ABBREV[resource]}:*.${SCOPE_ABBREV[scope]}`
     );
   }
 
@@ -197,9 +197,7 @@ function compressGrants(grants: PermissionGrant[], isDeny: boolean): string[] {
     if (resources.size !== TOTAL_RESOURCES) continue;
 
     for (const idx of indices) consumed.add(idx);
-    tokens.push(
-      `${prefix}*:${OP_ABBREV[operation]}.${SCOPE_ABBREV[scope]}`,
-    );
+    tokens.push(`${prefix}*:${OP_ABBREV[operation]}.${SCOPE_ABBREV[scope]}`);
   }
 
   // Remaining individual grants
@@ -207,7 +205,7 @@ function compressGrants(grants: PermissionGrant[], isDeny: boolean): string[] {
     if (consumed.has(i)) continue;
     const g = grants[i]!;
     tokens.push(
-      `${prefix}${RESOURCE_ABBREV[g.resource]}:${OP_ABBREV[g.operation]}.${SCOPE_ABBREV[g.scope]}`,
+      `${prefix}${RESOURCE_ABBREV[g.resource]}:${OP_ABBREV[g.operation]}.${SCOPE_ABBREV[g.scope]}`
     );
   }
 
@@ -232,7 +230,7 @@ function tryFullWildcard(grants: PermissionGrant[]): string | null {
 function groupBy(
   grants: PermissionGrant[],
   consumed: Set<number>,
-  keyFn: (g: PermissionGrant) => string,
+  keyFn: (g: PermissionGrant) => string
 ): Map<string, number[]> {
   const map = new Map<string, number[]>();
   for (let i = 0; i < grants.length; i++) {
@@ -252,15 +250,15 @@ function groupBy(
 // ---------------------------------------------------------------------------
 
 const RESOURCE_FROM_ABBREV: Record<string, string> = Object.fromEntries(
-  Object.entries(RESOURCE_ABBREV).map(([full, abbrev]) => [abbrev, full]),
+  Object.entries(RESOURCE_ABBREV).map(([full, abbrev]) => [abbrev, full])
 );
 
 const OP_FROM_ABBREV: Record<string, string> = Object.fromEntries(
-  Object.entries(OP_ABBREV).map(([full, abbrev]) => [abbrev, full]),
+  Object.entries(OP_ABBREV).map(([full, abbrev]) => [abbrev, full])
 );
 
 const SCOPE_FROM_ABBREV: Record<string, string> = Object.fromEntries(
-  Object.entries(SCOPE_ABBREV).map(([full, abbrev]) => [abbrev, full]),
+  Object.entries(SCOPE_ABBREV).map(([full, abbrev]) => [abbrev, full])
 );
 
 // ---------------------------------------------------------------------------
@@ -270,8 +268,8 @@ const SCOPE_FROM_ABBREV: Record<string, string> = Object.fromEntries(
 export interface DecodedToken {
   resource: string; // full name or "*"
   operation: string; // full name or "*"
-  scope: "own" | "all";
-  effect: "allow" | "deny";
+  scope: 'own' | 'all';
+  effect: 'allow' | 'deny';
 }
 
 // ---------------------------------------------------------------------------
@@ -287,44 +285,44 @@ export interface DecodedToken {
 export function decodeClaimsPermissions(encoded: string): DecodedToken[] {
   if (!encoded) return [];
 
-  const tokens = encoded.split(",");
+  const tokens = encoded.split(',');
   const results: DecodedToken[] = [];
 
   for (const token of tokens) {
     const trimmed = token.trim();
     if (!trimmed) continue;
 
-    const isDeny = trimmed.startsWith("!");
+    const isDeny = trimmed.startsWith('!');
     const body = isDeny ? trimmed.slice(1) : trimmed;
 
     // Format: {resource}:{op}.{scope}
-    const colonIdx = body.indexOf(":");
+    const colonIdx = body.indexOf(':');
     if (colonIdx === -1) continue;
 
     const resourceAbbrev = body.slice(0, colonIdx);
     const remainder = body.slice(colonIdx + 1);
 
-    const dotIdx = remainder.indexOf(".");
+    const dotIdx = remainder.indexOf('.');
     if (dotIdx === -1) continue;
 
     const opAbbrev = remainder.slice(0, dotIdx);
     const scopeAbbrev = remainder.slice(dotIdx + 1);
 
     const resource =
-      resourceAbbrev === "*"
-        ? "*"
-        : RESOURCE_FROM_ABBREV[resourceAbbrev] ?? resourceAbbrev;
+      resourceAbbrev === '*'
+        ? '*'
+        : (RESOURCE_FROM_ABBREV[resourceAbbrev] ?? resourceAbbrev);
     const operation =
-      opAbbrev === "*" ? "*" : OP_FROM_ABBREV[opAbbrev] ?? opAbbrev;
+      opAbbrev === '*' ? '*' : (OP_FROM_ABBREV[opAbbrev] ?? opAbbrev);
     const scope = (SCOPE_FROM_ABBREV[scopeAbbrev] ?? scopeAbbrev) as
-      | "own"
-      | "all";
+      | 'own'
+      | 'all';
 
     results.push({
       resource,
       operation,
       scope,
-      effect: isDeny ? "deny" : "allow",
+      effect: isDeny ? 'deny' : 'allow',
     });
   }
 
@@ -340,7 +338,7 @@ export function decodeClaimsPermissions(encoded: string): DecodedToken[] {
  */
 export interface PermissionCheckResult {
   allowed: boolean;
-  scope: "own" | "all" | null;
+  scope: 'own' | 'all' | null;
   denied: boolean;
 }
 
@@ -357,26 +355,26 @@ export interface PermissionCheckResult {
 export function checkPermission(
   tokens: DecodedToken[],
   resource: string,
-  operation: string,
+  operation: string
 ): PermissionCheckResult {
   // Phase 1: Check denies
   for (const token of tokens) {
-    if (token.effect !== "deny") continue;
+    if (token.effect !== 'deny') continue;
     if (tokenMatchesTarget(token, resource, operation)) {
       return { allowed: false, scope: null, denied: true };
     }
   }
 
   // Phase 2: Check allows, track broadest scope
-  let bestScope: "own" | "all" | null = null;
+  let bestScope: 'own' | 'all' | null = null;
 
   for (const token of tokens) {
-    if (token.effect !== "allow") continue;
+    if (token.effect !== 'allow') continue;
     if (tokenMatchesTarget(token, resource, operation)) {
-      if (token.scope === "all") {
-        bestScope = "all";
+      if (token.scope === 'all') {
+        bestScope = 'all';
       } else if (bestScope === null) {
-        bestScope = "own";
+        bestScope = 'own';
       }
     }
   }
@@ -391,11 +389,11 @@ export function checkPermission(
 function tokenMatchesTarget(
   token: DecodedToken,
   resource: string,
-  operation: string,
+  operation: string
 ): boolean {
-  const resourceMatch = token.resource === "*" || token.resource === resource;
+  const resourceMatch = token.resource === '*' || token.resource === resource;
   const operationMatch =
-    token.operation === "*" || token.operation === operation;
+    token.operation === '*' || token.operation === operation;
   return resourceMatch && operationMatch;
 }
 
@@ -406,7 +404,7 @@ function tokenMatchesTarget(
 export function buildClaimsPayload(
   groupIds: string[],
   encodedPermissions: string,
-  existingRole: string | undefined,
+  existingRole: string | undefined
 ): Record<string, unknown> {
   const claims: Record<string, unknown> = {
     rbac: {

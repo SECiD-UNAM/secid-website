@@ -30,7 +30,11 @@ vi.mock('@/lib/auth/oauth-providers', () => ({
   getProvider: vi.fn(),
 }));
 
-import { signInWithPopup, linkWithCredential, OAuthProvider } from 'firebase/auth';
+import {
+  signInWithPopup,
+  linkWithCredential,
+  OAuthProvider,
+} from 'firebase/auth';
 import { getDocs } from 'firebase/firestore';
 import { getProvider } from '@/lib/auth/oauth-providers';
 import { handleAccountExistsError, completeMerge } from '@/lib/auth/auto-merge';
@@ -100,7 +104,9 @@ describe.sequential('handleAccountExistsError', () => {
     });
 
     it('returns null when no user found in Firestore', async () => {
-      vi.mocked(OAuthProvider.credentialFromError).mockReturnValue({ providerId: 'github.com' } as any);
+      vi.mocked(OAuthProvider.credentialFromError).mockReturnValue({
+        providerId: 'github.com',
+      } as any);
       vi.mocked(getDocs).mockResolvedValue({ empty: true, docs: [] } as any);
 
       const error = {
@@ -120,7 +126,9 @@ describe.sequential('handleAccountExistsError', () => {
      */
     it('returns PendingMerge with correct fields when user exists in Firestore', async () => {
       const mockCredential = { providerId: 'github.com' };
-      vi.mocked(OAuthProvider.credentialFromError).mockReturnValue(mockCredential as any);
+      vi.mocked(OAuthProvider.credentialFromError).mockReturnValue(
+        mockCredential as any
+      );
       vi.mocked(getDocs).mockResolvedValue({
         empty: false,
         docs: [{ data: () => ({ lastLoginProvider: 'google' }) }],
@@ -142,7 +150,9 @@ describe.sequential('handleAccountExistsError', () => {
 
     it('defaults existingProvider to google when lastLoginProvider is missing', async () => {
       const mockCredential = { providerId: 'github.com' };
-      vi.mocked(OAuthProvider.credentialFromError).mockReturnValue(mockCredential as any);
+      vi.mocked(OAuthProvider.credentialFromError).mockReturnValue(
+        mockCredential as any
+      );
       vi.mocked(getDocs).mockResolvedValue({
         empty: false,
         docs: [{ data: () => ({}) }],
@@ -193,7 +203,10 @@ describe.sequential('completeMerge', () => {
       const pendingCredential = { providerId: 'github.com' };
       await completeMerge('google', pendingCredential);
 
-      expect(linkWithCredential).toHaveBeenCalledWith(mockUser, pendingCredential);
+      expect(linkWithCredential).toHaveBeenCalledWith(
+        mockUser,
+        pendingCredential
+      );
     });
 
     it('propagates error if signInWithPopup fails', async () => {
@@ -203,7 +216,9 @@ describe.sequential('completeMerge', () => {
 
       const pendingCredential = { providerId: 'github.com' };
 
-      await expect(completeMerge('google', pendingCredential)).rejects.toThrow('Popup closed');
+      await expect(completeMerge('google', pendingCredential)).rejects.toThrow(
+        'Popup closed'
+      );
     });
 
     it('propagates error if linkWithCredential fails', async () => {
@@ -211,7 +226,9 @@ describe.sequential('completeMerge', () => {
       const mockUser = { uid: 'user123' };
       vi.mocked(getProvider).mockReturnValue(mockProvider as any);
       vi.mocked(signInWithPopup).mockResolvedValue({ user: mockUser } as any);
-      vi.mocked(linkWithCredential).mockRejectedValue(new Error('Credential already in use'));
+      vi.mocked(linkWithCredential).mockRejectedValue(
+        new Error('Credential already in use')
+      );
 
       const pendingCredential = { providerId: 'github.com' };
 

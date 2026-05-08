@@ -45,8 +45,18 @@ describe('TC-ecosys-001: renders industry groups from company data', () => {
 
   it('groups companies by industry and renders group headers', () => {
     const companies = [
-      makeCompany({ id: 'c1', name: 'TechCo', industry: 'Tecnología', memberCount: 3 }),
-      makeCompany({ id: 'c2', name: 'BankCo', industry: 'Finanzas', memberCount: 2 }),
+      makeCompany({
+        id: 'c1',
+        name: 'TechCo',
+        industry: 'Tecnología',
+        memberCount: 3,
+      }),
+      makeCompany({
+        id: 'c2',
+        name: 'BankCo',
+        industry: 'Finanzas',
+        memberCount: 2,
+      }),
     ];
     render(<EcosystemMap companies={companies} lang="es" />);
     expect(screen.getByText('Tecnología')).toBeTruthy();
@@ -91,7 +101,9 @@ describe('TC-ecosys-004: calls onCompanyClick when provided', () => {
   it('invokes the handler with the company object on pill click', () => {
     const handler = vi.fn();
     const companies = [makeCompany()];
-    render(<EcosystemMap companies={companies} onCompanyClick={handler} lang="es" />);
+    render(
+      <EcosystemMap companies={companies} onCompanyClick={handler} lang="es" />
+    );
     fireEvent.click(screen.getByText('Acme Corp'));
     expect(handler).toHaveBeenCalledWith(companies[0]);
   });
@@ -103,7 +115,9 @@ describe('TC-ecosys-005: renders <a> links when onCompanyClick is omitted', () =
 
   it('wraps each company pill in an anchor pointing to /es/companies/:slug', () => {
     const companies = [makeCompany({ slug: 'acme-corp' })];
-    const { container } = render(<EcosystemMap companies={companies} lang="es" />);
+    const { container } = render(
+      <EcosystemMap companies={companies} lang="es" />
+    );
     const link = container.querySelector('a[href="/es/companies/acme-corp"]');
     expect(link).toBeTruthy();
   });

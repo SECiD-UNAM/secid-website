@@ -1,7 +1,12 @@
 import { calculateMexicoMonthlyNet } from './mexico-isr';
 import { calculateUSAMonthlyNet } from './usa-federal';
 
-export type FiscalRegime = 'asalariado' | 'honorarios' | 'resico' | 'w2' | '1099';
+export type FiscalRegime =
+  | 'asalariado'
+  | 'honorarios'
+  | 'resico'
+  | 'w2'
+  | '1099';
 export type Country = 'MX' | 'US' | 'OTHER';
 
 export interface NetSalaryResult {
@@ -18,7 +23,8 @@ export function calculateNetSalary(
   let monthlyNet: number;
 
   if (country === 'MX') {
-    const mxRegime = (regime as 'asalariado' | 'honorarios' | 'resico') || 'asalariado';
+    const mxRegime =
+      (regime as 'asalariado' | 'honorarios' | 'resico') || 'asalariado';
     monthlyNet = calculateMexicoMonthlyNet(monthlyGross, mxRegime);
   } else if (country === 'US') {
     const usRegime = (regime as 'w2' | '1099') || 'w2';

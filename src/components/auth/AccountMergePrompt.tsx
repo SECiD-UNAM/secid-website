@@ -32,7 +32,9 @@ export const AccountMergePrompt: React.FC<AccountMergePromptProps> = ({
       : `An account with ${email} already exists via ${providerName}. Sign in with ${providerName} to link your accounts.`;
 
   const signInButtonLabel =
-    lang === 'es' ? `Continuar con ${providerName}` : `Continue with ${providerName}`;
+    lang === 'es'
+      ? `Continuar con ${providerName}`
+      : `Continue with ${providerName}`;
 
   const cancelButtonLabel = lang === 'es' ? 'Cancelar' : 'Cancel';
 

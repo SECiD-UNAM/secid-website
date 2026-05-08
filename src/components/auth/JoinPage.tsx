@@ -143,7 +143,7 @@ export const JoinPage: React.FC<JoinPageProps> = ({ lang = 'es' }) => {
                 className={[
                   'flex items-center gap-4 rounded-lg border border-gray-200',
                   'border-l-4 bg-white p-4 transition-all',
-                  'hover:shadow-md dark:bg-gray-800 dark:border-gray-700',
+                  'hover:shadow-md dark:border-gray-700 dark:bg-gray-800',
                   path.borderColor,
                   path.hoverBorder,
                 ].join(' ')}

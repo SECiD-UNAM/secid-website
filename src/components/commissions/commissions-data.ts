@@ -16,13 +16,29 @@ export interface BoardMember {
 
 export const boardMembers: { es: BoardMember[]; en: BoardMember[] } = {
   es: [
-    { role: 'Presidente', name: 'Jorge Alejandro Ramirez Bondi', icon: 'fas fa-user-tie' },
-    { role: 'Secretario General', name: 'Artemio Santiago Padilla Robles', icon: 'fas fa-file-signature' },
+    {
+      role: 'Presidente',
+      name: 'Jorge Alejandro Ramirez Bondi',
+      icon: 'fas fa-user-tie',
+    },
+    {
+      role: 'Secretario General',
+      name: 'Artemio Santiago Padilla Robles',
+      icon: 'fas fa-file-signature',
+    },
     { role: 'Tesorera', name: 'Sara Kenia Cisneros', icon: 'fas fa-coins' },
   ],
   en: [
-    { role: 'President', name: 'Jorge Alejandro Ramirez Bondi', icon: 'fas fa-user-tie' },
-    { role: 'General Secretary', name: 'Artemio Santiago Padilla Robles', icon: 'fas fa-file-signature' },
+    {
+      role: 'President',
+      name: 'Jorge Alejandro Ramirez Bondi',
+      icon: 'fas fa-user-tie',
+    },
+    {
+      role: 'General Secretary',
+      name: 'Artemio Santiago Padilla Robles',
+      icon: 'fas fa-file-signature',
+    },
     { role: 'Treasurer', name: 'Sara Kenia Cisneros', icon: 'fas fa-coins' },
   ],
 };
@@ -124,11 +140,7 @@ export const directiveCommissions: Commission[] = [
         'Cumplimiento fiscal',
         'Aseguramiento de ingresos',
       ],
-      en: [
-        'Accounting & finance',
-        'Tax compliance',
-        'Revenue assurance',
-      ],
+      en: ['Accounting & finance', 'Tax compliance', 'Revenue assurance'],
     },
   },
 ];
@@ -177,11 +189,7 @@ export const horizontalCommissions: Commission[] = [
         'Boletines informativos',
         'Estrategias de marketing',
       ],
-      en: [
-        'Social media',
-        'Newsletters',
-        'Marketing strategies',
-      ],
+      en: ['Social media', 'Newsletters', 'Marketing strategies'],
     },
   },
   {
@@ -279,9 +287,11 @@ export const commissionsI18n = {
   es: {
     boardTitle: 'Consejo Directivo',
     directiveTitle: 'Comisiones Directivas',
-    directiveSubtitle: 'Comisiones que operan bajo una direccion del consejo directivo',
+    directiveSubtitle:
+      'Comisiones que operan bajo una direccion del consejo directivo',
     horizontalTitle: 'Comisiones Horizontales',
-    horizontalSubtitle: 'Comisiones transversales que apoyan a toda la organizacion',
+    horizontalSubtitle:
+      'Comisiones transversales que apoyan a toda la organizacion',
     reportsTo: 'Reporta a',
     areas: 'Areas',
     listView: 'Vista detallada',
@@ -292,7 +302,8 @@ export const commissionsI18n = {
     directiveTitle: 'Directive Commissions',
     directiveSubtitle: 'Commissions that operate under a board directorate',
     horizontalTitle: 'Horizontal Commissions',
-    horizontalSubtitle: 'Cross-cutting commissions that support the entire organization',
+    horizontalSubtitle:
+      'Cross-cutting commissions that support the entire organization',
     reportsTo: 'Reports to',
     areas: 'Areas',
     listView: 'Detailed view',

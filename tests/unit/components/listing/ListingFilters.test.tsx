@@ -3,7 +3,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { ListingFilters } from '@components/listing/ListingFilters';
 
 const definitions = [
-  { key: 'category', label: 'Category', type: 'select' as const, options: [{ value: 'tech', label: 'Tech' }] },
+  {
+    key: 'category',
+    label: 'Category',
+    type: 'select' as const,
+    options: [{ value: 'tech', label: 'Tech' }],
+  },
   { key: 'active', label: 'Active Only', type: 'toggle' as const },
 ];
 
@@ -62,7 +67,9 @@ describe.sequential('ListingFilters', () => {
         lang="en"
       />
     );
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'tech' } });
+    fireEvent.change(screen.getByRole('combobox'), {
+      target: { value: 'tech' },
+    });
     expect(onChange).toHaveBeenCalledWith('category', 'tech');
   });
 

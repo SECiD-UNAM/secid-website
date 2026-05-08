@@ -75,7 +75,9 @@ export const CompanyProfile: React.FC<Props> = ({
       }
     }
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [slug, lang]);
 
   const rolesBreakdown = useMemo(() => {
@@ -92,8 +94,7 @@ export const CompanyProfile: React.FC<Props> = ({
         counts.set(pos, (counts.get(pos) || 0) + 1);
       }
     }
-    return Array.from(counts.entries())
-      .sort((a, b) => b[1] - a[1]);
+    return Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
   }, [current, alumni, company]);
 
   if (loading) {
@@ -101,9 +102,7 @@ export const CompanyProfile: React.FC<Props> = ({
       <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-primary-600" />
-          <p className="text-gray-600 dark:text-gray-400">
-            {t.loading}
-          </p>
+          <p className="text-gray-600 dark:text-gray-400">{t.loading}</p>
         </div>
       </div>
     );
@@ -263,7 +262,9 @@ export const CompanyProfile: React.FC<Props> = ({
                 key={position}
                 className="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700"
               >
-                <span className="font-medium text-gray-900 dark:text-white">{position}</span>
+                <span className="font-medium text-gray-900 dark:text-white">
+                  {position}
+                </span>
                 <span className="rounded-full bg-primary-100 px-3 py-0.5 text-sm font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">
                   {count}
                 </span>

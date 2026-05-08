@@ -16,7 +16,9 @@ describe.sequential('ListingSearch', () => {
   it('calls onQueryChange when typing', () => {
     const onChange = vi.fn();
     render(<ListingSearch query="" onQueryChange={onChange} lang="en" />);
-    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'hello' } });
+    fireEvent.change(screen.getByRole('searchbox'), {
+      target: { value: 'hello' },
+    });
     expect(onChange).toHaveBeenCalledWith('hello');
   });
 

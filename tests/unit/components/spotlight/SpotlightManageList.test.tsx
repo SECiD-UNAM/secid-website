@@ -1,6 +1,13 @@
 // @ts-nocheck
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup, waitFor, fireEvent, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  cleanup,
+  waitFor,
+  fireEvent,
+  act,
+} from '@testing-library/react';
 
 const mockSpotlights = [
   {
@@ -96,7 +103,11 @@ describe.sequential('SpotlightManageList', () => {
 
     // Count text may be split across elements ("2" and "spotlights")
     const countEl = screen.getByText((content, element) => {
-      return element?.tagName === 'P' && content.includes('2') && element.textContent?.includes('spotlights');
+      return (
+        element?.tagName === 'P' &&
+        content.includes('2') &&
+        element.textContent?.includes('spotlights')
+      );
     });
     expect(countEl).toBeDefined();
   });

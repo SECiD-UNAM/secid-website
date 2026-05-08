@@ -184,7 +184,9 @@ function makeMentee(overrides: Partial<MenteeProfile> = {}): MenteeProfile {
   };
 }
 
-function makeRequest(overrides: Partial<MentorshipRequest> = {}): MentorshipRequest {
+function makeRequest(
+  overrides: Partial<MentorshipRequest> = {}
+): MentorshipRequest {
   return {
     id: 'req-1',
     menteeId: 'user-1',
@@ -307,7 +309,9 @@ describe.sequential('MentorshipMatcher', () => {
     });
 
     // ListingFilters renders a toggle button with aria-expanded
-    const filterButton = screen.getByRole('button', { name: /filtros|filters/i });
+    const filterButton = screen.getByRole('button', {
+      name: /filtros|filters/i,
+    });
     await user.click(filterButton);
     expect(filterButton).toHaveAttribute('aria-expanded', 'true');
   });
@@ -354,9 +358,13 @@ describe.sequential('MentorshipMatcher', () => {
       ).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole('button', { name: /request mentorship/i }));
+    await user.click(
+      screen.getByRole('button', { name: /request mentorship/i })
+    );
 
-    expect(screen.getByText('Send a request to this mentor')).toBeInTheDocument();
+    expect(
+      screen.getByText('Send a request to this mentor')
+    ).toBeInTheDocument();
   });
 
   it('TC-MATCHER-010: inactive mentors are not shown', async () => {
@@ -374,9 +382,16 @@ describe.sequential('MentorshipMatcher', () => {
       currentMentees: 3,
       maxMentees: 3,
     });
-    const activeMentor = makeMentor({ id: 'mentor-4', displayName: 'Active One' });
+    const activeMentor = makeMentor({
+      id: 'mentor-4',
+      displayName: 'Active One',
+    });
 
-    mockGetMentorProfiles.mockResolvedValue([inactiveMentor, fullMentor, activeMentor]);
+    mockGetMentorProfiles.mockResolvedValue([
+      inactiveMentor,
+      fullMentor,
+      activeMentor,
+    ]);
     mockCalculateMatchScore.mockResolvedValue({
       score: 0.8,
       reasons: ['Good match'],

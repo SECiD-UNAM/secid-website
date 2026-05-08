@@ -6,8 +6,17 @@ import { FirestoreAdapter } from '@lib/listing/adapters/FirestoreAdapter';
 vi.mock('firebase/firestore', () => ({
   query: vi.fn((...args: unknown[]) => ({ _constraints: args.slice(1) })),
   collection: vi.fn((_db: unknown, name: string) => ({ path: name })),
-  where: vi.fn((field: string, op: string, value: unknown) => ({ type: 'where', field, op, value })),
-  orderBy: vi.fn((field: string, dir: string) => ({ type: 'orderBy', field, dir })),
+  where: vi.fn((field: string, op: string, value: unknown) => ({
+    type: 'where',
+    field,
+    op,
+    value,
+  })),
+  orderBy: vi.fn((field: string, dir: string) => ({
+    type: 'orderBy',
+    field,
+    dir,
+  })),
   limit: vi.fn((n: number) => ({ type: 'limit', n })),
   startAfter: vi.fn((cursor: unknown) => ({ type: 'startAfter', cursor })),
   getDocs: vi.fn(),
@@ -28,9 +37,30 @@ interface TestDoc {
 }
 
 const mockDocs = [
-  { id: '1', data: () => ({ name: 'Alice', status: 'active', createdAt: { toDate: () => new Date('2026-01-01') } }) },
-  { id: '2', data: () => ({ name: 'Bob', status: 'active', createdAt: { toDate: () => new Date('2026-02-01') } }) },
-  { id: '3', data: () => ({ name: 'Charlie', status: 'inactive', createdAt: { toDate: () => new Date('2026-03-01') } }) },
+  {
+    id: '1',
+    data: () => ({
+      name: 'Alice',
+      status: 'active',
+      createdAt: { toDate: () => new Date('2026-01-01') },
+    }),
+  },
+  {
+    id: '2',
+    data: () => ({
+      name: 'Bob',
+      status: 'active',
+      createdAt: { toDate: () => new Date('2026-02-01') },
+    }),
+  },
+  {
+    id: '3',
+    data: () => ({
+      name: 'Charlie',
+      status: 'inactive',
+      createdAt: { toDate: () => new Date('2026-03-01') },
+    }),
+  },
 ];
 
 describe('FirestoreAdapter', () => {
@@ -47,7 +77,7 @@ describe('FirestoreAdapter', () => {
 
     adapter = new FirestoreAdapter<TestDoc>({
       collectionName: 'users',
-      mapDoc: (id, data) => ({ id, ...data } as unknown as TestDoc),
+      mapDoc: (id, data) => ({ id, ...data }) as unknown as TestDoc,
       searchFields: ['name'],
       defaultSort: { field: 'createdAt', direction: 'desc' },
     });

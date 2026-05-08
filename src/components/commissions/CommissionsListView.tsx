@@ -61,7 +61,13 @@ function SubAreaTags({ tags, color }: { tags: string[]; color: string }) {
   );
 }
 
-function CommissionCard({ commission, lang }: { commission: Commission; lang: 'es' | 'en' }) {
+function CommissionCard({
+  commission,
+  lang,
+}: {
+  commission: Commission;
+  lang: 'es' | 'en';
+}) {
   return (
     <div
       style={{
@@ -73,7 +79,13 @@ function CommissionCard({ commission, lang }: { commission: Commission; lang: 'e
         marginBottom: '0.5rem',
       }}
     >
-      <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--color-text-primary, #f1f1f1)' }}>
+      <div
+        style={{
+          fontWeight: 600,
+          fontSize: 14,
+          color: 'var(--color-text-primary, #f1f1f1)',
+        }}
+      >
         {commission.name[lang]}
       </div>
       <div
@@ -86,7 +98,10 @@ function CommissionCard({ commission, lang }: { commission: Commission; lang: 'e
       >
         {commission.description[lang]}
       </div>
-      <SubAreaTags tags={commission.responsibilities[lang]} color={commission.color} />
+      <SubAreaTags
+        tags={commission.responsibilities[lang]}
+        color={commission.color}
+      />
     </div>
   );
 }
@@ -102,7 +117,9 @@ function DirectionSection({
 }) {
   const color = directionColors[directionId] ?? '#888';
   const label = parentLabels[directionId]?.[lang] ?? directionId;
-  const commissions = directiveCommissions.filter((c) => c.parent === directionId);
+  const commissions = directiveCommissions.filter(
+    (c) => c.parent === directionId
+  );
 
   return (
     <div
@@ -136,7 +153,12 @@ function DirectionSection({
           >
             {label}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--color-text-secondary, #9ca3af)' }}>
+          <div
+            style={{
+              fontSize: 12,
+              color: 'var(--color-text-secondary, #9ca3af)',
+            }}
+          >
             {boardMemberName}
           </div>
         </div>
@@ -150,14 +172,24 @@ function DirectionSection({
         }}
       >
         {commissions.map((commission) => (
-          <CommissionCard key={commission.id} commission={commission} lang={lang} />
+          <CommissionCard
+            key={commission.id}
+            commission={commission}
+            lang={lang}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-function HorizontalCommissionCard({ commission, lang }: { commission: Commission; lang: 'es' | 'en' }) {
+function HorizontalCommissionCard({
+  commission,
+  lang,
+}: {
+  commission: Commission;
+  lang: 'es' | 'en';
+}) {
   return (
     <div
       style={{
@@ -182,13 +214,29 @@ function HorizontalCommissionCard({ commission, lang }: { commission: Commission
           flexShrink: 0,
         }}
       >
-        <i className={commission.icon} style={{ color: commission.color, fontSize: 14 }} />
+        <i
+          className={commission.icon}
+          style={{ color: commission.color, fontSize: 14 }}
+        />
       </div>
       <div>
-        <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--color-text-primary, #f1f1f1)' }}>
+        <div
+          style={{
+            fontWeight: 600,
+            fontSize: 14,
+            color: 'var(--color-text-primary, #f1f1f1)',
+          }}
+        >
           {commission.name[lang]}
         </div>
-        <div style={{ fontSize: 12, color: 'var(--color-text-secondary, #9ca3af)', marginTop: 3, lineHeight: 1.4 }}>
+        <div
+          style={{
+            fontSize: 12,
+            color: 'var(--color-text-secondary, #9ca3af)',
+            marginTop: 3,
+            lineHeight: 1.4,
+          }}
+        >
           {commission.description[lang]}
         </div>
       </div>
@@ -249,7 +297,11 @@ export default function CommissionsListView({ lang }: Props) {
           }}
         >
           {horizontalCommissions.map((commission) => (
-            <HorizontalCommissionCard key={commission.id} commission={commission} lang={lang} />
+            <HorizontalCommissionCard
+              key={commission.id}
+              commission={commission}
+              lang={lang}
+            />
           ))}
         </div>
       </div>

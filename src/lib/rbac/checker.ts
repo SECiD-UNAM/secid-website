@@ -13,7 +13,7 @@ export function checkPermission(
   perms: ResolvedPermissions,
   resource: Resource,
   operation: Operation,
-  requiredScope?: Scope,
+  requiredScope?: Scope
 ): boolean {
   if (hasDeny(perms, resource, operation)) {
     return false;
@@ -28,10 +28,10 @@ export function checkPermission(
 export function hasDeny(
   perms: ResolvedPermissions,
   resource: Resource,
-  operation: Operation,
+  operation: Operation
 ): boolean {
   const hasExactDeny = perms.denies.some(
-    (d) => d.resource === resource && d.operation === operation,
+    (d) => d.resource === resource && d.operation === operation
   );
 
   if (hasExactDeny) {
@@ -39,7 +39,7 @@ export function hasDeny(
   }
 
   return perms.wildcards.some(
-    (w) => w.effect === 'deny' && matchesWildcard(w, resource, operation),
+    (w) => w.effect === 'deny' && matchesWildcard(w, resource, operation)
   );
 }
 
@@ -55,13 +55,13 @@ export function hasAllow(
   perms: ResolvedPermissions,
   resource: Resource,
   operation: Operation,
-  requiredScope?: Scope,
+  requiredScope?: Scope
 ): boolean {
   const hasExactAllow = perms.allows.some(
     (a) =>
       a.resource === resource &&
       a.operation === operation &&
-      scopeSatisfies(a.scope, requiredScope),
+      scopeSatisfies(a.scope, requiredScope)
   );
 
   if (hasExactAllow) {
@@ -72,7 +72,7 @@ export function hasAllow(
     (w) =>
       w.effect === 'allow' &&
       matchesWildcard(w, resource, operation) &&
-      scopeSatisfies(w.scope, requiredScope),
+      scopeSatisfies(w.scope, requiredScope)
   );
 }
 
@@ -86,7 +86,7 @@ export function hasAllow(
 export function getEffectiveScope(
   perms: ResolvedPermissions,
   resource: Resource,
-  operation: Operation,
+  operation: Operation
 ): Scope | null {
   if (hasDeny(perms, resource, operation)) {
     return null;
@@ -115,7 +115,7 @@ export function getEffectiveScope(
 function matchesWildcard(
   wildcard: DecodedWildcard,
   resource: Resource,
-  operation: Operation,
+  operation: Operation
 ): boolean {
   const resourceMatch =
     wildcard.resource === '*' || wildcard.resource === resource;

@@ -59,24 +59,29 @@ interface BoxPlotData {
   p90: number;
 }
 
-function buildBoxPlotData(rows: ExperienceRow[], lang: 'es' | 'en'): BoxPlotData[] {
+function buildBoxPlotData(
+  rows: ExperienceRow[],
+  lang: 'es' | 'en'
+): BoxPlotData[] {
   const labels = lang === 'es' ? LEVEL_LABELS_ES : LEVEL_LABELS_EN;
   const rowMap = new Map(rows.map((r) => [r.level, r]));
 
   return EXPERIENCE_ORDER.flatMap((level) => {
     const row = rowMap.get(level);
     if (!row) return [];
-    return [{
-      level,
-      label: labels[level] ?? level,
-      color: LEVEL_COLORS[level] ?? '#8B5CF6',
-      count: row.count,
-      p10: row.p10,
-      p25: row.p25,
-      median: row.median,
-      p75: row.p75,
-      p90: row.p90,
-    }];
+    return [
+      {
+        level,
+        label: labels[level] ?? level,
+        color: LEVEL_COLORS[level] ?? '#8B5CF6',
+        count: row.count,
+        p10: row.p10,
+        p25: row.p25,
+        median: row.median,
+        p75: row.p75,
+        p90: row.p90,
+      },
+    ];
   });
 }
 
@@ -87,7 +92,9 @@ export function SalaryByExperience({ byExperience, lang = 'es' }: Props) {
   if (boxData.length === 0) {
     return (
       <p className="text-sm text-gray-500 dark:text-gray-400">
-        {lang === 'es' ? 'No hay suficientes datos por nivel.' : 'Not enough data by level.'}
+        {lang === 'es'
+          ? 'No hay suficientes datos por nivel.'
+          : 'Not enough data by level.'}
       </p>
     );
   }
@@ -102,8 +109,12 @@ export function SalaryByExperience({ byExperience, lang = 'es' }: Props) {
           {/* Label row */}
           <div className="mb-1 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-900 dark:text-white">{d.label}</span>
-              <span className="text-xs text-gray-400 dark:text-gray-500">n={d.count}</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                {d.label}
+              </span>
+              <span className="text-xs text-gray-400 dark:text-gray-500">
+                n={d.count}
+              </span>
             </div>
             <span className="text-sm font-semibold" style={{ color: d.color }}>
               {fmt(d.median)}
@@ -111,7 +122,13 @@ export function SalaryByExperience({ byExperience, lang = 'es' }: Props) {
           </div>
 
           {/* Box plot */}
-          <div className="relative h-8" style={{ marginLeft: `${scale(d.p10)}%`, width: `${scale(d.p90) - scale(d.p10)}%` }}>
+          <div
+            className="relative h-8"
+            style={{
+              marginLeft: `${scale(d.p10)}%`,
+              width: `${scale(d.p90) - scale(d.p10)}%`,
+            }}
+          >
             {/* Whisker line (p10 to p90) */}
             <div
               className="absolute top-1/2 h-px -translate-y-1/2"
@@ -126,11 +143,23 @@ export function SalaryByExperience({ byExperience, lang = 'es' }: Props) {
             {/* Whisker caps */}
             <div
               className="absolute top-1/2 w-px -translate-y-1/2"
-              style={{ left: 0, height: 16, marginTop: -8, background: d.color, opacity: 0.6 }}
+              style={{
+                left: 0,
+                height: 16,
+                marginTop: -8,
+                background: d.color,
+                opacity: 0.6,
+              }}
             />
             <div
               className="absolute top-1/2 w-px -translate-y-1/2"
-              style={{ right: 0, height: 16, marginTop: -8, background: d.color, opacity: 0.6 }}
+              style={{
+                right: 0,
+                height: 16,
+                marginTop: -8,
+                background: d.color,
+                opacity: 0.6,
+              }}
             />
 
             {/* Box (p25 to p75) */}
@@ -160,7 +189,13 @@ export function SalaryByExperience({ byExperience, lang = 'es' }: Props) {
           </div>
 
           {/* Scale labels */}
-          <div className="mt-0.5 flex justify-between text-[10px] text-gray-400 dark:text-gray-500" style={{ marginLeft: `${scale(d.p10)}%`, width: `${scale(d.p90) - scale(d.p10)}%` }}>
+          <div
+            className="mt-0.5 flex justify-between text-[10px] text-gray-400 dark:text-gray-500"
+            style={{
+              marginLeft: `${scale(d.p10)}%`,
+              width: `${scale(d.p90) - scale(d.p10)}%`,
+            }}
+          >
             <span>P10: {fmt(d.p10)}</span>
             <span>P90: {fmt(d.p90)}</span>
           </div>
@@ -171,7 +206,9 @@ export function SalaryByExperience({ byExperience, lang = 'es' }: Props) {
       <div className="flex flex-wrap items-center gap-4 border-t border-gray-200 pt-3 text-[10px] text-gray-400 dark:border-gray-700 dark:text-gray-500">
         <span className="flex items-center gap-1">
           <div className="h-3 w-3 rounded border-2 border-gray-400 bg-gray-400/25" />
-          {lang === 'es' ? 'P25–P75 (rango intercuartil)' : 'P25–P75 (interquartile range)'}
+          {lang === 'es'
+            ? 'P25–P75 (rango intercuartil)'
+            : 'P25–P75 (interquartile range)'}
         </span>
         <span className="flex items-center gap-1">
           <div className="h-3 w-1 rounded bg-gray-400" />

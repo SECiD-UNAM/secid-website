@@ -151,14 +151,9 @@ export default function NewsletterManageList({
 
   const handleTogglePublish = async (newsletter: NewsletterIssue) => {
     if (!user) return;
-    const newStatus =
-      newsletter.status === 'published' ? 'draft' : 'published';
+    const newStatus = newsletter.status === 'published' ? 'draft' : 'published';
     try {
-      await updateNewsletter(
-        newsletter.id,
-        { status: newStatus },
-        user.uid
-      );
+      await updateNewsletter(newsletter.id, { status: newStatus }, user.uid);
       setNewsletters((prev) =>
         prev.map((n) =>
           n.id === newsletter.id ? { ...n, status: newStatus } : n

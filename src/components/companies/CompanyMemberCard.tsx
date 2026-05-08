@@ -113,7 +113,11 @@ export const CompanyMemberCard: React.FC<Props> = ({
         {role.startDate && (
           <p className="text-xs text-gray-400 dark:text-gray-500">
             {formatDate(role.startDate, lang)}
-            {role.endDate ? ` – ${formatDate(role.endDate, lang)}` : isAlumni ? '' : ` – ${t.present}`}
+            {role.endDate
+              ? ` – ${formatDate(role.endDate, lang)}`
+              : isAlumni
+                ? ''
+                : ` – ${t.present}`}
           </p>
         )}
         {isAlumni && nowAt && (
@@ -143,8 +147,18 @@ export const CompanyMemberCard: React.FC<Props> = ({
           className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-primary-600 dark:hover:bg-gray-700 dark:hover:text-primary-400"
           title={t.viewProfile}
         >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M8.25 4.5l7.5 7.5-7.5 7.5"
+            />
           </svg>
         </a>
       </div>

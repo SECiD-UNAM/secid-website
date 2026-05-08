@@ -24,13 +24,23 @@ import {
   toCertification,
 } from '@/lib/linkedin-parser';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import type { WorkExperience, EducationEntry, Certification, Language } from '@/types/member';
+import type {
+  WorkExperience,
+  EducationEntry,
+  Certification,
+  Language,
+} from '@/types/member';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type TabId = 'experience' | 'education' | 'skills' | 'certifications' | 'languages';
+type TabId =
+  | 'experience'
+  | 'education'
+  | 'skills'
+  | 'certifications'
+  | 'languages';
 
 export interface ImportedData {
   experience?: WorkExperience[];
@@ -73,8 +83,10 @@ const TABS: TabDefinition[] = [
     id: 'education',
     labelEs: 'Educación',
     labelEn: 'Education',
-    placeholderEs: 'Universidad Nacional Autónoma de México\nLicenciatura en Matemáticas\n2015 - 2020',
-    placeholderEn: 'National Autonomous University of Mexico\nBachelor of Science in Mathematics\n2015 - 2020',
+    placeholderEs:
+      'Universidad Nacional Autónoma de México\nLicenciatura en Matemáticas\n2015 - 2020',
+    placeholderEn:
+      'National Autonomous University of Mexico\nBachelor of Science in Mathematics\n2015 - 2020',
   },
   {
     id: 'skills',
@@ -87,15 +99,19 @@ const TABS: TabDefinition[] = [
     id: 'certifications',
     labelEs: 'Certificaciones',
     labelEn: 'Certifications',
-    placeholderEs: 'AWS Certified Solutions Architect\nAmazon Web Services\nIssued Jan 2023',
-    placeholderEn: 'AWS Certified Solutions Architect\nAmazon Web Services\nIssued Jan 2023',
+    placeholderEs:
+      'AWS Certified Solutions Architect\nAmazon Web Services\nIssued Jan 2023',
+    placeholderEn:
+      'AWS Certified Solutions Architect\nAmazon Web Services\nIssued Jan 2023',
   },
   {
     id: 'languages',
     labelEs: 'Idiomas',
     labelEn: 'Languages',
-    placeholderEs: 'Español\nNativo o bilingüe\nInglés\nCompetencia profesional plena',
-    placeholderEn: 'Spanish\nNative or bilingual proficiency\nEnglish\nFull professional proficiency',
+    placeholderEs:
+      'Español\nNativo o bilingüe\nInglés\nCompetencia profesional plena',
+    placeholderEn:
+      'Spanish\nNative or bilingual proficiency\nEnglish\nFull professional proficiency',
   },
 ];
 
@@ -178,7 +194,12 @@ function buildPreviewData(texts: TabTexts): ImportedData {
 
 function LinkedInIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <svg
+      className={className}
+      fill="currentColor"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
       <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
     </svg>
   );
@@ -212,7 +233,9 @@ function PreviewSection({ data, lang }: PreviewSectionProps) {
       {data.experience && data.experience.length > 0 && (
         <div>
           <h4 className="mb-1 font-medium text-gray-700 dark:text-gray-300">
-            {lang === 'es' ? `Experiencia (${data.experience.length})` : `Experience (${data.experience.length})`}
+            {lang === 'es'
+              ? `Experiencia (${data.experience.length})`
+              : `Experience (${data.experience.length})`}
           </h4>
           <ul className="space-y-1 pl-4">
             {data.experience.map((e) => (
@@ -227,7 +250,9 @@ function PreviewSection({ data, lang }: PreviewSectionProps) {
       {data.education && data.education.length > 0 && (
         <div>
           <h4 className="mb-1 font-medium text-gray-700 dark:text-gray-300">
-            {lang === 'es' ? `Educación (${data.education.length})` : `Education (${data.education.length})`}
+            {lang === 'es'
+              ? `Educación (${data.education.length})`
+              : `Education (${data.education.length})`}
           </h4>
           <ul className="space-y-1 pl-4">
             {data.education.map((e) => (
@@ -242,9 +267,13 @@ function PreviewSection({ data, lang }: PreviewSectionProps) {
       {data.skills && data.skills.length > 0 && (
         <div>
           <h4 className="mb-1 font-medium text-gray-700 dark:text-gray-300">
-            {lang === 'es' ? `Habilidades (${data.skills.length})` : `Skills (${data.skills.length})`}
+            {lang === 'es'
+              ? `Habilidades (${data.skills.length})`
+              : `Skills (${data.skills.length})`}
           </h4>
-          <p className="text-gray-600 dark:text-gray-400">{data.skills.join(', ')}</p>
+          <p className="text-gray-600 dark:text-gray-400">
+            {data.skills.join(', ')}
+          </p>
         </div>
       )}
 
@@ -268,7 +297,9 @@ function PreviewSection({ data, lang }: PreviewSectionProps) {
       {data.languages && data.languages.length > 0 && (
         <div>
           <h4 className="mb-1 font-medium text-gray-700 dark:text-gray-300">
-            {lang === 'es' ? `Idiomas (${data.languages.length})` : `Languages (${data.languages.length})`}
+            {lang === 'es'
+              ? `Idiomas (${data.languages.length})`
+              : `Languages (${data.languages.length})`}
           </h4>
           <ul className="space-y-1 pl-4">
             {data.languages.map((l) => (
@@ -287,7 +318,12 @@ function PreviewSection({ data, lang }: PreviewSectionProps) {
 // Main component
 // ---------------------------------------------------------------------------
 
-export function LinkedInImportModal({ isOpen, onClose, onImport, lang }: LinkedInImportModalProps) {
+export function LinkedInImportModal({
+  isOpen,
+  onClose,
+  onImport,
+  lang,
+}: LinkedInImportModalProps) {
   const [activeTab, setActiveTab] = useState<TabId>('experience');
   const [texts, setTexts] = useState<TabTexts>(EMPTY_TEXTS);
   const [previewData, setPreviewData] = useState<ImportedData | null>(null);
@@ -334,9 +370,7 @@ export function LinkedInImportModal({ isOpen, onClose, onImport, lang }: LinkedI
       setPdfUploading(true);
       try {
         const buffer = await file.arrayBuffer();
-        const base64 = btoa(
-          String.fromCharCode(...new Uint8Array(buffer))
-        );
+        const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
         const functions = getFunctions();
         const parsePdf = httpsCallable(functions, 'parseLinkedInPdf');
         const result = await parsePdf({ pdfData: base64 });

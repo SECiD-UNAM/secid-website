@@ -61,9 +61,12 @@ function buildExternalFilters(
   if (!filters) return {};
   const result: Record<string, unknown> = {};
   if (filters.location) result['location'] = filters.location;
-  if (filters.locationType?.length) result['locationType'] = filters.locationType;
-  if (filters.employmentType?.length) result['employmentType'] = filters.employmentType;
-  if (filters.experienceLevel?.length) result['experienceLevel'] = filters.experienceLevel;
+  if (filters.locationType?.length)
+    result['locationType'] = filters.locationType;
+  if (filters.employmentType?.length)
+    result['employmentType'] = filters.employmentType;
+  if (filters.experienceLevel?.length)
+    result['experienceLevel'] = filters.experienceLevel;
   if (filters.salaryMin > 0) result['salaryMin'] = filters.salaryMin;
   if (filters.salaryMax < 200000) result['salaryMax'] = filters.salaryMax;
   if (filters.skills?.length) result['skills'] = filters.skills;

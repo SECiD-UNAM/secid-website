@@ -1,6 +1,12 @@
 // @ts-nocheck
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, within, cleanup, waitFor, fireEvent } from '@testing-library/react';
+import {
+  render,
+  within,
+  cleanup,
+  waitFor,
+  fireEvent,
+} from '@testing-library/react';
 import GroupList from '@/components/admin/GroupList';
 
 // ---------------------------------------------------------------------------
@@ -218,7 +224,9 @@ describe('GroupList: system no delete', () => {
 
     // Find Administrators row and check it has no delete button
     const rows = view.getAllByRole('row');
-    const adminRow = rows.find((r) => r.textContent?.includes('Administrators'));
+    const adminRow = rows.find((r) =>
+      r.textContent?.includes('Administrators')
+    );
     expect(adminRow).toBeDefined();
     const deleteBtn = adminRow.querySelector('button[title="Delete"]');
     expect(deleteBtn).toBeNull();

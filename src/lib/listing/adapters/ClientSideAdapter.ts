@@ -15,7 +15,9 @@ export class ClientSideAdapter<T extends object> implements DataAdapter<T> {
 
   constructor(config: ClientSideAdapterConfig<T>) {
     if (!config.fetchAll && !config.initialData) {
-      throw new Error('ClientSideAdapter requires either fetchAll or initialData');
+      throw new Error(
+        'ClientSideAdapter requires either fetchAll or initialData'
+      );
     }
     this.config = config;
     if (config.initialData) {
@@ -67,7 +69,10 @@ export class ClientSideAdapter<T extends object> implements DataAdapter<T> {
     const lowerQuery = query.toLowerCase();
     return items.filter((item) => {
       if (this.config.toSearchable) {
-        return this.config.toSearchable(item).toLowerCase().includes(lowerQuery);
+        return this.config
+          .toSearchable(item)
+          .toLowerCase()
+          .includes(lowerQuery);
       }
       const record = item as Record<string, unknown>;
       return this.config.searchFields.some((field) => {

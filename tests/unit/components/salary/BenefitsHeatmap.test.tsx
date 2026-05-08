@@ -30,7 +30,9 @@ describe('TC-salary-benefits-002: shows Remote Work benefit name', () => {
       { name: 'Health Insurance', count: 2, percentage: 50 },
     ];
     // Act
-    const { container } = render(<BenefitsHeatmap benefits={benefits} lang="en" />);
+    const { container } = render(
+      <BenefitsHeatmap benefits={benefits} lang="en" />
+    );
     // Assert
     const items = within(container).getAllByText('Remote Work');
     expect(items.length).toBeGreaterThanOrEqual(1);
@@ -45,7 +47,9 @@ describe('TC-salary-benefits-003: shows Health Insurance benefit name', () => {
       { name: 'Health Insurance', count: 2, percentage: 50 },
     ];
     // Act
-    const { container } = render(<BenefitsHeatmap benefits={benefits} lang="en" />);
+    const { container } = render(
+      <BenefitsHeatmap benefits={benefits} lang="en" />
+    );
     // Assert
     const items = within(container).getAllByText('Health Insurance');
     expect(items.length).toBeGreaterThanOrEqual(1);
@@ -59,9 +63,13 @@ describe('TC-salary-benefits-004: shows correct percentage for universal benefit
       { name: 'Remote Work', count: 4, percentage: 100 },
     ];
     // Act
-    const { container } = render(<BenefitsHeatmap benefits={benefits} lang="en" />);
+    const { container } = render(
+      <BenefitsHeatmap benefits={benefits} lang="en" />
+    );
     // Assert — percentage label is in the span next to the benefit name
-    const pctItems = within(container).getAllByText((content) => content.startsWith('100%'));
+    const pctItems = within(container).getAllByText((content) =>
+      content.startsWith('100%')
+    );
     expect(pctItems.length).toBeGreaterThanOrEqual(1);
   });
 });
@@ -71,7 +79,9 @@ describe('TC-salary-benefits-005: Spanish empty state when lang=es', () => {
     // Arrange / Act
     const { container } = render(<BenefitsHeatmap benefits={[]} lang="es" />);
     // Assert
-    const msg = within(container).getAllByText('No hay datos de beneficios registrados.');
+    const msg = within(container).getAllByText(
+      'No hay datos de beneficios registrados.'
+    );
     expect(msg.length).toBeGreaterThanOrEqual(1);
   });
 });

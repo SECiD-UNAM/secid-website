@@ -71,7 +71,9 @@ export default function PendingBlogPosts({ lang = 'es' }: Props) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
-        <span className="ml-3 text-gray-600 dark:text-gray-400">{t.loading}</span>
+        <span className="ml-3 text-gray-600 dark:text-gray-400">
+          {t.loading}
+        </span>
       </div>
     );
   }
@@ -115,7 +117,7 @@ export default function PendingBlogPosts({ lang = 'es' }: Props) {
                 <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
                   {t.by} {post.authorName}
                   {post.lang && (
-                    <span className="ml-2 inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                    <span className="ml-2 inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300">
                       {post.lang.toUpperCase()}
                     </span>
                   )}

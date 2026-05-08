@@ -1,6 +1,12 @@
 // tests/unit/components/blog/BlogList.test.tsx
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import BlogList from '@/components/blog/BlogList';
 import type { BlogPost } from '@/lib/blog';
 
@@ -20,7 +26,9 @@ vi.mock('@/lib/blog', () => ({
 }));
 
 // ListingSearch imports clsx in some environments
-vi.mock('clsx', () => ({ clsx: (...args: unknown[]) => args.filter(Boolean).join(' ') }));
+vi.mock('clsx', () => ({
+  clsx: (...args: unknown[]) => args.filter(Boolean).join(' '),
+}));
 
 import { getBlogPosts, mergeBlogPosts, filterByLocale } from '@/lib/blog';
 
@@ -67,10 +75,9 @@ const regularPost = samplePost({
 beforeEach(() => {
   vi.clearAllMocks();
   mockGetBlogPosts.mockResolvedValue([]);
-  mockMergeBlogPosts.mockImplementation((initial: BlogPost[], firestore: BlogPost[]) => [
-    ...initial,
-    ...firestore,
-  ]);
+  mockMergeBlogPosts.mockImplementation(
+    (initial: BlogPost[], firestore: BlogPost[]) => [...initial, ...firestore]
+  );
   mockFilterByLocale.mockImplementation((posts: BlogPost[]) => posts);
 });
 
@@ -193,9 +200,13 @@ describe.sequential('BlogList — featured post', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Featured Article')).toBeInTheDocument();
-        expect(screen.getByText('Data Science Trends 2025')).toBeInTheDocument();
+        expect(
+          screen.getByText('Data Science Trends 2025')
+        ).toBeInTheDocument();
       });
-      expect(document.querySelector('.secid-blog__featured-badge')).toBeInTheDocument();
+      expect(
+        document.querySelector('.secid-blog__featured-badge')
+      ).toBeInTheDocument();
     });
   });
 
@@ -210,15 +221,21 @@ describe.sequential('BlogList — featured post', () => {
       render(<BlogList lang="en" initialPosts={[featuredPost, regularPost]} />);
 
       await waitFor(() => {
-        expect(document.querySelector('.secid-blog__featured-badge')).toBeInTheDocument();
+        expect(
+          document.querySelector('.secid-blog__featured-badge')
+        ).toBeInTheDocument();
       });
 
       // Click Tutorial category
       const tutorialBtn = screen.getByRole('button', { name: 'Tutorial' });
-      act(() => { fireEvent.click(tutorialBtn); });
+      act(() => {
+        fireEvent.click(tutorialBtn);
+      });
 
       await waitFor(() => {
-        expect(document.querySelector('.secid-blog__featured-badge')).not.toBeInTheDocument();
+        expect(
+          document.querySelector('.secid-blog__featured-badge')
+        ).not.toBeInTheDocument();
       });
     });
   });
@@ -253,11 +270,15 @@ describe.sequential('BlogList — category filtering', () => {
       render(<BlogList lang="en" initialPosts={[]} />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Tutorial' })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'Tutorial' })
+        ).toBeInTheDocument();
       });
 
       const tutorialBtn = screen.getByRole('button', { name: 'Tutorial' });
-      act(() => { fireEvent.click(tutorialBtn); });
+      act(() => {
+        fireEvent.click(tutorialBtn);
+      });
 
       expect(tutorialBtn.className).toContain('active');
       const allBtn = screen.getByRole('button', { name: 'All' });
@@ -297,7 +318,9 @@ describe.sequential('BlogList — Spanish translations', () => {
       render(<BlogList lang="es" initialPosts={[]} />);
 
       await waitFor(() => {
-        expect(screen.getByText('Suscribirse al Newsletter')).toBeInTheDocument();
+        expect(
+          screen.getByText('Suscribirse al Newsletter')
+        ).toBeInTheDocument();
       });
     });
   });

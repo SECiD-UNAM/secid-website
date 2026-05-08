@@ -8,7 +8,10 @@ interface Props {
   spotlightId?: string;
 }
 
-export default function SpotlightEditorPage({ lang = 'es', spotlightId }: Props) {
+export default function SpotlightEditorPage({
+  lang = 'es',
+  spotlightId,
+}: Props) {
   const routeId = useRouteIdBySegment('spotlights');
   const effectiveId = spotlightId || routeId;
 

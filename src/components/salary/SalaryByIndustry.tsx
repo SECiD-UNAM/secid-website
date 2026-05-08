@@ -28,26 +28,26 @@ interface Props {
 }
 
 const INDUSTRY_COLORS: Record<string, string> = {
-  'Tecnología': '#3B82F6',
-  'Technology': '#3B82F6',
-  'Finanzas': '#10B981',
-  'Finance': '#10B981',
-  'Fintech': '#06B6D4',
-  'Retail': '#F59E0B',
-  'Consultoría': '#EF4444',
-  'Consulting': '#EF4444',
-  'Gobierno': '#F97316',
-  'Government': '#F97316',
-  'Entretenimiento': '#A855F7',
-  'Entertainment': '#A855F7',
-  'Consumo': '#EC4899',
+  Tecnología: '#3B82F6',
+  Technology: '#3B82F6',
+  Finanzas: '#10B981',
+  Finance: '#10B981',
+  Fintech: '#06B6D4',
+  Retail: '#F59E0B',
+  Consultoría: '#EF4444',
+  Consulting: '#EF4444',
+  Gobierno: '#F97316',
+  Government: '#F97316',
+  Entretenimiento: '#A855F7',
+  Entertainment: '#A855F7',
+  Consumo: '#EC4899',
   'Consumer Goods': '#EC4899',
-  'Educación': '#6366F1',
-  'Education': '#6366F1',
-  'Datos': '#14B8A6',
-  'Data': '#14B8A6',
-  'Salud': '#84CC16',
-  'Healthcare': '#84CC16',
+  Educación: '#6366F1',
+  Education: '#6366F1',
+  Datos: '#14B8A6',
+  Data: '#14B8A6',
+  Salud: '#84CC16',
+  Healthcare: '#84CC16',
 };
 
 function getIndustryColor(industry: string): string {
@@ -99,16 +99,18 @@ function CustomTooltip({
 }
 
 export function SalaryByIndustry({ byIndustry, lang = 'es' }: Props) {
-  const chartData: ChartEntry[] = byIndustry.map((row) => {
-    const label = translateIndustry(row.industry, lang);
-    return {
-      industryKey: row.industry,
-      label,
-      median: row.median,
-      count: row.count,
-      color: getIndustryColor(label),
-    };
-  }).sort((a, b) => b.median - a.median);
+  const chartData: ChartEntry[] = byIndustry
+    .map((row) => {
+      const label = translateIndustry(row.industry, lang);
+      return {
+        industryKey: row.industry,
+        label,
+        median: row.median,
+        count: row.count,
+        color: getIndustryColor(label),
+      };
+    })
+    .sort((a, b) => b.median - a.median);
 
   const noDataLabel =
     lang === 'es'

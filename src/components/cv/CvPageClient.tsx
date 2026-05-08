@@ -9,7 +9,13 @@
  * - Gradient dividers between sections
  * - Polished cards, skill tags, language badges, project grid
  */
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getMemberProfile } from '@/lib/members';
 import { transformProfileToCV } from '@/lib/cv/transform';
@@ -49,8 +55,7 @@ function getLabels(lang: 'es' | 'en') {
     ? {
         loading: 'Cargando CV...',
         notFound: 'Miembro no encontrado',
-        notFoundDetail:
-          'El perfil que buscas no existe o no esta disponible.',
+        notFoundDetail: 'El perfil que buscas no existe o no esta disponible.',
         backToDirectory: 'Volver al directorio',
         accessDeniedPrivate: 'Este CV no esta disponible publicamente.',
         accessDeniedMembers: 'Inicia sesion para ver este CV.',
@@ -235,7 +240,7 @@ function useActiveSection(sectionIds: string[]): string {
           setActiveSection(first.target.id);
         }
       },
-      { rootMargin: '-80px 0px -60% 0px', threshold: 0 },
+      { rootMargin: '-80px 0px -60% 0px', threshold: 0 }
     );
 
     const observer = observerRef.current;
@@ -313,7 +318,7 @@ function GradientDivider() {
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
     <h2
-      className="text-3xl font-bold uppercase tracking-wide mb-8"
+      className="mb-8 text-3xl font-bold uppercase tracking-wide"
       style={{ color: 'var(--color-text)' }}
     >
       {children}
@@ -387,32 +392,72 @@ function PortfolioIcon() {
 
 function HamburgerIcon() {
   return (
-    <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+    <svg
+      className="h-6 w-6"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M4 6h16M4 12h16M4 18h16"
+      />
     </svg>
   );
 }
 
 function CloseIcon() {
   return (
-    <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+    <svg
+      className="h-6 w-6"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M6 18L18 6M6 6l12 12"
+      />
     </svg>
   );
 }
 
 function ArrowLeftIcon() {
   return (
-    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    <svg
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+      />
     </svg>
   );
 }
 
 function ExternalLinkIcon() {
   return (
-    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+    <svg
+      className="h-3.5 w-3.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+      />
     </svg>
   );
 }
@@ -498,7 +543,8 @@ function Sidebar({
   mobileOpen: boolean;
   onClose: () => void;
 }) {
-  const initials = `${personal.name.first.charAt(0)}${personal.name.last.charAt(0)}`.toUpperCase();
+  const initials =
+    `${personal.name.first.charAt(0)}${personal.name.last.charAt(0)}`.toUpperCase();
 
   const handleNavClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
@@ -509,24 +555,24 @@ function Sidebar({
       }
       onClose();
     },
-    [onClose],
+    [onClose]
   );
 
   const sidebarContent = (
     <div
-      className="flex flex-col h-full"
+      className="flex h-full flex-col"
       style={{
         background: 'var(--color-surface)',
         borderRight: '1px solid var(--color-border)',
       }}
     >
       {/* Profile section */}
-      <div className="flex flex-col items-center px-5 pt-8 pb-6">
+      <div className="flex flex-col items-center px-5 pb-6 pt-8">
         {personal.profileImage ? (
           <img
             src={personal.profileImage}
             alt={personal.name.full}
-            className="h-28 w-28 rounded-full object-cover border-4 shadow-lg"
+            className="h-28 w-28 rounded-full border-4 object-cover shadow-lg"
             style={{ borderColor: 'var(--color-surface-light)' }}
           />
         ) : (
@@ -542,14 +588,14 @@ function Sidebar({
           </div>
         )}
         <h2
-          className="mt-4 text-base font-bold text-center"
+          className="mt-4 text-center text-base font-bold"
           style={{ color: 'var(--color-heading)' }}
         >
           {personal.name.full}
         </h2>
         {personal.title && (
           <p
-            className="mt-1 text-sm text-center"
+            className="mt-1 text-center text-sm"
             style={{ color: 'var(--color-text-muted)' }}
           >
             {personal.title}
@@ -568,7 +614,7 @@ function Sidebar({
       />
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 overflow-y-auto">
+      <nav className="flex-1 overflow-y-auto px-3 py-4">
         <div className="space-y-0.5">
           {sections.map((section) => {
             const isActive = activeSection === section.id;
@@ -582,8 +628,12 @@ function Sidebar({
                   padding: '0.4rem 0.75rem',
                   borderRadius: '0.5rem',
                   fontSize: '0.8125rem',
-                  color: isActive ? 'var(--color-primary)' : 'var(--color-text-muted)',
-                  background: isActive ? 'var(--color-surface-light)' : 'transparent',
+                  color: isActive
+                    ? 'var(--color-primary)'
+                    : 'var(--color-text-muted)',
+                  background: isActive
+                    ? 'var(--color-surface-light)'
+                    : 'transparent',
                   fontWeight: isActive ? 500 : 400,
                   transition: 'all 0.2s ease',
                   textDecoration: 'none',
@@ -591,7 +641,8 @@ function Sidebar({
                 onMouseEnter={(e) => {
                   if (!isActive) {
                     e.currentTarget.style.color = 'var(--color-heading)';
-                    e.currentTarget.style.background = 'var(--color-surface-light)';
+                    e.currentTarget.style.background =
+                      'var(--color-surface-light)';
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -644,7 +695,7 @@ function Sidebar({
     <>
       {/* Desktop sidebar */}
       <aside
-        className="fixed top-0 left-0 z-40 h-screen w-[260px] hidden lg:block"
+        className="fixed left-0 top-0 z-40 hidden h-screen w-[260px] lg:block"
         style={{
           background: 'var(--color-surface)',
           borderRight: '1px solid var(--color-border)',
@@ -655,15 +706,15 @@ function Sidebar({
 
       {/* Mobile overlay */}
       <div
-        className={`fixed inset-0 z-30 bg-black/60 lg:hidden transition-opacity duration-300 ${
-          mobileOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        className={`fixed inset-0 z-30 bg-black/60 transition-opacity duration-300 lg:hidden ${
+          mobileOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
         onClick={onClose}
       />
 
       {/* Mobile sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-40 h-screen w-[260px] lg:hidden transition-transform duration-300 ${
+        className={`fixed left-0 top-0 z-40 h-screen w-[260px] transition-transform duration-300 lg:hidden ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
         style={{
@@ -692,20 +743,23 @@ function CvAboutSection({
 
   return (
     <section id="about" className="scroll-mt-8">
-      <div className="flex flex-col-reverse md:flex-row md:items-start gap-8">
+      <div className="flex flex-col-reverse gap-8 md:flex-row md:items-start">
         {/* Text column */}
         <div className="flex-1">
           <h1
-            className="text-5xl md:text-6xl font-bold uppercase tracking-wide leading-tight"
+            className="text-5xl font-bold uppercase leading-tight tracking-wide md:text-6xl"
             style={{ color: 'var(--color-text)' }}
           >
             {name.full}
           </h1>
 
           {(title || location) && (
-            <div className="flex items-center gap-2 mt-3 mb-6">
-              <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-lg" style={{ color: 'var(--color-text-muted)' }}>
+            <div className="mb-6 mt-3 flex items-center gap-2">
+              <span className="inline-block h-2.5 w-2.5 animate-pulse rounded-full bg-green-500" />
+              <span
+                className="text-lg"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
                 {[title, location].filter(Boolean).join(' \u00B7 ')}
               </span>
             </div>
@@ -751,17 +805,17 @@ function CvAboutSection({
         </div>
 
         {/* Profile image */}
-        <div className="flex-shrink-0 flex justify-center md:justify-end">
+        <div className="flex flex-shrink-0 justify-center md:justify-end">
           {profileImage ? (
             <img
               src={profileImage}
               alt={name.full}
-              className="w-36 h-36 md:w-44 md:h-44 rounded-full object-cover border-4 shadow-xl"
+              className="h-36 w-36 rounded-full border-4 object-cover shadow-xl md:h-44 md:w-44"
               style={{ borderColor: 'var(--color-surface-light)' }}
             />
           ) : (
             <div
-              className="flex w-36 h-36 md:w-44 md:h-44 items-center justify-center rounded-full text-4xl md:text-5xl font-bold shadow-xl"
+              className="flex h-36 w-36 items-center justify-center rounded-full text-4xl font-bold shadow-xl md:h-44 md:w-44 md:text-5xl"
               style={{
                 background: 'var(--color-surface-light)',
                 color: 'var(--color-primary)',
@@ -804,25 +858,31 @@ function CvExperienceSection({
                 borderBottom: isLast ? 'none' : '1px solid var(--color-border)',
               }}
             >
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-3">
+              <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+                  <h3
+                    className="text-lg font-semibold"
+                    style={{ color: 'var(--color-text)' }}
+                  >
                     {exp.title}
                   </h3>
-                  <p className="font-medium" style={{ color: 'var(--color-primary)' }}>
+                  <p
+                    className="font-medium"
+                    style={{ color: 'var(--color-primary)' }}
+                  >
                     {exp.company}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex flex-shrink-0 items-center gap-2">
                   <span
-                    className="text-sm whitespace-nowrap"
+                    className="whitespace-nowrap text-sm"
                     style={{ color: 'var(--color-text-muted)' }}
                   >
                     {exp.startDate} &ndash; {exp.endDate || labels.current}
                   </span>
                   {exp.current && (
                     <span
-                      className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                      className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
                       style={{
                         background: 'rgb(16 185 129 / 0.2)',
                         color: 'var(--color-accent)',
@@ -836,13 +896,13 @@ function CvExperienceSection({
               </div>
 
               {exp.description && (
-                <ul className="space-y-2 mt-3">
+                <ul className="mt-3 space-y-2">
                   <li
                     className="flex items-start gap-3 text-sm leading-relaxed"
                     style={{ color: 'var(--color-text-muted)' }}
                   >
                     <span
-                      className="mt-1.5 w-1 h-1 rounded-full flex-shrink-0"
+                      className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full"
                       style={{ background: 'var(--color-border)' }}
                     />
                     <span>{exp.description}</span>
@@ -905,30 +965,39 @@ function CvEducationSection({
                 borderBottom: isLast ? 'none' : '1px solid var(--color-border)',
               }}
             >
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-3">
+              <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+                  <h3
+                    className="text-lg font-semibold"
+                    style={{ color: 'var(--color-text)' }}
+                  >
                     {edu.degree}
                   </h3>
-                  <p className="font-medium" style={{ color: 'var(--color-primary)' }}>
+                  <p
+                    className="font-medium"
+                    style={{ color: 'var(--color-primary)' }}
+                  >
                     {edu.institution}
                   </p>
                   {edu.fieldOfStudy && (
-                    <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                    <p
+                      className="text-sm"
+                      style={{ color: 'var(--color-text-muted)' }}
+                    >
                       {edu.fieldOfStudy}
                     </p>
                   )}
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex flex-shrink-0 items-center gap-2">
                   <span
-                    className="text-sm whitespace-nowrap"
+                    className="whitespace-nowrap text-sm"
                     style={{ color: 'var(--color-text-muted)' }}
                   >
                     {edu.startDate} &ndash; {edu.endDate || labels.current}
                   </span>
                   {edu.current && (
                     <span
-                      className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                      className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
                       style={{
                         background: 'rgb(16 185 129 / 0.2)',
                         color: 'var(--color-accent)',
@@ -942,8 +1011,14 @@ function CvEducationSection({
               </div>
 
               {edu.gpa != null && (
-                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                  <span className="font-medium" style={{ color: 'var(--color-text)' }}>
+                <p
+                  className="text-sm"
+                  style={{ color: 'var(--color-text-muted)' }}
+                >
+                  <span
+                    className="font-medium"
+                    style={{ color: 'var(--color-text)' }}
+                  >
                     GPA:
                   </span>{' '}
                   {edu.gpa}
@@ -951,13 +1026,13 @@ function CvEducationSection({
               )}
 
               {edu.description && (
-                <ul className="space-y-2 mt-3">
+                <ul className="mt-3 space-y-2">
                   <li
                     className="flex items-start gap-3 text-sm leading-relaxed"
                     style={{ color: 'var(--color-text-muted)' }}
                   >
                     <span
-                      className="mt-1.5 w-1 h-1 rounded-full flex-shrink-0"
+                      className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full"
                       style={{ background: 'var(--color-border)' }}
                     />
                     <span>{edu.description}</span>
@@ -999,12 +1074,18 @@ function CvCertificationsSection({
                 borderBottom: isLast ? 'none' : '1px solid var(--color-border)',
               }}
             >
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-2">
+              <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex-1">
-                  <h3 className="text-base font-semibold" style={{ color: 'var(--color-text)' }}>
+                  <h3
+                    className="text-base font-semibold"
+                    style={{ color: 'var(--color-text)' }}
+                  >
                     {cert.name}
                   </h3>
-                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                  <p
+                    className="text-sm"
+                    style={{ color: 'var(--color-text-muted)' }}
+                  >
                     {cert.issuer}
                   </p>
                 </div>
@@ -1020,7 +1101,7 @@ function CvCertificationsSection({
                   href={cert.credentialUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 mt-2 text-xs font-medium"
+                  className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium"
                   style={{
                     color: 'var(--color-primary)',
                     textDecoration: 'none',
@@ -1051,33 +1132,113 @@ function CvCertificationsSection({
 
 const SKILL_CATEGORIES: Record<string, string[]> = {
   Languages: [
-    'Python', 'R', 'SQL', 'Java', 'Julia', 'C++', 'JavaScript', 'TypeScript',
-    'Scala', 'MATLAB', 'Fortran', 'Node.js', 'HTML', 'CSS', 'Go', 'Rust',
-    'Kotlin', 'Swift', 'PHP', 'Ruby', 'Perl', 'Shell', 'Bash',
+    'Python',
+    'R',
+    'SQL',
+    'Java',
+    'Julia',
+    'C++',
+    'JavaScript',
+    'TypeScript',
+    'Scala',
+    'MATLAB',
+    'Fortran',
+    'Node.js',
+    'HTML',
+    'CSS',
+    'Go',
+    'Rust',
+    'Kotlin',
+    'Swift',
+    'PHP',
+    'Ruby',
+    'Perl',
+    'Shell',
+    'Bash',
   ],
   'Cloud & MLOps': [
-    'AWS', 'Azure', 'GCP', 'SageMaker', 'EMR', 'Lambda', 'Docker',
-    'Kubernetes', 'Airflow', 'MLflow', 'Snowflake', 'Glue', 'Terraform',
-    'CloudFormation', 'Databricks', 'Vertex AI',
+    'AWS',
+    'Azure',
+    'GCP',
+    'SageMaker',
+    'EMR',
+    'Lambda',
+    'Docker',
+    'Kubernetes',
+    'Airflow',
+    'MLflow',
+    'Snowflake',
+    'Glue',
+    'Terraform',
+    'CloudFormation',
+    'Databricks',
+    'Vertex AI',
   ],
   Databases: [
-    'PostgreSQL', 'MySQL', 'MongoDB', 'Cassandra', 'Neo4j', 'Redis',
-    'SQL Server', 'Riak', 'DynamoDB', 'Elasticsearch', 'InfluxDB', 'SQLite',
+    'PostgreSQL',
+    'MySQL',
+    'MongoDB',
+    'Cassandra',
+    'Neo4j',
+    'Redis',
+    'SQL Server',
+    'Riak',
+    'DynamoDB',
+    'Elasticsearch',
+    'InfluxDB',
+    'SQLite',
   ],
   'Machine Learning': [
-    'PyTorch', 'TensorFlow', 'Scikit-learn', 'XGBoost', 'Keras', 'CUDA',
-    'Deep Learning', 'Machine Learning', 'NLP', 'Computer Vision',
-    'Transformers', 'LLMs', 'HuggingFace', 'OpenCV', 'spaCy', 'NLTK',
-    'LangChain', 'RAG',
+    'PyTorch',
+    'TensorFlow',
+    'Scikit-learn',
+    'XGBoost',
+    'Keras',
+    'CUDA',
+    'Deep Learning',
+    'Machine Learning',
+    'NLP',
+    'Computer Vision',
+    'Transformers',
+    'LLMs',
+    'HuggingFace',
+    'OpenCV',
+    'spaCy',
+    'NLTK',
+    'LangChain',
+    'RAG',
   ],
   'Data & Visualization': [
-    'Pandas', 'NumPy', 'Spark', 'PySpark', 'Power BI', 'Tableau',
-    'Matplotlib', 'Seaborn', 'Plotly', 'D3.js', 'Qlik', 'Data Studio',
-    'Excel', 'Grafana', 'Looker', 'dbt',
+    'Pandas',
+    'NumPy',
+    'Spark',
+    'PySpark',
+    'Power BI',
+    'Tableau',
+    'Matplotlib',
+    'Seaborn',
+    'Plotly',
+    'D3.js',
+    'Qlik',
+    'Data Studio',
+    'Excel',
+    'Grafana',
+    'Looker',
+    'dbt',
   ],
   Tools: [
-    'Git', 'Linux', 'Jenkins', 'Jira', 'LaTeX', 'Postman', 'CI/CD',
-    'GitHub Actions', 'GitLab CI', 'Confluence', 'Notion', 'VS Code',
+    'Git',
+    'Linux',
+    'Jenkins',
+    'Jira',
+    'LaTeX',
+    'Postman',
+    'CI/CD',
+    'GitHub Actions',
+    'GitLab CI',
+    'Confluence',
+    'Notion',
+    'VS Code',
   ],
 };
 
@@ -1163,7 +1324,7 @@ function CvSkillsSection({
   return (
     <section id="skills" className="scroll-mt-8">
       <SectionHeading>{labels.skills}</SectionHeading>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {groups.map((group) => (
           <div
             key={group.label}
@@ -1182,7 +1343,7 @@ function CvSkillsSection({
             }}
           >
             <h3
-              className="text-xs font-semibold uppercase tracking-wider mb-3"
+              className="mb-3 text-xs font-semibold uppercase tracking-wider"
               style={{ color: 'var(--color-primary)' }}
             >
               {group.label}
@@ -1215,7 +1376,7 @@ function CvProjectsSection({
   return (
     <section id="projects" className="scroll-mt-8">
       <SectionHeading>{labels.projects}</SectionHeading>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {projects.map((project, i) => (
           <div
             key={`${project.title}-${i}`}
@@ -1238,7 +1399,10 @@ function CvProjectsSection({
             }}
           >
             <div className="mb-2 flex items-start justify-between gap-3">
-              <h3 className="text-base font-semibold" style={{ color: 'var(--color-text)' }}>
+              <h3
+                className="text-base font-semibold"
+                style={{ color: 'var(--color-text)' }}
+              >
                 {project.title}
               </h3>
               <div className="flex flex-shrink-0 items-center gap-2">
@@ -1367,7 +1531,7 @@ function CvLanguagesSection({
   return (
     <section id="languages" className="scroll-mt-8">
       <SectionHeading>{labels.languages}</SectionHeading>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {languages.map((language, i) => (
           <div
             key={`${language.name}-${i}`}
@@ -1385,12 +1549,15 @@ function CvLanguagesSection({
               e.currentTarget.style.borderColor = 'var(--color-border)';
             }}
           >
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+            <div className="mb-3 flex items-center justify-between">
+              <h3
+                className="text-lg font-semibold"
+                style={{ color: 'var(--color-text)' }}
+              >
                 {language.name}
               </h3>
               <span
-                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
                 style={getLevelBadgeStyle(language.proficiency)}
               >
                 {language.proficiency}
@@ -1417,7 +1584,7 @@ function CvCurrentlyWorkingOnSection({
   return (
     <section id="currentlyWorkingOn" className="scroll-mt-8">
       <SectionHeading>{labels.currentlyWorkingOn}</SectionHeading>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {data.education && (
           <div
             style={{
@@ -1434,7 +1601,7 @@ function CvCurrentlyWorkingOnSection({
               e.currentTarget.style.borderColor = 'var(--color-border)';
             }}
           >
-            <div className="flex items-center gap-2 mb-3">
+            <div className="mb-3 flex items-center gap-2">
               <span className="text-xl" role="img" aria-label="Education">
                 &#x1F393;
               </span>
@@ -1452,14 +1619,14 @@ function CvCurrentlyWorkingOnSection({
               {data.education.degree}
             </p>
             <p
-              className="text-sm mt-1"
+              className="mt-1 text-sm"
               style={{ color: 'var(--color-text-muted)' }}
             >
               {data.education.institution}
             </p>
             {data.education.expectedCompletion && (
               <p
-                className="text-xs mt-2"
+                className="mt-2 text-xs"
                 style={{ color: 'var(--color-text-muted)' }}
               >
                 {data.education.expectedCompletion}
@@ -1484,7 +1651,7 @@ function CvCurrentlyWorkingOnSection({
               e.currentTarget.style.borderColor = 'var(--color-border)';
             }}
           >
-            <div className="flex items-center gap-2 mb-3">
+            <div className="mb-3 flex items-center gap-2">
               <span className="text-xl" role="img" aria-label="Projects">
                 &#x1F680;
               </span>
@@ -1505,7 +1672,7 @@ function CvCurrentlyWorkingOnSection({
                     {project.title}
                   </p>
                   <p
-                    className="text-xs mt-0.5 leading-relaxed"
+                    className="mt-0.5 text-xs leading-relaxed"
                     style={{ color: 'var(--color-text-muted)' }}
                   >
                     {project.description}
@@ -1549,12 +1716,10 @@ function CvAwardsSection({
               key={`${award.title}-${i}`}
               style={{
                 padding: '1.25rem 0',
-                borderBottom: isLast
-                  ? 'none'
-                  : '1px solid var(--color-border)',
+                borderBottom: isLast ? 'none' : '1px solid var(--color-border)',
               }}
             >
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-2">
+              <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
                 <div className="flex-1">
                   <h3
                     className="text-base font-semibold"
@@ -1564,7 +1729,7 @@ function CvAwardsSection({
                   </h3>
                   {award.category && (
                     <span
-                      className="inline-block mt-1 rounded-full px-2 py-0.5 text-xs font-medium"
+                      className="mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium"
                       style={{
                         background: 'rgb(245 158 11 / 0.2)',
                         color: '#f59e0b',
@@ -1666,7 +1831,7 @@ function CopyToClipboardSidebar({
   return (
     <>
       <div
-        className="hidden lg:flex flex-col gap-2"
+        className="hidden flex-col gap-2 lg:flex"
         style={{
           position: 'fixed',
           right: '-50px',
@@ -1799,7 +1964,7 @@ function VCardDownloadButton({
       onClick={handleDownload}
       title={labels.downloadVcard}
       aria-label={labels.downloadVcard}
-      className="hidden lg:flex items-center gap-2 fixed bottom-6 left-[276px] z-40"
+      className="fixed bottom-6 left-[276px] z-40 hidden items-center gap-2 lg:flex"
       style={{
         background: '#10b981',
         color: '#ffffff',
@@ -1837,11 +2002,17 @@ function VCardDownloadButton({
 
 function LoadingView({ label }: { label: string }) {
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ background: 'var(--color-surface-light)' }}>
+    <div
+      className="flex min-h-screen items-center justify-center"
+      style={{ background: 'var(--color-surface-light)' }}
+    >
       <div className="text-center">
         <div
           className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4"
-          style={{ borderColor: 'var(--color-border)', borderTopColor: 'var(--color-primary)' }}
+          style={{
+            borderColor: 'var(--color-border)',
+            borderTopColor: 'var(--color-primary)',
+          }}
         />
         <p style={{ color: 'var(--color-text-muted)' }}>{label}</p>
       </div>
@@ -1861,7 +2032,10 @@ function ErrorView({
   backLabel: string;
 }) {
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ background: 'var(--color-surface-light)' }}>
+    <div
+      className="flex min-h-screen items-center justify-center"
+      style={{ background: 'var(--color-surface-light)' }}
+    >
       <div
         className="mx-auto max-w-md rounded-2xl p-8 text-center shadow-sm"
         style={{ background: 'var(--color-surface)' }}
@@ -1903,7 +2077,10 @@ function AccessDeniedView({
   const labels = getLabels(lang);
 
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ background: 'var(--color-surface-light)' }}>
+    <div
+      className="flex min-h-screen items-center justify-center"
+      style={{ background: 'var(--color-surface-light)' }}
+    >
       <div
         className="mx-auto max-w-md rounded-2xl p-8 text-center shadow-sm"
         style={{ background: 'var(--color-surface)' }}
@@ -2008,17 +2185,17 @@ export default function CvPageClient({ lang }: CvPageClientProps) {
 
   const cvData = useMemo(
     () => (member ? transformProfileToCV(member, lang) : null),
-    [member, lang],
+    [member, lang]
   );
 
   const visibleSections = useMemo(
     () => (cvData ? getVisibleSections(cvData) : []),
-    [cvData],
+    [cvData]
   );
 
   const sectionIds = useMemo(
     () => visibleSections.map((s) => s.id),
-    [visibleSections],
+    [visibleSections]
   );
 
   const activeSection = useActiveSection(sectionIds);
@@ -2088,7 +2265,7 @@ export default function CvPageClient({ lang }: CvPageClientProps) {
       {/* Mobile hamburger button */}
       <button
         onClick={() => setSidebarOpen((prev) => !prev)}
-        className="fixed top-4 left-4 z-50 lg:hidden inline-flex items-center justify-center rounded-lg p-2 shadow-md"
+        className="fixed left-4 top-4 z-50 inline-flex items-center justify-center rounded-lg p-2 shadow-md lg:hidden"
         style={{
           background: 'var(--color-surface)',
           border: '1px solid var(--color-border)',
@@ -2125,35 +2302,51 @@ export default function CvPageClient({ lang }: CvPageClientProps) {
 
           {cvData.currentlyWorkingOn && (
             <>
-              <CvCurrentlyWorkingOnSection data={cvData.currentlyWorkingOn} labels={labels} />
+              <CvCurrentlyWorkingOnSection
+                data={cvData.currentlyWorkingOn}
+                labels={labels}
+              />
               <GradientDivider />
             </>
           )}
 
           {cvData.experience.length > 0 && (
             <>
-              <CvExperienceSection experience={cvData.experience} labels={labels} />
+              <CvExperienceSection
+                experience={cvData.experience}
+                labels={labels}
+              />
               <GradientDivider />
             </>
           )}
 
           {cvData.education.length > 0 && (
             <>
-              <CvEducationSection education={cvData.education} labels={labels} />
+              <CvEducationSection
+                education={cvData.education}
+                labels={labels}
+              />
               <GradientDivider />
             </>
           )}
 
           {cvData.certifications.length > 0 && (
             <>
-              <CvCertificationsSection certifications={cvData.certifications} labels={labels} />
+              <CvCertificationsSection
+                certifications={cvData.certifications}
+                labels={labels}
+              />
               <GradientDivider />
             </>
           )}
 
           {cvData.skills.length > 0 && (
             <>
-              <CvSkillsSection skills={cvData.skills} labels={labels} lang={lang} />
+              <CvSkillsSection
+                skills={cvData.skills}
+                labels={labels}
+                lang={lang}
+              />
               <GradientDivider />
             </>
           )}
@@ -2167,7 +2360,10 @@ export default function CvPageClient({ lang }: CvPageClientProps) {
 
           {cvData.languages.length > 0 && (
             <>
-              <CvLanguagesSection languages={cvData.languages} labels={labels} />
+              <CvLanguagesSection
+                languages={cvData.languages}
+                labels={labels}
+              />
               <GradientDivider />
             </>
           )}

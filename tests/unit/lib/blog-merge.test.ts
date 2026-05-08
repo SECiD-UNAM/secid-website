@@ -45,9 +45,15 @@ function makePost(overrides: Partial<BlogPost> = {}): BlogPost {
 
 describe('mergeBlogPosts', () => {
   it('merges two arrays sorted by publishedAt desc', () => {
-    const collectionPosts = [makePost({ slug: 'a', publishedAt: new Date('2026-03-10') })];
+    const collectionPosts = [
+      makePost({ slug: 'a', publishedAt: new Date('2026-03-10') }),
+    ];
     const firestorePosts = [
-      makePost({ slug: 'b', publishedAt: new Date('2026-03-15'), source: 'firestore' }),
+      makePost({
+        slug: 'b',
+        publishedAt: new Date('2026-03-15'),
+        source: 'firestore',
+      }),
     ];
     const merged = mergeBlogPosts(collectionPosts, firestorePosts);
     expect(merged[0].slug).toBe('b');
@@ -56,7 +62,11 @@ describe('mergeBlogPosts', () => {
 
   it('deduplicates by slug — content-collection wins', () => {
     const collectionPosts = [
-      makePost({ slug: 'same', source: 'content-collection', title: 'CC version' }),
+      makePost({
+        slug: 'same',
+        source: 'content-collection',
+        title: 'CC version',
+      }),
     ];
     const firestorePosts = [
       makePost({ slug: 'same', source: 'firestore', title: 'FS version' }),
@@ -69,18 +79,30 @@ describe('mergeBlogPosts', () => {
   it('filters out pending/rejected firestore posts', () => {
     const collectionPosts: BlogPost[] = [];
     const firestorePosts = [
-      makePost({ slug: 'approved', source: 'firestore', moderationStatus: 'approved' }),
-      makePost({ slug: 'pending', source: 'firestore', moderationStatus: 'pending' }),
-      makePost({ slug: 'rejected', source: 'firestore', moderationStatus: 'rejected' }),
-      makePost({ slug: 'auto', source: 'firestore', moderationStatus: 'auto-approved' }),
+      makePost({
+        slug: 'approved',
+        source: 'firestore',
+        moderationStatus: 'approved',
+      }),
+      makePost({
+        slug: 'pending',
+        source: 'firestore',
+        moderationStatus: 'pending',
+      }),
+      makePost({
+        slug: 'rejected',
+        source: 'firestore',
+        moderationStatus: 'rejected',
+      }),
+      makePost({
+        slug: 'auto',
+        source: 'firestore',
+        moderationStatus: 'auto-approved',
+      }),
     ];
     const merged = mergeBlogPosts(collectionPosts, firestorePosts);
     expect(merged).toHaveLength(2);
-    expect(
-      merged
-        .map((p) => p.slug)
-        .sort()
-    ).toEqual(['approved', 'auto']);
+    expect(merged.map((p) => p.slug).sort()).toEqual(['approved', 'auto']);
   });
 
   it('applies limit to final merged result', () => {
@@ -93,7 +115,11 @@ describe('mergeBlogPosts', () => {
 
   it('keeps content-collection posts without moderationStatus', () => {
     const collectionPosts = [
-      makePost({ slug: 'cc-no-mod', source: 'content-collection', moderationStatus: undefined }),
+      makePost({
+        slug: 'cc-no-mod',
+        source: 'content-collection',
+        moderationStatus: undefined,
+      }),
     ];
     const merged = mergeBlogPosts(collectionPosts, []);
     expect(merged).toHaveLength(1);
@@ -101,7 +127,11 @@ describe('mergeBlogPosts', () => {
 
   it('keeps firestore posts without moderationStatus (backward compat)', () => {
     const firestorePosts = [
-      makePost({ slug: 'fs-no-mod', source: 'firestore', moderationStatus: undefined }),
+      makePost({
+        slug: 'fs-no-mod',
+        source: 'firestore',
+        moderationStatus: undefined,
+      }),
     ];
     const merged = mergeBlogPosts([], firestorePosts);
     expect(merged).toHaveLength(1);
@@ -149,7 +179,9 @@ describe('filterByLocale', () => {
   });
 
   it('includes posts without moderationStatus (backward compatibility)', () => {
-    const posts = [makePost({ slug: 'legacy', lang: 'es', moderationStatus: undefined })];
+    const posts = [
+      makePost({ slug: 'legacy', lang: 'es', moderationStatus: undefined }),
+    ];
     const filtered = filterByLocale(posts, 'es');
     expect(filtered).toHaveLength(1);
   });
@@ -157,7 +189,11 @@ describe('filterByLocale', () => {
   it('excludes foreign original when a target-locale translation claims it via translationOf', () => {
     const posts = [
       makePost({ slug: 'en-original', lang: 'en' }), // no translationOf
-      makePost({ slug: 'es-traduccion', lang: 'es', translationOf: 'en-original' }),
+      makePost({
+        slug: 'es-traduccion',
+        lang: 'es',
+        translationOf: 'en-original',
+      }),
     ];
     const filtered = filterByLocale(posts, 'es');
     expect(filtered).toHaveLength(1);

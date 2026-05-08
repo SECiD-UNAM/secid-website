@@ -21,9 +21,7 @@ describe('extractRouteId', () => {
   });
 
   it('handles trailing slashes', () => {
-    expect(extractRouteId('/es/dashboard/admin/groups/abc123/')).toBe(
-      'abc123'
-    );
+    expect(extractRouteId('/es/dashboard/admin/groups/abc123/')).toBe('abc123');
   });
 
   it('returns null for empty path', () => {
@@ -32,9 +30,7 @@ describe('extractRouteId', () => {
   });
 
   it('extracts ID from nested edit paths', () => {
-    expect(extractRouteId('/es/dashboard/events/edit/evt-999')).toBe(
-      'evt-999'
-    );
+    expect(extractRouteId('/es/dashboard/events/edit/evt-999')).toBe('evt-999');
   });
 
   it('handles paths with only a locale segment', () => {

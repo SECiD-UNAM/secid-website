@@ -23,7 +23,12 @@ import { db } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProfileComparison } from '@/components/merge/ProfileComparison';
 import { MergeRequestStatusBadge } from '@/components/merge/MergeRequestStatus';
-import type { MergeRequest, FieldSelections, OldDocAction, FieldGroupKey } from '@/types/merge';
+import type {
+  MergeRequest,
+  FieldSelections,
+  OldDocAction,
+  FieldGroupKey,
+} from '@/types/merge';
 import { Loader2, Eye, XCircle, CheckCircle, RefreshCw } from 'lucide-react';
 
 const MERGE_REQUESTS_COLLECTION = 'merge_requests';
@@ -87,7 +92,11 @@ export const MergeRequestsQueue: React.FC<MergeRequestsQueueProps> = ({
     const buildQuery = () => {
       const ref = collection(db, MERGE_REQUESTS_COLLECTION);
       if (filterPending) {
-        return query(ref, where('status', '==', 'pending'), orderBy('createdAt', 'desc'));
+        return query(
+          ref,
+          where('status', '==', 'pending'),
+          orderBy('createdAt', 'desc')
+        );
       }
       return query(ref, orderBy('createdAt', 'desc'));
     };
@@ -103,13 +112,17 @@ export const MergeRequestsQueue: React.FC<MergeRequestsQueueProps> = ({
         },
         (err) => {
           console.error('MergeRequestsQueue snapshot error:', err);
-          setListError(isEs ? 'Error al cargar solicitudes.' : 'Failed to load requests.');
+          setListError(
+            isEs ? 'Error al cargar solicitudes.' : 'Failed to load requests.'
+          );
           setLoading(false);
         }
       );
     } catch (err) {
       console.error('MergeRequestsQueue query error:', err);
-      setListError(isEs ? 'Error al cargar solicitudes.' : 'Failed to load requests.');
+      setListError(
+        isEs ? 'Error al cargar solicitudes.' : 'Failed to load requests.'
+      );
       setLoading(false);
     }
 
@@ -142,8 +155,12 @@ export const MergeRequestsQueue: React.FC<MergeRequestsQueueProps> = ({
         prev
           ? {
               ...prev,
-              sourceProfile: sourceSnap.exists() ? (sourceSnap.data() as Record<string, any>) : {},
-              targetProfile: targetSnap.exists() ? (targetSnap.data() as Record<string, any>) : {},
+              sourceProfile: sourceSnap.exists()
+                ? (sourceSnap.data() as Record<string, any>)
+                : {},
+              targetProfile: targetSnap.exists()
+                ? (targetSnap.data() as Record<string, any>)
+                : {},
               loadingProfiles: false,
             }
           : null
@@ -155,7 +172,9 @@ export const MergeRequestsQueue: React.FC<MergeRequestsQueueProps> = ({
           ? {
               ...prev,
               loadingProfiles: false,
-              error: isEs ? 'Error al cargar perfiles.' : 'Failed to load profiles.',
+              error: isEs
+                ? 'Error al cargar perfiles.'
+                : 'Failed to load profiles.',
             }
           : null
       );
@@ -167,10 +186,16 @@ export const MergeRequestsQueue: React.FC<MergeRequestsQueueProps> = ({
   const handleApprove = async () => {
     if (!review || !user) return;
 
-    setReview((prev) => (prev ? { ...prev, submitting: true, error: null } : null));
+    setReview((prev) =>
+      prev ? { ...prev, submitting: true, error: null } : null
+    );
 
     try {
-      const mergeRef = doc(db, MERGE_REQUESTS_COLLECTION, review.mergeRequest.id);
+      const mergeRef = doc(
+        db,
+        MERGE_REQUESTS_COLLECTION,
+        review.mergeRequest.id
+      );
       await updateDoc(mergeRef, {
         status: 'approved',
         fieldSelections: review.selections,
@@ -188,7 +213,9 @@ export const MergeRequestsQueue: React.FC<MergeRequestsQueueProps> = ({
           ? {
               ...prev,
               submitting: false,
-              error: isEs ? 'Error al aprobar la solicitud.' : 'Failed to approve request.',
+              error: isEs
+                ? 'Error al aprobar la solicitud.'
+                : 'Failed to approve request.',
             }
           : null
       );
@@ -198,10 +225,16 @@ export const MergeRequestsQueue: React.FC<MergeRequestsQueueProps> = ({
   const handleReject = async () => {
     if (!review || !user) return;
 
-    setReview((prev) => (prev ? { ...prev, submitting: true, error: null } : null));
+    setReview((prev) =>
+      prev ? { ...prev, submitting: true, error: null } : null
+    );
 
     try {
-      const mergeRef = doc(db, MERGE_REQUESTS_COLLECTION, review.mergeRequest.id);
+      const mergeRef = doc(
+        db,
+        MERGE_REQUESTS_COLLECTION,
+        review.mergeRequest.id
+      );
       await updateDoc(mergeRef, {
         status: 'rejected',
         reviewNotes: review.reviewNotes,
@@ -216,7 +249,9 @@ export const MergeRequestsQueue: React.FC<MergeRequestsQueueProps> = ({
           ? {
               ...prev,
               submitting: false,
-              error: isEs ? 'Error al rechazar la solicitud.' : 'Failed to reject request.',
+              error: isEs
+                ? 'Error al rechazar la solicitud.'
+                : 'Failed to reject request.',
             }
           : null
       );
@@ -257,14 +292,19 @@ export const MergeRequestsQueue: React.FC<MergeRequestsQueueProps> = ({
               <dt className="font-medium text-gray-500 dark:text-gray-400">
                 {isEs ? 'Número de Cuenta' : 'Numero de Cuenta'}
               </dt>
-              <dd className="text-gray-900 dark:text-white">{review.mergeRequest.numeroCuenta}</dd>
+              <dd className="text-gray-900 dark:text-white">
+                {review.mergeRequest.numeroCuenta}
+              </dd>
             </div>
             <div>
               <dt className="font-medium text-gray-500 dark:text-gray-400">
                 {isEs ? 'Estado' : 'Status'}
               </dt>
               <dd>
-                <MergeRequestStatusBadge status={review.mergeRequest.status} lang={lang} />
+                <MergeRequestStatusBadge
+                  status={review.mergeRequest.status}
+                  lang={lang}
+                />
               </dd>
             </div>
             <div>
@@ -317,34 +357,49 @@ export const MergeRequestsQueue: React.FC<MergeRequestsQueueProps> = ({
                   checked={review.migrateReferences}
                   onChange={(e) =>
                     setReview((prev) =>
-                      prev ? { ...prev, migrateReferences: e.target.checked } : null
+                      prev
+                        ? { ...prev, migrateReferences: e.target.checked }
+                        : null
                     )
                   }
                   className="rounded border-gray-300 text-blue-600"
                 />
                 <span className="text-gray-700 dark:text-gray-300">
-                  {isEs ? 'Migrar referencias (jobs, events, etc.)' : 'Migrate references (jobs, events, etc.)'}
+                  {isEs
+                    ? 'Migrar referencias (jobs, events, etc.)'
+                    : 'Migrate references (jobs, events, etc.)'}
                 </span>
               </label>
 
               <fieldset>
                 <legend className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  {isEs ? 'Acción para el documento original' : 'Action for old document'}
+                  {isEs
+                    ? 'Acción para el documento original'
+                    : 'Action for old document'}
                 </legend>
                 <div className="flex gap-4">
-                  {(['soft-delete', 'hard-delete', 'archive'] as OldDocAction[]).map((action) => (
-                    <label key={action} className="flex cursor-pointer items-center gap-1.5 text-sm">
+                  {(
+                    ['soft-delete', 'hard-delete', 'archive'] as OldDocAction[]
+                  ).map((action) => (
+                    <label
+                      key={action}
+                      className="flex cursor-pointer items-center gap-1.5 text-sm"
+                    >
                       <input
                         type="radio"
                         name="oldDocAction"
                         value={action}
                         checked={review.oldDocAction === action}
                         onChange={() =>
-                          setReview((prev) => (prev ? { ...prev, oldDocAction: action } : null))
+                          setReview((prev) =>
+                            prev ? { ...prev, oldDocAction: action } : null
+                          )
                         }
                         className="text-blue-600"
                       />
-                      <span className="text-gray-700 dark:text-gray-300">{action}</span>
+                      <span className="text-gray-700 dark:text-gray-300">
+                        {action}
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -357,17 +412,23 @@ export const MergeRequestsQueue: React.FC<MergeRequestsQueueProps> = ({
                 <textarea
                   value={review.reviewNotes}
                   onChange={(e) =>
-                    setReview((prev) => (prev ? { ...prev, reviewNotes: e.target.value } : null))
+                    setReview((prev) =>
+                      prev ? { ...prev, reviewNotes: e.target.value } : null
+                    )
                   }
                   rows={3}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  placeholder={isEs ? 'Comentarios opcionales...' : 'Optional comments...'}
+                  placeholder={
+                    isEs ? 'Comentarios opcionales...' : 'Optional comments...'
+                  }
                 />
               </div>
             </div>
 
             {review.error && (
-              <p className="text-sm text-red-600 dark:text-red-400">{review.error}</p>
+              <p className="text-sm text-red-600 dark:text-red-400">
+                {review.error}
+              </p>
             )}
 
             <div className="flex gap-3">
@@ -457,7 +518,9 @@ export const MergeRequestsQueue: React.FC<MergeRequestsQueueProps> = ({
               </span>
             </div>
             {req.error && (
-              <p className="text-xs text-red-600 dark:text-red-400">{req.error}</p>
+              <p className="text-xs text-red-600 dark:text-red-400">
+                {req.error}
+              </p>
             )}
           </div>
 

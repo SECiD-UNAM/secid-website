@@ -47,8 +47,10 @@ function buildForumAdapter(): DataAdapter<ForumSearchResult> {
       const searchFilters: ForumSearchFilters = {
         query: queryTerm,
         sortBy: (sort?.field as ForumSearchFilters['sortBy']) ?? 'relevance',
-        sortOrder: (sort?.direction as ForumSearchFilters['sortOrder']) ?? 'desc',
-        topicType: (filters['topicType'] as ForumSearchFilters['topicType']) ?? 'all',
+        sortOrder:
+          (sort?.direction as ForumSearchFilters['sortOrder']) ?? 'desc',
+        topicType:
+          (filters['topicType'] as ForumSearchFilters['topicType']) ?? 'all',
         hasAttachments: (filters['hasAttachments'] as boolean) ?? false,
         categoryIds: filters['categoryIds'] as string[] | undefined,
         tags: filters['tags'] as string[] | undefined,
@@ -77,13 +79,20 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
 
   // Map initialFilters to the hook's activeFilters shape
   const initialActiveFilters: Record<string, unknown> = {};
-  if (initialFilters.topicType) initialActiveFilters['topicType'] = initialFilters.topicType;
-  if (initialFilters.hasAttachments != null) initialActiveFilters['hasAttachments'] = initialFilters.hasAttachments;
-  if (initialFilters.categoryIds?.length) initialActiveFilters['categoryIds'] = initialFilters.categoryIds;
-  if (initialFilters.tags?.length) initialActiveFilters['tags'] = initialFilters.tags;
-  if (initialFilters.authorId) initialActiveFilters['authorId'] = initialFilters.authorId;
-  if (initialFilters.dateFrom) initialActiveFilters['dateFrom'] = initialFilters.dateFrom;
-  if (initialFilters.dateTo) initialActiveFilters['dateTo'] = initialFilters.dateTo;
+  if (initialFilters.topicType)
+    initialActiveFilters['topicType'] = initialFilters.topicType;
+  if (initialFilters.hasAttachments != null)
+    initialActiveFilters['hasAttachments'] = initialFilters.hasAttachments;
+  if (initialFilters.categoryIds?.length)
+    initialActiveFilters['categoryIds'] = initialFilters.categoryIds;
+  if (initialFilters.tags?.length)
+    initialActiveFilters['tags'] = initialFilters.tags;
+  if (initialFilters.authorId)
+    initialActiveFilters['authorId'] = initialFilters.authorId;
+  if (initialFilters.dateFrom)
+    initialActiveFilters['dateFrom'] = initialFilters.dateFrom;
+  if (initialFilters.dateTo)
+    initialActiveFilters['dateTo'] = initialFilters.dateTo;
 
   const listing = useUniversalListing<ForumSearchResult>({
     adapter,
@@ -96,7 +105,8 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
   const [localQuery, setLocalQuery] = useState(initialQuery);
 
   // Track whether a search has been performed
-  const searchPerformed = listing.totalCount > 0 || (listing.query !== '' && !listing.loading);
+  const searchPerformed =
+    listing.totalCount > 0 || (listing.query !== '' && !listing.loading);
 
   // UI state
   const [showFilters, setShowFilters] = useState(false);
@@ -149,9 +159,11 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
     const tags = filters['tags'] as string[] | undefined;
     if (categoryIds?.length) params['set']('categories', categoryIds.join(','));
     if (tags?.length) params['set']('tags', tags.join(','));
-    if (filters['authorId']) params['set']('author', filters['authorId'] as string);
+    if (filters['authorId'])
+      params['set']('author', filters['authorId'] as string);
     const sortBy = filters['sortBy'] ?? listing.sort.field;
-    if (sortBy && sortBy !== 'relevance') params['set']('sort', sortBy as string);
+    if (sortBy && sortBy !== 'relevance')
+      params['set']('sort', sortBy as string);
     const topicType = filters['topicType'] ?? 'all';
     if (topicType !== 'all') params['set']('type', topicType as string);
     if (filters['hasAttachments']) params['set']('attachments', 'true');
@@ -248,10 +260,15 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
   const totalResults = listing.totalCount;
 
   const activeTags = (listing.activeFilters['tags'] as string[]) ?? [];
-  const activeCategoryIds = (listing.activeFilters['categoryIds'] as string[]) ?? [];
-  const activeTopicType = (listing.activeFilters['topicType'] as string) ?? 'all';
-  const activeHasAttachments = (listing.activeFilters['hasAttachments'] as boolean) ?? false;
-  const activeAuthorId = listing.activeFilters['authorId'] as string | undefined;
+  const activeCategoryIds =
+    (listing.activeFilters['categoryIds'] as string[]) ?? [];
+  const activeTopicType =
+    (listing.activeFilters['topicType'] as string) ?? 'all';
+  const activeHasAttachments =
+    (listing.activeFilters['hasAttachments'] as boolean) ?? false;
+  const activeAuthorId = listing.activeFilters['authorId'] as
+    | string
+    | undefined;
 
   const hasActiveFilters =
     activeCategoryIds.length > 0 ||
@@ -368,11 +385,12 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
                     >
                       <input
                         type="checkbox"
-                        checked={
-                          ((tempFilters['categoryIds'] as string[]) ?? []).includes(category.id)
-                        }
+                        checked={(
+                          (tempFilters['categoryIds'] as string[]) ?? []
+                        ).includes(category.id)}
                         onChange={(e) => {
-                          const categoryIds = (tempFilters['categoryIds'] as string[]) ?? [];
+                          const categoryIds =
+                            (tempFilters['categoryIds'] as string[]) ?? [];
                           if (e.target.checked) {
                             setTempFilters((prev) => ({
                               ...prev,
@@ -469,7 +487,9 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
                   <label className="flex items-center gap-2">
                     <input
                       type="checkbox"
-                      checked={(tempFilters['hasAttachments'] as boolean) || false}
+                      checked={
+                        (tempFilters['hasAttachments'] as boolean) || false
+                      }
                       onChange={(e) =>
                         setTempFilters((prev) => ({
                           ...prev,
@@ -602,10 +622,9 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
                         href={`/${language}/forum/topic/${result.id}`}
                         className="transition-colors hover:text-blue-600 dark:hover:text-blue-400"
                         dangerouslySetInnerHTML={{
-                          __html: sanitizeHtml(highlightText(
-                            result.title,
-                            result.highlights
-                          )),
+                          __html: sanitizeHtml(
+                            highlightText(result.title, result.highlights)
+                          ),
                         }}
                       />
                     </h3>
@@ -613,10 +632,9 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
                     <div
                       className="mb-3 line-clamp-2 text-gray-600 dark:text-gray-400"
                       dangerouslySetInnerHTML={{
-                        __html: sanitizeHtml(highlightText(
-                          result.excerpt,
-                          result.highlights
-                        )),
+                        __html: sanitizeHtml(
+                          highlightText(result.excerpt, result.highlights)
+                        ),
                       }}
                     />
 
@@ -668,10 +686,9 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
                     <div
                       className="mb-3 line-clamp-3 text-gray-600 dark:text-gray-400"
                       dangerouslySetInnerHTML={{
-                        __html: sanitizeHtml(highlightText(
-                          result.excerpt,
-                          result.highlights
-                        )),
+                        __html: sanitizeHtml(
+                          highlightText(result.excerpt, result.highlights)
+                        ),
                       }}
                     />
 

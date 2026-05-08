@@ -4,7 +4,10 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { useUniversalListing } from '@/hooks/useUniversalListing';
 import type { DataAdapter } from '@lib/listing/adapters/types';
 
-interface TestItem { id: string; name: string; }
+interface TestItem {
+  id: string;
+  name: string;
+}
 
 const mockItems: TestItem[] = [
   { id: '1', name: 'Alpha' },
@@ -36,7 +39,9 @@ describe.sequential('useUniversalListing', () => {
       useUniversalListing({ adapter, defaultPageSize: 3 })
     );
     expect(result.current.loading).toBe(true);
-    await waitFor(() => { expect(result.current.loading).toBe(false); });
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
     expect(result.current.items).toHaveLength(3);
     expect(result.current.totalCount).toBe(5);
     expect(adapter.fetch).toHaveBeenCalledTimes(1);
@@ -47,7 +52,9 @@ describe.sequential('useUniversalListing', () => {
       useUniversalListing({ adapter, defaultPageSize: 3 })
     );
     await waitFor(() => expect(result.current.loading).toBe(false));
-    act(() => { result.current.setQuery('test'); });
+    act(() => {
+      result.current.setQuery('test');
+    });
     await waitFor(() => {
       expect(adapter.fetch).toHaveBeenCalledWith(
         expect.objectContaining({ query: 'test', page: 1 })
@@ -60,13 +67,17 @@ describe.sequential('useUniversalListing', () => {
       useUniversalListing({ adapter, defaultPageSize: 10 })
     );
     await waitFor(() => expect(result.current.loading).toBe(false));
-    act(() => { result.current.setFilter('category', 'tech'); });
+    act(() => {
+      result.current.setFilter('category', 'tech');
+    });
     await waitFor(() => {
       expect(adapter.fetch).toHaveBeenCalledWith(
         expect.objectContaining({ filters: { category: 'tech' }, page: 1 })
       );
     });
-    act(() => { result.current.clearFilters(); });
+    act(() => {
+      result.current.clearFilters();
+    });
     await waitFor(() => {
       expect(adapter.fetch).toHaveBeenCalledWith(
         expect.objectContaining({ filters: {} })
@@ -79,7 +90,9 @@ describe.sequential('useUniversalListing', () => {
       useUniversalListing({ adapter, defaultPageSize: 10 })
     );
     await waitFor(() => expect(result.current.loading).toBe(false));
-    act(() => { result.current.setSort({ field: 'name', direction: 'asc' }); });
+    act(() => {
+      result.current.setSort({ field: 'name', direction: 'asc' });
+    });
     await waitFor(() => {
       expect(adapter.fetch).toHaveBeenCalledWith(
         expect.objectContaining({ sort: { field: 'name', direction: 'asc' } })
@@ -89,10 +102,16 @@ describe.sequential('useUniversalListing', () => {
 
   it('navigates pages with goToPage', async () => {
     const { result } = renderHook(() =>
-      useUniversalListing({ adapter, defaultPageSize: 3, paginationMode: 'offset' })
+      useUniversalListing({
+        adapter,
+        defaultPageSize: 3,
+        paginationMode: 'offset',
+      })
     );
     await waitFor(() => expect(result.current.loading).toBe(false));
-    act(() => { result.current.goToPage(2); });
+    act(() => {
+      result.current.goToPage(2);
+    });
     await waitFor(() => {
       expect(adapter.fetch).toHaveBeenCalledWith(
         expect.objectContaining({ page: 2 })
@@ -106,7 +125,9 @@ describe.sequential('useUniversalListing', () => {
       useUniversalListing({ adapter, defaultViewMode: 'grid' })
     );
     expect(result.current.viewMode).toBe('grid');
-    act(() => { result.current.setViewMode('compact'); });
+    act(() => {
+      result.current.setViewMode('compact');
+    });
     expect(result.current.viewMode).toBe('compact');
   });
 
@@ -117,21 +138,30 @@ describe.sequential('useUniversalListing', () => {
     const { result } = renderHook(() =>
       useUniversalListing({ adapter: failingAdapter })
     );
-    await waitFor(() => { expect(result.current.error).toBe('Network error'); });
+    await waitFor(() => {
+      expect(result.current.error).toBe('Network error');
+    });
     expect(result.current.loading).toBe(false);
   });
 
   it('retries on error', async () => {
     const failThenSucceed: DataAdapter<TestItem> = {
-      fetch: vi.fn()
+      fetch: vi
+        .fn()
         .mockRejectedValueOnce(new Error('Network error'))
-        .mockResolvedValueOnce({ items: mockItems, totalCount: 5, hasMore: false }),
+        .mockResolvedValueOnce({
+          items: mockItems,
+          totalCount: 5,
+          hasMore: false,
+        }),
     };
     const { result } = renderHook(() =>
       useUniversalListing({ adapter: failThenSucceed })
     );
     await waitFor(() => expect(result.current.error).toBe('Network error'));
-    act(() => { result.current.retry(); });
+    act(() => {
+      result.current.retry();
+    });
     await waitFor(() => {
       expect(result.current.error).toBeNull();
       expect(result.current.items).toHaveLength(5);

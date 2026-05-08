@@ -1,6 +1,12 @@
 // @ts-nocheck
 import React from 'react';
-import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 
 // Mock the chart view (lazy loaded)

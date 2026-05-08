@@ -7,7 +7,9 @@ interface MemberShowcaseProps {
   lang?: 'es' | 'en';
 }
 
-export const MemberShowcase: React.FC<MemberShowcaseProps> = ({ lang = 'es' }) => {
+export const MemberShowcase: React.FC<MemberShowcaseProps> = ({
+  lang = 'es',
+}) => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -39,7 +41,10 @@ export const MemberShowcase: React.FC<MemberShowcaseProps> = ({ lang = 'es' }) =
         <div className="h-48 rounded-2xl bg-gray-200 dark:bg-gray-700" />
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-32 rounded-xl bg-gray-200 dark:bg-gray-700" />
+            <div
+              key={i}
+              className="h-32 rounded-xl bg-gray-200 dark:bg-gray-700"
+            />
           ))}
         </div>
       </div>

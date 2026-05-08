@@ -56,9 +56,12 @@ export const EducationMap: React.FC<EducationMapProps> = ({
   lang = 'es',
 }) => {
   const t = getCompanyTranslations(lang);
-  const categoryLabels = lang === 'es' ? CATEGORY_LABELS_ES : CATEGORY_LABELS_EN;
+  const categoryLabels =
+    lang === 'es' ? CATEGORY_LABELS_ES : CATEGORY_LABELS_EN;
   const containerRef = useRef<HTMLDivElement>(null);
-  const [hoveredInst, setHoveredInst] = useState<InstitutionAggregate | null>(null);
+  const [hoveredInst, setHoveredInst] = useState<InstitutionAggregate | null>(
+    null
+  );
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 

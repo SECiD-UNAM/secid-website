@@ -110,8 +110,9 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
     useState<SearchContentType>('all');
   const [showFilters, setShowFilters] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [recentSearches, setRecentSearches] =
-    useState<SearchHistoryItem[]>(INITIAL_RECENT_SEARCHES);
+  const [recentSearches, setRecentSearches] = useState<SearchHistoryItem[]>(
+    INITIAL_RECENT_SEARCHES
+  );
   const [popularSearches] = useState<PopularSearch[]>(INITIAL_POPULAR_SEARCHES);
   const [selectedResult, setSelectedResult] = useState(-1);
 

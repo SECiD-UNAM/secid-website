@@ -16,7 +16,12 @@ const initialPost = slug ? await getContentCollectionPost(slug) : null;
   <main>
     <section class="secid-section">
       <div class="secid-container">
-        <BlogPostPage client:load slug={slug} lang="en" initialPost={initialPost} />
+        <BlogPostPage
+          client:load
+          slug={slug}
+          lang="en"
+          initialPost={initialPost}
+        />
       </div>
     </section>
   </main>

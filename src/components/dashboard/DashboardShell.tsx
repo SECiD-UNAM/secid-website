@@ -48,7 +48,9 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
         requireVerified={requireVerified}
         requireRole={requireRole}
       >
-        <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 ${isBeta ? 'pt-24' : 'pt-16'}`}>
+        <div
+          className={`min-h-screen bg-gray-50 dark:bg-gray-900 ${isBeta ? 'pt-24' : 'pt-16'}`}
+        >
           {/* Sidebar toggle — hidden on mobile (bottom nav) and desktop (sidebar visible) */}
           <button
             onClick={() => setMobileOpen(true)}
@@ -76,14 +78,26 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
                   <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white p-6 shadow-2xl dark:bg-gray-800">
                     <div className="mb-4 flex items-center justify-between">
                       <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                        {lang === 'es' ? '¡Completa tu perfil!' : 'Complete your profile!'}
+                        {lang === 'es'
+                          ? '¡Completa tu perfil!'
+                          : 'Complete your profile!'}
                       </h2>
                       <button
                         onClick={() => setShowOnboarding(false)}
                         className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
                       >
-                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        <svg
+                          className="h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6 18 18 6M6 6l12 12"
+                          />
                         </svg>
                       </button>
                     </div>
@@ -97,7 +111,9 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({
                         href={`/${lang}/dashboard/profile`}
                         className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700"
                       >
-                        {lang === 'es' ? 'Completar perfil' : 'Complete profile'}
+                        {lang === 'es'
+                          ? 'Completar perfil'
+                          : 'Complete profile'}
                       </a>
                       <button
                         onClick={() => setShowOnboarding(false)}

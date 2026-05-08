@@ -99,13 +99,18 @@ function computeSummaryStats(distribution: DistributionBin[]): {
 export function SalaryDistribution({ distribution, lang = 'es' }: Props) {
   const formatCurrency = (v: number) => _fmt(v, 'MXN', lang);
 
-  const histogram = useMemo(() => buildDisplayBins(distribution), [distribution]);
+  const histogram = useMemo(
+    () => buildDisplayBins(distribution),
+    [distribution]
+  );
   const s = useMemo(() => computeSummaryStats(distribution), [distribution]);
 
   if (!s || s.n < 3) {
     return (
       <p className="text-sm text-gray-500 dark:text-gray-400">
-        {lang === 'es' ? 'Se necesitan al menos 3 datos.' : 'At least 3 data points needed.'}
+        {lang === 'es'
+          ? 'Se necesitan al menos 3 datos.'
+          : 'At least 3 data points needed.'}
       </p>
     );
   }
@@ -152,7 +157,10 @@ export function SalaryDistribution({ distribution, lang = 'es' }: Props) {
 
       {/* Histogram */}
       <ResponsiveContainer width="100%" height={200}>
-        <BarChart data={histogram} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+        <BarChart
+          data={histogram}
+          margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
+        >
           <XAxis
             dataKey="range"
             tick={{ fontSize: 9, fill: 'var(--color-text-secondary, #9CA3AF)' }}
@@ -162,7 +170,10 @@ export function SalaryDistribution({ distribution, lang = 'es' }: Props) {
             height={40}
           />
           <YAxis
-            tick={{ fontSize: 10, fill: 'var(--color-text-secondary, #9CA3AF)' }}
+            tick={{
+              fontSize: 10,
+              fill: 'var(--color-text-secondary, #9CA3AF)',
+            }}
             allowDecimals={false}
           />
           <Tooltip
@@ -199,7 +210,9 @@ export function SalaryDistribution({ distribution, lang = 'es' }: Props) {
             {histogram.map((bin, i) => (
               <Cell
                 key={i}
-                fill={bin.isMedianBin ? 'var(--secid-primary, #f65425)' : '#6366F1'}
+                fill={
+                  bin.isMedianBin ? 'var(--secid-primary, #f65425)' : '#6366F1'
+                }
                 opacity={bin.isMedianBin ? 1 : 0.6}
               />
             ))}
@@ -209,8 +222,13 @@ export function SalaryDistribution({ distribution, lang = 'es' }: Props) {
 
       {/* IQR annotation */}
       <div className="mt-2 flex items-center justify-center gap-4 text-[10px] text-gray-400 dark:text-gray-500">
-        <span>IQR: {formatCurrency(s.p25)} – {formatCurrency(s.p75)}</span>
-        <span>{lang === 'es' ? 'Rango' : 'Range'}: {formatCurrency(s.min)} – {formatCurrency(s.max)}</span>
+        <span>
+          IQR: {formatCurrency(s.p25)} – {formatCurrency(s.p75)}
+        </span>
+        <span>
+          {lang === 'es' ? 'Rango' : 'Range'}: {formatCurrency(s.min)} –{' '}
+          {formatCurrency(s.max)}
+        </span>
       </div>
     </div>
   );

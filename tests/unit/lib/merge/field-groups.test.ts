@@ -1,11 +1,18 @@
 import { describe, it, expect } from 'vitest';
-import { FIELD_GROUPS, getFieldsForGroup, applyFieldSelections } from '@/lib/merge/field-groups';
+import {
+  FIELD_GROUPS,
+  getFieldsForGroup,
+  applyFieldSelections,
+} from '@/lib/merge/field-groups';
 import type { FieldSelections } from '@/types/merge';
 
 describe('FIELD_GROUPS', () => {
   it('should map basicInfo to correct Firestore paths', () => {
     expect(FIELD_GROUPS.basicInfo).toEqual([
-      'firstName', 'lastName', 'displayName', 'photoURL',
+      'firstName',
+      'lastName',
+      'displayName',
+      'photoURL',
     ]);
   });
 
@@ -37,7 +44,13 @@ describe('applyFieldSelections', () => {
     lastName: 'User',
     displayName: 'Old User',
     photoURL: 'old.jpg',
-    profile: { company: 'OldCorp', position: 'Dev', bio: '', location: '', linkedin: '' },
+    profile: {
+      company: 'OldCorp',
+      position: 'Dev',
+      bio: '',
+      location: '',
+      linkedin: '',
+    },
     skills: ['python'],
   };
   const targetDoc = {
@@ -45,7 +58,13 @@ describe('applyFieldSelections', () => {
     lastName: 'User',
     displayName: 'New User',
     photoURL: 'new.jpg',
-    profile: { company: 'NewCorp', position: 'Lead', bio: 'hi', location: 'MX', linkedin: 'li' },
+    profile: {
+      company: 'NewCorp',
+      position: 'Lead',
+      bio: 'hi',
+      location: 'MX',
+      linkedin: 'li',
+    },
     skills: ['typescript'],
   };
 

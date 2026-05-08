@@ -44,9 +44,7 @@ export default function SalaryAdminPage({ lang = 'es' }: Props) {
       } catch {
         if (!cancelled)
           setError(
-            lang === 'es'
-              ? 'Error al cargar los datos.'
-              : 'Error loading data.'
+            lang === 'es' ? 'Error al cargar los datos.' : 'Error loading data.'
           );
       } finally {
         if (!cancelled) setLoading(false);

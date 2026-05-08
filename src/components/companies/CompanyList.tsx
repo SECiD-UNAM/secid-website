@@ -8,7 +8,10 @@ import { CompanyLogo } from '@/components/shared/CompanyLogo';
 import { CompanyDrawer } from './CompanyDrawer';
 import { EcosystemMap } from '@/components/shared/EcosystemMap';
 import { EducationMap } from '@/components/shared/EducationMap';
-import { getEducationEcosystem, type EducationEcosystemData } from '@/lib/members';
+import {
+  getEducationEcosystem,
+  type EducationEcosystemData,
+} from '@/lib/members';
 import { useUniversalListing } from '@/hooks/useUniversalListing';
 import { ClientSideAdapter } from '@lib/listing/adapters/ClientSideAdapter';
 import type { FilterDefinition } from '@lib/listing/types';
@@ -47,7 +50,9 @@ const EDUCATION_INDUSTRIES = new Set(['Educación', 'Academia']);
 async function fetchApprovedCompanies(): Promise<Company[]> {
   const all = await getCompanies();
   return all
-    .filter((c) => !c.pendingReview && !EDUCATION_INDUSTRIES.has(c.industry || ''))
+    .filter(
+      (c) => !c.pendingReview && !EDUCATION_INDUSTRIES.has(c.industry || '')
+    )
     .sort((a, b) => b.memberCount - a.memberCount);
 }
 
@@ -62,12 +67,15 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showLandscape, setShowLandscape] = useState(true);
   const [allCompanies, setAllCompanies] = useState<Company[]>([]);
-  const [educationData, setEducationData] = useState<EducationEcosystemData | null>(null);
+  const [educationData, setEducationData] =
+    useState<EducationEcosystemData | null>(null);
 
   useEffect(() => {
     getEducationEcosystem()
       .then(setEducationData)
-      .catch((err: unknown) => console.error('Error loading education data:', err));
+      .catch((err: unknown) =>
+        console.error('Error loading education data:', err)
+      );
   }, []);
 
   const adapter = useMemo(
@@ -121,7 +129,9 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
     >
       <CompanyLogo company={company} size="md" />
       <div className="min-w-0 flex-1">
-        <p className="font-medium text-gray-900 dark:text-white">{company.name}</p>
+        <p className="font-medium text-gray-900 dark:text-white">
+          {company.name}
+        </p>
         <p className="text-sm text-gray-500 dark:text-gray-400">
           {[
             company.industry ? translateIndustry(company.industry, lang) : null,

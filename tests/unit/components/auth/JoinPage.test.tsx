@@ -106,9 +106,7 @@ describe('JoinPage — English post-job link', () => {
     // Verifies: post-job link uses English prefix
     render(<JoinPage lang="en" />);
     const links = screen.getAllByRole('link');
-    const link = links.find(
-      (l) => l.getAttribute('href') === '/en/post-job'
-    );
+    const link = links.find((l) => l.getAttribute('href') === '/en/post-job');
     expect(link).toBeTruthy();
   });
 });
@@ -118,9 +116,7 @@ describe('JoinPage — English sign-in link', () => {
     // Verifies: sign-in link uses English prefix
     render(<JoinPage lang="en" />);
     const links = screen.getAllByRole('link');
-    const link = links.find(
-      (l) => l.getAttribute('href') === '/en/login'
-    );
+    const link = links.find((l) => l.getAttribute('href') === '/en/login');
     expect(link).toBeTruthy();
   });
 });

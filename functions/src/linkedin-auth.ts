@@ -1,29 +1,31 @@
 // @ts-nocheck
-import { onRequest, onCall, HttpsError } from "firebase-functions/v2/https";
-import { defineSecret } from "firebase-functions/params";
-import { FieldValue } from "firebase-admin/firestore";
-import * as admin from "firebase-admin";
-import * as crypto from "crypto";
+import { onRequest, onCall, HttpsError } from 'firebase-functions/v2/https';
+import { defineSecret } from 'firebase-functions/params';
+import { FieldValue } from 'firebase-admin/firestore';
+import * as admin from 'firebase-admin';
+import * as crypto from 'crypto';
 
-const linkedinClientId = defineSecret("LINKEDIN_CLIENT_ID");
-const linkedinClientSecret = defineSecret("LINKEDIN_CLIENT_SECRET");
+const linkedinClientId = defineSecret('LINKEDIN_CLIENT_ID');
+const linkedinClientSecret = defineSecret('LINKEDIN_CLIENT_SECRET');
 
-const LINKEDIN_AUTH_URL = "https://www.linkedin.com/oauth/v2/authorization";
-const LINKEDIN_TOKEN_URL = "https://www.linkedin.com/oauth/v2/accessToken";
-const LINKEDIN_USERINFO_URL = "https://api.linkedin.com/v2/userinfo";
+const LINKEDIN_AUTH_URL = 'https://www.linkedin.com/oauth/v2/authorization';
+const LINKEDIN_TOKEN_URL = 'https://www.linkedin.com/oauth/v2/accessToken';
+const LINKEDIN_USERINFO_URL = 'https://api.linkedin.com/v2/userinfo';
 const LINKEDIN_VERIFY_URL =
-  "https://api.linkedin.com/v2/memberVerifications?q=member";
+  'https://api.linkedin.com/v2/memberVerifications?q=member';
 
-function getCallbackUrl(req: { headers: Record<string, string | string[] | undefined> }): string {
-  const host = req.headers["x-forwarded-host"] || req.headers["host"];
-  const protocol = req.headers["x-forwarded-proto"] || "https";
+function getCallbackUrl(req: {
+  headers: Record<string, string | string[] | undefined>;
+}): string {
+  const host = req.headers['x-forwarded-host'] || req.headers['host'];
+  const protocol = req.headers['x-forwarded-proto'] || 'https';
   const hostStr = Array.isArray(host) ? host[0] : host;
   const protoStr = Array.isArray(protocol) ? protocol[0] : protocol;
   return `${protoStr}://${hostStr}/linkedinAuthCallback`;
 }
 
 function getAppUrl(): string {
-  return process.env.APP_URL || "https://secid.org";
+  return process.env.APP_URL || 'https://secid.org';
 }
 
 /**
@@ -39,20 +41,20 @@ export const linkedinAuthRedirect = onRequest(
     const callbackUrl = getCallbackUrl(req);
     const state = Buffer.from(
       JSON.stringify({
-        returnUrl: (req.query.returnUrl as string) || "/",
-      }),
-    ).toString("base64");
+        returnUrl: (req.query.returnUrl as string) || '/',
+      })
+    ).toString('base64');
 
     const params = new URLSearchParams({
-      response_type: "code",
+      response_type: 'code',
       client_id: linkedinClientId.value(),
       redirect_uri: callbackUrl,
-      scope: "openid profile email",
+      scope: 'openid profile email',
       state,
     });
 
     res.redirect(`${LINKEDIN_AUTH_URL}?${params.toString()}`);
-  },
+  }
 );
 
 /**
@@ -78,16 +80,16 @@ export const linkedinAuthCallback = onRequest(
       return;
     }
 
-    let returnUrl = "/";
+    let returnUrl = '/';
     if (stateParam) {
       try {
         const stateData = JSON.parse(
-          Buffer.from(stateParam, "base64").toString(),
+          Buffer.from(stateParam, 'base64').toString()
         );
-        returnUrl = stateData.returnUrl || "/";
+        returnUrl = stateData.returnUrl || '/';
         // Prevent open redirect — only allow relative paths
-        if (/^https?:\/\//i.test(returnUrl) || returnUrl.startsWith("//")) {
-          returnUrl = "/";
+        if (/^https?:\/\//i.test(returnUrl) || returnUrl.startsWith('//')) {
+          returnUrl = '/';
         }
       } catch {
         // Malformed state is non-fatal; default returnUrl is fine.
@@ -100,10 +102,10 @@ export const linkedinAuthCallback = onRequest(
     try {
       // --- Exchange code for access token ---
       const tokenRes = await fetch(LINKEDIN_TOKEN_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
-          grant_type: "authorization_code",
+          grant_type: 'authorization_code',
           code: code as string,
           redirect_uri: getCallbackUrl(req),
           client_id: linkedinClientId.value(),
@@ -112,10 +114,7 @@ export const linkedinAuthCallback = onRequest(
       });
 
       if (!tokenRes.ok) {
-        console.error(
-          "LinkedIn token exchange failed:",
-          await tokenRes.text(),
-        );
+        console.error('LinkedIn token exchange failed:', await tokenRes.text());
         res.redirect(`${appUrl}/es/login?error=linkedin_token`);
         return;
       }
@@ -130,8 +129,8 @@ export const linkedinAuthCallback = onRequest(
 
       if (!profileRes.ok) {
         console.error(
-          "LinkedIn profile fetch failed:",
-          await profileRes.text(),
+          'LinkedIn profile fetch failed:',
+          await profileRes.text()
         );
         res.redirect(`${appUrl}/es/login?error=linkedin_profile`);
         return;
@@ -149,7 +148,7 @@ export const linkedinAuthCallback = onRequest(
       const email = profile.email;
       const displayName =
         profile.name ||
-        `${profile.given_name || ""} ${profile.family_name || ""}`.trim();
+        `${profile.given_name || ''} ${profile.family_name || ''}`.trim();
       const photoURL = profile.picture;
 
       if (!email) {
@@ -167,7 +166,7 @@ export const linkedinAuthCallback = onRequest(
         });
       } catch (err: unknown) {
         const authError = err as { code?: string };
-        if (authError.code === "auth/user-not-found") {
+        if (authError.code === 'auth/user-not-found') {
           firebaseUser = await auth.createUser({
             email,
             displayName,
@@ -184,10 +183,10 @@ export const linkedinAuthCallback = onRequest(
       await userRef.set(
         {
           lastLogin: FieldValue.serverTimestamp(),
-          lastLoginProvider: "linkedin",
+          lastLoginProvider: 'linkedin',
           updatedAt: FieldValue.serverTimestamp(),
         },
-        { merge: true },
+        { merge: true }
       );
 
       // --- Check LinkedIn verification (if API product available) ---
@@ -195,7 +194,7 @@ export const linkedinAuthCallback = onRequest(
         const verifyRes = await fetch(LINKEDIN_VERIFY_URL, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            "LinkedIn-Version": "202401",
+            'LinkedIn-Version': '202401',
           },
         });
         if (verifyRes.ok) {
@@ -210,20 +209,20 @@ export const linkedinAuthCallback = onRequest(
               linkedinVerified: verified,
               linkedinVerifiedAt: FieldValue.serverTimestamp(),
             },
-            { merge: true },
+            { merge: true }
           );
         }
       } catch (e) {
-        console.warn("LinkedIn verification check skipped:", e);
+        console.warn('LinkedIn verification check skipped:', e);
       }
 
       // --- Generate custom token and store via short-lived code ---
       const customToken = await auth.createCustomToken(firebaseUser.uid);
-      const code = crypto.randomBytes(32).toString("hex");
+      const code = crypto.randomBytes(32).toString('hex');
       const db = admin.firestore();
 
       await db
-        .collection("linkedin_auth_codes")
+        .collection('linkedin_auth_codes')
         .doc(code)
         .set({
           token: customToken,
@@ -233,13 +232,13 @@ export const linkedinAuthCallback = onRequest(
         });
 
       res.redirect(
-        `${appUrl}/es/login?linkedinCode=${encodeURIComponent(code)}&returnUrl=${encodeURIComponent(returnUrl)}`,
+        `${appUrl}/es/login?linkedinCode=${encodeURIComponent(code)}&returnUrl=${encodeURIComponent(returnUrl)}`
       );
     } catch (err) {
-      console.error("LinkedIn auth error:", err);
+      console.error('LinkedIn auth error:', err);
       res.redirect(`${appUrl}/es/login?error=linkedin_server`);
     }
-  },
+  }
 );
 
 /**
@@ -249,30 +248,30 @@ export const linkedinAuthCallback = onRequest(
 export const exchangeLinkedInCode = onCall<{ code: string }>(
   async (request) => {
     const { code } = request.data;
-    if (!code || typeof code !== "string") {
-      throw new HttpsError("invalid-argument", "Code is required");
+    if (!code || typeof code !== 'string') {
+      throw new HttpsError('invalid-argument', 'Code is required');
     }
 
     const firestore = admin.firestore();
-    const codeRef = firestore.collection("linkedin_auth_codes").doc(code);
+    const codeRef = firestore.collection('linkedin_auth_codes').doc(code);
 
     // Atomic read-check-update to prevent race conditions
     const token = await firestore.runTransaction(async (tx) => {
       const codeDoc = await tx.get(codeRef);
 
       if (!codeDoc.exists) {
-        throw new HttpsError("not-found", "Invalid or expired code");
+        throw new HttpsError('not-found', 'Invalid or expired code');
       }
 
       const data = codeDoc.data()!;
 
       if (data.used) {
-        throw new HttpsError("already-exists", "Code already used");
+        throw new HttpsError('already-exists', 'Code already used');
       }
 
       if (data.expiresAt.toDate() < new Date()) {
         tx.delete(codeRef);
-        throw new HttpsError("deadline-exceeded", "Code expired");
+        throw new HttpsError('deadline-exceeded', 'Code expired');
       }
 
       tx.update(codeRef, { used: true });
@@ -283,5 +282,5 @@ export const exchangeLinkedInCode = onCall<{ code: string }>(
     codeRef.delete().catch(() => {});
 
     return { token };
-  },
+  }
 );

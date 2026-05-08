@@ -234,9 +234,7 @@ describe('PermissionMatrixPicker: displays current permissions from value prop',
     );
     const view = within(container);
 
-    const select = view.getByTestId(
-      'cell-events-view'
-    ) as HTMLSelectElement;
+    const select = view.getByTestId('cell-events-view') as HTMLSelectElement;
     expect(select.value).toBe('');
   });
 });

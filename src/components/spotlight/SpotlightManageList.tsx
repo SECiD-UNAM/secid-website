@@ -156,8 +156,7 @@ export default function SpotlightManageList({
 
   const handleTogglePublish = async (spotlight: AlumniSpotlight) => {
     if (!user) return;
-    const newStatus =
-      spotlight.status === 'published' ? 'draft' : 'published';
+    const newStatus = spotlight.status === 'published' ? 'draft' : 'published';
     try {
       await updateSpotlight(spotlight.id, { status: newStatus });
       setSpotlights((prev) =>

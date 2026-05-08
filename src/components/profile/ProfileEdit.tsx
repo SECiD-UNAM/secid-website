@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { doc, updateDoc, serverTimestamp, deleteField } from 'firebase/firestore';
+import {
+  doc,
+  updateDoc,
+  serverTimestamp,
+  deleteField,
+} from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { updateProfile, updateEmail } from 'firebase/auth';
 import { db, storage } from '@/lib/firebase';
@@ -444,7 +449,9 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
           currentWork?.company || formData.currentCompany || '',
         'profile.position':
           currentWork?.position || formData.currentPosition || '',
-        'experience.previousRoles': workHistory.map(({ compensation, ...rest }: any) => rest),
+        'experience.previousRoles': workHistory.map(
+          ({ compensation, ...rest }: any) => rest
+        ),
         'experience.currentRole':
           currentWork?.position || formData.currentPosition || '',
         'experience.level': formData.experience || 'mid',

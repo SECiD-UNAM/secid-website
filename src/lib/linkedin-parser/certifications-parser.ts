@@ -27,9 +27,14 @@ const ISSUED_RE = /^issued\s+(.+)$/i;
  *
  * Blocks separated by blank lines are treated as independent certifications.
  */
-export function parseLinkedInCertifications(text: string): ParsedCertificationEntry[] {
+export function parseLinkedInCertifications(
+  text: string
+): ParsedCertificationEntry[] {
   const entries: ParsedCertificationEntry[] = [];
-  const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
+  const lines = text
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
 
   let i = 0;
   while (i < lines.length) {

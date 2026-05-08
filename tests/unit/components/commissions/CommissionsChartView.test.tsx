@@ -6,7 +6,11 @@ import { describe, it, expect, vi } from 'vitest';
 // Mock @xyflow/react since it needs a browser DOM with measurements
 vi.mock('@xyflow/react', () => ({
   ReactFlow: ({ children, nodes, edges }: any) => (
-    <div data-testid="reactflow" data-node-count={nodes?.length} data-edge-count={edges?.length}>
+    <div
+      data-testid="reactflow"
+      data-node-count={nodes?.length}
+      data-edge-count={edges?.length}
+    >
       {children}
     </div>
   ),

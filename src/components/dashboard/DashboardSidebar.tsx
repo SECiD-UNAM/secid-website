@@ -79,7 +79,10 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
               osc.type = 'sine';
               osc.frequency.value = freq;
               gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.12);
-              gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.3);
+              gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                ctx.currentTime + i * 0.12 + 0.3
+              );
               osc.connect(gain).connect(ctx.destination);
               osc.start(ctx.currentTime + i * 0.12);
               osc.stop(ctx.currentTime + i * 0.12 + 0.3);
@@ -92,13 +95,18 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
               osc.type = 'sine';
               osc.frequency.value = freq;
               gain.gain.setValueAtTime(0.12, ctx.currentTime + i * 0.12);
-              gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.25);
+              gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                ctx.currentTime + i * 0.12 + 0.25
+              );
               osc.connect(gain).connect(ctx.destination);
               osc.start(ctx.currentTime + i * 0.12);
               osc.stop(ctx.currentTime + i * 0.12 + 0.25);
             });
           }
-        } catch { /* ignore if AudioContext unavailable */ }
+        } catch {
+          /* ignore if AudioContext unavailable */
+        }
         return next;
       });
     }, 3000);
@@ -347,7 +355,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
   const sidebarContent = (
     <div className="flex h-full flex-col">
-      <div className="flex-1 space-y-1 overflow-y-auto px-4 pt-4 pb-4">
+      <div className="flex-1 space-y-1 overflow-y-auto px-4 pb-4 pt-4">
         {/* Main menu items */}
         <div className="space-y-1">{menuItems.map(renderMenuItem)}</div>
 
@@ -406,7 +414,10 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             <item.icon className="mr-3 h-5 w-5" />
             <span>{item.name}</span>
             {showAdminNav && (
-              <span className="ml-auto h-2 w-2 rounded-full bg-amber-500" title="Admin mode" />
+              <span
+                className="ml-auto h-2 w-2 rounded-full bg-amber-500"
+                title="Admin mode"
+              />
             )}
           </a>
         ))}

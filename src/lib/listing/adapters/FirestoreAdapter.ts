@@ -13,7 +13,12 @@ import {
 } from 'firebase/firestore';
 import { db } from '@lib/firebase';
 import type { DataAdapter } from './types';
-import type { FetchParams, FetchResult, CountParams, SortConfig } from '../types';
+import type {
+  FetchParams,
+  FetchResult,
+  CountParams,
+  SortConfig,
+} from '../types';
 
 export interface FirestoreAdapterConfig<T> {
   collectionName: string;
@@ -65,7 +70,10 @@ export class FirestoreAdapter<T> implements DataAdapter<T> {
     return this.getTotalCount(params);
   }
 
-  private buildConstraints(params: FetchParams, fetchSize: number): QueryConstraint[] {
+  private buildConstraints(
+    params: FetchParams,
+    fetchSize: number
+  ): QueryConstraint[] {
     const constraints: QueryConstraint[] = [
       ...(this.config.baseConstraints ?? []),
     ];
@@ -108,7 +116,9 @@ export class FirestoreAdapter<T> implements DataAdapter<T> {
     );
   }
 
-  private async getTotalCount(params: FetchParams | CountParams): Promise<number> {
+  private async getTotalCount(
+    params: FetchParams | CountParams
+  ): Promise<number> {
     const constraints: QueryConstraint[] = [
       ...(this.config.baseConstraints ?? []),
     ];

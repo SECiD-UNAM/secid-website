@@ -52,9 +52,9 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
   const [showFilters, setShowFilters] = useState(false);
 
   // Track search results with match scores for display in MemberCard
-  const [searchResultMap, setSearchResultMap] = useState<
-    Map<string, number>
-  >(new Map());
+  const [searchResultMap, setSearchResultMap] = useState<Map<string, number>>(
+    new Map()
+  );
 
   // Create adapter that refreshes when memberType changes
   const adapter = useMemo(
@@ -166,10 +166,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
     [memberViewMode, lang, user, searchResultMap]
   );
 
-  const keyExtractor = useCallback(
-    (member: MemberProfile) => member.uid,
-    []
-  );
+  const keyExtractor = useCallback((member: MemberProfile) => member.uid, []);
 
   // Loading timeout
   useEffect(() => {

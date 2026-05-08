@@ -27,7 +27,9 @@ const { CompensationBreakdown } = await import(
   '../../../../src/components/salary/CompensationBreakdown'
 );
 
-function makeBreakdown(overrides: Partial<BreakdownStats> = {}): BreakdownStats {
+function makeBreakdown(
+  overrides: Partial<BreakdownStats> = {}
+): BreakdownStats {
   return {
     base: 240000,
     bonus: 0,

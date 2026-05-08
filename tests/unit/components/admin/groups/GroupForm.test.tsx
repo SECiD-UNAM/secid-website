@@ -1,6 +1,12 @@
 // @ts-nocheck
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, within, cleanup, fireEvent, waitFor } from '@testing-library/react';
+import {
+  render,
+  within,
+  cleanup,
+  fireEvent,
+  waitFor,
+} from '@testing-library/react';
 import GroupForm from '@/components/admin/GroupForm';
 
 // ---------------------------------------------------------------------------
@@ -151,7 +157,14 @@ describe('GroupForm: edit loads', () => {
       data: () => ({
         name: 'Editors',
         description: 'Content editors',
-        permissions: [{ resource: 'blog', operation: 'edit', scope: 'all', effect: 'allow' }],
+        permissions: [
+          {
+            resource: 'blog',
+            operation: 'edit',
+            scope: 'all',
+            effect: 'allow',
+          },
+        ],
         isSystem: false,
         createdBy: 'creator-uid',
         createdAt: null,
@@ -182,7 +195,14 @@ describe('GroupForm: edit submit', () => {
       data: () => ({
         name: 'Editors',
         description: 'Content editors',
-        permissions: [{ resource: 'blog', operation: 'edit', scope: 'all', effect: 'allow' }],
+        permissions: [
+          {
+            resource: 'blog',
+            operation: 'edit',
+            scope: 'all',
+            effect: 'allow',
+          },
+        ],
         isSystem: false,
         createdBy: 'creator-uid',
         createdAt: null,
@@ -231,7 +251,9 @@ describe('GroupForm: system immutable', () => {
       }),
     });
 
-    const { container } = render(<GroupForm lang="en" groupId="system-group" />);
+    const { container } = render(
+      <GroupForm lang="en" groupId="system-group" />
+    );
     const view = within(container);
 
     await waitFor(() => {
@@ -263,7 +285,9 @@ describe('GroupForm: system permissions only', () => {
       }),
     });
 
-    const { container } = render(<GroupForm lang="en" groupId="system-group" />);
+    const { container } = render(
+      <GroupForm lang="en" groupId="system-group" />
+    );
     const view = within(container);
 
     await waitFor(() => {

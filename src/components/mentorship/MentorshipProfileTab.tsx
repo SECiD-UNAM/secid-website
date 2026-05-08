@@ -20,8 +20,18 @@ function BackButton({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
     >
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+      <svg
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M15 19l-7-7 7-7"
+        />
       </svg>
     </button>
   );
@@ -33,7 +43,12 @@ function EditButton({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-white dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
     >
-      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg
+        className="h-3.5 w-3.5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -54,17 +69,13 @@ function CardWrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-function FormHeader({
-  title,
-  onBack,
-}: {
-  title: string;
-  onBack: () => void;
-}) {
+function FormHeader({ title, onBack }: { title: string; onBack: () => void }) {
   return (
     <div className="mb-6 flex items-center gap-3">
       <BackButton onClick={onBack} />
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h2>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+        {title}
+      </h2>
     </div>
   );
 }
@@ -92,9 +103,11 @@ function MentorProfileView({
 }) {
   return (
     <CardWrapper>
-      <div className="rounded-t-xl bg-gradient-to-r from-primary-50 to-amber-50 px-6 py-4 dark:from-primary-900/10 dark:to-amber-900/10 -mx-6 -mt-6 mb-6">
+      <div className="-mx-6 -mt-6 mb-6 rounded-t-xl bg-gradient-to-r from-primary-50 to-amber-50 px-6 py-4 dark:from-primary-900/10 dark:to-amber-900/10">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Mentor Profile</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Mentor Profile
+          </h3>
           <EditButton onClick={onEdit} />
         </div>
       </div>
@@ -119,18 +132,24 @@ function MentorProfileView({
             </p>
           )}
           {profile.bio && (
-            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">{profile.bio}</p>
+            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+              {profile.bio}
+            </p>
           )}
         </div>
       </div>
 
       <div className="mt-6 grid grid-cols-3 gap-4">
         <div className="text-center">
-          <p className="text-2xl font-bold text-primary-600">{profile.rating.toFixed(1)}</p>
+          <p className="text-2xl font-bold text-primary-600">
+            {profile.rating.toFixed(1)}
+          </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">Rating</p>
         </div>
         <div className="text-center">
-          <p className="text-2xl font-bold text-green-600">{profile.totalSessions}</p>
+          <p className="text-2xl font-bold text-green-600">
+            {profile.totalSessions}
+          </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">Sessions</p>
         </div>
         <div className="text-center">
@@ -173,9 +192,11 @@ function MenteeProfileView({
 
   return (
     <CardWrapper>
-      <div className="rounded-t-xl bg-gradient-to-r from-secondary-50 to-blue-50 px-6 py-4 dark:from-secondary-900/10 dark:to-blue-900/10 -mx-6 -mt-6 mb-6">
+      <div className="-mx-6 -mt-6 mb-6 rounded-t-xl bg-gradient-to-r from-secondary-50 to-blue-50 px-6 py-4 dark:from-secondary-900/10 dark:to-blue-900/10">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Mentee Profile</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Mentee Profile
+          </h3>
           <EditButton onClick={onEdit} />
         </div>
       </div>
@@ -200,7 +221,9 @@ function MenteeProfileView({
               ` \u00B7 ${profile.background.yearsOfExperience} years`}
           </p>
           {profile.bio && (
-            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">{profile.bio}</p>
+            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+              {profile.bio}
+            </p>
           )}
         </div>
       </div>
@@ -282,16 +305,26 @@ function RoleSelectionCard({
       >
         {title}
       </h3>
-      <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">{description}</p>
-      <span className={`inline-flex items-center text-sm font-medium ${ctaColor}`}>
+      <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+        {description}
+      </p>
+      <span
+        className={`inline-flex items-center text-sm font-medium ${ctaColor}`}
+      >
         {ctaText}
-        <span className="ml-1 transition-transform group-hover:translate-x-1">&rarr;</span>
+        <span className="ml-1 transition-transform group-hover:translate-x-1">
+          &rarr;
+        </span>
       </span>
     </button>
   );
 }
 
-function WelcomeScreen({ onSelectRole }: { onSelectRole: (role: 'mentor' | 'mentee') => void }) {
+function WelcomeScreen({
+  onSelectRole,
+}: {
+  onSelectRole: (role: 'mentor' | 'mentee') => void;
+}) {
   return (
     <div className="flex flex-col items-center py-12">
       <CardWrapper>
@@ -301,8 +334,8 @@ function WelcomeScreen({ onSelectRole }: { onSelectRole: (role: 'mentor' | 'ment
             Welcome to Mentorship
           </h2>
           <p className="mt-2 max-w-md text-gray-600 dark:text-gray-400">
-            Connect with experienced professionals or guide the next generation of data scientists.
-            Choose your role to get started.
+            Connect with experienced professionals or guide the next generation
+            of data scientists. Choose your role to get started.
           </p>
 
           <div className="mt-8 flex w-full max-w-xl flex-col gap-4 sm:flex-row">
@@ -451,16 +484,28 @@ export default function MentorshipProfileTab({
   return (
     <div className="space-y-6">
       {mentorProfile && (
-        <MentorProfileView profile={mentorProfile} onEdit={() => setEditingRole('mentor')} />
+        <MentorProfileView
+          profile={mentorProfile}
+          onEdit={() => setEditingRole('mentor')}
+        />
       )}
       {menteeProfile && (
-        <MenteeProfileView profile={menteeProfile} onEdit={() => setEditingRole('mentee')} />
+        <MenteeProfileView
+          profile={menteeProfile}
+          onEdit={() => setEditingRole('mentee')}
+        />
       )}
       {mentorProfile && !menteeProfile && (
-        <AddProfileCta role="mentee" onClick={() => setCreatingRole('mentee')} />
+        <AddProfileCta
+          role="mentee"
+          onClick={() => setCreatingRole('mentee')}
+        />
       )}
       {menteeProfile && !mentorProfile && (
-        <AddProfileCta role="mentor" onClick={() => setCreatingRole('mentor')} />
+        <AddProfileCta
+          role="mentor"
+          onClick={() => setCreatingRole('mentor')}
+        />
       )}
     </div>
   );

@@ -60,7 +60,10 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
               osc.type = 'sine';
               osc.frequency.value = freq;
               gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.12);
-              gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.3);
+              gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                ctx.currentTime + i * 0.12 + 0.3
+              );
               osc.connect(gain).connect(ctx.destination);
               osc.start(ctx.currentTime + i * 0.12);
               osc.stop(ctx.currentTime + i * 0.12 + 0.3);
@@ -72,13 +75,18 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
               osc.type = 'sine';
               osc.frequency.value = freq;
               gain.gain.setValueAtTime(0.12, ctx.currentTime + i * 0.12);
-              gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.25);
+              gain.gain.exponentialRampToValueAtTime(
+                0.001,
+                ctx.currentTime + i * 0.12 + 0.25
+              );
               osc.connect(gain).connect(ctx.destination);
               osc.start(ctx.currentTime + i * 0.12);
               osc.stop(ctx.currentTime + i * 0.12 + 0.25);
             });
           }
-        } catch { /* ignore */ }
+        } catch {
+          /* ignore */
+        }
         return next;
       });
     }, 3000);
@@ -209,19 +217,43 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
   const canManageJournalClub = can('journal-club', 'view');
   const canManageNewsletter = can('newsletter', 'view');
   const canManageSpotlights = can('spotlights', 'view');
-  const showAdminSection = canViewSettings || canManageUsers || canManageCompanies || canManageGroups || canViewReports;
-  const showContentSection = canManageJournalClub || canManageNewsletter || canManageSpotlights;
+  const showAdminSection =
+    canViewSettings ||
+    canManageUsers ||
+    canManageCompanies ||
+    canManageGroups ||
+    canViewReports;
+  const showContentSection =
+    canManageJournalClub || canManageNewsletter || canManageSpotlights;
 
   const contentManagementItems = showContentSection
     ? [
         ...(canManageJournalClub
-          ? [{ href: `/${lang}/dashboard/journal-club`, label: 'Journal Club', icon: 'fas fa-book-reader' }]
+          ? [
+              {
+                href: `/${lang}/dashboard/journal-club`,
+                label: 'Journal Club',
+                icon: 'fas fa-book-reader',
+              },
+            ]
           : []),
         ...(canManageNewsletter
-          ? [{ href: `/${lang}/dashboard/newsletter`, label: 'Newsletter', icon: 'fas fa-newspaper' }]
+          ? [
+              {
+                href: `/${lang}/dashboard/newsletter`,
+                label: 'Newsletter',
+                icon: 'fas fa-newspaper',
+              },
+            ]
           : []),
         ...(canManageSpotlights
-          ? [{ href: `/${lang}/dashboard/spotlights`, label: lang === 'es' ? 'Destacados' : 'Spotlights', icon: 'fas fa-star' }]
+          ? [
+              {
+                href: `/${lang}/dashboard/spotlights`,
+                label: lang === 'es' ? 'Destacados' : 'Spotlights',
+                icon: 'fas fa-star',
+              },
+            ]
           : []),
       ]
     : [];
@@ -229,22 +261,59 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
   const adminItems = showAdminSection
     ? [
         ...(canViewSettings
-          ? [{ href: `/${lang}/dashboard/admin`, label: 'Admin Panel', icon: 'fas fa-shield-alt' }]
+          ? [
+              {
+                href: `/${lang}/dashboard/admin`,
+                label: 'Admin Panel',
+                icon: 'fas fa-shield-alt',
+              },
+            ]
           : []),
         ...(canManageUsers
-          ? [{ href: `/${lang}/dashboard/admin/members`, label: lang === 'es' ? 'Gestionar Miembros' : 'Manage Members', icon: 'fas fa-user-cog' }]
+          ? [
+              {
+                href: `/${lang}/dashboard/admin/members`,
+                label: lang === 'es' ? 'Gestionar Miembros' : 'Manage Members',
+                icon: 'fas fa-user-cog',
+              },
+            ]
           : []),
         ...(canManageCompanies
-          ? [{ href: `/${lang}/dashboard/admin/companies`, label: lang === 'es' ? 'Gestionar Empresas' : 'Manage Companies', icon: 'fas fa-building' }]
+          ? [
+              {
+                href: `/${lang}/dashboard/admin/companies`,
+                label:
+                  lang === 'es' ? 'Gestionar Empresas' : 'Manage Companies',
+                icon: 'fas fa-building',
+              },
+            ]
           : []),
         ...(canManageGroups
-          ? [{ href: `/${lang}/dashboard/admin/groups`, label: lang === 'es' ? 'Grupos' : 'Groups', icon: 'fas fa-layer-group' }]
+          ? [
+              {
+                href: `/${lang}/dashboard/admin/groups`,
+                label: lang === 'es' ? 'Grupos' : 'Groups',
+                icon: 'fas fa-layer-group',
+              },
+            ]
           : []),
         ...(canViewSettings
-          ? [{ href: `/${lang}/dashboard/admin/salary`, label: lang === 'es' ? 'Salarios (Admin)' : 'Salary Data', icon: 'fas fa-dollar-sign' }]
+          ? [
+              {
+                href: `/${lang}/dashboard/admin/salary`,
+                label: lang === 'es' ? 'Salarios (Admin)' : 'Salary Data',
+                icon: 'fas fa-dollar-sign',
+              },
+            ]
           : []),
         ...(canViewReports
-          ? [{ href: `/${lang}/dashboard/admin/reports`, label: lang === 'es' ? 'Reportes' : 'Reports', icon: 'fas fa-chart-bar' }]
+          ? [
+              {
+                href: `/${lang}/dashboard/admin/reports`,
+                label: lang === 'es' ? 'Reportes' : 'Reports',
+                icon: 'fas fa-chart-bar',
+              },
+            ]
           : []),
       ]
     : [];
@@ -319,7 +388,13 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
         }}
       >
         {/* Handle */}
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 4px' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            padding: '10px 0 4px',
+          }}
+        >
           <div
             style={{
               width: 36,
@@ -385,7 +460,12 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
               >
                 {user.displayName || user.email}
               </div>
-              <div style={{ fontSize: 12, color: 'var(--color-text-secondary, #94a3b8)' }}>
+              <div
+                style={{
+                  fontSize: 12,
+                  color: 'var(--color-text-secondary, #94a3b8)',
+                }}
+              >
                 {lang === 'es' ? 'Ver perfil →' : 'View profile →'}
               </div>
             </div>
@@ -418,26 +498,39 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
                   onTouchEnd={onSettingsPointerUp}
                   onTouchCancel={onSettingsPointerUp}
                   onContextMenu={(e) => e.preventDefault()}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    padding: 12,
-                    borderRadius: 8,
-                    background: 'var(--color-background, #0f172a)',
-                    textDecoration: 'none',
-                    color: 'var(--color-text-primary, #e2e8f0)',
-                    fontSize: 13,
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                    WebkitUserSelect: 'none',
-                    WebkitTouchCallout: 'none',
-                  } as React.CSSProperties}
+                  style={
+                    {
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                      padding: 12,
+                      borderRadius: 8,
+                      background: 'var(--color-background, #0f172a)',
+                      textDecoration: 'none',
+                      color: 'var(--color-text-primary, #e2e8f0)',
+                      fontSize: 13,
+                      cursor: 'pointer',
+                      userSelect: 'none',
+                      WebkitUserSelect: 'none',
+                      WebkitTouchCallout: 'none',
+                    } as React.CSSProperties
+                  }
                 >
-                  <i className={item.icon} style={{ width: 18, textAlign: 'center', fontSize: 14 }} />
+                  <i
+                    className={item.icon}
+                    style={{ width: 18, textAlign: 'center', fontSize: 14 }}
+                  />
                   {item.label}
                   {showAdminNav && (
-                    <span style={{ marginLeft: 'auto', width: 8, height: 8, borderRadius: '50%', background: '#f59e0b' }} />
+                    <span
+                      style={{
+                        marginLeft: 'auto',
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        background: '#f59e0b',
+                      }}
+                    />
                   )}
                 </div>
               );
@@ -459,7 +552,10 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
                   fontSize: 13,
                 }}
               >
-                <i className={item.icon} style={{ width: 18, textAlign: 'center', fontSize: 14 }} />
+                <i
+                  className={item.icon}
+                  style={{ width: 18, textAlign: 'center', fontSize: 14 }}
+                />
                 {item.label}
               </a>
             );
@@ -506,7 +602,10 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
                     fontSize: 13,
                   }}
                 >
-                  <i className={item.icon} style={{ width: 18, textAlign: 'center', fontSize: 14 }} />
+                  <i
+                    className={item.icon}
+                    style={{ width: 18, textAlign: 'center', fontSize: 14 }}
+                  />
                   {item.label}
                 </a>
               ))}
@@ -554,7 +653,10 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
                     fontSize: 13,
                   }}
                 >
-                  <i className={item.icon} style={{ width: 18, textAlign: 'center', fontSize: 14 }} />
+                  <i
+                    className={item.icon}
+                    style={{ width: 18, textAlign: 'center', fontSize: 14 }}
+                  />
                   {item.label}
                 </a>
               ))}
@@ -584,7 +686,10 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
               textAlign: 'left',
             }}
           >
-            <i className="fas fa-sign-out-alt" style={{ width: 18, textAlign: 'center', fontSize: 14 }} />
+            <i
+              className="fas fa-sign-out-alt"
+              style={{ width: 18, textAlign: 'center', fontSize: 14 }}
+            />
             {lang === 'es' ? 'Cerrar sesión' : 'Sign out'}
           </button>
         </div>

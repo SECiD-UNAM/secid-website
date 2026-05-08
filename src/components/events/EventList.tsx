@@ -562,10 +562,7 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
 
   const adapter = useMemo(() => buildAdapter(), []);
 
-  const filterDefinitions = useMemo(
-    () => buildFilterDefinitions(lang),
-    [lang]
-  );
+  const filterDefinitions = useMemo(() => buildFilterDefinitions(lang), [lang]);
 
   const {
     items,
@@ -770,9 +767,7 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
               hasActiveFilters={hasActiveFilters}
               onClearFilters={handleClearAll}
               title={
-                lang === 'es'
-                  ? 'No se encontraron eventos'
-                  : 'No events found'
+                lang === 'es' ? 'No se encontraron eventos' : 'No events found'
               }
               description={
                 lang === 'es'
@@ -786,7 +781,12 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
           {!loading && displayedItems.length > 0 && viewMode === 'grid' && (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {displayedItems.map((event) => (
-                <EventCardGrid key={event.id} event={event} lang={lang} actions={cardActions} />
+                <EventCardGrid
+                  key={event.id}
+                  event={event}
+                  lang={lang}
+                  actions={cardActions}
+                />
               ))}
             </div>
           )}
@@ -795,7 +795,12 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
           {!loading && displayedItems.length > 0 && viewMode === 'list' && (
             <div className="space-y-4">
               {displayedItems.map((event) => (
-                <EventCardList key={event.id} event={event} lang={lang} actions={cardActions} />
+                <EventCardList
+                  key={event.id}
+                  event={event}
+                  lang={lang}
+                  actions={cardActions}
+                />
               ))}
             </div>
           )}

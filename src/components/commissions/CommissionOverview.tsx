@@ -36,7 +36,13 @@ export default function CommissionOverview({ lang = 'es' }: Props) {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginBottom: '2rem',
+        }}
+      >
         <div
           style={{
             display: 'inline-flex',
@@ -67,7 +73,9 @@ export default function CommissionOverview({ lang = 'es' }: Props) {
             opacity: view === 'list' ? 1 : 0,
             pointerEvents: view === 'list' ? 'auto' : 'none',
             transition: 'opacity 300ms ease',
-            ...(view !== 'list' ? { position: 'absolute', top: 0, left: 0, width: '100%' } : {}),
+            ...(view !== 'list'
+              ? { position: 'absolute', top: 0, left: 0, width: '100%' }
+              : {}),
           }}
         >
           <CommissionsListView lang={lang} />
@@ -78,7 +86,9 @@ export default function CommissionOverview({ lang = 'es' }: Props) {
             opacity: view === 'chart' ? 1 : 0,
             pointerEvents: view === 'chart' ? 'auto' : 'none',
             transition: 'opacity 300ms ease',
-            ...(view !== 'chart' ? { position: 'absolute', top: 0, left: 0, width: '100%' } : {}),
+            ...(view !== 'chart'
+              ? { position: 'absolute', top: 0, left: 0, width: '100%' }
+              : {}),
           }}
         >
           <Suspense

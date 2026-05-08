@@ -63,7 +63,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const profileUnsubRef = useRef<Unsubscribe | null>(null);
 
   // Subscribe to user profile changes
-  const subscribeToProfile = (uid: string, onFirstSnapshot?: () => void): Unsubscribe => {
+  const subscribeToProfile = (
+    uid: string,
+    onFirstSnapshot?: () => void
+  ): Unsubscribe => {
     const userRef = doc(db, 'users', uid);
     let firstSnapshot = true;
 

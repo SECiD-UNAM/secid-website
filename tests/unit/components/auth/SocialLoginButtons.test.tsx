@@ -46,12 +46,20 @@ describe.sequential('SocialLoginButtons', () => {
   const mockToast = vi.mocked(toast);
 
   const mockSuccessResult = {
-    user: { uid: 'google123', email: 'user@example.com', displayName: 'Test User' },
+    user: {
+      uid: 'google123',
+      email: 'user@example.com',
+      displayName: 'Test User',
+    },
     isNewUser: false,
   };
 
   const mockNewUserResult = {
-    user: { uid: 'google123', email: 'user@example.com', displayName: 'Test User' },
+    user: {
+      uid: 'google123',
+      email: 'user@example.com',
+      displayName: 'Test User',
+    },
     isNewUser: true,
   };
 
@@ -69,15 +77,23 @@ describe.sequential('SocialLoginButtons', () => {
     it('renders all social login providers', () => {
       render(<SocialLoginButtons lang="en" />);
 
-      expect(screen.getByRole('button', { name: /continue with google/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /continue with github/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /continue with linkedin/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continue with google/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continue with github/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continue with linkedin/i })
+      ).toBeInTheDocument();
     });
 
     it('renders divider text in English', () => {
       const { container } = render(<SocialLoginButtons lang="en" />);
 
-      const dividers = container.querySelectorAll('.bg-white.px-2.text-gray-500');
+      const dividers = container.querySelectorAll(
+        '.bg-white.px-2.text-gray-500'
+      );
       expect(dividers.length).toBe(1);
       expect(dividers[0].textContent).toBe('or');
     });
@@ -85,7 +101,9 @@ describe.sequential('SocialLoginButtons', () => {
     it('renders divider text in Spanish', () => {
       const { container } = render(<SocialLoginButtons lang="es" />);
 
-      const dividers = container.querySelectorAll('.bg-white.px-2.text-gray-500');
+      const dividers = container.querySelectorAll(
+        '.bg-white.px-2.text-gray-500'
+      );
       expect(dividers.length).toBe(1);
       expect(dividers[0].textContent).toBe('o');
     });
@@ -93,41 +111,65 @@ describe.sequential('SocialLoginButtons', () => {
     it('renders signup mode text correctly in Spanish', () => {
       render(<SocialLoginButtons mode="signup" lang="es" />);
 
-      expect(screen.getByRole('button', { name: /crear cuenta con google/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /crear cuenta con github/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /crear cuenta con linkedin/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /crear cuenta con google/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /crear cuenta con github/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /crear cuenta con linkedin/i })
+      ).toBeInTheDocument();
     });
 
     it('renders signup mode text correctly in English', () => {
       render(<SocialLoginButtons mode="signup" lang="en" />);
 
-      expect(screen.getByRole('button', { name: /sign up with google/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /sign up with github/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /sign up with linkedin/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /sign up with google/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /sign up with github/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /sign up with linkedin/i })
+      ).toBeInTheDocument();
     });
 
     it('renders signin mode text correctly in Spanish', () => {
       render(<SocialLoginButtons mode="signin" lang="es" />);
 
-      expect(screen.getByRole('button', { name: /continuar con google/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /continuar con github/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /continuar con linkedin/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continuar con google/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continuar con github/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continuar con linkedin/i })
+      ).toBeInTheDocument();
     });
 
     it('uses correct language for Spanish signup', () => {
       render(<SocialLoginButtons lang="es" mode="signup" />);
 
-      expect(screen.getByRole('button', { name: /crear cuenta con google/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /crear cuenta con google/i })
+      ).toBeInTheDocument();
     });
 
     it('uses correct language for English signup', () => {
       render(<SocialLoginButtons lang="en" mode="signup" />);
 
-      expect(screen.getByRole('button', { name: /sign up with google/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /sign up with google/i })
+      ).toBeInTheDocument();
     });
 
     it('applies custom className', () => {
-      const { container } = render(<SocialLoginButtons className="custom-class" />);
+      const { container } = render(
+        <SocialLoginButtons className="custom-class" />
+      );
       expect(container.firstChild).toHaveClass('custom-class');
     });
 
@@ -146,7 +188,9 @@ describe.sequential('SocialLoginButtons', () => {
     it('renders Google button with correct styling', () => {
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       expect(googleButton).toHaveClass('bg-white');
       expect(googleButton).toHaveClass('border-gray-300');
       expect(googleButton).toHaveClass('text-gray-700');
@@ -155,7 +199,9 @@ describe.sequential('SocialLoginButtons', () => {
     it('renders GitHub button with correct styling', () => {
       render(<SocialLoginButtons lang="es" />);
 
-      const githubButton = screen.getByRole('button', { name: /continuar con github/i });
+      const githubButton = screen.getByRole('button', {
+        name: /continuar con github/i,
+      });
       expect(githubButton).toHaveClass('bg-gray-900');
       expect(githubButton).toHaveClass('text-white');
     });
@@ -163,7 +209,9 @@ describe.sequential('SocialLoginButtons', () => {
     it('renders LinkedIn button with correct styling', () => {
       render(<SocialLoginButtons lang="es" />);
 
-      const linkedinButton = screen.getByRole('button', { name: /continuar con linkedin/i });
+      const linkedinButton = screen.getByRole('button', {
+        name: /continuar con linkedin/i,
+      });
       expect(linkedinButton).toHaveClass('bg-[#0A66C2]');
       expect(linkedinButton).toHaveClass('text-white');
     });
@@ -177,12 +225,16 @@ describe.sequential('SocialLoginButtons', () => {
       const onSuccess = vi.fn();
       render(<SocialLoginButtons lang="es" onSuccess={onSuccess} />);
 
-      const googleButton = screen.getByRole('button', { name: /continuar con google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continuar con google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
         expect(mockSignInWithProvider).toHaveBeenCalledWith('google');
-        expect(mockToast.success).toHaveBeenCalledWith('¡Bienvenido de vuelta!');
+        expect(mockToast.success).toHaveBeenCalledWith(
+          '¡Bienvenido de vuelta!'
+        );
         expect(onSuccess).toHaveBeenCalled();
       });
     });
@@ -194,7 +246,9 @@ describe.sequential('SocialLoginButtons', () => {
       const onSuccess = vi.fn();
       render(<SocialLoginButtons lang="es" onSuccess={onSuccess} />);
 
-      const githubButton = screen.getByRole('button', { name: /continuar con github/i });
+      const githubButton = screen.getByRole('button', {
+        name: /continuar con github/i,
+      });
       await user.click(githubButton);
 
       await waitFor(() => {
@@ -210,7 +264,9 @@ describe.sequential('SocialLoginButtons', () => {
       const onSuccess = vi.fn();
       render(<SocialLoginButtons lang="es" onSuccess={onSuccess} />);
 
-      const linkedinButton = screen.getByRole('button', { name: /continuar con linkedin/i });
+      const linkedinButton = screen.getByRole('button', {
+        name: /continuar con linkedin/i,
+      });
       await user.click(linkedinButton);
 
       await waitFor(() => {
@@ -226,11 +282,15 @@ describe.sequential('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="es" />);
 
-      const googleButton = screen.getByRole('button', { name: /continuar con google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continuar con google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(mockToast.success).toHaveBeenCalledWith('¡Bienvenido de vuelta!');
+        expect(mockToast.success).toHaveBeenCalledWith(
+          '¡Bienvenido de vuelta!'
+        );
       });
     });
 
@@ -240,7 +300,9 @@ describe.sequential('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -256,7 +318,9 @@ describe.sequential('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -270,7 +334,9 @@ describe.sequential('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -290,7 +356,9 @@ describe.sequential('SocialLoginButtons', () => {
       const onError = vi.fn();
       render(<SocialLoginButtons lang="en" onError={onError} />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -305,7 +373,9 @@ describe.sequential('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="es" />);
 
-      const googleButton = screen.getByRole('button', { name: /continuar con google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continuar con google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -320,7 +390,9 @@ describe.sequential('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -334,7 +406,9 @@ describe.sequential('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -350,7 +424,9 @@ describe.sequential('SocialLoginButtons', () => {
       const onError = vi.fn();
       render(<SocialLoginButtons lang="en" onError={onError} />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -362,17 +438,22 @@ describe.sequential('SocialLoginButtons', () => {
       const user = userEvent.setup();
       const providerError = {
         code: 'auth/popup-closed-by-user',
-        message: 'The popup has been closed by the user before finalizing the operation.',
+        message:
+          'The popup has been closed by the user before finalizing the operation.',
       };
       mockSignInWithProvider.mockRejectedValue(providerError);
 
       render(<SocialLoginButtons lang="es" />);
 
-      const googleButton = screen.getByRole('button', { name: /continuar con google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continuar con google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(mockToast.error).toHaveBeenCalledWith('Inicio de sesión cancelado');
+        expect(mockToast.error).toHaveBeenCalledWith(
+          'Inicio de sesión cancelado'
+        );
       });
     });
   });
@@ -388,7 +469,9 @@ describe.sequential('SocialLoginButtons', () => {
 
       const { container } = render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -409,7 +492,9 @@ describe.sequential('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -432,8 +517,12 @@ describe.sequential('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
-      const githubButton = screen.getByRole('button', { name: /continue with github/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
+      const githubButton = screen.getByRole('button', {
+        name: /continue with github/i,
+      });
 
       await user.click(googleButton);
       await user.click(githubButton); // Should not trigger second request
@@ -450,7 +539,9 @@ describe.sequential('SocialLoginButtons', () => {
 
       const { container } = render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -470,11 +561,15 @@ describe.sequential('SocialLoginButtons', () => {
 
     it('resets loading state after error', async () => {
       const user = userEvent.setup();
-      mockSignInWithProvider.mockRejectedValue(new Error('Authentication failed'));
+      mockSignInWithProvider.mockRejectedValue(
+        new Error('Authentication failed')
+      );
 
       const { container } = render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -507,7 +602,9 @@ describe.sequential('SocialLoginButtons', () => {
       const user = userEvent.setup();
       render(<SocialLoginButtons lang="en" disabled={true} />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       expect(mockSignInWithProvider).not.toHaveBeenCalled();
@@ -541,9 +638,15 @@ describe.sequential('SocialLoginButtons', () => {
     it('has proper button labeling in Spanish', () => {
       render(<SocialLoginButtons lang="es" />);
 
-      expect(screen.getByRole('button', { name: /continuar con google/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /continuar con github/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /continuar con linkedin/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continuar con google/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continuar con github/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /continuar con linkedin/i })
+      ).toBeInTheDocument();
     });
 
     it('provides visual feedback for interactions', () => {
@@ -593,7 +696,9 @@ describe.sequential('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
 
       await user.click(googleButton);
 
@@ -608,7 +713,9 @@ describe.sequential('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
 
       await user.click(googleButton);
 
@@ -627,7 +734,9 @@ describe.sequential('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
 
       // Click once to start loading, then rapid clicks while loading
       await user.click(googleButton);
@@ -652,7 +761,9 @@ describe.sequential('SocialLoginButtons', () => {
 
       const { rerender, container } = render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -681,17 +792,23 @@ describe.sequential('SocialLoginButtons', () => {
        * Verifies: AC-merge-01
        */
       const user = userEvent.setup();
-      const conflictError = { code: 'auth/account-exists-with-different-credential' };
+      const conflictError = {
+        code: 'auth/account-exists-with-different-credential',
+      };
       mockSignInWithProvider.mockRejectedValue(conflictError);
       mockHandleAccountExistsError.mockResolvedValue(mockMergeData);
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/already exists via Google/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/already exists via Google/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -701,17 +818,23 @@ describe.sequential('SocialLoginButtons', () => {
        * Verifies: AC-merge-01
        */
       const user = userEvent.setup();
-      const conflictError = { code: 'auth/account-exists-with-different-credential' };
+      const conflictError = {
+        code: 'auth/account-exists-with-different-credential',
+      };
       mockSignInWithProvider.mockRejectedValue(conflictError);
       mockHandleAccountExistsError.mockResolvedValue(mockMergeData);
 
       render(<SocialLoginButtons lang="es" />);
 
-      const googleButton = screen.getByRole('button', { name: /continuar con google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continuar con google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Ya existe una cuenta con/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Ya existe una cuenta con/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -721,17 +844,23 @@ describe.sequential('SocialLoginButtons', () => {
        * Verifies: AC-merge-02
        */
       const user = userEvent.setup();
-      const conflictError = { code: 'auth/account-exists-with-different-credential' };
+      const conflictError = {
+        code: 'auth/account-exists-with-different-credential',
+      };
       mockSignInWithProvider.mockRejectedValue(conflictError);
       mockHandleAccountExistsError.mockResolvedValue(mockMergeData);
 
       const { container } = render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/already exists via Google/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/already exists via Google/i)
+        ).toBeInTheDocument();
       });
 
       // Provider buttons should not be in loading state
@@ -750,7 +879,9 @@ describe.sequential('SocialLoginButtons', () => {
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
@@ -766,23 +897,31 @@ describe.sequential('SocialLoginButtons', () => {
        * Verifies: AC-merge-04
        */
       const user = userEvent.setup();
-      const conflictError = { code: 'auth/account-exists-with-different-credential' };
+      const conflictError = {
+        code: 'auth/account-exists-with-different-credential',
+      };
       mockSignInWithProvider.mockRejectedValue(conflictError);
       mockHandleAccountExistsError.mockResolvedValue(mockMergeData);
 
       render(<SocialLoginButtons lang="en" />);
 
-      const googleButton = screen.getByRole('button', { name: /continue with google/i });
+      const googleButton = screen.getByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/already exists via Google/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/already exists via Google/i)
+        ).toBeInTheDocument();
       });
 
       const cancelButton = screen.getByRole('button', { name: /cancel/i });
       await user.click(cancelButton);
 
-      expect(screen.queryByText(/already exists via Google/i)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/already exists via Google/i)
+      ).not.toBeInTheDocument();
     });
 
     it('completes merge and calls onSuccess when sign in with existing is clicked', async () => {
@@ -791,7 +930,9 @@ describe.sequential('SocialLoginButtons', () => {
        * Verifies: AC-merge-05
        */
       const user = userEvent.setup();
-      const conflictError = { code: 'auth/account-exists-with-different-credential' };
+      const conflictError = {
+        code: 'auth/account-exists-with-different-credential',
+      };
       mockSignInWithProvider.mockRejectedValue(conflictError);
       mockHandleAccountExistsError.mockResolvedValue(mockMergeData);
       mockCompleteMerge.mockResolvedValue(undefined);
@@ -800,23 +941,34 @@ describe.sequential('SocialLoginButtons', () => {
       render(<SocialLoginButtons lang="en" onSuccess={onSuccess} />);
 
       // First click triggers the conflict flow (there are multiple "Continue with Google" buttons)
-      const providerButtons = screen.getAllByRole('button', { name: /continue with google/i });
+      const providerButtons = screen.getAllByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(providerButtons[0]);
 
       await waitFor(() => {
-        expect(screen.getByText(/already exists via Google/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/already exists via Google/i)
+        ).toBeInTheDocument();
       });
 
       // The merge prompt button is now first in the list; use the amber-styled one
-      const mergeButtons = screen.getAllByRole('button', { name: /continue with google/i });
+      const mergeButtons = screen.getAllByRole('button', {
+        name: /continue with google/i,
+      });
       const mergePromptButton = mergeButtons.find((btn) =>
         btn.className.includes('bg-amber-600')
       )!;
       await user.click(mergePromptButton);
 
       await waitFor(() => {
-        expect(mockCompleteMerge).toHaveBeenCalledWith('google', mockMergeData.pendingCredential);
-        expect(mockToast.success).toHaveBeenCalledWith('Accounts linked successfully!');
+        expect(mockCompleteMerge).toHaveBeenCalledWith(
+          'google',
+          mockMergeData.pendingCredential
+        );
+        expect(mockToast.success).toHaveBeenCalledWith(
+          'Accounts linked successfully!'
+        );
         expect(onSuccess).toHaveBeenCalled();
       });
     });
@@ -827,21 +979,29 @@ describe.sequential('SocialLoginButtons', () => {
        * Verifies: AC-merge-06
        */
       const user = userEvent.setup();
-      const conflictError = { code: 'auth/account-exists-with-different-credential' };
+      const conflictError = {
+        code: 'auth/account-exists-with-different-credential',
+      };
       mockSignInWithProvider.mockRejectedValue(conflictError);
       mockHandleAccountExistsError.mockResolvedValue(mockMergeData);
       mockCompleteMerge.mockRejectedValue(new Error('Merge failed'));
 
       render(<SocialLoginButtons lang="en" />);
 
-      const providerButtons = screen.getAllByRole('button', { name: /continue with google/i });
+      const providerButtons = screen.getAllByRole('button', {
+        name: /continue with google/i,
+      });
       await user.click(providerButtons[0]);
 
       await waitFor(() => {
-        expect(screen.getByText(/already exists via Google/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/already exists via Google/i)
+        ).toBeInTheDocument();
       });
 
-      const mergeButtons = screen.getAllByRole('button', { name: /continue with google/i });
+      const mergeButtons = screen.getAllByRole('button', {
+        name: /continue with google/i,
+      });
       const mergePromptButton = mergeButtons.find((btn) =>
         btn.className.includes('bg-amber-600')
       )!;
@@ -858,28 +1018,38 @@ describe.sequential('SocialLoginButtons', () => {
        * Verifies: AC-merge-05
        */
       const user = userEvent.setup();
-      const conflictError = { code: 'auth/account-exists-with-different-credential' };
+      const conflictError = {
+        code: 'auth/account-exists-with-different-credential',
+      };
       mockSignInWithProvider.mockRejectedValue(conflictError);
       mockHandleAccountExistsError.mockResolvedValue(mockMergeData);
       mockCompleteMerge.mockResolvedValue(undefined);
 
       render(<SocialLoginButtons lang="es" />);
 
-      const providerButtons = screen.getAllByRole('button', { name: /continuar con google/i });
+      const providerButtons = screen.getAllByRole('button', {
+        name: /continuar con google/i,
+      });
       await user.click(providerButtons[0]);
 
       await waitFor(() => {
-        expect(screen.getByText(/Ya existe una cuenta con/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Ya existe una cuenta con/i)
+        ).toBeInTheDocument();
       });
 
-      const mergeButtons = screen.getAllByRole('button', { name: /Continuar con Google/i });
+      const mergeButtons = screen.getAllByRole('button', {
+        name: /Continuar con Google/i,
+      });
       const mergePromptButton = mergeButtons.find((btn) =>
         btn.className.includes('bg-amber-600')
       )!;
       await user.click(mergePromptButton);
 
       await waitFor(() => {
-        expect(mockToast.success).toHaveBeenCalledWith('¡Cuentas vinculadas exitosamente!');
+        expect(mockToast.success).toHaveBeenCalledWith(
+          '¡Cuentas vinculadas exitosamente!'
+        );
       });
     });
   });

@@ -26,7 +26,10 @@ const labels: Record<string, Record<'es' | 'en', string>> = {
   createTitle: { en: 'Group Information', es: 'Informacion del Grupo' },
   editTitle: { en: 'Group Information', es: 'Informacion del Grupo' },
   name: { en: 'Name', es: 'Nombre' },
-  namePlaceholder: { en: 'e.g. Content Editors', es: 'p.ej. Editores de Contenido' },
+  namePlaceholder: {
+    en: 'e.g. Content Editors',
+    es: 'p.ej. Editores de Contenido',
+  },
   description: { en: 'Description', es: 'Descripcion' },
   descriptionPlaceholder: {
     en: 'Describe the purpose of this group',
@@ -37,10 +40,19 @@ const labels: Record<string, Record<'es' | 'en', string>> = {
   saving: { en: 'Saving...', es: 'Guardando...' },
   create: { en: 'Create Group', es: 'Crear Grupo' },
   update: { en: 'Update Group', es: 'Actualizar Grupo' },
-  successCreate: { en: 'Group created successfully', es: 'Grupo creado exitosamente' },
-  successUpdate: { en: 'Group updated successfully', es: 'Grupo actualizado exitosamente' },
+  successCreate: {
+    en: 'Group created successfully',
+    es: 'Grupo creado exitosamente',
+  },
+  successUpdate: {
+    en: 'Group updated successfully',
+    es: 'Grupo actualizado exitosamente',
+  },
   errorAuth: { en: 'You must be logged in', es: 'Debes iniciar sesion' },
-  errorGeneric: { en: 'An error occurred. Please try again.', es: 'Ocurrio un error. Intenta de nuevo.' },
+  errorGeneric: {
+    en: 'An error occurred. Please try again.',
+    es: 'Ocurrio un error. Intenta de nuevo.',
+  },
   errorNotFound: { en: 'Group not found', es: 'Grupo no encontrado' },
   errorNameRequired: { en: 'Name is required', es: 'El nombre es requerido' },
   systemGroupNotice: {

@@ -33,8 +33,7 @@ const translations = {
       loadMore: 'Cargar más',
       showing: (start: number, end: number, total: number) =>
         `Mostrando ${start}–${end} de ${total}`,
-      page: (current: number, total: number) =>
-        `Página ${current} de ${total}`,
+      page: (current: number, total: number) => `Página ${current} de ${total}`,
     },
     empty: {
       title: 'Sin resultados',
@@ -81,8 +80,7 @@ const translations = {
       loadMore: 'Load more',
       showing: (start: number, end: number, total: number) =>
         `Showing ${start}–${end} of ${total}`,
-      page: (current: number, total: number) =>
-        `Page ${current} of ${total}`,
+      page: (current: number, total: number) => `Page ${current} of ${total}`,
     },
     empty: {
       title: 'No results',

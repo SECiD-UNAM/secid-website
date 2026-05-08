@@ -54,11 +54,41 @@ export interface CalendarActivity {
 
 const ACTIVITIES: CalendarActivity[] = [
   // Journal Club sessions
-  { id: 'jc-1', date: '2026-05-29', type: 'journal-club', topic: 'NLP Foundations', presenter: 'Fernando Avitua' },
-  { id: 'jc-2', date: '2026-09-18', type: 'journal-club', topic: 'Attention Is All You Need', presenter: 'Fernando Avitua' },
-  { id: 'jc-3', date: '2026-11-20', type: 'journal-club', topic: 'BERT', presenter: 'Artemio Padilla' },
-  { id: 'jc-4', date: '2027-02-19', type: 'journal-club', topic: 'GPTs', presenter: 'Alejandro Ramirez Bondi' },
-  { id: 'jc-5', date: '2027-04-23', type: 'journal-club', topic: 'LLaMA', presenter: 'Eduardo Garduño' },
+  {
+    id: 'jc-1',
+    date: '2026-05-29',
+    type: 'journal-club',
+    topic: 'NLP Foundations',
+    presenter: 'Fernando Avitua',
+  },
+  {
+    id: 'jc-2',
+    date: '2026-09-18',
+    type: 'journal-club',
+    topic: 'Attention Is All You Need',
+    presenter: 'Fernando Avitua',
+  },
+  {
+    id: 'jc-3',
+    date: '2026-11-20',
+    type: 'journal-club',
+    topic: 'BERT',
+    presenter: 'Artemio Padilla',
+  },
+  {
+    id: 'jc-4',
+    date: '2027-02-19',
+    type: 'journal-club',
+    topic: 'GPTs',
+    presenter: 'Alejandro Ramirez Bondi',
+  },
+  {
+    id: 'jc-5',
+    date: '2027-04-23',
+    type: 'journal-club',
+    topic: 'LLaMA',
+    presenter: 'Eduardo Garduño',
+  },
   // Knowledge Exchange (TBD presenters)
   { id: 'ke-1', date: '2026-08-21', type: 'knowledge-exchange' },
   { id: 'ke-2', date: '2026-10-23', type: 'knowledge-exchange' },
@@ -110,8 +140,8 @@ function ActivityBadge({
       ? 'bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800'
       : 'bg-blue-100 border-blue-300 dark:bg-blue-900/40 dark:border-blue-700'
     : past
-    ? 'bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800'
-    : 'bg-amber-100 border-amber-300 dark:bg-amber-900/40 dark:border-amber-700';
+      ? 'bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800'
+      : 'bg-amber-100 border-amber-300 dark:bg-amber-900/40 dark:border-amber-700';
 
   const iconClass = isJC
     ? 'text-blue-600 dark:text-blue-400'
@@ -124,8 +154,10 @@ function ActivityBadge({
   if (compact) {
     return (
       <div
-        className={`rounded px-1.5 py-0.5 text-xs font-medium border ${colorClass} ${textClass} truncate`}
-        title={activity.topic ?? t(isJC ? 'journalClub' : 'knowledgeExchange', lang)}
+        className={`rounded border px-1.5 py-0.5 text-xs font-medium ${colorClass} ${textClass} truncate`}
+        title={
+          activity.topic ?? t(isJC ? 'journalClub' : 'knowledgeExchange', lang)
+        }
       >
         {isJC ? '📖' : '💡'}{' '}
         {activity.topic ?? t(isJC ? 'journalClub' : 'knowledgeExchange', lang)}
@@ -135,7 +167,7 @@ function ActivityBadge({
 
   return (
     <div
-      className={`rounded-lg border p-4 flex gap-3 items-start ${colorClass} ${past ? 'opacity-65' : ''}`}
+      className={`flex items-start gap-3 rounded-lg border p-4 ${colorClass} ${past ? 'opacity-65' : ''}`}
     >
       <div className={`mt-0.5 flex-shrink-0 ${iconClass}`}>
         {isJC ? (
@@ -144,9 +176,11 @@ function ActivityBadge({
           <LightBulbIcon className="h-5 w-5" />
         )}
       </div>
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <span className={`text-xs font-semibold uppercase tracking-wide ${iconClass}`}>
+          <span
+            className={`text-xs font-semibold uppercase tracking-wide ${iconClass}`}
+          >
             {t(isJC ? 'journalClub' : 'knowledgeExchange', lang)}
           </span>
           {past ? (
@@ -154,15 +188,19 @@ function ActivityBadge({
               {t('completed', lang)}
             </span>
           ) : (
-            <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${isJC ? 'bg-blue-200 text-blue-800 dark:bg-blue-800 dark:text-blue-200' : 'bg-amber-200 text-amber-800 dark:bg-amber-800 dark:text-amber-200'}`}>
+            <span
+              className={`rounded-full px-2 py-0.5 text-xs font-medium ${isJC ? 'bg-blue-200 text-blue-800 dark:bg-blue-800 dark:text-blue-200' : 'bg-amber-200 text-amber-800 dark:bg-amber-800 dark:text-amber-200'}`}
+            >
               {t('upcoming', lang)}
             </span>
           )}
         </div>
         <p className={`mt-1 text-sm font-medium ${textClass}`}>
-          {activity.topic ?? <em className="font-normal opacity-70">{t('tbd', lang)}</em>}
+          {activity.topic ?? (
+            <em className="font-normal opacity-70">{t('tbd', lang)}</em>
+          )}
         </p>
-        <p className="mt-0.5 text-xs text-gray-600 dark:text-gray-400 capitalize">
+        <p className="mt-0.5 text-xs capitalize text-gray-600 dark:text-gray-400">
           {formatDate(activity.date, lang)}
         </p>
         {activity.presenter && (
@@ -190,7 +228,7 @@ function ListView({ lang }: { lang: string }) {
     <div className="space-y-8">
       {upcoming.length > 0 && (
         <section>
-          <h3 className="mb-4 text-base font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">
+          <h3 className="mb-4 border-b pb-2 text-base font-semibold text-gray-700 dark:text-gray-300">
             {lang === 'es' ? 'Próximas Actividades' : 'Upcoming Activities'}
           </h3>
           <div className="space-y-3">
@@ -202,7 +240,7 @@ function ListView({ lang }: { lang: string }) {
       )}
       {past.length > 0 && (
         <section>
-          <h3 className="mb-4 text-base font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">
+          <h3 className="mb-4 border-b pb-2 text-base font-semibold text-gray-700 dark:text-gray-300">
             {lang === 'es' ? 'Actividades Pasadas' : 'Past Activities'}
           </h3>
           <div className="space-y-3">
@@ -242,17 +280,22 @@ function MonthView({ lang }: { lang: string }) {
   });
 
   function prevMonth() {
-    if (month === 0) { setMonth(11); setYear(y => y - 1); }
-    else setMonth(m => m - 1);
+    if (month === 0) {
+      setMonth(11);
+      setYear((y) => y - 1);
+    } else setMonth((m) => m - 1);
   }
   function nextMonth() {
-    if (month === 11) { setMonth(0); setYear(y => y + 1); }
-    else setMonth(m => m + 1);
+    if (month === 11) {
+      setMonth(0);
+      setYear((y) => y + 1);
+    } else setMonth((m) => m + 1);
   }
 
-  const dayLabels = lang === 'es'
-    ? ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
-    : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const dayLabels =
+    lang === 'es'
+      ? ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+      : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
     <div className="space-y-4">
@@ -261,7 +304,7 @@ function MonthView({ lang }: { lang: string }) {
         <button
           onClick={prevMonth}
           aria-label={t('previousMonth', lang)}
-          className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          className="rounded-lg p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
         >
           <ChevronLeftIcon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
         </button>
@@ -271,7 +314,7 @@ function MonthView({ lang }: { lang: string }) {
         <button
           onClick={nextMonth}
           aria-label={t('nextMonth', lang)}
-          className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          className="rounded-lg p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
         >
           <ChevronRightIcon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
         </button>
@@ -280,7 +323,10 @@ function MonthView({ lang }: { lang: string }) {
       {/* Day headers */}
       <div className="grid grid-cols-7 gap-1">
         {dayLabels.map((d) => (
-          <div key={d} className="text-center text-xs font-medium text-gray-500 dark:text-gray-400 py-1">
+          <div
+            key={d}
+            className="py-1 text-center text-xs font-medium text-gray-500 dark:text-gray-400"
+          >
             {d}
           </div>
         ))}
@@ -300,13 +346,15 @@ function MonthView({ lang }: { lang: string }) {
             <div
               key={idx}
               className={`min-h-[60px] rounded-lg p-1 text-xs ${
-                day ? 'bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700' : ''
+                day
+                  ? 'border border-gray-100 bg-white dark:border-gray-700 dark:bg-gray-800'
+                  : ''
               } ${isToday ? 'ring-2 ring-blue-400' : ''}`}
             >
               {day && (
                 <>
                   <span
-                    className={`block text-right font-medium mb-1 ${
+                    className={`mb-1 block text-right font-medium ${
                       isToday
                         ? 'text-blue-600 dark:text-blue-400'
                         : 'text-gray-700 dark:text-gray-300'
@@ -316,7 +364,12 @@ function MonthView({ lang }: { lang: string }) {
                   </span>
                   <div className="space-y-0.5">
                     {dayActivities.map((a) => (
-                      <ActivityBadge key={a.id} activity={a} lang={lang} compact />
+                      <ActivityBadge
+                        key={a.id}
+                        activity={a}
+                        lang={lang}
+                        compact
+                      />
                     ))}
                   </div>
                 </>
@@ -328,7 +381,7 @@ function MonthView({ lang }: { lang: string }) {
 
       {/* Events this month summary */}
       {activitiesThisMonth.length === 0 ? (
-        <p className="text-center text-sm text-gray-400 dark:text-gray-500 py-4">
+        <p className="py-4 text-center text-sm text-gray-400 dark:text-gray-500">
           {t('noEvents', lang)}
         </p>
       ) : (
@@ -355,7 +408,7 @@ export default function CalendarPage({ lang = 'es' }: CalendarPageProps) {
     <div className="mx-auto max-w-6xl space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-900 dark:text-white">
           <CalendarIcon className="h-7 w-7 text-blue-600 dark:text-blue-400" />
           {t('title', lang)}
         </h1>
@@ -368,18 +421,22 @@ export default function CalendarPage({ lang = 'es' }: CalendarPageProps) {
       <div className="flex flex-wrap gap-4 text-sm">
         <div className="flex items-center gap-2">
           <BookOpenIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-          <span className="text-gray-600 dark:text-gray-400">{t('journalClub', lang)}</span>
+          <span className="text-gray-600 dark:text-gray-400">
+            {t('journalClub', lang)}
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <LightBulbIcon className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-          <span className="text-gray-600 dark:text-gray-400">{t('knowledgeExchange', lang)}</span>
+          <span className="text-gray-600 dark:text-gray-400">
+            {t('knowledgeExchange', lang)}
+          </span>
         </div>
       </div>
 
       {/* Both views side by side on desktop, stacked on mobile */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
         {/* Month view */}
-        <div className="rounded-xl bg-white dark:bg-gray-800 shadow p-4">
+        <div className="rounded-xl bg-white p-4 shadow dark:bg-gray-800">
           <h2 className="mb-4 text-base font-semibold text-gray-700 dark:text-gray-300">
             {t('monthView', lang)}
           </h2>
@@ -387,7 +444,7 @@ export default function CalendarPage({ lang = 'es' }: CalendarPageProps) {
         </div>
 
         {/* List view */}
-        <div className="rounded-xl bg-white dark:bg-gray-800 shadow p-4">
+        <div className="rounded-xl bg-white p-4 shadow dark:bg-gray-800">
           <h2 className="mb-4 text-base font-semibold text-gray-700 dark:text-gray-300">
             {t('listView', lang)}
           </h2>

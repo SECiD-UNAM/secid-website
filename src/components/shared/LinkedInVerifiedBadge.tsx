@@ -11,7 +11,8 @@ export const LinkedInVerifiedBadge: React.FC<LinkedInVerifiedBadgeProps> = ({
   size = 'sm',
   className = '',
 }) => {
-  const tooltip = lang === 'es' ? 'Verificado en LinkedIn' : 'Verified on LinkedIn';
+  const tooltip =
+    lang === 'es' ? 'Verificado en LinkedIn' : 'Verified on LinkedIn';
   const iconSize = size === 'sm' ? 'h-4 w-4' : 'h-5 w-5';
 
   return (

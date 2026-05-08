@@ -1,6 +1,12 @@
 // @ts-nocheck
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, within, cleanup, waitFor, fireEvent } from '@testing-library/react';
+import {
+  render,
+  within,
+  cleanup,
+  waitFor,
+  fireEvent,
+} from '@testing-library/react';
 import GroupMemberManager from '@/components/admin/GroupMemberManager';
 
 // ---------------------------------------------------------------------------
@@ -60,8 +66,14 @@ const userProfiles = {
 function setupWithMembers() {
   mockGetDocs.mockResolvedValue({
     docs: [
-      { id: 'user-1', data: () => ({ groups: ['test-group-id'], userId: 'user-1' }) },
-      { id: 'user-2', data: () => ({ groups: ['test-group-id'], userId: 'user-2' }) },
+      {
+        id: 'user-1',
+        data: () => ({ groups: ['test-group-id'], userId: 'user-1' }),
+      },
+      {
+        id: 'user-2',
+        data: () => ({ groups: ['test-group-id'], userId: 'user-2' }),
+      },
     ],
   });
   mockGetDoc.mockImplementation((ref) => {

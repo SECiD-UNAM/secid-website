@@ -310,9 +310,11 @@ const schemaOrgJson = JSON.stringify({
       <div class="beta-banner__content">
         <span class="beta-banner__icon" aria-hidden="true">&#9888;</span>
         <span class="beta-banner__text">
-          {lang === 'en'
-            ? 'Beta Environment \u2014 Features may be unstable or change without notice.'
-            : 'Entorno Beta \u2014 Las funcionalidades pueden ser inestables o cambiar sin previo aviso.'}
+          {
+            lang === 'en'
+              ? 'Beta Environment \u2014 Features may be unstable or change without notice.'
+              : 'Entorno Beta \u2014 Las funcionalidades pueden ser inestables o cambiar sin previo aviso.'
+          }
         </span>
         <button
           class="beta-banner__dismiss"

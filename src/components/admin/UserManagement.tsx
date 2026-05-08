@@ -85,9 +85,15 @@ function mapUserDoc(id: string, data: Record<string, unknown>): User {
     portfolioUrl: data['portfolioUrl'] as string | undefined,
     profileCompleteness: data['profileCompleteness'] as number | undefined,
     photoURL: data['photoURL'] as string | undefined,
-    createdAt: (data['createdAt'] as { toDate(): Date } | undefined)?.toDate() ?? new Date(),
-    updatedAt: (data['updatedAt'] as { toDate(): Date } | undefined)?.toDate() ?? new Date(),
-    lastLoginAt: (data['lastLoginAt'] as { toDate(): Date } | undefined)?.toDate(),
+    createdAt:
+      (data['createdAt'] as { toDate(): Date } | undefined)?.toDate() ??
+      new Date(),
+    updatedAt:
+      (data['updatedAt'] as { toDate(): Date } | undefined)?.toDate() ??
+      new Date(),
+    lastLoginAt: (
+      data['lastLoginAt'] as { toDate(): Date } | undefined
+    )?.toDate(),
   };
 }
 
@@ -135,7 +141,8 @@ export const UserManagement: React.FC = () => {
           membershipTier: (v) => (v ? where('membershipTier', '==', v) : null),
           isVerified: (v) => (v !== '' ? where('isVerified', '==', v) : null),
           isActive: (v) => (v !== '' ? where('isActive', '==', v) : null),
-          graduationYear: (v) => (v ? where('graduationYear', '==', Number(v)) : null),
+          graduationYear: (v) =>
+            v ? where('graduationYear', '==', Number(v)) : null,
           program: (v) => (v ? where('program', '==', v) : null),
         },
       }),
@@ -152,7 +159,10 @@ export const UserManagement: React.FC = () => {
         options: [
           { value: 'member', label: lang === 'es' ? 'Miembro' : 'Member' },
           { value: 'admin', label: lang === 'es' ? 'Administrador' : 'Admin' },
-          { value: 'moderator', label: lang === 'es' ? 'Moderador' : 'Moderator' },
+          {
+            value: 'moderator',
+            label: lang === 'es' ? 'Moderador' : 'Moderator',
+          },
           { value: 'company', label: lang === 'es' ? 'Empresa' : 'Company' },
         ],
       },
@@ -164,7 +174,10 @@ export const UserManagement: React.FC = () => {
         options: [
           { value: 'free', label: lang === 'es' ? 'Gratuita' : 'Free' },
           { value: 'premium', label: 'Premium' },
-          { value: 'corporate', label: lang === 'es' ? 'Corporativa' : 'Corporate' },
+          {
+            value: 'corporate',
+            label: lang === 'es' ? 'Corporativa' : 'Corporate',
+          },
         ],
       },
       {
@@ -174,7 +187,10 @@ export const UserManagement: React.FC = () => {
         placeholder: lang === 'es' ? 'Todos' : 'All',
         options: [
           { value: 'true', label: lang === 'es' ? 'Verificados' : 'Verified' },
-          { value: 'false', label: lang === 'es' ? 'No verificados' : 'Not verified' },
+          {
+            value: 'false',
+            label: lang === 'es' ? 'No verificados' : 'Not verified',
+          },
         ],
       },
       {
@@ -224,25 +240,46 @@ export const UserManagement: React.FC = () => {
 
       switch (action) {
         case 'verify':
-          await updateDoc(userRef, { isVerified: true, updatedAt: Timestamp.now() });
+          await updateDoc(userRef, {
+            isVerified: true,
+            updatedAt: Timestamp.now(),
+          });
           break;
         case 'unverify':
-          await updateDoc(userRef, { isVerified: false, updatedAt: Timestamp.now() });
+          await updateDoc(userRef, {
+            isVerified: false,
+            updatedAt: Timestamp.now(),
+          });
           break;
         case 'activate':
-          await updateDoc(userRef, { isActive: true, updatedAt: Timestamp.now() });
+          await updateDoc(userRef, {
+            isActive: true,
+            updatedAt: Timestamp.now(),
+          });
           break;
         case 'deactivate':
-          await updateDoc(userRef, { isActive: false, updatedAt: Timestamp.now() });
+          await updateDoc(userRef, {
+            isActive: false,
+            updatedAt: Timestamp.now(),
+          });
           break;
         case 'make_admin':
-          await updateDoc(userRef, { role: 'admin', updatedAt: Timestamp.now() });
+          await updateDoc(userRef, {
+            role: 'admin',
+            updatedAt: Timestamp.now(),
+          });
           break;
         case 'make_moderator':
-          await updateDoc(userRef, { role: 'moderator', updatedAt: Timestamp.now() });
+          await updateDoc(userRef, {
+            role: 'moderator',
+            updatedAt: Timestamp.now(),
+          });
           break;
         case 'make_member':
-          await updateDoc(userRef, { role: 'member', updatedAt: Timestamp.now() });
+          await updateDoc(userRef, {
+            role: 'member',
+            updatedAt: Timestamp.now(),
+          });
           break;
         case 'delete':
           if (
@@ -263,7 +300,9 @@ export const UserManagement: React.FC = () => {
     } catch (err) {
       console.error('Error performing user action:', err);
       setActionError(
-        lang === 'es' ? 'Error al realizar la acción' : 'Error performing action'
+        lang === 'es'
+          ? 'Error al realizar la acción'
+          : 'Error performing action'
       );
     }
   };
@@ -314,7 +353,10 @@ export const UserManagement: React.FC = () => {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `users-export-${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute(
+      'download',
+      `users-export-${new Date().toISOString().split('T')[0]}.csv`
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -350,7 +392,11 @@ export const UserManagement: React.FC = () => {
           <div className="flex items-center">
             <div className="h-10 w-10 flex-shrink-0">
               {user.photoURL ? (
-                <img className="h-10 w-10 rounded-full" src={user.photoURL} alt="" />
+                <img
+                  className="h-10 w-10 rounded-full"
+                  src={user.photoURL}
+                  alt=""
+                />
               ) : (
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
                   <Users className="h-5 w-5 text-gray-500" />
@@ -373,7 +419,9 @@ export const UserManagement: React.FC = () => {
         accessor: (user) => (
           <div className="flex items-center">
             {getRoleIcon(user.role)}
-            <span className="ml-2 text-sm capitalize text-gray-900">{user.role}</span>
+            <span className="ml-2 text-sm capitalize text-gray-900">
+              {user.role}
+            </span>
           </div>
         ),
       },
@@ -384,21 +432,33 @@ export const UserManagement: React.FC = () => {
           <div className="flex space-x-2">
             <span
               className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                user.isVerified ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                user.isVerified
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-gray-100 text-gray-800'
               }`}
             >
               {user.isVerified
-                ? lang === 'es' ? 'Verificado' : 'Verified'
-                : lang === 'es' ? 'No verificado' : 'Unverified'}
+                ? lang === 'es'
+                  ? 'Verificado'
+                  : 'Verified'
+                : lang === 'es'
+                  ? 'No verificado'
+                  : 'Unverified'}
             </span>
             <span
               className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                user.isActive
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
               }`}
             >
               {user.isActive
-                ? lang === 'es' ? 'Activo' : 'Active'
-                : lang === 'es' ? 'Inactivo' : 'Inactive'}
+                ? lang === 'es'
+                  ? 'Activo'
+                  : 'Active'
+                : lang === 'es'
+                  ? 'Inactivo'
+                  : 'Inactive'}
             </span>
           </div>
         ),
@@ -408,7 +468,9 @@ export const UserManagement: React.FC = () => {
         label: lang === 'es' ? 'Membresía' : 'Membership',
         sortable: true,
         accessor: (user) => (
-          <span className="text-sm capitalize text-gray-900">{user.membershipTier}</span>
+          <span className="text-sm capitalize text-gray-900">
+            {user.membershipTier}
+          </span>
         ),
       },
       {
@@ -416,7 +478,9 @@ export const UserManagement: React.FC = () => {
         label: lang === 'es' ? 'Registro' : 'Joined',
         sortable: true,
         accessor: (user) => (
-          <span className="text-sm text-gray-500">{formatDate(user.createdAt, lang)}</span>
+          <span className="text-sm text-gray-500">
+            {formatDate(user.createdAt, lang)}
+          </span>
         ),
       },
       {
@@ -436,26 +500,60 @@ export const UserManagement: React.FC = () => {
               <Eye className="h-4 w-4" />
             </button>
             <button
-              onClick={() => handleUserAction(user.isVerified ? 'unverify' : 'verify', user.uid)}
-              className={user.isVerified ? 'text-gray-600 hover:text-gray-900' : 'text-green-600 hover:text-green-900'}
+              onClick={() =>
+                handleUserAction(
+                  user.isVerified ? 'unverify' : 'verify',
+                  user.uid
+                )
+              }
+              className={
+                user.isVerified
+                  ? 'text-gray-600 hover:text-gray-900'
+                  : 'text-green-600 hover:text-green-900'
+              }
               title={
                 user.isVerified
-                  ? lang === 'es' ? 'Quitar verificación' : 'Unverify'
-                  : lang === 'es' ? 'Verificar' : 'Verify'
+                  ? lang === 'es'
+                    ? 'Quitar verificación'
+                    : 'Unverify'
+                  : lang === 'es'
+                    ? 'Verificar'
+                    : 'Verify'
               }
             >
-              {user.isVerified ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
+              {user.isVerified ? (
+                <UserX className="h-4 w-4" />
+              ) : (
+                <UserCheck className="h-4 w-4" />
+              )}
             </button>
             <button
-              onClick={() => handleUserAction(user.isActive ? 'deactivate' : 'activate', user.uid)}
-              className={user.isActive ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}
+              onClick={() =>
+                handleUserAction(
+                  user.isActive ? 'deactivate' : 'activate',
+                  user.uid
+                )
+              }
+              className={
+                user.isActive
+                  ? 'text-red-600 hover:text-red-900'
+                  : 'text-green-600 hover:text-green-900'
+              }
               title={
                 user.isActive
-                  ? lang === 'es' ? 'Desactivar' : 'Deactivate'
-                  : lang === 'es' ? 'Activar' : 'Activate'
+                  ? lang === 'es'
+                    ? 'Desactivar'
+                    : 'Deactivate'
+                  : lang === 'es'
+                    ? 'Activar'
+                    : 'Activate'
               }
             >
-              {user.isActive ? <Ban className="h-4 w-4" /> : <UnlockKeyhole className="h-4 w-4" />}
+              {user.isActive ? (
+                <Ban className="h-4 w-4" />
+              ) : (
+                <UnlockKeyhole className="h-4 w-4" />
+              )}
             </button>
             <button
               onClick={() => handleUserAction('delete', user.uid)}
@@ -566,11 +664,21 @@ export const UserManagement: React.FC = () => {
                 <option value="">
                   {lang === 'es' ? 'Seleccionar acción' : 'Select action'}
                 </option>
-                <option value="verify">{lang === 'es' ? 'Verificar' : 'Verify'}</option>
-                <option value="unverify">{lang === 'es' ? 'No verificar' : 'Unverify'}</option>
-                <option value="activate">{lang === 'es' ? 'Activar' : 'Activate'}</option>
-                <option value="deactivate">{lang === 'es' ? 'Desactivar' : 'Deactivate'}</option>
-                <option value="delete">{lang === 'es' ? 'Eliminar' : 'Delete'}</option>
+                <option value="verify">
+                  {lang === 'es' ? 'Verificar' : 'Verify'}
+                </option>
+                <option value="unverify">
+                  {lang === 'es' ? 'No verificar' : 'Unverify'}
+                </option>
+                <option value="activate">
+                  {lang === 'es' ? 'Activar' : 'Activate'}
+                </option>
+                <option value="deactivate">
+                  {lang === 'es' ? 'Desactivar' : 'Deactivate'}
+                </option>
+                <option value="delete">
+                  {lang === 'es' ? 'Eliminar' : 'Delete'}
+                </option>
               </select>
             </div>
             <div className="flex items-center space-x-2">
@@ -670,7 +778,9 @@ export const UserManagement: React.FC = () => {
         </h3>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-blue-600">{totalCount.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-blue-600">
+              {totalCount.toLocaleString()}
+            </p>
             <p className="text-sm text-gray-500">
               {lang === 'es' ? 'Total de usuarios' : 'Total users'}
             </p>

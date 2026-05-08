@@ -16,7 +16,10 @@ import { httpsCallable } from 'firebase/functions';
 import { auth, db, storage, functions } from '@/lib/firebase';
 import Button from '@/components/ui/Button';
 import { useTranslations } from '@/hooks/useTranslations';
-import { checkNumeroCuentaMatch, setPotentialMergeMatch } from '@/lib/merge/mutations';
+import {
+  checkNumeroCuentaMatch,
+  setPotentialMergeMatch,
+} from '@/lib/merge/mutations';
 import { Building2 } from 'lucide-react';
 
 function getReturnUrl(lang: string): string {
@@ -24,7 +27,9 @@ function getReturnUrl(lang: string): string {
   try {
     const stored = sessionStorage.getItem('secid_returnUrl');
     sessionStorage.removeItem('secid_returnUrl');
-    return stored && stored.startsWith('/') && !stored.startsWith('//') ? stored : defaultUrl;
+    return stored && stored.startsWith('/') && !stored.startsWith('//')
+      ? stored
+      : defaultUrl;
   } catch {
     return defaultUrl;
   }
@@ -53,7 +58,12 @@ const signUpSchema = z
 
 // Step 3: UNAM verification schema
 const unamVerificationSchema = z.object({
-  numeroCuenta: z.string().regex(/^\d{9}$/, 'El número de cuenta debe ser exactamente 9 dígitos / Account number must be exactly 9 digits'),
+  numeroCuenta: z
+    .string()
+    .regex(
+      /^\d{9}$/,
+      'El número de cuenta debe ser exactamente 9 dígitos / Account number must be exactly 9 digits'
+    ),
   academicLevel: z.enum(['licenciatura', 'posgrado', 'curso']),
   campus: z.string().min(1, 'Campus is required'),
   generation: z.string().optional(),
@@ -492,7 +502,12 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       ? [{ key: 'unam' as Step, label: l.stepUnam }]
       : []),
     ...(registrationType === 'recruiter'
-      ? [{ key: 'company' as Step, label: lang === 'es' ? 'Empresa' : 'Company' }]
+      ? [
+          {
+            key: 'company' as Step,
+            label: lang === 'es' ? 'Empresa' : 'Company',
+          },
+        ]
       : []),
   ];
 
@@ -903,8 +918,12 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                   if (value.length >= 5 && auth.currentUser) {
                     setMatchChecking(true);
                     try {
-                      const { checkNumeroCuentaMatch: checkMatch } = await import('@/lib/merge/mutations');
-                      const match = await checkMatch(value, auth.currentUser.uid);
+                      const { checkNumeroCuentaMatch: checkMatch } =
+                        await import('@/lib/merge/mutations');
+                      const match = await checkMatch(
+                        value,
+                        auth.currentUser.uid
+                      );
                       setMatchFound(!!match);
                     } catch {
                       // Silent fail
@@ -1110,7 +1129,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         <div className="space-y-6">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {lang === 'es' ? 'Información de la Empresa' : 'Company Information'}
+              {lang === 'es'
+                ? 'Información de la Empresa'
+                : 'Company Information'}
             </h2>
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
               {lang === 'es'
@@ -1119,10 +1140,15 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
             </p>
           </div>
 
-          <form onSubmit={recruiterForm.handleSubmit(onRecruiterSubmit)} className="space-y-4">
+          <form
+            onSubmit={recruiterForm.handleSubmit(onRecruiterSubmit)}
+            className="space-y-4"
+          >
             {error && (
               <div className="rounded-md bg-red-50 p-4 dark:bg-red-900/20">
-                <p className="text-sm text-red-800 dark:text-red-400">{error}</p>
+                <p className="text-sm text-red-800 dark:text-red-400">
+                  {error}
+                </p>
               </div>
             )}
 
@@ -1135,7 +1161,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               />
               {recruiterForm.formState.errors.companyName && (
-                <p className="mt-1 text-sm text-red-600">{recruiterForm.formState.errors.companyName.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {recruiterForm.formState.errors.companyName.message}
+                </p>
               )}
             </div>
             <div>
@@ -1147,7 +1175,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               />
               {recruiterForm.formState.errors.companyPosition && (
-                <p className="mt-1 text-sm text-red-600">{recruiterForm.formState.errors.companyPosition.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {recruiterForm.formState.errors.companyPosition.message}
+                </p>
               )}
             </div>
             <div>
@@ -1179,8 +1209,12 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 loading={isLoading}
               >
                 {isLoading
-                  ? (lang === 'es' ? 'Registrando...' : 'Registering...')
-                  : (lang === 'es' ? 'Completar Registro' : 'Complete Registration')}
+                  ? lang === 'es'
+                    ? 'Registrando...'
+                    : 'Registering...'
+                  : lang === 'es'
+                    ? 'Completar Registro'
+                    : 'Complete Registration'}
               </Button>
             </div>
           </form>
@@ -1209,7 +1243,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
           {registrationType === 'recruiter' ? (
             <>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {lang === 'es' ? '¡Bienvenido/a, reclutador/a!' : 'Welcome, recruiter!'}
+                {lang === 'es'
+                  ? '¡Bienvenido/a, reclutador/a!'
+                  : 'Welcome, recruiter!'}
               </h2>
               <p className="mt-2 text-gray-600 dark:text-gray-400">
                 {lang === 'es'

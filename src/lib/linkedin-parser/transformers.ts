@@ -69,7 +69,9 @@ export function toLanguage(parsed: ParsedLanguageEntry): Language {
  * issueDate falls back to the current date when no date string is present
  * so the domain object always satisfies the non-optional Date constraint.
  */
-export function toCertification(parsed: ParsedCertificationEntry): Certification {
+export function toCertification(
+  parsed: ParsedCertificationEntry
+): Certification {
   return {
     id: crypto.randomUUID(),
     name: parsed.name,

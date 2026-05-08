@@ -4,7 +4,11 @@ import {
   useUniversalListing,
   type UseUniversalListingConfig,
 } from '@/hooks/useUniversalListing';
-import type { ViewMode, FilterDefinition, ColumnDefinition } from '@lib/listing/types';
+import type {
+  ViewMode,
+  FilterDefinition,
+  ColumnDefinition,
+} from '@lib/listing/types';
 import { getListingTranslations } from '@lib/listing/i18n';
 import type { ListingLang } from '@lib/listing/i18n';
 import { ListingSearch } from './ListingSearch';
