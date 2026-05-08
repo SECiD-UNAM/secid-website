@@ -1,22 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AuthProvider } from '@/contexts/AuthContext';
 import BlogPost from '@/components/blog/BlogPost';
-import type { BlogPost as BlogPostType } from '@/lib/blog';
 
 interface Props {
-  slug?: string;
   lang?: 'es' | 'en';
-  initialPost?: BlogPostType | null;
 }
 
-export default function BlogPostPage({
-  slug,
-  lang = 'es',
-  initialPost = null,
-}: Props) {
+export default function BlogPostPage({ lang = 'es' }: Props) {
+  const [slug] = useState(() => {
+    const parts = window.location.pathname.split('/');
+    return parts[parts.length - 1] || '';
+  });
+
   return (
     <AuthProvider>
-      <BlogPost slug={slug || ''} lang={lang} initialPost={initialPost} />
+      <BlogPost slug={slug} lang={lang} />
     </AuthProvider>
   );
 }
