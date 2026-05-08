@@ -91,7 +91,14 @@ service cloud.firestore {
              request.resource.data.title.size() >= 5 &&
              request.resource.data.description.size() >= 50;
     }
-    
+
+    // Prevents owners from self-approving verification; only 'none' and 'pending' are self-settable.
+    function isOwnerVerificationStatusValid() {
+      let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+      return !affectedKeys.hasAny(['verificationStatus']) ||
+             request.resource.data.verificationStatus in ['none', 'pending'];
+    }
+
     // Users collection — RBAC-migrated authorization
     match /users/{userId} {
       // Own profile: always readable
@@ -99,13 +106,18 @@ service cloud.firestore {
       allow read: if isAuthenticated() &&
                      (isOwner(userId) || isVerified() ||
                       (!hasRBACDeny('us', 'v') && hasRBACAllowAll('us', 'v')));
-      
+
+      // Fix: prevent new users from self-granting isVerified or isActive on creation
       allow create: if isAuthenticated() &&
                        isOwner(userId) &&
-                       request.resource.data.role in ['member', 'collaborator'];
+                       request.resource.data.role in ['member', 'collaborator'] &&
+                       request.resource.data.get('isVerified', false) == false &&
+                       request.resource.data.get('isActive', false) == false;
 
+      // Fix: restrict verificationStatus to user-settable values ('none', 'pending') only
       allow update: if isAuthenticated() &&
                        isOwner(userId) &&
+                       isOwnerVerificationStatusValid() &&
                        request.resource.data.diff(resource.data).affectedKeys()
                          .hasOnly(['firstName', 'lastName', 'displayName', 'bio', 'skills',
                                   'interests', 'currentTitle', 'company', 'phone',
@@ -120,11 +132,12 @@ service cloud.firestore {
                                   'slug',
                                   'cvVisibility']);
 
-      // Allow authenticated members to update networking fields on other users
-      // (connection requests, follow/unfollow, accept connections)
+      // Allow authenticated members to update only networking fields on other users
+      // (connection requests, follow/unfollow, accept connections).
+      // Fix: removed 'activity' — it is owner-only via the rule above.
       allow update: if isAuthenticated() &&
                        request.resource.data.diff(resource.data).affectedKeys()
-                         .hasOnly(['networking', 'activity']);
+                         .hasOnly(['networking']);
       
       // RBAC admin operations
       allow update: if isAuthenticated() &&
@@ -454,8 +467,10 @@ service cloud.firestore {
       allow update: if isAuthenticated() &&
                        !hasRBACDeny('us', 'e') &&
                        (isOwner(resource.data.to) || hasRBACAllowAll('us', 'e'));
+      // Fix: allow sender to cancel their own pending request
       allow delete: if isAuthenticated() &&
-                       !hasRBACDeny('us', 'd') && hasRBACAllowAll('us', 'd');
+                       (isOwner(resource.data.from) ||
+                        (!hasRBACDeny('us', 'd') && hasRBACAllowAll('us', 'd')));
     }
 
     // Conversations (direct messaging) — RBAC-migrated (Batch 4, us)
