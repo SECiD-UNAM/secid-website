@@ -103,14 +103,12 @@ export const getSalaryStats = onRequest(
     // Verify Firebase Auth token
     const authHeader = req.headers.authorization;
     if (!authHeader?.startsWith('Bearer ')) {
-      res
-        .status(401)
-        .json({
-          error: {
-            message: 'Authentication required',
-            status: 'UNAUTHENTICATED',
-          },
-        });
+      res.status(401).json({
+        error: {
+          message: 'Authentication required',
+          status: 'UNAUTHENTICATED',
+        },
+      });
       return;
     }
 
@@ -120,11 +118,9 @@ export const getSalaryStats = onRequest(
         .auth()
         .verifyIdToken(authHeader.split('Bearer ')[1]!);
     } catch {
-      res
-        .status(401)
-        .json({
-          error: { message: 'Invalid token', status: 'UNAUTHENTICATED' },
-        });
+      res.status(401).json({
+        error: { message: 'Invalid token', status: 'UNAUTHENTICATED' },
+      });
       return;
     }
 

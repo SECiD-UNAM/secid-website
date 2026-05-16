@@ -483,30 +483,38 @@ export function createSecurityManagerFromEnv(): SecurityManager {
     (process.env.NODE_ENV as string as keyof typeof SecurityEnvironments) ||
     'production';
 
-  const secrets: SecurityConfig['secrets'] = {
-    sessionSecret:
-      process.env['SESSION_SECRET'] ||
-      'dev-session-secret-change-in-production',
-    captchaSiteKey: (process.env.RECAPTCHA_SITE_KEY as string) || '',
-    captchaSecretKey: (process.env.RECAPTCHA_SECRET_KEY as string) || '',
-    jwtSecret:
-      (process.env.JWT_SECRET as string) ||
-      'dev-jwt-secret-change-in-production',
-  };
+  const sessionSecretEnv = process.env['SESSION_SECRET'];
+  const jwtSecretEnv = process.env.JWT_SECRET as string | undefined;
 
-  // Validate required secrets in production
-  if (environment === 'production') {
-    const requiredSecrets = ['sessionSecret', 'jwtSecret'];
-    const missingSecrets = requiredSecrets.filter(
-      (key) => !secrets[key as keyof typeof secrets]
-    );
+  // The hardcoded fallbacks below are convenience defaults for local work
+  // only. Any environment other than development/test (staging, preview,
+  // production, ...) MUST supply real secrets — silently running on the
+  // well-known dev defaults would allow session/JWT forgery (W-SEC-3).
+  const isLocalEnv = environment === 'development' || environment === 'test';
+  if (!isLocalEnv) {
+    const missingSecrets = (
+      [
+        ['SESSION_SECRET', sessionSecretEnv],
+        ['JWT_SECRET', jwtSecretEnv],
+      ] as const
+    )
+      .filter(([, value]) => !value)
+      .map(([name]) => name);
 
     if (missingSecrets.length > 0) {
       throw new Error(
-        `Missing required security secrets: ${missingSecrets.join(', ')}`
+        `Missing required security secrets in '${environment}' environment: ${missingSecrets.join(', ')}`
       );
     }
   }
+
+  const secrets: SecurityConfig['secrets'] = {
+    sessionSecret:
+      sessionSecretEnv || 'dev-session-secret-change-in-production',
+    captchaSiteKey: (process.env.RECAPTCHA_SITE_KEY as string) || '',
+    captchaSecretKey: (process.env.RECAPTCHA_SECRET_KEY as string) || '',
+    jwtSecret: jwtSecretEnv || 'dev-jwt-secret-change-in-production',
+  };
 
   return SecurityManager.fromEnvironment(environment, secrets);
 }
