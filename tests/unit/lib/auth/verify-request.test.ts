@@ -5,7 +5,6 @@ describe('verifyRequest', () => {
   it('returns authenticated=true when request has a valid session set by middleware', () => {
     const request = new Request('https://secid.mx/api/create-payment-intent', {
       method: 'POST',
-      headers: { Authorization: 'Bearer valid-token-123' },
     });
     (request as any).session = { userId: 'user-abc-123' };
 
@@ -16,7 +15,7 @@ describe('verifyRequest', () => {
     expect(result.error).toBeUndefined();
   });
 
-  it('returns authenticated=false when no Authorization header is present', () => {
+  it('returns authenticated=false when there is no session', () => {
     const request = new Request('https://secid.mx/api/create-payment-intent', {
       method: 'POST',
     });
@@ -25,40 +24,27 @@ describe('verifyRequest', () => {
 
     expect(result.authenticated).toBe(false);
     expect(result.userId).toBeNull();
-    expect(result.error).toBe('Missing or invalid authorization header');
+    expect(result.error).toBe('Authentication required');
   });
 
-  it('returns authenticated=false when Authorization header does not start with Bearer', () => {
+  it('never trusts a Bearer token on its own (unsigned-JWT fallback removed)', () => {
     const request = new Request('https://secid.mx/api/create-payment-intent', {
       method: 'POST',
-      headers: { Authorization: 'Basic dXNlcjpwYXNz' },
+      headers: { Authorization: 'Bearer some-unverified-token' },
     });
+    // No session attached by middleware -> a forged/unverified Bearer
+    // token must NOT authenticate the request.
 
     const result = verifyRequest(request);
 
     expect(result.authenticated).toBe(false);
     expect(result.userId).toBeNull();
-    expect(result.error).toBe('Missing or invalid authorization header');
-  });
-
-  it('returns authenticated=false when Bearer token exists but no session was validated', () => {
-    const request = new Request('https://secid.mx/api/create-payment-intent', {
-      method: 'POST',
-      headers: { Authorization: 'Bearer some-token-456' },
-    });
-    // No session set on request -- middleware did not validate the token
-
-    const result = verifyRequest(request);
-
-    expect(result.authenticated).toBe(false);
-    expect(result.userId).toBeNull();
-    expect(result.error).toBe('Invalid or expired token');
+    expect(result.error).toBe('Authentication required');
   });
 
   it('returns authenticated=false when session exists but has no userId', () => {
     const request = new Request('https://secid.mx/api/create-payment-intent', {
       method: 'POST',
-      headers: { Authorization: 'Bearer some-token' },
     });
     (request as any).session = { userId: null };
 
@@ -66,7 +52,7 @@ describe('verifyRequest', () => {
 
     expect(result.authenticated).toBe(false);
     expect(result.userId).toBeNull();
-    expect(result.error).toBe('Invalid or expired token');
+    expect(result.error).toBe('Authentication required');
   });
 });
 

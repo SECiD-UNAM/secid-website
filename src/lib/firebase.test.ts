@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+// This file tests the REAL firebase.ts. src/test/setup.ts installs a
+// global vi.mock('@/lib/firebase') stub (to stop unrelated tests opening
+// real connections); opt out of it here so we exercise the actual module.
+vi.unmock('@/lib/firebase');
+vi.unmock('./firebase');
+
 // Mock Firebase modules before importing the module under test.
 // firebase.ts runs initialization at import time, so all mocks must be in place first.
 
