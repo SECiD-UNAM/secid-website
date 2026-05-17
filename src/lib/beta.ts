@@ -18,7 +18,10 @@ export const BETA_FEATURES = {
   // review findings are deferred. Keep the pricing/checkout flow beta-only
   // until paid plans actually ship.
   payments: true,
-  messaging: true,
+  // Messaging ships at first prod launch. Firestore rules for
+  // conversations/messages enforce participant membership + isActive()
+  // (see firestore.rules), so member DMs are safe in production.
+  messaging: false,
   learningPaths: true,
 } as const;
 
