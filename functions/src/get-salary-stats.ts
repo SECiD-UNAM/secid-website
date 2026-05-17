@@ -13,9 +13,9 @@ function getDb() {
 const MIN_GROUP_SIZE = 3;
 
 const ALLOWED_ORIGINS = [
+  'https://secid.mx',
+  'https://www.secid.mx',
   'https://beta.secid.mx',
-  'https://secid.org',
-  'https://www.secid.org',
   'http://localhost:4321',
   'http://localhost:3000',
 ];

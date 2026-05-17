@@ -942,11 +942,14 @@ service cloud.firestore {
     // =========================================================================
 
     // RBAC groups: permission group definitions
+    // This collection defines the RBAC system itself — require org-scoped
+    // (all) grants, never own-scoped, so a non-super-admin with gr:*.own
+    // cannot author group definitions and self-escalate.
     match /rbac_groups/{groupId} {
-      allow read: if isAuthenticated() && !hasRBACDeny('gr', 'v') && hasRBACAllow('gr', 'v');
-      allow create: if isAuthenticated() && !hasRBACDeny('gr', 'c') && hasRBACAllow('gr', 'c');
-      allow update: if isAuthenticated() && !hasRBACDeny('gr', 'e') && hasRBACAllow('gr', 'e');
-      allow delete: if isAuthenticated() && !hasRBACDeny('gr', 'd') && hasRBACAllow('gr', 'd')
+      allow read: if isAuthenticated() && !hasRBACDeny('gr', 'v') && hasRBACAllowAll('gr', 'v');
+      allow create: if isAuthenticated() && !hasRBACDeny('gr', 'c') && hasRBACAllowAll('gr', 'c');
+      allow update: if isAuthenticated() && !hasRBACDeny('gr', 'e') && hasRBACAllowAll('gr', 'e');
+      allow delete: if isAuthenticated() && !hasRBACDeny('gr', 'd') && hasRBACAllowAll('gr', 'd')
         && !resource.data.isSystem;
     }
 
