@@ -50,11 +50,47 @@ positive, verified against current code. No fixes implemented yet.
   **correct**. (Only `functions/get-salary-stats.ts` references the stale
   `secid.org` — separate minor cleanup, not a promotion blocker.)
 
-## Rough remediation estimate
+---
 
-- 5 confirmed blockers: ~2 M + 2 S + 1 S → ~1–1.5 focused days
-- HIGH batch: mostly S/XS rule + guard tweaks → ~0.5 day
-- Pending product answers gate: messaging, logos, annual plans
+# FINAL VERDICT (adjusted for product answers, 2026-05-17)
 
-Pre-existing debt (not hub regressions): #1, #2, #3 (flagged in March
-audits). PR #1 remains DRAFT until blockers cleared.
+Product decisions: (a) messaging **ships in prod**; (b) company logos
+**restricted to owner/RBAC**; (c) **no subscriptions — everything free**.
+Verified: prod/beta deploy injects only `PUBLIC_STRIPE_PUBLISHABLE_KEY`;
+`STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` are **not set** in
+`cd.yml`/`deploy-beta.yml`. So the Stripe server surface is inert at launch.
+
+## LAUNCH BLOCKERS (must fix before prod)
+
+| #   | Issue                                                                                                                                                                                                                                    | Effort |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1   | Fake DOMPurify → stored XSS (forums/blog/newsletter/spotlight are core prod)                                                                                                                                                             | M      |
+| 2   | `verify-request` forgeable JWT — still gates **`/api/companies/*`** (a prod feature), not just payments                                                                                                                                  | M      |
+| 3   | **Messaging hardening** (now launch scope): graduate `messaging:false`; tighten `conversations`/`messages`/`connectionRequests` rules (participant + `isActive`); verify e2e via `lib/messaging.ts` / `members/mutations.ts:sendMessage` | M–L    |
+| 4   | Storage: company logos → owner/RBAC only (per product)                                                                                                                                                                                   | S      |
+| 5   | `networking` field writable on any user (firestore.rules:138)                                                                                                                                                                            | S      |
+| 6   | `securityManager` fail-open → fail-closed (middleware/index.ts:17)                                                                                                                                                                       | S      |
+
+Plus quick HIGH tweaks bundled in: captcha `body.captcha - token` bug,
+`archived_users` (us:v→us:d), storage forum size/type limits,
+`submitPublicJob` rate-limit/CAPTCHA.
+
+## DEFERRED — payments inert at launch (track as debt, do NOT block prod)
+
+Stripe secret-in-bundle (no secret in build env → nothing leaks),
+invoice IDOR, webhook signature bypass, duplicate txn, annual
+`billing_cycle_anchor` bug. **Recommendation:** hide/disable the
+`pricing.astro` + checkout UI in prod so the broken payment endpoints
+aren't reachable, and re-open all payment findings when paid plans land.
+
+## Dropped false positive
+
+CORS "wrong domain" — prod is `secid.mx`; allowlist correct.
+
+## Estimate
+
+- Launch blockers (1–6 + bundled HIGH tweaks): **~1.5–2 focused days**
+- Payment UI disable for prod: **S** (if chosen)
+
+PR #1 stays DRAFT until launch blockers cleared. Blockers #1–2 are
+pre-existing debt (March audits), not hub regressions.
