@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '20.17.0'
+  NODE_VERSION: '22.12.0'
 
 jobs:
   # Dependency vulnerability scanning
@@ -172,7 +172,9 @@ jobs:
 
       - name: Upload ESLint security results
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        # ESLint security step is continue-on-error; only upload if it
+        # actually produced a SARIF (missing file must not fail the job).
+        if: always() && hashFiles('eslint-security.sarif') != ''
         with:
           sarif_file: eslint-security.sarif
           wait-for-processing: true

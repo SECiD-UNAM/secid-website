@@ -20,7 +20,7 @@ on:
           - accessibility
 
 env:
-  NODE_VERSION: '20.17.0'
+  NODE_VERSION: '22.12.0'
   PLAYWRIGHT_BROWSERS_PATH: ~/.cache/playwright
 
 jobs:
