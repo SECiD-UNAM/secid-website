@@ -1,6 +1,22 @@
 import { z } from 'zod';
+import DOMPurifyLib from 'dompurify';
 
-// Lightweight HTML sanitizer (replaces isomorphic-dompurify to avoid build issues)
+const isBrowser = typeof window !== 'undefined';
+
+/**
+ * Real HTML sanitizer.
+ *
+ * The previous implementation was a regex stub that returned the entire
+ * matched opening tag for allow-listed tags — so `on*` handlers and
+ * `javascript:` URLs survived (stored XSS, review confidence 100).
+ *
+ * Browser: real DOMPurify (honours ALLOWED_TAGS/ATTR, FORBID_*,
+ * ALLOWED_URI_REGEXP, etc.). SSR / no DOM: fail safe by stripping ALL
+ * tags — never pass markup through unsanitised. Every sink using this
+ * (forum/blog/newsletter/spotlight `dangerouslySetInnerHTML`) is a
+ * client-rendered React island, so the browser path is the effective
+ * one; SSR output is plain text and re-renders sanitised on hydration.
+ */
 const DOMPurify = {
   sanitize(
     html: string,
@@ -9,15 +25,16 @@ const DOMPurify = {
       ALLOWED_ATTR?: string[];
     }
   ): string {
-    if (!options?.ALLOWED_TAGS || options.ALLOWED_TAGS.length === 0) {
-      // Strip all HTML tags
-      return html.replace(/<[^>]*>/g, '');
+    const input = String(html ?? '');
+    if (isBrowser) {
+      return (
+        DOMPurifyLib as unknown as {
+          sanitize: (h: string, o?: unknown) => string;
+        }
+      ).sanitize(input, options ?? {});
     }
-    // Strip tags not in allowlist
-    const allowed = new Set(options.ALLOWED_TAGS);
-    return html.replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)\b[^>]*>/g, (match, tag) => {
-      return allowed.has(tag.toLowerCase()) ? match : '';
-    });
+    // No DOM available — strip every tag rather than risk passthrough.
+    return input.replace(/<[^>]*>/g, '');
   },
 };
 
