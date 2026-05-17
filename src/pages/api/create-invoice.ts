@@ -169,6 +169,9 @@ export const POST: APIRoute = async ({ request }) => {
     const metadata: Record<string, string> = {
       ...body.metadata,
       platform: 'secid',
+      // Bind the invoice to its creator so GET can enforce ownership
+      // (prevents IDOR enumeration of other members' RFC/tax data).
+      firebaseUid: auth.userId ?? '',
       subtotal: taxCalculation['subtotal'].toString(),
       iva: taxCalculation['iva'].toString(),
       total: taxCalculation.total.toString(),
@@ -285,6 +288,17 @@ export const GET: APIRoute = async ({ request, url }) => {
     const { stripe } = await import('@/lib/stripe/stripe-client');
 
     const invoice = await stripe.invoices.retrieve(invoiceId);
+
+    // Ownership check: the invoice must belong to the caller. Without this
+    // any authenticated user could enumerate invoice IDs and read other
+    // members' RFC / tax / billing data (IDOR). 404 (not 403) so we don't
+    // confirm existence of invoices the caller doesn't own.
+    if (!auth.userId || invoice.metadata?.firebaseUid !== auth.userId) {
+      return new Response(JSON.stringify({ error: 'Invoice not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     // Parse Mexican tax data from metadata
     const mexicanTaxData = {

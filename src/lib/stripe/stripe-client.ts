@@ -224,13 +224,18 @@ export async function createSubscription(
       customer: subscriptionData.customerId,
       items: [
         {
-          price: plan.priceId,
+          // The billing interval (monthly vs yearly) is a property of the
+          // Stripe Price, not of the subscription. The previous code set
+          // billing_cycle_anchor = now + 365d for "yearly", which Stripe
+          // interprets as a ~1-year free trial (no charge) on a monthly
+          // price — not an annual plan. Annual billing must use a
+          // dedicated annual Price ID (plan.annualPriceId) when present.
+          price:
+            subscriptionData.billingCycle === 'yearly' && plan.annualPriceId
+              ? plan.annualPriceId
+              : plan.priceId,
         },
       ],
-      billing_cycle_anchor:
-        subscriptionData.billingCycle === 'yearly'
-          ? Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60
-          : undefined,
       metadata: {
         ...subscriptionData.metadata,
         planId: subscriptionData['planId'],

@@ -154,6 +154,12 @@ export function verifyWebhookSignature(
   payload: string,
   signature: string
 ): Stripe.Event {
+  // constructEvent() with an undefined secret SKIPS signature verification,
+  // which would let anyone POST forged events. Fail closed instead.
+  if (!webhookSecret) {
+    console.error('STRIPE_WEBHOOK_SECRET is not configured');
+    throw new Error('Webhook secret not configured — refusing to process');
+  }
   try {
     return stripe.webhooks.constructEvent(payload, signature, webhookSecret);
   } catch (error) {
@@ -774,31 +780,13 @@ async function handleCheckoutSessionCompleted(
 
       console.log(`Subscription checkout completed for session ${session.id}`);
     } else if (session.mode === 'payment') {
-      // One-time payment -- the payment_intent.succeeded handler records the transaction.
-      // Store checkout metadata for reference.
-      const firebaseUid = customerId
-        ? await findFirebaseUidByCustomerId(customerId)
-        : (session.metadata?.firebaseUid ?? null);
-
-      await addDoc(transactionsRef, {
-        userId: firebaseUid,
-        type: 'one_time',
-        status: 'succeeded',
-        amount: (session.amount_total ?? 0) / 100,
-        currency: session.currency ?? 'mxn',
-        description: `Checkout ${session.id}`,
-        stripeCheckoutSessionId: session.id,
-        stripePaymentIntentId:
-          typeof session.payment_intent === 'string'
-            ? session.payment_intent
-            : null,
-        metadata: session.metadata ?? {},
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
-
+      // One-time payment: the transaction is recorded exactly once by the
+      // payment_intent.succeeded handler. Recording it here too produced a
+      // duplicate `transactions` doc per payment (corrupting revenue
+      // reporting). This branch intentionally does NOT write a transaction.
       console.log(
-        `One-time payment checkout completed for session ${session.id}`
+        `One-time payment checkout completed for session ${session.id} ` +
+          `(transaction recorded by payment_intent.succeeded)`
       );
     }
   } catch (error) {
