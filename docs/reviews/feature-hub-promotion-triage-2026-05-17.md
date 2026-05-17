@@ -94,3 +94,34 @@ CORS "wrong domain" — prod is `secid.mx`; allowlist correct.
 
 PR #1 stays DRAFT until launch blockers cleared. Blockers #1–2 are
 pre-existing debt (March audits), not hub regressions.
+
+---
+
+# REMEDIATION COMPLETE (2026-05-17)
+
+Second scoping correction (same class as the CORS one): `astro.config.mjs`
+is `output: 'static'`; prod = GitHub Pages static + separate Firestore/
+Storage rules & Cloud Functions deploy. **Astro `/api/*` routes and
+middleware never run in prod/beta — only under `astro dev`.** So the real
+prod perimeter is Firestore/Storage rules + Cloud Functions + the
+client-rendered bundle. Findings #1 (middleware) and verify-request are
+therefore not prod-attackable; fixed anyway as correct hardening.
+
+| Blocker                      | Resolution                                                               | Commit           |
+| ---------------------------- | ------------------------------------------------------------------------ | ---------------- |
+| Fake DOMPurify XSS           | real dompurify@3 (browser) + SSR strip-safe                              | 6c7e677          |
+| verify-request forgeable JWT | unsigned fallback removed                                                | 0ffe829          |
+| Messaging hardening          | rules `isActive()` + flag graduated                                      | e647bac, e7a64f5 |
+| Company-logo Storage         | RBAC `co:e` claim + size/type                                            | e647bac          |
+| `networking` open            | `isActive()` gate                                                        | e647bac          |
+| securityManager fail-open    | fail-closed 503                                                          | e647bac          |
+| Bundled HIGH                 | captcha bug, archived_users, forum limits, submitPublicJob IP rate-limit | e647bac, 7efc759 |
+| Payments inert               | pricing/checkout gated beta-only                                         | 4bf7f2c          |
+
+Deferred (tracked debt, payments off at launch): invoice IDOR, webhook
+signature, dup txn, annual billing, Stripe-bundle — re-open when paid
+plans ship. Test job remains non-blocking (separate pre-existing debt,
+docs/known-issues/test-suite-hang.md).
+
+All launch blockers cleared. PR #1 ready for human review (not merged —
+first prod deploy stays a human-triggered action).
