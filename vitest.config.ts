@@ -3,11 +3,14 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 
+const isCI = !!process.env.CI;
+
 export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    environment: 'jsdom',
+    // happy-dom is ~2-3x faster than jsdom for the RTL component suite.
+    environment: 'happy-dom',
     setupFiles: ['./src/test/setup.ts'],
     include: [
       'src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
@@ -76,12 +79,17 @@ export default defineConfig({
       all: true,
       skipFull: false,
     },
-    reporters: [
-      'default',
-      'json',
-      'html',
-      ['junit', { outputFile: './test-results/junit.xml' }],
-    ],
+    // In CI the heavy 'json'/'html' reporters serialize the whole run tree
+    // and write a static site on every push — pure overhead. Keep them only
+    // for local debugging; CI just needs a compact reporter + junit.
+    reporters: isCI
+      ? ['dot', ['junit', { outputFile: './test-results/junit.xml' }]]
+      : [
+          'default',
+          'json',
+          'html',
+          ['junit', { outputFile: './test-results/junit.xml' }],
+        ],
     outputFile: {
       json: './test-results/test-results.json',
       html: './test-results/index.html',
@@ -89,7 +97,7 @@ export default defineConfig({
     cache: {
       dir: 'node_modules/.vitest',
     },
-    logHeapUsage: true,
+    logHeapUsage: false,
     sequence: {
       shuffle: true,
       concurrent: true,
