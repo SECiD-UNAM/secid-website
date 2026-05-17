@@ -1,10 +1,52 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import * as admin from 'firebase-admin';
+import { createHash } from 'crypto';
 
 const db = admin.firestore();
 const MAX_FIELD_LENGTH = 10000;
 const MAX_ARRAY_LENGTH = 50;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// This callable is intentionally unauthenticated (public job board), so
+// rate-limit by client IP to stop bot spam (each submission costs a
+// Firestore write + admin review). Fixed window, IP hashed (no raw PII).
+const RL_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const RL_MAX_PER_WINDOW = 5;
+
+function clientIp(request: { rawRequest?: unknown }): string {
+  const raw = request.rawRequest as
+    | { headers?: Record<string, unknown>; ip?: string }
+    | undefined;
+  const xff = raw?.headers?.['x-forwarded-for'];
+  if (typeof xff === 'string' && xff.length > 0) {
+    return xff.split(',')[0]!.trim();
+  }
+  return raw?.ip || 'unknown';
+}
+
+async function enforceRateLimit(ip: string): Promise<void> {
+  const key = createHash('sha256').update(ip).digest('hex').slice(0, 32);
+  const ref = db.collection('rate_limits').doc(`pubjob_${key}`);
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    const now = Date.now();
+    const data = snap.exists
+      ? (snap.data() as { count: number; windowStart: number })
+      : null;
+
+    if (!data || now - data.windowStart > RL_WINDOW_MS) {
+      tx.set(ref, { count: 1, windowStart: now });
+      return;
+    }
+    if (data.count >= RL_MAX_PER_WINDOW) {
+      throw new HttpsError(
+        'resource-exhausted',
+        'Too many submissions from this network. Please try again later.'
+      );
+    }
+    tx.update(ref, { count: data.count + 1 });
+  });
+}
 
 function sanitize(str: string, maxLen = MAX_FIELD_LENGTH): string {
   return str
@@ -118,6 +160,8 @@ function buildSanitizedDocument(
 }
 
 export const submitPublicJob = onCall(async (request) => {
+  await enforceRateLimit(clientIp(request));
+
   const data = request.data as PublicJobSubmissionData;
 
   validateRequiredFields(data);
