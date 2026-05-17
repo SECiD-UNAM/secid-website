@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { stripe } from './stripe-client';
+import { stripe } from './stripe-server';
 import { db } from '../firebase';
 import {
   doc,

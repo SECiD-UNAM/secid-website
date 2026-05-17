@@ -1,5 +1,5 @@
+import { createInvoice } from '../../lib/stripe/stripe-server';
 import {
-  createInvoice,
   calculateMexicanTaxes,
   validateRFC,
 } from '../../lib/stripe/stripe-client';
@@ -285,7 +285,7 @@ export const GET: APIRoute = async ({ request, url }) => {
     }
 
     // Import stripe here to avoid module loading issues
-    const { stripe } = await import('@/lib/stripe/stripe-client');
+    const { stripe } = await import('@/lib/stripe/stripe-server');
 
     const invoice = await stripe.invoices.retrieve(invoiceId);
 

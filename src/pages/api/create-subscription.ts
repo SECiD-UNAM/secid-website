@@ -1,8 +1,8 @@
 import {
   createSubscription,
   createCustomer,
-  SUBSCRIPTION_PLANS,
-} from '../../lib/stripe/stripe-client';
+} from '../../lib/stripe/stripe-server';
+import { SUBSCRIPTION_PLANS } from '../../lib/stripe/stripe-client';
 import {
   verifyRequest,
   unauthorizedResponse,

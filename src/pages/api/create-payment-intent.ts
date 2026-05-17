@@ -1,5 +1,5 @@
+import { createPaymentIntent } from '../../lib/stripe/stripe-server';
 import {
-  createPaymentIntent,
   SUBSCRIPTION_PLANS,
   calculateMexicanTaxes,
 } from '../../lib/stripe/stripe-client';
