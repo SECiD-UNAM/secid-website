@@ -13,6 +13,11 @@
 export const BETA_FEATURES = {
   hub: false,
   gamification: true,
+  // No paid plans at first prod launch — everything is free. The Stripe
+  // server surface is inert (no secret keys in prod env) and the payment
+  // review findings are deferred. Keep the pricing/checkout flow beta-only
+  // until paid plans actually ship.
+  payments: true,
   messaging: true,
   learningPaths: true,
 } as const;
@@ -27,7 +32,7 @@ export const BETA_HOSTNAMES = ['beta.secid.mx', 'beta.localhost'];
  * Keys are pathname substrings; values are the corresponding feature flag.
  */
 export const BETA_ROUTES: Record<string, BetaFeatureId> = {
-  '/dashboard/messages': 'messaging',
+  '/pricing': 'payments',
   '/dashboard/progress': 'gamification',
   '/dashboard/learning': 'learningPaths',
 };

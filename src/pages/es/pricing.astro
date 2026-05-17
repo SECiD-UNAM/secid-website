@@ -14,9 +14,12 @@ import Footer from '../../components/Footer.astro';
   import { createRoot } from 'react-dom/client';
   import React from 'react';
   import PricingPlans from '../../components/payments/PricingPlans';
+  import { isFeatureEnabled } from '../../lib/beta';
 
   const container = document.getElementById('pricing-page');
-  if (container) {
+  // Payments are beta-only at launch; on prod the middleware already
+  // redirects, this is defense-in-depth so the flow can never mount.
+  if (container && isFeatureEnabled('payments')) {
     const root = createRoot(container);
     root.render(
       React.createElement(PricingPlans, {
