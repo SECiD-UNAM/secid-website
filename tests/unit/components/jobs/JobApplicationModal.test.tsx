@@ -37,25 +37,10 @@ vi.mock('@/lib/firebase', () => ({
 }));
 
 // Mock all heroicons with Proxy to auto-handle any icon import
-vi.mock(
-  '@heroicons/react/24/outline',
-  () =>
-    new Proxy(
-      {},
-      {
-        get: (_target, prop) => {
-          if (typeof prop === 'string' && prop !== '__esModule') {
-            const Icon = ({ className }: any) => (
-              <svg className={className} data-testid={`${prop}-icon`} />
-            );
-            Icon.displayName = String(prop);
-            return Icon;
-          }
-          return undefined;
-        },
-      }
-    )
-);
+vi.mock('@heroicons/react/24/outline', async () => {
+  const { heroiconsMock } = await import('@tests/utils/heroiconsMock');
+  return heroiconsMock('icon');
+});
 
 // Mock file upload
 const mockFileUpload = vi.fn();

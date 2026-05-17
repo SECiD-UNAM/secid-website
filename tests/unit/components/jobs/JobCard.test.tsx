@@ -16,45 +16,15 @@ vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn(),
 }));
 
-vi.mock(
-  '@heroicons/react/24/outline',
-  () =>
-    new Proxy(
-      {},
-      {
-        get: (_target, prop) => {
-          if (typeof prop === 'string' && prop !== '__esModule') {
-            const Icon = ({ className }: any) => (
-              <svg className={className} data-testid={`${prop}-icon`} />
-            );
-            Icon.displayName = prop;
-            return Icon;
-          }
-          return undefined;
-        },
-      }
-    )
-);
+vi.mock('@heroicons/react/24/outline', async () => {
+  const { heroiconsMock } = await import('@tests/utils/heroiconsMock');
+  return heroiconsMock('icon');
+});
 
-vi.mock(
-  '@heroicons/react/24/solid',
-  () =>
-    new Proxy(
-      {},
-      {
-        get: (_target, prop) => {
-          if (typeof prop === 'string' && prop !== '__esModule') {
-            const Icon = ({ className }: any) => (
-              <svg className={className} data-testid={`${prop}-solid-icon`} />
-            );
-            Icon.displayName = prop;
-            return Icon;
-          }
-          return undefined;
-        },
-      }
-    )
-);
+vi.mock('@heroicons/react/24/solid', async () => {
+  const { heroiconsMock } = await import('@tests/utils/heroiconsMock');
+  return heroiconsMock('solid-icon');
+});
 
 describe('JobCard', () => {
   const mockUser = {

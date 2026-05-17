@@ -29,25 +29,10 @@ import type {
 } from '@/types/search';
 
 // Mock heroicons with Proxy-based auto-mock (component imports 10+ icons)
-vi.mock(
-  '@heroicons/react/24/outline',
-  () =>
-    new Proxy(
-      {},
-      {
-        get: (_target, prop) => {
-          if (typeof prop === 'string' && prop !== '__esModule') {
-            const Icon = ({ className }: any) => (
-              <svg className={className} data-testid={`${prop}-icon`} />
-            );
-            Icon.displayName = String(prop);
-            return Icon;
-          }
-          return undefined;
-        },
-      }
-    )
-);
+vi.mock('@heroicons/react/24/outline', async () => {
+  const { heroiconsMock } = await import('@tests/utils/heroiconsMock');
+  return heroiconsMock('icon');
+});
 
 vi.mock('clsx', () => ({
   clsx: (...args: any[]) => args.filter(Boolean).join(' '),
