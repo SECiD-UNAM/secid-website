@@ -1,6 +1,23 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    // Storage rules cannot read Firestore, so ownership-by-document is not
+    // possible here — privileged writes are gated on the RBAC custom claim
+    // (request.auth.token.rbac.p, comma-separated "res:op.scope" tokens).
+    // NOTE: this is an allow-grant check only; deny-wins parity is enforced
+    // by Firestore rules / Cloud Functions, not replicated here.
+    function hasRbacGrant(resAbbr, opAbbr) {
+      return request.auth != null
+        && request.auth.token.rbac != null
+        && request.auth.token.rbac.p is string
+        && request.auth.token.rbac.p.matches(
+             '(^|.*,)(' + resAbbr + '|[*]):(' + opAbbr + '|[*])[.](o|a)(,.*|$)');
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
     // User profile images
     match /profiles/{userId}/{allPaths=**} {
       allow read: if request.auth != null;
@@ -13,25 +30,30 @@ service firebase.storage {
       allow write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Company logos
+    // Company logos — write requires companies-edit RBAC grant
     match /companies/{companyId}/{fileName} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null
+      allow write: if hasRbacGrant('co', 'e')
         && request.resource.size < 2 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
+        && isImage();
     }
-    
-    // Event images
+
+    // Event images — write requires events-edit RBAC grant (was legacy role)
     match /events/{eventId}/{allPaths=**} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null && 
-                      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'moderator'];
+      allow write: if hasRbacGrant('ev', 'e')
+        && request.resource.size < 5 * 1024 * 1024
+        && isImage();
     }
-    
-    // Forum attachments
+
+    // Forum attachments — any member, but strict size + type allowlist
+    // (was unrestricted: arbitrary blobs of any size by any auth'd user)
     match /forums/{forumId}/{allPaths=**} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null;
+      allow write: if request.auth != null
+        && request.resource.size < 10 * 1024 * 1024
+        && (isImage()
+            || request.resource.contentType == 'application/pdf');
     }
 
     // Member verification documents (student ID, transcripts, degrees)

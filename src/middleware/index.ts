@@ -156,11 +156,25 @@ const assetSecurityMiddleware: MiddlewareHandler = async (context, next) => {
 };
 
 /**
+ * Fail-closed response when the security layer is unavailable on a guarded
+ * path. A swallowed securityManager init error must NOT silently disable
+ * rate limiting / session / CAPTCHA enforcement.
+ */
+const securityUnavailableResponse = () =>
+  new Response(JSON.stringify({ error: 'Security layer unavailable' }), {
+    status: 503,
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+/**
  * Rate limiting middleware for API endpoints
  */
 const rateLimitingMiddleware: MiddlewareHandler = async (context, next) => {
-  if (!securityManager || !context.url.pathname.startsWith('/api/')) {
+  if (!context.url.pathname.startsWith('/api/')) {
     return next();
+  }
+  if (!securityManager) {
+    return securityUnavailableResponse();
   }
 
   const rateLimitMiddleware = createRateLimitMiddleware(
@@ -184,10 +198,6 @@ const sessionValidationMiddleware: MiddlewareHandler = async (
   context,
   next
 ) => {
-  if (!securityManager) {
-    return next();
-  }
-
   // Only validate sessions for protected endpoints
   const protectedPaths = [
     '/api/user/',
@@ -202,6 +212,11 @@ const sessionValidationMiddleware: MiddlewareHandler = async (
 
   if (!needsSession) {
     return next();
+  }
+
+  // Guarded path but security layer failed to init → fail closed.
+  if (!securityManager) {
+    return securityUnavailableResponse();
   }
 
   const sessionMiddleware = createSessionMiddleware(
@@ -234,7 +249,7 @@ const captchaValidationMiddleware: MiddlewareHandler = async (
   context,
   next
 ) => {
-  if (!securityManager || context['request'].method === 'GET') {
+  if (context['request'].method === 'GET') {
     return next();
   }
 
@@ -246,6 +261,11 @@ const captchaValidationMiddleware: MiddlewareHandler = async (
 
   if (!needsCaptcha) {
     return next();
+  }
+
+  // Guarded path but security layer failed to init → fail closed.
+  if (!securityManager) {
+    return securityUnavailableResponse();
   }
 
   const captchaMiddleware = createCaptchaMiddleware(

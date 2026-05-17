@@ -710,7 +710,7 @@ export function createCaptchaMiddleware(
     if (contentType.includes('application/json')) {
       try {
         const body = await request.clone().json();
-        captchaToken = body.captchaToken || body.captcha - token || body.token;
+        captchaToken = body.captchaToken || body['captcha-token'] || body.token;
       } catch {
         // Ignore JSON parsing errors
       }
