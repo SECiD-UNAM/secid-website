@@ -150,6 +150,20 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
     }
   }, []);
 
+  // Re-entry: an account can exist but never have completed registration
+  // (e.g. completeRegistration failed — the Cloud Run invoker 403 cohort —
+  // or the wizard was abandoned). Such a user logs in and is dumped on a
+  // gated dashboard with no way to finish. If we're already authenticated
+  // when this form mounts, skip account creation and start at type
+  // selection so they can submit numeroCuenta + proof.
+  React.useEffect(() => {
+    if (auth.currentUser && step === 'account') {
+      setStep('type');
+    }
+    // run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Call the completeRegistration Cloud Function
   const callCompleteRegistration = async (data: Record<string, any>) => {
     const fn = httpsCallable(functions, 'completeRegistration');

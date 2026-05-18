@@ -21,7 +21,15 @@ interface AuthContextType {
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
+  // Two-tier access:
+  //  emailVerified (Firebase Auth)  → BASIC access
+  //  isVerified    (Firestore users/{uid}.isVerified, set only after
+  //                 numeroCuenta + proof + admin review) → FULL access
+  emailVerified: boolean;
   isVerified: boolean;
+  // True once the user picked a registration type / ran completeRegistration.
+  // Used to route incomplete accounts back into the completion flow.
+  registrationComplete: boolean;
   isAdmin: boolean;
   isModerator: boolean;
   isCompany: boolean;
@@ -35,7 +43,9 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   error: null,
   isAuthenticated: false,
+  emailVerified: false,
   isVerified: false,
+  registrationComplete: false,
   isAdmin: false,
   isModerator: false,
   isCompany: false,
@@ -222,7 +232,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Compute derived state
   const isAuthenticated = !!user;
+  // BASIC tier: Firebase Auth email verified.
+  const emailVerified = user?.emailVerified || false;
+  // FULL tier: Firestore field, set only after numeroCuenta + proof +
+  // admin review (completeRegistration → verificationStatus:'pending' →
+  // admin approve → isVerified:true).
   const isVerified = userProfile?.isVerified || false;
+  // Registration is "complete" once a type was chosen (member/recruiter
+  // get a registrationType; collaborator path also sets it). Used to
+  // detect accounts stuck pre-completeRegistration (e.g. the 403 cohort).
+  const registrationComplete = !!userProfile?.registrationType;
   const isAdmin = userProfile?.role === 'admin';
   const isModerator = userProfile?.role === 'moderator';
   const isCompany = userProfile?.role === 'company';
@@ -233,7 +252,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loading,
     error,
     isAuthenticated,
+    emailVerified,
     isVerified,
+    registrationComplete,
     isAdmin,
     isModerator,
     isCompany,

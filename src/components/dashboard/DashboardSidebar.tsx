@@ -43,7 +43,9 @@ interface MenuItem {
     | 'company'
     | 'collaborator'
   )[];
-  requireVerified?: boolean;
+  // 'basic' → unlocked by email verification; 'full' → needs full
+  // membership (users.isVerified). Omitted → always accessible.
+  minTier?: 'basic' | 'full';
   requireBeta?: BetaFeatureId;
 }
 
@@ -52,7 +54,18 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   mobileOpen = false,
   onClose,
 }) => {
-  const { userProfile, isVerified, isAdmin, isModerator, signOut } = useAuth();
+  const {
+    userProfile,
+    emailVerified,
+    isVerified,
+    isAdmin,
+    isModerator,
+    signOut,
+  } = useAuth();
+  // none < basic (email verified) < full (membership isVerified)
+  const userTierRank = isVerified ? 2 : emailVerified ? 1 : 0;
+  const tierRank = (t?: 'basic' | 'full') =>
+    t === 'full' ? 2 : t === 'basic' ? 1 : 0;
   const t = useTranslations(lang);
   const isBeta = useBeta();
 
@@ -133,53 +146,57 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       href: `/${lang}/dashboard/profile`,
       icon: UserCircleIcon,
     },
+    // minTier: 'basic' = unlocked by email verification (browse);
+    //          'full'  = needs full membership (numeroCuenta + proof +
+    //                    admin review → users.isVerified). Adjust the
+    //                    basic/full split here as a product decision.
     {
       name: lang === 'es' ? 'Empleos' : 'Jobs',
       href: `/${lang}/dashboard/jobs`,
       icon: BriefcaseIcon,
-      requireVerified: true,
+      minTier: 'basic',
     },
     {
       name: lang === 'es' ? 'Eventos' : 'Events',
       href: `/${lang}/dashboard/events`,
       icon: CalendarIcon,
-      requireVerified: true,
+      minTier: 'basic',
     },
     {
       name: lang === 'es' ? 'Foros' : 'Forums',
       href: `/${lang}/dashboard/forums`,
       icon: ChatBubbleLeftRightIcon,
-      requireVerified: true,
+      minTier: 'basic',
     },
     {
       name: lang === 'es' ? 'Mentoría' : 'Mentorship',
       href: `/${lang}/dashboard/mentorship`,
       icon: AcademicCapIcon,
-      requireVerified: true,
+      minTier: 'full',
     },
     {
       name: lang === 'es' ? 'Recursos' : 'Resources',
       href: `/${lang}/dashboard/resources`,
       icon: BookOpenIcon,
-      requireVerified: true,
+      minTier: 'basic',
     },
     {
       name: lang === 'es' ? 'Miembros' : 'Members',
       href: `/${lang}/dashboard/members`,
       icon: UserGroupIcon,
-      requireVerified: true,
+      minTier: 'basic',
     },
     {
       name: lang === 'es' ? 'Red de Empresas' : 'Company Network',
       href: `/${lang}/dashboard/companies`,
       icon: BuildingOffice2Icon,
-      requireVerified: true,
+      minTier: 'full',
     },
     {
       name: lang === 'es' ? 'Salarios' : 'Salary Insights',
       href: `/${lang}/dashboard/salary-insights`,
       icon: CurrencyDollarIcon,
-      requireVerified: true,
+      minTier: 'full',
     },
   ];
 
@@ -259,7 +276,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
   const isItemAccessible = (item: MenuItem): boolean => {
     if (item.requireBeta && !isFeatureEnabled(item.requireBeta)) return false;
-    if (item.requireVerified && !isVerified) return false;
+    if (tierRank(item.minTier) > userTierRank) return false;
     if (
       item.requireRole &&
       !item.requireRole.includes(userProfile?.role || 'member')
@@ -320,11 +337,15 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         <div className="flex items-center">
           <Icon className="mr-3 h-5 w-5" />
           <span>{item['name']}</span>
-          {!accessible && item.requireVerified && (
+          {!accessible && item.minTier && (
             <span className="ml-2 text-xs text-yellow-600 dark:text-yellow-400">
-              {lang === 'es'
-                ? '(Verificación requerida)'
-                : '(Verification Required)'}
+              {item.minTier === 'basic'
+                ? lang === 'es'
+                  ? '(Verifica tu correo)'
+                  : '(Verify your email)'
+                : lang === 'es'
+                  ? '(Membresía requerida)'
+                  : '(Membership required)'}
             </span>
           )}
         </div>

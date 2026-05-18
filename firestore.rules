@@ -5,7 +5,14 @@ service cloud.firestore {
     function isAuthenticated() {
       return request.auth != null;
     }
-    
+
+    // BASIC tier: Firebase Auth email is verified. Unlocks read-only
+    // browsing of content collections. FULL participation (create/apply/
+    // post) still requires isVerified() (numeroCuenta + proof + admin).
+    function isEmailVerified() {
+      return isAuthenticated() && request.auth.token.email_verified == true;
+    }
+
     function getCurrentUser() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid));
     }
@@ -205,7 +212,7 @@ service cloud.firestore {
 
     // Jobs collection — RBAC-only authorization
     match /jobs/{jobId} {
-      allow read: if isAuthenticated();
+      allow read: if isEmailVerified();
 
       allow create: if isAuthenticated()
         && isVerified()
@@ -275,8 +282,8 @@ service cloud.firestore {
     
     // Events collection — RBAC-only authorization
     match /events/{eventId} {
-      // All authenticated users can read events
-      allow read: if isAuthenticated();
+      // Basic tier (email verified) can browse events
+      allow read: if isEmailVerified();
 
       allow create: if isAuthenticated()
         && hasRBACAllow('ev', 'c') && !hasRBACDeny('ev', 'c')
@@ -324,7 +331,7 @@ service cloud.firestore {
     
     // Forums collection — RBAC-only authorization
     match /forums/{forumId} {
-      allow read: if isAuthenticated();
+      allow read: if isEmailVerified();
 
       // Forum-level management (create/edit/delete forums themselves)
       allow create: if isAuthenticated()
@@ -338,7 +345,7 @@ service cloud.firestore {
 
       // Forum posts with content validation
       match /posts/{postId} {
-        allow read: if isAuthenticated();
+        allow read: if isEmailVerified();
 
         allow create: if isAuthenticated() &&
                         isVerified() &&
@@ -368,7 +375,7 @@ service cloud.firestore {
 
         // Post replies subcollection
         match /replies/{replyId} {
-          allow read: if isAuthenticated();
+          allow read: if isEmailVerified();
 
           allow create: if isAuthenticated() &&
                           isVerified() &&
@@ -603,7 +610,7 @@ service cloud.firestore {
 
     // Resources collection — RBAC-only authorization
     match /resources/{resourceId} {
-      allow read: if isAuthenticated();
+      allow read: if isEmailVerified();
 
       allow create: if isAuthenticated()
         && isVerified()
@@ -625,7 +632,7 @@ service cloud.firestore {
 
     // Resource reviews — RBAC-only authorization
     match /resource_reviews/{reviewId} {
-      allow read: if isAuthenticated();
+      allow read: if isEmailVerified();
       allow create: if isAuthenticated() &&
                        isVerified() &&
                        request.resource.data.reviewerId == request.auth.uid &&
@@ -649,7 +656,7 @@ service cloud.firestore {
 
     // Resource collections — RBAC-only authorization
     match /resource_collections/{collectionId} {
-      allow read: if isAuthenticated();
+      allow read: if isEmailVerified();
       allow create: if isAuthenticated() &&
                        isVerified() &&
                        request.resource.data.createdBy == request.auth.uid;
@@ -694,7 +701,7 @@ service cloud.firestore {
 
     // Mentorship: Mentors collection — RBAC-migrated (Batch 3, mn)
     match /mentors/{mentorId} {
-      allow read: if isAuthenticated();
+      allow read: if isEmailVerified();
       allow create: if isAuthenticated() &&
                        isVerified() &&
                        isOwner(mentorId);
@@ -864,7 +871,7 @@ service cloud.firestore {
 
     // Commission members — RBAC-migrated authorization
     match /commission_members/{memberId} {
-      allow read: if isAuthenticated();
+      allow read: if isEmailVerified();
 
       allow create: if isAuthenticated() &&
                        isVerified() &&
