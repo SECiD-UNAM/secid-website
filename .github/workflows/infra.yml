@@ -1,0 +1,75 @@
+name: Infra (Terraform)
+
+# Manages the single shared Firebase/GCP project (secid-org) config that
+# was previously manual: required APIs, Identity Platform (email/pw +
+# authorized domains + sign-up), and public Cloud Run invoker IAM for
+# browser-callable functions. Code (functions/hosting/rules) is still
+# deployed by the Firebase CLI in deploy-beta.yml / cd.yml.
+#
+# Ordering note: APIs + Identity Platform must be applied BEFORE functions
+# deploy; Cloud Run invoker bindings require the function services to
+# already exist. The push job applies in two phases around the existing
+# Deploy Beta. See infra/BOOTSTRAP.md.
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths: ['infra/**', '.github/workflows/infra.yml']
+  push:
+    branches: [feature/hub, main]
+    paths: ['infra/**', '.github/workflows/infra.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: infra-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  TF_IN_AUTOMATION: 'true'
+  TF_VAR_project_id: secid-org
+
+jobs:
+  terraform:
+    name: Terraform ${{ github.event_name == 'pull_request' && 'plan' || 'apply' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.9.8'
+
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="prefix=secid/infra"
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        run: terraform plan -no-color -input=false -out=tfplan
+
+      # PRs stop at plan (review gate). Apply only on push/dispatch.
+      - name: Terraform apply
+        if: github.event_name != 'pull_request'
+        run: terraform apply -no-color -input=false -auto-approve tfplan

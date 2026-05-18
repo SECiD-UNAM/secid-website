@@ -93,26 +93,29 @@ jobs:
       - name: Install Cloud Functions dependencies
         run: cd functions && npm ci
 
+      # Fail loud (prod). Swallowing these is how the prod Firebase project
+      # ended up with completeRegistration returning 403 and unverified
+      # rule state. set -o pipefail preserves output AND the real exit.
       - name: Deploy Cloud Functions
         run: |
+          set -o pipefail
           npx firebase-tools deploy --only functions \
             --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
-            --non-interactive --force 2>&1 | tail -80 \
-            || echo "::warning::Cloud Functions deployment failed"
+            --non-interactive --force 2>&1
 
       - name: Deploy Firestore Rules & Indexes
         run: |
+          set -o pipefail
           npx firebase-tools deploy --only firestore:rules,firestore:indexes \
             --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
-            --non-interactive 2>&1 | tail -50 \
-            || echo "::warning::Firestore rules/indexes deployment failed"
+            --non-interactive 2>&1
 
       - name: Deploy Storage Rules
         run: |
+          set -o pipefail
           npx firebase-tools deploy --only storage \
             --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
-            --non-interactive 2>&1 | tail -50 \
-            || echo "::warning::Storage rules deployment failed"
+            --non-interactive 2>&1
 
   # ── Health check ─────────────────────────────────────────────────────────
   validate:

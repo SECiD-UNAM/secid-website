@@ -1,0 +1,23 @@
+# Copy considerations only — CI passes these via -var / TF_VAR_* from
+# GitHub secrets; this file documents the shape. Do NOT commit real values.
+
+# Single shared project for beta + prod.
+project_id = "secid-org"
+
+region = "us-central1"
+
+authorized_domains = [
+  "localhost",
+  "secid.mx",
+  "beta.secid.mx",
+]
+
+# Keep in sync with callable/onRequest exports in functions/src/index.ts.
+public_callable_functions = [
+  "completeRegistration",
+  "submitPublicJob",
+  "getSalaryStats",
+  "verifyUnamEmail",
+  "seedRbacGroups",
+  "backfillRbacUsers",
+]
