@@ -157,9 +157,7 @@ describe.sequential('AuthContext alias resolution', () => {
       });
     });
 
-    expect(screen.getByTestId('profile')).toHaveTextContent(
-      'Canonical Member'
-    );
+    expect(screen.getByTestId('profile')).toHaveTextContent('Canonical Member');
     expect(screen.getByTestId('uid')).toHaveTextContent('canon1');
     expect(screen.getByTestId('error')).toHaveTextContent('none');
     // Loading cleared from the canonical snapshot.
