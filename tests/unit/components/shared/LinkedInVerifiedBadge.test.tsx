@@ -85,8 +85,8 @@ describe('LinkedInVerifiedBadge - size="sm" (default)', () => {
     const { container } = render(<LinkedInVerifiedBadge size="sm" />);
 
     const linkedinSvg = container.querySelectorAll('svg')[0] as SVGElement;
-    expect(linkedinSvg.className.baseVal).toContain('h-4');
-    expect(linkedinSvg.className.baseVal).toContain('w-4');
+    expect(linkedinSvg.getAttribute('class') || '').toContain('h-4');
+    expect(linkedinSvg.getAttribute('class') || '').toContain('w-4');
   });
 
   it('TC-linkedin-badge-008: applies h-3 w-3 to checkmark icon when size="sm"', () => {
@@ -94,8 +94,8 @@ describe('LinkedInVerifiedBadge - size="sm" (default)', () => {
     const { container } = render(<LinkedInVerifiedBadge size="sm" />);
 
     const checkSvg = container.querySelectorAll('svg')[1] as SVGElement;
-    expect(checkSvg.className.baseVal).toContain('h-3');
-    expect(checkSvg.className.baseVal).toContain('w-3');
+    expect(checkSvg.getAttribute('class') || '').toContain('h-3');
+    expect(checkSvg.getAttribute('class') || '').toContain('w-3');
   });
 });
 
@@ -107,8 +107,8 @@ describe('LinkedInVerifiedBadge - size="md"', () => {
     const { container } = render(<LinkedInVerifiedBadge size="md" />);
 
     const linkedinSvg = container.querySelectorAll('svg')[0] as SVGElement;
-    expect(linkedinSvg.className.baseVal).toContain('h-5');
-    expect(linkedinSvg.className.baseVal).toContain('w-5');
+    expect(linkedinSvg.getAttribute('class') || '').toContain('h-5');
+    expect(linkedinSvg.getAttribute('class') || '').toContain('w-5');
   });
 
   it('TC-linkedin-badge-010: applies h-3.5 w-3.5 to checkmark icon when size="md"', () => {
@@ -116,8 +116,8 @@ describe('LinkedInVerifiedBadge - size="md"', () => {
     const { container } = render(<LinkedInVerifiedBadge size="md" />);
 
     const checkSvg = container.querySelectorAll('svg')[1] as SVGElement;
-    expect(checkSvg.className.baseVal).toContain('h-3.5');
-    expect(checkSvg.className.baseVal).toContain('w-3.5');
+    expect(checkSvg.getAttribute('class') || '').toContain('h-3.5');
+    expect(checkSvg.getAttribute('class') || '').toContain('w-3.5');
   });
 });
 
@@ -170,7 +170,7 @@ describe('LinkedInVerifiedBadge - accessibility', () => {
     const { container } = render(<LinkedInVerifiedBadge />);
 
     const linkedinSvg = container.querySelectorAll('svg')[0] as SVGElement;
-    expect(linkedinSvg.className.baseVal).toContain('text-[#0A66C2]');
+    expect(linkedinSvg.getAttribute('class') || '').toContain('text-[#0A66C2]');
   });
 
   it('TC-linkedin-badge-015: checkmark icon uses green color class', () => {
@@ -178,6 +178,6 @@ describe('LinkedInVerifiedBadge - accessibility', () => {
     const { container } = render(<LinkedInVerifiedBadge />);
 
     const checkSvg = container.querySelectorAll('svg')[1] as SVGElement;
-    expect(checkSvg.className.baseVal).toContain('text-green-500');
+    expect(checkSvg.getAttribute('class') || '').toContain('text-green-500');
   });
 });
