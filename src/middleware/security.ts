@@ -132,14 +132,20 @@ function buildCSPHeader(csp: SecurityConfig['csp']): string {
 function buildPermissionsPolicyHeader(
   policy: SecurityConfig['permissionsPolicy']
 ): string {
+  // Permissions-Policy is a *structured* header — it does NOT use CSP-style
+  // quoted keywords. The correct syntax is `feature=()` to disable for all,
+  // `feature=(self)` for same-origin, and `feature=("https://origin")` for
+  // explicit origins. Emitting `feature=('none')`/`feature=('self')` makes
+  // browsers reject the ENTIRE header, silently dropping every restriction.
   return Object.entries(policy)
     .map(([feature, allowlist]) => {
-      const sources = allowlist
-        .map((source) =>
-          source === "'self'" || source === "'none'" ? source : `"${source}"`
-        )
+      const tokens = allowlist
+        .map((s) => s.replace(/^'|'$/g, '')) // tolerate CSP-style quotes
+        .filter((s) => s && s !== 'none'); // 'none' => empty allowlist ()
+      const inner = tokens
+        .map((s) => (s === 'self' || s === '*' ? s : `"${s}"`))
         .join(' ');
-      return `${feature}=(${sources})`;
+      return `${feature}=(${inner})`;
     })
     .join(', ');
 }
