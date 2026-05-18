@@ -29,16 +29,24 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
       '**/.git/**',
-      // QUARANTINED — pre-existing broken tests, tracked for rewrite in
-      // docs/known-issues/test-suite-hang.md. 9 of these never executed
-      // at all (the Heroicons-mock collection hang, now fixed); their
-      // assertions were authored but never validated against the shipped
-      // components. The other 4 ran but were already failing
-      // pre-branch (stale assertions / test-mock issues — NOT product
-      // bugs; the components ship and 97 test files pass). Excluded so
-      // the suite is green and the CI job can gate on real tests; each
-      // must be rewritten against actual component behaviour, then
-      // removed from this list.
+      // QUARANTINED — see docs/known-issues/test-suite-hang.md + GitHub
+      // issue. There are TWO independent defects here:
+      //
+      //  1. Stale assertions: tests authored against a since-rewritten
+      //     component API/data-model (e.g. JobApplicationModal now takes
+      //     jobId + getDoc; DashboardStats shows profile-completeness, not
+      //     +%/connection counts; TwoFactorSetup copy/labels changed).
+      //  2. Cross-file isolation leakage: even after the assertions are
+      //     corrected, several files pass individually but fail when run
+      //     together (shared global/module mock state — webkitSpeechRecognition
+      //     defineProperty, console spies, shared heroicons/firebase mocks —
+      //     bleeds across files; reproduced even single-process/single-fork).
+      //
+      // 6 files (journal-club, LinkedInVerifiedBadge, ForumSearch, JobCard,
+      // QuickActions, SearchBar) have had defect #1 fixed and pass in
+      // isolation, but stay quarantined until defect #2 (suite-wide test
+      // isolation) is fixed — un-quarantining them now adds 66 failures to
+      // the gating suite. The remaining files also need fresh suites.
       'tests/unit/components/dashboard/DashboardStats.test.tsx',
       'tests/unit/components/dashboard/QuickActions.test.tsx',
       'tests/unit/components/dashboard/RecentActivity.test.tsx',
