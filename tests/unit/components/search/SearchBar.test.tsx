@@ -123,11 +123,13 @@ describe('SearchBar', () => {
     // Mock Speech Recognition
     Object.defineProperty(window, 'webkitSpeechRecognition', {
       writable: true,
+      configurable: true,
       value: vi.fn().mockImplementation(() => mockSpeechRecognition),
     });
 
     Object.defineProperty(window, 'SpeechRecognition', {
       writable: true,
+      configurable: true,
       value: vi.fn().mockImplementation(() => mockSpeechRecognition),
     });
   });
@@ -166,10 +168,14 @@ describe('SearchBar', () => {
 
     it('applies custom className', () => {
       const customClass = 'custom-search-bar';
-      render(<SearchBar {...defaultProps} className={customClass} />);
+      const { container } = render(
+        <SearchBar {...defaultProps} className={customClass} />
+      );
 
-      const container = screen.getByRole('textbox').closest('div');
-      expect(container).toHaveClass(customClass);
+      // The custom className lands on the outermost container div
+      // (clsx('relative w-full', className)). The form and search box are
+      // also `.relative`, so closest('.relative') would match the wrong one.
+      expect(container.firstChild).toHaveClass(customClass);
     });
   });
 
@@ -215,7 +221,7 @@ describe('SearchBar', () => {
       render(<SearchBar {...defaultProps} />);
 
       const input = screen.getByRole('textbox');
-      const searchButton = screen.getByRole('button', { name: /search/i });
+      const searchButton = screen.getByRole('button', { name: /^search$/i });
 
       await user.type(input, 'test query');
       await user.click(searchButton);
@@ -249,7 +255,7 @@ describe('SearchBar', () => {
     it('disables search button when query is empty', () => {
       render(<SearchBar {...defaultProps} />);
 
-      const searchButton = screen.getByRole('button', { name: /search/i });
+      const searchButton = screen.getByRole('button', { name: /^search$/i });
       expect(searchButton).toBeDisabled();
     });
 
@@ -258,7 +264,7 @@ describe('SearchBar', () => {
       render(<SearchBar {...defaultProps} />);
 
       const input = screen.getByRole('textbox');
-      const searchButton = screen.getByRole('button', { name: /search/i });
+      const searchButton = screen.getByRole('button', { name: /^search$/i });
 
       await user.type(input, 'test');
 
@@ -394,10 +400,10 @@ describe('SearchBar', () => {
       const input = screen.getByRole('textbox');
       await user.type(input, 'test');
 
-      // Should show loading spinner
-      expect(
-        screen.getByRole('progressbar', { hidden: true })
-      ).toBeInTheDocument();
+      // The loading spinner is an animate-spin div (no progressbar role).
+      await waitFor(() => {
+        expect(document.querySelector('.animate-spin')).toBeInTheDocument();
+      });
     });
 
     it('handles suggestion click', async () => {
@@ -443,10 +449,10 @@ describe('SearchBar', () => {
       await user.type(input, 'da');
 
       await waitFor(() => {
-        // Check for search icon (query type)
-        expect(screen.getByText('🔍')).toBeInTheDocument();
-        // Check for recent icon (recent type)
-        expect(screen.getByText('🕒')).toBeInTheDocument();
+        // Multiple suggestions can share the query icon, so assert presence
+        // via getAllByText rather than a single-match query.
+        expect(screen.getAllByText('🔍').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('🕒').length).toBeGreaterThan(0);
       });
     });
 
@@ -572,7 +578,9 @@ describe('SearchBar', () => {
       const input = screen.getByRole('textbox');
       await user.type(input, 'test query');
 
-      fireEvent.keyDown(input, { key: 'Enter' });
+      // handleKeyDown early-returns when no suggestions are shown, so Enter
+      // here goes through the native form submit (handleSubmit).
+      fireEvent.submit(input.closest('form') as HTMLFormElement);
 
       expect(defaultProps.onSearch).toHaveBeenCalledWith('test query');
     });
@@ -744,7 +752,7 @@ describe('SearchBar', () => {
         screen.getByRole('button', { name: /voice search/i })
       ).toBeInTheDocument();
       expect(
-        screen.getByRole('button', { name: /search/i })
+        screen.getByRole('button', { name: /^search$/i })
       ).toBeInTheDocument();
     });
 
