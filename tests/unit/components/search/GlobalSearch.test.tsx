@@ -51,24 +51,28 @@ vi.mock('@/hooks/useTranslations', () => ({
   }),
 }));
 
-vi.mock('@headlessui/react', () => ({
-  Dialog: ({ children, onClose }: any) => (
+vi.mock('@headlessui/react', () => {
+  // The component uses compound components (Dialog.Panel, Dialog.Title,
+  // Transition.Child) via member access, so the mocks must be attached as
+  // properties of the parent — not registered as separate string keys.
+  const Dialog: any = ({ children, onClose }: any) => (
     <div data-testid="dialog" onClick={onClose}>
       {children}
     </div>
-  ),
-  'Dialog.Panel': ({ children, className }: any) => (
+  );
+  Dialog.Panel = ({ children, className }: any) => (
     <div data-testid="dialog-panel" className={className}>
       {children}
     </div>
-  ),
-  'Dialog.Title': ({ children }: any) => (
+  );
+  Dialog.Title = ({ children }: any) => (
     <h2 data-testid="dialog-title">{children}</h2>
-  ),
-  Transition: ({ children, show }: any) =>
-    show ? <div>{children}</div> : null,
-  'Transition.Child': ({ children }: any) => <div>{children}</div>,
-}));
+  );
+  const Transition: any = ({ children, show }: any) =>
+    show ? <div>{children}</div> : null;
+  Transition.Child = ({ children }: any) => <div>{children}</div>;
+  return { Dialog, Transition };
+});
 
 vi.mock('@/components/search/SearchBar', () => ({
   default: ({ onSearch, onSuggestionSelect, defaultQuery, autoFocus }: any) => (
