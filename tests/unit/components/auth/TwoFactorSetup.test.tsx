@@ -86,11 +86,12 @@ vi.mock('@/components/ui/Button', () => ({
   ),
 }));
 
-// Mock navigator.clipboard
-Object.assign(navigator, {
-  clipboard: {
-    writeText: vi.fn(),
-  },
+// Mock navigator.clipboard — happy-dom exposes `clipboard` as a getter-only
+// property, so Object.assign throws. Define it explicitly instead.
+Object.defineProperty(navigator, 'clipboard', {
+  value: { writeText: vi.fn() },
+  configurable: true,
+  writable: true,
 });
 
 // Mock document.execCommand for fallback
@@ -106,7 +107,7 @@ Object.assign(window.URL, {
 // button text that doesn't match actual component output. Component
 // uses useTranslations hook but tests expect hardcoded English strings.
 // Needs rewrite to match actual TwoFactorSetup component API. See TD-013.
-describe.skip('TwoFactorSetup', () => {
+describe('TwoFactorSetup', () => {
   const mockSetupTwoFactor = vi.mocked(setupTwoFactor);
   const mockEnableTwoFactor = vi.mocked(enableTwoFactor);
   const mockRegenerateBackupCodes = vi.mocked(regenerateBackupCodes);
