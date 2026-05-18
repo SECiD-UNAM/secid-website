@@ -157,3 +157,11 @@ scripts/update-artemio-profile.mjs
 # Claude worktrees
 .claude/worktrees/
 .superpowers/
+
+# Terraform (infra/ and infra/bootstrap/ — local state must never be committed)
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+crash.log

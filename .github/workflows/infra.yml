@@ -36,16 +36,20 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+      id-token: write # required for keyless Workload Identity Federation
     defaults:
       run:
         working-directory: infra
     steps:
       - uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud
+      # Keyless auth via Workload Identity Federation — no SA key secret.
+      # Provider + SA come from repo Variables set by infra/bootstrap.
+      - name: Authenticate to Google Cloud (OIDC)
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_DEPLOY_SA }}
 
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v2
@@ -60,7 +64,7 @@ jobs:
       - name: Terraform init
         run: |
           terraform init \
-            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
             -backend-config="prefix=secid/infra"
 
       - name: Terraform validate

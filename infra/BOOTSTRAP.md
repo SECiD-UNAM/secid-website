@@ -1,68 +1,54 @@
 # Infra bootstrap (one-time, org/admin)
 
 Goal: CI/CD manages the complete project configuration via Terraform
-(`infra/`) + Firebase CLI for code. A few things **cannot** be done by a
-per-repo pipeline and must be set up once by someone with org/billing/admin
-rights. After this bootstrap, everything else is CI-managed and idempotent.
+(`infra/`) + Firebase CLI for code. Single shared project **`secid-org`**
+backs both `beta.secid.mx` and `secid.mx` (intentional — no staging/prod
+split).
 
-Single shared project: **`secid-org`** backs both `beta.secid.mx` and
-`secid.mx` (intentional — no staging/prod split).
+## 1. The trust root → `infra/bootstrap/`
 
-## 1. Terraform state bucket (once)
+Steps 1–2 below (state bucket + deployer SA + roles) and the **keyless**
+GitHub→GCP auth are now codified in **`infra/bootstrap/`** (local-state
+Terraform, run once by an admin). See `infra/bootstrap/README.md`. It
+creates the state bucket, the `tf-deployer` SA, its least-priv roles, and
+a **Workload Identity Federation** pool/provider — so **no service-account
+key is ever created or stored as a secret**. After running it, set the
+three outputs as GitHub Actions _Variables_ (`GCP_WIF_PROVIDER`,
+`GCP_DEPLOY_SA`, `TF_STATE_BUCKET`) and delete any legacy
+`FIREBASE_SERVICE_ACCOUNT` key secret.
 
-```
-gsutil mb -p secid-org -l us-central1 gs://secid-org-tfstate
-gsutil versioning set on gs://secid-org-tfstate
-```
+This `infra/bootstrap/` `terraform apply` is the **only** human-privileged
+step — it cannot be done by the pipeline itself (a pipeline can't mint the
+identity it runs as). Everything else is CI-managed and idempotent.
 
-CI passes `-backend-config="bucket=secid-org-tfstate" -backend-config="prefix=secid/infra"`.
-
-## 2. Terraform deploy service account (once)
-
-```
-gcloud iam service-accounts create tf-deployer --project secid-org \
-  --display-name "Terraform/CI deployer"
-```
-
-Grant (project-scoped) — least privilege for what this root manages:
-
-- `roles/serviceusage.serviceUsageAdmin` (enable APIs)
-- `roles/firebaseauth.admin` (Identity Platform config)
-- `roles/run.admin` + `roles/iam.serviceAccountUser` (Cloud Run invoker IAM)
-- `roles/firebase.admin` / `roles/cloudfunctions.admin` (functions deploy via Firebase CLI uses the same SA)
-- `roles/firebaserules.admin`, `roles/datastore.indexAdmin` (rules/indexes)
-- `roles/storage.objectAdmin` on the state bucket
-
-Provide it to GitHub Actions as the `FIREBASE_SERVICE_ACCOUNT` /
-`GCP_SA_KEY` secret (already referenced by the workflows).
-
-## 3. Org-policy check (cannot be done by per-repo CI)
+## 2. Org-policy check (genuinely cannot be in any per-repo CI)
 
 `completeRegistration` & other callables need `allUsers` `roles/run.invoker`.
 If **Domain Restricted Sharing** (`iam.allowedPolicyMemberDomains`) is
 enforced at the org/folder, `terraform apply` of `cloud_run_invoker.tf`
-will be **rejected** and no pipeline can override it. An org admin must
-either add a project/service exception, or the callables must move to
-authenticated invocation + Firebase App Check. Verify once:
+will be **rejected** and no pipeline can override it. An org admin must add
+a project/service exception, or the callables must move to authenticated
+invocation + Firebase App Check. Verify once:
 
 ```
 gcloud resource-manager org-policies describe \
   iam.allowedPolicyMemberDomains --project secid-org
 ```
 
-## 4. Residual console toggle (only if needed)
+## 3. Residual console toggle (only if needed)
 
-`infra/identity_platform.tf` enables Email/Password + authorized domains and
-PATCHes the Identity Toolkit config. The **"Allow users to sign up"**
+`infra/identity_platform.tf` enables Email/Password + authorized domains
+and PATCHes the Identity Toolkit config. The **"Allow users to sign up"**
 control (server returns `ADMIN_ONLY_OPERATION` when off) is not cleanly
 exposed by the Terraform providers. If, after `terraform apply`, a test
 registration still returns `ADMIN_ONLY_OPERATION`, enable it once in
 Firebase Console → Authentication → Settings → User actions →
-"Allow users to sign up", for `secid-org`. This is the single residual
-manual step and is documented honestly rather than faked in TF.
+"Allow users to sign up", for `secid-org`. The single residual manual
+step — documented honestly rather than faked in TF.
 
 ## After bootstrap
 
-`.github/workflows/infra.yml` runs `terraform plan` on PRs and a phased
-`terraform apply` on deploy (APIs+Identity first, then `firebase deploy`,
-then invoker IAM). The deploy workflows no longer swallow failures.
+`.github/workflows/infra.yml` authenticates **keyless via OIDC/WIF**, runs
+`terraform plan` on PRs (review gate) and `terraform apply` on push. The
+deploy workflows no longer swallow functions/rules deploy failures
+(`set -o pipefail`, fail-loud).
