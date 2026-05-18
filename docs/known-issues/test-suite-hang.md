@@ -40,6 +40,11 @@ Never-ran (assertions never validated — stale vs shipped markup):
 - tests/unit/components/search/GlobalSearch.test.tsx
 - tests/unit/components/search/SearchBar.test.tsx
 
+Anti-pattern (runs a full `astro build` inside a unit test; redundant
+with the Build Validation CI job):
+
+- tests/build/astro-build.test.ts
+
 Ran but already failing pre-branch (stale assertions / test-mock issues):
 
 - tests/unit/components/auth/TwoFactorSetup.test.tsx
