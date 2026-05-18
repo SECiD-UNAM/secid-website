@@ -122,11 +122,13 @@ describe('QuickActions', () => {
       );
     });
 
-    it('renders 6 action items', () => {
+    it('renders all action items (incl. "Ver mi CV" for a signed-in user)', () => {
       render(<QuickActions />);
 
+      // 6 base actions + the conditional "Ver mi CV" (rendered when a user
+      // is present, which the default auth mock provides) = 7.
       const actionLinks = screen.getAllByRole('link');
-      expect(actionLinks).toHaveLength(6);
+      expect(actionLinks).toHaveLength(7);
     });
   });
 
@@ -338,7 +340,7 @@ describe('QuickActions', () => {
           (el) =>
             el.classList.contains('p-3') && el.classList.contains('rounded-lg')
         );
-      expect(iconContainers).toHaveLength(6);
+      expect(iconContainers).toHaveLength(7);
     });
 
     it('applies correct color schemes', () => {
@@ -346,13 +348,13 @@ describe('QuickActions', () => {
 
       const actions = screen.getAllByRole('link');
 
-      // Check that each action has appropriate styling
+      // Check that each action has the shipped card styling.
       actions.forEach((action) => {
         expect(action).toHaveClass(
           'block',
           'p-6',
           'bg-white',
-          'rounded-lg',
+          'rounded-xl',
           'shadow'
         );
       });
@@ -381,18 +383,19 @@ describe('QuickActions', () => {
             el.classList.contains('p-3') && el.classList.contains('rounded-lg')
         );
 
-      // Should have variety in colors (blue, green, purple, orange, pink, indigo)
-      const hasBlue = iconContainers.some((el) =>
-        el.classList.contains('bg-blue-100')
+      // Color tokens map to the design-system palette (secondary/primary/
+      // accent), not raw Tailwind bg-blue-100 etc.
+      const hasSecondary = iconContainers.some((el) =>
+        el.classList.contains('bg-secondary-100')
       );
-      const hasGreen = iconContainers.some((el) =>
-        el.classList.contains('bg-green-100')
+      const hasPrimary = iconContainers.some((el) =>
+        el.classList.contains('bg-primary-100')
       );
-      const hasPurple = iconContainers.some((el) =>
-        el.classList.contains('bg-purple-100')
+      const hasAccent = iconContainers.some((el) =>
+        el.classList.contains('bg-accent-100')
       );
 
-      expect(hasBlue || hasGreen || hasPurple).toBe(true); // At least one should have colored background
+      expect(hasSecondary || hasPrimary || hasAccent).toBe(true);
     });
   });
 
@@ -520,8 +523,11 @@ describe('QuickActions', () => {
       const actions = screen.getAllByRole('link');
 
       actions.forEach((action) => {
-        // Each action should have proper internal spacing
-        const content = within(action).getByRole('generic');
+        // The card has several generic divs (hover stripe, content row);
+        // assert the content row carries the spacing classes.
+        const content = within(action)
+          .getAllByRole('generic')
+          .find((el) => el.classList.contains('flex'));
         expect(content).toHaveClass('flex', 'items-start', 'space-x-4');
       });
     });
@@ -539,8 +545,8 @@ describe('QuickActions', () => {
             el.classList.contains('p-3') && el.classList.contains('rounded-lg')
         );
 
-      // Should have exactly 6 icon containers (one per action)
-      expect(iconContainers).toHaveLength(6);
+      // One icon container per action (6 base + "Ver mi CV").
+      expect(iconContainers).toHaveLength(7);
 
       // Each should have some background color class
       iconContainers.forEach((container) => {
