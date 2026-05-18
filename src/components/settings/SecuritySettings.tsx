@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Button from '@/components/ui/Button';
 import { useTranslations } from '@/hooks/useTranslations';
+import { AddAlternateEmail } from '@/components/profile/AddAlternateEmail';
 import {
   updatePassword,
   reauthenticateWithCredential,
@@ -655,6 +656,10 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
                     </div>
                   );
                 })}
+              </div>
+
+              <div className="border-t border-gray-200 pt-6 dark:border-gray-700">
+                <AddAlternateEmail lang={lang} />
               </div>
             </div>
           )}

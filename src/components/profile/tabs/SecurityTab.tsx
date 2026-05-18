@@ -6,7 +6,6 @@ import {
   EyeIcon,
   EyeSlashIcon,
 } from '@heroicons/react/24/outline';
-import { AddAlternateEmail } from '@/components/profile/AddAlternateEmail';
 
 interface SecurityTabProps {
   user: any;
@@ -140,10 +139,6 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
             {lang === 'es' ? 'Actualizar contraseña' : 'Update password'}
           </button>
         </div>
-      </div>
-
-      <div className="border-t border-gray-200 pt-6 dark:border-gray-700">
-        <AddAlternateEmail lang={lang} />
       </div>
 
       <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
