@@ -914,6 +914,20 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // email_alias: alternate-email resolution index. Client-readable
+    // (auth resolution), server-write-only via Admin SDK (like
+    // numero_cuenta_index).
+    match /email_alias/{emailLower} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // alternate_email_tokens: single-use email-verification tokens.
+    // Fully server-only — never exposed to clients.
+    match /alternate_email_tokens/{tokenId} {
+      allow read, write: if false;
+    }
+
     // merge_requests: users create their own, admins create and manage
     match /merge_requests/{requestId} {
       // Users can create pending requests for themselves

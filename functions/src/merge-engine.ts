@@ -221,15 +221,54 @@ export const onMergeRequestApproved = onDocumentUpdated(
         await db.collection('users').doc(sourceUid).delete();
       } else if (action === 'hard-delete') {
         await db.collection('users').doc(sourceUid).delete();
+      } else if (action === 'alias') {
+        // Multi-email identity: the source account stays a usable login but
+        // its profile doc becomes a thin alias stub pointing at the target.
+        // Overwrite (NOT merge) so the stub carries NO role/isVerified/rbac
+        // — a compromised alias must never self-escalate independently of
+        // the canonical doc.
+        await db.collection('users').doc(sourceUid).set({
+          aliasOf: targetUid,
+          mergedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
+        // Append the source user's email to the target's alternateEmails
+        // (deduped) and register the resolution index entry.
+        const sourceEmailLower = String(sourceDoc.email || '')
+          .trim()
+          .toLowerCase();
+        if (sourceEmailLower) {
+          const targetRef = db.collection('users').doc(targetUid);
+          const targetCurrent = await targetRef.get();
+          const existingAlts: { email: string; verifiedAt: unknown }[] =
+            targetCurrent.data()?.alternateEmails || [];
+          const dedupedAlts = existingAlts.filter(
+            (e) => String(e?.email || '').toLowerCase() !== sourceEmailLower
+          );
+          dedupedAlts.push({
+            email: sourceEmailLower,
+            verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+          await targetRef.update({ alternateEmails: dedupedAlts });
+
+          await db.collection('email_alias').doc(sourceEmailLower).set({
+            canonicalUid: targetUid,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+        }
       }
 
-      // Step 6: Disable old Firebase Auth account
-      try {
-        await admin.auth().updateUser(sourceUid, { disabled: true });
-      } catch (authErr: unknown) {
-        const msg =
-          authErr instanceof Error ? authErr.message : String(authErr);
-        console.warn(`Could not disable auth for ${sourceUid}: ${msg}`);
+      // Step 6: Disable old Firebase Auth account.
+      // Skipped for 'alias': logging in with the source email must keep
+      // working (it read-through resolves to the canonical profile).
+      if (action !== 'alias') {
+        try {
+          await admin.auth().updateUser(sourceUid, { disabled: true });
+        } catch (authErr: unknown) {
+          const msg =
+            authErr instanceof Error ? authErr.message : String(authErr);
+          console.warn(`Could not disable auth for ${sourceUid}: ${msg}`);
+        }
       }
 
       // Step 7: Clean up target doc
@@ -239,13 +278,20 @@ export const onMergeRequestApproved = onDocumentUpdated(
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
 
-      // Step 8: Delete old index entry
+      // Step 8: Clean up old index entry.
+      // For 'alias' the numeroCuenta stays valid (same person, both logins
+      // live) — repoint the index at the canonical (target) uid instead of
+      // deleting it. For all other actions, delete the stale entry.
       const numeroCuenta = afterData.numeroCuenta;
       if (numeroCuenta) {
         const indexRef = db.collection('numero_cuenta_index').doc(numeroCuenta);
         const indexSnap = await indexRef.get();
         if (indexSnap.exists && indexSnap.data()?.uid === sourceUid) {
-          await indexRef.delete();
+          if (action === 'alias') {
+            await indexRef.update({ uid: targetUid });
+          } else {
+            await indexRef.delete();
+          }
         }
       }
 

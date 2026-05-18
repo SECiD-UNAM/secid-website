@@ -27,6 +27,10 @@ import {
 import { onUserNumeroCuentaChange } from './numero-cuenta-index';
 import { onMergeRequestApproved } from './merge-engine';
 import { completeRegistration } from './complete-registration';
+import {
+  requestAlternateEmail,
+  confirmAlternateEmail,
+} from './alternate-email';
 import { submitPublicJob } from './public-job-submit';
 
 // Firebase Admin initialized in ./init.ts (imported above)
@@ -591,6 +595,9 @@ export { onMergeRequestApproved };
 
 // Registration: complete registration callable CF
 export { completeRegistration };
+
+// Multi-email identity: request + confirm verified alternate emails
+export { requestAlternateEmail, confirmAlternateEmail };
 
 // Jobs: public anonymous job submission callable CF
 export { submitPublicJob };

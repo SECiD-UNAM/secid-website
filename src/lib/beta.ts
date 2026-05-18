@@ -23,6 +23,9 @@ export const BETA_FEATURES = {
   // (see firestore.rules), so member DMs are safe in production.
   messaging: false,
   learningPaths: true,
+  // Multi-email identity: resolve aliasOf accounts to their canonical
+  // profile. Beta-only until rollout completes (default OFF in prod).
+  aliasResolution: true,
 } as const;
 
 export type BetaFeatureId = keyof typeof BETA_FEATURES;

@@ -14,6 +14,11 @@ export interface UserProfile {
   createdAt?: any; // Firestore Timestamp or Date
   updatedAt?: any; // Firestore Timestamp or Date
 
+  // Multi-email identity (server-managed via Admin SDK)
+  alternateEmails?: { email: string; verifiedAt: any }[]; // verified secondary emails
+  aliasOf?: string; // canonical uid this account redirects to
+  primaryEmail?: string;
+
   // Flat convenience fields (written by beforeUserCreated Cloud Function)
   displayName?: string;
   firstName?: string;

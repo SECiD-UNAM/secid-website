@@ -12,6 +12,7 @@ import {
 } from 'firebase/auth';
 import { auth, db, isEmulatorMode } from '@/lib/firebase';
 import { doc, onSnapshot, getDoc, type Unsubscribe } from 'firebase/firestore';
+import { isFeatureEnabled } from '@/lib/beta';
 import type { UserProfile } from '@/types/user';
 export type { UserProfile };
 
@@ -80,11 +81,80 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const userRef = doc(db, 'users', uid);
     let firstSnapshot = true;
 
-    return onSnapshot(
+    // Holds the listener for the canonical doc when this uid turns out to be
+    // an alias stub. The returned Unsubscribe tears down BOTH the alias-stub
+    // listener and (if we hopped) the canonical listener, so the existing
+    // profileUnsubRef cleanup (signOut / unmount / re-subscribe) still works
+    // with a single stored unsubscribe and never leaks the redirect listener.
+    let canonicalUnsub: Unsubscribe | null = null;
+
+    // Transparently resolve a single alias hop: alias stub -> canonical doc.
+    // Fails closed (no profile + error) on alias->alias chains or a missing
+    // canonical target so resolution can never loop. Resolves at most ONE hop.
+    const resolveAlias = (
+      canonicalId: string,
+      stubUnsub: Unsubscribe
+    ): void => {
+      // Drop the alias-stub listener; loading state must clear from the
+      // CANONICAL snapshot, not from the stub.
+      stubUnsub();
+      const canonicalRef = doc(db, 'users', canonicalId);
+      canonicalUnsub = onSnapshot(
+        canonicalRef,
+        (canonicalSnap) => {
+          if (!canonicalSnap['exists']()) {
+            // Missing canonical target — fail closed, do not loop.
+            setError('Linked account could not be resolved');
+            setUserProfile(null);
+          } else {
+            const canonicalData = canonicalSnap['data']() as UserProfile & {
+              aliasOf?: string;
+            };
+            if (canonicalData.aliasOf) {
+              // alias -> alias chain — fail closed, resolve at most one hop.
+              setError('Linked account could not be resolved');
+              setUserProfile(null);
+            } else {
+              setUserProfile({
+                ...canonicalData,
+                uid: canonicalSnap['id'],
+              });
+              setError(null);
+            }
+          }
+          if (firstSnapshot) {
+            firstSnapshot = false;
+            onFirstSnapshot?.();
+          }
+        },
+        (err) => {
+          console.error('Error fetching canonical profile:', err);
+          setError('Failed to load user profile');
+          if (firstSnapshot) {
+            firstSnapshot = false;
+            onFirstSnapshot?.();
+          }
+        }
+      );
+    };
+
+    const stubUnsub = onSnapshot(
       userRef,
       (snapshot) => {
         if (snapshot['exists']()) {
-          const data = snapshot['data']() as UserProfile;
+          const data = snapshot['data']() as UserProfile & {
+            aliasOf?: string;
+          };
+          if (data.aliasOf && isFeatureEnabled('aliasResolution')) {
+            // This doc is an alias stub. Re-subscribe to the canonical doc
+            // and forward onFirstSnapshot so loading clears from there.
+            // Guard against repeated hops if the stub re-fires before the
+            // canonical listener replaces it.
+            if (!canonicalUnsub) {
+              resolveAlias(data.aliasOf, stubUnsub);
+            }
+            return;
+          }
           setUserProfile({
             ...data,
             uid: snapshot['id'],
@@ -127,6 +197,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       }
     );
+
+    // Composite unsubscribe: tears down the alias-stub listener AND the
+    // canonical listener (if we hopped). Stored as a single Unsubscribe in
+    // profileUnsubRef, so signOut / unmount / re-subscribe never leak.
+    return () => {
+      stubUnsub();
+      if (canonicalUnsub) {
+        canonicalUnsub();
+        canonicalUnsub = null;
+      }
+    };
   };
 
   // Refresh user profile manually

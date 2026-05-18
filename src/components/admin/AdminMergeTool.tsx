@@ -441,17 +441,18 @@ export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({
                       ? 'Acción para el documento original'
                       : 'Action for old document'}
                   </legend>
-                  <div className="flex gap-4">
+                  <div className="flex flex-col gap-2">
                     {(
                       [
                         'soft-delete',
                         'hard-delete',
                         'archive',
+                        'alias',
                       ] as OldDocAction[]
                     ).map((action) => (
                       <label
                         key={action}
-                        className="flex cursor-pointer items-center gap-1.5 text-sm"
+                        className="flex cursor-pointer items-start gap-1.5 text-sm"
                       >
                         <input
                           type="radio"
@@ -459,10 +460,23 @@ export const AdminMergeTool: React.FC<AdminMergeToolProps> = ({
                           value={action}
                           checked={oldDocAction === action}
                           onChange={() => setOldDocAction(action)}
-                          className="text-blue-600"
+                          className="mt-0.5 text-blue-600"
                         />
-                        <span className="text-gray-700 dark:text-gray-300">
-                          {action}
+                        <span>
+                          <span className="text-gray-700 dark:text-gray-300">
+                            {action === 'alias'
+                              ? isEs
+                                ? 'Vincular como correo alterno (ambas cuentas activas)'
+                                : 'Link as alternate email (both logins stay active)'
+                              : action}
+                          </span>
+                          {action === 'alias' && (
+                            <span className="block text-xs text-gray-500 dark:text-gray-400">
+                              {isEs
+                                ? 'El duplicado se convierte en alias de la cuenta destino. El usuario podrá iniciar sesión con cualquiera de los dos correos y verá el mismo perfil. No se deshabilita ningún acceso.'
+                                : 'The duplicate becomes an alias of the target account. The user can sign in with either email and will see the same profile. No login is disabled.'}
+                            </span>
+                          )}
                         </span>
                       </label>
                     ))}

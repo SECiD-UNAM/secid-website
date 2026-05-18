@@ -54,7 +54,7 @@ export type MergeRequestStatus =
 /**
  * What happens to the old (source) Firestore document after a successful merge.
  */
-export type OldDocAction = 'soft-delete' | 'hard-delete' | 'archive';
+export type OldDocAction = 'soft-delete' | 'hard-delete' | 'archive' | 'alias';
 
 /**
  * A Firestore document representing a pending or completed profile merge.
