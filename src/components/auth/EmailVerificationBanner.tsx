@@ -12,17 +12,31 @@ export const EmailVerificationBanner: React.FC<
   const { user } = useAuth();
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!user || user.emailVerified) return null;
 
   const handleResend = async () => {
     if (sending || sent) return;
     setSending(true);
+    setError(null);
     try {
       await sendEmailVerification(user);
       setSent(true);
-    } catch {
-      // Silently fail — rate limits may apply
+    } catch (e: unknown) {
+      // Surface the failure — previously this was swallowed silently, so a
+      // failed send looked identical to "no email arrived" with zero
+      // feedback. Show the reason (rate limit, config, network) + log it.
+      const code =
+        (e as { code?: string; message?: string })?.code ||
+        (e as { message?: string })?.message ||
+        'unknown';
+      console.error('sendEmailVerification failed:', e);
+      setError(
+        lang === 'es'
+          ? `No se pudo enviar el correo (${code}). Revisa spam o intenta más tarde.`
+          : `Could not send the email (${code}). Check spam or try again later.`
+      );
     } finally {
       setSending(false);
     }
@@ -84,6 +98,14 @@ export const EmailVerificationBanner: React.FC<
               {lang === 'es' ? 'Ya verifiqué' : 'I already verified'}
             </button>
           </div>
+          {error && (
+            <p
+              role="alert"
+              className="mt-2 text-sm font-medium text-red-700 dark:text-red-400"
+            >
+              {error}
+            </p>
+          )}
         </div>
       </div>
     </div>
