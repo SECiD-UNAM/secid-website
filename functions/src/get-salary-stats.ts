@@ -169,6 +169,29 @@ export const getSalaryStats = onRequest(
 
     const tier = isAdmin ? 'admin' : isContributor ? 'contributor' : 'member';
 
+    // Salary reciprocity: a verified member who has NOT shared their own
+    // compensation gets NO salary aggregates (overview/distribution/by-
+    // experience were previously exposed to any verified member). Stats
+    // are unlocked only by contributing your own salary (or admin).
+    // `requiresContribution` lets the client show an "add your salary to
+    // unlock" prompt instead of empty data.
+    if (!isContributor && !isAdmin) {
+      res.json({
+        result: {
+          tier,
+          requiresContribution: true,
+          overview: null,
+          distribution: null,
+          byExperience: null,
+          byIndustry: null,
+          benefits: null,
+          breakdown: null,
+          rawData: null,
+        },
+      });
+      return;
+    }
+
     // Read ALL compensation docs via collectionGroup
     const compSnap = await db.collectionGroup('compensation').get();
 

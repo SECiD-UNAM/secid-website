@@ -1,10 +1,14 @@
 /**
  * SalaryInsights — Main analytics dashboard with tiered access.
  *
- * Access tiers are determined server-side by the getSalaryStats Cloud Function:
- * - public:      Total data points count only (overview.dataPointCount)
- * - member:      Overview cards + experience chart (industry/benefits/breakdown null)
- * - contributor: Full access to all charts
+ * Access tiers are determined server-side by the getSalaryStats Cloud Function.
+ * Salary stats are RECIPROCAL — you only see aggregates if you've shared
+ * your own compensation:
+ * - public:      Nothing (not verified) — all sections null
+ * - member:      Verified but has NOT contributed — all sections null +
+ *                requiresContribution:true ("share to unlock")
+ * - contributor: Shared own salary → overview/distribution/experience +
+ *                industry/benefits
  * - admin:       Full access + raw data table
  *
  * Null fields from the CF mean "not authorized for this tier" — no client-side
