@@ -142,6 +142,37 @@ export const JobBoard: React.FC<JobBoardProps> = ({ lang = 'es', filters }) => {
   const keyExtractor = useCallback((job: Job) => job.id, []);
 
   if (listing.error && !listing.loading && listing.items.length === 0) {
+    // The jobs collection requires authentication (Firestore rules). For
+    // anonymous visitors the query fails with "Missing or insufficient
+    // permissions" — show a friendly members-gate instead of leaking a
+    // raw Firestore error string.
+    const isAuthError =
+      /permission|insufficient|unauthenticated|sign[- ]?in|auth/i.test(
+        String(listing.error)
+      );
+    if (isAuthError) {
+      const loginHref = `/${lang}/login?returnUrl=/${lang}/jobs`;
+      return (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-gray-100">
+            {lang === 'es'
+              ? 'Inicia sesión para ver la bolsa de trabajo'
+              : 'Sign in to view the job board'}
+          </h3>
+          <p className="mb-4 max-w-md text-sm text-gray-500">
+            {lang === 'es'
+              ? 'Las ofertas de empleo están disponibles para miembros de SECiD.'
+              : 'Job postings are available to SECiD members.'}
+          </p>
+          <a
+            href={loginHref}
+            className="rounded-lg bg-orange-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-orange-700"
+          >
+            {lang === 'es' ? 'Iniciar Sesión' : 'Sign In'}
+          </a>
+        </div>
+      );
+    }
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <h3 className="mb-2 text-lg font-medium text-red-600 dark:text-red-400">

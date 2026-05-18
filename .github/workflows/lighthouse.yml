@@ -58,8 +58,10 @@ jobs:
           # Wait for server to be ready
           npx wait-on http://localhost:4321 --timeout 60000
 
-          # Run Lighthouse CI
-          lhci autorun --config=lighthouserc.js || LHCI_EXIT_CODE=$?
+          # Run Lighthouse CI (config file is lighthouserc.cjs — the
+          # workflow previously referenced a nonexistent .js, so lhci
+          # errored out and scores defaulted to 0)
+          lhci autorun --config=lighthouserc.cjs || LHCI_EXIT_CODE=$?
 
           # Stop the server
           kill $SERVER_PID 2>/dev/null || true
