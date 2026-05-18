@@ -36,6 +36,7 @@ resource "google_project_iam_member" "deployer_roles" {
     "roles/firebaserules.admin",            # rules
     "roles/datastore.indexAdmin",           # firestore indexes
     "roles/storage.admin",                  # tfstate bucket + function src
+    "roles/firebasestorage.admin",          # deploy Storage rules (default bucket get)
   ])
   project = var.project_id
   role    = each.value
