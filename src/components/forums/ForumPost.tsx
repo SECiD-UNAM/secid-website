@@ -541,6 +541,9 @@ const ForumPost: React.FC<ForumPostProps> = ({
                   <div className="prose max-w-none dark:prose-invert">
                     <div
                       dangerouslySetInnerHTML={{
+                        // Sanitized by the real DOMPurify-backed
+                        // sanitizeHtml; CodeQL can't see the custom sink.
+                        // codeql[js/xss-through-dom]
                         __html: sanitizeHtml(processContent(content)),
                       }}
                     />

@@ -34,7 +34,17 @@ const DOMPurify = {
       ).sanitize(input, options ?? {});
     }
     // No DOM available — strip every tag rather than risk passthrough.
-    return input.replace(/<[^>]*>/g, '');
+    // Strip iteratively until stable: a single pass of /<[^>]*>/ can be
+    // defeated by overlapping/nested constructs (e.g. `<<b>script>`), so
+    // repeat until no angle-bracket constructs remain, then drop any
+    // leftover stray `<`/`>`.
+    let out = input;
+    let prev;
+    do {
+      prev = out;
+      out = out.replace(/<[^>]*>/g, '');
+    } while (out !== prev);
+    return out.replace(/[<>]/g, '');
   },
 };
 

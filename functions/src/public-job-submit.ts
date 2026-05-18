@@ -49,10 +49,15 @@ async function enforceRateLimit(ip: string): Promise<void> {
 }
 
 function sanitize(str: string, maxLen = MAX_FIELD_LENGTH): string {
-  return str
-    .replace(/<[^>]*>/g, '')
-    .trim()
-    .slice(0, maxLen);
+  // Strip tags iteratively until stable (a single /<[^>]*>/ pass can be
+  // bypassed by nested/overlapping constructs), then drop stray <>.
+  let out = str;
+  let prev;
+  do {
+    prev = out;
+    out = out.replace(/<[^>]*>/g, '');
+  } while (out !== prev);
+  return out.replace(/[<>]/g, '').trim().slice(0, maxLen);
 }
 
 function sanitizeArray(arr: string[], maxLen = MAX_FIELD_LENGTH): string[] {

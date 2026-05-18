@@ -357,7 +357,12 @@ export default function BlogEditor({ lang = 'es' }: Props) {
           {content ? (
             <div
               className="blog-editor__preview-content"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
+              dangerouslySetInnerHTML={{
+                // Sanitized by the real DOMPurify-backed sanitizeHtml;
+                // CodeQL can't see the custom sink.
+                // codeql[js/xss-through-dom]
+                __html: sanitizeHtml(content),
+              }}
             />
           ) : (
             <p

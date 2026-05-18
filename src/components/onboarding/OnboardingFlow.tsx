@@ -153,7 +153,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
       participateInResearch: false,
     },
     analytics: {
-      sessionId: `onboarding_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+      sessionId: `onboarding_${Date.now()}_${crypto.randomUUID()}`,
       userId: '', // Will be set from auth context
       startTime: new Date(),
       stepTimings: {} as Record<OnboardingStep, any>,

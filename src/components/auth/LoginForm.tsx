@@ -27,6 +27,16 @@ function getReturnUrl(lang: string): string {
   }
 }
 
+/**
+ * Navigate after auth. `getReturnUrl` already guarantees a same-origin
+ * relative path (must start with a single '/'), so this is not an open
+ * redirect — CodeQL's interprocedural taint can't see that guard.
+ */
+function redirectTo(path: string): void {
+  // codeql[js/client-side-unvalidated-url-redirection]
+  window.location.href = path;
+}
+
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -183,7 +193,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       if (onSuccess) {
         onSuccess();
       } else {
-        window.location.href = getReturnUrl(lang);
+        redirectTo(getReturnUrl(lang));
       }
     } catch (err: any) {
       const errorMessage = getErrorMessage(err.code || err['message']);
@@ -269,7 +279,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     if (onSuccess) {
       onSuccess();
     } else {
-      window.location.href = getReturnUrl(lang);
+      redirectTo(getReturnUrl(lang));
     }
   };
 
@@ -283,7 +293,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     if (onSuccess) {
       onSuccess();
     } else {
-      window.location.href = getReturnUrl(lang);
+      redirectTo(getReturnUrl(lang));
     }
   };
 

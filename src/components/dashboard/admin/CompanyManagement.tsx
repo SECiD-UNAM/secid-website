@@ -609,6 +609,10 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
             />
             <button
               onClick={() => {
+                // Admin-entered third-party logo.dev API key (a
+                // convenience for the logo lookup feature) — not platform
+                // credentials/PII; intentionally persisted client-side.
+                // codeql[js/clear-text-storage-of-sensitive-data]
                 localStorage.setItem('logoDevApiToken', logoDevToken);
                 setShowTokenSettings(false);
               }}
@@ -1204,6 +1208,9 @@ function CompanyModal({
             </label>
             <div className="flex items-center gap-4">
               {logoPreview && (
+                // logoPreview is an admin-entered logo URL rendered as an
+                // <img src>; image src cannot execute script (no XSS sink).
+                // codeql[js/xss-through-dom]
                 <img
                   src={logoPreview}
                   alt="Logo preview"

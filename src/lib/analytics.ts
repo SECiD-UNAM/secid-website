@@ -700,15 +700,16 @@ export class AnalyticsService {
    * Helper Methods
    */
   private getSessionId(): string {
+    const newId = () => `session_${Date.now()}_${crypto.randomUUID()}`;
     if (typeof window !== 'undefined') {
       let sessionId = sessionStorage.getItem('analytics_session_id');
       if (!sessionId) {
-        sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        sessionId = newId();
         sessionStorage.setItem('analytics_session_id', sessionId);
       }
       return sessionId;
     }
-    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return newId();
   }
 
   private async getUserLocation(): Promise<
