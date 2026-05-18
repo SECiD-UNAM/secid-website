@@ -24,9 +24,12 @@ resource "google_cloud_run_service_iam_member" "public_invoker" {
 
   project  = var.project_id
   location = var.region
-  service  = each.value # gen2 function -> Cloud Run service of same name
-  role     = "roles/run.invoker"
-  member   = "allUsers"
+  # Gen2 functions create a Cloud Run service whose name is the function
+  # name LOWERCASED (Cloud Run requires lowercase). Using the camelCase
+  # name here fails with NOT_FOUND.
+  service = lower(each.value)
+  role    = "roles/run.invoker"
+  member  = "allUsers"
 
   depends_on = [google_project_service.required]
 }
