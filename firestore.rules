@@ -928,6 +928,15 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // alternate-email anti-abuse: audit log + per-caller rate limit.
+    // Server-only (Admin SDK); never exposed to clients.
+    match /alternate_email_audit/{docId} {
+      allow read, write: if false;
+    }
+    match /alternate_email_ratelimit/{uid} {
+      allow read, write: if false;
+    }
+
     // merge_requests: users create their own, admins create and manage
     match /merge_requests/{requestId} {
       // Users can create pending requests for themselves

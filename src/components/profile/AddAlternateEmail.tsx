@@ -26,6 +26,10 @@ const labels = {
     errorOwnPrimary: 'Ese ya es el correo principal de tu cuenta.',
     errorMembersOnly:
       'Los correos alternos están disponibles solo para miembros con membresía completa.',
+    errorAlreadyLinked:
+      'Ese correo ya pertenece a otra cuenta de SECiD. Para unificarlas, solicita una fusión de cuentas o contacta a soporte (contacto@secid.mx).',
+    errorRateLimited:
+      'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.',
     errorGeneric: 'No se pudo procesar la solicitud. Inténtalo de nuevo.',
     errorEmpty: 'Ingresa un correo',
   },
@@ -44,6 +48,10 @@ const labels = {
     errorInvalid: 'Invalid email',
     errorOwnPrimary: "That's already your account's primary email.",
     errorMembersOnly: 'Alternate emails are available to full members only.',
+    errorAlreadyLinked:
+      'That email already belongs to another SECiD account. To unify them, request an account merge or contact support (contacto@secid.mx).',
+    errorRateLimited:
+      'Too many attempts. Please wait a few minutes and try again.',
     errorGeneric: 'Could not process the request. Please try again.',
     errorEmpty: 'Enter an email',
   },
@@ -76,14 +84,22 @@ export const AddAlternateEmail: React.FC<AddAlternateEmailProps> = ({
     setSending(true);
     try {
       const fn = httpsCallable(functions, 'requestAlternateEmail');
-      await fn({ email: trimmed });
-      // Always generic — the backend never reveals whether the email exists.
-      setMessage(l.success);
-      setEmail('');
+      const res = await fn({ email: trimmed });
+      if ((res?.data as { alreadyLinked?: boolean })?.alreadyLinked) {
+        // Authenticated owner: the email belongs to another account — be
+        // honest and route them to an account merge (no misleading
+        // "we sent you a link").
+        setError(l.errorAlreadyLinked);
+      } else {
+        setMessage(l.success);
+        setEmail('');
+      }
     } catch (err: any) {
       console.error('requestAlternateEmail error:', err);
       const reason = err?.details?.reason;
-      if (reason === 'members_only') {
+      if (reason === 'rate_limited') {
+        setError(l.errorRateLimited);
+      } else if (reason === 'members_only') {
         setError(l.errorMembersOnly);
       } else if (reason === 'primary_email') {
         setError(l.errorOwnPrimary);

@@ -61,6 +61,32 @@ export const requestAlternateEmail = onCall(
       );
     }
 
+    // Best-effort per-caller rate limit. The endpoint is authenticated so
+    // the enumeration surface is small, but this bounds probing of which
+    // emails belong to SECiD accounts. Single-doc, no composite index.
+    const RL_MAX = 5;
+    const RL_WINDOW_MS = 10 * 60 * 1000;
+    const rlRef = db.collection('alternate_email_ratelimit').doc(uid);
+    const rlSnap = await rlRef.get();
+    const nowMs = Date.now();
+    const rl = rlSnap.exists ? rlSnap.data() : null;
+    if (
+      rl &&
+      nowMs - (rl.windowStart || 0) < RL_WINDOW_MS &&
+      (rl.count || 0) >= RL_MAX
+    ) {
+      throw new HttpsError(
+        'resource-exhausted',
+        'Too many attempts. Please try again later.',
+        { reason: 'rate_limited' }
+      );
+    }
+    if (!rl || nowMs - (rl.windowStart || 0) >= RL_WINDOW_MS) {
+      await rlRef.set({ windowStart: nowMs, count: 1 });
+    } else {
+      await rlRef.set({ count: (rl.count || 0) + 1 }, { merge: true });
+    }
+
     // Reject if it equals the caller's own primary email.
     const callerPrimary = String(
       callerData?.primaryEmail || callerData?.email || ''
@@ -108,8 +134,18 @@ export const requestAlternateEmail = onCall(
     }
 
     if (alreadyClaimed) {
-      // Generic response — do not leak existence, do not create a token.
-      return { ok: true };
+      // This is an AUTHENTICATED self-service action and the spec routes an
+      // already-registered email to an admin merge — so tell the owner the
+      // truth instead of a misleading "we sent you a link". Audit the
+      // attempt (server-only) to keep the reduced enumeration surface
+      // accountable.
+      await db.collection('alternate_email_audit').add({
+        uid,
+        email: emailLower,
+        result: 'already_in_use',
+        at: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      return { ok: true, alreadyLinked: true };
     }
 
     // Create a single-use, time-boxed verification token.
