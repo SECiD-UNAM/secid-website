@@ -52,7 +52,7 @@ const labels = {
 export const AddAlternateEmail: React.FC<AddAlternateEmailProps> = ({
   lang,
 }) => {
-  const { userProfile } = useAuth();
+  const { userProfile, isVerified } = useAuth();
   const l = labels[lang];
 
   const [email, setEmail] = useState('');
@@ -101,8 +101,9 @@ export const AddAlternateEmail: React.FC<AddAlternateEmailProps> = ({
   };
 
   // First-class members only (numeroCuenta + proof + admin approval).
-  // Basic / pending accounts never see this section.
-  if (userProfile?.isVerified !== true) return null;
+  // Use the AuthContext-derived flag so membership is judged exactly
+  // like the sidebar/rest of the app (truthy), not a brittle === true.
+  if (!isVerified) return null;
 
   return (
     <div className="border-t border-gray-200 pt-6 dark:border-gray-700">

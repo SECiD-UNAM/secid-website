@@ -53,7 +53,7 @@ export const requestAlternateEmail = onCall(
     // Multi-email identity is a first-class-member privilege only
     // (isVerified = numeroCuenta + proof + admin approval). Basic /
     // pending accounts cannot register alternate emails.
-    if (callerData?.isVerified !== true) {
+    if (!callerData?.isVerified) {
       throw new HttpsError(
         'failed-precondition',
         'Alternate emails are available to full members only',
@@ -260,7 +260,7 @@ export const confirmAlternateEmail = onCall(
       throw new HttpsError('not-found', 'Canonical account not found');
     }
     // Alternate emails only attach to first-class member profiles.
-    if (canonicalSnap.data()?.isVerified !== true) {
+    if (!canonicalSnap.data()?.isVerified) {
       throw new HttpsError(
         'failed-precondition',
         'Alternate emails are available to full members only',
