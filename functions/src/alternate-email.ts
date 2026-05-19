@@ -47,9 +47,21 @@ export const requestAlternateEmail = onCall(
       });
     }
 
-    // Reject if it equals the caller's own primary email.
     const callerSnap = await db.collection('users').doc(uid).get();
     const callerData = callerSnap.data();
+
+    // Multi-email identity is a first-class-member privilege only
+    // (isVerified = numeroCuenta + proof + admin approval). Basic /
+    // pending accounts cannot register alternate emails.
+    if (callerData?.isVerified !== true) {
+      throw new HttpsError(
+        'failed-precondition',
+        'Alternate emails are available to full members only',
+        { reason: 'members_only' }
+      );
+    }
+
+    // Reject if it equals the caller's own primary email.
     const callerPrimary = String(
       callerData?.primaryEmail || callerData?.email || ''
     )
@@ -246,6 +258,14 @@ export const confirmAlternateEmail = onCall(
     const canonicalSnap = await canonicalRef.get();
     if (!canonicalSnap.exists) {
       throw new HttpsError('not-found', 'Canonical account not found');
+    }
+    // Alternate emails only attach to first-class member profiles.
+    if (canonicalSnap.data()?.isVerified !== true) {
+      throw new HttpsError(
+        'failed-precondition',
+        'Alternate emails are available to full members only',
+        { reason: 'members_only' }
+      );
     }
 
     const existing: { email: string; verifiedAt: unknown }[] =

@@ -658,9 +658,7 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
                 })}
               </div>
 
-              <div className="border-t border-gray-200 pt-6 dark:border-gray-700">
-                <AddAlternateEmail lang={lang} />
-              </div>
+              <AddAlternateEmail lang={lang} />
             </div>
           )}
 

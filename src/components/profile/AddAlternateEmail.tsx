@@ -24,6 +24,8 @@ const labels = {
       'Si el correo es válido, te enviamos un enlace de verificación. Revisa tu bandeja (y spam).',
     errorInvalid: 'Correo inválido',
     errorOwnPrimary: 'Ese ya es el correo principal de tu cuenta.',
+    errorMembersOnly:
+      'Los correos alternos están disponibles solo para miembros con membresía completa.',
     errorGeneric: 'No se pudo procesar la solicitud. Inténtalo de nuevo.',
     errorEmpty: 'Ingresa un correo',
   },
@@ -41,6 +43,7 @@ const labels = {
       'If the email is valid, we sent you a verification link. Check your inbox (and spam).',
     errorInvalid: 'Invalid email',
     errorOwnPrimary: "That's already your account's primary email.",
+    errorMembersOnly: 'Alternate emails are available to full members only.',
     errorGeneric: 'Could not process the request. Please try again.',
     errorEmpty: 'Enter an email',
   },
@@ -80,7 +83,9 @@ export const AddAlternateEmail: React.FC<AddAlternateEmailProps> = ({
     } catch (err: any) {
       console.error('requestAlternateEmail error:', err);
       const reason = err?.details?.reason;
-      if (reason === 'primary_email') {
+      if (reason === 'members_only') {
+        setError(l.errorMembersOnly);
+      } else if (reason === 'primary_email') {
         setError(l.errorOwnPrimary);
       } else if (
         reason === 'invalid_format' ||
@@ -95,8 +100,12 @@ export const AddAlternateEmail: React.FC<AddAlternateEmailProps> = ({
     }
   };
 
+  // First-class members only (numeroCuenta + proof + admin approval).
+  // Basic / pending accounts never see this section.
+  if (userProfile?.isVerified !== true) return null;
+
   return (
-    <div>
+    <div className="border-t border-gray-200 pt-6 dark:border-gray-700">
       <h3 className="mb-1 text-lg font-medium text-gray-900 dark:text-white">
         {l.title}
       </h3>
