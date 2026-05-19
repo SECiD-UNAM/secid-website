@@ -42,7 +42,9 @@ export const requestAlternateEmail = onCall(
       .toLowerCase();
 
     if (!emailLower || !EMAIL_RE.test(emailLower)) {
-      throw new HttpsError('invalid-argument', 'A valid email is required');
+      throw new HttpsError('invalid-argument', 'A valid email is required', {
+        reason: 'invalid_format',
+      });
     }
 
     // Reject if it equals the caller's own primary email.
@@ -56,7 +58,8 @@ export const requestAlternateEmail = onCall(
     if (callerPrimary && callerPrimary === emailLower) {
       throw new HttpsError(
         'invalid-argument',
-        'That email is already your primary email'
+        'That email is already your primary email',
+        { reason: 'primary_email' }
       );
     }
 

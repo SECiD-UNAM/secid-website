@@ -23,6 +23,7 @@ const labels = {
     success:
       'Si el correo es válido, te enviamos un enlace de verificación. Revisa tu bandeja (y spam).',
     errorInvalid: 'Correo inválido',
+    errorOwnPrimary: 'Ese ya es el correo principal de tu cuenta.',
     errorGeneric: 'No se pudo procesar la solicitud. Inténtalo de nuevo.',
     errorEmpty: 'Ingresa un correo',
   },
@@ -39,6 +40,7 @@ const labels = {
     success:
       'If the email is valid, we sent you a verification link. Check your inbox (and spam).',
     errorInvalid: 'Invalid email',
+    errorOwnPrimary: "That's already your account's primary email.",
     errorGeneric: 'Could not process the request. Please try again.',
     errorEmpty: 'Enter an email',
   },
@@ -77,7 +79,13 @@ export const AddAlternateEmail: React.FC<AddAlternateEmailProps> = ({
       setEmail('');
     } catch (err: any) {
       console.error('requestAlternateEmail error:', err);
-      if (err?.code === 'functions/invalid-argument') {
+      const reason = err?.details?.reason;
+      if (reason === 'primary_email') {
+        setError(l.errorOwnPrimary);
+      } else if (
+        reason === 'invalid_format' ||
+        err?.code === 'functions/invalid-argument'
+      ) {
         setError(l.errorInvalid);
       } else {
         setError(l.errorGeneric);
