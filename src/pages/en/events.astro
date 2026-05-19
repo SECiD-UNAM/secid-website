@@ -1,0 +1,117 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import EventListPage from '../../components/wrappers/EventListPage';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('en');
+---
+
+<ModernLayout
+  title="Events - SECiD"
+  description="Events, workshops and webinars for data science professionals"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">SECiD Events</h1>
+          <p class="secid-hero__subtitle">
+            Connect, learn and grow with the data science community
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Event List -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <EventListPage client:load lang="en" />
+      </div>
+    </section>
+
+    <!-- Event Registration CTA -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-events__cta">
+          <div class="secid-events__cta-content">
+            <i class="fas fa-microphone-alt secid-events__cta-icon"></i>
+            <h2 class="secid-events__cta-title">Want to propose an event?</h2>
+            <p class="secid-events__cta-description">
+              If you have an idea for a workshop, webinar or networking event,
+              we'd love to hear it
+            </p>
+            <div class="secid-events__cta-actions">
+              <a
+                href="/en/dashboard/events/new"
+                class="secid-button secid-button--primary secid-button--lg"
+              >
+                <i class="fas fa-plus"></i>
+                Propose Event
+              </a>
+              <a
+                href="/en/dashboard/events"
+                class="secid-button secid-button--outline secid-button--lg"
+              >
+                <i class="fas fa-calendar"></i>
+                View Full Calendar
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</ModernLayout>
+
+<style>
+  /* Events CTA */
+  .secid-events__cta {
+    text-align: center;
+    padding: var(--space-3xl);
+    background: linear-gradient(
+      135deg,
+      var(--secid-secondary),
+      var(--secid-secondary-dark)
+    );
+    border-radius: var(--radius-xl);
+    color: white;
+  }
+
+  .secid-events__cta-icon {
+    font-size: 3rem;
+    margin-bottom: var(--space-lg);
+  }
+
+  .secid-events__cta-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-events__cta-description {
+    font-size: 1.125rem;
+    margin: 0 0 var(--space-xl) 0;
+    opacity: 0.95;
+  }
+
+  .secid-events__cta-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .secid-events__cta-actions {
+      flex-direction: column;
+    }
+  }
+</style>

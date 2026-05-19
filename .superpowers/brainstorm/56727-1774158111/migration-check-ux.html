@@ -1,0 +1,64 @@
+<h2>Migration Check: Early vs In-Flow</h2>
+<p class="subtitle">Both catch the match before wasted effort — the question is where it feels most natural.</p>
+
+<div class="split">
+  <div class="mockup" data-choice="a" onclick="toggleSelect(this)" style="cursor:pointer;">
+    <div class="mockup-header">A: Check on /join page (before account)</div>
+    <div class="mockup-body" style="padding: 1rem; font-size: 0.85rem;">
+      <div style="padding: 0.75rem; background: #dbeafe; border-radius: 6px; margin-bottom: 0.75rem; border-left: 3px solid #3b82f6;">
+        <strong>🎓 I'm a UNAM graduate</strong><br>
+        <div style="margin-top: 0.5rem;">
+          <span style="font-size: 0.8rem; color: #6b7280;">Already have an account?</span><br>
+          <input class="mock-input" placeholder="Enter your número de cuenta" style="margin-top: 0.25rem; width: 100%;">
+          <button class="mock-button" style="margin-top: 0.25rem; font-size: 0.75rem;">Check</button>
+        </div>
+      </div>
+      <div style="padding: 0.75rem; background: #fef3c7; border-radius: 6px; border-left: 3px solid #f59e0b;">
+        <strong>✅ Profile found!</strong><br>
+        <span style="font-size: 0.8rem;">Juan García — 7a Generación</span><br>
+        <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
+          <button class="mock-button" style="font-size: 0.75rem; background: #2563eb; color: white;">Claim this profile</button>
+          <button class="mock-button" style="font-size: 0.75rem;">Register new account</button>
+        </div>
+      </div>
+      <div class="pros-cons" style="margin-top: 1rem;">
+        <div class="pros"><h4>Pros</h4><ul><li>Catches match earliest</li><li>No wasted signup steps</li><li>Can redirect to login</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Exposes profile existence to anyone</li><li>User not authenticated yet — can't write merge request</li><li>Adds friction to /join for everyone</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup" data-choice="c" onclick="toggleSelect(this)" style="cursor:pointer;">
+    <div class="mockup-header">C: Check at Step 3 inline (during UNAM form)</div>
+    <div class="mockup-body" style="padding: 1rem; font-size: 0.85rem;">
+      <div style="padding: 0.5rem; background: #f3f4f6; border-radius: 6px; margin-bottom: 0.5rem; opacity: 0.6;">
+        <strong>Step 1:</strong> ✅ Account created
+      </div>
+      <div style="padding: 0.5rem; background: #f3f4f6; border-radius: 6px; margin-bottom: 0.5rem; opacity: 0.6;">
+        <strong>Step 2:</strong> ✅ Selected "Member"
+      </div>
+      <div style="padding: 0.75rem; background: #dbeafe; border-radius: 6px; margin-bottom: 0.75rem; border-left: 3px solid #3b82f6;">
+        <strong>Step 3: UNAM Verification</strong><br>
+        <div style="margin-top: 0.5rem;">
+          <input class="mock-input" placeholder="Número de cuenta" style="width: 100%;">
+          <span style="font-size: 0.75rem; color: #6b7280;">← check triggers on blur/submit</span>
+        </div>
+      </div>
+      <div style="padding: 0.75rem; background: #dcfce7; border-radius: 6px; border-left: 3px solid #22c55e;">
+        <strong>🔗 Existing profile detected!</strong><br>
+        <span style="font-size: 0.8rem;">We found a profile matching this número de cuenta.</span><br>
+        <span style="font-size: 0.8rem;">You can claim it after registration — an admin will review.</span><br>
+        <button class="mock-button" style="margin-top: 0.5rem; font-size: 0.75rem; background: #16a34a; color: white;">Continue & claim profile</button>
+      </div>
+      <div class="pros-cons" style="margin-top: 1rem;">
+        <div class="pros"><h4>Pros</h4><ul><li>User is authenticated — can write merge request</li><li>Natural flow — no extra page</li><li>Only members see it (no info leak)</li><li>Works with existing merge system</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>User already created account before seeing match</li><li>Slightly later in funnel</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 1.5rem; padding: 1rem; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;">
+  <h3 style="margin-top: 0;">💡 Recommendation: Option C</h3>
+  <p style="margin: 0; font-size: 0.9rem;">Option A has a <strong>security problem</strong>: anyone can probe whether a numeroCuenta has a profile without being authenticated. Option C keeps the check behind authentication, integrates cleanly with the existing merge system (potentialMergeMatch is already built), and the "wasted" Steps 1-2 take about 30 seconds — minimal cost. The user gets a clear inline message right when they enter their numeroCuenta.</p>
+</div>

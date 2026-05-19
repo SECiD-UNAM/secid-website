@@ -1,0 +1,13 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import AdminModerationPage from '@/components/wrappers/AdminModerationPage';
+---
+
+<DashboardLayout
+  title="Moderación de Contenido - SECiD"
+  description="Modera contenido y gestiona notificaciones"
+  lang="es"
+  requireRole={['admin', 'moderator']}
+>
+  <AdminModerationPage client:only="react" />
+</DashboardLayout>

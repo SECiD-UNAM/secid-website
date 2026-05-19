@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import SpotlightManageListPage from '@/components/wrappers/SpotlightManageListPage';
+---
+
+<DashboardLayout
+  title="Historias de Egresados - SECiD"
+  description="Gestiona las historias de egresados destacados de SECiD"
+  lang="es"
+>
+  <SpotlightManageListPage client:only="react" lang="es" />
+</DashboardLayout>

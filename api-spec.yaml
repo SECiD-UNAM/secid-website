@@ -1,0 +1,1186 @@
+openapi: 3.0.3
+info:
+  title: SECiD Platform API
+  description: |
+    The SECiD (Sociedad de Egresados en Ciencia de Datos) Platform API provides comprehensive access to all platform features including user management, job postings, events, forums, member directory, and gamification systems.
+    
+    ## Features
+    - 🔐 JWT-based authentication
+    - 📊 Comprehensive job board management
+    - 🎉 Event management and registration
+    - 💬 Forum and discussion systems
+    - 🏆 Gamification with points, badges, and quests
+    - 👥 Member directory and networking
+    - 🔍 Advanced search capabilities
+    - 📧 Notification and messaging systems
+    
+    ## Rate Limits
+    - Free Tier: 1,000 requests/hour
+    - Premium Tier: 10,000 requests/hour
+    - Enterprise: 100,000 requests/hour
+    
+    ## Base URL
+    Production: `https://api.secid.org/v1`
+    Sandbox: `https://api-sandbox.secid.org/v1`
+  version: '1.0.0'
+  contact:
+    name: SECiD API Support
+    email: api-support@secid.org
+    url: https://secid.org/contact
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.secid.org/v1
+    description: Production server
+  - url: https://api-sandbox.secid.org/v1
+    description: Sandbox server
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Authentication
+    description: User authentication and session management
+  - name: Users
+    description: User profile and account management
+  - name: Jobs
+    description: Job posting and application management
+  - name: Events
+    description: Event creation and attendance management
+  - name: Forums
+    description: Forum discussions and posts
+  - name: Members
+    description: Member directory and networking
+  - name: Gamification
+    description: Points, badges, quests, and leaderboards
+  - name: Search
+    description: Global search functionality
+  - name: Notifications
+    description: Notification and messaging systems
+  - name: Admin
+    description: Administrative functions
+
+paths:
+  # Authentication Endpoints
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Authenticate user
+      description: Login with email and password to receive JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: securePassword123
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      user:
+                        $ref: '#/components/schemas/User'
+                      expiresAt:
+                        type: string
+                        format: date-time
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register new user
+      description: Create a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, firstName, lastName]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                firstName:
+                  type: string
+                  example: Juan
+                lastName:
+                  type: string
+                  example: Pérez
+                graduationYear:
+                  type: integer
+                  example: 2020
+                specialization:
+                  type: string
+                  example: Machine Learning
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /auth/refresh:
+    post:
+      tags: [Authentication]
+      summary: Refresh JWT token
+      description: Get a new JWT token using refresh token
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      expiresAt:
+                        type: string
+                        format: date-time
+
+  # User Endpoints
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get current user profile
+      description: Retrieve the authenticated user's profile information
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    patch:
+      tags: [Users]
+      summary: Update user profile
+      description: Update the authenticated user's profile information
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/User'
+
+  /users/{userId}:
+    get:
+      tags: [Users]
+      summary: Get user by ID
+      description: Retrieve public profile information for a specific user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User ID
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/PublicUser'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Job Endpoints
+  /jobs:
+    get:
+      tags: [Jobs]
+      summary: List jobs
+      description: Retrieve a paginated list of job postings with optional filtering
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+          description: Number of items per page
+        - name: location
+          in: query
+          schema:
+            type: string
+          description: Filter by job location
+        - name: level
+          in: query
+          schema:
+            type: string
+            enum: [entry, mid, senior, lead, executive]
+          description: Filter by experience level
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [full-time, part-time, contract, internship]
+          description: Filter by job type
+        - name: remote
+          in: query
+          schema:
+            type: boolean
+          description: Filter for remote jobs
+        - name: skills
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          description: Filter by required skills
+      responses:
+        '200':
+          description: Jobs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+    post:
+      tags: [Jobs]
+      summary: Create job posting
+      description: Create a new job posting (requires employer role)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobCreate'
+      responses:
+        '201':
+          description: Job created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Job'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /jobs/{jobId}:
+    get:
+      tags: [Jobs]
+      summary: Get job by ID
+      description: Retrieve detailed information about a specific job
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Job ID
+      responses:
+        '200':
+          description: Job retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Job'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /jobs/{jobId}/apply:
+    post:
+      tags: [Jobs]
+      summary: Apply to job
+      description: Submit an application for a specific job
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                coverLetter:
+                  type: string
+                  description: Cover letter text
+                resumeUrl:
+                  type: string
+                  format: uri
+                  description: URL to resume file
+      responses:
+        '201':
+          description: Application submitted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/JobApplication'
+
+  # Event Endpoints
+  /events:
+    get:
+      tags: [Events]
+      summary: List events
+      description: Retrieve a list of upcoming and past events
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [upcoming, ongoing, past]
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Events retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+    post:
+      tags: [Events]
+      summary: Create event
+      description: Create a new event (requires member role)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventCreate'
+      responses:
+        '201':
+          description: Event created successfully
+
+  /events/{eventId}/register:
+    post:
+      tags: [Events]
+      summary: Register for event
+      description: Register the authenticated user for an event
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Registration successful
+        '409':
+          description: Already registered
+
+  # Gamification Endpoints
+  /gamification/profile:
+    get:
+      tags: [Gamification]
+      summary: Get user's gamification profile
+      description: Retrieve the authenticated user's points, level, badges, and achievements
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Gamification profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/GamificationProfile'
+
+  /gamification/leaderboard:
+    get:
+      tags: [Gamification]
+      summary: Get leaderboard
+      description: Retrieve leaderboard data for points, levels, badges, or streaks
+      parameters:
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [points, level, badges, streak]
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [all, month, week]
+            default: all
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Leaderboard retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LeaderboardEntry'
+
+  /gamification/quests:
+    get:
+      tags: [Gamification]
+      summary: Get active quests
+      description: Retrieve available quests for the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Quests retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Quest'
+
+  # Search Endpoints
+  /search:
+    get:
+      tags: [Search]
+      summary: Global search
+      description: Search across jobs, members, events, and forum posts
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Search query
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [all, jobs, members, events, forums]
+            default: all
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Search results retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/SearchResults'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: user_123456789
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        firstName:
+          type: string
+          example: Juan
+        lastName:
+          type: string
+          example: Pérez
+        displayName:
+          type: string
+          example: Juan Pérez
+        avatar:
+          type: string
+          format: uri
+          example: https://api.secid.org/avatars/user_123456789.jpg
+        bio:
+          type: string
+          example: Data Scientist passionate about ML and AI
+        graduationYear:
+          type: integer
+          example: 2020
+        specialization:
+          type: string
+          example: Machine Learning
+        location:
+          type: string
+          example: Mexico City, Mexico
+        skills:
+          type: array
+          items:
+            type: string
+          example: [Python, R, TensorFlow, SQL]
+        linkedin:
+          type: string
+          format: uri
+        github:
+          type: string
+          format: uri
+        website:
+          type: string
+          format: uri
+        role:
+          type: string
+          enum: [member, premium, employer, admin]
+          example: member
+        isVerified:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PublicUser:
+      type: object
+      properties:
+        id:
+          type: string
+        displayName:
+          type: string
+        avatar:
+          type: string
+          format: uri
+        bio:
+          type: string
+        specialization:
+          type: string
+        location:
+          type: string
+        skills:
+          type: array
+          items:
+            type: string
+        linkedin:
+          type: string
+          format: uri
+        github:
+          type: string
+          format: uri
+        website:
+          type: string
+          format: uri
+        isVerified:
+          type: boolean
+
+    UserUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        bio:
+          type: string
+        location:
+          type: string
+        skills:
+          type: array
+          items:
+            type: string
+        linkedin:
+          type: string
+          format: uri
+        github:
+          type: string
+          format: uri
+        website:
+          type: string
+          format: uri
+
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+          example: job_123456789
+        title:
+          type: string
+          example: Senior Data Scientist
+        company:
+          type: string
+          example: TechCorp
+        description:
+          type: string
+          example: We are looking for an experienced Data Scientist...
+        requirements:
+          type: array
+          items:
+            type: string
+          example: [5+ years experience, Python, Machine Learning]
+        location:
+          type: string
+          example: Mexico City, Mexico
+        salary:
+          type: object
+          properties:
+            min:
+              type: integer
+              example: 80000
+            max:
+              type: integer
+              example: 120000
+            currency:
+              type: string
+              example: MXN
+        level:
+          type: string
+          enum: [entry, mid, senior, lead, executive]
+          example: senior
+        type:
+          type: string
+          enum: [full-time, part-time, contract, internship]
+          example: full-time
+        remote:
+          type: boolean
+          example: true
+        skills:
+          type: array
+          items:
+            type: string
+          example: [Python, TensorFlow, SQL, Docker]
+        benefits:
+          type: array
+          items:
+            type: string
+          example: [Health insurance, Remote work, Learning budget]
+        applicationDeadline:
+          type: string
+          format: date
+        employerId:
+          type: string
+        applicationCount:
+          type: integer
+          example: 15
+        isActive:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    JobCreate:
+      type: object
+      required: [title, company, description, location, type]
+      properties:
+        title:
+          type: string
+        company:
+          type: string
+        description:
+          type: string
+        requirements:
+          type: array
+          items:
+            type: string
+        location:
+          type: string
+        salary:
+          type: object
+          properties:
+            min:
+              type: integer
+            max:
+              type: integer
+            currency:
+              type: string
+              default: MXN
+        level:
+          type: string
+          enum: [entry, mid, senior, lead, executive]
+        type:
+          type: string
+          enum: [full-time, part-time, contract, internship]
+        remote:
+          type: boolean
+          default: false
+        skills:
+          type: array
+          items:
+            type: string
+        benefits:
+          type: array
+          items:
+            type: string
+        applicationDeadline:
+          type: string
+          format: date
+
+    JobApplication:
+      type: object
+      properties:
+        id:
+          type: string
+        jobId:
+          type: string
+        applicantId:
+          type: string
+        coverLetter:
+          type: string
+        resumeUrl:
+          type: string
+          format: uri
+        status:
+          type: string
+          enum: [pending, reviewed, interview, rejected, hired]
+          example: pending
+        appliedAt:
+          type: string
+          format: date-time
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+          example: Data Science Workshop
+        description:
+          type: string
+        category:
+          type: string
+          example: Workshop
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        location:
+          type: string
+          example: UNAM Campus
+        isVirtual:
+          type: boolean
+          example: false
+        maxAttendees:
+          type: integer
+          example: 50
+        currentAttendees:
+          type: integer
+          example: 23
+        organizer:
+          $ref: '#/components/schemas/PublicUser'
+        registrationDeadline:
+          type: string
+          format: date-time
+        price:
+          type: number
+          example: 0
+        status:
+          type: string
+          enum: [upcoming, ongoing, past, cancelled]
+        createdAt:
+          type: string
+          format: date-time
+
+    EventCreate:
+      type: object
+      required: [title, description, startDate, endDate, location]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        location:
+          type: string
+        isVirtual:
+          type: boolean
+          default: false
+        maxAttendees:
+          type: integer
+        registrationDeadline:
+          type: string
+          format: date-time
+        price:
+          type: number
+          default: 0
+
+    GamificationProfile:
+      type: object
+      properties:
+        userId:
+          type: string
+        totalPoints:
+          type: integer
+          example: 1250
+        level:
+          type: integer
+          example: 5
+        streak:
+          type: integer
+          example: 12
+        badges:
+          type: array
+          items:
+            type: string
+          example: [networking_ninja, forum_star, mentor_master]
+        rank:
+          type: integer
+          example: 42
+        nextLevelPoints:
+          type: integer
+          example: 250
+
+    LeaderboardEntry:
+      type: object
+      properties:
+        rank:
+          type: integer
+          example: 1
+        userId:
+          type: string
+        displayName:
+          type: string
+          example: Juan Pérez
+        avatar:
+          type: string
+          format: uri
+        points:
+          type: integer
+          example: 2500
+        level:
+          type: integer
+          example: 8
+        badgeCount:
+          type: integer
+          example: 12
+        streak:
+          type: integer
+          example: 45
+
+    Quest:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+          example: Network Builder
+        description:
+          type: string
+          example: Connect with 5 new members this week
+        type:
+          type: string
+          enum: [daily, weekly, monthly, achievement, special]
+          example: weekly
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+          example: medium
+        targetValue:
+          type: integer
+          example: 5
+        currentProgress:
+          type: integer
+          example: 2
+        rewards:
+          type: object
+          properties:
+            points:
+              type: integer
+              example: 100
+            badge:
+              type: string
+              example: networking_ninja
+        expiresAt:
+          type: string
+          format: date-time
+        completed:
+          type: boolean
+          example: false
+
+    SearchResults:
+      type: object
+      properties:
+        query:
+          type: string
+          example: data scientist
+        totalResults:
+          type: integer
+          example: 127
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [job, member, event, forum]
+              id:
+                type: string
+              title:
+                type: string
+              description:
+                type: string
+              url:
+                type: string
+                format: uri
+              relevanceScore:
+                type: number
+                example: 0.95
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 150
+        totalPages:
+          type: integer
+          example: 8
+        hasNext:
+          type: boolean
+          example: true
+        hasPrev:
+          type: boolean
+          example: false
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              example: Invalid input provided
+            details:
+              type: array
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                  message:
+                    type: string
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    RateLimited:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

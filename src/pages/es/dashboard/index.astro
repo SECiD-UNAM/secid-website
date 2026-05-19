@@ -1,0 +1,15 @@
+---
+import ModernLayout from '@/layouts/ModernLayout.astro';
+import Navigation from '@/components/Navigation.astro';
+import DashboardHomePage from '@/components/dashboard/DashboardHomePage';
+---
+
+<ModernLayout
+  title="Dashboard - SECiD"
+  description="Panel de miembros de SECiD"
+  lang="es"
+  noIndex
+>
+  <Navigation lang="es" />
+  <DashboardHomePage client:only="react" lang="es" />
+</ModernLayout>

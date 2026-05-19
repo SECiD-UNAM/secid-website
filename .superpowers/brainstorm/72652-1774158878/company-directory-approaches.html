@@ -1,0 +1,42 @@
+<h2>Company Network Directory — 3 Approaches</h2>
+<p class="subtitle">A page for members to discover where other members work (and have worked), find references, and connect</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Company Cards with Member Drawer</h3>
+      <p>Grid of company cards (logo + name + member count). Click a company to open a slide-out drawer showing current and former members with contact buttons. Filter by industry, search by name. Simple, focused.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Clean, familiar UX</li><li>Fast to build — reuses CompanyLogo + existing data</li><li>Mobile-friendly</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Less visual impact</li><li>No network visualization</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Interactive Network Map</h3>
+      <p>Visual graph showing companies as nodes connected to member nodes. Click a company to see who works/worked there. Hover for quick info. Timeline slider to see how the network evolved over time. Think LinkedIn's "company insights" but visual.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Wow factor — visually impressive</li><li>Shows connections between companies (shared members)</li><li>Timeline reveals career migration patterns</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Complex to build (graph library needed)</li><li>Can be confusing with many nodes</li><li>Poor on mobile</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Company Profiles + Reference System</h3>
+      <p>Each company gets a dedicated profile page (/companies/{slug}) showing: logo, description, industry, current members, alumni (former members), and a "Request Reference" button. Main page is a searchable/filterable company list. Members can mark themselves as "available for references" at each company.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Most complete — dedicated company pages</li><li>Reference request system adds real value</li><li>SEO-friendly (public company pages)</li><li>Scales well with data</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Most work to build</li><li>Needs moderation for company descriptions</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top: 2rem;">Which approach resonates? You can also combine elements — e.g., C's company profiles with B's network visualization as an optional view.</p>

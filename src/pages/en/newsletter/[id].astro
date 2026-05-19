@@ -1,0 +1,28 @@
+---
+export const prerender = false;
+
+import ModernLayout from '../../../layouts/ModernLayout.astro';
+import Navigation from '../../../components/Navigation.astro';
+import Footer from '../../../components/Footer.astro';
+import NewsletterViewPage from '../../../components/wrappers/NewsletterViewPage';
+
+const { id } = Astro.params;
+---
+
+<ModernLayout
+  title="Newsletter - SECiD"
+  description="Read this edition of the SECiD newsletter"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <main>
+    <section class="secid-section">
+      <div class="secid-container">
+        <NewsletterViewPage client:load newsletterId={id} lang="en" />
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</ModernLayout>

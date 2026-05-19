@@ -1,0 +1,15 @@
+name: "SECiD CodeQL Config"
+
+paths:
+  - src
+  - functions/src
+
+paths-ignore:
+  - node_modules
+  - dist
+  - functions/lib
+  - public/assets
+  - tests
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*.spec.ts"

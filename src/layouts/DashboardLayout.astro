@@ -1,0 +1,39 @@
+---
+import ModernLayout from './ModernLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import DashboardShell from '@/components/dashboard/DashboardShell';
+
+export interface Props {
+  title: string;
+  description?: string;
+  lang?: 'es' | 'en';
+  requireVerified?: boolean;
+  requireRole?: (
+    | 'member'
+    | 'admin'
+    | 'moderator'
+    | 'company'
+    | 'collaborator'
+  )[];
+}
+
+const {
+  title,
+  description = 'SECiD Member Dashboard',
+  lang = 'es',
+  requireVerified = false,
+  requireRole = [],
+} = Astro.props;
+---
+
+<ModernLayout title={title} description={description} lang={lang} noIndex>
+  <Navigation lang={lang} />
+  <DashboardShell
+    client:only="react"
+    lang={lang}
+    requireVerified={requireVerified}
+    requireRole={requireRole}
+  >
+    <slot />
+  </DashboardShell>
+</ModernLayout>

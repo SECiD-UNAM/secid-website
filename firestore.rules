@@ -1,0 +1,1027 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions for role-based access control
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // BASIC tier: Firebase Auth email is verified. Unlocks read-only
+    // browsing of content collections. FULL participation (create/apply/
+    // post) still requires isVerified() (numeroCuenta + proof + admin).
+    function isEmailVerified() {
+      return isAuthenticated() && request.auth.token.email_verified == true;
+    }
+
+    function getCurrentUser() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+    
+    function isVerified() {
+      return getCurrentUser().data.isVerified == true;
+    }
+    
+    function isActive() {
+      return getCurrentUser().data.isActive == true;
+    }
+    
+    function isOwner(resourceUserId) {
+      return request.auth.uid == resourceUserId;
+    }
+
+    function rateLimitCheck() {
+      // Basic rate limiting - can be enhanced with custom claims
+      return true; // Implement with Cloud Functions if needed
+    }
+
+    // =========================================================================
+    // RBAC Permission Helpers
+    // Comma-anchored regex with wildcard support.
+    // Claims format: "resource:op.scope" comma-separated in request.auth.token.rbac.p
+    // Scope: "o" = own, "a" = all. Deny prefix: "!"
+    // Wildcards: "*:op.scope", "resource:*.scope", "*:*.scope"
+    // =========================================================================
+
+    function hasRBACAllow(resource, op) {
+      return request.auth.token.rbac != null && (
+        request.auth.token.rbac.p.matches('(^|.*,)' + resource + ':' + op + '\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)\\*:' + op + '\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)' + resource + ':\\*\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)\\*:\\*\\.(o|a)(,.*|$)')
+      );
+    }
+
+    function hasRBACAllowAll(resource, op) {
+      return request.auth.token.rbac != null && (
+        request.auth.token.rbac.p.matches('(^|.*,)' + resource + ':' + op + '\\.a(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)\\*:' + op + '\\.a(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)' + resource + ':\\*\\.a(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)\\*:\\*\\.a(,.*|$)')
+      );
+    }
+
+    function hasRBACDeny(resource, op) {
+      return request.auth.token.rbac != null && (
+        request.auth.token.rbac.p.matches('(^|.*,)!' + resource + ':' + op + '\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)!\\*:' + op + '\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)!' + resource + ':\\*\\.(o|a)(,.*|$)') ||
+        request.auth.token.rbac.p.matches('(^|.*,)!\\*:\\*\\.(o|a)(,.*|$)')
+      );
+    }
+
+    function validateUserData() {
+      return request.resource.data.keys().hasAll(['email', 'firstName', 'lastName']) &&
+             request.resource.data.email is string &&
+             request.resource.data.firstName is string &&
+             request.resource.data.lastName is string &&
+             request.resource.data.email.size() > 0 &&
+             request.resource.data.firstName.size() > 0 &&
+             request.resource.data.lastName.size() > 0;
+    }
+    
+    function validateJobData() {
+      return request.resource.data.keys().hasAll(['title', 'company', 'description']) &&
+             request.resource.data.title is string &&
+             request.resource.data.company is string &&
+             request.resource.data.description is string &&
+             request.resource.data.title.size() >= 5 &&
+             request.resource.data.title.size() <= 100 &&
+             request.resource.data.company.size() >= 2 &&
+             request.resource.data.description.size() >= 50;
+    }
+    
+    function validateEventData() {
+      return request.resource.data.keys().hasAll(['title', 'description', 'startDate']) &&
+             request.resource.data.title is string &&
+             request.resource.data.description is string &&
+             request.resource.data.startDate is timestamp &&
+             request.resource.data.title.size() >= 5 &&
+             request.resource.data.description.size() >= 50;
+    }
+
+    // Prevents owners from self-approving verification; only 'none' and 'pending' are self-settable.
+    function isOwnerVerificationStatusValid() {
+      let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+      return !affectedKeys.hasAny(['verificationStatus']) ||
+             request.resource.data.verificationStatus in ['none', 'pending'];
+    }
+
+    // Users collection — RBAC-migrated authorization
+    match /users/{userId} {
+      // Own profile: always readable
+      // Other profiles: verified members or RBAC view-all
+      allow read: if isAuthenticated() &&
+                     (isOwner(userId) || isVerified() ||
+                      (!hasRBACDeny('us', 'v') && hasRBACAllowAll('us', 'v')));
+
+      // Fix: prevent new users from self-granting isVerified or isActive on creation
+      allow create: if isAuthenticated() &&
+                       isOwner(userId) &&
+                       request.resource.data.role in ['member', 'collaborator'] &&
+                       request.resource.data.get('isVerified', false) == false &&
+                       request.resource.data.get('isActive', false) == false;
+
+      // Fix: restrict verificationStatus to user-settable values ('none', 'pending') only
+      allow update: if isAuthenticated() &&
+                       isOwner(userId) &&
+                       isOwnerVerificationStatusValid() &&
+                       request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['firstName', 'lastName', 'displayName', 'bio', 'skills',
+                                  'interests', 'currentTitle', 'company', 'phone',
+                                  'profileImage', 'photoURL', 'socialMedia', 'preferences',
+                                  'updatedAt', 'lastLogin', 'lastLoginProvider', 'profile',
+                                  'settings', 'email',
+                                  'registrationType', 'verificationStatus', 'verificationDocumentUrl',
+                                  'numeroCuenta', 'academicLevel', 'campus', 'generation',
+                                  'graduationYear', 'lifecycle',
+                                  'networking', 'activity',
+                                  'potentialMergeMatch',
+                                  'slug',
+                                  'cvVisibility']);
+
+      // Allow authenticated members to update only networking fields on other users
+      // (connection requests, follow/unfollow, accept connections).
+      // Fix: removed 'activity' — it is owner-only via the rule above.
+      allow update: if isAuthenticated() && isActive() &&
+                       request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['networking']);
+      
+      // RBAC admin operations
+      allow update: if isAuthenticated() &&
+                       !hasRBACDeny('us', 'e') && hasRBACAllowAll('us', 'e');
+
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('us', 'd') && hasRBACAllowAll('us', 'd');
+      
+      // User activity logs subcollection
+      match /activity/{activityId} {
+        allow read: if isAuthenticated() &&
+                      (isOwner(userId) ||
+                       (!hasRBACDeny('us', 'v') && hasRBACAllowAll('us', 'v')));
+        allow write: if false; // Only server can write activity logs
+      }
+      
+      // User notifications subcollection
+      match /notifications/{notificationId} {
+        allow read: if isAuthenticated() && isOwner(userId);
+        allow update: if isAuthenticated() && isOwner(userId) &&
+                        request.resource.data.diff(resource.data).affectedKeys()
+                          .hasOnly(['read', 'readAt']);
+        allow delete: if isAuthenticated() && isOwner(userId);
+      }
+
+      // Compensation sub-collection: owner + RBAC admin read
+      match /compensation/{entryId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+        allow read: if isAuthenticated() &&
+                      !hasRBACDeny('us', 'v') && hasRBACAllowAll('us', 'v');
+      }
+    }
+
+    // Companies collection — RBAC-migrated authorization (public read)
+    match /companies/{companyId} {
+      allow read: if true;
+
+      allow create: if isAuthenticated()
+        && !hasRBACDeny('co', 'c') && (
+          hasRBACAllowAll('co', 'c') ||
+          (hasRBACAllow('co', 'c') && isVerified())
+        )
+        && request.resource.data.pendingReview == true
+        && request.resource.data.keys().hasOnly([
+          'name', 'domain', 'slug', 'logoUrl', 'industry', 'location',
+          'website', 'description', 'memberCount', 'createdBy', 'createdAt',
+          'updatedAt', 'pendingReview'
+        ]);
+
+      // Owner edit: verified owner can update own company (pending review only)
+      allow update: if isAuthenticated()
+        && !hasRBACDeny('co', 'e') && (
+          hasRBACAllowAll('co', 'e') ||
+          (hasRBACAllow('co', 'e') && resource.data.createdBy == request.auth.uid
+            && isVerified()
+            && request.resource.data.pendingReview == true
+            && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['name', 'domain', 'slug', 'logoUrl', 'industry', 'location',
+                        'website', 'description', 'memberCount', 'updatedAt', 'pendingReview']))
+        );
+
+      allow delete: if isAuthenticated()
+        && !hasRBACDeny('co', 'd') && hasRBACAllowAll('co', 'd');
+    }
+
+    // Jobs collection — RBAC-only authorization
+    match /jobs/{jobId} {
+      allow read: if isEmailVerified() || isVerified();
+
+      allow create: if isAuthenticated()
+        && isVerified()
+        && isActive()
+        && hasRBACAllow('jo', 'c') && !hasRBACDeny('jo', 'c')
+        && validateJobData()
+        && request.resource.data.postedBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.status == 'draft';
+
+      allow update: if isAuthenticated()
+        && isActive()
+        && !hasRBACDeny('jo', 'e') && (
+          hasRBACAllowAll('jo', 'e') ||
+          (hasRBACAllow('jo', 'e') && resource.data.postedBy == request.auth.uid)
+        )
+        && validateJobData()
+        && request.resource.data.updatedAt == request.time
+        // Prevent changing ownership
+        && request.resource.data.postedBy == resource.data.postedBy;
+
+      allow delete: if isAuthenticated()
+        && !hasRBACDeny('jo', 'd') && (
+          hasRBACAllowAll('jo', 'd') ||
+          (hasRBACAllow('jo', 'd') && resource.data.postedBy == request.auth.uid)
+        );
+
+      // Job applications subcollection
+      match /applications/{applicationId} {
+        allow read: if isAuthenticated() && (
+          isOwner(resource.data.applicantId) ||
+          isOwner(get(/databases/$(database)/documents/jobs/$(jobId)).data.postedBy) ||
+          hasRBACAllowAll('jo', 'v')
+        );
+
+        allow create: if isAuthenticated() &&
+                        isVerified() &&
+                        isActive() &&
+                        request.resource.data.applicantId == request.auth.uid &&
+                        request.resource.data.jobId == jobId &&
+                        request.resource.data.createdAt == request.time &&
+                        request.resource.data.status == 'submitted';
+
+        allow update: if isAuthenticated() &&
+                        isActive() && !hasRBACDeny('jo', 'e') && (
+                          isOwner(resource.data.applicantId) ||
+                          isOwner(get(/databases/$(database)/documents/jobs/$(jobId)).data.postedBy) ||
+                          hasRBACAllowAll('jo', 'e')
+                        ) &&
+                        request.resource.data.updatedAt == request.time;
+
+        allow delete: if isAuthenticated() && !hasRBACDeny('jo', 'd') && (
+          isOwner(resource.data.applicantId) ||
+          hasRBACAllowAll('jo', 'd')
+        );
+      }
+
+      // Job analytics subcollection (read-only for job owners)
+      match /analytics/{analyticsId} {
+        allow read: if isAuthenticated() && (
+          isOwner(get(/databases/$(database)/documents/jobs/$(jobId)).data.postedBy) ||
+          hasRBACAllowAll('jo', 'v')
+        );
+        allow write: if false; // Only server can write analytics
+      }
+    }
+    
+    // Events collection — RBAC-only authorization
+    match /events/{eventId} {
+      // Basic tier (email verified) can browse events
+      allow read: if isEmailVerified() || isVerified();
+
+      allow create: if isAuthenticated()
+        && hasRBACAllow('ev', 'c') && !hasRBACDeny('ev', 'c')
+        && validateEventData()
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if isAuthenticated() && !hasRBACDeny('ev', 'e') && (
+        hasRBACAllowAll('ev', 'e') ||
+        (hasRBACAllow('ev', 'e') && resource.data.createdBy == request.auth.uid)
+      ) && validateEventData()
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if isAuthenticated() && !hasRBACDeny('ev', 'd') && (
+        hasRBACAllowAll('ev', 'd') ||
+        (hasRBACAllow('ev', 'd') && resource.data.createdBy == request.auth.uid)
+      );
+      
+      // Event registrations subcollection — RBAC-migrated (Batch 4, ev)
+      match /registrations/{registrationId} {
+        allow read: if isAuthenticated() &&
+                      (isOwner(resource.data.userId) ||
+                       isOwner(get(/databases/$(database)/documents/events/$(eventId)).data.createdBy) ||
+                       (!hasRBACDeny('ev', 'v') && hasRBACAllowAll('ev', 'v')));
+
+        allow create: if isAuthenticated() &&
+                        isVerified() &&
+                        isActive() &&
+                        request.resource.data.userId == request.auth.uid &&
+                        request.resource.data.eventId == eventId &&
+                        request.resource.data.registeredAt == request.time;
+
+        allow update: if isAuthenticated() &&
+                        !hasRBACDeny('ev', 'e') &&
+                        (isOwner(resource.data.userId) ||
+                         isOwner(get(/databases/$(database)/documents/events/$(eventId)).data.createdBy) ||
+                         hasRBACAllowAll('ev', 'e')) &&
+                        request.resource.data.updatedAt == request.time;
+
+        allow delete: if isAuthenticated() &&
+                        !hasRBACDeny('ev', 'd') &&
+                        (isOwner(resource.data.userId) || hasRBACAllowAll('ev', 'd'));
+      }
+    }
+    
+    // Forums collection — RBAC-only authorization
+    match /forums/{forumId} {
+      allow read: if isEmailVerified() || isVerified();
+
+      // Forum-level management (create/edit/delete forums themselves)
+      allow create: if isAuthenticated()
+        && hasRBACAllow('fo', 'c') && !hasRBACDeny('fo', 'c');
+
+      allow update: if isAuthenticated()
+        && !hasRBACDeny('fo', 'e') && hasRBACAllowAll('fo', 'e');
+
+      allow delete: if isAuthenticated()
+        && !hasRBACDeny('fo', 'd') && hasRBACAllowAll('fo', 'd');
+
+      // Forum posts with content validation
+      match /posts/{postId} {
+        allow read: if isEmailVerified() || isVerified();
+
+        allow create: if isAuthenticated() &&
+                        isVerified() &&
+                        isActive() &&
+                        hasRBACAllow('fo', 'c') && !hasRBACDeny('fo', 'c') &&
+                        request.resource.data.authorId == request.auth.uid &&
+                        request.resource.data.forumId == forumId &&
+                        request.resource.data.createdAt == request.time &&
+                        request.resource.data.content is string &&
+                        request.resource.data.content.size() >= 10 &&
+                        request.resource.data.content.size() <= 5000;
+
+        allow update: if isAuthenticated() &&
+                        isActive() &&
+                        !hasRBACDeny('fo', 'e') && (
+                          hasRBACAllowAll('fo', 'e') ||
+                          (hasRBACAllow('fo', 'e') && resource.data.authorId == request.auth.uid)
+                        ) &&
+                        request.resource.data.updatedAt == request.time &&
+                        // Prevent changing authorship
+                        request.resource.data.authorId == resource.data.authorId;
+
+        allow delete: if isAuthenticated() && !hasRBACDeny('fo', 'd') && (
+          hasRBACAllowAll('fo', 'd') ||
+          (hasRBACAllow('fo', 'd') && resource.data.authorId == request.auth.uid)
+        );
+
+        // Post replies subcollection
+        match /replies/{replyId} {
+          allow read: if isEmailVerified() || isVerified();
+
+          allow create: if isAuthenticated() &&
+                          isVerified() &&
+                          isActive() &&
+                          hasRBACAllow('fo', 'c') && !hasRBACDeny('fo', 'c') &&
+                          request.resource.data.authorId == request.auth.uid &&
+                          request.resource.data.postId == postId &&
+                          request.resource.data.createdAt == request.time;
+
+          allow update: if isAuthenticated() &&
+                          !hasRBACDeny('fo', 'e') && (
+                            hasRBACAllowAll('fo', 'e') ||
+                            (hasRBACAllow('fo', 'e') && resource.data.authorId == request.auth.uid)
+                          ) &&
+                          request.resource.data.updatedAt == request.time;
+
+          allow delete: if isAuthenticated() && !hasRBACDeny('fo', 'd') && (
+            hasRBACAllowAll('fo', 'd') ||
+            (hasRBACAllow('fo', 'd') && resource.data.authorId == request.auth.uid)
+          );
+        }
+      }
+    }
+    
+    // Mentorship system with privacy controls — RBAC-migrated (Batch 3, mn)
+    match /mentorship/{matchId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.mentorId) ||
+                      isOwner(resource.data.menteeId) ||
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
+
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       isActive() &&
+                       (request.resource.data.mentorId == request.auth.uid ||
+                        request.resource.data.menteeId == request.auth.uid) &&
+                       request.resource.data.createdAt == request.time;
+
+      allow update: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'e') &&
+                       (isOwner(resource.data.mentorId) ||
+                        isOwner(resource.data.menteeId) ||
+                        hasRBACAllowAll('mn', 'e')) &&
+                       request.resource.data.updatedAt == request.time;
+
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'd') &&
+                       (isOwner(resource.data.mentorId) ||
+                        isOwner(resource.data.menteeId) ||
+                        hasRBACAllowAll('mn', 'd'));
+    }
+    
+    // Top-level applications collection (queried by dashboard stats) — RBAC-migrated (Batch 4, jo)
+    match /applications/{applicationId} {
+      allow read: if isAuthenticated() &&
+                     !hasRBACDeny('jo', 'v') &&
+                     (isOwner(resource.data.applicantId) || hasRBACAllowAll('jo', 'v'));
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       isActive() &&
+                       request.resource.data.applicantId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       !hasRBACDeny('jo', 'e') &&
+                       (isOwner(resource.data.applicantId) || hasRBACAllowAll('jo', 'e'));
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('jo', 'd') &&
+                       (isOwner(resource.data.applicantId) || hasRBACAllowAll('jo', 'd'));
+    }
+
+    // Top-level eventRegistrations collection (queried by dashboard stats) — RBAC-migrated (Batch 4, ev)
+    match /eventRegistrations/{registrationId} {
+      allow read: if isAuthenticated() &&
+                     !hasRBACDeny('ev', 'v') &&
+                     (isOwner(resource.data.userId) || hasRBACAllowAll('ev', 'v'));
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       isActive() &&
+                       request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       !hasRBACDeny('ev', 'e') &&
+                       (isOwner(resource.data.userId) || hasRBACAllowAll('ev', 'e'));
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('ev', 'd') &&
+                       (isOwner(resource.data.userId) || hasRBACAllowAll('ev', 'd'));
+    }
+
+    // Connection requests — RBAC-migrated (Batch 4, us)
+    match /connectionRequests/{requestId} {
+      allow read: if isAuthenticated() &&
+                     !hasRBACDeny('us', 'v') &&
+                     (isOwner(resource.data.from) ||
+                      isOwner(resource.data.to) ||
+                      hasRBACAllowAll('us', 'v'));
+      allow create: if isAuthenticated() && isActive() &&
+                       request.resource.data.from == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       !hasRBACDeny('us', 'e') &&
+                       (isOwner(resource.data.to) || hasRBACAllowAll('us', 'e'));
+      // Fix: allow sender to cancel their own pending request
+      allow delete: if isAuthenticated() &&
+                       (isOwner(resource.data.from) ||
+                        (!hasRBACDeny('us', 'd') && hasRBACAllowAll('us', 'd')));
+    }
+
+    // Conversations (direct messaging) — RBAC-migrated (Batch 4, us)
+    match /conversations/{conversationId} {
+      allow read: if isAuthenticated() &&
+                     !hasRBACDeny('us', 'v') &&
+                     (request.auth.uid in resource.data.participants ||
+                      hasRBACAllowAll('us', 'v'));
+      allow create: if isAuthenticated() && isActive() &&
+                       request.auth.uid in request.resource.data.participants;
+      allow update: if isAuthenticated() &&
+                       request.auth.uid in resource.data.participants;
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('us', 'd') && hasRBACAllowAll('us', 'd');
+    }
+
+    // Direct messages — RBAC-migrated (Batch 4, us)
+    match /messages/{messageId} {
+      allow read: if isAuthenticated() &&
+                     !hasRBACDeny('us', 'v') &&
+                     (isOwner(resource.data.from) ||
+                      isOwner(resource.data.to) ||
+                      hasRBACAllowAll('us', 'v'));
+      allow create: if isAuthenticated() && isActive() &&
+                       request.resource.data.from == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.from) ||
+                        isOwner(resource.data.to));
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('us', 'd') && hasRBACAllowAll('us', 'd');
+    }
+
+    // Admin-only collections — RBAC-migrated (Batch 4, st)
+    match /admin/{document=**} {
+      allow read: if isAuthenticated() &&
+                     !hasRBACDeny('st', 'v') && hasRBACAllowAll('st', 'v');
+      allow write: if isAuthenticated() &&
+                      !hasRBACDeny('st', 'e') && hasRBACAllowAll('st', 'e');
+    }
+
+    // System logs (read-only for admins) — RBAC-migrated (Batch 4, an)
+    match /logs/{logId} {
+      allow read: if isAuthenticated() &&
+                     !hasRBACDeny('an', 'v') && hasRBACAllowAll('an', 'v');
+      allow write: if false; // Only server can write logs
+    }
+    
+    // Reports collection for content moderation — RBAC-migrated (Batch 4, rp)
+    match /reports/{reportId} {
+      allow read: if isAuthenticated() &&
+                     !hasRBACDeny('rp', 'v') && hasRBACAllowAll('rp', 'v');
+
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.reportedBy == request.auth.uid &&
+                       request.resource.data.createdAt == request.time &&
+                       request.resource.data.reason is string &&
+                       request.resource.data.description is string;
+
+      allow update: if isAuthenticated() &&
+                       !hasRBACDeny('rp', 'e') && hasRBACAllowAll('rp', 'e');
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('rp', 'd') && hasRBACAllowAll('rp', 'd');
+    }
+
+    // Rate limiting collection (server-managed) — RBAC-migrated (Batch 4, an)
+    match /rate_limits/{limitId} {
+      allow read: if isAuthenticated() &&
+                     !hasRBACDeny('an', 'v') && hasRBACAllowAll('an', 'v');
+      allow write: if false; // Only server can manage rate limits
+    }
+    
+    // Analytics collections — RBAC-migrated (Batch 4, an)
+    match /analytics/{document=**} {
+      allow read: if isAuthenticated() &&
+                     !hasRBACDeny('an', 'v') && hasRBACAllowAll('an', 'v');
+      allow write: if false; // Only server can write analytics
+    }
+
+    // Newsletter subscriptions (public write, admin read)
+    match /newsletter/{subscriptionId} {
+      allow read: if isAuthenticated() && !hasRBACDeny('nl', 'v') && hasRBACAllowAll('nl', 'v');
+      allow create: if request.resource.data.keys().hasAll(['email', 'name', 'subscribedAt']) &&
+                       request.resource.data.email is string &&
+                       request.resource.data.email.size() > 0 &&
+                       request.resource.data.name is string &&
+                       request.resource.data.subscribedAt == request.time;
+      allow update, delete: if isAuthenticated() && !hasRBACDeny('nl', 'd') && hasRBACAllowAll('nl', 'd');
+    }
+
+    // Contact messages (public write, admin read)
+    match /contactMessages/{messageId} {
+      allow read: if isAuthenticated() && !hasRBACDeny('nt', 'v') && hasRBACAllowAll('nt', 'v');
+      allow create: if request.resource.data.keys().hasAll(['name', 'email', 'subject', 'message', 'sentAt']) &&
+                       request.resource.data.email is string &&
+                       request.resource.data.email.size() > 0 &&
+                       request.resource.data.name is string &&
+                       request.resource.data.name.size() > 0 &&
+                       request.resource.data.message is string &&
+                       request.resource.data.message.size() >= 10 &&
+                       request.resource.data.sentAt == request.time;
+      allow update, delete: if isAuthenticated() && !hasRBACDeny('nt', 'd') && hasRBACAllowAll('nt', 'd');
+    }
+
+    // ============================================
+    // Phase A: Newsletter Archive (upgraded with RBAC)
+    // ============================================
+
+    // Newsletter archive — public read for published, RBAC-only for management
+    match /newsletter_archive/{issueId} {
+      allow read: if resource.data.status == 'published' ||
+        (isAuthenticated() && hasRBACAllow('nl', 'v'));
+      allow create: if isAuthenticated() && hasRBACAllow('nl', 'c')
+        && !hasRBACDeny('nl', 'c')
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+      allow update: if isAuthenticated() && !hasRBACDeny('nl', 'e') && (
+        hasRBACAllowAll('nl', 'e') ||
+        (hasRBACAllow('nl', 'e') && resource.data.createdBy == request.auth.uid)
+      );
+      allow delete: if isAuthenticated() && !hasRBACDeny('nl', 'd') && (
+        hasRBACAllowAll('nl', 'd') ||
+        (hasRBACAllow('nl', 'd') && resource.data.createdBy == request.auth.uid)
+      );
+    }
+
+    // ============================================
+    // Phase B: Resources, Blog, Mentorship
+    // ============================================
+
+    // Resources collection — RBAC-only authorization
+    match /resources/{resourceId} {
+      allow read: if isEmailVerified() || isVerified();
+
+      allow create: if isAuthenticated()
+        && isVerified()
+        && isActive()
+        && hasRBACAllow('rs', 'c') && !hasRBACDeny('rs', 'c')
+        && request.resource.data.uploadedBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if isAuthenticated() && !hasRBACDeny('rs', 'e') && (
+        hasRBACAllowAll('rs', 'e') ||
+        (hasRBACAllow('rs', 'e') && resource.data.uploadedBy == request.auth.uid)
+      ) && request.resource.data.updatedAt == request.time;
+
+      allow delete: if isAuthenticated() && !hasRBACDeny('rs', 'd') && (
+        hasRBACAllowAll('rs', 'd') ||
+        (hasRBACAllow('rs', 'd') && resource.data.uploadedBy == request.auth.uid)
+      );
+    }
+
+    // Resource reviews — RBAC-only authorization
+    match /resource_reviews/{reviewId} {
+      allow read: if isEmailVerified() || isVerified();
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.reviewerId == request.auth.uid &&
+                       request.resource.data.createdAt == request.time;
+      allow update: if isAuthenticated() &&
+                       isOwner(resource.data.reviewerId) &&
+                       request.resource.data.updatedAt == request.time;
+      allow delete: if isAuthenticated() && !hasRBACDeny('rs', 'd') && (
+        isOwner(resource.data.reviewerId) ||
+        hasRBACAllowAll('rs', 'd')
+      );
+    }
+
+    // Resource bookmarks (user-specific)
+    match /resource_bookmarks/{bookmarkId} {
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() &&
+                       request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+
+    // Resource collections — RBAC-only authorization
+    match /resource_collections/{collectionId} {
+      allow read: if isEmailVerified() || isVerified();
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.createdBy == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       isOwner(resource.data.createdBy);
+      allow delete: if isAuthenticated() && !hasRBACDeny('rs', 'd') && (
+        isOwner(resource.data.createdBy) ||
+        hasRBACAllowAll('rs', 'd')
+      );
+    }
+
+    // Resource downloads (tracking) — RBAC-only authorization
+    match /resource_downloads/{downloadId} {
+      allow read: if isAuthenticated() && hasRBACAllowAll('rs', 'v');
+      allow create: if isAuthenticated();
+    }
+
+    // Resource activities (tracking) — RBAC-only authorization
+    match /resource_activities/{activityId} {
+      allow read: if isAuthenticated() && hasRBACAllowAll('rs', 'v');
+      allow create: if isAuthenticated();
+    }
+
+    // Blog collection — RBAC-only authorization (public read)
+    match /blog/{postId} {
+      allow read: if true;
+
+      allow create: if isAuthenticated()
+        && hasRBACAllow('bl', 'c') && !hasRBACDeny('bl', 'c')
+        && request.resource.data.authorId == request.auth.uid;
+
+      allow update: if isAuthenticated() && !hasRBACDeny('bl', 'e') && (
+        hasRBACAllowAll('bl', 'e') ||
+        (hasRBACAllow('bl', 'e') && resource.data.authorId == request.auth.uid)
+      );
+
+      allow delete: if isAuthenticated() && !hasRBACDeny('bl', 'd') && (
+        hasRBACAllowAll('bl', 'd') ||
+        (hasRBACAllow('bl', 'd') && resource.data.authorId == request.auth.uid)
+      );
+    }
+
+    // Mentorship: Mentors collection — RBAC-migrated (Batch 3, mn)
+    match /mentors/{mentorId} {
+      allow read: if isEmailVerified() || isVerified();
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       isOwner(mentorId);
+      allow update: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'e') &&
+                       (isOwner(mentorId) || hasRBACAllowAll('mn', 'e'));
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'd') && hasRBACAllowAll('mn', 'd');
+    }
+
+    // Mentorship: Mentees collection — RBAC-migrated (Batch 3, mn)
+    match /mentees/{menteeId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(menteeId) ||
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       isOwner(menteeId);
+      allow update: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'e') &&
+                       (isOwner(menteeId) || hasRBACAllowAll('mn', 'e'));
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'd') && hasRBACAllowAll('mn', 'd');
+    }
+
+    // Mentorship matches — RBAC-migrated (Batch 3, mn)
+    match /mentorship_matches/{matchId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.mentorId) ||
+                      isOwner(resource.data.menteeId) ||
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       (request.resource.data.mentorId == request.auth.uid ||
+                        request.resource.data.menteeId == request.auth.uid);
+      allow update: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'e') &&
+                       (isOwner(resource.data.mentorId) ||
+                        isOwner(resource.data.menteeId) ||
+                        hasRBACAllowAll('mn', 'e'));
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'd') && hasRBACAllowAll('mn', 'd');
+    }
+
+    // Mentorship sessions — RBAC-migrated (Batch 3, mn)
+    match /mentorship_sessions/{sessionId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.mentorId) ||
+                      isOwner(resource.data.menteeId) ||
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       (request.resource.data.mentorId == request.auth.uid ||
+                        request.resource.data.menteeId == request.auth.uid);
+      allow update: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'e') &&
+                       (isOwner(resource.data.mentorId) ||
+                        isOwner(resource.data.menteeId) ||
+                        hasRBACAllowAll('mn', 'e'));
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'd') && hasRBACAllowAll('mn', 'd');
+    }
+
+    // Mentorship requests — RBAC-migrated (Batch 3, mn)
+    match /mentorship_requests/{requestId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.fromUserId) ||
+                      isOwner(resource.data.toUserId) ||
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.fromUserId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'e') &&
+                       (isOwner(resource.data.fromUserId) ||
+                        isOwner(resource.data.toUserId) ||
+                        hasRBACAllowAll('mn', 'e'));
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'd') &&
+                       (isOwner(resource.data.fromUserId) ||
+                        hasRBACAllowAll('mn', 'd'));
+    }
+
+    // Mentorship feedback — RBAC-migrated (Batch 3, mn)
+    match /mentorship_feedback/{feedbackId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.fromUserId) ||
+                      isOwner(resource.data.toUserId) ||
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.fromUserId == request.auth.uid;
+      allow update: if false; // Feedback is immutable
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'd') && hasRBACAllowAll('mn', 'd');
+    }
+
+    // Mentorship goals — RBAC-migrated (Batch 3, mn)
+    match /mentorship_goals/{goalId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.menteeId) ||
+                      isOwner(resource.data.mentorId) ||
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.menteeId == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       (isOwner(resource.data.menteeId) ||
+                        isOwner(resource.data.mentorId));
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'd') &&
+                       (isOwner(resource.data.menteeId) ||
+                        hasRBACAllowAll('mn', 'd'));
+    }
+
+    // Mentorship resources (shared between mentor/mentee) — RBAC-migrated (Batch 3, mn)
+    match /mentorship_resources/{resourceId} {
+      allow read: if isAuthenticated() &&
+                     (isOwner(resource.data.sharedBy) ||
+                      (!hasRBACDeny('mn', 'v') && hasRBACAllowAll('mn', 'v')));
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.sharedBy == request.auth.uid;
+      allow update: if isAuthenticated() &&
+                       isOwner(resource.data.sharedBy);
+      allow delete: if isAuthenticated() &&
+                       !hasRBACDeny('mn', 'd') &&
+                       (isOwner(resource.data.sharedBy) ||
+                        hasRBACAllowAll('mn', 'd'));
+    }
+
+    // ============================================
+    // Phase C: Spotlights, Commissions, Mail
+    // ============================================
+
+    // Alumni spotlights — public read for published, RBAC-only for management
+    match /spotlights/{spotlightId} {
+      allow read: if resource.data.status == 'published' ||
+        (isAuthenticated() && hasRBACAllow('sp', 'v'));
+      allow create: if isAuthenticated() && hasRBACAllow('sp', 'c')
+        && !hasRBACDeny('sp', 'c')
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+      allow update: if isAuthenticated() && !hasRBACDeny('sp', 'e') && (
+        hasRBACAllowAll('sp', 'e') ||
+        (hasRBACAllow('sp', 'e') && resource.data.createdBy == request.auth.uid)
+      );
+      allow delete: if isAuthenticated() && !hasRBACDeny('sp', 'd') && (
+        hasRBACAllowAll('sp', 'd') ||
+        (hasRBACAllow('sp', 'd') && resource.data.createdBy == request.auth.uid)
+      );
+    }
+
+    // Commissions — RBAC-migrated authorization (public read)
+    match /commissions/{commissionId} {
+      allow read: if true;
+
+      allow create: if isAuthenticated()
+        && !hasRBACDeny('cm', 'c') && hasRBACAllowAll('cm', 'c');
+
+      allow update: if isAuthenticated()
+        && !hasRBACDeny('cm', 'e') && hasRBACAllowAll('cm', 'e');
+
+      allow delete: if isAuthenticated()
+        && !hasRBACDeny('cm', 'd') && hasRBACAllowAll('cm', 'd');
+    }
+
+    // Commission members — RBAC-migrated authorization
+    match /commission_members/{memberId} {
+      allow read: if isEmailVerified() || isVerified();
+
+      allow create: if isAuthenticated() &&
+                       isVerified() &&
+                       request.resource.data.userId == request.auth.uid;
+
+      allow update: if isAuthenticated()
+        && !hasRBACDeny('cm', 'e') && (
+          hasRBACAllowAll('cm', 'e') ||
+          (hasRBACAllow('cm', 'e') && isOwner(resource.data.userId))
+        );
+
+      allow delete: if isAuthenticated()
+        && !hasRBACDeny('cm', 'd') && (
+          hasRBACAllowAll('cm', 'd') ||
+          (hasRBACAllow('cm', 'd') && isOwner(resource.data.userId))
+        );
+    }
+
+    // Mail collection (for Firebase Trigger Email extension)
+    match /mail/{mailId} {
+      allow read: if isAuthenticated() && !hasRBACDeny('nt', 'v') && hasRBACAllowAll('nt', 'v');
+      allow create: if false; // Only server (Cloud Functions) can write
+      allow update, delete: if false;
+    }
+
+    // Member status change log (written by Cloud Functions, read by admins)
+    match /member_status_log/{logId} {
+      allow read: if isAuthenticated() && !hasRBACDeny('us', 'v') && hasRBACAllowAll('us', 'v');
+      allow write: if false; // Only Cloud Functions can write
+    }
+
+    // =========================================================================
+    // Profile Merge System
+    // =========================================================================
+
+    // numero_cuenta_index: read-only for authenticated users
+    // Cloud Functions use Admin SDK (bypasses rules) to write
+    match /numero_cuenta_index/{numeroCuenta} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // email_alias: alternate-email resolution index. Client-readable
+    // (auth resolution), server-write-only via Admin SDK (like
+    // numero_cuenta_index).
+    match /email_alias/{emailLower} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // alternate_email_tokens: single-use email-verification tokens.
+    // Fully server-only — never exposed to clients.
+    match /alternate_email_tokens/{tokenId} {
+      allow read, write: if false;
+    }
+
+    // alternate-email anti-abuse: audit log + per-caller rate limit.
+    // Server-only (Admin SDK); never exposed to clients.
+    match /alternate_email_audit/{docId} {
+      allow read, write: if false;
+    }
+    match /alternate_email_ratelimit/{uid} {
+      allow read, write: if false;
+    }
+
+    // merge_requests: users create their own, admins create and manage
+    match /merge_requests/{requestId} {
+      // Users can create pending requests for themselves
+      allow create: if isAuthenticated()
+        && request.resource.data.targetUid == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.initiatedBy == 'user';
+      // Admins can create requests with any status (including pre-approved)
+      allow create: if isAuthenticated() && !hasRBACDeny('us', 'c') && hasRBACAllowAll('us', 'c');
+      allow read: if isAuthenticated()
+        && (resource.data.targetUid == request.auth.uid
+            || resource.data.sourceUid == request.auth.uid
+            || (!hasRBACDeny('us', 'v') && hasRBACAllowAll('us', 'v')));
+      allow update: if isAuthenticated() && !hasRBACDeny('us', 'e') && hasRBACAllowAll('us', 'e');
+      allow delete: if false;
+    }
+
+    // archived_users: read for user-viewers; write requires delete-users
+    // permission (population is a destructive admin/merge operation).
+    match /archived_users/{userId} {
+      allow read: if isAuthenticated() && !hasRBACDeny('us', 'v') && hasRBACAllowAll('us', 'v');
+      allow write: if isAuthenticated() && !hasRBACDeny('us', 'd') && hasRBACAllowAll('us', 'd');
+    }
+
+    // Public job submissions: server writes only (callable CF uses Admin SDK)
+    match /public_job_submissions/{submissionId} {
+      allow create: if false;
+      allow read, update, delete: if isAuthenticated() && !hasRBACDeny('jo', 'v') && hasRBACAllowAll('jo', 'v');
+    }
+
+    // =========================================================================
+    // RBAC Collections
+    // =========================================================================
+
+    // RBAC groups: permission group definitions
+    // This collection defines the RBAC system itself — require org-scoped
+    // (all) grants, never own-scoped, so a non-super-admin with gr:*.own
+    // cannot author group definitions and self-escalate.
+    match /rbac_groups/{groupId} {
+      allow read: if isAuthenticated() && !hasRBACDeny('gr', 'v') && hasRBACAllowAll('gr', 'v');
+      allow create: if isAuthenticated() && !hasRBACDeny('gr', 'c') && hasRBACAllowAll('gr', 'c');
+      allow update: if isAuthenticated() && !hasRBACDeny('gr', 'e') && hasRBACAllowAll('gr', 'e');
+      allow delete: if isAuthenticated() && !hasRBACDeny('gr', 'd') && hasRBACAllowAll('gr', 'd')
+        && !resource.data.isSystem;
+    }
+
+    // RBAC user-group assignments: maps users to their groups
+    match /rbac_user_groups/{userId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == userId || hasRBACAllow('gr', 'a')
+      );
+      allow write: if isAuthenticated() && hasRBACAllow('gr', 'a');
+    }
+
+    // RBAC audit log: immutable, server-written only
+    match /rbac_audit_log/{logId} {
+      allow read: if isAuthenticated() && hasRBACAllow('gr', 'v');
+      allow write: if false;
+    }
+
+    // =========================================================================
+    // Journal Club (new collection — replacing hardcoded data)
+    // =========================================================================
+
+    match /journal_club_sessions/{sessionId} {
+      // Public read for published sessions; authenticated + RBAC for drafts
+      allow read: if resource.data.status == 'published' ||
+        (isAuthenticated() && hasRBACAllow('jc', 'v'));
+      allow create: if isAuthenticated() && hasRBACAllow('jc', 'c')
+        && !hasRBACDeny('jc', 'c')
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+      allow update: if isAuthenticated() && !hasRBACDeny('jc', 'e') && (
+        hasRBACAllowAll('jc', 'e') ||
+        (hasRBACAllow('jc', 'e') && resource.data.createdBy == request.auth.uid)
+      );
+      allow delete: if isAuthenticated() && !hasRBACDeny('jc', 'd') && (
+        hasRBACAllowAll('jc', 'd') ||
+        (hasRBACAllow('jc', 'd') && resource.data.createdBy == request.auth.uid)
+      );
+    }
+
+    // LinkedIn auth codes: server-only (Admin SDK). Deny all client access.
+    match /linkedin_auth_codes/{codeId} {
+      allow read, write: if false;
+    }
+  }
+}

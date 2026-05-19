@@ -1,0 +1,165 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import JournalClubPublicListPage from '@/components/wrappers/JournalClubPublicListPage';
+---
+
+<ModernLayout
+  title="Journal Club - SECiD"
+  description="SECiD Journal Club - A reading group exploring NLP and large language models. Wednesdays at 6pm, starting March 2026."
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Journal Club</h1>
+          <p class="secid-hero__subtitle">
+            Explore the foundations and frontier of Natural Language Processing
+            and Large Language Models
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Intro -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-jc-intro">
+          <img
+            src="/images/logo.png"
+            alt="SECiD Logo"
+            class="secid-jc-intro__logo"
+          />
+
+          <p class="secid-jc-intro__text">
+            The SECiD Journal Club is a reading group where we explore
+            foundational and cutting-edge topics in Natural Language Processing
+            (NLP) and Large Language Models (LLMs). Each session is led by a
+            community member who presents a key paper or topic, followed by open
+            discussion.
+          </p>
+          <p class="secid-jc-schedule-highlight">
+            <i class="fas fa-calendar-alt"></i>
+            <strong>Wednesdays at 6pm</strong> &mdash; Starting March 2026
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Schedule -->
+    <section class="secid-section secid-bg-light">
+      <div class="secid-container">
+        <h2 class="secid-section__title">
+          <i class="fas fa-book-reader"></i>
+          Session Schedule
+        </h2>
+        <JournalClubPublicListPage client:only="react" lang="en" />
+      </div>
+    </section>
+
+    <!-- Join CTA -->
+    <section class="secid-section secid-bg-light">
+      <div class="secid-container">
+        <div class="secid-jc-cta">
+          <h2 class="secid-jc-cta__title">Join Us</h2>
+          <p class="secid-jc-cta__description">
+            Did you study Data Science at UNAM? Register as a member to
+            participate in the Journal Club and other SECiD initiatives.
+          </p>
+          <div class="secid-jc-cta__actions">
+            <a
+              href="/registro"
+              class="secid-button secid-button--primary secid-button--lg"
+            >
+              <i class="fas fa-rocket"></i>
+              Register Now
+            </a>
+            <a
+              href="/en/contact"
+              class="secid-button secid-button--outline secid-button--lg"
+            >
+              <i class="fas fa-envelope"></i>
+              Contact Us
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</ModernLayout>
+
+<style>
+  .secid-jc-intro {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .secid-jc-intro__logo {
+    max-width: 200px;
+    margin-bottom: var(--space-xl);
+  }
+
+  .secid-jc-intro__text {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--color-text-secondary);
+    max-width: 800px;
+    margin: 0 auto var(--space-lg);
+  }
+
+  .secid-jc-schedule-highlight {
+    font-size: 1.25rem;
+    color: var(--secid-primary);
+    margin-bottom: 0;
+  }
+
+  .secid-jc-schedule-highlight i {
+    margin-right: 0.5rem;
+  }
+
+  .secid-jc-cta {
+    text-align: center;
+    padding: var(--space-3xl) 0;
+  }
+
+  .secid-jc-cta__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-jc-cta__description {
+    font-size: 1.25rem;
+    color: var(--color-text-secondary);
+    max-width: 600px;
+    margin: 0 auto var(--space-xl);
+  }
+
+  .secid-jc-cta__actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .secid-jc-cta__actions {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .secid-jc-cta__actions .secid-button {
+      width: 100%;
+      max-width: 300px;
+    }
+  }
+</style>

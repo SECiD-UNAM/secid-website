@@ -1,0 +1,556 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('en');
+---
+
+<ModernLayout
+  title="Contact - SECiD"
+  description="Get in touch with the Data Science Alumni Society"
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Contact</h1>
+          <p class="secid-hero__subtitle">
+            Have questions, suggestions, or want to collaborate with us? We're
+            here to listen.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Content -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-contact__grid">
+          <!-- Contact Form -->
+          <div class="secid-contact__form-wrapper">
+            <h2 class="secid-section__title">Send us a message</h2>
+            <form class="secid-form" id="contact-form">
+              <div class="secid-form__row">
+                <div class="secid-form__group">
+                  <label class="secid-form__label" for="contact-name"
+                    >Name</label
+                  >
+                  <input
+                    type="text"
+                    id="contact-name"
+                    class="secid-form__input"
+                    placeholder="Your name"
+                    required
+                  />
+                </div>
+                <div class="secid-form__group">
+                  <label class="secid-form__label" for="contact-email"
+                    >Email</label
+                  >
+                  <input
+                    type="email"
+                    id="contact-email"
+                    class="secid-form__input"
+                    placeholder="your@email.com"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="secid-form__group">
+                <label class="secid-form__label" for="contact-subject"
+                  >Subject</label
+                >
+                <select
+                  id="contact-subject"
+                  class="secid-form__select"
+                  required
+                >
+                  <option value="">- Select a topic -</option>
+                  <option value="general">General Inquiry</option>
+                  <option value="membership">Membership</option>
+                  <option value="jobs">Job Board</option>
+                  <option value="partnership">Partnership/Sponsorship</option>
+                  <option value="events">Events</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div class="secid-form__group">
+                <label class="secid-form__label" for="contact-message"
+                  >Message</label
+                >
+                <textarea
+                  id="contact-message"
+                  class="secid-form__textarea"
+                  placeholder="Your message"
+                  rows="6"
+                  required></textarea>
+              </div>
+
+              <div class="secid-form__actions">
+                <button
+                  type="submit"
+                  id="contact-submit"
+                  class="secid-button secid-button--primary"
+                >
+                  <i class="fas fa-paper-plane"></i>
+                  Send Message
+                </button>
+                <button type="reset" class="secid-button secid-button--outline">
+                  Clear
+                </button>
+              </div>
+
+              <div
+                id="contact-success"
+                class="secid-form__message secid-form__message--success"
+                style="display:none;"
+              >
+                <i class="fas fa-check-circle"></i>
+                Message sent! We'll get back to you soon.
+              </div>
+              <div
+                id="contact-error"
+                class="secid-form__message secid-form__message--error"
+                style="display:none;"
+              >
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="contact-error-text"
+                  >Something went wrong. Please try again.</span
+                >
+              </div>
+            </form>
+          </div>
+
+          <!-- Contact Information -->
+          <div class="secid-contact__info">
+            <h2 class="secid-section__title">Contact Information</h2>
+
+            <div class="secid-contact__card">
+              <div class="secid-contact__card-icon">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <h3 class="secid-contact__card-title">Email</h3>
+              <p>
+                <strong>General:</strong>
+                <a href="mailto:contacto@secid.mx">contacto@secid.mx</a>
+              </p>
+              <p>
+                <strong>Membership:</strong>
+                <a href="mailto:contacto@secid.mx">contacto@secid.mx</a>
+              </p>
+              <p>
+                <strong>Job Board:</strong>
+                <a href="mailto:contacto@secid.mx">contacto@secid.mx</a>
+              </p>
+            </div>
+
+            <div class="secid-contact__card">
+              <div class="secid-contact__card-icon">
+                <i class="fas fa-share-alt"></i>
+              </div>
+              <h3 class="secid-contact__card-title">Social Media</h3>
+              <div class="secid-contact__social">
+                <a
+                  href="https://www.linkedin.com/company/sociedad-de-egresados-en-ciencia-de-datos-secid"
+                  class="secid-contact__social-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                >
+                  <i class="fab fa-linkedin"></i>
+                </a>
+                <a
+                  href="https://twitter.com/secid_unam"
+                  class="secid-contact__social-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Twitter"
+                >
+                  <i class="fab fa-twitter"></i>
+                </a>
+                <a
+                  href="https://www.facebook.com/secid.unam"
+                  class="secid-contact__social-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                >
+                  <i class="fab fa-facebook"></i>
+                </a>
+              </div>
+            </div>
+
+            <div class="secid-contact__card">
+              <div class="secid-contact__card-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <h3 class="secid-contact__card-title">Office Hours</h3>
+              <p>Monday to Friday: 9:00 AM - 6:00 PM</p>
+              <p>Saturday: 10:00 AM - 2:00 PM</p>
+              <p>Sunday: Closed</p>
+            </div>
+
+            <div class="secid-contact__card">
+              <div class="secid-contact__card-icon">
+                <i class="fas fa-external-link-alt"></i>
+              </div>
+              <h3 class="secid-contact__card-title">Sites of Interest</h3>
+              <ul class="secid-contact__links">
+                <li>
+                  <a
+                    href="https://www.iimas.unam.mx/ciencia-de-datos/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >UNAM Data Science Undergraduate Program</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://docencia.tic.unam.mx/diplomado-en-ciencia-de-datos"
+                    target="_blank"
+                    rel="noopener noreferrer">UNAM Data Science Diploma</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://www.iimas.unam.mx/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Instituto de Investigaciones en Matemáticas Aplicadas y en
+                    Sistemas (IIMAS)</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="secid-section secid-bg-light">
+      <div class="secid-container">
+        <div class="secid-section__header">
+          <h2 class="secid-section__title">
+            <i class="fas fa-question-circle"></i>
+            Frequently Asked Questions
+          </h2>
+        </div>
+
+        <div class="secid-faq__grid">
+          <div class="secid-faq__item">
+            <h3 class="secid-faq__question">
+              How can I become a SECiD member?
+            </h3>
+            <p class="secid-faq__answer">
+              To become a SECiD member, you must be a graduate of UNAM's Data
+              Science program. You can register through our online form.
+            </p>
+          </div>
+
+          <div class="secid-faq__item">
+            <h3 class="secid-faq__question">
+              What are the benefits of membership?
+            </h3>
+            <p class="secid-faq__answer">
+              Members have access to exclusive job opportunities, networking
+              events, professional development workshops, and discounts on
+              specialized courses.
+            </p>
+          </div>
+
+          <div class="secid-faq__item">
+            <h3 class="secid-faq__question">How can I post a job offer?</h3>
+            <p class="secid-faq__answer">
+              Companies can post job offers by contacting us through the form or
+              sending an email to contacto@secid.mx.
+            </p>
+          </div>
+
+          <div class="secid-faq__item">
+            <h3 class="secid-faq__question">
+              Do you organize in-person events?
+            </h3>
+            <p class="secid-faq__answer">
+              Yes, we organize networking events, conferences, and workshops
+              both in-person and virtually. Check our events calendar for more
+              information.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</ModernLayout>
+
+<style>
+  .secid-contact__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3xl);
+  }
+
+  .secid-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+  }
+
+  .secid-form__group {
+    margin-bottom: var(--space-lg);
+  }
+
+  .secid-form__label {
+    display: block;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-sm);
+  }
+
+  .secid-form__input,
+  .secid-form__select,
+  .secid-form__textarea {
+    width: 100%;
+    padding: var(--space-md);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    background: var(--card-bg);
+    color: var(--color-text-primary);
+    transition: border-color var(--transition-base);
+  }
+
+  .secid-form__input:focus,
+  .secid-form__select:focus,
+  .secid-form__textarea:focus {
+    outline: none;
+    border-color: var(--secid-primary);
+  }
+
+  .secid-form__actions {
+    display: flex;
+    gap: var(--space-md);
+  }
+
+  .secid-contact__card {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-lg);
+  }
+
+  .secid-contact__card-icon {
+    width: 3rem;
+    height: 3rem;
+    background: linear-gradient(
+      135deg,
+      var(--secid-primary),
+      var(--secid-gold)
+    );
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    margin-bottom: var(--space-md);
+  }
+
+  .secid-contact__card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-contact__card p {
+    color: var(--color-text-secondary);
+    margin: var(--space-xs) 0;
+  }
+
+  .secid-contact__card a {
+    color: var(--secid-primary);
+    text-decoration: none;
+  }
+
+  .secid-contact__card a:hover {
+    text-decoration: underline;
+  }
+
+  .secid-contact__links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .secid-contact__links li {
+    margin-bottom: var(--space-sm);
+  }
+
+  .secid-contact__links a {
+    color: var(--secid-primary);
+    text-decoration: none;
+  }
+
+  .secid-contact__links a:hover {
+    text-decoration: underline;
+  }
+
+  .secid-contact__social {
+    display: flex;
+    gap: var(--space-md);
+  }
+
+  .secid-contact__social-link {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-surface-alt);
+    border-radius: var(--radius-full);
+    color: var(--color-text-secondary);
+    font-size: 1.125rem;
+    transition: all var(--transition-base);
+  }
+
+  .secid-contact__social-link:hover {
+    background: var(--secid-primary);
+    color: white;
+  }
+
+  .secid-faq__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xl);
+  }
+
+  .secid-faq__item {
+    background: var(--card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+  }
+
+  .secid-faq__question {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-faq__answer {
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* Form messages */
+  .secid-form__message {
+    margin-top: var(--space-lg);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 0.95rem;
+  }
+
+  .secid-form__message--success {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--secid-success, #22c55e);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+
+  .secid-form__message--error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .secid-contact__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .secid-form__row {
+      grid-template-columns: 1fr;
+    }
+
+    .secid-form__actions {
+      flex-direction: column;
+    }
+
+    .secid-faq__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { db } from '@/lib/firebase';
+  import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const submitBtn = document.getElementById(
+    'contact-submit'
+  ) as HTMLButtonElement;
+  const successMsg = document.getElementById('contact-success')!;
+  const errorMsg = document.getElementById('contact-error')!;
+  const errorText = document.getElementById('contact-error-text')!;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+
+    const name = (
+      document.getElementById('contact-name') as HTMLInputElement
+    ).value.trim();
+    const email = (
+      document.getElementById('contact-email') as HTMLInputElement
+    ).value.trim();
+    const subject = (
+      document.getElementById('contact-subject') as HTMLSelectElement
+    ).value;
+    const message = (
+      document.getElementById('contact-message') as HTMLTextAreaElement
+    ).value.trim();
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+    try {
+      await addDoc(collection(db, 'contactMessages'), {
+        name,
+        email,
+        subject,
+        message,
+        sentAt: serverTimestamp(),
+        source: 'website',
+        lang: 'en',
+        status: 'new',
+      });
+      form.reset();
+      successMsg.style.display = 'flex';
+    } catch (err: any) {
+      errorText.textContent =
+        err?.message || 'Something went wrong. Please try again.';
+      errorMsg.style.display = 'flex';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
+    }
+  });
+</script>

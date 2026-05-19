@@ -1,0 +1,94 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import CalendarPageWrapper from '@/components/wrappers/CalendarPageWrapper';
+---
+
+<ModernLayout
+  title="Calendario de Actividades - SECiD"
+  description="Consulta el calendario de actividades de SECiD: Journal Club, Knowledge Exchange y próximos eventos de la comunidad."
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <!-- Hero -->
+  <section class="secid-hero secid-hero--calendar">
+    <div class="secid-hero__container">
+      <div class="secid-hero__content">
+        <h1 class="secid-hero__title">Calendario de Actividades</h1>
+        <p class="secid-hero__subtitle">
+          Journal Club, Knowledge Exchange y más — todas las actividades de la
+          comunidad SECiD en un solo lugar
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Calendar -->
+  <section class="secid-section">
+    <div class="secid-container">
+      <CalendarPageWrapper client:only="react" lang="es" />
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="secid-section secid-bg-cream">
+    <div class="secid-container">
+      <div class="secid-content secid-content--center">
+        <h2 class="secid-section__title">¿Quieres participar?</h2>
+        <p class="secid-section__description">
+          Regístrate como miembro para unirte al Journal Club, proponer sesiones
+          y conectar con la comunidad SECiD.
+        </p>
+        <div class="secid-section__actions">
+          <a
+            href="/registro"
+            class="secid-button secid-button--primary secid-button--lg"
+          >
+            <i class="fas fa-users secid-button__icon"></i>
+            Regístrate Ahora
+          </a>
+          <a
+            href="/es/journal-club"
+            class="secid-button secid-button--outline secid-button--lg"
+          >
+            <i class="fas fa-book-reader secid-button__icon"></i>
+            Journal Club
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer lang="es" />
+</ModernLayout>
+
+<style>
+  .secid-hero--calendar {
+    background: linear-gradient(
+      135deg,
+      var(--secid-dark-blue) 0%,
+      var(--secid-secondary) 100%
+    );
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .secid-hero--calendar .secid-hero__title {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .secid-hero--calendar .secid-hero__subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .secid-content--center {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+</style>

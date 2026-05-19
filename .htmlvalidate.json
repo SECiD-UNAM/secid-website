@@ -23,9 +23,7 @@
     "wcag/h67": "error",
     "wcag/h71": "error"
   },
-  "elements": [
-    "html5"
-  ],
+  "elements": ["html5"],
   "plugins": ["<rootDir>/node_modules/html-validate"],
   "transform": {
     "^.*\\.html$": "html-validate/jest"

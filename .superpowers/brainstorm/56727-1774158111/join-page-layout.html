@@ -1,0 +1,112 @@
+<h2>How should the /join page present the 4 paths?</h2>
+<p class="subtitle">This is the first thing new users see after clicking "Únete" on the homepage.</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 1.5rem;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div style="padding: 1.25rem; background: #eff6ff; border-radius: 8px; border: 2px solid #bfdbfe; text-align: center;">
+          <div style="font-size: 2rem;">🎓</div>
+          <div style="font-weight: 600; margin-top: 0.5rem; font-size: 0.85rem;">Member</div>
+          <div style="font-size: 0.7rem; color: #6b7280; margin-top: 0.25rem;">UNAM graduate</div>
+        </div>
+        <div style="padding: 1.25rem; background: #f0fdf4; border-radius: 8px; border: 2px solid #bbf7d0; text-align: center;">
+          <div style="font-size: 2rem;">🤝</div>
+          <div style="font-weight: 600; margin-top: 0.5rem; font-size: 0.85rem;">Collaborator</div>
+          <div style="font-size: 0.7rem; color: #6b7280; margin-top: 0.25rem;">External ally</div>
+        </div>
+        <div style="padding: 1.25rem; background: #fef3c7; border-radius: 8px; border: 2px solid #fde68a; text-align: center;">
+          <div style="font-size: 2rem;">🏢</div>
+          <div style="font-weight: 600; margin-top: 0.5rem; font-size: 0.85rem;">Recruiter</div>
+          <div style="font-size: 0.7rem; color: #6b7280; margin-top: 0.25rem;">Hire talent</div>
+        </div>
+        <div style="padding: 1.25rem; background: #faf5ff; border-radius: 8px; border: 2px solid #e9d5ff; text-align: center;">
+          <div style="font-size: 2rem;">📋</div>
+          <div style="font-weight: 600; margin-top: 0.5rem; font-size: 0.85rem;">Post a Job</div>
+          <div style="font-size: 0.7rem; color: #6b7280; margin-top: 0.25rem;">No account needed</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Grid of Cards</h3>
+      <p>Equal-weight 2×2 grid. Clean, quick scan. All options feel equally valid. Best for mobile too.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 1.5rem;">
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <div style="padding: 1rem; background: #eff6ff; border-radius: 8px; border-left: 4px solid #3b82f6; display: flex; align-items: center; gap: 1rem;">
+          <div style="font-size: 1.5rem;">🎓</div>
+          <div>
+            <div style="font-weight: 600; font-size: 0.85rem;">I'm a UNAM Data Science graduate</div>
+            <div style="font-size: 0.7rem; color: #6b7280;">Full membership with all benefits</div>
+          </div>
+          <div style="margin-left: auto; color: #3b82f6;">→</div>
+        </div>
+        <div style="padding: 1rem; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #22c55e; display: flex; align-items: center; gap: 1rem;">
+          <div style="font-size: 1.5rem;">🤝</div>
+          <div>
+            <div style="font-weight: 600; font-size: 0.85rem;">I want to collaborate with SECiD</div>
+            <div style="font-size: 0.7rem; color: #6b7280;">Public events & job board access</div>
+          </div>
+          <div style="margin-left: auto; color: #22c55e;">→</div>
+        </div>
+        <div style="padding: 1rem; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b; display: flex; align-items: center; gap: 1rem;">
+          <div style="font-size: 1.5rem;">🏢</div>
+          <div>
+            <div style="font-weight: 600; font-size: 0.85rem;">I want to recruit Data Science talent</div>
+            <div style="font-size: 0.7rem; color: #6b7280;">Post jobs directly, no review needed</div>
+          </div>
+          <div style="margin-left: auto; color: #f59e0b;">→</div>
+        </div>
+        <div style="padding: 0.75rem; background: #f9fafb; border-radius: 8px; border: 1px dashed #d1d5db; text-align: center;">
+          <span style="font-size: 0.8rem; color: #6b7280;">Just want to post a job? <a style="color: #3b82f6;">Post without an account →</a></span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Stacked List with CTA</h3>
+      <p>Vertical stack with descriptions. "Post a Job" is de-emphasized as a secondary action. Creates a clear visual hierarchy: registration paths first, anonymous action last.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 1.5rem;">
+      <div style="margin-bottom: 1rem; text-align: center;">
+        <div style="font-size: 0.85rem; font-weight: 600; color: #374151;">What brings you to SECiD?</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <div style="padding: 1.25rem; background: linear-gradient(135deg, #eff6ff, #dbeafe); border-radius: 12px; border: 2px solid #93c5fd;">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="width: 48px; height: 48px; background: #3b82f6; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem;">🎓</div>
+            <div style="flex: 1;">
+              <div style="font-weight: 700; font-size: 0.9rem;">I'm a UNAM graduate</div>
+              <div style="font-size: 0.75rem; color: #4b5563; margin-top: 0.15rem;">Apply for full membership — networking, mentorship, jobs, events</div>
+            </div>
+          </div>
+          <div style="margin-top: 0.5rem; font-size: 0.7rem; color: #1e40af; background: #dbeafe; padding: 0.25rem 0.5rem; border-radius: 4px; display: inline-block;">✓ Check if you already have a profile</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div style="padding: 1rem; background: #f9fafb; border-radius: 10px; border: 1.5px solid #e5e7eb;">
+            <div style="font-size: 1.25rem; margin-bottom: 0.25rem;">🤝</div>
+            <div style="font-weight: 600; font-size: 0.8rem;">Collaborate</div>
+            <div style="font-size: 0.7rem; color: #6b7280;">Events & community</div>
+          </div>
+          <div style="padding: 1rem; background: #f9fafb; border-radius: 10px; border: 1.5px solid #e5e7eb;">
+            <div style="font-size: 1.25rem; margin-bottom: 0.25rem;">🏢</div>
+            <div style="font-weight: 600; font-size: 0.8rem;">Recruit talent</div>
+            <div style="font-size: 0.7rem; color: #6b7280;">Post & manage jobs</div>
+          </div>
+        </div>
+        <div style="text-align: center; padding: 0.5rem; font-size: 0.8rem; color: #6b7280;">
+          or <a style="color: #3b82f6; text-decoration: underline;">post a job without an account</a>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Hero Member + Supporting Options</h3>
+      <p>Member path is the primary CTA (most users are alumni). Collaborator & Recruiter are secondary. "Post a Job" is a text link. Emphasizes what SECiD is primarily about.</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SECiD Components - Design System Examples</title>
+    <link rel="stylesheet" href="public/assets/css/secid-components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: var(--font-family-base);
+            margin: 0;
+            padding: 0;
+            background: var(--secid-gray-50);
+            line-height: 1.6;
+        }
+        
+        .demo-section {
+            padding: var(--space-4xl) 0;
+            border-bottom: 1px solid var(--secid-gray-200);
+        }
+        
+        .demo-title {
+            font-family: var(--font-family-heading);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secid-dark-blue);
+            margin-bottom: var(--space-xl);
+            text-align: center;
+        }
+        
+        .demo-subtitle {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--secid-dark-blue);
+            margin: var(--space-2xl) 0 var(--space-lg) 0;
+        }
+        
+        .demo-description {
+            color: var(--secid-gray-600);
+            margin-bottom: var(--space-lg);
+            text-align: center;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .component-showcase {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-md);
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .component-group {
+            margin-bottom: var(--space-2xl);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="secid-navbar secid-navbar--scrolled">
+        <div class="secid-navbar__container">
+            <a href="#" class="secid-navbar__logo">
+                <div class="secid-navbar__logo-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                SECiD
+            </a>
+            
+            <div class="secid-navbar__nav">
+                <a href="#" class="secid-navbar__link secid-navbar__link--active">Inicio</a>
+                <a href="#" class="secid-navbar__link">Empleos</a>
+                <a href="#" class="secid-navbar__link">Miembros</a>
+                <a href="#" class="secid-navbar__link">Nosotros</a>
+            </div>
+            
+            <div class="secid-navbar__actions">
+                <a href="#" class="secid-button secid-button--outline secid-button--sm">Iniciar Sesión</a>
+                <a href="#" class="secid-button secid-button--primary secid-button--sm">Registrarse</a>
+            </div>
+            
+            <div class="secid-navbar__mobile-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="secid-hero">
+        <div class="secid-hero__container">
+            <div class="secid-hero__content">
+                <h1 class="secid-hero__title">
+                    Conectando el futuro de la 
+                    <span class="secid-hero__title-highlight">Ciencia de Datos</span>
+                </h1>
+                <p class="secid-hero__subtitle">
+                    La red de egresados en Ciencia de Datos más grande de México. 
+                    Conecta, aprende y crece con profesionales de élite.
+                </p>
+                <div class="secid-hero__actions">
+                    <a href="#" class="secid-button secid-button--primary secid-button--lg">
+                        <i class="fas fa-rocket secid-button__icon"></i>
+                        Únete Ahora
+                    </a>
+                    <a href="#" class="secid-button secid-button--outline secid-button--lg">
+                        <i class="fas fa-play secid-button__icon"></i>
+                        Ver Demo
+                    </a>
+                </div>
+            </div>
+            <div class="secid-hero__visual">
+                <div class="secid-hero__graphic">
+                    <div class="secid-data-chart"></div>
+                </div>
+                <div class="secid-hero__floating-element"></div>
+                <div class="secid-hero__floating-element"></div>
+                <div class="secid-hero__floating-element"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Component Demonstrations -->
+    <main>
+        <!-- Buttons Section -->
+        <section class="demo-section">
+            <div class="secid-container">
+                <h2 class="demo-title">Botones</h2>
+                <p class="demo-description">
+                    Sistema completo de botones con variantes de estilo, tamaño y estados interactivos.
+                </p>
+                
+                <div class="component-group">
+                    <h3 class="demo-subtitle">Variantes de Estilo</h3>
+                    <div class="component-showcase">
+                        <button class="secid-button secid-button--primary">
+                            <i class="fas fa-star secid-button__icon"></i>
+                            Primario
+                        </button>
+                        <button class="secid-button secid-button--secondary">
+                            <i class="fas fa-users secid-button__icon"></i>
+                            Secundario
+                        </button>
+                        <button class="secid-button secid-button--outline">
+                            <i class="fas fa-download secid-button__icon"></i>
+                            Outline
+                        </button>
+                        <button class="secid-button secid-button--ghost">
+                            <i class="fas fa-edit secid-button__icon"></i>
+                            Ghost
+                        </button>
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <h3 class="demo-subtitle">Tamaños</h3>
+                    <div class="component-showcase">
+                        <button class="secid-button secid-button--primary secid-button--sm">Pequeño</button>
+                        <button class="secid-button secid-button--primary">Normal</button>
+                        <button class="secid-button secid-button--primary secid-button--lg">Grande</button>
+                        <button class="secid-button secid-button--primary secid-button--xl">Extra Grande</button>
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <h3 class="demo-subtitle">Estados</h3>
+                    <div class="component-showcase">
+                        <button class="secid-button secid-button--primary">Normal</button>
+                        <button class="secid-button secid-button--primary secid-button--loading">Cargando</button>
+                        <button class="secid-button secid-button--primary" disabled>Deshabilitado</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Job Cards Section -->
+        <section class="demo-section secid-bg-cream">
+            <div class="secid-container">
+                <h2 class="demo-title">Tarjetas de Empleo</h2>
+                <p class="demo-description">
+                    Diseño moderno para mostrar oportunidades laborales con toda la información relevante.
+                </p>
+                
+                <div class="secid-grid secid-grid--2">
+                    <div class="secid-job-card">
+                        <div class="secid-job-card__header">
+                            <div class="secid-job-card__company">
+                                <div class="secid-job-card__logo">TF</div>
+                                <div class="secid-job-card__company-info">
+                                    <h3>Senior Data Scientist</h3>
+                                    <p class="secid-job-card__company-name">TechFlow AI</p>
+                                </div>
+                            </div>
+                            <span class="secid-job-card__status secid-job-card__status--remote">Remoto</span>
+                        </div>
+                        
+                        <p class="secid-job-card__description">
+                            Buscamos un Data Scientist senior para liderar proyectos de machine learning 
+                            y análisis predictivo en el sector fintech.
+                        </p>
+                        
+                        <div class="secid-job-card__tags">
+                            <span class="secid-job-card__tag">Python</span>
+                            <span class="secid-job-card__tag">TensorFlow</span>
+                            <span class="secid-job-card__tag">SQL</span>
+                            <span class="secid-job-card__tag">AWS</span>
+                        </div>
+                        
+                        <div class="secid-job-card__footer">
+                            <div class="secid-job-card__meta">
+                                <span class="secid-job-card__salary">$80k - $120k</span>
+                                <span>•</span>
+                                <span>Hace 2 días</span>
+                            </div>
+                            <button class="secid-button secid-button--primary secid-button--sm">
+                                Ver Detalles
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="secid-job-card">
+                        <div class="secid-job-card__header">
+                            <div class="secid-job-card__company">
+                                <div class="secid-job-card__logo">DI</div>
+                                <div class="secid-job-card__company-info">
+                                    <h3>ML Engineer</h3>
+                                    <p class="secid-job-card__company-name">DataInsights</p>
+                                </div>
+                            </div>
+                            <span class="secid-job-card__status secid-job-card__status--hybrid">Híbrido</span>
+                        </div>
+                        
+                        <p class="secid-job-card__description">
+                            Únete a nuestro equipo para desarrollar soluciones de ML escalables 
+                            para clientes enterprise.
+                        </p>
+                        
+                        <div class="secid-job-card__tags">
+                            <span class="secid-job-card__tag">PyTorch</span>
+                            <span class="secid-job-card__tag">Docker</span>
+                            <span class="secid-job-card__tag">Kubernetes</span>
+                            <span class="secid-job-card__tag">GCP</span>
+                        </div>
+                        
+                        <div class="secid-job-card__footer">
+                            <div class="secid-job-card__meta">
+                                <span class="secid-job-card__salary">$70k - $100k</span>
+                                <span>•</span>
+                                <span>Hace 1 semana</span>
+                            </div>
+                            <button class="secid-button secid-button--primary secid-button--sm">
+                                Ver Detalles
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Cards Section -->
+        <section class="demo-section">
+            <div class="secid-container">
+                <h2 class="demo-title">Tarjetas de Características</h2>
+                <p class="demo-description">
+                    Componentes para destacar las funcionalidades y beneficios de la plataforma.
+                </p>
+                
+                <div class="secid-grid secid-grid--3">
+                    <div class="secid-feature-card">
+                        <div class="secid-feature-card__icon">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <h3 class="secid-feature-card__title">Red de Contactos</h3>
+                        <p class="secid-feature-card__description">
+                            Conecta con más de 5,000 profesionales en ciencia de datos 
+                            de las mejores empresas del país.
+                        </p>
+                        <a href="#" class="secid-button secid-button--outline">Explorar Red</a>
+                    </div>
+
+                    <div class="secid-feature-card">
+                        <div class="secid-feature-card__icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h3 class="secid-feature-card__title">Oportunidades Exclusivas</h3>
+                        <p class="secid-feature-card__description">
+                            Accede a ofertas de trabajo exclusivas de empresas que buscan 
+                            talento especializado en datos.
+                        </p>
+                        <a href="#" class="secid-button secid-button--outline">Ver Empleos</a>
+                    </div>
+
+                    <div class="secid-feature-card">
+                        <div class="secid-feature-card__icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="secid-feature-card__title">Desarrollo Continuo</h3>
+                        <p class="secid-feature-card__description">
+                            Participa en workshops, webinars y eventos de la comunidad 
+                            para mantenerte actualizado.
+                        </p>
+                        <a href="#" class="secid-button secid-button--outline">Ver Eventos</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Forms Section -->
+        <section class="demo-section secid-bg-cream">
+            <div class="secid-container">
+                <h2 class="demo-title">Formularios</h2>
+                <p class="demo-description">
+                    Sistema de formularios moderno con validación visual y experiencia de usuario optimizada.
+                </p>
+                
+                <div class="secid-form">
+                    <form>
+                        <div class="secid-form__group">
+                            <label class="secid-form__label" for="name">Nombre Completo</label>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                class="secid-form__input" 
+                                placeholder="Tu nombre completo"
+                            >
+                        </div>
+
+                        <div class="secid-form__group">
+                            <label class="secid-form__label" for="email">Email</label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                class="secid-form__input secid-form__input--success" 
+                                placeholder="tu.email@ejemplo.com"
+                                value="usuario@ejemplo.com"
+                            >
+                            <div class="secid-form__success">
+                                <i class="fas fa-check-circle"></i>
+                                Email válido
+                            </div>
+                        </div>
+
+                        <div class="secid-form__group">
+                            <label class="secid-form__label" for="company">Empresa</label>
+                            <input 
+                                type="text" 
+                                id="company" 
+                                class="secid-form__input secid-form__input--error" 
+                                placeholder="Nombre de tu empresa"
+                            >
+                            <div class="secid-form__error">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Este campo es requerido
+                            </div>
+                        </div>
+
+                        <div class="secid-form__group">
+                            <label class="secid-form__label" for="role">Rol Actual</label>
+                            <select id="role" class="secid-form__select">
+                                <option value="">Selecciona tu rol</option>
+                                <option value="data-scientist">Data Scientist</option>
+                                <option value="data-analyst">Data Analyst</option>
+                                <option value="ml-engineer">ML Engineer</option>
+                                <option value="data-engineer">Data Engineer</option>
+                            </select>
+                        </div>
+
+                        <div class="secid-form__group">
+                            <label class="secid-form__label" for="bio">Biografía</label>
+                            <textarea 
+                                id="bio" 
+                                class="secid-form__textarea" 
+                                placeholder="Cuéntanos sobre tu experiencia..."
+                            ></textarea>
+                        </div>
+
+                        <div class="secid-form__group">
+                            <label class="secid-form__checkbox">
+                                <input type="checkbox" checked>
+                                Acepto los términos y condiciones
+                            </label>
+                        </div>
+
+                        <div class="component-showcase">
+                            <button type="submit" class="secid-button secid-button--primary secid-button--lg">
+                                Enviar Formulario
+                            </button>
+                            <button type="button" class="secid-button secid-button--ghost">
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Member Profile Cards Section -->
+        <section class="demo-section">
+            <div class="secid-container">
+                <h2 class="demo-title">Perfiles de Miembros</h2>
+                <p class="demo-description">
+                    Tarjetas de perfil para mostrar la información de los miembros de la comunidad.
+                </p>
+                
+                <div class="secid-grid secid-grid--3">
+                    <div class="secid-member-card">
+                        <div class="secid-member-card__avatar">
+                            AM
+                        </div>
+                        <h3 class="secid-member-card__name">Ana Martínez</h3>
+                        <p class="secid-member-card__title">Senior Data Scientist</p>
+                        <p class="secid-member-card__company">Google</p>
+                        
+                        <div class="secid-member-card__skills">
+                            <span class="secid-member-card__skill">Python</span>
+                            <span class="secid-member-card__skill">TensorFlow</span>
+                            <span class="secid-member-card__skill">SQL</span>
+                            <span class="secid-member-card__skill">AWS</span>
+                        </div>
+                        
+                        <div class="secid-member-card__contact">
+                            <a href="#" class="secid-member-card__contact-link">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="secid-member-card__contact-link">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="secid-member-card__contact-link">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="secid-member-card">
+                        <div class="secid-member-card__avatar">
+                            CS
+                        </div>
+                        <h3 class="secid-member-card__name">Carlos Silva</h3>
+                        <p class="secid-member-card__title">ML Engineer</p>
+                        <p class="secid-member-card__company">Microsoft</p>
+                        
+                        <div class="secid-member-card__skills">
+                            <span class="secid-member-card__skill">PyTorch</span>
+                            <span class="secid-member-card__skill">Docker</span>
+                            <span class="secid-member-card__skill">Kubernetes</span>
+                        </div>
+                        
+                        <div class="secid-member-card__contact">
+                            <a href="#" class="secid-member-card__contact-link">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="secid-member-card__contact-link">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="#" class="secid-member-card__contact-link">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="secid-member-card">
+                        <div class="secid-member-card__avatar">
+                            LR
+                        </div>
+                        <h3 class="secid-member-card__name">Laura Rodríguez</h3>
+                        <p class="secid-member-card__title">Data Analytics Lead</p>
+                        <p class="secid-member-card__company">Amazon</p>
+                        
+                        <div class="secid-member-card__skills">
+                            <span class="secid-member-card__skill">R</span>
+                            <span class="secid-member-card__skill">Tableau</span>
+                            <span class="secid-member-card__skill">Spark</span>
+                            <span class="secid-member-card__skill">GCP</span>
+                        </div>
+                        
+                        <div class="secid-member-card__contact">
+                            <a href="#" class="secid-member-card__contact-link">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="secid-member-card__contact-link">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="secid-member-card__contact-link">
+                                <i class="fas fa-globe"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading States Section -->
+        <section class="demo-section secid-bg-cream">
+            <div class="secid-container">
+                <h2 class="demo-title">Estados de Carga</h2>
+                <p class="demo-description">
+                    Indicadores visuales para mejorar la experiencia durante procesos de carga.
+                </p>
+                
+                <div class="component-group">
+                    <h3 class="demo-subtitle">Spinners</h3>
+                    <div class="component-showcase">
+                        <div class="secid-spinner secid-spinner--sm"></div>
+                        <div class="secid-spinner"></div>
+                        <div class="secid-spinner secid-spinner--lg"></div>
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <h3 class="demo-subtitle">Skeleton Loaders</h3>
+                    <div style="max-width: 400px; margin: 0 auto;">
+                        <div class="secid-skeleton secid-skeleton--title"></div>
+                        <div class="secid-skeleton secid-skeleton--text"></div>
+                        <div class="secid-skeleton secid-skeleton--text"></div>
+                        <div class="secid-skeleton secid-skeleton--text"></div>
+                        <div style="display: flex; gap: var(--space-md); align-items: center; margin-top: var(--space-lg);">
+                            <div class="secid-skeleton secid-skeleton--avatar"></div>
+                            <div style="flex: 1;">
+                                <div class="secid-skeleton secid-skeleton--text"></div>
+                                <div class="secid-skeleton secid-skeleton--text"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="secid-footer">
+        <div class="secid-footer__container">
+            <div class="secid-footer__content">
+                <div class="secid-footer__brand">
+                    <a href="#" class="secid-footer__logo">
+                        <div class="secid-footer__logo-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        SECiD
+                    </a>
+                    <p class="secid-footer__description">
+                        La red de egresados en Ciencia de Datos más grande de México. 
+                        Conectamos talento, oportunidades y conocimiento.
+                    </p>
+                    <div class="secid-footer__social">
+                        <a href="#" class="secid-footer__social-link">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="secid-footer__social-link">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="secid-footer__social-link">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="secid-footer__social-link">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="secid-footer__column">
+                    <h4>Plataforma</h4>
+                    <ul class="secid-footer__links">
+                        <li><a href="#" class="secid-footer__link">Empleos</a></li>
+                        <li><a href="#" class="secid-footer__link">Miembros</a></li>
+                        <li><a href="#" class="secid-footer__link">Eventos</a></li>
+                        <li><a href="#" class="secid-footer__link">Recursos</a></li>
+                    </ul>
+                </div>
+
+                <div class="secid-footer__column">
+                    <h4>Comunidad</h4>
+                    <ul class="secid-footer__links">
+                        <li><a href="#" class="secid-footer__link">Slack</a></li>
+                        <li><a href="#" class="secid-footer__link">Discord</a></li>
+                        <li><a href="#" class="secid-footer__link">Newsletter</a></li>
+                        <li><a href="#" class="secid-footer__link">Blog</a></li>
+                    </ul>
+                </div>
+
+                <div class="secid-footer__column">
+                    <h4>Soporte</h4>
+                    <ul class="secid-footer__links">
+                        <li><a href="#" class="secid-footer__link">Centro de Ayuda</a></li>
+                        <li><a href="#" class="secid-footer__link">Contacto</a></li>
+                        <li><a href="#" class="secid-footer__link">FAQ</a></li>
+                        <li><a href="#" class="secid-footer__link">Status</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="secid-footer__bottom">
+                <p class="secid-footer__copyright">
+                    © 2024 SECiD - Sociedad de Egresados en Ciencia de Datos UNAM
+                </p>
+                <div class="secid-footer__legal">
+                    <a href="#">Privacidad</a>
+                    <a href="#">Términos</a>
+                    <a href="#">Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for interactivity -->
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.secid-navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('secid-navbar--scrolled');
+            } else {
+                navbar.classList.remove('secid-navbar--scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const mobileToggle = document.querySelector('.secid-navbar__mobile-toggle');
+        const mobileMenu = document.querySelector('.secid-navbar__mobile-menu');
+        
+        if (mobileToggle && mobileMenu) {
+            mobileToggle.addEventListener('click', function() {
+                mobileMenu.classList.toggle('secid-navbar__mobile-menu--open');
+            });
+        }
+
+        // Button loading state demo
+        const loadingButtons = document.querySelectorAll('.secid-button--loading');
+        loadingButtons.forEach(button => {
+            setInterval(() => {
+                button.classList.toggle('secid-button--loading');
+            }, 3000);
+        });
+
+        // Form validation demo
+        const inputs = document.querySelectorAll('.secid-form__input, .secid-form__textarea, .secid-form__select');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.value && this.checkValidity()) {
+                    this.classList.remove('secid-form__input--error');
+                    this.classList.add('secid-form__input--success');
+                } else if (!this.value) {
+                    this.classList.add('secid-form__input--error');
+                    this.classList.remove('secid-form__input--success');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

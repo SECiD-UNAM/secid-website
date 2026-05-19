@@ -1,0 +1,88 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import MemberShowcasePage from '../../components/wrappers/MemberShowcasePage';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('es');
+---
+
+<ModernLayout
+  title="Directorio de Miembros - SECiD"
+  description="Conoce a los profesionales de la comunidad SECiD - Sociedad de Egresados en Ciencia de Datos UNAM"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <!-- Hero Section -->
+  <section class="secid-hero secid-hero--members">
+    <div class="secid-hero__container">
+      <div class="secid-hero__content">
+        <h1 class="secid-hero__title">Directorio de Miembros</h1>
+        <p class="secid-hero__subtitle">
+          Conecta con los mejores profesionales en ciencia de datos de México
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Member Directory -->
+  <section class="secid-section" aria-label="Directorio">
+    <div class="secid-container">
+      <h2 class="sr-only">Miembros</h2>
+      <MemberShowcasePage client:load lang="es" />
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="secid-section secid-cta-section">
+    <div class="secid-container">
+      <div class="secid-cta">
+        <h2 class="secid-cta__title">¿Aún no eres miembro?</h2>
+        <p class="secid-cta__description">
+          Únete a la comunidad de profesionales en ciencia de datos más grande
+          de México
+        </p>
+        <a
+          href="/registro"
+          class="secid-button secid-button--primary secid-button--xl"
+        >
+          <i class="fas fa-rocket secid-button__icon"></i>
+          Únete a SECiD
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer lang="es" />
+</ModernLayout>
+
+<style>
+  .secid-hero--members {
+    background: linear-gradient(
+      135deg,
+      var(--secid-secondary) 0%,
+      var(--secid-primary) 100%
+    );
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .secid-hero--members .secid-hero__title {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .secid-hero--members .secid-hero__subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Dark mode styles */
+  [data-theme='dark'] .secid-search-input {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+</style>

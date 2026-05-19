@@ -1,0 +1,163 @@
+---
+interface Props {
+  title: string;
+  lang: 'es' | 'en';
+}
+
+const { title, lang } = Astro.props;
+
+const backLabel = lang === 'es' ? 'Directorio' : 'Directory';
+const footerText =
+  lang === 'es'
+    ? 'Generado desde el perfil SECiD'
+    : 'Generated from SECiD profile';
+const currentYear = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang={lang} class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | SECiD</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100"
+  >
+    <!-- Header -->
+    <header
+      class="sticky top-0 z-40 border-b border-gray-200 bg-white/80 backdrop-blur-md dark:border-gray-800 dark:bg-gray-950/80"
+    >
+      <div
+        class="mx-auto flex max-w-4xl items-center justify-between px-6 py-4"
+      >
+        <div class="flex items-center gap-3">
+          <a
+            href={`/${lang}/members`}
+            class="flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400"
+          >
+            <svg
+              class="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            {backLabel}
+          </a>
+          <span class="text-gray-300 dark:text-gray-700">|</span>
+          <span class="text-lg font-bold text-gray-900 dark:text-white">
+            SECiD
+          </span>
+          <span
+            class="rounded bg-primary-100 px-1.5 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-400"
+          >
+            CV
+          </span>
+        </div>
+
+        <button
+          id="cv-theme-toggle"
+          class="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+          aria-label="Toggle theme"
+        >
+          <svg
+            class="cv-dark-icon h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+            ></path>
+          </svg>
+          <svg
+            class="cv-light-icon hidden h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+            ></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="mx-auto max-w-4xl px-6 py-12">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-800">
+      <div
+        class="mx-auto max-w-4xl px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400"
+      >
+        {footerText} &copy; {currentYear}
+      </div>
+    </footer>
+
+    <script is:inline>
+      // Theme toggle
+      (function () {
+        const btn = document.getElementById('cv-theme-toggle');
+        const darkIcon = btn?.querySelector('.cv-dark-icon');
+        const lightIcon = btn?.querySelector('.cv-light-icon');
+        const html = document.documentElement;
+
+        function update() {
+          const isDark = html.classList.contains('dark');
+          if (darkIcon) darkIcon.classList.toggle('hidden', !isDark);
+          if (lightIcon) lightIcon.classList.toggle('hidden', isDark);
+        }
+
+        update();
+
+        btn?.addEventListener('click', function () {
+          const isDark = html.classList.contains('dark');
+          html.classList.toggle('dark', !isDark);
+          localStorage.setItem('theme', isDark ? 'light' : 'dark');
+          update();
+        });
+
+        // Restore saved preference
+        var saved = localStorage.getItem('theme');
+        if (saved === 'light') {
+          html.classList.remove('dark');
+          update();
+        }
+      })();
+    </script>
+  </body>
+</html>
