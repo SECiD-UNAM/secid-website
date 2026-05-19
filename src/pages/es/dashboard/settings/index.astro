@@ -1,6 +1,6 @@
 ---
 import DashboardLayout from '@/layouts/DashboardLayout.astro';
-import SecuritySettings from '@/components/settings/SecuritySettings';
+import SecuritySettingsPage from '@/components/wrappers/SecuritySettingsPage';
 ---
 
 <DashboardLayout
@@ -17,5 +17,5 @@ import SecuritySettings from '@/components/settings/SecuritySettings';
     </p>
   </div>
 
-  <SecuritySettings client:only="react" lang="es" />
+  <SecuritySettingsPage client:only="react" lang="es" />
 </DashboardLayout>
