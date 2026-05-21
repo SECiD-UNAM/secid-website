@@ -5,12 +5,10 @@ import {
   type User,
   type Unsubscribe,
 } from 'firebase/auth';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
+import { useResolvedProfile } from '@/hooks/useResolvedProfile';
 
 // Alias-aware profile shape: only the fields the avatar/dropdown needs.
-// Mirrors the one-hop aliasOf resolution from AuthContext so the navbar
-// reflects the canonical profile when signed in with an alias account.
 type NavProfile = {
   displayName?: string;
   firstName?: string;
@@ -51,7 +49,6 @@ export default function AuthNavButtons({
   registerLabel = lang === 'es' ? 'Registrarse' : 'Register',
 }: AuthNavButtonsProps) {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<NavProfile>(null);
   const [ready, setReady] = useState(false);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -71,43 +68,10 @@ export default function AuthNavButtons({
     };
   }, []);
 
-  // One-hop alias-aware profile subscription so the avatar reflects the
-  // canonical profile when signed in with an alias account (mirrors
-  // AuthContext's resolution). Defensive: doesn't loop on alias->alias.
-  useEffect(() => {
-    if (!user) {
-      setProfile(null);
-      return;
-    }
-    let stubUnsub: Unsubscribe | null = null;
-    let canonicalUnsub: Unsubscribe | null = null;
-    stubUnsub = onSnapshot(
-      doc(db, 'users', user.uid),
-      (snap) => {
-        const data = snap.exists()
-          ? (snap.data() as NavProfile & { aliasOf?: string })
-          : null;
-        const aliasOf = data && (data as { aliasOf?: string }).aliasOf;
-        if (aliasOf) {
-          if (canonicalUnsub) return; // already hopped
-          canonicalUnsub = onSnapshot(
-            doc(db, 'users', aliasOf),
-            (csnap) => {
-              setProfile(csnap.exists() ? (csnap.data() as NavProfile) : null);
-            },
-            () => setProfile(null)
-          );
-        } else {
-          setProfile(data);
-        }
-      },
-      () => setProfile(null)
-    );
-    return () => {
-      if (stubUnsub) stubUnsub();
-      if (canonicalUnsub) canonicalUnsub();
-    };
-  }, [user]);
+  // One-hop alias-aware profile subscription via shared hook so the avatar
+  // reflects the canonical profile when signed in with an alias account.
+  const { profile: resolvedProfile } = useResolvedProfile(user?.uid);
+  const profile: NavProfile = resolvedProfile as NavProfile;
 
   // Close dropdown on outside click
   useEffect(() => {

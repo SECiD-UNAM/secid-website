@@ -11,9 +11,9 @@ import {
   signOut as firebaseSignOut,
 } from 'firebase/auth';
 import { auth, db, isEmulatorMode } from '@/lib/firebase';
-import { doc, onSnapshot, getDoc, type Unsubscribe } from 'firebase/firestore';
-import { isFeatureEnabled } from '@/lib/beta';
+import { doc, getDoc, type Unsubscribe } from 'firebase/firestore';
 import type { UserProfile } from '@/types/user';
+import { useResolvedProfile } from '@/hooks/useResolvedProfile';
 export type { UserProfile };
 
 interface AuthContextType {
@@ -68,147 +68,41 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const profileUnsubRef = useRef<Unsubscribe | null>(null);
+  // authReady tracks whether the Firebase Auth state has been resolved at
+  // least once; until then we hold loading=true regardless of the hook.
+  const authReadyRef = useRef(false);
 
-  // Subscribe to user profile changes
-  const subscribeToProfile = (
-    uid: string,
-    onFirstSnapshot?: () => void
-  ): Unsubscribe => {
-    const userRef = doc(db, 'users', uid);
-    let firstSnapshot = true;
+  // Use the shared hook for alias-aware profile subscription.
+  const {
+    profile: userProfile,
+    loading: profileLoading,
+    error,
+  } = useResolvedProfile(user?.uid);
 
-    // Holds the listener for the canonical doc when this uid turns out to be
-    // an alias stub. The returned Unsubscribe tears down BOTH the alias-stub
-    // listener and (if we hopped) the canonical listener, so the existing
-    // profileUnsubRef cleanup (signOut / unmount / re-subscribe) still works
-    // with a single stored unsubscribe and never leaks the redirect listener.
-    let canonicalUnsub: Unsubscribe | null = null;
+  // Mirror hook error into local state (hook provides it directly, but the
+  // context exposes a mutable error so we keep a local copy for signOut/refresh).
+  const [localError, setLocalError] = useState<string | null>(null);
 
-    // Transparently resolve a single alias hop: alias stub -> canonical doc.
-    // Fails closed (no profile + error) on alias->alias chains or a missing
-    // canonical target so resolution can never loop. Resolves at most ONE hop.
-    const resolveAlias = (
-      canonicalId: string,
-      stubUnsub: Unsubscribe
-    ): void => {
-      // Drop the alias-stub listener; loading state must clear from the
-      // CANONICAL snapshot, not from the stub.
-      stubUnsub();
-      const canonicalRef = doc(db, 'users', canonicalId);
-      canonicalUnsub = onSnapshot(
-        canonicalRef,
-        (canonicalSnap) => {
-          if (!canonicalSnap['exists']()) {
-            // Missing canonical target — fail closed, do not loop.
-            setError('Linked account could not be resolved');
-            setUserProfile(null);
-          } else {
-            const canonicalData = canonicalSnap['data']() as UserProfile & {
-              aliasOf?: string;
-            };
-            if (canonicalData.aliasOf) {
-              // alias -> alias chain — fail closed, resolve at most one hop.
-              setError('Linked account could not be resolved');
-              setUserProfile(null);
-            } else {
-              setUserProfile({
-                ...canonicalData,
-                uid: canonicalSnap['id'],
-              });
-              setError(null);
-            }
-          }
-          if (firstSnapshot) {
-            firstSnapshot = false;
-            onFirstSnapshot?.();
-          }
-        },
-        (err) => {
-          console.error('Error fetching canonical profile:', err);
-          setError('Failed to load user profile');
-          if (firstSnapshot) {
-            firstSnapshot = false;
-            onFirstSnapshot?.();
-          }
-        }
-      );
-    };
+  // Propagate hook error changes into local error state.
+  useEffect(() => {
+    setLocalError(error);
+  }, [error]);
 
-    const stubUnsub = onSnapshot(
-      userRef,
-      (snapshot) => {
-        if (snapshot['exists']()) {
-          const data = snapshot['data']() as UserProfile & {
-            aliasOf?: string;
-          };
-          if (data.aliasOf && isFeatureEnabled('aliasResolution')) {
-            // This doc is an alias stub. Re-subscribe to the canonical doc
-            // and forward onFirstSnapshot so loading clears from there.
-            // Guard against repeated hops if the stub re-fires before the
-            // canonical listener replaces it.
-            if (!canonicalUnsub) {
-              resolveAlias(data.aliasOf, stubUnsub);
-            }
-            return;
-          }
-          setUserProfile({
-            ...data,
-            uid: snapshot['id'],
-          });
-          setError(null);
-        } else {
-          // Profile doesn't exist yet (might be created by Cloud Function)
-          setUserProfile(null);
-          console.log('User profile not found, waiting for creation...');
-        }
-        if (firstSnapshot) {
-          firstSnapshot = false;
-          onFirstSnapshot?.();
-        }
-      },
-      (err) => {
-        console.error('Error fetching user profile:', err);
-        setError('Failed to load user profile');
-        // Keep last known profile to prevent auth flapping on transient errors
-
-        const firebaseErr = err as { code?: string };
-        if (firebaseErr.code === 'permission-denied') {
-          // Firebase terminates the listener on permission-denied; attempt recovery
-          setTimeout(() => {
-            auth.currentUser
-              ?.getIdToken(true)
-              .then(() => {
-                if (profileUnsubRef.current) {
-                  profileUnsubRef.current();
-                }
-                profileUnsubRef.current = subscribeToProfile(uid);
-              })
-              .catch((refreshErr) => {
-                console.error(
-                  'Token refresh failed during recovery:',
-                  refreshErr
-                );
-              });
-          }, 2000);
-        }
-      }
-    );
-
-    // Composite unsubscribe: tears down the alias-stub listener AND the
-    // canonical listener (if we hopped). Stored as a single Unsubscribe in
-    // profileUnsubRef, so signOut / unmount / re-subscribe never leak.
-    return () => {
-      stubUnsub();
-      if (canonicalUnsub) {
-        canonicalUnsub();
-        canonicalUnsub = null;
-      }
-    };
-  };
+  // Once the auth state is ready AND (there is no user OR the profile hook has
+  // resolved its first snapshot), clear the global loading flag.
+  // This preserves the original onFirstSnapshot behaviour: loading stays true
+  // until the profile is available, preventing ProtectedRoute flicker.
+  useEffect(() => {
+    if (!authReadyRef.current) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+    if (!profileLoading) {
+      setLoading(false);
+    }
+  }, [user, profileLoading]);
 
   // Refresh user profile manually
   const refreshProfile = async () => {
@@ -219,16 +113,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const snapshot = await getDoc(userRef);
 
       if (snapshot.exists()) {
-        const data = snapshot['data']() as UserProfile;
-        setUserProfile({
-          ...data,
-          uid: snapshot['id'],
-        });
-        setError(null);
+        // useResolvedProfile will pick up the updated doc via its live listener;
+        // this manual refresh is a one-shot read kept for API compatibility.
+        setLocalError(null);
       }
     } catch (err) {
       console.error('Error refreshing profile:', err);
-      setError('Failed to refresh profile');
+      setLocalError('Failed to refresh profile');
     }
   };
 
@@ -237,11 +128,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await firebaseSignOut(auth);
       setUser(null);
-      setUserProfile(null);
-      setError(null);
+      setLocalError(null);
     } catch (err) {
       console.error('Error signing out:', err);
-      setError('Failed to sign out');
+      setLocalError('Failed to sign out');
     }
   };
 
@@ -254,33 +144,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // to redirect to login prematurely.
     auth.authStateReady().then(() => {
       unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+        authReadyRef.current = true;
         if (firebaseUser) {
           setUser(firebaseUser);
 
-          // Subscribe to profile changes
-          if (profileUnsubRef.current) {
-            profileUnsubRef.current();
-          }
-          // Only clear loading after the first profile snapshot arrives
-          profileUnsubRef.current = subscribeToProfile(firebaseUser.uid, () => {
-            setLoading(false);
-          });
-
           // Show emulator status in development
           if (isEmulatorMode()) {
-            console.log('🔧 Auth Context: Using Firebase Emulator');
-            console.log('👤 Authenticated user:', firebaseUser['email']);
+            console.log('Auth Context: Using Firebase Emulator');
+            console.log('Authenticated user:', firebaseUser['email']);
           }
         } else {
           setUser(null);
-          setUserProfile(null);
           setLoading(false);
-
-          // Clean up profile subscription
-          if (profileUnsubRef.current) {
-            profileUnsubRef.current();
-            profileUnsubRef.current = null;
-          }
         }
       });
     });
@@ -289,9 +164,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return () => {
       if (unsubscribeAuth) {
         unsubscribeAuth();
-      }
-      if (profileUnsubRef.current) {
-        profileUnsubRef.current();
       }
     };
   }, []);
@@ -331,7 +203,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     userProfile,
     loading,
-    error,
+    error: localError,
     isAuthenticated,
     emailVerified,
     isVerified,
