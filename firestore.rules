@@ -29,6 +29,14 @@ service cloud.firestore {
       return request.auth.uid == resourceUserId;
     }
 
+    // Multi-email identity: an alias account (its own users doc has
+    // aliasOf == <canonical-uid>) is permitted to READ its canonical
+    // profile, so AuthContext's alias resolution and any canonical-
+    // dependent UI work without requiring isVerified/RBAC on the alias.
+    function isCanonicalOfAlias(resourceUserId) {
+      return getCurrentUser().data.aliasOf == resourceUserId;
+    }
+
     function rateLimitCheck() {
       // Basic rate limiting - can be enhanced with custom claims
       return true; // Implement with Cloud Functions if needed
@@ -110,8 +118,10 @@ service cloud.firestore {
     match /users/{userId} {
       // Own profile: always readable
       // Other profiles: verified members or RBAC view-all
+      // Alias accounts can read their canonical profile (multi-email).
       allow read: if isAuthenticated() &&
                      (isOwner(userId) || isVerified() ||
+                      isCanonicalOfAlias(userId) ||
                       (!hasRBACDeny('us', 'v') && hasRBACAllowAll('us', 'v')));
 
       // Fix: prevent new users from self-granting isVerified or isActive on creation
