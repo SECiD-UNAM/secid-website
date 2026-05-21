@@ -5,7 +5,19 @@ import {
   type User,
   type Unsubscribe,
 } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
+
+// Alias-aware profile shape: only the fields the avatar/dropdown needs.
+// Mirrors the one-hop aliasOf resolution from AuthContext so the navbar
+// reflects the canonical profile when signed in with an alias account.
+type NavProfile = {
+  displayName?: string;
+  firstName?: string;
+  lastName?: string;
+  photoURL?: string;
+  profileImage?: string;
+} | null;
 
 interface AuthNavButtonsProps {
   lang?: 'es' | 'en';
@@ -13,9 +25,14 @@ interface AuthNavButtonsProps {
   registerLabel?: string;
 }
 
-function getInitials(user: User): string {
-  if (user.displayName) {
-    return user.displayName
+function getInitials(user: User, profile: NavProfile): string {
+  const displayName =
+    profile?.displayName ||
+    [profile?.firstName, profile?.lastName].filter(Boolean).join(' ') ||
+    user.displayName ||
+    '';
+  if (displayName) {
+    return displayName
       .split(' ')
       .map((n) => n[0])
       .slice(0, 2)
@@ -34,6 +51,7 @@ export default function AuthNavButtons({
   registerLabel = lang === 'es' ? 'Registrarse' : 'Register',
 }: AuthNavButtonsProps) {
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<NavProfile>(null);
   const [ready, setReady] = useState(false);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -52,6 +70,44 @@ export default function AuthNavButtons({
       if (unsubscribe) unsubscribe();
     };
   }, []);
+
+  // One-hop alias-aware profile subscription so the avatar reflects the
+  // canonical profile when signed in with an alias account (mirrors
+  // AuthContext's resolution). Defensive: doesn't loop on alias->alias.
+  useEffect(() => {
+    if (!user) {
+      setProfile(null);
+      return;
+    }
+    let stubUnsub: Unsubscribe | null = null;
+    let canonicalUnsub: Unsubscribe | null = null;
+    stubUnsub = onSnapshot(
+      doc(db, 'users', user.uid),
+      (snap) => {
+        const data = snap.exists()
+          ? (snap.data() as NavProfile & { aliasOf?: string })
+          : null;
+        const aliasOf = data && (data as { aliasOf?: string }).aliasOf;
+        if (aliasOf) {
+          if (canonicalUnsub) return; // already hopped
+          canonicalUnsub = onSnapshot(
+            doc(db, 'users', aliasOf),
+            (csnap) => {
+              setProfile(csnap.exists() ? (csnap.data() as NavProfile) : null);
+            },
+            () => setProfile(null)
+          );
+        } else {
+          setProfile(data);
+        }
+      },
+      () => setProfile(null)
+    );
+    return () => {
+      if (stubUnsub) stubUnsub();
+      if (canonicalUnsub) canonicalUnsub();
+    };
+  }, [user]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -76,7 +132,9 @@ export default function AuthNavButtons({
   if (!ready) return null;
 
   if (user) {
-    const initials = getInitials(user);
+    const initials = getInitials(user, profile);
+    const avatarSrc =
+      profile?.photoURL || profile?.profileImage || user.photoURL || '';
 
     return (
       <div className="relative" ref={dropdownRef}>
@@ -87,9 +145,9 @@ export default function AuthNavButtons({
           aria-expanded={open}
           aria-haspopup="true"
         >
-          {user.photoURL ? (
+          {avatarSrc ? (
             <img
-              src={user.photoURL}
+              src={avatarSrc}
               alt=""
               className="h-8 w-8 rounded-full object-cover"
             />
