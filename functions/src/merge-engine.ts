@@ -240,10 +240,23 @@ export const onMergeRequestApproved = onDocumentUpdated(
         });
 
         // Append the source user's email to the target's alternateEmails
-        // (deduped) and register the resolution index entry.
-        const sourceEmailLower = String(sourceDoc.email || '')
+        // (deduped) and register the resolution index entry. Idempotent:
+        // if a prior partial run already overwrote the source doc to the
+        // alias stub (so sourceDoc.email is missing), recover the email
+        // from Firebase Auth so re-firing the merge completes the writes.
+        let sourceEmailLower = String(sourceDoc.email || '')
           .trim()
           .toLowerCase();
+        if (!sourceEmailLower) {
+          try {
+            const authUser = await admin.auth().getUser(sourceUid);
+            sourceEmailLower = String(authUser.email || '')
+              .trim()
+              .toLowerCase();
+          } catch {
+            // Auth user gone — nothing to recover; leave blank, guard below skips.
+          }
+        }
         if (sourceEmailLower) {
           const targetRef = db.collection('users').doc(targetUid);
           const targetCurrent = await targetRef.get();
