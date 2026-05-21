@@ -309,9 +309,11 @@ export const confirmAlternateEmail = onCall(
     const deduped = existing.filter(
       (e) => String(e?.email || '').toLowerCase() !== emailLower
     );
+    // Firestore forbids FieldValue.serverTimestamp() inside array
+    // elements; use a real Timestamp so the array write succeeds.
     deduped.push({
       email: emailLower,
-      verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
+      verifiedAt: admin.firestore.Timestamp.now(),
     });
 
     await canonicalRef.update({

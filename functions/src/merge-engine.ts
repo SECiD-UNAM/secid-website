@@ -252,9 +252,11 @@ export const onMergeRequestApproved = onDocumentUpdated(
           const dedupedAlts = existingAlts.filter(
             (e) => String(e?.email || '').toLowerCase() !== sourceEmailLower
           );
+          // Firestore forbids FieldValue.serverTimestamp() inside array
+          // elements; use a real Timestamp so the array write succeeds.
           dedupedAlts.push({
             email: sourceEmailLower,
-            verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
+            verifiedAt: admin.firestore.Timestamp.now(),
           });
           await targetRef.update({ alternateEmails: dedupedAlts });
 
