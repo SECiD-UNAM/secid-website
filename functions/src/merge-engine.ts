@@ -119,7 +119,7 @@ export const onMergeRequestApproved = onDocumentUpdated(
     const {
       sourceUid,
       targetUid,
-      fieldSelections,
+      fieldSelections = {},
       migrateReferences,
       oldDocAction,
       migratedCollections: alreadyMigrated,
