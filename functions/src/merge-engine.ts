@@ -322,6 +322,7 @@ export const onMergeRequestApproved = onDocumentUpdated(
         status: 'completed',
         completedAt: admin.firestore.FieldValue.serverTimestamp(),
         migratedCollections: migrated,
+        error: admin.firestore.FieldValue.delete(),
       });
 
       console.log(`Merge completed: ${sourceUid} → ${targetUid}`);
