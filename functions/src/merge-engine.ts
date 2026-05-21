@@ -174,7 +174,14 @@ export const onMergeRequestApproved = onDocumentUpdated(
       // Step 4: Migrate references
       const migrated: string[] = alreadyMigrated || [];
 
-      if (migrateReferences !== false) {
+      // For 'alias' action the source UID stays a valid identity (alias
+      // login resolves to the canonical via aliasOf in AuthContext), so
+      // rewriting authorship is both unnecessary and semantically wrong —
+      // also avoids the collection-group authorId index requirement.
+      const shouldMigrateRefs =
+        migrateReferences !== false && oldDocAction !== 'alias';
+
+      if (shouldMigrateRefs) {
         // 4a: Simple collection field updates
         for (const { collection: collName, field } of SIMPLE_COLLECTIONS) {
           const collKey = `${collName}:${field}`;
