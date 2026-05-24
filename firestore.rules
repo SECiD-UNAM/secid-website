@@ -683,9 +683,13 @@ service cloud.firestore {
       allow create: if isAuthenticated();
     }
 
-    // Blog collection — RBAC-only authorization (public read)
+    // Blog collection — published posts are public; drafts gated to authors
+    // and bl:view holders. Status field is required ('draft' | 'published',
+    // see src/lib/blog.ts:29). Closes #17 audit finding.
     match /blog/{postId} {
-      allow read: if true;
+      allow read: if resource.data.status == 'published'
+        || (isAuthenticated() && resource.data.authorId == request.auth.uid)
+        || (isAuthenticated() && !hasRBACDeny('bl', 'v') && hasRBACAllow('bl', 'v'));
 
       allow create: if isAuthenticated()
         && hasRBACAllow('bl', 'c') && !hasRBACDeny('bl', 'c')
