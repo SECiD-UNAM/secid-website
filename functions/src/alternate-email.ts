@@ -2,7 +2,7 @@ import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import * as admin from 'firebase-admin';
 import * as crypto from 'crypto';
 import { sendEmail } from './email-service';
-import { getAppUrl } from './env';
+import { getAppUrl, ALLOWED_CALLABLE_ORIGINS } from './env';
 
 const db = admin.firestore();
 
@@ -23,7 +23,7 @@ interface ConfirmAlternateEmailData {
  * `{ ok: true }` — never leaks whether the email is already in use.
  */
 export const requestAlternateEmail = onCall(
-  { cors: [/secid\.mx$/, /secid\.org$/, 'localhost'] },
+  { cors: ALLOWED_CALLABLE_ORIGINS },
   async (request) => {
     if (!request.auth) {
       throw new HttpsError('unauthenticated', 'Must be authenticated');
@@ -196,7 +196,7 @@ export const requestAlternateEmail = onCall(
  * account. Verifies the token and registers the alternate email.
  */
 export const confirmAlternateEmail = onCall(
-  { cors: [/secid\.mx$/, /secid\.org$/, 'localhost'] },
+  { cors: ALLOWED_CALLABLE_ORIGINS },
   async (request) => {
     if (!request.auth) {
       throw new HttpsError('unauthenticated', 'Must be authenticated');

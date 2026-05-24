@@ -1,5 +1,6 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import * as admin from 'firebase-admin';
+import { ALLOWED_CALLABLE_ORIGINS } from './env';
 
 const db = admin.firestore();
 
@@ -22,7 +23,7 @@ interface CompleteRegistrationData {
 }
 
 export const completeRegistration = onCall(
-  { cors: [/secid\.mx$/, /secid\.org$/, 'localhost'] },
+  { cors: ALLOWED_CALLABLE_ORIGINS },
   async (request) => {
     // 1. Validate caller is authenticated
     if (!request.auth) {

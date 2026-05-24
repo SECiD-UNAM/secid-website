@@ -16,6 +16,23 @@ function isEmulator(): boolean {
 let warned = false;
 
 /**
+ * Trusted Origins allowlist for HTTPS callable CORS.
+ *
+ * The previous pattern was [/secid\.mx$/, /secid\.org$/, 'localhost'], which
+ * is un-anchored — it matches ANY string ending in "secid.mx" or "secid.org"
+ * (e.g. "https://evil.com/?leak=secid.mx" or "https://attacker.secid.mx").
+ *
+ * Anchored regexes here pin scheme + (optional subdomain) + the exact host,
+ * so only first-party origins can hit our callables from a browser.
+ */
+export const ALLOWED_CALLABLE_ORIGINS: (string | RegExp)[] = [
+  /^https:\/\/(?:[a-z0-9-]+\.)?secid\.mx$/,
+  /^https:\/\/(?:[a-z0-9-]+\.)?secid\.org$/,
+  /^http:\/\/localhost(?::\d+)?$/,
+  /^http:\/\/127\.0\.0\.1(?::\d+)?$/,
+];
+
+/**
  * Absolute base URL for user-visible links sent from Cloud Functions
  * (verification emails, OAuth callbacks, deep links).
  *
