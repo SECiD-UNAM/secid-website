@@ -280,16 +280,23 @@ export const onMergeRequestApproved = onDocumentUpdated(
         }
       }
 
-      // Step 6: Disable old Firebase Auth account.
+      // Step 6: Disable old Firebase Auth account + revoke active sessions.
       // Skipped for 'alias': logging in with the source email must keep
       // working (it read-through resolves to the canonical profile).
+      // S3: disabling alone doesn't invalidate already-issued refresh tokens
+      // — any session active at merge time would stay live until expiry.
+      // revokeRefreshTokens forces re-auth immediately so a stolen pre-merge
+      // session can't keep operating against the now-merged identity.
       if (action !== 'alias') {
         try {
           await admin.auth().updateUser(sourceUid, { disabled: true });
+          await admin.auth().revokeRefreshTokens(sourceUid);
         } catch (authErr: unknown) {
           const msg =
             authErr instanceof Error ? authErr.message : String(authErr);
-          console.warn(`Could not disable auth for ${sourceUid}: ${msg}`);
+          console.warn(
+            `Could not disable/revoke auth for ${sourceUid}: ${msg}`
+          );
         }
       }
 
@@ -317,12 +324,47 @@ export const onMergeRequestApproved = onDocumentUpdated(
         }
       }
 
-      // Step 9: Mark complete
+      // Step 9: Mark complete.
+      // #42: clear any stale `error` field from a prior failed run so the
+      // surfaced status matches reality on retry.
       await requestRef.update({
         status: 'completed',
         completedAt: admin.firestore.FieldValue.serverTimestamp(),
         migratedCollections: migrated,
+        error: admin.firestore.FieldValue.delete(),
       });
+
+      // Step 10: Audit log.
+      // S2: identity merges are high-privilege; record an immutable trail
+      // (server-only read+write per rules) of WHO did WHAT to WHICH ids.
+      // afterData.reviewedBy / createdBy carry the admin uid from the client.
+      try {
+        await db
+          .collection('merge_audit_log')
+          .doc(requestId)
+          .set({
+            requestId,
+            sourceUid,
+            targetUid,
+            action,
+            migrateReferences: migrateReferences !== false,
+            fieldSelections,
+            migratedCollections: migrated,
+            executorUid:
+              afterData.reviewedBy || afterData.createdBy || 'unknown',
+            initiatedBy: afterData.initiatedBy || 'unknown',
+            matchedBy: afterData.matchedBy || null,
+            numeroCuenta: afterData.numeroCuenta || null,
+            completedAt: admin.firestore.FieldValue.serverTimestamp(),
+          });
+      } catch (auditErr: unknown) {
+        // Audit failure must not roll back the merge — but it must be
+        // visible in logs. Operators reconcile against merge_requests.
+        console.error(
+          `merge_audit_log write failed for ${requestId}:`,
+          auditErr
+        );
+      }
 
       console.log(`Merge completed: ${sourceUid} → ${targetUid}`);
     } catch (err: unknown) {

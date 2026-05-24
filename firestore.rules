@@ -947,6 +947,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // merge_audit_log: immutable, server-only record of every completed
+    // identity merge (S2). Cloud Function (Admin SDK) writes; admins read
+    // via Cloud Console or a dedicated audit query function — never via
+    // direct client access. No client-side mutation path.
+    match /merge_audit_log/{docId} {
+      allow read, write: if false;
+    }
+
     // merge_requests: users create their own, admins create and manage
     match /merge_requests/{requestId} {
       // Users can create pending requests for themselves
