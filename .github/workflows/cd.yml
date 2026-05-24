@@ -98,13 +98,19 @@ jobs:
         run: cd functions && npm ci
 
       # Write functions runtime env. Gen2 reads functions/.env at deploy
-      # time, baking values into process.env. Closes S5 for prod — APP_URL
-      # is the prod host, so verification emails point at secid.mx.
+      # time, baking values into process.env. Closes S5 (APP_URL) and the
+      # server-side half of #48 (RECAPTCHA_SECRET_KEY). File is gitignored
+      # — never committed; written fresh per deploy.
       - name: Write functions runtime env (prod)
+        env:
+          RECAPTCHA_SECRET_KEY: ${{ secrets.STAGING_RECAPTCHA_SECRET_KEY }}
         run: |
-          cat > functions/.env <<EOF
-          APP_URL=https://secid.mx
-          EOF
+          {
+            echo "APP_URL=https://secid.mx"
+            if [ -n "$RECAPTCHA_SECRET_KEY" ]; then
+              echo "RECAPTCHA_SECRET_KEY=$RECAPTCHA_SECRET_KEY"
+            fi
+          } > functions/.env
 
       # Fail loud (prod). Swallowing these is how the prod Firebase project
       # ended up with completeRegistration returning 403 and unverified
