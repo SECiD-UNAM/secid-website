@@ -8,6 +8,10 @@ import {
   updateMentorProfile,
   uploadProfileImage,
 } from '../../lib/mentorship';
+import {
+  inputClass as inputClasses,
+  labelClass as labelClasses,
+} from './shared/formClasses';
 
 interface MentorProfileProps {
   userId?: string;
@@ -100,14 +104,8 @@ const LANGUAGES = [
   'Japanese',
 ];
 
-const inputClasses =
-  'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-white';
-
 const numberInputClasses =
   'w-24 rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white';
-
-const labelClasses =
-  'mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300';
 
 function StarIcon({ filled }: { filled: boolean }) {
   return (

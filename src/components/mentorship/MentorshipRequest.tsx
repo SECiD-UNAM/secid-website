@@ -15,6 +15,12 @@ import {
   updateMentorshipRequest,
   getMentorshipRequests,
 } from '../../lib/mentorship';
+import {
+  inputClass,
+  labelClass,
+  sectionHeadingClass,
+  primaryBtnClass as btnPrimary,
+} from './shared/formClasses';
 
 interface MentorshipRequestProps {
   mentorId?: string;
@@ -329,15 +335,7 @@ function getStatusClasses(status: string): string {
   }
 }
 
-/** Tailwind class constants */
-const inputClass =
-  'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-white';
-const labelClass =
-  'mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300';
-const sectionHeadingClass =
-  'mb-4 text-lg font-semibold text-gray-900 dark:text-white';
-const btnPrimary =
-  'inline-flex items-center gap-2 rounded-lg bg-primary-600 px-6 py-2 text-sm font-medium text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50';
+/** Tailwind class constants (component-local; shared ones imported from ./shared/formClasses) */
 const btnOutline =
   'inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50';
 const btnDanger =
