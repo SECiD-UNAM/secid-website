@@ -680,9 +680,8 @@ const t = getTranslations('en');
 </style>
 
 <script>
-  import { db } from '@/lib/firebase';
-  import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-
+  // Subscriptions go through /api/forms/newsletter (Cloud Function with
+  // IP rate limit + optional CAPTCHA). Direct Firestore writes blocked.
   const form = document.getElementById('newsletter-form') as HTMLFormElement;
   const submitBtn = document.getElementById(
     'newsletter-submit'
@@ -712,14 +711,21 @@ const t = getTranslations('en');
       '<i class="fas fa-spinner fa-spin"></i> Submitting...';
 
     try {
-      await addDoc(collection(db, 'newsletter'), {
-        email,
-        name,
-        interests,
-        subscribedAt: serverTimestamp(),
-        source: 'website',
-        lang: 'en',
+      const res = await fetch('/api/forms/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name, interests, lang: 'en' }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        const reason =
+          data.error === 'rate_limited'
+            ? 'Too many attempts. Please try again later.'
+            : data.error === 'invalid_email'
+              ? 'Invalid email address.'
+              : 'Something went wrong. Please try again.';
+        throw new Error(reason);
+      }
       form.style.display = 'none';
       successMsg.style.display = 'flex';
     } catch (err: any) {

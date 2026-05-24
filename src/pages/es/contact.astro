@@ -431,9 +431,8 @@ const t = getTranslations('es');
 </style>
 
 <script>
-  import { db } from '@/lib/firebase';
-  import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-
+  // Contact submissions go through /api/forms/contact (Cloud Function
+  // with IP rate limit + optional CAPTCHA). Direct Firestore writes blocked.
   const form = document.getElementById('contact-form') as HTMLFormElement;
   const submitBtn = document.getElementById(
     'contact-submit'
@@ -464,16 +463,23 @@ const t = getTranslations('es');
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
 
     try {
-      await addDoc(collection(db, 'contactMessages'), {
-        name,
-        email,
-        subject,
-        message,
-        sentAt: serverTimestamp(),
-        source: 'website',
-        lang: 'es',
-        status: 'new',
+      const res = await fetch('/api/forms/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, subject, message, lang: 'es' }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        const reason =
+          data.error === 'rate_limited'
+            ? 'Demasiados intentos. Inténtalo más tarde.'
+            : data.error === 'invalid_email'
+              ? 'Correo electrónico inválido.'
+              : data.error === 'invalid_message'
+                ? 'El mensaje debe tener entre 10 y 4000 caracteres.'
+                : 'Hubo un error. Inténtalo de nuevo.';
+        throw new Error(reason);
+      }
       form.reset();
       successMsg.style.display = 'flex';
     } catch (err: any) {

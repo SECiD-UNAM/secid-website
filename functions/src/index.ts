@@ -32,6 +32,10 @@ import {
   confirmAlternateEmail,
 } from './alternate-email';
 import { submitPublicJob } from './public-job-submit';
+import {
+  subscribeNewsletter,
+  sendContactMessage,
+} from './public-forms';
 
 // Firebase Admin initialized in ./init.ts (imported above)
 
@@ -601,6 +605,8 @@ export { requestAlternateEmail, confirmAlternateEmail };
 
 // Jobs: public anonymous job submission callable CF
 export { submitPublicJob };
+
+export { subscribeNewsletter, sendContactMessage };
 
 // LinkedIn OAuth: disabled — requires LINKEDIN_CLIENT_ID secret in Secret Manager
 // export { linkedinAuthRedirect, linkedinAuthCallback, exchangeLinkedInCode } from "./linkedin-auth";

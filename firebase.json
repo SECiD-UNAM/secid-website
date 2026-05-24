@@ -98,6 +98,20 @@
       {
         "source": "/en/companies/*",
         "destination": "/en/companies/profile/index.html"
+      },
+      {
+        "source": "/api/forms/newsletter",
+        "function": {
+          "functionId": "subscribeNewsletter",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/api/forms/contact",
+        "function": {
+          "functionId": "sendContactMessage",
+          "region": "us-central1"
+        }
       }
     ],
     "headers": [

@@ -567,28 +567,21 @@ service cloud.firestore {
       allow write: if false; // Only server can write analytics
     }
 
-    // Newsletter subscriptions (public write, admin read)
+    // Newsletter subscriptions: write closed at the rules layer (S4).
+    // Public submissions go through the subscribeNewsletter Cloud Function
+    // (POST /api/forms/newsletter), which enforces per-IP rate limit and
+    // optional CAPTCHA before the Admin SDK writes here. Reads stay RBAC-
+    // gated; admin update/delete unchanged.
     match /newsletter/{subscriptionId} {
       allow read: if isAuthenticated() && !hasRBACDeny('nl', 'v') && hasRBACAllowAll('nl', 'v');
-      allow create: if request.resource.data.keys().hasAll(['email', 'name', 'subscribedAt']) &&
-                       request.resource.data.email is string &&
-                       request.resource.data.email.size() > 0 &&
-                       request.resource.data.name is string &&
-                       request.resource.data.subscribedAt == request.time;
+      allow create: if false;
       allow update, delete: if isAuthenticated() && !hasRBACDeny('nl', 'd') && hasRBACAllowAll('nl', 'd');
     }
 
-    // Contact messages (public write, admin read)
+    // Contact messages: same S4 closure. POST /api/forms/contact.
     match /contactMessages/{messageId} {
       allow read: if isAuthenticated() && !hasRBACDeny('nt', 'v') && hasRBACAllowAll('nt', 'v');
-      allow create: if request.resource.data.keys().hasAll(['name', 'email', 'subject', 'message', 'sentAt']) &&
-                       request.resource.data.email is string &&
-                       request.resource.data.email.size() > 0 &&
-                       request.resource.data.name is string &&
-                       request.resource.data.name.size() > 0 &&
-                       request.resource.data.message is string &&
-                       request.resource.data.message.size() >= 10 &&
-                       request.resource.data.sentAt == request.time;
+      allow create: if false;
       allow update, delete: if isAuthenticated() && !hasRBACDeny('nt', 'd') && hasRBACAllowAll('nt', 'd');
     }
 
@@ -944,6 +937,13 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /alternate_email_ratelimit/{uid} {
+      allow read, write: if false;
+    }
+
+    // public_form_ratelimit: per-IP bucket for newsletter/contact endpoints
+    // (S4). Written only by subscribeNewsletter / sendContactMessage Cloud
+    // Functions; never exposed to clients.
+    match /public_form_ratelimit/{key} {
       allow read, write: if false;
     }
 
