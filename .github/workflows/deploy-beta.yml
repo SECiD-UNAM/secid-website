@@ -56,6 +56,11 @@ jobs:
           # push registration silently no-ops — better than the previous
           # `process.env.X` reference which was always undefined.
           PUBLIC_FIREBASE_VAPID_KEY: ${{ secrets.STAGING_FIREBASE_VAPID_KEY }}
+          # reCAPTCHA v3 site key (#48). Pairs with the server-side
+          # RECAPTCHA_SECRET_KEY (set via firebase functions:secrets:set).
+          # Until both are set, public form endpoints accept any request
+          # that passes rate-limit + origin check.
+          PUBLIC_RECAPTCHA_SITE_KEY: ${{ secrets.STAGING_RECAPTCHA_SITE_KEY }}
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0

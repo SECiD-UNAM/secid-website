@@ -53,6 +53,8 @@ jobs:
           PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STAGING_STRIPE_PUBLISHABLE_KEY }}
           # Browser push notifications (B2). See deploy-beta.yml for context.
           PUBLIC_FIREBASE_VAPID_KEY: ${{ secrets.STAGING_FIREBASE_VAPID_KEY }}
+          # reCAPTCHA v3 site key (#48). See deploy-beta.yml for context.
+          PUBLIC_RECAPTCHA_SITE_KEY: ${{ secrets.STAGING_RECAPTCHA_SITE_KEY }}
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5

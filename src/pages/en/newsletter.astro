@@ -682,6 +682,8 @@ const t = getTranslations('en');
 <script>
   // Subscriptions go through /api/forms/newsletter (Cloud Function with
   // IP rate limit + optional CAPTCHA). Direct Firestore writes blocked.
+  import { getCaptchaToken } from '@/lib/captcha-client';
+
   const form = document.getElementById('newsletter-form') as HTMLFormElement;
   const submitBtn = document.getElementById(
     'newsletter-submit'
@@ -711,10 +713,17 @@ const t = getTranslations('en');
       '<i class="fas fa-spinner fa-spin"></i> Submitting...';
 
     try {
+      const captchaToken = await getCaptchaToken('newsletter_subscribe');
       const res = await fetch('/api/forms/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name, interests, lang: 'en' }),
+        body: JSON.stringify({
+          email,
+          name,
+          interests,
+          lang: 'en',
+          captchaToken,
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));

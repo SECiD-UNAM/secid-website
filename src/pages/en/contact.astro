@@ -501,6 +501,8 @@ const t = getTranslations('en');
 <script>
   // Contact submissions go through /api/forms/contact (Cloud Function
   // with IP rate limit + optional CAPTCHA). Direct Firestore writes blocked.
+  import { getCaptchaToken } from '@/lib/captcha-client';
+
   const form = document.getElementById('contact-form') as HTMLFormElement;
   const submitBtn = document.getElementById(
     'contact-submit'
@@ -531,10 +533,18 @@ const t = getTranslations('en');
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
     try {
+      const captchaToken = await getCaptchaToken('contact_send');
       const res = await fetch('/api/forms/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, subject, message, lang: 'en' }),
+        body: JSON.stringify({
+          name,
+          email,
+          subject,
+          message,
+          lang: 'en',
+          captchaToken,
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
