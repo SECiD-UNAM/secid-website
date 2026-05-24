@@ -13,7 +13,13 @@ import {
 import { auth, db, isEmulatorMode } from '@/lib/firebase';
 import { doc, onSnapshot, getDoc, type Unsubscribe } from 'firebase/firestore';
 import { isFeatureEnabled } from '@/lib/beta';
+import { logger } from '@/lib/logger';
 import type { UserProfile } from '@/types/user';
+
+// Module-scoped child logger for the B7 permission-denied recovery path.
+// Other call sites in this file still use `console.*` and will be migrated
+// in a separate burndown.
+const log = logger.child('AuthContext');
 export type { UserProfile };
 
 interface AuthContextType {
@@ -190,11 +196,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           const MAX_RETRIES = 5;
           const attempt = permissionRetryCountRef.current;
           if (attempt >= MAX_RETRIES) {
-            console.error(
-              'Permission-denied recovery exhausted; giving up after',
-              MAX_RETRIES,
-              'attempts'
-            );
+            log.error('Permission-denied recovery exhausted; giving up', {
+              attempts: MAX_RETRIES,
+            });
             return;
           }
           permissionRetryCountRef.current = attempt + 1;
@@ -213,10 +217,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 profileUnsubRef.current = subscribeToProfile(uid);
               })
               .catch((refreshErr) => {
-                console.error(
-                  'Token refresh failed during recovery:',
-                  refreshErr
-                );
+                log.error('Token refresh failed during recovery', refreshErr);
               });
           }, delayMs);
         } else {

@@ -59,7 +59,11 @@ module.exports = {
     'jsx-a11y/no-static-element-interactions': 'warn',
 
     // General rules
-    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+    // `no-console` is intentionally a WARN globally — 787 existing call sites
+    // make 'error' a flag-day rewrite. New code should route through
+    // `src/lib/logger.ts` (the one file where `console.*` is allowed,
+    // see overrides). Burndown is tracked separately.
+    'no-console': 'warn',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
     'prefer-const': 'error',
     'no-var': 'error',
@@ -94,6 +98,15 @@ module.exports = {
       },
       rules: {
         '@typescript-eslint/no-require-imports': 'off',
+      },
+    },
+    {
+      // The logger is the ONE place console.* is allowed; it has to call
+      // the real console to emit anything. Keep this list tiny and
+      // explicit — every new entry is a hole in the guardrail.
+      files: ['src/lib/logger.ts'],
+      rules: {
+        'no-console': 'off',
       },
     },
   ],

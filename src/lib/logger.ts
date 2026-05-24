@@ -1,168 +1,220 @@
 /**
- * Logger utility for SECiD platform
- * Provides structured logging with different log levels and optional remote reporting
+ * Structured logger for SECiD frontend.
+ *
+ * Dependency-free. Browser-safe (no Node `process` imports).
+ *
+ * Two API shapes are exported:
+ *
+ *  1) Singleton with module-first signature — for ad-hoc call sites:
+ *
+ *       import { logger } from '@/lib/logger';
+ *       logger.info('AuthContext', 'session ready', { uid });
+ *
+ *  2) Child loggers with module bound once — for files with many calls:
+ *
+ *       const log = logger.child('AuthContext');
+ *       log.error('token refresh failed', { code });
+ *
+ * In dev (`import.meta.env.DEV === true` or no env signal at all) output is
+ * pretty-printed via `console.*` so DevTools renders it readably. In prod
+ * each entry is JSON-stringified on a single line so Cloud Logging /
+ * browser DevTools can parse it. The file itself is the ONE place
+ * `console.*` is allowed (see eslint override on this path).
  */
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 export interface LogEntry {
   level: LogLevel;
+  module: string;
   message: string;
-  timestamp: Date;
-  context?: string;
+  timestamp: string;
   data?: Record<string, unknown>;
-  error?: Error;
 }
 
-export interface LoggerConfig {
-  level: LogLevel;
-  enableConsole: boolean;
-  enableRemote: boolean;
-  context?: string;
-}
-
-const LOG_LEVELS: Record<LogLevel, number> = {
+const LEVEL_RANK: Record<LogLevel, number> = {
   debug: 0,
   info: 1,
   warn: 2,
   error: 3,
 };
 
-const DEFAULT_CONFIG: LoggerConfig = {
-  level: import.meta.env.DEV ? 'debug' : 'warn',
-  enableConsole: true,
-  enableRemote: import.meta.env.PROD,
-};
+/**
+ * Browser-safe dev detection. Astro/Vite injects `import.meta.env.DEV`.
+ * When no env signal exists (tests, plain Node scripts), default to dev
+ * so output is human-readable rather than silently JSON.
+ */
+function isDev(): boolean {
+  try {
+    const env = (import.meta as ImportMeta & { env?: { DEV?: boolean } }).env;
+    if (env && typeof env.DEV === 'boolean') return env.DEV;
+  } catch {
+    // `import.meta` not available — fall through to "dev".
+  }
+  return true;
+}
 
-class Logger {
-  private config: LoggerConfig;
-  private context?: string;
+/**
+ * In dev we drop `debug`; in prod we drop `debug` and `info` to keep the
+ * console / log stream signal-heavy. Override via `setMinLevel` if needed.
+ */
+let minLevel: LogLevel = isDev() ? 'info' : 'warn';
 
-  constructor(config: Partial<LoggerConfig> = {}) {
-    this.config = { ...DEFAULT_CONFIG, ...config };
-    this.context = config.context;
+export function setMinLevel(level: LogLevel): void {
+  minLevel = level;
+}
+
+function shouldEmit(level: LogLevel): boolean {
+  return LEVEL_RANK[level] >= LEVEL_RANK[minLevel];
+}
+
+function emit(
+  level: LogLevel,
+  module: string,
+  message: string,
+  data?: Record<string, unknown>
+): void {
+  if (!shouldEmit(level)) return;
+
+  const entry: LogEntry = {
+    level,
+    module,
+    message,
+    timestamp: new Date().toISOString(),
+    ...(data ? { data } : {}),
+  };
+
+  if (isDev()) {
+    const prefix = `[${entry.timestamp}] ${level.toUpperCase()} ${module}`;
+    // Pretty-print: prefix + message + structured data as a separate arg so
+    // DevTools renders the object inspector instead of a JSON string.
+    switch (level) {
+      case 'debug':
+        if (data) console.debug(prefix, message, data);
+        else console.debug(prefix, message);
+        break;
+      case 'info':
+        if (data) console.info(prefix, message, data);
+        else console.info(prefix, message);
+        break;
+      case 'warn':
+        if (data) console.warn(prefix, message, data);
+        else console.warn(prefix, message);
+        break;
+      case 'error':
+        if (data) console.error(prefix, message, data);
+        else console.error(prefix, message);
+        break;
+    }
+    return;
   }
 
-  private shouldLog(level: LogLevel): boolean {
-    return LOG_LEVELS[level] >= LOG_LEVELS[this.config.level];
+  // Prod: single-line JSON so log collectors can parse without ambiguity.
+  const line = JSON.stringify(entry);
+  switch (level) {
+    case 'debug':
+      console.debug(line);
+      break;
+    case 'info':
+      console.info(line);
+      break;
+    case 'warn':
+      console.warn(line);
+      break;
+    case 'error':
+      console.error(line);
+      break;
   }
+}
 
-  private formatMessage(
-    level: LogLevel,
-    message: string,
-    data?: Record<string, unknown>
-  ): string {
-    const timestamp = new Date().toISOString();
-    const contextStr = this.context ? `[${this.context}]` : '';
-    const dataStr = data ? ` ${JSON.stringify(data)}` : '';
-    return `${timestamp} ${level.toUpperCase()} ${contextStr} ${message}${dataStr}`;
-  }
-
-  private log(
-    level: LogLevel,
-    message: string,
-    data?: Record<string, unknown>,
-    error?: Error
-  ): void {
-    if (!this.shouldLog(level)) return;
-
-    const entry: LogEntry = {
-      level,
-      message,
-      timestamp: new Date(),
-      context: this.context,
-      data,
-      error,
+/**
+ * Normalize an arbitrary error-ish value into a plain `data` record so
+ * callers can pass either `{ ...fields }` OR a raw `Error`/`unknown` as the
+ * second arg to `.error(...)` without losing information. Keeps the public
+ * type loose but the wire format consistent.
+ */
+function normalizeErrorData(
+  payload?: Record<string, unknown> | Error | unknown
+): Record<string, unknown> | undefined {
+  if (payload === undefined || payload === null) return undefined;
+  if (payload instanceof Error) {
+    return {
+      errorName: payload.name,
+      errorMessage: payload.message,
+      errorStack: payload.stack,
     };
-
-    if (this.config.enableConsole) {
-      const formattedMessage = this.formatMessage(level, message, data);
-
-      switch (level) {
-        case 'debug':
-          console.debug(formattedMessage);
-          break;
-        case 'info':
-          console.info(formattedMessage);
-          break;
-        case 'warn':
-          console.warn(formattedMessage);
-          break;
-        case 'error':
-          console.error(formattedMessage, error || '');
-          break;
-      }
-    }
-
-    if (this.config.enableRemote && level !== 'debug') {
-      this.sendToRemote(entry);
-    }
   }
-
-  private async sendToRemote(entry: LogEntry): Promise<void> {
-    // In production, send logs to a logging service
-    // This could be integrated with services like:
-    // - Sentry for error tracking
-    // - LogRocket for session replay
-    // - Custom logging endpoint
-    try {
-      // Placeholder for remote logging implementation
-      // await fetch('/api/logs', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(entry),
-      // });
-    } catch {
-      // Silently fail remote logging to not disrupt the app
-    }
+  if (typeof payload === 'object') {
+    return payload as Record<string, unknown>;
   }
+  return { error: String(payload) };
+}
+
+/**
+ * Logger bound to a single module name. Returned by `logger.child(...)`
+ * and by the legacy `createLogger(...)` factory below.
+ *
+ * `.error` accepts either a structured-data record OR a raw `Error`/
+ * `unknown` payload — keeps existing call sites (e.g. `firebase.ts`) green
+ * while new callers can pass `{ ... }` records.
+ */
+export class ChildLogger {
+  constructor(private readonly module: string) {}
 
   debug(message: string, data?: Record<string, unknown>): void {
-    this.log('debug', message, data);
+    emit('debug', this.module, message, data);
   }
-
   info(message: string, data?: Record<string, unknown>): void {
-    this.log('info', message, data);
+    emit('info', this.module, message, data);
   }
-
   warn(message: string, data?: Record<string, unknown>): void {
-    this.log('warn', message, data);
+    emit('warn', this.module, message, data);
   }
-
   error(
     message: string,
-    error?: Error | unknown,
-    data?: Record<string, unknown>
+    data?: Record<string, unknown> | Error | unknown
   ): void {
-    const errorObj = error instanceof Error ? error : undefined;
-    const errorData =
-      error instanceof Error
-        ? { ...data, errorName: error.name, errorStack: error.stack }
-        : { ...data, error: String(error) };
-    this.log('error', message, errorData, errorObj);
-  }
-
-  /**
-   * Create a child logger with a specific context
-   */
-  child(context: string): Logger {
-    const childContext = this.context ? `${this.context}:${context}` : context;
-    return new Logger({ ...this.config, context: childContext });
+    emit('error', this.module, message, normalizeErrorData(data));
   }
 }
 
-// Default logger instance
-export const logger = new Logger();
-
-// Factory function to create loggers with specific context
-export function createLogger(
-  context: string,
-  config?: Partial<LoggerConfig>
-): Logger {
-  return new Logger({ ...config, context });
+/**
+ * Module-first singleton. Use for one-off call sites; for files that log
+ * heavily, prefer `logger.child('ModuleName')`.
+ */
+export interface Logger {
+  debug(module: string, message: string, data?: Record<string, unknown>): void;
+  info(module: string, message: string, data?: Record<string, unknown>): void;
+  warn(module: string, message: string, data?: Record<string, unknown>): void;
+  error(
+    module: string,
+    message: string,
+    data?: Record<string, unknown> | Error | unknown
+  ): void;
+  child(module: string): ChildLogger;
 }
 
-// Pre-configured loggers for different parts of the application
+export const logger: Logger = {
+  debug: (module, message, data) => emit('debug', module, message, data),
+  info: (module, message, data) => emit('info', module, message, data),
+  warn: (module, message, data) => emit('warn', module, message, data),
+  error: (module, message, data) =>
+    emit('error', module, message, normalizeErrorData(data)),
+  child: (module) => new ChildLogger(module),
+};
+
+// ---------------------------------------------------------------------------
+// Backward-compatible factories (existing consumers).
+//
+// `firebase.ts` imports `firebaseLogger` as a child-style logger. Keep these
+// exports so migration to the new API can happen file-by-file without a
+// flag-day rewrite.
+// ---------------------------------------------------------------------------
+
+export function createLogger(module: string): ChildLogger {
+  return new ChildLogger(module);
+}
+
 export const authLogger = createLogger('auth');
 export const apiLogger = createLogger('api');
 export const firebaseLogger = createLogger('firebase');
