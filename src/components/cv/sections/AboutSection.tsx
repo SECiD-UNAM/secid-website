@@ -13,11 +13,7 @@ import {
 } from './_icons';
 import { SocialButton } from './_primitives';
 
-export function CvAboutSection({
-  personal,
-}: {
-  personal: CVData['personal'];
-}) {
+export function CvAboutSection({ personal }: { personal: CVData['personal'] }) {
   const { name, title, location, contact, profileImage, summary } = personal;
 
   return (

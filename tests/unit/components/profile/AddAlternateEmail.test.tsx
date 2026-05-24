@@ -153,34 +153,26 @@ describe.sequential('AddAlternateEmail', () => {
     render(<AddAlternateEmail lang="es" />);
     await typeAndSubmit('new@example.com');
     expect(
-      screen.getByText(
-        /miembros con membresía completa|full members only/i
-      )
+      screen.getByText(/miembros con membresía completa|full members only/i)
     ).toBeTruthy();
   });
 
   it('maps primary_email -> errorOwnPrimary copy', async () => {
     H.callableFn.setImpl(() => {
-      throw new FakeCallableError(
-        'functions/invalid-argument',
-        'Primary',
-        { reason: 'primary_email' }
-      );
+      throw new FakeCallableError('functions/invalid-argument', 'Primary', {
+        reason: 'primary_email',
+      });
     });
     render(<AddAlternateEmail lang="es" />);
     await typeAndSubmit('caller@example.com');
-    expect(
-      screen.getByText(/correo principal de tu cuenta/i)
-    ).toBeTruthy();
+    expect(screen.getByText(/correo principal de tu cuenta/i)).toBeTruthy();
   });
 
   it('maps invalid_format -> errorInvalid copy', async () => {
     H.callableFn.setImpl(() => {
-      throw new FakeCallableError(
-        'functions/invalid-argument',
-        'Bad email',
-        { reason: 'invalid_format' }
-      );
+      throw new FakeCallableError('functions/invalid-argument', 'Bad email', {
+        reason: 'invalid_format',
+      });
     });
     render(<AddAlternateEmail lang="es" />);
     await typeAndSubmit('whatever@x.y');
@@ -189,11 +181,9 @@ describe.sequential('AddAlternateEmail', () => {
 
   it('maps rate_limited -> errorRateLimited copy', async () => {
     H.callableFn.setImpl(() => {
-      throw new FakeCallableError(
-        'functions/resource-exhausted',
-        'Rate',
-        { reason: 'rate_limited' }
-      );
+      throw new FakeCallableError('functions/resource-exhausted', 'Rate', {
+        reason: 'rate_limited',
+      });
     });
     render(<AddAlternateEmail lang="es" />);
     await typeAndSubmit('new@example.com');
@@ -204,17 +194,13 @@ describe.sequential('AddAlternateEmail', () => {
 
   it('maps an unknown error -> generic fallback copy', async () => {
     H.callableFn.setImpl(() => {
-      throw new FakeCallableError(
-        'functions/internal',
-        'kaboom',
-        { reason: 'something_else' }
-      );
+      throw new FakeCallableError('functions/internal', 'kaboom', {
+        reason: 'something_else',
+      });
     });
     render(<AddAlternateEmail lang="es" />);
     await typeAndSubmit('new@example.com');
-    expect(
-      screen.getByText(/No se pudo procesar la solicitud/i)
-    ).toBeTruthy();
+    expect(screen.getByText(/No se pudo procesar la solicitud/i)).toBeTruthy();
   });
 
   it('maps res.data.alreadyLinked=true -> errorAlreadyLinked merge copy', async () => {

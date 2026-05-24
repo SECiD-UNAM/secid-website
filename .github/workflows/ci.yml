@@ -72,6 +72,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Tests that import from functions/src/* (e.g. alternate-email.test.ts,
+      # merge-engine.audit-log.test.ts) resolve `firebase-functions/v2/*` and
+      # `firebase-admin` against functions/node_modules/, which `npm ci` at
+      # the repo root does not populate.
+      - name: Install Cloud Functions dependencies
+        run: cd functions && npm ci
+
       # `vitest run` include globs already cover tests/unit, tests/integration
       # and tests/build. Sharded across 4 parallel runners; the global
       # Firebase stub in src/test/setup.ts keeps Firebase-touching tests from

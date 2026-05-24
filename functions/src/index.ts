@@ -32,10 +32,7 @@ import {
   confirmAlternateEmail,
 } from './alternate-email';
 import { submitPublicJob } from './public-job-submit';
-import {
-  subscribeNewsletter,
-  sendContactMessage,
-} from './public-forms';
+import { subscribeNewsletter, sendContactMessage } from './public-forms';
 
 // Firebase Admin initialized in ./init.ts (imported above)
 

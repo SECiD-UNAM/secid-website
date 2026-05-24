@@ -51,6 +51,8 @@ jobs:
           PUBLIC_FIREBASE_APP_ID: ${{ secrets.STAGING_FIREBASE_APP_ID }}
           PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.STAGING_FIREBASE_MEASUREMENT_ID }}
           PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STAGING_STRIPE_PUBLISHABLE_KEY }}
+          # Browser push notifications (B2). See deploy-beta.yml for context.
+          PUBLIC_FIREBASE_VAPID_KEY: ${{ secrets.STAGING_FIREBASE_VAPID_KEY }}
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5

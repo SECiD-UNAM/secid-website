@@ -51,6 +51,11 @@ jobs:
           PUBLIC_FIREBASE_APP_ID: ${{ secrets.STAGING_FIREBASE_APP_ID }}
           PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.STAGING_FIREBASE_MEASUREMENT_ID }}
           PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STAGING_STRIPE_PUBLISHABLE_KEY }}
+          # Browser push notifications (B2). If the secret is unset, the
+          # build still ships; the FCM register call returns undefined and
+          # push registration silently no-ops — better than the previous
+          # `process.env.X` reference which was always undefined.
+          PUBLIC_FIREBASE_VAPID_KEY: ${{ secrets.STAGING_FIREBASE_VAPID_KEY }}
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0

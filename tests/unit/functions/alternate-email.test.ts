@@ -527,9 +527,7 @@ describe.sequential('confirmAlternateEmail', () => {
       H.state.txOps.find((o) => o.collection === 'email_alias')
     ).toBeUndefined();
     expect(
-      H.state.txOps.find(
-        (o) => o.op === 'update' && o.collection === 'users'
-      )
+      H.state.txOps.find((o) => o.op === 'update' && o.collection === 'users')
     ).toBeUndefined();
   });
 
@@ -574,8 +572,7 @@ describe.sequential('confirmAlternateEmail', () => {
       (o) => o.op === 'get' && o.collection === 'alternate_email_tokens'
     );
     const userGet = H.state.txOps.find(
-      (o) =>
-        o.op === 'get' && o.collection === 'users' && o.id === CALLER_UID
+      (o) => o.op === 'get' && o.collection === 'users' && o.id === CALLER_UID
     );
     const userUpdate = H.state.txOps.find(
       (o) =>
@@ -586,8 +583,7 @@ describe.sequential('confirmAlternateEmail', () => {
         o.op === 'set' && o.collection === 'email_alias' && o.id === NEW_EMAIL
     );
     const tokenUpdate = H.state.txOps.find(
-      (o) =>
-        o.op === 'update' && o.collection === 'alternate_email_tokens'
+      (o) => o.op === 'update' && o.collection === 'alternate_email_tokens'
     );
 
     expect(tokenGet).toBeTruthy();

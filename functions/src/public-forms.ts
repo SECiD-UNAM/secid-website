@@ -49,10 +49,7 @@ function hashKey(parts: string[]): string {
  * Per-IP+endpoint rate limit. Single-doc bucket; no composite index.
  * Returns true if the caller should be admitted, false if blocked.
  */
-async function checkRateLimit(
-  ip: string,
-  endpoint: string
-): Promise<boolean> {
+async function checkRateLimit(ip: string, endpoint: string): Promise<boolean> {
   const key = hashKey([endpoint, ip]);
   const ref = db.collection('public_form_ratelimit').doc(key);
   const snap = await ref.get();
@@ -93,14 +90,11 @@ async function verifyCaptcha(token?: string): Promise<boolean> {
   }
   if (!token) return false;
   try {
-    const res = await fetch(
-      'https://www.google.com/recaptcha/api/siteverify',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`,
-      }
-    );
+    const res = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`,
+    });
     const data = (await res.json()) as { success?: boolean; score?: number };
     // For v3, accept score >= 0.5. For v2, just check success.
     if (data.success === false) return false;
