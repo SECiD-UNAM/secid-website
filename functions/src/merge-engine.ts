@@ -511,14 +511,23 @@ async function migrateConversations(
     .where('participants', 'array-contains', sourceUid);
   const snap = await q.get();
 
+  let batch = db.batch();
+  let count = 0;
   for (const docSnap of snap.docs) {
     const data = docSnap.data();
     const participants: string[] = data.participants || [];
     const updated = participants.map((uid: string) =>
       uid === sourceUid ? targetUid : uid
     );
-    await docSnap.ref.update({ participants: updated });
+    batch.update(docSnap.ref, { participants: updated });
+    count++;
+    if (count >= 500) {
+      await batch.commit();
+      batch = db.batch();
+      count = 0;
+    }
   }
+  if (count > 0) await batch.commit();
 
   migrated.push(key);
   await requestRef.update({ migratedCollections: migrated });

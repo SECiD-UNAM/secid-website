@@ -72,6 +72,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const profileUnsubRef = useRef<Unsubscribe | null>(null);
+  // Exponential-backoff state for permission-denied recovery. Without a cap,
+  // a genuinely denied rule (e.g. signed-in user has no users/{uid} doc that
+  // rules allow) would flap UI every 2s forever.
+  const permissionRetryCountRef = useRef(0);
+  const permissionRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
 
   // Subscribe to user profile changes
   const subscribeToProfile = (
@@ -177,8 +184,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         const firebaseErr = err as { code?: string };
         if (firebaseErr.code === 'permission-denied') {
-          // Firebase terminates the listener on permission-denied; attempt recovery
-          setTimeout(() => {
+          // Firebase terminates the listener on permission-denied. Recover
+          // with exponential backoff capped at 5 attempts so a genuinely
+          // denied read doesn't loop forever (UI flap, log spam).
+          const MAX_RETRIES = 5;
+          const attempt = permissionRetryCountRef.current;
+          if (attempt >= MAX_RETRIES) {
+            console.error(
+              'Permission-denied recovery exhausted; giving up after',
+              MAX_RETRIES,
+              'attempts'
+            );
+            return;
+          }
+          permissionRetryCountRef.current = attempt + 1;
+          // 2s, 4s, 8s, 16s, 32s
+          const delayMs = 2000 * Math.pow(2, attempt);
+          if (permissionRetryTimerRef.current) {
+            clearTimeout(permissionRetryTimerRef.current);
+          }
+          permissionRetryTimerRef.current = setTimeout(() => {
             auth.currentUser
               ?.getIdToken(true)
               .then(() => {
@@ -193,7 +218,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                   refreshErr
                 );
               });
-          }, 2000);
+          }, delayMs);
+        } else {
+          // Non-permission error — reset counter so the next genuine denial
+          // gets the full backoff window again.
+          permissionRetryCountRef.current = 0;
         }
       }
     );
@@ -292,6 +321,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       if (profileUnsubRef.current) {
         profileUnsubRef.current();
+      }
+      if (permissionRetryTimerRef.current) {
+        clearTimeout(permissionRetryTimerRef.current);
       }
     };
   }, []);
