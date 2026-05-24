@@ -50,7 +50,9 @@ if (typeof window !== 'undefined') {
   try {
     analytics = getAnalytics();
   } catch (error) {
-    log.warn('Failed to initialize Firebase Analytics', { error: String(error) });
+    log.warn('Failed to initialize Firebase Analytics', {
+      error: String(error),
+    });
   }
 }
 
