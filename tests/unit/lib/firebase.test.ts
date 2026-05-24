@@ -7,14 +7,23 @@ vi.unmock('@/lib/firebase');
 // Mock all Firebase SDK modules and the logger before the module-under-test
 // is imported (firebase.ts runs side-effects at the top level).
 
-vi.mock('@/lib/logger', () => ({
-  firebaseLogger: {
+vi.mock('@/lib/logger', () => {
+  const child = {
     info: vi.fn(),
     warn: vi.fn(),
     error: vi.fn(),
     debug: vi.fn(),
-  },
-}));
+  };
+  return {
+    logger: {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+      child: vi.fn(() => child),
+    },
+  };
+});
 
 vi.mock('firebase/app', () => ({
   initializeApp: vi.fn(() => ({ name: 'mock-app' })),

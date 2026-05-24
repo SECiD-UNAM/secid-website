@@ -9,14 +9,23 @@ vi.unmock('./firebase');
 // Mock Firebase modules before importing the module under test.
 // firebase.ts runs initialization at import time, so all mocks must be in place first.
 
-vi.mock('./logger', () => ({
-  firebaseLogger: {
+vi.mock('./logger', () => {
+  const child = {
     info: vi.fn(),
     warn: vi.fn(),
     error: vi.fn(),
     debug: vi.fn(),
-  },
-}));
+  };
+  return {
+    logger: {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+      child: vi.fn(() => child),
+    },
+  };
+});
 
 vi.mock('firebase/app', () => ({
   initializeApp: vi.fn(() => ({ name: 'test-app' })),

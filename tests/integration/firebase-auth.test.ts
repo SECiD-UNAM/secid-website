@@ -99,14 +99,23 @@ vi.mock('firebase/analytics', () => ({
 }));
 
 // Mock the logger used by @/lib/firebase
-vi.mock('@/lib/logger', () => ({
-  firebaseLogger: {
+vi.mock('@/lib/logger', () => {
+  const child = {
     info: vi.fn(),
     warn: vi.fn(),
     error: vi.fn(),
     debug: vi.fn(),
-  },
-}));
+  };
+  return {
+    logger: {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+      child: vi.fn(() => child),
+    },
+  };
+});
 
 // Mock Firebase config
 vi.mock('@/lib/firebase', () => ({

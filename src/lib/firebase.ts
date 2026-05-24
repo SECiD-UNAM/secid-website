@@ -31,7 +31,9 @@ import {
   type Functions,
   connectFunctionsEmulator,
 } from 'firebase/functions';
-import { firebaseLogger as logger } from './logger';
+import { logger as rootLogger } from './logger';
+
+const logger = rootLogger.child('firebase');
 
 // ---------------------------------------------------------------------------
 // Firebase configuration with fallback defaults for dev/build/SSR safety

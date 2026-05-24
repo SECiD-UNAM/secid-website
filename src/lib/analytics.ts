@@ -40,6 +40,9 @@ import type {
   AnalyticsEventTrack,
   ReportConfig,
 } from '../types/analytics';
+import { logger } from './logger';
+
+const log = logger.child('analytics');
 
 // Initialize Firebase Analytics
 let analytics: any = null;
@@ -47,7 +50,7 @@ if (typeof window !== 'undefined') {
   try {
     analytics = getAnalytics();
   } catch (error) {
-    console.warn('Failed to initialize Firebase Analytics:', error);
+    log.warn('Failed to initialize Firebase Analytics', { error: String(error) });
   }
 }
 
@@ -103,7 +106,7 @@ export class AnalyticsService {
         );
       }
     } catch (error) {
-      console.error('Failed to track event:', error);
+      log.error('Failed to track event', error);
     }
   }
 
@@ -120,7 +123,7 @@ export class AnalyticsService {
         (window as any).amplitude.setUserId(userId);
       }
     } catch (error) {
-      console.error('Failed to set user ID:', error);
+      log.error('Failed to set user ID', error);
     }
   }
 
@@ -137,7 +140,7 @@ export class AnalyticsService {
         (window as any).amplitude.identify(properties);
       }
     } catch (error) {
-      console.error('Failed to set user properties:', error);
+      log.error('Failed to set user properties', error);
     }
   }
 
@@ -202,7 +205,7 @@ export class AnalyticsService {
       this.cache.set(cacheKey, { data: dashboardData, timestamp: Date.now() });
       return dashboardData;
     } catch (error) {
-      console.error('Failed to get dashboard data:', error);
+      log.error('Failed to get dashboard data', error);
       throw error;
     }
   }

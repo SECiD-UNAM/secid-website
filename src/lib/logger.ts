@@ -204,23 +204,15 @@ export const logger: Logger = {
 };
 
 // ---------------------------------------------------------------------------
-// Backward-compatible factories (existing consumers).
-//
-// `firebase.ts` imports `firebaseLogger` as a child-style logger. Keep these
-// exports so migration to the new API can happen file-by-file without a
-// flag-day rewrite.
+// Backward-compatible factory. The original named singletons
+// (`firebaseLogger`, `authLogger`, `apiLogger`, `stripeLogger`, `forumLogger`,
+// `jobsLogger`, `eventsLogger`) were removed once all in-tree consumers
+// migrated to `logger.child('module')`. `createLogger` stays as a thin alias
+// for code that prefers a named factory over the singleton's `.child()`.
 // ---------------------------------------------------------------------------
 
 export function createLogger(module: string): ChildLogger {
   return new ChildLogger(module);
 }
-
-export const authLogger = createLogger('auth');
-export const apiLogger = createLogger('api');
-export const firebaseLogger = createLogger('firebase');
-export const stripeLogger = createLogger('stripe');
-export const forumLogger = createLogger('forum');
-export const jobsLogger = createLogger('jobs');
-export const eventsLogger = createLogger('events');
 
 export default logger;

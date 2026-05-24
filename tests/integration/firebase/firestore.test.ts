@@ -52,14 +52,23 @@ vi.mock('firebase/analytics', () => ({
   isSupported: vi.fn(() => Promise.resolve(false)),
 }));
 
-vi.mock('@/lib/logger', () => ({
-  firebaseLogger: {
+vi.mock('@/lib/logger', () => {
+  const child = {
     info: vi.fn(),
     warn: vi.fn(),
     error: vi.fn(),
     debug: vi.fn(),
-  },
-}));
+  };
+  return {
+    logger: {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+      child: vi.fn(() => child),
+    },
+  };
+});
 
 // ---------------------------------------------------------------------------
 // Local stubs for @firebase/rules-unit-testing (package is not installed).

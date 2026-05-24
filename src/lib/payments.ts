@@ -22,6 +22,9 @@ import type {
   Invoice,
   PaymentSettings,
 } from '../types';
+import { logger } from './logger';
+
+const log = logger.child('payments');
 
 // Collection references
 const subscriptionTiersRef = collection(db, 'subscriptionTiers');
@@ -55,7 +58,7 @@ export const getSubscriptionTiers = async (): Promise<SubscriptionTier[]> => {
       updatedAt: doc.data().updatedAt?.toDate() || new Date(),
     })) as SubscriptionTier[];
   } catch (error) {
-    console.error('Error getting subscription tiers:', error);
+    log.error('Error getting subscription tiers', error);
     throw new Error('Failed to get subscription tiers');
   }
 };
@@ -77,7 +80,7 @@ export const getSubscriptionTier = async (
       updatedAt: tierDoc.data().updatedAt?.toDate() || new Date(),
     } as SubscriptionTier;
   } catch (error) {
-    console.error('Error getting subscription tier:', error);
+    log.error('Error getting subscription tier', error);
     throw new Error('Failed to get subscription tier');
   }
 };
@@ -112,7 +115,7 @@ export const getUserSubscription = async (
       updatedAt: doc.data().updatedAt?.toDate() || new Date(),
     } as UserSubscription;
   } catch (error) {
-    console.error('Error getting user subscription:', error);
+    log.error('Error getting user subscription', error);
     throw new Error('Failed to get user subscription');
   }
 };
@@ -152,7 +155,7 @@ export const createSubscription = async (subscriptionData: {
       updatedAt: new Date(),
     };
   } catch (error) {
-    console.error('Error creating subscription:', error);
+    log.error('Error creating subscription', error);
     throw new Error('Failed to create subscription');
   }
 };
@@ -185,7 +188,7 @@ export const updateSubscription = async (
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error updating subscription:', error);
+    log.error('Error updating subscription', error);
     throw new Error('Failed to update subscription');
   }
 };
@@ -224,7 +227,7 @@ export const cancelSubscription = async (
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error canceling subscription:', error);
+    log.error('Error canceling subscription', error);
     throw new Error('Failed to cancel subscription');
   }
 };
@@ -263,7 +266,7 @@ export const resumeSubscription = async (
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error resuming subscription:', error);
+    log.error('Error resuming subscription', error);
     throw new Error('Failed to resume subscription');
   }
 };
@@ -287,7 +290,7 @@ export const getPaymentMethods = async (
       updatedAt: doc.data().updatedAt?.toDate() || new Date(),
     })) as PaymentMethod[];
   } catch (error) {
-    console.error('Error getting payment methods:', error);
+    log.error('Error getting payment methods', error);
     throw new Error('Failed to get payment methods');
   }
 };
@@ -326,7 +329,7 @@ export const createPaymentMethod = async (
       updatedAt: new Date(),
     };
   } catch (error) {
-    console.error('Error creating payment method:', error);
+    log.error('Error creating payment method', error);
     throw new Error('Failed to create payment method');
   }
 };
@@ -354,7 +357,7 @@ export const setDefaultPaymentMethod = async (
 
     await Promise.all(batch);
   } catch (error) {
-    console.error('Error setting default payment method:', error);
+    log.error('Error setting default payment method', error);
     throw new Error('Failed to set default payment method');
   }
 };
@@ -390,7 +393,7 @@ export const deletePaymentMethod = async (
     // Delete from Firebase
     await deleteDoc(paymentMethodDocRef);
   } catch (error) {
-    console.error('Error deleting payment method:', error);
+    log.error('Error deleting payment method', error);
     throw new Error('Failed to delete payment method');
   }
 };
@@ -419,7 +422,7 @@ export const createStripeCheckoutSession = async (data: {
 
     return await response.json();
   } catch (error) {
-    console.error('Error creating Stripe checkout session:', error);
+    log.error('Error creating Stripe checkout session', error);
     throw new Error('Failed to create checkout session');
   }
 };
@@ -438,7 +441,7 @@ export const getUpcomingInvoice = async (
 
     return await response.json();
   } catch (error) {
-    console.error('Error getting upcoming invoice:', error);
+    log.error('Error getting upcoming invoice', error);
     return null;
   }
 };
@@ -463,7 +466,7 @@ export const getUserTransactions = async (
       updatedAt: doc.data().updatedAt?.toDate() || new Date(),
     })) as Transaction[];
   } catch (error) {
-    console.error('Error getting user transactions:', error);
+    log.error('Error getting user transactions', error);
     throw new Error('Failed to get user transactions');
   }
 };
@@ -497,7 +500,7 @@ export const createTransaction = async (transactionData: {
       updatedAt: new Date(),
     };
   } catch (error) {
-    console.error('Error creating transaction:', error);
+    log.error('Error creating transaction', error);
     throw new Error('Failed to create transaction');
   }
 };
@@ -552,7 +555,7 @@ export const requestRefund = async (
       },
     });
   } catch (error) {
-    console.error('Error requesting refund:', error);
+    log.error('Error requesting refund', error);
     throw new Error('Failed to request refund');
   }
 };
@@ -577,7 +580,7 @@ export const getUserInvoices = async (userId: string): Promise<Invoice[]> => {
       updatedAt: doc.data().updatedAt?.toDate() || new Date(),
     })) as Invoice[];
   } catch (error) {
-    console.error('Error getting user invoices:', error);
+    log.error('Error getting user invoices', error);
     throw new Error('Failed to get user invoices');
   }
 };
@@ -595,7 +598,7 @@ export const downloadInvoice = async (invoiceId: string): Promise<string> => {
     const data = await response.json();
     return data.downloadUrl;
   } catch (error) {
-    console.error('Error downloading invoice:', error);
+    log.error('Error downloading invoice', error);
     throw new Error('Failed to download invoice');
   }
 };
@@ -625,7 +628,7 @@ export const getPaymentSettings = async (
       updatedAt: doc['data']().updatedAt?.toDate() || new Date(),
     } as PaymentSettings;
   } catch (error) {
-    console.error('Error getting payment settings:', error);
+    log.error('Error getting payment settings', error);
     throw new Error('Failed to get payment settings');
   }
 };
@@ -660,7 +663,7 @@ export const updatePaymentSettings = async (
       updatedAt: new Date(),
     } as PaymentSettings;
   } catch (error) {
-    console.error('Error updating payment settings:', error);
+    log.error('Error updating payment settings', error);
     throw new Error('Failed to update payment settings');
   }
 };
@@ -698,7 +701,7 @@ const createDefaultPaymentSettings = async (
       ...defaultSettings,
     };
   } catch (error) {
-    console.error('Error creating default payment settings:', error);
+    log.error('Error creating default payment settings', error);
     throw new Error('Failed to create default payment settings');
   }
 };
@@ -729,37 +732,37 @@ export const handleStripeWebhook = async (event: any): Promise<void> => {
         break;
 
       default:
-        console.log(`Unhandled Stripe event type: ${event['type']}`);
+        log.info('Unhandled Stripe event type', { type: event['type'] });
     }
   } catch (error) {
-    console.error('Error handling Stripe webhook:', error);
+    log.error('Error handling Stripe webhook', error);
     throw error;
   }
 };
 
 const handleSubscriptionUpdate = async (subscription: any): Promise<void> => {
   // Implementation would update the subscription in Firebase
-  console.log('Handling subscription update:', subscription['id']);
+  log.info('Handling subscription update', { id: subscription['id'] });
 };
 
 const handleSubscriptionCancellation = async (
   subscription: any
 ): Promise<void> => {
   // Implementation would mark subscription as canceled in Firebase
-  console.log('Handling subscription cancellation:', subscription['id']);
+  log.info('Handling subscription cancellation', { id: subscription['id'] });
 };
 
 const handleInvoicePaymentSucceeded = async (invoice: any): Promise<void> => {
   // Implementation would create transaction record and update subscription status
-  console.log('Handling invoice payment succeeded:', invoice['id']);
+  log.info('Handling invoice payment succeeded', { id: invoice['id'] });
 };
 
 const handleInvoicePaymentFailed = async (invoice: any): Promise<void> => {
   // Implementation would handle failed payment
-  console.log('Handling invoice payment failed:', invoice['id']);
+  log.info('Handling invoice payment failed', { id: invoice['id'] });
 };
 
 const handlePaymentSucceeded = async (paymentIntent: any): Promise<void> => {
   // Implementation would create transaction record
-  console.log('Handling payment succeeded:', paymentIntent['id']);
+  log.info('Handling payment succeeded', { id: paymentIntent['id'] });
 };

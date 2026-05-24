@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import { stripe } from './stripe-server';
 import { db } from '../firebase';
+import { logger } from '../logger';
 import {
   doc,
   setDoc,
@@ -14,6 +15,8 @@ import {
   Timestamp,
   addDoc,
 } from 'firebase/firestore';
+
+const log = logger.child('stripe-webhooks');
 
 // Webhook endpoint secret for signature verification
 const webhookSecret = import.meta.env.STRIPE_WEBHOOK_SECRET;
@@ -89,7 +92,7 @@ async function logWebhookEvent(
     });
   } catch (logError) {
     // Never let audit logging crash the webhook handler
-    console.error('Failed to write webhook audit log:', logError);
+    log.error('Failed to write webhook audit log', logError);
   }
 }
 
@@ -157,13 +160,13 @@ export function verifyWebhookSignature(
   // constructEvent() with an undefined secret SKIPS signature verification,
   // which would let anyone POST forged events. Fail closed instead.
   if (!webhookSecret) {
-    console.error('STRIPE_WEBHOOK_SECRET is not configured');
+    log.error('STRIPE_WEBHOOK_SECRET is not configured');
     throw new Error('Webhook secret not configured — refusing to process');
   }
   try {
     return stripe.webhooks.constructEvent(payload, signature, webhookSecret);
   } catch (error) {
-    console.error('Webhook signature verification failed:', error);
+    log.error('Webhook signature verification failed', error);
     throw new Error('Invalid webhook signature');
   }
 }
@@ -176,7 +179,7 @@ export function verifyWebhookSignature(
  * Process webhook event by dispatching to the appropriate handler and logging the result.
  */
 export async function processWebhookEvent(event: Stripe.Event): Promise<void> {
-  console.log(`Processing webhook event: ${event.type}`);
+  log.info('Processing webhook event', { type: event.type });
 
   const handler = webhookHandlers[event.type];
 
@@ -184,15 +187,15 @@ export async function processWebhookEvent(event: Stripe.Event): Promise<void> {
     try {
       await handler(event as WebhookEvent);
       await logWebhookEvent(event as WebhookEvent, 'processed');
-      console.log(`Successfully processed ${event.type} event`);
+      log.info('Successfully processed event', { type: event.type });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       await logWebhookEvent(event as WebhookEvent, 'failed', message);
-      console.error(`Error processing ${event.type} event:`, error);
+      log.error('Error processing event', { type: event.type, error });
       throw error;
     }
   } else {
-    console.log(`No handler found for event type: ${event.type}`);
+    log.info('No handler found for event type', { type: event.type });
   }
 }
 
@@ -208,7 +211,7 @@ async function handleSubscriptionCreated(event: WebhookEvent): Promise<void> {
   const subscription = event.data.object as Stripe.Subscription;
   const customerId = subscription.customer as string;
 
-  console.log('Subscription created:', subscription.id);
+  log.info('Subscription created', { id: subscription.id });
 
   try {
     const firebaseUid = await findFirebaseUidByCustomerId(customerId);
@@ -231,11 +234,12 @@ async function handleSubscriptionCreated(event: WebhookEvent): Promise<void> {
       updatedAt: serverTimestamp(),
     });
 
-    console.log(
-      `Subscription ${subscription.id} stored for customer ${customerId}`
-    );
+    log.info('Subscription stored for customer', {
+      subscriptionId: subscription.id,
+      customerId,
+    });
   } catch (error) {
-    console.error('Failed to handle subscription creation:', error);
+    log.error('Failed to handle subscription creation', error);
     throw error;
   }
 }
@@ -248,13 +252,14 @@ async function handleSubscriptionUpdated(event: WebhookEvent): Promise<void> {
   const subscription = event.data.object as Stripe.Subscription;
   const previousAttributes = event.data.previous_attributes;
 
-  console.log('Subscription updated:', subscription.id);
+  log.info('Subscription updated', { id: subscription.id });
 
   try {
     const docId = await findSubscriptionDocId(subscription.id);
     if (!docId) {
-      console.warn(
-        `No Firestore subscription found for Stripe ID ${subscription.id}. Skipping update.`
+      log.warn(
+        'No Firestore subscription found for Stripe ID. Skipping update.',
+        { stripeSubscriptionId: subscription.id }
       );
       return;
     }
@@ -285,23 +290,23 @@ async function handleSubscriptionUpdated(event: WebhookEvent): Promise<void> {
     // Detect plan change
     if (previousAttributes?.items) {
       updates.tier = derivePlanTier(subscription.metadata);
-      console.log('Subscription plan changed to:', updates.tier);
+      log.info('Subscription plan changed', { tier: updates.tier });
     }
 
     // Detect cancellation scheduling
     if (previousAttributes?.cancel_at_period_end !== undefined) {
       if (subscription.cancel_at_period_end) {
-        console.log('Subscription scheduled for cancellation');
+        log.info('Subscription scheduled for cancellation');
       } else {
-        console.log('Subscription cancellation reversed');
+        log.info('Subscription cancellation reversed');
       }
     }
 
     await updateDoc(doc(userSubscriptionsRef, docId), updates);
 
-    console.log(`Subscription ${subscription.id} updated in Firestore`);
+    log.info('Subscription updated in Firestore', { id: subscription.id });
   } catch (error) {
-    console.error('Failed to handle subscription update:', error);
+    log.error('Failed to handle subscription update', error);
     throw error;
   }
 }
@@ -313,13 +318,14 @@ async function handleSubscriptionUpdated(event: WebhookEvent): Promise<void> {
 async function handleSubscriptionDeleted(event: WebhookEvent): Promise<void> {
   const subscription = event.data.object as Stripe.Subscription;
 
-  console.log('Subscription deleted:', subscription.id);
+  log.info('Subscription deleted', { id: subscription.id });
 
   try {
     const docId = await findSubscriptionDocId(subscription.id);
     if (!docId) {
-      console.warn(
-        `No Firestore subscription found for Stripe ID ${subscription.id}. Skipping deletion.`
+      log.warn(
+        'No Firestore subscription found for Stripe ID. Skipping deletion.',
+        { stripeSubscriptionId: subscription.id }
       );
       return;
     }
@@ -330,11 +336,11 @@ async function handleSubscriptionDeleted(event: WebhookEvent): Promise<void> {
       updatedAt: serverTimestamp(),
     });
 
-    console.log(
-      `Subscription ${subscription.id} marked as cancelled in Firestore`
-    );
+    log.info('Subscription marked as cancelled in Firestore', {
+      id: subscription.id,
+    });
   } catch (error) {
-    console.error('Failed to handle subscription deletion:', error);
+    log.error('Failed to handle subscription deletion', error);
     throw error;
   }
 }
@@ -346,13 +352,14 @@ async function handleSubscriptionDeleted(event: WebhookEvent): Promise<void> {
 async function handleSubscriptionPaused(event: WebhookEvent): Promise<void> {
   const subscription = event.data.object as Stripe.Subscription;
 
-  console.log('Subscription paused:', subscription.id);
+  log.info('Subscription paused', { id: subscription.id });
 
   try {
     const docId = await findSubscriptionDocId(subscription.id);
     if (!docId) {
-      console.warn(
-        `No Firestore subscription found for Stripe ID ${subscription.id}. Skipping pause.`
+      log.warn(
+        'No Firestore subscription found for Stripe ID. Skipping pause.',
+        { stripeSubscriptionId: subscription.id }
       );
       return;
     }
@@ -362,11 +369,11 @@ async function handleSubscriptionPaused(event: WebhookEvent): Promise<void> {
       updatedAt: serverTimestamp(),
     });
 
-    console.log(
-      `Subscription ${subscription.id} marked as paused in Firestore`
-    );
+    log.info('Subscription marked as paused in Firestore', {
+      id: subscription.id,
+    });
   } catch (error) {
-    console.error('Failed to handle subscription pause:', error);
+    log.error('Failed to handle subscription pause', error);
     throw error;
   }
 }
@@ -378,13 +385,14 @@ async function handleSubscriptionPaused(event: WebhookEvent): Promise<void> {
 async function handleSubscriptionResumed(event: WebhookEvent): Promise<void> {
   const subscription = event.data.object as Stripe.Subscription;
 
-  console.log('Subscription resumed:', subscription.id);
+  log.info('Subscription resumed', { id: subscription.id });
 
   try {
     const docId = await findSubscriptionDocId(subscription.id);
     if (!docId) {
-      console.warn(
-        `No Firestore subscription found for Stripe ID ${subscription.id}. Skipping resume.`
+      log.warn(
+        'No Firestore subscription found for Stripe ID. Skipping resume.',
+        { stripeSubscriptionId: subscription.id }
       );
       return;
     }
@@ -394,11 +402,11 @@ async function handleSubscriptionResumed(event: WebhookEvent): Promise<void> {
       updatedAt: serverTimestamp(),
     });
 
-    console.log(
-      `Subscription ${subscription.id} marked as active in Firestore`
-    );
+    log.info('Subscription marked as active in Firestore', {
+      id: subscription.id,
+    });
   } catch (error) {
-    console.error('Failed to handle subscription resume:', error);
+    log.error('Failed to handle subscription resume', error);
     throw error;
   }
 }
@@ -417,7 +425,7 @@ async function handleInvoicePaymentSucceeded(
   const invoice = event.data.object as Stripe.Invoice;
   const customerId = invoice.customer as string;
 
-  console.log('Invoice payment succeeded:', invoice.id);
+  log.info('Invoice payment succeeded', { id: invoice.id });
 
   try {
     // Record the transaction
@@ -472,9 +480,9 @@ async function handleInvoicePaymentSucceeded(
       }
     }
 
-    console.log(`Invoice ${invoice.id} payment recorded`);
+    log.info('Invoice payment recorded', { id: invoice.id });
   } catch (error) {
-    console.error('Failed to handle successful payment:', error);
+    log.error('Failed to handle successful payment', error);
     throw error;
   }
 }
@@ -487,7 +495,7 @@ async function handleInvoicePaymentFailed(event: WebhookEvent): Promise<void> {
   const invoice = event.data.object as Stripe.Invoice;
   const customerId = invoice.customer as string;
 
-  console.log('Invoice payment failed:', invoice.id);
+  log.info('Invoice payment failed', { id: invoice.id });
 
   try {
     // Record the failed transaction
@@ -525,15 +533,15 @@ async function handleInvoicePaymentFailed(event: WebhookEvent): Promise<void> {
           updatedAt: serverTimestamp(),
         });
 
-        console.log(
-          `Subscription marked as past_due (failure #${currentFailureCount + 1})`
-        );
+        log.info('Subscription marked as past_due', {
+          failureNumber: currentFailureCount + 1,
+        });
       }
     }
 
-    console.log(`Invoice ${invoice.id} payment failure recorded`);
+    log.info('Invoice payment failure recorded', { id: invoice.id });
   } catch (error) {
-    console.error('Failed to handle payment failure:', error);
+    log.error('Failed to handle payment failure', error);
     throw error;
   }
 }
@@ -550,7 +558,7 @@ async function handleInvoicePaymentFailed(event: WebhookEvent): Promise<void> {
 async function handleCustomerCreated(event: WebhookEvent): Promise<void> {
   const customer = event.data.object as Stripe.Customer;
 
-  console.log('Customer created:', customer.id);
+  log.info('Customer created', { id: customer.id });
 
   try {
     const firebaseUid = customer.metadata?.firebaseUid ?? null;
@@ -564,11 +572,12 @@ async function handleCustomerCreated(event: WebhookEvent): Promise<void> {
       updatedAt: serverTimestamp(),
     });
 
-    console.log(
-      `Customer mapping stored: ${customer.id} -> ${firebaseUid ?? 'unknown'}`
-    );
+    log.info('Customer mapping stored', {
+      stripeCustomerId: customer.id,
+      firebaseUid: firebaseUid ?? 'unknown',
+    });
   } catch (error) {
-    console.error('Failed to handle customer creation:', error);
+    log.error('Failed to handle customer creation', error);
     throw error;
   }
 }
@@ -580,15 +589,16 @@ async function handleCustomerCreated(event: WebhookEvent): Promise<void> {
 async function handleCustomerUpdated(event: WebhookEvent): Promise<void> {
   const customer = event.data.object as Stripe.Customer;
 
-  console.log('Customer updated:', customer.id);
+  log.info('Customer updated', { id: customer.id });
 
   try {
     const customerDocRef = doc(stripeCustomersRef, customer.id);
     const customerDoc = await getDoc(customerDocRef);
 
     if (!customerDoc.exists()) {
-      console.warn(
-        `No Firestore mapping found for Stripe customer ${customer.id}. Creating one.`
+      log.warn(
+        'No Firestore mapping found for Stripe customer. Creating one.',
+        { stripeCustomerId: customer.id }
       );
       await setDoc(customerDocRef, {
         stripeCustomerId: customer.id,
@@ -607,9 +617,9 @@ async function handleCustomerUpdated(event: WebhookEvent): Promise<void> {
       updatedAt: serverTimestamp(),
     });
 
-    console.log(`Customer ${customer.id} details updated in Firestore`);
+    log.info('Customer details updated in Firestore', { id: customer.id });
   } catch (error) {
-    console.error('Failed to handle customer update:', error);
+    log.error('Failed to handle customer update', error);
     throw error;
   }
 }
@@ -623,16 +633,16 @@ async function handleCustomerUpdated(event: WebhookEvent): Promise<void> {
 async function handleCustomerDeleted(event: WebhookEvent): Promise<void> {
   const customer = event.data.object as Stripe.Customer;
 
-  console.log('Customer deleted:', customer.id);
+  log.info('Customer deleted', { id: customer.id });
 
   try {
     const customerDocRef = doc(stripeCustomersRef, customer.id);
     const customerDoc = await getDoc(customerDocRef);
 
     if (!customerDoc.exists()) {
-      console.warn(
-        `No Firestore mapping found for deleted Stripe customer ${customer.id}.`
-      );
+      log.warn('No Firestore mapping found for deleted Stripe customer', {
+        stripeCustomerId: customer.id,
+      });
       return;
     }
 
@@ -642,9 +652,9 @@ async function handleCustomerDeleted(event: WebhookEvent): Promise<void> {
       updatedAt: serverTimestamp(),
     });
 
-    console.log(`Customer ${customer.id} marked as deleted in Firestore`);
+    log.info('Customer marked as deleted in Firestore', { id: customer.id });
   } catch (error) {
-    console.error('Failed to handle customer deletion:', error);
+    log.error('Failed to handle customer deletion', error);
     throw error;
   }
 }
@@ -663,7 +673,7 @@ async function handlePaymentIntentSucceeded(
   const paymentIntent = event.data.object as Stripe.PaymentIntent;
   const customerId = paymentIntent.customer as string | null;
 
-  console.log('Payment intent succeeded:', paymentIntent.id);
+  log.info('Payment intent succeeded', { id: paymentIntent.id });
 
   try {
     const firebaseUid = customerId
@@ -691,14 +701,14 @@ async function handlePaymentIntentSucceeded(
     });
 
     if (paymentType === 'course_purchase') {
-      console.log('Course purchase recorded:', metadata.courseId);
+      log.info('Course purchase recorded', { courseId: metadata.courseId });
     } else if (paymentType === 'event_ticket') {
-      console.log('Event ticket purchase recorded:', metadata.eventId);
+      log.info('Event ticket purchase recorded', { eventId: metadata.eventId });
     }
 
-    console.log(`Payment intent ${paymentIntent.id} transaction recorded`);
+    log.info('Payment intent transaction recorded', { id: paymentIntent.id });
   } catch (error) {
-    console.error('Failed to handle payment intent success:', error);
+    log.error('Failed to handle payment intent success', error);
     throw error;
   }
 }
@@ -711,7 +721,7 @@ async function handlePaymentIntentFailed(event: WebhookEvent): Promise<void> {
   const paymentIntent = event.data.object as Stripe.PaymentIntent;
   const customerId = paymentIntent.customer as string | null;
 
-  console.log('Payment intent failed:', paymentIntent.id);
+  log.info('Payment intent failed', { id: paymentIntent.id });
 
   try {
     const firebaseUid = customerId
@@ -732,9 +742,9 @@ async function handlePaymentIntentFailed(event: WebhookEvent): Promise<void> {
       updatedAt: serverTimestamp(),
     });
 
-    console.log(`Payment intent ${paymentIntent.id} failure recorded`);
+    log.info('Payment intent failure recorded', { id: paymentIntent.id });
   } catch (error) {
-    console.error('Failed to handle payment intent failure:', error);
+    log.error('Failed to handle payment intent failure', error);
     throw error;
   }
 }
@@ -754,7 +764,7 @@ async function handleCheckoutSessionCompleted(
   const session = event.data.object as Stripe.Checkout.Session;
   const customerId = session.customer as string | null;
 
-  console.log('Checkout session completed:', session.id);
+  log.info('Checkout session completed', { id: session.id });
 
   try {
     if (session.mode === 'subscription') {
@@ -771,26 +781,26 @@ async function handleCheckoutSessionCompleted(
               firebaseUid: session.metadata.firebaseUid,
               updatedAt: serverTimestamp(),
             });
-            console.log(
-              `Updated customer ${customerId} with firebaseUid from checkout`
-            );
+            log.info('Updated customer with firebaseUid from checkout', {
+              customerId,
+            });
           }
         }
       }
 
-      console.log(`Subscription checkout completed for session ${session.id}`);
+      log.info('Subscription checkout completed', { sessionId: session.id });
     } else if (session.mode === 'payment') {
       // One-time payment: the transaction is recorded exactly once by the
       // payment_intent.succeeded handler. Recording it here too produced a
       // duplicate `transactions` doc per payment (corrupting revenue
       // reporting). This branch intentionally does NOT write a transaction.
-      console.log(
-        `One-time payment checkout completed for session ${session.id} ` +
-          `(transaction recorded by payment_intent.succeeded)`
+      log.info(
+        'One-time payment checkout completed (transaction recorded by payment_intent.succeeded)',
+        { sessionId: session.id }
       );
     }
   } catch (error) {
-    console.error('Failed to handle checkout session completion:', error);
+    log.error('Failed to handle checkout session completion', error);
     throw error;
   }
 }
@@ -834,17 +844,19 @@ export async function retryWebhookProcessing(
       retries++;
 
       if (retries >= maxRetries) {
-        console.error(
-          `Failed to process webhook after ${maxRetries} retries:`,
-          error
-        );
+        log.error('Failed to process webhook after retries', {
+          maxRetries,
+          error,
+        });
         throw error;
       }
 
       const delay = baseDelay * Math.pow(2, retries - 1);
-      console.log(
-        `Retrying webhook processing in ${delay}ms (attempt ${retries}/${maxRetries})`
-      );
+      log.info('Retrying webhook processing', {
+        delayMs: delay,
+        attempt: retries,
+        maxRetries,
+      });
 
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
@@ -856,12 +868,12 @@ export async function retryWebhookProcessing(
  */
 export function validateWebhookEvent(event: Stripe.Event): boolean {
   if (!event.id || !event.type || !event.created) {
-    console.error('Invalid webhook event structure');
+    log.error('Invalid webhook event structure');
     return false;
   }
 
   if (!event.data || !event.data.object) {
-    console.error('Invalid webhook event data');
+    log.error('Invalid webhook event data');
     return false;
   }
 

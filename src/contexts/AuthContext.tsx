@@ -16,9 +16,9 @@ import { isFeatureEnabled } from '@/lib/beta';
 import { logger } from '@/lib/logger';
 import type { UserProfile } from '@/types/user';
 
-// Module-scoped child logger for the B7 permission-denied recovery path.
-// Other call sites in this file still use `console.*` and will be migrated
-// in a separate burndown.
+// Module-scoped child logger. All call sites in this file route through
+// the structured logger so we get consistent module-tagged JSON in prod and
+// pretty output in dev. See src/lib/logger.ts.
 const log = logger.child('AuthContext');
 export type { UserProfile };
 
@@ -141,7 +141,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         },
         (err) => {
-          console.error('Error fetching canonical profile:', err);
+          log.error('Error fetching canonical profile', err);
           setError('Failed to load user profile');
           if (firstSnapshot) {
             firstSnapshot = false;
@@ -176,7 +176,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } else {
           // Profile doesn't exist yet (might be created by Cloud Function)
           setUserProfile(null);
-          console.log('User profile not found, waiting for creation...');
+          log.info('User profile not found, waiting for creation...');
         }
         if (firstSnapshot) {
           firstSnapshot = false;
@@ -184,7 +184,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       },
       (err) => {
-        console.error('Error fetching user profile:', err);
+        log.error('Error fetching user profile', err);
         setError('Failed to load user profile');
         // Keep last known profile to prevent auth flapping on transient errors
 
@@ -257,7 +257,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setError(null);
       }
     } catch (err) {
-      console.error('Error refreshing profile:', err);
+      log.error('Error refreshing profile', err);
       setError('Failed to refresh profile');
     }
   };
@@ -270,7 +270,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUserProfile(null);
       setError(null);
     } catch (err) {
-      console.error('Error signing out:', err);
+      log.error('Error signing out', err);
       setError('Failed to sign out');
     }
   };
@@ -298,8 +298,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
           // Show emulator status in development
           if (isEmulatorMode()) {
-            console.log('🔧 Auth Context: Using Firebase Emulator');
-            console.log('👤 Authenticated user:', firebaseUser['email']);
+            log.info('Using Firebase Emulator');
+            log.info('Authenticated user', { email: firebaseUser['email'] });
           }
         } else {
           setUser(null);
@@ -334,7 +334,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && auth.currentUser) {
         auth.currentUser.getIdToken(true).catch((err) => {
-          console.warn('Token refresh failed:', err);
+          log.warn('Token refresh failed', { error: String(err) });
         });
       }
     };
