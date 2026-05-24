@@ -2,14 +2,9 @@ import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import * as admin from 'firebase-admin';
 import * as crypto from 'crypto';
 import { sendEmail } from './email-service';
+import { getAppUrl } from './env';
 
 const db = admin.firestore();
-
-// App base URL for verification links. Mirrors linkedin-auth.ts (process.env.APP_URL)
-// but falls back to the beta host since feature/hub deploys to beta.secid.mx.
-function getBaseUrl(): string {
-  return process.env.APP_URL || 'https://beta.secid.mx';
-}
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const TOKEN_TTL_MS = 24 * 60 * 60 * 1000; // 24h
@@ -163,7 +158,7 @@ export const requestAlternateEmail = onCall(
         used: false,
       });
 
-    const link = `${getBaseUrl()}/es/verify-alternate-email?token=${token}`;
+    const link = `${getAppUrl()}/es/verify-alternate-email?token=${token}`;
     const html = `
 <!DOCTYPE html>
 <html>

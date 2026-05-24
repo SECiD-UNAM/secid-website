@@ -32,7 +32,9 @@ const invoicesRef = collection(db, 'invoices');
 const paymentSettingsRef = collection(db, 'paymentSettings');
 
 // Stripe configuration
-const STRIPE_PUBLIC_KEY = process.env.VITE_STRIPE_PUBLISHABLE_KEY as string;
+// Browser bundle: Astro replaces import.meta.env.PUBLIC_* at build time.
+// Server-only secret stays on process.env (only read in SSR / API routes).
+const STRIPE_PUBLIC_KEY = import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY as string;
 const STRIPE_SECRET_KEY = process.env['STRIPE_SECRET_KEY'];
 
 // Subscription Tier Functions

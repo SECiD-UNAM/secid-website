@@ -507,7 +507,7 @@ export async function requestPushPermission(): Promise<NotificationPermission> {
 
     if (permission === 'granted') {
       const token = await getToken(messaging, {
-        vapidKey: process.env.FIREBASE_VAPID_KEY as string,
+        vapidKey: import.meta.env.PUBLIC_FIREBASE_VAPID_KEY as string,
       });
 
       // Store token in Firestore

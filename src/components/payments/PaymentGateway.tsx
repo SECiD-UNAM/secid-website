@@ -93,7 +93,7 @@ const PaymentGateway: React.FC<PaymentGatewayProps> = ({
       stripeScript.src = 'https://js.stripe.com/v3/';
       stripeScript.onload = () => {
         const stripeInstance = (window as any).Stripe(
-          process.env.STRIPE_PUBLISHABLE_KEY as string
+          import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY as string
         );
         const elementsInstance = stripeInstance.elements();
 

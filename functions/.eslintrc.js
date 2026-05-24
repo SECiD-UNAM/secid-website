@@ -14,6 +14,9 @@ module.exports = {
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
+    // Resolve project paths relative to this file so lint-staged (which runs
+    // from the repo root) can still find functions/tsconfig.dev.json.
+    tsconfigRootDir: __dirname,
     project: ['tsconfig.json', 'tsconfig.dev.json'],
     sourceType: 'module',
   },

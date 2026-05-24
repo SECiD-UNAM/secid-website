@@ -24,8 +24,10 @@ function getCallbackUrl(req: {
   return `${protoStr}://${hostStr}/linkedinAuthCallback`;
 }
 
+import { getAppUrl as getRequiredAppUrl } from './env';
+
 function getAppUrl(): string {
-  return process.env.APP_URL || 'https://secid.org';
+  return getRequiredAppUrl('https://secid.org');
 }
 
 /**
