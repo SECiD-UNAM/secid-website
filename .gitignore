@@ -165,3 +165,8 @@ scripts/update-artemio-profile.mjs
 *.tfplan
 tfplan
 crash.log
+
+# Firebase Functions runtime env — written by deploy workflow per env
+# (see .github/workflows/deploy-beta.yml + cd.yml). Must never be checked in.
+functions/.env
+functions/.env.local

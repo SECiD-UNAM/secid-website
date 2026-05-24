@@ -73,6 +73,16 @@ jobs:
       - name: Install Cloud Functions dependencies
         run: cd functions && npm ci
 
+      # Write functions runtime env. Gen2 reads functions/.env at deploy
+      # time, baking the values into the function's process.env. Closes
+      # S5 — APP_URL no longer silently falls back to the hardcoded host
+      # in functions/src/env.ts when the build is for beta vs prod.
+      - name: Write functions runtime env (beta)
+        run: |
+          cat > functions/.env <<EOF
+          APP_URL=https://beta.secid.mx
+          EOF
+
       # Fail loud. A failed functions/rules deploy MUST fail the job —
       # previously `… 2>&1 | tail | || echo ::warning::` swallowed the
       # exit code, so completeRegistration could be undeployed (HTTP 403)

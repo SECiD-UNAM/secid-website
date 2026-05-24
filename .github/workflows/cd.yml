@@ -97,6 +97,15 @@ jobs:
       - name: Install Cloud Functions dependencies
         run: cd functions && npm ci
 
+      # Write functions runtime env. Gen2 reads functions/.env at deploy
+      # time, baking values into process.env. Closes S5 for prod — APP_URL
+      # is the prod host, so verification emails point at secid.mx.
+      - name: Write functions runtime env (prod)
+        run: |
+          cat > functions/.env <<EOF
+          APP_URL=https://secid.mx
+          EOF
+
       # Fail loud (prod). Swallowing these is how the prod Firebase project
       # ended up with completeRegistration returning 403 and unverified
       # rule state. set -o pipefail preserves output AND the real exit.
