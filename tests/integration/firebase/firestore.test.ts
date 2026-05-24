@@ -64,6 +64,20 @@ vi.mock('@/lib/logger', () => ({
 // ---------------------------------------------------------------------------
 // Local stubs for @firebase/rules-unit-testing (package is not installed).
 // These produce simple mock objects that match the shape the tests expect.
+//
+// TODO: rules-unit-testing harness for isCanonicalOfAlias (see follow-up issue)
+//   The multi-email identity feature relies on Firestore rules helpers
+//   isCanonicalOfAlias() / isAliasOfCanonical() to let a canonical account
+//   write to its own alias stub doc (and vice versa) while still denying
+//   cross-account writes. With the real @firebase/rules-unit-testing harness
+//   we would want positive tests:
+//     - canonical (uid=A) can update users/{alias} when alias.aliasOf === A
+//     - alias    (uid=B) can read users/{canonical} when alias.aliasOf === canonical
+//   and matching negative tests:
+//     - random uid CANNOT update either doc
+//     - swapping aliasOf to a different uid revokes access
+//   That requires installing @firebase/rules-unit-testing and standing up
+//   the rules emulator in CI — out of scope for the unit-test track.
 // ---------------------------------------------------------------------------
 function createMockFirestore() {
   const mockDocRef = (id?: string) => ({
