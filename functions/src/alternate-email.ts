@@ -211,49 +211,34 @@ export const confirmAlternateEmail = onCall(
     }
 
     const tokenRef = db.collection('alternate_email_tokens').doc(token);
-    const tokenSnap = await tokenRef.get();
 
-    if (!tokenSnap.exists) {
+    // Pre-read token (outside the transaction) only to extract email +
+    // canonicalUid so we can do the admin.auth() conflict check (which
+    // can't participate in a Firestore transaction). The atomic check-
+    // and-consume happens inside the transaction below.
+    const preReadSnap = await tokenRef.get();
+    if (!preReadSnap.exists) {
       throw new HttpsError('not-found', 'Invalid verification token');
     }
+    const preReadData = preReadSnap.data()!;
+    const emailLower = String(preReadData.email || '')
+      .trim()
+      .toLowerCase();
+    const canonicalUid: string = preReadData.canonicalUid;
 
-    const tokenData = tokenSnap.data()!;
-
-    if (tokenData.used === true) {
-      throw new HttpsError(
-        'failed-precondition',
-        'This verification link has already been used'
-      );
-    }
-
-    const expiresAtMs =
-      tokenData.expiresAt && typeof tokenData.expiresAt.toMillis === 'function'
-        ? tokenData.expiresAt.toMillis()
-        : 0;
-    if (expiresAtMs && expiresAtMs < Date.now()) {
-      throw new HttpsError(
-        'deadline-exceeded',
-        'This verification link has expired'
-      );
-    }
-
-    if (request.auth.uid !== tokenData.canonicalUid) {
+    if (request.auth.uid !== canonicalUid) {
       throw new HttpsError(
         'permission-denied',
         'This verification link belongs to a different account'
       );
     }
 
-    const emailLower = String(tokenData.email || '')
-      .trim()
-      .toLowerCase();
-    const canonicalUid: string = tokenData.canonicalUid;
-
     // Detect whether a SEPARATE account already owns this email as its
     // primary. If so, we do NOT silently link — an admin merge-alias
-    // operation must consolidate the two accounts instead.
+    // operation must consolidate the two accounts instead. Best-effort
+    // outside the transaction (Auth state can race independently of
+    // Firestore; the transaction guarantees token single-use).
     let conflictUid: string | null = null;
-
     try {
       const authUser = await admin.auth().getUserByEmail(emailLower);
       if (authUser && authUser.uid !== canonicalUid) {
@@ -262,7 +247,6 @@ export const confirmAlternateEmail = onCall(
     } catch {
       // No Firebase Auth user with that email — not an error.
     }
-
     if (!conflictUid) {
       const primaryQuery = await db
         .collection('users')
@@ -274,58 +258,89 @@ export const confirmAlternateEmail = onCall(
       }
     }
 
-    if (conflictUid) {
-      // Do not modify anything; consume the token so the link can't be
-      // replayed. Admin merge-alias flow handles the existing account.
-      await tokenRef.update({
+    const canonicalRef = db.collection('users').doc(canonicalUid);
+    const aliasIndexRef = db.collection('email_alias').doc(emailLower);
+
+    // Atomic token consumption + state writes (B4). Two concurrent calls
+    // with the same token previously could both pass the "used === true"
+    // check before either wrote used: true, then both write the alternate
+    // email and alias index. The transaction's tokenRef.get inside the
+    // txn + update-to-used inside the txn fail the loser's commit.
+    const result = await db.runTransaction(async (tx) => {
+      const tokenSnapTx = await tx.get(tokenRef);
+      if (!tokenSnapTx.exists) {
+        throw new HttpsError('not-found', 'Invalid verification token');
+      }
+      const tokenDataTx = tokenSnapTx.data()!;
+      if (tokenDataTx.used === true) {
+        throw new HttpsError(
+          'failed-precondition',
+          'This verification link has already been used'
+        );
+      }
+      const expiresAtMs =
+        tokenDataTx.expiresAt &&
+        typeof tokenDataTx.expiresAt.toMillis === 'function'
+          ? tokenDataTx.expiresAt.toMillis()
+          : 0;
+      if (expiresAtMs && expiresAtMs < Date.now()) {
+        throw new HttpsError(
+          'deadline-exceeded',
+          'This verification link has expired'
+        );
+      }
+
+      // Conflict path: consume the token (no state writes) and tell the
+      // client to use the admin merge flow.
+      if (conflictUid) {
+        tx.update(tokenRef, {
+          used: true,
+          usedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        return { ok: true, email: emailLower, requiresAdminMerge: true };
+      }
+
+      // Non-conflict path: write canonical + alias index + token in a
+      // single atomic commit.
+      const canonicalSnapTx = await tx.get(canonicalRef);
+      if (!canonicalSnapTx.exists) {
+        throw new HttpsError('not-found', 'Canonical account not found');
+      }
+      if (!canonicalSnapTx.data()?.isVerified) {
+        throw new HttpsError(
+          'failed-precondition',
+          'Alternate emails are available to full members only',
+          { reason: 'members_only' }
+        );
+      }
+      const existing: { email: string; verifiedAt: unknown }[] =
+        canonicalSnapTx.data()?.alternateEmails || [];
+      const deduped = existing.filter(
+        (e) => String(e?.email || '').toLowerCase() !== emailLower
+      );
+      // Firestore forbids FieldValue.serverTimestamp() inside array
+      // elements; use a real Timestamp so the array write succeeds.
+      deduped.push({
+        email: emailLower,
+        verifiedAt: admin.firestore.Timestamp.now(),
+      });
+
+      tx.update(canonicalRef, {
+        alternateEmails: deduped,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      tx.set(aliasIndexRef, {
+        canonicalUid,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      tx.update(tokenRef, {
         used: true,
         usedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
-      return { ok: true, email: emailLower, requiresAdminMerge: true };
-    }
 
-    // Register the verified alternate email on the canonical user doc.
-    const canonicalRef = db.collection('users').doc(canonicalUid);
-    const canonicalSnap = await canonicalRef.get();
-    if (!canonicalSnap.exists) {
-      throw new HttpsError('not-found', 'Canonical account not found');
-    }
-    // Alternate emails only attach to first-class member profiles.
-    if (!canonicalSnap.data()?.isVerified) {
-      throw new HttpsError(
-        'failed-precondition',
-        'Alternate emails are available to full members only',
-        { reason: 'members_only' }
-      );
-    }
-
-    const existing: { email: string; verifiedAt: unknown }[] =
-      canonicalSnap.data()?.alternateEmails || [];
-    const deduped = existing.filter(
-      (e) => String(e?.email || '').toLowerCase() !== emailLower
-    );
-    // Firestore forbids FieldValue.serverTimestamp() inside array
-    // elements; use a real Timestamp so the array write succeeds.
-    deduped.push({
-      email: emailLower,
-      verifiedAt: admin.firestore.Timestamp.now(),
+      return { ok: true, email: emailLower };
     });
 
-    await canonicalRef.update({
-      alternateEmails: deduped,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-
-    await db.collection('email_alias').doc(emailLower).set({
-      canonicalUid,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-
-    await tokenRef.update({
-      used: true,
-      usedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-
-    return { ok: true, email: emailLower };
+    return result;
   }
 );
