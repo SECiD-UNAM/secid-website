@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { db } from './firebase';
 import {
   collection,
@@ -13,8 +12,8 @@ import {
   updateDoc,
   Timestamp,
   startAfter,
-  QueryDocumentSnapshot,
-  DocumentData,
+  type QueryDocumentSnapshot,
+  type DocumentData,
 } from 'firebase/firestore';
 import {
   getAnalytics,
@@ -71,7 +70,10 @@ export class AnalyticsService {
    * Event Tracking
    */
   async trackEvent(
-    eventData: Omit<AnalyticsEventTrack, 'timestamp' | 'sessionId'>
+    eventData: Omit<
+      AnalyticsEventTrack,
+      'timestamp' | 'sessionId' | 'userAgent' | 'location'
+    >
   ): Promise<void> {
     try {
       const event: AnalyticsEventTrack = {
@@ -222,16 +224,21 @@ export class AnalyticsService {
     );
 
     const usersSnapshot = await getDocs(usersQuery);
-    const users = usersSnapshot.docs.map((doc) => ({
+    // `joinedAt` is a Firestore Timestamp on the user doc — declare so
+    // the .toDate() arithmetic below type-checks without `any`.
+    type UserDocRow = { id: string; joinedAt?: Timestamp };
+    const users: UserDocRow[] = usersSnapshot.docs.map((doc) => ({
       id: doc['id'],
-      ...doc['data'](),
+      ...(doc['data']() as Omit<UserDocRow, 'id'>),
     }));
 
     // Calculate metrics
     const totalUsers = users.length;
     const newUsers = users.filter(
       (user) =>
-        user?.joinedAt?.toDate() >= start && user?.joinedAt?.toDate() <= end
+        !!user.joinedAt &&
+        user.joinedAt.toDate() >= start &&
+        user.joinedAt.toDate() <= end
     ).length;
 
     // Get active users (users with activity in the period)
