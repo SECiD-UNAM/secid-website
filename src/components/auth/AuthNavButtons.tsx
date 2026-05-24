@@ -5,19 +5,19 @@ import {
   type User,
   type Unsubscribe,
 } from 'firebase/auth';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
+import { useResolvedProfile } from '@/hooks/useResolvedProfile';
 
 // Alias-aware profile shape: only the fields the avatar/dropdown needs.
-// Mirrors the one-hop aliasOf resolution from AuthContext so the navbar
-// reflects the canonical profile when signed in with an alias account.
+// Alias resolution lives in useResolvedProfile (one-hop, fails closed on
+// alias->alias chains).
 type NavProfile = {
   displayName?: string;
   firstName?: string;
   lastName?: string;
   photoURL?: string;
   profileImage?: string;
-} | null;
+};
 
 interface AuthNavButtonsProps {
   lang?: 'es' | 'en';
@@ -25,7 +25,7 @@ interface AuthNavButtonsProps {
   registerLabel?: string;
 }
 
-function getInitials(user: User, profile: NavProfile): string {
+function getInitials(user: User, profile: NavProfile | null): string {
   const displayName =
     profile?.displayName ||
     [profile?.firstName, profile?.lastName].filter(Boolean).join(' ') ||
@@ -51,10 +51,10 @@ export default function AuthNavButtons({
   registerLabel = lang === 'es' ? 'Registrarse' : 'Register',
 }: AuthNavButtonsProps) {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<NavProfile>(null);
   const [ready, setReady] = useState(false);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { profile } = useResolvedProfile<NavProfile>(user?.uid ?? null);
 
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
@@ -70,44 +70,6 @@ export default function AuthNavButtons({
       if (unsubscribe) unsubscribe();
     };
   }, []);
-
-  // One-hop alias-aware profile subscription so the avatar reflects the
-  // canonical profile when signed in with an alias account (mirrors
-  // AuthContext's resolution). Defensive: doesn't loop on alias->alias.
-  useEffect(() => {
-    if (!user) {
-      setProfile(null);
-      return;
-    }
-    let stubUnsub: Unsubscribe | null = null;
-    let canonicalUnsub: Unsubscribe | null = null;
-    stubUnsub = onSnapshot(
-      doc(db, 'users', user.uid),
-      (snap) => {
-        const data = snap.exists()
-          ? (snap.data() as NavProfile & { aliasOf?: string })
-          : null;
-        const aliasOf = data && (data as { aliasOf?: string }).aliasOf;
-        if (aliasOf) {
-          if (canonicalUnsub) return; // already hopped
-          canonicalUnsub = onSnapshot(
-            doc(db, 'users', aliasOf),
-            (csnap) => {
-              setProfile(csnap.exists() ? (csnap.data() as NavProfile) : null);
-            },
-            () => setProfile(null)
-          );
-        } else {
-          setProfile(data);
-        }
-      },
-      () => setProfile(null)
-    );
-    return () => {
-      if (stubUnsub) stubUnsub();
-      if (canonicalUnsub) canonicalUnsub();
-    };
-  }, [user]);
 
   // Close dropdown on outside click
   useEffect(() => {
