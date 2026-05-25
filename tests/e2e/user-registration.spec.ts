@@ -321,40 +321,6 @@ test.describe('User Registration and Onboarding Flow', () => {
     await expect(page.locator('text=Major is required')).toBeVisible();
   });
 
-  test('onboarding skip options', async ({ page }) => {
-    // Start at interests selection
-    await page.goto('/es/onboarding/interests');
-
-    // Skip interests
-    await page.click('button[data-testid="skip-interests"]');
-    await expect(page).toHaveURL(/\/es\/onboarding\/goals/);
-
-    // Skip goals
-    await page.click('button[data-testid="skip-goals"]');
-    await expect(page).toHaveURL(/\/es\/onboarding\/connections/);
-
-    // Skip connections
-    await page.click('button[data-testid="skip-connections"]');
-    await expect(page).toHaveURL(/\/es\/onboarding\/complete/);
-  });
-
-  test('onboarding progress tracking', async ({ page }) => {
-    await page.goto('/es/onboarding/interests');
-
-    // Should show progress indicator
-    const progressBar = page.locator('[data-testid="onboarding-progress"]');
-    await expect(progressBar).toBeVisible();
-
-    // Should show current step
-    await expect(page.locator('text=Paso 1 de 3')).toBeVisible();
-
-    // Move to next step
-    await page.click('button[data-testid="continue-interests"]');
-
-    // Progress should update
-    await expect(page.locator('text=Paso 2 de 3')).toBeVisible();
-  });
-
   test('accessibility in registration flow', async ({ page }) => {
     await registrationFlow.navigateToSignup();
 
@@ -436,21 +402,6 @@ test.describe('Mobile Registration Tests', () => {
     await registrationFlow.submitRegistration();
   });
 
-  test('mobile onboarding navigation', async ({ page }) => {
-    await page.goto('/es/onboarding/interests');
-
-    // Mobile navigation should work with swipe gestures
-    const interestsContainer = page.locator(
-      '[data-testid="interests-container"]'
-    );
-    await expect(interestsContainer).toBeVisible();
-
-    // Test touch interactions
-    await page.locator('button[data-value="AI Research"]').tap();
-    await expect(page.locator('button[data-value="AI Research"]')).toHaveClass(
-      /selected/
-    );
-  });
 });
 
 // Visual regression tests
@@ -469,14 +420,4 @@ test.describe('Visual Regression Tests', () => {
     await expect(page).toHaveScreenshot('signup-form-validation-errors.png');
   });
 
-  test('onboarding steps visual consistency', async ({ page }) => {
-    await page.goto('/es/onboarding/interests');
-    await expect(page).toHaveScreenshot('onboarding-interests.png');
-
-    await page.goto('/es/onboarding/goals');
-    await expect(page).toHaveScreenshot('onboarding-goals.png');
-
-    await page.goto('/es/onboarding/connections');
-    await expect(page).toHaveScreenshot('onboarding-connections.png');
-  });
 });

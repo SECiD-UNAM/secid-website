@@ -103,7 +103,6 @@ describe('Astro Build Tests', () => {
       const filesToCheck = [
         'forums/ForumPost.tsx',
         'jobs/JobFilters.tsx',
-        'onboarding/OnboardingComplete.tsx'
       ];
 
       for (const file of filesToCheck) {

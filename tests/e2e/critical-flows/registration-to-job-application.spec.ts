@@ -1,6 +1,5 @@
 import { test, expect, Page, BrowserContext } from '@playwright/test';
 import { SignUpPage } from '../../page-objects/auth/SignUpPage';
-import { OnboardingPage } from '../../page-objects/onboarding/OnboardingPage';
 import { JobBoardPage } from '../../page-objects/jobs/JobBoardPage';
 import { JobDetailPage } from '../../page-objects/jobs/JobDetailPage';
 import { NavigationComponent } from '../../page-objects/base/NavigationComponent';
@@ -32,7 +31,6 @@ test.describe('Critical Flow: Registration to Job Application', () => {
   let page: Page;
   let context: BrowserContext;
   let signUpPage: SignUpPage;
-  let onboardingPage: OnboardingPage;
   let jobBoardPage: JobBoardPage;
   let jobDetailPage: JobDetailPage;
   let navigation: NavigationComponent;
@@ -49,7 +47,6 @@ test.describe('Critical Flow: Registration to Job Application', () => {
 
     // Initialize page objects
     signUpPage = new SignUpPage(page);
-    onboardingPage = new OnboardingPage(page);
     jobBoardPage = new JobBoardPage(page);
     jobDetailPage = new JobDetailPage(page);
     navigation = new NavigationComponent(page);
@@ -115,51 +112,7 @@ test.describe('Critical Flow: Registration to Job Application', () => {
 
     // Step 3: Complete onboarding process
     await test.step('Profile Onboarding', async () => {
-      if (page.url().includes('onboarding')) {
-        await onboardingPage.completeOnboarding({
-          professionalInfo: {
-            company: testUser.company,
-            position: testUser.position,
-            experienceYears: '3-5',
-            industry: 'Technology',
-            salaryRange: '60000-100000',
-            remotePreference: 'hybrid',
-          },
-          skills: testUser.skills,
-          careerData: {
-            goals:
-              'Looking to advance my career in machine learning and data science',
-            lookingForJob: true,
-            openToOpportunities: true,
-            interestedInMentorship: true,
-            jobTypes: ['full-time'],
-            preferredLocations: ['Ciudad de México', 'Remoto'],
-          },
-          networkingData: {
-            linkedinProfile: testUser.linkedIn,
-            githubProfile: testUser.github,
-            personalWebsite: testUser.website,
-            bio: testUser.bio,
-            profileVisibility: 'public',
-            showContactInfo: true,
-            showCareerInfo: true,
-          },
-          notificationData: {
-            emailNotifications: true,
-            jobAlerts: true,
-            eventNotifications: true,
-            mentorshipNotifications: true,
-            marketingEmails: false,
-            frequency: 'weekly',
-          },
-        });
-
-        // Verify onboarding completion
-        await expect(onboardingPage.isOnboardingComplete()).resolves.toBe(true);
-
-        // Go to dashboard or jobs
-        await onboardingPage.exploreJobs();
-      }
+      // Onboarding routes removed; SignUpForm handles inline wizard
     });
 
     // Step 4: Navigate to job board and verify initial state
@@ -327,10 +280,8 @@ ${testUser.firstName} ${testUser.lastName}`,
     await signUpPage.goto();
     await signUpPage.registerUser(quickUser);
 
-    // Skip onboarding
-    if (page.url().includes('onboarding')) {
-      await onboardingPage.skipOnboarding();
-      await onboardingPage.exploreJobs();
+    if (!page.url().includes('jobs')) {
+      await navigation.goToJobs();
     }
 
     // Should be on job board
@@ -404,10 +355,8 @@ ${testUser.firstName} ${testUser.lastName}`,
       includeAcademicInfo: false,
     });
 
-    // Skip onboarding
-    if (page.url().includes('onboarding')) {
-      await onboardingPage.skipOnboarding();
-      await onboardingPage.exploreJobs();
+    if (!page.url().includes('jobs')) {
+      await navigation.goToJobs();
     }
 
     // Try to apply for a job
@@ -449,15 +398,6 @@ ${testUser.firstName} ${testUser.lastName}`,
     await signUpPage.testMobileLayout();
     await signUpPage.registerUser(mobileUser);
 
-    // Mobile onboarding
-    if (page.url().includes('onboarding')) {
-      await onboardingPage.testMobileOnboarding();
-      await onboardingPage.completeOnboarding({
-        skills: ['Python', 'SQL'],
-        careerData: { lookingForJob: true },
-      });
-    }
-
     // Mobile job search
     if (!page.url().includes('jobs')) {
       await navigation.goToJobs();
@@ -486,15 +426,6 @@ ${testUser.firstName} ${testUser.lastName}`,
     await signUpPage.goto();
     await signUpPage.validateAccessibility();
     await signUpPage.registerUser(a11yUser);
-
-    // Test onboarding accessibility
-    if (page.url().includes('onboarding')) {
-      // Basic accessibility checks for onboarding
-      const headings = await page.locator('h1, h2, h3').count();
-      expect(headings).toBeGreaterThan(0);
-
-      await onboardingPage.skipOnboarding();
-    }
 
     // Test job board accessibility
     if (!page.url().includes('jobs')) {
