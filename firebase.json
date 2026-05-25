@@ -124,7 +124,7 @@
           },
           {
             "key": "X-Frame-Options",
-            "value": "SAMEORIGIN"
+            "value": "DENY"
           },
           {
             "key": "Referrer-Policy",
@@ -132,11 +132,11 @@
           },
           {
             "key": "Permissions-Policy",
-            "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+            "value": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
           },
           {
             "key": "Content-Security-Policy-Report-Only",
-            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com https://cdn.amplitude.com https://www.google.com https://www.gstatic.com https://recaptcha.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://storage.googleapis.com https://firebasestorage.googleapis.com wss://*.firebaseio.com https://api.stripe.com https://api.amplitude.com https://api2.amplitude.com https://www.google.com https://recaptcha.net; frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://www.google.com https://recaptcha.net; object-src 'none'; base-uri 'self'; form-action 'self'"
+            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.amplitude.com https://js.stripe.com https://www.google.com https://www.gstatic.com https://recaptcha.net https://www.recaptcha.net https://challenges.cloudflare.com https://hcaptcha.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://firebasestorage.googleapis.com https://storage.googleapis.com https://lh3.googleusercontent.com https://images.unsplash.com https://api.dicebear.com https://avatars.githubusercontent.com https://img.logo.dev; connect-src 'self' https://api.amplitude.com https://api2.amplitude.com https://cdn.amplitude.com https://firebase.googleapis.com https://firebaseinstallations.googleapis.com https://firebasestorage.googleapis.com https://storage.googleapis.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com wss://*.firebaseio.com https://api.stripe.com https://www.google.com https://recaptcha.net; frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://www.google.com https://recaptcha.net https://challenges.cloudflare.com https://hcaptcha.com https://www.hcaptcha.com https://docs.google.com https://meet.google.com; worker-src blob:; object-src 'none'; base-uri 'self'; form-action 'self'"
           }
         ]
       },
