@@ -160,21 +160,57 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     setIsLoading(true);
     setError(null);
 
+    // QA round 4: getTwoFactorStatus + updateLastLogin both do Firestore
+    // reads/writes that can hang if the SDK is in a corrupt state (see
+    // #70 — INTERNAL ASSERTION FAILED loops). Without timeouts, the login
+    // button spins forever and the user has no idea what's wrong.
+    // Wrap each post-auth step in a timeout so we can degrade gracefully.
+    const withTimeout = <T,>(
+      p: Promise<T>,
+      ms: number,
+      label: string
+    ): Promise<T> =>
+      Promise.race([
+        p,
+        new Promise<T>((_, reject) =>
+          setTimeout(() => reject(new Error(`TIMEOUT:${label}`)), ms)
+        ),
+      ]);
+
     try {
       const user = await signIn(data['email'], data['password']);
 
-      // Check if user has 2FA enabled
-      const twoFactorStatus = await getTwoFactorStatus(user.uid);
+      // Check if user has 2FA enabled (best-effort — degrade to "no 2FA"
+      // if Firestore is stuck so we don't block the login).
+      let twoFactorEnabled = false;
+      try {
+        const twoFactorStatus = await withTimeout(
+          getTwoFactorStatus(user.uid),
+          5000,
+          'getTwoFactorStatus'
+        );
+        twoFactorEnabled = twoFactorStatus.isEnabled;
+      } catch (err) {
+        console.warn('2FA status check failed/timed out; assuming disabled:', err);
+      }
 
-      if (twoFactorStatus.isEnabled) {
+      if (twoFactorEnabled) {
         setCurrentUserId(user.uid);
         setRequiresTwoFactor(true);
         setIsLoading(false);
         return;
       }
 
-      // Update last login
-      await updateLastLogin(user.uid, 'email');
+      // Update last login (also best-effort)
+      try {
+        await withTimeout(
+          updateLastLogin(user.uid, 'email'),
+          5000,
+          'updateLastLogin'
+        );
+      } catch (err) {
+        console.warn('updateLastLogin failed/timed out:', err);
+      }
 
       // Handle remember me
       if (data['rememberMe']) {
