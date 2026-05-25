@@ -1,5 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+// ESM: __dirname doesn't exist; derive from import.meta.url so the
+// globalSetup/globalTeardown paths below resolve.
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Performance budgets for Core Web Vitals
 export const PERFORMANCE_BUDGETS = {

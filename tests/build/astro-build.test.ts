@@ -100,10 +100,10 @@ describe('Astro Build Tests', () => {
       const componentsPath = join(process.cwd(), 'src/components');
 
       // List of files to check
+      // onboarding/* removed 2026-05-25 — orphan components, no page consumer.
       const filesToCheck = [
         'forums/ForumPost.tsx',
         'jobs/JobFilters.tsx',
-        'onboarding/OnboardingComplete.tsx'
       ];
 
       for (const file of filesToCheck) {
