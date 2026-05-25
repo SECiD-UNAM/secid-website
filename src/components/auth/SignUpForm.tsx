@@ -157,10 +157,13 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
   // when this form mounts, skip account creation and start at type
   // selection so they can submit numeroCuenta + proof.
   React.useEffect(() => {
-    if (auth.currentUser && step === 'account') {
-      setStep('type');
-    }
-    // run once on mount
+    // auth.authStateReady() resolves after Firebase finishes restoring the
+    // persisted session — auth.currentUser is null synchronously at mount.
+    auth.authStateReady().then(() => {
+      if (auth.currentUser && step === 'account') {
+        setStep('type');
+      }
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
