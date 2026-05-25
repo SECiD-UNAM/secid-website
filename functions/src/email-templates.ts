@@ -10,6 +10,25 @@
 
 type Lang = 'es' | 'en';
 
+/**
+ * Escape HTML entities so user-controlled values can't smuggle markup
+ * into the rendered email (e.g. <script>, <img onerror>, attacker-set
+ * displayName). Email clients vary in how they handle scripts but
+ * <img onerror>, <a href="javascript:">, and CSS-based exfil all work
+ * in enough clients to matter. Apply to every interpolated string
+ * that originated from user input or from a Firestore doc that may
+ * have been written by a user (QA pass §10.8 fallout).
+ */
+function escapeHtml(s: string | undefined | null): string {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 interface BaseTemplateParams {
   title: string;
   bodyHtml: string;
@@ -84,8 +103,8 @@ export function generateWelcomeEmail(params: WelcomeParams): {
   );
   const greeting = t(
     {
-      es: `Hola${params.recipientName ? ` ${params.recipientName}` : ''},`,
-      en: `Hi${params.recipientName ? ` ${params.recipientName}` : ''},`,
+      es: `Hola${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
+      en: `Hi${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
     },
     lang
   );
@@ -135,12 +154,15 @@ export function generateAdminPendingNotif(params: AdminPendingParams): {
   subject: string;
   html: string;
 } {
+  // Subject is plain text in all clients, so no escape needed; HTML body
+  // interpolations DO need escapeHtml() — email + numeroCuenta + type are
+  // user-controlled values from the Firestore user doc.
   const subject = `Nueva solicitud pendiente: ${params.memberName || params.memberEmail}`;
   const details = `
     <ul style="line-height:1.8;">
-      <li><strong>Email</strong>: ${params.memberEmail}</li>
-      ${params.numeroCuenta ? `<li><strong>Número de cuenta</strong>: ${params.numeroCuenta}</li>` : ''}
-      ${params.registrationType ? `<li><strong>Tipo</strong>: ${params.registrationType}</li>` : ''}
+      <li><strong>Email</strong>: ${escapeHtml(params.memberEmail)}</li>
+      ${params.numeroCuenta ? `<li><strong>Número de cuenta</strong>: ${escapeHtml(params.numeroCuenta)}</li>` : ''}
+      ${params.registrationType ? `<li><strong>Tipo</strong>: ${escapeHtml(params.registrationType)}</li>` : ''}
     </ul>`;
   return {
     subject,
@@ -179,8 +201,8 @@ export function generateApprovedEmail(params: ApprovedParams): {
   );
   const greeting = t(
     {
-      es: `Hola${params.recipientName ? ` ${params.recipientName}` : ''},`,
-      en: `Hi${params.recipientName ? ` ${params.recipientName}` : ''},`,
+      es: `Hola${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
+      en: `Hi${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
     },
     lang
   );
@@ -227,15 +249,15 @@ export function generateRejectedEmail(params: RejectedParams): {
   );
   const greeting = t(
     {
-      es: `Hola${params.recipientName ? ` ${params.recipientName}` : ''},`,
-      en: `Hi${params.recipientName ? ` ${params.recipientName}` : ''},`,
+      es: `Hola${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
+      en: `Hi${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
     },
     lang
   );
   const body = t(
     {
-      es: `Tu solicitud no pudo ser aprobada en esta ocasión. ${params.reason ? `Motivo: ${params.reason}.` : ''} Si crees que es un error, escríbenos a ${params.contactEmail} y revisamos.`,
-      en: `Your application could not be approved at this time. ${params.reason ? `Reason: ${params.reason}.` : ''} If you believe this is an error, write to ${params.contactEmail} and we'll review.`,
+      es: `Tu solicitud no pudo ser aprobada en esta ocasión. ${params.reason ? `Motivo: ${escapeHtml(params.reason)}.` : ''} Si crees que es un error, escríbenos a ${escapeHtml(params.contactEmail)} y revisamos.`,
+      en: `Your application could not be approved at this time. ${params.reason ? `Reason: ${escapeHtml(params.reason)}.` : ''} If you believe this is an error, write to ${escapeHtml(params.contactEmail)} and we'll review.`,
     },
     lang
   );
@@ -265,8 +287,8 @@ export function generateStatusChangeEmail(params: StatusChangeParams): {
   const lang = params.lang ?? 'es';
   const greeting = t(
     {
-      es: `Hola${params.recipientName ? ` ${params.recipientName}` : ''},`,
-      en: `Hi${params.recipientName ? ` ${params.recipientName}` : ''},`,
+      es: `Hola${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
+      en: `Hi${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
     },
     lang
   );
