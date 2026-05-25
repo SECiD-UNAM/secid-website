@@ -75,4 +75,13 @@ export function getLabels(lang: 'es' | 'en') {
       };
 }
 
-export type Labels = ReturnType<typeof getLabels>;
+export type Labels = ReturnType<typeof getLabels> & { _lang?: 'es' | 'en' };
+
+/**
+ * Wrapper that attaches the active language to the labels object so
+ * downstream components can call locale-aware helpers (formatDateForDisplay)
+ * without prop-drilling lang separately.
+ */
+export function getLabelsWithLang(lang: 'es' | 'en'): Labels {
+  return { ...getLabels(lang), _lang: lang };
+}

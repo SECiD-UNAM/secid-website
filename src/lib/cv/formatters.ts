@@ -5,9 +5,71 @@
  *   - Skill categorisation by domain (Languages, ML, Cloud, etc).
  *   - Language proficiency badge color resolution (returns inline style
  *     objects, but no React imports — see `React.CSSProperties` typing).
+ *   - Date formatting for display (#49 — consolidate HTML vs PDF).
  */
 
 import type { CSSProperties } from 'react';
+
+// ---------------------------------------------------------------------------
+// Date formatting (issue #49)
+//
+// The HTML CV viewer renders raw "YYYY-MM" strings (from transform.formatDate),
+// while pdf-generator reformats to "MMM YYYY". Same field, two different
+// displayed strings. Consolidate here so both rendering paths produce
+// identical output.
+//
+// Input: "YYYY-MM" string (or "" / undefined for absent dates).
+// Output: localised "Abr 2024" / "Apr 2024".
+// ---------------------------------------------------------------------------
+
+const MONTH_NAMES_ES = [
+  '',
+  'Ene',
+  'Feb',
+  'Mar',
+  'Abr',
+  'May',
+  'Jun',
+  'Jul',
+  'Ago',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dic',
+] as const;
+
+const MONTH_NAMES_EN = [
+  '',
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+] as const;
+
+export function formatDateForDisplay(
+  yyyymm: string | undefined | null,
+  lang: 'es' | 'en' = 'es'
+): string {
+  if (!yyyymm) return '';
+  const parts = String(yyyymm).split('-');
+  const year = parts[0] ?? '';
+  const month = parts[1] ?? '';
+  if (!year) return '';
+  const monthIndex = parseInt(month, 10);
+  if (!Number.isFinite(monthIndex) || monthIndex < 1 || monthIndex > 12) {
+    return year; // year-only is acceptable
+  }
+  const names = lang === 'es' ? MONTH_NAMES_ES : MONTH_NAMES_EN;
+  return `${names[monthIndex]} ${year}`;
+}
 
 // ---------------------------------------------------------------------------
 // Language proficiency badge styling

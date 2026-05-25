@@ -178,6 +178,24 @@
             "value": "public, max-age=0, must-revalidate"
           }
         ]
+      },
+      {
+        "source": "/",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "**/!(*.@(js|css|woff2|woff|ttf|eot|jpg|jpeg|png|gif|svg|webp|avif|ico|json|map))",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ]
       }
     ]
   },

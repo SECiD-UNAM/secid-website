@@ -6,6 +6,7 @@
 import React from 'react';
 import type { CVData } from '@/types/cv';
 import type { Labels } from '@/lib/cv/labels';
+import { formatDateForDisplay } from '@/lib/cv/formatters';
 import { SectionHeading } from './_primitives';
 
 export function CvExperienceSection({
@@ -51,7 +52,10 @@ export function CvExperienceSection({
                     className="whitespace-nowrap text-sm"
                     style={{ color: 'var(--color-text-muted)' }}
                   >
-                    {exp.startDate} &ndash; {exp.endDate || labels.current}
+                    {formatDateForDisplay(exp.startDate, labels._lang)} &ndash;{' '}
+                    {exp.endDate
+                      ? formatDateForDisplay(exp.endDate, labels._lang)
+                      : labels.current}
                   </span>
                   {exp.current && (
                     <span

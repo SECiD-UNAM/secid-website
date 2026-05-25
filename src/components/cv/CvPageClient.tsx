@@ -23,7 +23,7 @@ import React, {
 import { useAuth } from '@/contexts/AuthContext';
 import { getMemberProfile } from '@/lib/members';
 import { transformProfileToCV } from '@/lib/cv/transform';
-import { getLabels } from '@/lib/cv/labels';
+import { getLabelsWithLang } from '@/lib/cv/labels';
 import { getVisibleSections } from '@/lib/cv/sections';
 import CvPdfDownloader from '@/components/cv/CvPdfDownloader';
 import { Sidebar } from './sections/Sidebar';
@@ -163,7 +163,7 @@ export default function CvPageClient({ lang }: CvPageClientProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const slug = useMemo(() => extractSlugFromUrl(), []);
-  const labels = useMemo(() => getLabels(lang), [lang]);
+  const labels = useMemo(() => getLabelsWithLang(lang), [lang]);
   const themeVars = useThemeVars();
 
   useEffect(() => {

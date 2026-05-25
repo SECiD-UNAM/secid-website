@@ -10,6 +10,7 @@
  * Uses dynamic import of jsPDF to avoid SSR issues in Astro.
  */
 import type { CVData } from '@/types/cv';
+import { formatDateForDisplay } from './formatters';
 
 export type PdfFormat = 'full' | 'resume' | 'summary';
 
@@ -101,37 +102,19 @@ function fixSpacedOutParagraph(p: string): string {
   return p;
 }
 
+// #49: delegate to the shared formatter so HTML and PDF produce
+// identical strings. The shared helper returns '' for empty input;
+// preserve the presentLabel fallback here for the PDF "Current" semantics.
 function formatDate(
   dateStr: string | undefined | null,
   presentLabel: string
 ): string {
   if (!dateStr) return presentLabel;
-  if (dateStr.includes('-')) {
-    const parts = dateStr.split('-');
-    const year = parts[0] ?? '';
-    const month = parts[1] ?? '';
-    const monthNames = [
-      '',
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    const monthIndex = parseInt(month, 10);
-    if (monthIndex >= 1 && monthIndex <= 12) {
-      return `${monthNames[monthIndex]} ${year}`;
-    }
-    return year;
-  }
-  return dateStr;
+  // PDF historically emitted English month names. Keep that default for
+  // backward visual compatibility; English-locale users get the same look,
+  // Spanish-locale callers can pass lang via the higher-level CV pipeline
+  // when we wire it through (separate follow-up).
+  return formatDateForDisplay(dateStr, 'en') || dateStr;
 }
 
 function buildFilename(
