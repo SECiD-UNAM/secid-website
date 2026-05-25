@@ -116,6 +116,31 @@
     ],
     "headers": [
       {
+        "source": "**",
+        "headers": [
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          },
+          {
+            "key": "Permissions-Policy",
+            "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+          },
+          {
+            "key": "Content-Security-Policy-Report-Only",
+            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com https://cdn.amplitude.com https://www.google.com https://www.gstatic.com https://recaptcha.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://storage.googleapis.com https://firebasestorage.googleapis.com wss://*.firebaseio.com https://api.stripe.com https://api.amplitude.com https://api2.amplitude.com https://www.google.com https://recaptcha.net; frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://www.google.com https://recaptcha.net; object-src 'none'; base-uri 'self'; form-action 'self'"
+          }
+        ]
+      },
+      {
         "source": "/assets/**",
         "headers": [
           {
