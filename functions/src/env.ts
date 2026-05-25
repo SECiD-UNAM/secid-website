@@ -18,16 +18,24 @@ let warned = false;
 /**
  * Trusted Origins allowlist for HTTPS callable CORS.
  *
- * The previous pattern was [/secid\.mx$/, /secid\.org$/, 'localhost'], which
- * is un-anchored — it matches ANY string ending in "secid.mx" or "secid.org"
- * (e.g. "https://evil.com/?leak=secid.mx" or "https://attacker.secid.mx").
- *
- * Anchored regexes here pin scheme + (optional subdomain) + the exact host,
- * so only first-party origins can hit our callables from a browser.
+ * History of this list (each iteration discovered the prior one was too
+ * permissive — both surfaced during the user-journey QA pass §10.3):
+ *   v1: [/secid\.mx$/, /secid\.org$/, 'localhost']
+ *        Un-anchored — matches "https://evil.com/?leak=secid.mx".
+ *   v2: [/^https:\/\/(?:[a-z0-9-]+\.)?secid\.mx$/, ...]
+ *        Anchored at scheme + host BUT the optional subdomain group
+ *        matches ANY first-level subdomain — including "attacker.secid.mx"
+ *        if an attacker can stand one up (or convince DNS).
+ *   v3 (here): explicit literal allowlist of the known-good origins. No
+ *        wildcard subdomains. New env (e.g. "alpha.secid.mx") needs an
+ *        explicit add — that's the point.
  */
 export const ALLOWED_CALLABLE_ORIGINS: (string | RegExp)[] = [
-  /^https:\/\/(?:[a-z0-9-]+\.)?secid\.mx$/,
-  /^https:\/\/(?:[a-z0-9-]+\.)?secid\.org$/,
+  'https://secid.mx',
+  'https://www.secid.mx',
+  'https://beta.secid.mx',
+  'https://secid.org',
+  'https://www.secid.org',
   /^http:\/\/localhost(?::\d+)?$/,
   /^http:\/\/127\.0\.0\.1(?::\d+)?$/,
 ];
