@@ -369,9 +369,14 @@ export const onUserDocCreated = onDocumentCreated(
         userData.firstName ||
         userData.displayName ||
         (typeof email === 'string' ? email.split('@')[0] : '');
+      // /onboarding doesn't exist as a route. The signup wizard
+      // (src/components/auth/SignUpForm.tsx) detects an existing auth
+      // session and skips the 'account' step, so /signup is where the
+      // user resumes completing their profile (numeroCuenta, proof,
+      // membership type) after email verification.
       const { subject, html } = generateWelcomeEmail({
         recipientName,
-        onboardingUrl: `${getAppUrl()}/${lang}/onboarding`,
+        onboardingUrl: `${getAppUrl()}/${lang}/signup`,
         lang,
       });
       await sendEmail({ to: email, subject, html });
