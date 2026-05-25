@@ -28,6 +28,9 @@ import {
 interface DashboardStats {
   totalUsers: number;
   newUsersThisMonth: number;
+  // Phase 0 #2 (QA plan): users with lifecycle.status == 'pending' awaiting
+  // admin approval. Surfaces as the "membership review queue" badge.
+  pendingMembers: number;
   totalJobs: number;
   activeJobs: number;
   pendingJobs: number;
@@ -61,6 +64,7 @@ export const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     newUsersThisMonth: 0,
+    pendingMembers: 0,
     totalJobs: 0,
     activeJobs: 0,
     pendingJobs: 0,
@@ -91,6 +95,7 @@ export const AdminDashboard: React.FC = () => {
     const loadDashboardData = async () => {
       let totalUsers = 0;
       let newUsersThisMonth = 0;
+      let pendingMembers = 0;
       let totalJobs = 0;
       let activeJobs = 0;
       let pendingJobs = 0;
@@ -110,6 +115,13 @@ export const AdminDashboard: React.FC = () => {
         );
         const newUsersSnapshot = await getDocs(newUsersQuery);
         newUsersThisMonth = newUsersSnapshot.size;
+        // Membership review queue — Phase 0 #2.
+        const pendingMembersQuery = query(
+          usersRef,
+          where('lifecycle.status', '==', 'pending')
+        );
+        const pendingMembersSnapshot = await getDocs(pendingMembersQuery);
+        pendingMembers = pendingMembersSnapshot.size;
       } catch (err) {
         console.warn('Error loading users stats:', err);
       }
@@ -175,14 +187,16 @@ export const AdminDashboard: React.FC = () => {
         console.warn('Error loading reports stats:', err);
       }
 
-      // Determine system health
-      const pendingCount = pendingJobs + pendingReports;
+      // Determine system health (pending members weigh heaviest — they're
+      // people waiting for an answer, not just queue items).
+      const pendingCount = pendingJobs + pendingReports + pendingMembers * 2;
       const systemHealth: 'good' | 'warning' | 'critical' =
         pendingCount > 50 ? 'critical' : pendingCount > 20 ? 'warning' : 'good';
 
       setStats({
         totalUsers,
         newUsersThisMonth,
+        pendingMembers,
         totalJobs,
         activeJobs,
         pendingJobs,
@@ -390,6 +404,44 @@ export const AdminDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Pending member approvals — Phase 0 #2 */}
+        <a
+          href={`/${language === 'es' ? 'es' : 'en'}/dashboard/admin?tab=users&status=pending`}
+          className="block rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-colors hover:bg-orange-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-orange-900/10"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                {language === 'es'
+                  ? 'Solicitudes pendientes'
+                  : 'Pending applications'}
+              </p>
+              <div className="flex items-baseline gap-3">
+                <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                  {stats.pendingMembers}
+                </p>
+                {stats.pendingMembers > 0 && (
+                  <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-800 dark:bg-orange-900/40 dark:text-orange-200">
+                    {language === 'es' ? 'requiere acción' : 'needs action'}
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {language === 'es'
+                  ? 'Click para revisar'
+                  : 'Click to review'}
+              </p>
+            </div>
+            <div
+              className={`rounded-lg p-3 ${stats.pendingMembers > 0 ? 'bg-orange-100 dark:bg-orange-900/30' : 'bg-gray-100 dark:bg-gray-700'}`}
+            >
+              <Clock
+                className={`h-6 w-6 ${stats.pendingMembers > 0 ? 'text-orange-600 dark:text-orange-300' : 'text-gray-500 dark:text-gray-400'}`}
+              />
+            </div>
+          </div>
+        </a>
 
         {/* Jobs */}
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">

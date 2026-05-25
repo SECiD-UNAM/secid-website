@@ -11,6 +11,14 @@ import * as functionsV1 from 'firebase-functions/v1';
 import { admin } from './init'; // Must be first — initializes Firebase before other imports
 import { sendEmail, generateJobMatchEmail } from './email-service';
 import {
+  generateWelcomeEmail,
+  generateAdminPendingNotif,
+  generateApprovedEmail,
+  generateRejectedEmail,
+  generateStatusChangeEmail,
+} from './email-templates';
+import { getAppUrl } from './env';
+import {
   addMemberToGroup,
   removeMemberFromGroup,
   removeMemberFromAllGroups,
@@ -338,14 +346,38 @@ export const onUserDocCreated = onDocumentCreated(
     const email = userData.email;
 
     if (!email) {
-      console.log('No email for user, skipping group add');
+      console.log('No email for user, skipping group add + welcome email');
       return;
     }
 
-    // Add to collaborators group by default
+    // 1. Add to default collaborators Google Group.
     const added = await addMemberToGroup(getDefaultGroup(), email);
     if (added) {
       console.log(`Added ${email} to collaborators group`);
+    }
+
+    // 2. Send welcome email pointing the user at /onboarding (Phase 0 #1
+    // from docs/qa/2026-05-24-user-journey-validation-and-improvement-plan.md).
+    // Best-effort: log + continue on failure so Group sync above stays the
+    // contract of this trigger.
+    try {
+      const lang: 'es' | 'en' =
+        (userData.lang as 'es' | 'en') ||
+        (userData.locale as 'es' | 'en') ||
+        'es';
+      const recipientName =
+        userData.firstName ||
+        userData.displayName ||
+        (typeof email === 'string' ? email.split('@')[0] : '');
+      const { subject, html } = generateWelcomeEmail({
+        recipientName,
+        onboardingUrl: `${getAppUrl()}/${lang}/onboarding`,
+        lang,
+      });
+      await sendEmail({ to: email, subject, html });
+      console.log(`Welcome email queued for ${email}`);
+    } catch (err) {
+      console.error(`Failed to queue welcome email for ${email}:`, err);
     }
   }
 );
@@ -391,32 +423,126 @@ export const onMemberStatusChange = onDocumentUpdated(
 
     console.log(`Status change for ${email}: ${oldStatus} → ${newStatus}`);
 
+    // Common bits for the email payloads below.
+    const lang: 'es' | 'en' =
+      (afterData.lang as 'es' | 'en') ||
+      (afterData.locale as 'es' | 'en') ||
+      'es';
+    const recipientName =
+      afterData.firstName ||
+      afterData.displayName ||
+      (typeof email === 'string' ? email.split('@')[0] : '');
+    const contactEmail = process.env.ADMIN_EMAIL || 'contacto@secid.mx';
+    const baseUrl = getAppUrl();
+
+    // Best-effort email helper — never let an email failure block the
+    // Google Group sync below.
+    const queueEmail = async (
+      to: string,
+      payload: { subject: string; html: string }
+    ): Promise<void> => {
+      try {
+        await sendEmail({ to, subject: payload.subject, html: payload.html });
+      } catch (err) {
+        console.error(`Failed to queue email to ${to}:`, err);
+      }
+    };
+
     switch (newStatus) {
       case 'active':
         // Member approved or reinstated → add to miembros@, remove from colaboradores@
         await addMemberToGroup(getMembersGroup(), email);
         await removeMemberFromGroup(getDefaultGroup(), email);
+        // Notify the user that they were approved (Phase 0 #3). Only on
+        // the meaningful pending → active transition; skip silent admin
+        // reactivations from other prior states.
+        if (oldStatus === 'pending') {
+          await queueEmail(
+            email,
+            generateApprovedEmail({
+              recipientName,
+              dashboardUrl: `${baseUrl}/${lang}/dashboard`,
+              lang,
+            })
+          );
+        } else if (oldStatus === 'suspended' || oldStatus === 'deactivated') {
+          await queueEmail(
+            email,
+            generateStatusChangeEmail({
+              recipientName,
+              newStatus: 'alumni', // reuse template; phrasing fits reactivation context loosely
+              contactEmail,
+              lang,
+            })
+          );
+        }
         break;
 
       case 'suspended':
       case 'deactivated':
         // Suspended or deactivated → remove from all groups
         await removeMemberFromAllGroups(email, getAllGroups());
+        await queueEmail(
+          email,
+          generateStatusChangeEmail({
+            recipientName,
+            newStatus,
+            contactEmail,
+            lang,
+          })
+        );
         break;
 
       case 'alumni':
         // Alumni → remove from miembros@, optionally keep in colaboradores@
         await removeMemberFromGroup(getMembersGroup(), email);
+        await queueEmail(
+          email,
+          generateStatusChangeEmail({
+            recipientName,
+            newStatus: 'alumni',
+            contactEmail,
+            lang,
+          })
+        );
         break;
 
       case 'collaborator':
         // Rejected or downgraded → ensure in colaboradores@, remove from miembros@
         await addMemberToGroup(getDefaultGroup(), email);
         await removeMemberFromGroup(getMembersGroup(), email);
+        // Only email the user if this is a real rejection (was pending),
+        // not just an initial creation that landed at collaborator.
+        if (oldStatus === 'pending') {
+          await queueEmail(
+            email,
+            generateRejectedEmail({
+              recipientName,
+              reason: afterData.rejectionReason,
+              contactEmail,
+              lang,
+            })
+          );
+        }
         break;
 
       case 'pending':
-        // Membership requested → no group change (still in colaboradores@)
+        // Membership requested → no group change (still in colaboradores@).
+        // Phase 0 #2: notify admin that there's something to review.
+        // Skip if already notified (defensive against re-fires of the
+        // same transition by a Firestore retry).
+        if (oldStatus !== 'pending') {
+          await queueEmail(
+            contactEmail,
+            generateAdminPendingNotif({
+              memberName: recipientName,
+              memberEmail: email,
+              numeroCuenta: afterData.numeroCuenta,
+              registrationType: afterData.registrationType,
+              adminPanelUrl: `${baseUrl}/admin/users?status=pending`,
+            })
+          );
+        }
         break;
 
       default:
