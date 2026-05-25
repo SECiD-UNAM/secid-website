@@ -17,6 +17,10 @@ export default defineConfig({
       'tests/unit/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
       'tests/integration/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
       'tests/build/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+      // tests/rules/* uses @firebase/rules-unit-testing against the Firestore
+      // emulator. Tests gracefully skip if emulator isn't running, so they
+      // never break CI when the emulator step is omitted.
+      'tests/rules/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
     ],
     exclude: [
       'node_modules',
