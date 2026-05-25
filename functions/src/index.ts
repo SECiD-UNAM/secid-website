@@ -453,6 +453,31 @@ export const onMemberStatusChange = onDocumentUpdated(
       }
     };
 
+    // Resolve the recipient list for admin-targeted notifications.
+    // Query every user with role='admin' and email set (so notifications
+    // fanout to the whole admin team instead of dying with one stale
+    // ADMIN_EMAIL inbox). Fallback to env so bootstrap / empty-DB
+    // scenarios still work.
+    const resolveAdminRecipients = async (): Promise<string[]> => {
+      try {
+        const snap = await admin
+          .firestore()
+          .collection('users')
+          .where('role', '==', 'admin')
+          .get();
+        const emails: string[] = snap.docs
+          .map((d: FirebaseFirestore.QueryDocumentSnapshot) =>
+            String(d.data().email || '').trim()
+          )
+          .filter((e: string) => e.length > 0);
+        const deduped: string[] = Array.from(new Set(emails));
+        if (deduped.length > 0) return deduped;
+      } catch (err) {
+        console.warn('Failed to resolve admin recipients from Firestore:', err);
+      }
+      return [contactEmail];
+    };
+
     switch (newStatus) {
       case 'active':
         // Member approved or reinstated → add to miembros@, remove from colaboradores@
@@ -540,19 +565,27 @@ export const onMemberStatusChange = onDocumentUpdated(
 
       case 'pending':
         // Membership requested → no group change (still in colaboradores@).
-        // Phase 0 #2: notify admin that there's something to review.
+        // Phase 0 #2: notify admins that there's something to review.
         // Skip if already notified (defensive against re-fires of the
         // same transition by a Firestore retry).
         if (oldStatus !== 'pending') {
-          await queueEmail(
-            contactEmail,
-            generateAdminPendingNotif({
-              memberName: recipientName,
-              memberEmail: email,
-              numeroCuenta: afterData.numeroCuenta,
-              registrationType: afterData.registrationType,
-              adminPanelUrl: `${baseUrl}/admin/users?status=pending`,
-            })
+          // Fanout to every user with role='admin', not just a single
+          // ADMIN_EMAIL env var (QA round 4 redesign — single inbox was
+          // a stale-inbox risk).
+          const adminRecipients = await resolveAdminRecipients();
+          const adminPayload = generateAdminPendingNotif({
+            memberName: recipientName,
+            memberEmail: email,
+            numeroCuenta: afterData.numeroCuenta,
+            registrationType: afterData.registrationType,
+            // /admin/users doesn't exist; the actual admin members page is here.
+            adminPanelUrl: `${baseUrl}/${lang}/dashboard/admin/members?status=pending`,
+          });
+          for (const adminTo of adminRecipients) {
+            await queueEmail(adminTo, adminPayload);
+          }
+          console.log(
+            `Admin pending notif fanout to ${adminRecipients.length} recipient(s)`
           );
         }
         break;
