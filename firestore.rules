@@ -119,10 +119,17 @@ service cloud.firestore {
       // Own profile: always readable
       // Other profiles: verified members or RBAC view-all
       // Alias accounts can read their canonical profile (multi-email).
-      allow read: if isAuthenticated() &&
-                     (isOwner(userId) || isVerified() ||
-                      isCanonicalOfAlias(userId) ||
-                      (!hasRBACDeny('us', 'v') && hasRBACAllowAll('us', 'v')));
+      // PUBLIC CV (issue #56): anonymous read allowed when the owner opted
+      // their profile into public visibility AND the CV viewer mode.
+      // Surfaces only docs where the user explicitly set BOTH flags; the
+      // CV viewer in the component already trims sensitive fields client-
+      // side (no email/phone/numeroCuenta in the public CV view).
+      allow read: if (resource.data.publicProfile == true &&
+                       resource.data.publicCv == true) ||
+                     (isAuthenticated() &&
+                       (isOwner(userId) || isVerified() ||
+                        isCanonicalOfAlias(userId) ||
+                        (!hasRBACDeny('us', 'v') && hasRBACAllowAll('us', 'v'))));
 
       // Fix: prevent new users from self-granting isVerified or isActive on creation
       allow create: if isAuthenticated() &&
