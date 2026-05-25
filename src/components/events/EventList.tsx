@@ -264,15 +264,26 @@ async function fetchAllEvents(): Promise<Event[]> {
 
   // Fetch journal club sessions and transform to Event shape
   try {
+    // #8: legacy journal_club_sessions docs may not have status='published'
+    // (some have 'active', 'live', or no status field at all). Drop the
+    // status filter and rely on client-side date filtering — the events
+    // tab only renders upcoming entries anyway. Also: 'cancelled' status
+    // is filtered out below.
     const jcQuery = query(
       collection(db, 'journal_club_sessions'),
-      where('status', '==', 'published'),
       orderBy('date', 'desc'),
       limit(50)
     );
     const jcSnap = await getDocs(jcQuery);
-    const jcEvents: Event[] = jcSnap.docs.map((d) => {
-      const data = d.data();
+    const jcEvents: Event[] = jcSnap.docs
+      .filter((d) => {
+        const status = d.data()?.status;
+        // Show everything except explicit cancellations/drafts. Treat
+        // missing status as upcoming (legacy data).
+        return status !== 'cancelled' && status !== 'draft';
+      })
+      .map((d) => {
+        const data = d.data();
       const sessionDate = data['date']?.toDate() ?? new Date();
       const endDate = new Date(sessionDate.getTime() + 90 * 60 * 1000); // 90 min default
       return {
