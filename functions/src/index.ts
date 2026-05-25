@@ -458,25 +458,32 @@ export const onMemberStatusChange = onDocumentUpdated(
         // Member approved or reinstated → add to miembros@, remove from colaboradores@
         await addMemberToGroup(getMembersGroup(), email);
         await removeMemberFromGroup(getDefaultGroup(), email);
-        // Notify the user that they were approved (Phase 0 #3). Only on
-        // the meaningful pending → active transition; skip silent admin
-        // reactivations from other prior states.
-        if (oldStatus === 'pending') {
-          await queueEmail(
-            email,
-            generateApprovedEmail({
-              recipientName,
-              dashboardUrl: `${baseUrl}/${lang}/dashboard`,
-              lang,
-            })
-          );
-        } else if (oldStatus === 'suspended' || oldStatus === 'deactivated') {
+        // Notify the user that they were approved (Phase 0 #3).
+        // QA round 3 found my original guard `oldStatus === 'pending'` was
+        // too strict: the AdminMembersTable shows "Pendiente" as the
+        // default UI label when lifecycle.status is undefined, but the
+        // ACTUAL stored value is undefined or 'collaborator'. So real
+        // admin approvals manifest as `undefined → active` or
+        // `'collaborator' → active`, not `'pending' → active`. Relax
+        // the guard: send the approval email for any → active EXCEPT
+        // when reactivating from suspended/deactivated (which gets the
+        // reactivation copy).
+        if (oldStatus === 'suspended' || oldStatus === 'deactivated') {
           await queueEmail(
             email,
             generateStatusChangeEmail({
               recipientName,
               newStatus: 'alumni', // reuse template; phrasing fits reactivation context loosely
               contactEmail,
+              lang,
+            })
+          );
+        } else {
+          await queueEmail(
+            email,
+            generateApprovedEmail({
+              recipientName,
+              dashboardUrl: `${baseUrl}/${lang}/dashboard`,
               lang,
             })
           );
