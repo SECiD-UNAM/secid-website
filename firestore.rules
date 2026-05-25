@@ -128,10 +128,16 @@ service cloud.firestore {
       // (email/phone/numeroCuenta are NOT rendered in the public CV view).
       // We still hand the WHOLE doc to the anonymous reader here — that's a
       // known tradeoff vs. the alternative (a denormalized users_public/
-      // collection populated by Cloud Function). If we ever surface email
-      // or numeroCuenta in the public CV, this rule must tighten or move.
-      allow read: if (resource.data.privacy.profileVisibility == 'public' &&
-                       resource.data.cvVisibility == 'public') ||
+      // collection populated by Cloud Function).
+      //
+      // QA round 3 regression caveat: `resource.data.privacy.profileVisibility`
+      // is a CrUD on a missing field if the user doc never set `privacy`
+      // (most legacy docs don't). Firestore rules surface that as a runtime
+      // error → whole rule denies → admin can't read their own doc → login
+      // breaks. Use `.get()` with default '' so missing privacy fields are
+      // treated as private (not public).
+      allow read: if (resource.data.get(['privacy','profileVisibility'], '') == 'public' &&
+                       resource.data.get('cvVisibility', '') == 'public') ||
                      (isAuthenticated() &&
                        (isOwner(userId) || isVerified() ||
                         isCanonicalOfAlias(userId) ||
