@@ -407,7 +407,7 @@ export const AdminDashboard: React.FC = () => {
 
         {/* Pending member approvals — Phase 0 #2 */}
         <a
-          href={`/${language === 'es' ? 'es' : 'en'}/dashboard/admin?tab=users&status=pending`}
+          href={`/${language === 'es' ? 'es' : 'en'}/dashboard/admin/members?status=pending`}
           className="block rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-colors hover:bg-orange-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-orange-900/10"
         >
           <div className="flex items-center justify-between">

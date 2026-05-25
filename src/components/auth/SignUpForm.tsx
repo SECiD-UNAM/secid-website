@@ -151,17 +151,35 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
   }, []);
 
   // Re-entry: an account can exist but never have completed registration
-  // (e.g. completeRegistration failed — the Cloud Run invoker 403 cohort —
-  // or the wizard was abandoned). Such a user logs in and is dumped on a
-  // gated dashboard with no way to finish. If we're already authenticated
-  // when this form mounts, skip account creation and start at type
-  // selection so they can submit numeroCuenta + proof.
+  // (e.g. completeRegistration failed, or the wizard was abandoned, or
+  // the user followed the welcome email link back to /signup after
+  // verifying). Such a user logs in and is dumped on a gated dashboard
+  // with no way to finish. If we're already authenticated when this
+  // form mounts, skip account creation and start at type selection so
+  // they can submit numeroCuenta + proof.
+  //
+  // QA round 3 (#67): the previous mount-only check raced with Firebase
+  // Auth restoring the session asynchronously. auth.currentUser was
+  // null at first render → effect skipped → form stuck on 'account'
+  // → resubmit blew up with auth/email-already-in-use. Use authStateReady
+  // + onAuthStateChanged so we react when the session actually arrives.
   React.useEffect(() => {
-    if (auth.currentUser && step === 'account') {
-      setStep('type');
-    }
-    // run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let cancelled = false;
+    let unsub: (() => void) | undefined;
+    auth.authStateReady().then(() => {
+      if (cancelled) return;
+      const advance = () => {
+        if (auth.currentUser) {
+          setStep((current) => (current === 'account' ? 'type' : current));
+        }
+      };
+      advance();
+      unsub = auth.onAuthStateChanged(() => advance());
+    });
+    return () => {
+      cancelled = true;
+      if (unsub) unsub();
+    };
   }, []);
 
   // Call the completeRegistration Cloud Function
@@ -305,7 +323,14 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         console.warn('Failed to send verification email:', err)
       );
 
-      // Wait for Cloud Function to create the user document
+      // Wait for Cloud Function to create the user document.
+      //
+      // QA round 3 (#63 root cause): the previous onSnapshot had no
+      // error handler. If Firestore rules deny the read (regression
+      // tested in #56→c8e029a→47c367a chain), the snapshot silently
+      // never fires and the only signal is the 10s timeout → PROFILE_TIMEOUT
+      // → user sees a generic "tardando" message with no actionable info.
+      // Now we surface the actual rule-denial / network error explicitly.
       const userRef = doc(db, 'users', userCredential.user.uid);
       await new Promise<void>((resolve, reject) => {
         const timeout = setTimeout(() => {
@@ -313,18 +338,27 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
           reject(new Error('PROFILE_TIMEOUT'));
         }, 10000);
 
-        const unsubscribe = onSnapshot(userRef, (snap) => {
-          if (snap.exists()) {
+        const unsubscribe = onSnapshot(
+          userRef,
+          (snap) => {
+            if (snap.exists()) {
+              clearTimeout(timeout);
+              unsubscribe();
+              // Update firstName/lastName now that doc exists
+              updateDoc(userRef, {
+                firstName: data.firstName,
+                lastName: data['lastName'],
+              }).catch(() => {});
+              resolve();
+            }
+          },
+          (err) => {
             clearTimeout(timeout);
             unsubscribe();
-            // Update firstName/lastName now that doc exists
-            updateDoc(userRef, {
-              firstName: data.firstName,
-              lastName: data['lastName'],
-            }).catch(() => {});
-            resolve();
+            console.error('Profile snapshot subscription error:', err);
+            reject(err);
           }
-        });
+        );
       });
 
       setStep('type');
