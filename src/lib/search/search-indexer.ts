@@ -10,7 +10,10 @@ import {
   limit,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { logger } from '@/lib/logger';
 import { searchEngine } from './search-engine';
+
+const log = logger.child('SearchIndexer');
 
 /**
  * Search Content Indexer for SECiD Platform
@@ -159,7 +162,7 @@ class JobIndexer {
 
       return indexed;
     } catch (error) {
-      console.error('Error indexing jobs:', error);
+      log.error('Error indexing jobs', error);
       return [];
     }
   }
@@ -231,7 +234,7 @@ class EventIndexer {
 
       return indexed;
     } catch (error) {
-      console.error('Error indexing events:', error);
+      log.error('Error indexing events', error);
       return [];
     }
   }
@@ -360,7 +363,7 @@ class ForumIndexer {
 
       return indexed;
     } catch (error) {
-      console.error('Error indexing forum content:', error);
+      log.error('Error indexing forum content', error);
       return [];
     }
   }
@@ -432,7 +435,7 @@ class MemberIndexer {
 
       return indexed;
     } catch (error) {
-      console.error('Error indexing members:', error);
+      log.error('Error indexing members', error);
       return [];
     }
   }
@@ -516,7 +519,7 @@ class MentorIndexer {
 
       return indexed;
     } catch (error) {
-      console.error('Error indexing mentors:', error);
+      log.error('Error indexing mentors', error);
       return [];
     }
   }
@@ -591,7 +594,7 @@ class NewsIndexer {
 
       return indexed;
     } catch (error) {
-      console.error('Error indexing news:', error);
+      log.error('Error indexing news', error);
       return [];
     }
   }
@@ -612,12 +615,12 @@ export class SearchIndexer {
 
   async indexAllContent(): Promise<void> {
     if (this.indexingInProgress) {
-      console.log('Indexing already in progress...');
+      log.info('Indexing already in progress...');
       return;
     }
 
     this.indexingInProgress = true;
-    console.log('Starting content indexing...');
+    log.info('Starting content indexing...');
 
     try {
       const startTime = Date.now();
@@ -649,14 +652,16 @@ export class SearchIndexer {
       this.lastIndexUpdate = new Date();
       const indexTime = Date.now() - startTime;
 
-      console.log(`Content indexing completed in ${indexTime}ms:`);
-      console.log(`- Jobs: ${jobs.length}`);
-      console.log(`- Events: ${events.length}`);
-      console.log(`- Forum content: ${forumContent.length}`);
-      console.log(`- Members: ${members.length}`);
-      console.log(`- Mentors: ${mentors.length}`);
-      console.log(`- News: ${news.length}`);
-      console.log(`- Total: ${allContent.length} items`);
+      log.info('Content indexing completed', {
+        indexTimeMs: indexTime,
+        jobs: jobs.length,
+        events: events.length,
+        forumContent: forumContent.length,
+        members: members.length,
+        mentors: mentors.length,
+        news: news.length,
+        total: allContent.length,
+      });
 
       // Track indexing analytics
       this.trackIndexingAnalytics({
@@ -672,7 +677,7 @@ export class SearchIndexer {
         },
       });
     } catch (error) {
-      console.error('Error during content indexing:', error);
+      log.error('Error during content indexing', error);
       throw error;
     } finally {
       this.indexingInProgress = false;
@@ -680,7 +685,7 @@ export class SearchIndexer {
   }
 
   async indexContentType(type: SearchContentType): Promise<void> {
-    console.log(`Indexing ${type} content...`);
+    log.info('Indexing content for type', { type });
 
     try {
       let content: IndexedContent[] = [];
@@ -712,9 +717,9 @@ export class SearchIndexer {
       const existingIndex = searchEngine.getIndexStatus();
       // This would require a method to update partial index
       // For now, we'll just log
-      console.log(`Updated ${content.length} ${type} items`);
+      log.info('Updated items for type', { type, count: content.length });
     } catch (error) {
-      console.error(`Error indexing ${type} content:`, error);
+      log.error('Error indexing content for type', { type, error });
       throw error;
     }
   }
@@ -743,9 +748,9 @@ export class SearchIndexer {
       };
 
       // Store indexing metrics (would implement Firebase Analytics tracking)
-      console.log('Indexing analytics:', data);
+      log.info('Indexing analytics', { data });
     } catch (error) {
-      console.error('Error tracking indexing analytics:', error);
+      log.error('Error tracking indexing analytics', error);
     }
   }
 
@@ -755,14 +760,14 @@ export class SearchIndexer {
 
     setInterval(async () => {
       try {
-        console.log('Starting scheduled content re-indexing...');
+        log.info('Starting scheduled content re-indexing...');
         await this.indexAllContent();
       } catch (error) {
-        console.error('Error during scheduled indexing:', error);
+        log.error('Error during scheduled indexing', error);
       }
     }, intervalMs);
 
-    console.log(`Scheduled periodic indexing every ${intervalHours} hours`);
+    log.info('Scheduled periodic indexing', { intervalHours });
   }
 
   // Force immediate re-indexing (for admin use)
@@ -779,7 +784,9 @@ export const searchIndexer = SearchIndexer.getInstance();
 if (typeof window !== 'undefined') {
   // Initial indexing after a delay to allow app to initialize
   setTimeout(() => {
-    searchIndexer.indexAllContent().catch(console.error);
+    searchIndexer
+      .indexAllContent()
+      .catch((error) => log.error('indexAllContent failed', error));
   }, 5000);
 
   // Start periodic indexing

@@ -28,6 +28,9 @@ import type {
   Conversation,
 } from '@/types/member';
 import { mapUserDocToMemberProfile } from './mapper';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('MemberMutations');
 
 const COLLECTIONS = {
   MEMBERS: 'users',
@@ -45,7 +48,7 @@ export async function updateMemberProfile(
   updates: Partial<MemberProfile>
 ): Promise<void> {
   if (isUsingMockAPI()) {
-    console.log('Mock: Updating member profile', uid, updates);
+    log.info('Mock: Updating member profile', { uid, updates });
     return;
   }
 
@@ -56,7 +59,7 @@ export async function updateMemberProfile(
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error updating member profile:', error);
+    log.error('Error updating member profile', error);
     throw error;
   }
 }
@@ -70,7 +73,7 @@ export async function sendConnectionRequest(
   message?: string
 ): Promise<void> {
   if (isUsingMockAPI()) {
-    console.log('Mock: Sending connection request', {
+    log.info('Mock: Sending connection request', {
       fromUid,
       toUid,
       message,
@@ -100,7 +103,7 @@ export async function sendConnectionRequest(
 
     await batch.commit();
   } catch (error) {
-    console.error('Error sending connection request:', error);
+    log.error('Error sending connection request', error);
     throw error;
   }
 }
@@ -109,7 +112,7 @@ export async function acceptConnectionRequest(
   requestId: string
 ): Promise<void> {
   if (isUsingMockAPI()) {
-    console.log('Mock: Accepting connection request', requestId);
+    log.info('Mock: Accepting connection request', { requestId });
     return;
   }
 
@@ -145,7 +148,7 @@ export async function acceptConnectionRequest(
 
     await batch.commit();
   } catch (error) {
-    console.error('Error accepting connection request:', error);
+    log.error('Error accepting connection request', error);
     throw error;
   }
 }
@@ -159,7 +162,7 @@ export async function sendMessage(
   content: string
 ): Promise<void> {
   if (isUsingMockAPI()) {
-    console.log('Mock: Sending message', { fromUid, toUid, content });
+    log.info('Mock: Sending message', { fromUid, toUid, content });
     return;
   }
 
@@ -190,7 +193,7 @@ export async function sendMessage(
 
     await batch.commit();
   } catch (error) {
-    console.error('Error sending message:', error);
+    log.error('Error sending message', error);
     throw error;
   }
 }
@@ -230,7 +233,7 @@ export async function followMember(
   targetUid: string
 ): Promise<void> {
   if (isUsingMockAPI()) {
-    console.log('Mock: Following member', { followerUid, targetUid });
+    log.info('Mock: Following member', { followerUid, targetUid });
     return;
   }
 
@@ -249,7 +252,7 @@ export async function unfollowMember(
   targetUid: string
 ): Promise<void> {
   if (isUsingMockAPI()) {
-    console.log('Mock: Unfollowing member', { followerUid, targetUid });
+    log.info('Mock: Unfollowing member', { followerUid, targetUid });
     return;
   }
 
@@ -289,7 +292,7 @@ export async function uploadProfileImage(
     await uploadBytes(fileRef, file, { contentType: file.type });
     return await getDownloadURL(fileRef);
   } catch (error) {
-    console.error('Error uploading profile image:', error);
+    log.error('Error uploading profile image', error);
     throw error;
   }
 }
@@ -302,7 +305,7 @@ export async function trackProfileView(
   profileUid: string
 ): Promise<void> {
   if (isUsingMockAPI()) {
-    console.log('Mock: Tracking profile view', { viewerUid, profileUid });
+    log.info('Mock: Tracking profile view', { viewerUid, profileUid });
     return;
   }
 
@@ -312,7 +315,7 @@ export async function trackProfileView(
       'activity.profileViews': increment(1),
     });
   } catch (error) {
-    console.error('Error tracking profile view:', error);
+    log.error('Error tracking profile view', error);
   }
 }
 
@@ -326,7 +329,7 @@ export async function updateMemberStatus(
   reason: string = ''
 ): Promise<void> {
   if (isUsingMockAPI()) {
-    console.log('Mock: Updating member status', {
+    log.info('Mock: Updating member status', {
       uid,
       newStatus,
       changedBy,
@@ -379,7 +382,7 @@ export async function bulkUpdateMemberStatus(
   reason: string = ''
 ): Promise<void> {
   if (isUsingMockAPI()) {
-    console.log('Mock: Bulk updating member status', { uids, newStatus });
+    log.info('Mock: Bulk updating member status', { uids, newStatus });
     return;
   }
 

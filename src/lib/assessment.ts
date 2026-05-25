@@ -20,6 +20,9 @@ import {
   type QueryConstraint,
 } from 'firebase/firestore';
 import { db, isUsingMockAPI } from './firebase';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('Assessment');
 
 /**
  * Assessment System Firebase Functions
@@ -61,7 +64,7 @@ export async function createAssessment(
 ): Promise<string> {
   if (isUsingMockAPI()) {
     const mockId = `assessment_${Date.now()}`;
-    console.log('Mock: Created assessment', mockId);
+    log.info('Mock: Created assessment', { mockId });
     return mockId;
   }
 
@@ -76,7 +79,7 @@ export async function createAssessment(
     });
     return docRef['id'];
   } catch (error) {
-    console.error('Error creating assessment:', error);
+    log.error('Error creating assessment', error);
     throw error;
   }
 }
@@ -118,7 +121,7 @@ export async function getAssessment(
     }
     return null;
   } catch (error) {
-    console.error('Error getting assessment:', error);
+    log.error('Error getting assessment', error);
     throw error;
   }
 }
@@ -206,7 +209,7 @@ export async function getAssessments(
       ...doc['data'](),
     })) as Assessment[];
   } catch (error) {
-    console.error('Error getting assessments:', error);
+    log.error('Error getting assessments', error);
     throw error;
   }
 }
@@ -216,7 +219,7 @@ export async function updateAssessment(
   updates: Partial<Assessment>
 ): Promise<void> {
   if (isUsingMockAPI()) {
-    console.log('Mock: Updated assessment', assessmentId, updates);
+    log.info('Mock: Updated assessment', { assessmentId, updates });
     return;
   }
 
@@ -226,7 +229,7 @@ export async function updateAssessment(
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error updating assessment:', error);
+    log.error('Error updating assessment', error);
     throw error;
   }
 }
@@ -237,7 +240,7 @@ export async function createQuestion(
 ): Promise<string> {
   if (isUsingMockAPI()) {
     const mockId = `question_${Date.now()}`;
-    console.log('Mock: Created question', mockId);
+    log.info('Mock: Created question', { mockId });
     return mockId;
   }
 
@@ -251,7 +254,7 @@ export async function createQuestion(
     });
     return docRef['id'];
   } catch (error) {
-    console.error('Error creating question:', error);
+    log.error('Error creating question', error);
     throw error;
   }
 }
@@ -320,7 +323,7 @@ export async function getQuestion(
     }
     return null;
   } catch (error) {
-    console.error('Error getting question:', error);
+    log.error('Error getting question', error);
     throw error;
   }
 }
@@ -361,7 +364,7 @@ export async function getQuestions(questionIds: string[]): Promise<Question[]> {
     }
     return questions;
   } catch (error) {
-    console.error('Error getting questions:', error);
+    log.error('Error getting questions', error);
     throw error;
   }
 }
@@ -373,7 +376,7 @@ export async function startAssessment(
 ): Promise<string> {
   if (isUsingMockAPI()) {
     const mockId = `attempt_${Date.now()}`;
-    console.log('Mock: Started assessment attempt', mockId);
+    log.info('Mock: Started assessment attempt', { mockId });
     return mockId;
   }
 
@@ -408,7 +411,7 @@ export async function startAssessment(
 
     return docRef['id'];
   } catch (error) {
-    console.error('Error starting assessment:', error);
+    log.error('Error starting assessment', error);
     throw error;
   }
 }
@@ -444,7 +447,7 @@ export async function getAssessmentAttempt(
     }
     return null;
   } catch (error) {
-    console.error('Error getting assessment attempt:', error);
+    log.error('Error getting assessment attempt', error);
     throw error;
   }
 }
@@ -454,7 +457,7 @@ export async function saveAnswer(
   answer: UserAnswer
 ): Promise<void> {
   if (isUsingMockAPI()) {
-    console.log('Mock: Saved answer for attempt', attemptId, answer);
+    log.info('Mock: Saved answer for attempt', { attemptId, answer });
     return;
   }
 
@@ -465,7 +468,7 @@ export async function saveAnswer(
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error saving answer:', error);
+    log.error('Error saving answer', error);
     throw error;
   }
 }
@@ -475,7 +478,7 @@ export async function updateAttemptProgress(
   updates: Partial<AssessmentAttempt>
 ): Promise<void> {
   if (isUsingMockAPI()) {
-    console.log('Mock: Updated attempt progress', attemptId, updates);
+    log.info('Mock: Updated attempt progress', { attemptId, updates });
     return;
   }
 
@@ -485,7 +488,7 @@ export async function updateAttemptProgress(
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error updating attempt progress:', error);
+    log.error('Error updating attempt progress', error);
     throw error;
   }
 }
@@ -584,7 +587,7 @@ export async function submitAssessment(
 
     return { ...result, attemptId };
   } catch (error) {
-    console.error('Error submitting assessment:', error);
+    log.error('Error submitting assessment', error);
     throw error;
   }
 }
@@ -657,7 +660,7 @@ export async function getUserProgress(
       lastActivity: new Date(),
     };
   } catch (error) {
-    console.error('Error getting user progress:', error);
+    log.error('Error getting user progress', error);
     throw error;
   }
 }
@@ -729,7 +732,7 @@ export async function getLeaderboard(
       totalParticipants: 0,
     };
   } catch (error) {
-    console.error('Error getting leaderboard:', error);
+    log.error('Error getting leaderboard', error);
     throw error;
   }
 }
@@ -796,7 +799,7 @@ export async function generateCertificate(
 
     return { id: docRef['id'], ...certificate };
   } catch (error) {
-    console.error('Error generating certificate:', error);
+    log.error('Error generating certificate', error);
     throw error;
   }
 }
@@ -836,7 +839,7 @@ export async function getUserCertificates(
       ...doc['data'](),
     })) as Certificate[];
   } catch (error) {
-    console.error('Error getting user certificates:', error);
+    log.error('Error getting user certificates', error);
     throw error;
   }
 }
@@ -888,7 +891,7 @@ export async function searchAssessments(
       }))
       .sort((a, b) => b.relevanceScore - a.relevanceScore);
   } catch (error) {
-    console.error('Error searching assessments:', error);
+    log.error('Error searching assessments', error);
     throw error;
   }
 }
@@ -932,8 +935,8 @@ export function subscribeToAttempt(
   callback: (attempt: AssessmentAttempt) => void
 ): () => void {
   if (isUsingMockAPI()) {
-    console.log('Mock: Subscribed to attempt', attemptId);
-    return () => console.log('Mock: Unsubscribed from attempt', attemptId);
+    log.info('Mock: Subscribed to attempt', { attemptId });
+    return () => log.info('Mock: Unsubscribed from attempt', { attemptId });
   }
 
   return onSnapshot(doc(db, ATTEMPTS_COLLECTION, attemptId), (doc) => {
@@ -949,8 +952,8 @@ export function subscribeToLeaderboard(
   callback: (leaderboard: Leaderboard) => void
 ): () => void {
   if (isUsingMockAPI()) {
-    console.log('Mock: Subscribed to leaderboard', type, category);
-    return () => console.log('Mock: Unsubscribed from leaderboard');
+    log.info('Mock: Subscribed to leaderboard', { type, category });
+    return () => log.info('Mock: Unsubscribed from leaderboard');
   }
 
   const leaderboardId = `${type}_${category || 'global'}`;

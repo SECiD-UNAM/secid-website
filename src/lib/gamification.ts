@@ -10,6 +10,9 @@ import type {
   QuestProgress,
   QuestType,
 } from '../types/gamification';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('Gamification');
 
 /**
  * Gamification System Library
@@ -153,11 +156,9 @@ export async function awardPoints(
     // Check for badge achievements
     await checkBadgeAchievements(userId);
 
-    console.log(
-      `Awarded ${points} points to user ${userId} for ${activityType}`
-    );
+    log.info('Awarded points', { points, userId, activityType });
   } catch (error) {
-    console.error('Error awarding points:', error);
+    log.error('Error awarding points', error);
     throw error;
   }
 }
@@ -178,7 +179,7 @@ export async function getUserGameData(userId: string): Promise<UserGameData> {
       }
     );
   } catch (error) {
-    console.error('Error fetching user game data:', error);
+    log.error('Error fetching user game data', error);
     throw error;
   }
 }
@@ -190,7 +191,7 @@ export async function getPointsHistory(
   try {
     return await fetchPointsHistory(userId, limit);
   } catch (error) {
-    console.error('Error fetching points history:', error);
+    log.error('Error fetching points history', error);
     return [];
   }
 }
@@ -230,7 +231,7 @@ export async function getPointsBreakdown(
 
     return breakdown;
   } catch (error) {
-    console.error('Error calculating points breakdown:', error);
+    log.error('Error calculating points breakdown', error);
     throw error;
   }
 }
@@ -261,9 +262,9 @@ export async function awardBadge(
     // Award bonus points for badge achievement
     await awardPoints(userId, 'REFERRAL', `Earned badge: ${badge['name']}`);
 
-    console.log(`Awarded badge ${badgeId} to user ${userId}`);
+    log.info('Awarded badge', { badgeId, userId });
   } catch (error) {
-    console.error('Error awarding badge:', error);
+    log.error('Error awarding badge', error);
     throw error;
   }
 }
@@ -284,7 +285,7 @@ export async function checkBadgeAchievements(userId: string): Promise<void> {
       }
     }
   } catch (error) {
-    console.error('Error checking badge achievements:', error);
+    log.error('Error checking badge achievements', error);
   }
 }
 
@@ -311,7 +312,7 @@ export async function getLeaderboard(
   try {
     return await fetchLeaderboard(type, period, limit);
   } catch (error) {
-    console.error('Error fetching leaderboard:', error);
+    log.error('Error fetching leaderboard', error);
     return [];
   }
 }
@@ -324,7 +325,7 @@ export async function getUserRank(
   try {
     return await fetchUserRank(userId, type, period);
   } catch (error) {
-    console.error('Error fetching user rank:', error);
+    log.error('Error fetching user rank', error);
     return null;
   }
 }
@@ -337,7 +338,7 @@ export async function getActiveQuests(): Promise<Quest[]> {
     const now = new Date().toISOString();
     return await fetchActiveQuests(now);
   } catch (error) {
-    console.error('Error fetching active quests:', error);
+    log.error('Error fetching active quests', error);
     return [];
   }
 }
@@ -348,7 +349,7 @@ export async function getUserQuestProgress(
   try {
     return await fetchUserQuestProgress(userId);
   } catch (error) {
-    console.error('Error fetching quest progress:', error);
+    log.error('Error fetching quest progress', error);
     return {};
   }
 }
@@ -369,7 +370,7 @@ export async function completeQuestStep(
       await completeQuest(userId, questId);
     }
   } catch (error) {
-    console.error('Error completing quest step:', error);
+    log.error('Error completing quest step', error);
     throw error;
   }
 }
@@ -401,7 +402,7 @@ async function savePointsActivity(activity: PointsActivity): Promise<void> {
   // Implementation depends on your database
   // For Firebase: add to 'pointsActivities' collection
   // For MongoDB: insert into pointsActivities collection
-  console.log('Saving points activity:', activity);
+  log.info('Saving points activity', { activity });
 }
 
 async function updateUserGameData(
@@ -410,7 +411,7 @@ async function updateUserGameData(
 ): Promise<void> {
   // Implementation depends on your database
   // Update user's total points, recalculate level, update streak if daily login
-  console.log(`Updating user ${userId} game data with ${pointsToAdd} points`);
+  log.info('Updating user game data', { userId, pointsToAdd });
 }
 
 async function fetchUserGameData(userId: string): Promise<UserGameData | null> {
@@ -430,7 +431,7 @@ async function fetchPointsHistory(
 
 async function saveBadgeAchievement(achievement: Achievement): Promise<void> {
   // Implementation depends on your database
-  console.log('Saving badge achievement:', achievement);
+  log.info('Saving badge achievement', { achievement });
 }
 
 async function getUserStats(userId: string): Promise<any> {
@@ -480,7 +481,7 @@ async function updateQuestProgress(
 ): Promise<void> {
   // Implementation depends on your database
   // Update quest progress for the user
-  console.log(`Updating quest progress: ${userId}, ${questId}, ${actionType}`);
+  log.info('Updating quest progress', { userId, questId, actionType });
 }
 
 async function getQuestById(questId: string): Promise<Quest | null> {
@@ -501,7 +502,7 @@ async function getQuestProgress(
 async function completeQuest(userId: string, questId: string): Promise<void> {
   // Implementation depends on your database
   // Mark quest as completed and award rewards
-  console.log(`Completing quest: ${userId}, ${questId}`);
+  log.info('Completing quest', { userId, questId });
 }
 
 /**

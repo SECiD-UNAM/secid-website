@@ -27,6 +27,9 @@ import type {
   Certificate,
   CourseCategory,
 } from '../types';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('Learning');
 
 // Collection references
 const coursesRef = collection(db, 'courses');
@@ -82,7 +85,7 @@ export const getCourses = async (filters?: {
       updatedAt: doc.data().updatedAt?.toDate() || new Date(),
     })) as Course[];
   } catch (error) {
-    console.error('Error getting courses:', error);
+    log.error('Error getting courses', error);
     throw new Error('Failed to get courses');
   }
 };
@@ -102,7 +105,7 @@ export const getCourse = async (courseId: string): Promise<Course> => {
       updatedAt: courseDoc.data().updatedAt?.toDate() || new Date(),
     } as Course;
   } catch (error) {
-    console.error('Error getting course:', error);
+    log.error('Error getting course', error);
     throw new Error('Failed to get course');
   }
 };
@@ -126,7 +129,7 @@ export const createCourse = async (
       updatedAt: new Date(),
     };
   } catch (error) {
-    console.error('Error creating course:', error);
+    log.error('Error creating course', error);
     throw new Error('Failed to create course');
   }
 };
@@ -142,7 +145,7 @@ export const updateCourse = async (
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error updating course:', error);
+    log.error('Error updating course', error);
     throw new Error('Failed to update course');
   }
 };
@@ -185,7 +188,7 @@ export const getLearningPaths = async (filters?: {
       updatedAt: doc.data().updatedAt?.toDate() || new Date(),
     })) as LearningPath[];
   } catch (error) {
-    console.error('Error getting learning paths:', error);
+    log.error('Error getting learning paths', error);
     throw new Error('Failed to get learning paths');
   }
 };
@@ -233,7 +236,7 @@ export const getRecommendedPaths = async (
 
     return paths.slice(0, 3); // Return top 3 recommendations
   } catch (error) {
-    console.error('Error getting recommended paths:', error);
+    log.error('Error getting recommended paths', error);
     return [];
   }
 };
@@ -325,7 +328,7 @@ export const enrollInCourse = async (
       progress: initialProgress,
     } as CourseEnrollment;
   } catch (error) {
-    console.error('Error enrolling in course:', error);
+    log.error('Error enrolling in course', error);
     throw new Error('Failed to enroll in course');
   }
 };
@@ -355,7 +358,7 @@ export const getUserEnrollments = async (
       },
     })) as CourseEnrollment[];
   } catch (error) {
-    console.error('Error getting user enrollments:', error);
+    log.error('Error getting user enrollments', error);
     throw new Error('Failed to get user enrollments');
   }
 };
@@ -391,7 +394,7 @@ export const getUserEnrollment = async (
       },
     } as CourseEnrollment;
   } catch (error) {
-    console.error('Error getting user enrollment:', error);
+    log.error('Error getting user enrollment', error);
     throw new Error('Failed to get user enrollment');
   }
 };
@@ -478,7 +481,7 @@ export const updateLessonProgress = async (
       );
     }
   } catch (error) {
-    console.error('Error updating lesson progress:', error);
+    log.error('Error updating lesson progress', error);
     throw new Error('Failed to update lesson progress');
   }
 };
@@ -525,7 +528,7 @@ export const submitQuizAttempt = async (
       ...attempt,
     };
   } catch (error) {
-    console.error('Error submitting quiz attempt:', error);
+    log.error('Error submitting quiz attempt', error);
     throw new Error('Failed to submit quiz attempt');
   }
 };
@@ -600,7 +603,7 @@ export const generateCertificate = async (
       expiresAt: undefined,
     } as Certificate;
   } catch (error) {
-    console.error('Error generating certificate:', error);
+    log.error('Error generating certificate', error);
     throw new Error('Failed to generate certificate');
   }
 };
@@ -623,7 +626,7 @@ export const getUserCertificates = async (
       expiresAt: doc.data().expiresAt?.toDate(),
     })) as Certificate[];
   } catch (error) {
-    console.error('Error getting user certificates:', error);
+    log.error('Error getting user certificates', error);
     throw new Error('Failed to get user certificates');
   }
 };
@@ -699,7 +702,7 @@ export const searchCourses = async (
         )
     );
   } catch (error) {
-    console.error('Error searching courses:', error);
+    log.error('Error searching courses', error);
     throw new Error('Failed to search courses');
   }
 };
@@ -782,7 +785,7 @@ export const getCourseAnalytics = async (
       popularLessons,
     };
   } catch (error) {
-    console.error('Error getting course analytics:', error);
+    log.error('Error getting course analytics', error);
     throw new Error('Failed to get course analytics');
   }
 };

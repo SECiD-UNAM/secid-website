@@ -34,6 +34,9 @@ import type {
   MessageSearchFilters,
   TypingIndicator,
 } from '../types';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('Messaging');
 
 // Collection references
 const conversationsRef = collection(db, 'conversations');
@@ -82,7 +85,7 @@ export const sendMessage = async (
           );
           thumbnailUrl = await getDownloadURL(thumbnailSnapshot.ref);
         } catch (error) {
-          console.warn('Error generating thumbnail:', error);
+          log.warn('Error generating thumbnail', { error });
         }
       }
 
@@ -157,7 +160,7 @@ export const sendMessage = async (
 
     return createdMessage;
   } catch (error) {
-    console.error('Error sending message:', error);
+    log.error('Error sending message', error);
     throw new Error('Failed to send message');
   }
 };
@@ -202,7 +205,7 @@ export const getMessages = async (
 
     return messages;
   } catch (error) {
-    console.error('Error getting messages:', error);
+    log.error('Error getting messages', error);
     throw new Error('Failed to get messages');
   }
 };
@@ -220,7 +223,7 @@ export const editMessage = async (
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error editing message:', error);
+    log.error('Error editing message', error);
     throw new Error('Failed to edit message');
   }
 };
@@ -248,14 +251,14 @@ export const deleteMessage = async (messageId: string): Promise<void> => {
             await deleteObject(thumbnailRef);
           }
         } catch (error) {
-          console.warn('Error deleting attachment:', error);
+          log.warn('Error deleting attachment', { error });
         }
       }
     }
 
     await deleteDoc(messageDocRef);
   } catch (error) {
-    console.error('Error deleting message:', error);
+    log.error('Error deleting message', error);
     throw new Error('Failed to delete message');
   }
 };
@@ -270,7 +273,7 @@ export const markMessageAsRead = async (
       'metadata.readAt': serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error marking message as read:', error);
+    log.error('Error marking message as read', error);
     throw new Error('Failed to mark message as read');
   }
 };
@@ -292,7 +295,7 @@ export const addReaction = async (
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error adding reaction:', error);
+    log.error('Error adding reaction', error);
     throw new Error('Failed to add reaction');
   }
 };
@@ -319,7 +322,7 @@ export const removeReaction = async (
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error removing reaction:', error);
+    log.error('Error removing reaction', error);
     throw new Error('Failed to remove reaction');
   }
 };
@@ -361,7 +364,7 @@ export const getConversations = async (
 
     return conversations;
   } catch (error) {
-    console.error('Error getting conversations:', error);
+    log.error('Error getting conversations', error);
     throw new Error('Failed to get conversations');
   }
 };
@@ -424,7 +427,7 @@ export const createConversation = async (
       updatedAt: new Date(),
     } as Conversation;
   } catch (error) {
-    console.error('Error creating conversation:', error);
+    log.error('Error creating conversation', error);
     throw new Error('Failed to create conversation');
   }
 };
@@ -440,7 +443,7 @@ export const markConversationAsRead = async (
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error marking conversation as read:', error);
+    log.error('Error marking conversation as read', error);
     throw new Error('Failed to mark conversation as read');
   }
 };
@@ -457,7 +460,7 @@ export const archiveConversation = async (
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error archiving conversation:', error);
+    log.error('Error archiving conversation', error);
     throw new Error('Failed to archive conversation');
   }
 };
@@ -484,7 +487,7 @@ export const deleteConversation = async (
     const conversationDocRef = doc(conversationsRef, conversationId);
     await deleteDoc(conversationDocRef);
   } catch (error) {
-    console.error('Error deleting conversation:', error);
+    log.error('Error deleting conversation', error);
     throw new Error('Failed to delete conversation');
   }
 };
@@ -517,7 +520,7 @@ export const sendTypingIndicator = async (
       });
     }
   } catch (error) {
-    console.error('Error sending typing indicator:', error);
+    log.error('Error sending typing indicator', error);
   }
 };
 
@@ -606,7 +609,7 @@ export const searchMessages = async (
 
     return messages;
   } catch (error) {
-    console.error('Error searching messages:', error);
+    log.error('Error searching messages', error);
     throw new Error('Failed to search messages');
   }
 };

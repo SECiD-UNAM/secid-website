@@ -3,6 +3,10 @@
  * including service worker registration, update management, and offline capabilities
  */
 
+import { logger } from '@/lib/logger';
+
+const log = logger.child('PWA');
+
 interface PWAState {
   isSupported: boolean;
   isInstalled: boolean;
@@ -42,7 +46,7 @@ class PWAManager {
    */
   private async init(): Promise<void> {
     if (!this.isSupported()) {
-      console.warn('[PWA] Service Workers not supported');
+      log.warn('Service Workers not supported');
       return;
     }
 
@@ -76,7 +80,7 @@ class PWAManager {
         }
       );
 
-      console.log('[PWA] Service Worker registered successfully');
+      log.info('Service Worker registered successfully');
 
       // Handle service worker state changes
       this.registration.addEventListener('updatefound', () => {
@@ -85,16 +89,16 @@ class PWAManager {
 
       // Check for existing service worker
       if (this.registration.active) {
-        console.log('[PWA] Service Worker is active');
+        log.info('Service Worker is active');
       }
 
       // Listen for controller changes
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         this.emit('controllerchange');
-        console.log('[PWA] New service worker controller');
+        log.info('New service worker controller');
       });
     } catch (error) {
-      console.error('[PWA] Service Worker registration failed:', error);
+      log.error('Service Worker registration failed', error);
       throw error;
     }
   }
@@ -108,18 +112,18 @@ class PWAManager {
     const newWorker = this.registration.installing;
     if (!newWorker) return;
 
-    console.log('[PWA] New service worker found');
+    log.info('New service worker found');
     this.emit('updatefound');
 
     newWorker.addEventListener('statechange', () => {
       if (newWorker.state === 'installed') {
         if (navigator.serviceWorker.controller) {
           // New update available
-          console.log('[PWA] New update available');
+          log.info('New update available');
           this.emit('updateavailable');
         } else {
           // First install
-          console.log('[PWA] Content is cached for offline use');
+          log.info('Content is cached for offline use');
           this.emit('cached');
         }
       }
@@ -134,25 +138,25 @@ class PWAManager {
     window.addEventListener('beforeinstallprompt', (e: Event) => {
       e.preventDefault();
       this.deferredPrompt = e as InstallPromptEvent;
-      console.log('[PWA] Install prompt deferred');
+      log.info('Install prompt deferred');
       this.emit('installprompt');
     });
 
     // App installed event
     window.addEventListener('appinstalled', () => {
-      console.log('[PWA] App installed successfully');
+      log.info('App installed successfully');
       this.deferredPrompt = null;
       this.emit('installed');
     });
 
     // Online/offline status
     window.addEventListener('online', () => {
-      console.log('[PWA] App is online');
+      log.info('App is online');
       this.emit('online');
     });
 
     window.addEventListener('offline', () => {
-      console.log('[PWA] App is offline');
+      log.info('App is offline');
       this.emit('offline');
     });
 
@@ -180,12 +184,12 @@ class PWAManager {
 
       this.deferredPrompt = null;
 
-      console.log('[PWA] Install prompt result:', result.outcome);
+      log.info('Install prompt result', { outcome: result.outcome });
       this.emit('installresult', result);
 
       return result;
     } catch (error) {
-      console.error('[PWA] Install prompt failed:', error);
+      log.error('Install prompt failed', error);
       return { outcome: 'dismissed' };
     }
   }
@@ -236,9 +240,9 @@ class PWAManager {
 
     try {
       await this.registration.update();
-      console.log('[PWA] Checked for updates');
+      log.info('Checked for updates');
     } catch (error) {
-      console.error('[PWA] Update check failed:', error);
+      log.error('Update check failed', error);
     }
   }
 
@@ -247,7 +251,7 @@ class PWAManager {
    */
   async applyUpdate(): Promise<void> {
     if (!this.registration || !this.registration.waiting) {
-      console.warn('[PWA] No update available to apply');
+      log.warn('No update available to apply');
       return;
     }
 
@@ -271,7 +275,7 @@ class PWAManager {
         );
       });
     } catch (error) {
-      console.error('[PWA] Failed to apply update:', error);
+      log.error('Failed to apply update', error);
       throw error;
     }
   }
@@ -311,12 +315,12 @@ class PWAManager {
    */
   async requestNotificationPermission(): Promise<NotificationPermission> {
     if (!('Notification' in window)) {
-      console.warn('[PWA] Notifications not supported');
+      log.warn('Notifications not supported');
       return 'denied';
     }
 
     const permission = await Notification.requestPermission();
-    console.log('[PWA] Notification permission:', permission);
+    log.info('Notification permission', { permission });
 
     return permission;
   }
@@ -344,9 +348,9 @@ class PWAManager {
         requireInteraction: options.requireInteraction || false,
       });
 
-      console.log('[PWA] Notification shown:', options.title);
+      log.info('Notification shown', { title: options.title });
     } catch (error) {
-      console.error('[PWA] Failed to show notification:', error);
+      log.error('Failed to show notification', error);
       throw error;
     }
   }
@@ -367,10 +371,10 @@ class PWAManager {
         ),
       });
 
-      console.log('[PWA] Push subscription created');
+      log.info('Push subscription created');
       return subscription;
     } catch (error) {
-      console.error('[PWA] Push subscription failed:', error);
+      log.error('Push subscription failed', error);
       return null;
     }
   }
@@ -384,7 +388,7 @@ class PWAManager {
     try {
       return await this.registration.pushManager.getSubscription();
     } catch (error) {
-      console.error('[PWA] Failed to get push subscription:', error);
+      log.error('Failed to get push subscription', error);
       return null;
     }
   }
@@ -401,10 +405,10 @@ class PWAManager {
 
     try {
       const result = await subscription.unsubscribe();
-      console.log('[PWA] Push unsubscribed:', result);
+      log.info('Push unsubscribed', { result });
       return result;
     } catch (error) {
-      console.error('[PWA] Push unsubscribe failed:', error);
+      log.error('Push unsubscribe failed', error);
       return false;
     }
   }
@@ -420,9 +424,9 @@ class PWAManager {
     try {
       const cache = await caches.open('user-cache-v1');
       await cache.addAll(urls);
-      console.log('[PWA] Resources cached:', urls.length);
+      log.info('Resources cached', { count: urls.length });
     } catch (error) {
-      console.error('[PWA] Failed to cache resources:', error);
+      log.error('Failed to cache resources', error);
       throw error;
     }
   }
@@ -438,9 +442,9 @@ class PWAManager {
 
       await Promise.all(names.map((name) => caches.delete(name)));
 
-      console.log('[PWA] Cache cleared');
+      log.info('Cache cleared');
     } catch (error) {
-      console.error('[PWA] Failed to clear cache:', error);
+      log.error('Failed to clear cache', error);
     }
   }
 

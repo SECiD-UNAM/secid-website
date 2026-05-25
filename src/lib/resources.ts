@@ -50,6 +50,9 @@ import type {
   ResourceAnalytics,
   AccessLevel,
 } from '@/types/resource';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('Resources');
 
 const RESOURCES_COLLECTION = 'resources';
 const REVIEWS_COLLECTION = 'resource_reviews';
@@ -158,7 +161,7 @@ export async function searchResources(
       facets,
     };
   } catch (error) {
-    console.error('Error searching resources:', error);
+    log.error('Error searching resources', error);
     throw new Error('Failed to search resources');
   }
 }
@@ -188,7 +191,7 @@ export async function getResource(id: string): Promise<Resource | null> {
       publishedAt: data['publishedAt']?.toDate(),
     } as Resource;
   } catch (error) {
-    console.error('Error getting resource:', error);
+    log.error('Error getting resource', error);
     throw new Error('Failed to get resource');
   }
 }
@@ -352,7 +355,7 @@ export async function uploadResource(
       return resourceRef['id'];
     });
   } catch (error) {
-    console.error('Error uploading resource:', error);
+    log.error('Error uploading resource', error);
     throw new Error('Failed to upload resource');
   }
 }
@@ -390,7 +393,7 @@ export async function updateResource(
       description: `Updated resource: ${updates.title || id}`,
     });
   } catch (error) {
-    console.error('Error updating resource:', error);
+    log.error('Error updating resource', error);
     throw new Error('Failed to update resource');
   }
 }
@@ -444,11 +447,11 @@ export async function deleteResource(id: string): Promise<void> {
           await deleteObject(thumbnailRef);
         }
       } catch (storageError) {
-        console.warn('Error deleting files from storage:', storageError);
+        log.warn('Error deleting files from storage', { storageError });
       }
     });
   } catch (error) {
-    console.error('Error deleting resource:', error);
+    log.error('Error deleting resource', error);
     throw new Error('Failed to delete resource');
   }
 }
@@ -497,7 +500,7 @@ export async function trackDownload(resourceId: string): Promise<void> {
       });
     });
   } catch (error) {
-    console.error('Error tracking download:', error);
+    log.error('Error tracking download', error);
     throw new Error('Failed to track download');
   }
 }
@@ -516,7 +519,7 @@ export async function trackView(resourceId: string): Promise<void> {
       viewCount: increment(1),
     });
   } catch (error) {
-    console.error('Error tracking view:', error);
+    log.error('Error tracking view', error);
     // Don't throw error for view tracking failures
   }
 }
@@ -564,7 +567,7 @@ export async function addReview(
       });
     });
   } catch (error) {
-    console.error('Error adding review:', error);
+    log.error('Error adding review', error);
     throw new Error('Failed to add review');
   }
 }
@@ -600,7 +603,7 @@ export async function bookmarkResource(
       bookmarkCount: increment(1),
     });
   } catch (error) {
-    console.error('Error bookmarking resource:', error);
+    log.error('Error bookmarking resource', error);
     throw new Error('Failed to bookmark resource');
   }
 }
@@ -641,7 +644,7 @@ export async function removeBookmark(resourceId: string): Promise<void> {
       bookmarkCount: increment(-1),
     });
   } catch (error) {
-    console.error('Error removing bookmark:', error);
+    log.error('Error removing bookmark', error);
     throw new Error('Failed to remove bookmark');
   }
 }
@@ -680,7 +683,7 @@ export async function getUserBookmarks(userId: string): Promise<Resource[]> {
       publishedAt: doc.data().publishedAt?.toDate(),
     })) as Resource[];
   } catch (error) {
-    console.error('Error getting user bookmarks:', error);
+    log.error('Error getting user bookmarks', error);
     throw new Error('Failed to get user bookmarks');
   }
 }
@@ -738,7 +741,7 @@ export async function getResourceStats(): Promise<ResourceStats> {
 
     return stats;
   } catch (error) {
-    console.error('Error getting resource stats:', error);
+    log.error('Error getting resource stats', error);
     throw new Error('Failed to get resource stats');
   }
 }
@@ -756,7 +759,7 @@ async function logActivity(
       createdAt: new Date(),
     });
   } catch (error) {
-    console.error('Error logging activity:', error);
+    log.error('Error logging activity', error);
   }
 }
 

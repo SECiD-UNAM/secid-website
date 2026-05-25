@@ -1,5 +1,8 @@
 // @ts-nocheck
 import { db, auth } from '@/lib/firebase';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('SearchAnalytics');
 
 /**
  * Search Analytics and History Tracking System
@@ -99,9 +102,9 @@ export class SearchAnalytics {
     try {
       // Initialize analytics tracking
       this.isInitialized = true;
-      console.log('Search Analytics initialized');
+      log.info('Search Analytics initialized');
     } catch (error) {
-      console.error('Failed to initialize search analytics:', error);
+      log.error('Failed to initialize search analytics', error);
     }
   }
 
@@ -144,9 +147,9 @@ export class SearchAnalytics {
       // Update popular searches
       await this.updatePopularSearch(query);
 
-      console.log('Search tracked:', { query, resultCount, searchTime });
+      log.info('Search tracked', { query, resultCount, searchTime });
     } catch (error) {
-      console.error('Error tracking search:', error);
+      log.error('Error tracking search', error);
     }
   }
 
@@ -179,9 +182,9 @@ export class SearchAnalytics {
         clickThrough: true,
       });
 
-      console.log('Result click tracked:', { resultId, position });
+      log.info('Result click tracked', { resultId, position });
     } catch (error) {
-      console.error('Error tracking result click:', error);
+      log.error('Error tracking result click', error);
     }
   }
 
@@ -212,9 +215,9 @@ export class SearchAnalytics {
         filterEffectiveness: resultCountAfter / resultCountBefore,
       });
 
-      console.log('Filter application tracked:', appliedFilters);
+      log.info('Filter application tracked', { appliedFilters });
     } catch (error) {
-      console.error('Error tracking filter application:', error);
+      log.error('Error tracking filter application', error);
     }
   }
 
@@ -242,9 +245,9 @@ export class SearchAnalytics {
         suggestionType,
       });
 
-      console.log('Suggestion click tracked:', { suggestion, suggestionType });
+      log.info('Suggestion click tracked', { suggestion, suggestionType });
     } catch (error) {
-      console.error('Error tracking suggestion click:', error);
+      log.error('Error tracking suggestion click', error);
     }
   }
 
@@ -273,13 +276,13 @@ export class SearchAnalytics {
         voiceEnabled: true,
       });
 
-      console.log('Voice search tracked:', {
+      log.info('Voice search tracked', {
         originalQuery,
         recognizedQuery,
         confidence,
       });
     } catch (error) {
-      console.error('Error tracking voice search:', error);
+      log.error('Error tracking voice search', error);
     }
   }
 
@@ -297,7 +300,7 @@ export class SearchAnalytics {
         createdAt: serverTimestamp(),
       });
     } catch (error) {
-      console.error('Error saving analytics event:', error);
+      log.error('Error saving analytics event', error);
       // Fallback to local storage for offline support
       this.saveEventLocally(event, additionalData);
     }
@@ -324,7 +327,7 @@ export class SearchAnalytics {
         JSON.stringify(localEvents)
       );
     } catch (error) {
-      console.error('Error saving event locally:', error);
+      log.error('Error saving event locally', error);
     }
   }
 
@@ -354,7 +357,7 @@ export class SearchAnalytics {
         });
       }
     } catch (error) {
-      console.error('Error updating popular search:', error);
+      log.error('Error updating popular search', error);
     }
   }
 
@@ -410,7 +413,7 @@ export class SearchHistoryManager {
       // Always save to local storage
       this.saveToLocalStorage(historyItem);
     } catch (error) {
-      console.error('Error adding to search history:', error);
+      log.error('Error adding to search history', error);
     }
   }
 
@@ -428,7 +431,7 @@ export class SearchHistoryManager {
       // Fallback to local storage
       return this.getFromLocalStorage(limit);
     } catch (error) {
-      console.error('Error getting search history:', error);
+      log.error('Error getting search history', error);
       return [];
     }
   }
@@ -454,7 +457,7 @@ export class SearchHistoryManager {
         await Promise.all(deletePromises);
       }
     } catch (error) {
-      console.error('Error clearing search history:', error);
+      log.error('Error clearing search history', error);
     }
   }
 
@@ -468,7 +471,7 @@ export class SearchHistoryManager {
         createdAt: serverTimestamp(),
       });
     } catch (error) {
-      console.error('Error saving to Firebase:', error);
+      log.error('Error saving to Firebase', error);
     }
   }
 
@@ -496,7 +499,7 @@ export class SearchHistoryManager {
         } as SearchHistoryItem;
       });
     } catch (error) {
-      console.error('Error getting from Firebase:', error);
+      log.error('Error getting from Firebase', error);
       return [];
     }
   }
@@ -526,7 +529,7 @@ export class SearchHistoryManager {
         )
       );
     } catch (error) {
-      console.error('Error saving to local storage:', error);
+      log.error('Error saving to local storage', error);
     }
   }
 
@@ -544,7 +547,7 @@ export class SearchHistoryManager {
         }))
         .slice(0, limit);
     } catch (error) {
-      console.error('Error getting from local storage:', error);
+      log.error('Error getting from local storage', error);
       return [];
     }
   }
@@ -613,7 +616,7 @@ export class PopularSearchManager {
         };
       });
     } catch (error) {
-      console.error('Error getting popular searches:', error);
+      log.error('Error getting popular searches', error);
       return [];
     }
   }
@@ -660,7 +663,7 @@ export class SearchPreferencesManager {
         JSON.stringify(preferences)
       );
     } catch (error) {
-      console.error('Error saving search preferences:', error);
+      log.error('Error saving search preferences', error);
     }
   }
 
@@ -670,7 +673,7 @@ export class SearchPreferencesManager {
       const stored = localStorage.getItem(STORAGE_KEYS.SEARCH_PREFERENCES);
       return stored ? JSON.parse(stored) : {};
     } catch (error) {
-      console.error('Error getting search preferences:', error);
+      log.error('Error getting search preferences', error);
       return {};
     }
   }
@@ -680,7 +683,7 @@ export class SearchPreferencesManager {
     try {
       localStorage.removeItem(STORAGE_KEYS.SEARCH_PREFERENCES);
     } catch (error) {
-      console.error('Error clearing search preferences:', error);
+      log.error('Error clearing search preferences', error);
     }
   }
 }

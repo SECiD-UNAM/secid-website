@@ -33,6 +33,9 @@ import type {
   PushSubscription,
   NotificationQueue,
 } from '../types';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('Notifications');
 
 // Firebase Cloud Functions
 const functions = getFunctions();
@@ -48,7 +51,7 @@ let messaging: any = null;
 try {
   messaging = getMessaging();
 } catch (error) {
-  console.warn('Firebase messaging not available:', error);
+  log.warn('Firebase messaging not available', { error });
 }
 
 // Collections
@@ -277,7 +280,7 @@ export async function createNotification(
 
     return docRef['id'];
   } catch (error) {
-    console.error('Error creating notification:', error);
+    log.error('Error creating notification', error);
     throw error;
   }
 }
@@ -336,7 +339,7 @@ export async function getNotifications(
 
     return { notifications, unreadCount };
   } catch (error) {
-    console.error('Error getting notifications:', error);
+    log.error('Error getting notifications', error);
     throw error;
   }
 }
@@ -395,7 +398,7 @@ export async function getNotificationHistory(
       lastFetched: new Date(),
     };
   } catch (error) {
-    console.error('Error getting notification history:', error);
+    log.error('Error getting notification history', error);
     throw error;
   }
 }
@@ -410,7 +413,7 @@ export async function markNotificationAsRead(
       readAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error marking notification as read:', error);
+    log.error('Error marking notification as read', error);
     throw error;
   }
 }
@@ -435,7 +438,7 @@ export async function markAllAsRead(userId: string): Promise<void> {
 
     await batch.commit();
   } catch (error) {
-    console.error('Error marking all notifications as read:', error);
+    log.error('Error marking all notifications as read', error);
     throw error;
   }
 }
@@ -447,7 +450,7 @@ export async function deleteNotification(
     const notificationRef = doc(db, NOTIFICATIONS_COLLECTION, notificationId);
     await deleteDoc(notificationRef);
   } catch (error) {
-    console.error('Error deleting notification:', error);
+    log.error('Error deleting notification', error);
     throw error;
   }
 }
@@ -475,7 +478,7 @@ export async function getNotificationSettings(
       return { ...defaultSettings, id: userId };
     }
   } catch (error) {
-    console.error('Error getting notification settings:', error);
+    log.error('Error getting notification settings', error);
     throw error;
   }
 }
@@ -491,7 +494,7 @@ export async function updateNotificationSettings(
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error updating notification settings:', error);
+    log.error('Error updating notification settings', error);
     throw error;
   }
 }
@@ -518,7 +521,7 @@ export async function requestPushPermission(): Promise<NotificationPermission> {
 
     return permission;
   } catch (error) {
-    console.error('Error requesting push permission:', error);
+    log.error('Error requesting push permission', error);
     throw error;
   }
 }
@@ -552,7 +555,7 @@ export async function storePushToken(
       lastUsed: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error storing push token:', error);
+    log.error('Error storing push token', error);
     throw error;
   }
 }
@@ -566,7 +569,7 @@ export function setupPushListener(
 
   try {
     const unsubscribe = onMessage(messaging, (payload) => {
-      console.log('Message received:', payload);
+      log.info('Message received', { payload });
       onNotification(payload);
 
       // Show browser notification if page is not focused
@@ -584,7 +587,7 @@ export function setupPushListener(
 
     return unsubscribe;
   } catch (error) {
-    console.error('Error setting up push listener:', error);
+    log.error('Error setting up push listener', error);
     return () => {};
   }
 }
@@ -621,11 +624,11 @@ export function subscribeToNotifications(
         onNotification(notifications);
       },
       (error) => {
-        console.error('Error in notification subscription:', error);
+        log.error('Error in notification subscription', error);
       }
     );
   } catch (error) {
-    console.error('Error subscribing to notifications:', error);
+    log.error('Error subscribing to notifications', error);
     return () => {};
   }
 }
@@ -643,7 +646,7 @@ export async function sendBulkNotifications(
   try {
     await sendBulkNotificationsFn({ notifications });
   } catch (error) {
-    console.error('Error sending bulk notifications:', error);
+    log.error('Error sending bulk notifications', error);
     throw error;
   }
 }
@@ -669,7 +672,7 @@ export async function scheduleNotification(
 
     return result?.data?.notificationId;
   } catch (error) {
-    console.error('Error scheduling notification:', error);
+    log.error('Error scheduling notification', error);
     throw error;
   }
 }
@@ -761,6 +764,6 @@ export async function trackNotificationInteraction(
     // You could also send analytics events here
     // analytics.track('notification_interaction', { notificationId, action });
   } catch (error) {
-    console.error('Error tracking notification interaction:', error);
+    log.error('Error tracking notification interaction', error);
   }
 }
