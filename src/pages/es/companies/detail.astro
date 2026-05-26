@@ -1,26 +1,22 @@
 ---
-export const prerender = false;
 import ModernLayout from '../../../layouts/ModernLayout.astro';
 import Navigation from '../../../components/Navigation.astro';
 import Footer from '../../../components/Footer.astro';
 import CompanyProfilePage from '../../../components/wrappers/CompanyProfilePage';
-
-const { slug } = Astro.params;
-if (!slug) return Astro.redirect('/en/companies');
 ---
 
 <ModernLayout
-  title="Company - SECiD"
-  description="Company profile in the SECiD network - Data Science Alumni Society UNAM"
-  lang="en"
+  title="Empresa - SECiD"
+  description="Perfil de empresa en la red SECiD - Sociedad de Egresados en Ciencia de Datos UNAM"
+  lang="es"
 >
-  <Navigation lang="en" />
+  <Navigation lang="es" />
 
   <section class="secid-section">
     <div class="secid-container">
-      <CompanyProfilePage client:load slug={slug} lang="en" />
+      <CompanyProfilePage client:only="react" lang="es" />
     </div>
   </section>
 
-  <Footer lang="en" />
+  <Footer lang="es" />
 </ModernLayout>

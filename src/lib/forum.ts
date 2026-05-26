@@ -126,7 +126,7 @@ export const forumCategories = {
     const snapshot = await getDocs(q);
     return snapshot['empty']
       ? null
-      : convertDoc<ForumCategory>(snapshot['docs'][0])!;
+      : convertDoc<ForumCategory>(snapshot['docs'][0]!)!;
   },
 
   // Create new category
@@ -194,7 +194,7 @@ export const forumTopics = {
     const topics = snapshot['docs'].map((doc) => convertDoc<ForumTopic>(doc)!);
     const newLastDoc =
       snapshot['docs'].length > 0
-        ? snapshot.docs[snapshot['docs'].length - 1]
+        ? (snapshot.docs[snapshot['docs'].length - 1] ?? null)
         : null;
 
     return { topics, lastDoc: newLastDoc };
@@ -219,7 +219,7 @@ export const forumTopics = {
     const snapshot = await getDocs(q);
     if (snapshot['empty']) return null;
 
-    const topic = convertDoc<ForumTopic>(snapshot['docs'][0])!;
+    const topic = convertDoc<ForumTopic>(snapshot['docs'][0]!)!;
 
     // Increment view count
     await updateDoc(doc(topicsRef, topic['id']), {
@@ -366,7 +366,7 @@ export const forumPosts = {
     const posts = snapshot['docs'].map((doc) => convertDoc<ForumPost>(doc)!);
     const newLastDoc =
       snapshot['docs'].length > 0
-        ? snapshot.docs[snapshot['docs'].length - 1]
+        ? (snapshot.docs[snapshot['docs'].length - 1] ?? null)
         : null;
 
     return { posts, lastDoc: newLastDoc };
@@ -428,7 +428,7 @@ export const forumPosts = {
 
   // Update post
   async update(id: string, data: Partial<ForumPost>): Promise<void> {
-    const updateData = {
+    const updateData: Record<string, unknown> = {
       ...data,
       updatedAt: serverTimestamp(),
       isEdited: true,

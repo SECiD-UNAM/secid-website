@@ -84,20 +84,92 @@
         "destination": "/en/cv/index.html"
       },
       {
+        "source": "/es/dashboard/admin/members/*/edit",
+        "destination": "/es/dashboard/admin/members/edit/index.html"
+      },
+      {
+        "source": "/en/dashboard/admin/members/*/edit",
+        "destination": "/en/dashboard/admin/members/edit/index.html"
+      },
+      {
         "source": "/es/members/*",
-        "destination": "/es/members/profile/index.html"
+        "destination": "/es/members/detail/index.html"
       },
       {
         "source": "/en/members/*",
-        "destination": "/en/members/profile/index.html"
+        "destination": "/en/members/detail/index.html"
       },
       {
         "source": "/es/companies/*",
-        "destination": "/es/companies/profile/index.html"
+        "destination": "/es/companies/detail/index.html"
       },
       {
         "source": "/en/companies/*",
-        "destination": "/en/companies/profile/index.html"
+        "destination": "/en/companies/detail/index.html"
+      },
+      {
+        "source": "/es/blog/*",
+        "destination": "/es/blog/entry/index.html"
+      },
+      {
+        "source": "/en/blog/*",
+        "destination": "/en/blog/entry/index.html"
+      },
+      {
+        "source": "/es/resources/*",
+        "destination": "/es/resources/detail/index.html"
+      },
+      {
+        "source": "/en/resources/*",
+        "destination": "/en/resources/detail/index.html"
+      },
+      {
+        "source": "/es/spotlights/*",
+        "destination": "/es/spotlights/detail/index.html"
+      },
+      {
+        "source": "/en/spotlights/*",
+        "destination": "/en/spotlights/detail/index.html"
+      },
+      {
+        "source": "/es/events/*",
+        "destination": "/es/events/detail/index.html"
+      },
+      {
+        "source": "/en/events/*",
+        "destination": "/en/events/detail/index.html"
+      },
+      {
+        "source": "/es/newsletter/*",
+        "destination": "/es/newsletter/detail/index.html"
+      },
+      {
+        "source": "/en/newsletter/*",
+        "destination": "/en/newsletter/detail/index.html"
+      },
+      {
+        "source": "/es/forum/category/*",
+        "destination": "/es/forum/category/detail/index.html"
+      },
+      {
+        "source": "/en/forum/category/*",
+        "destination": "/en/forum/category/detail/index.html"
+      },
+      {
+        "source": "/es/forum/topic/*",
+        "destination": "/es/forum/topic/detail/index.html"
+      },
+      {
+        "source": "/en/forum/topic/*",
+        "destination": "/en/forum/topic/detail/index.html"
+      },
+      {
+        "source": "/es/dashboard/assessments/*",
+        "destination": "/es/dashboard/assessments/detail/index.html"
+      },
+      {
+        "source": "/en/dashboard/assessments/*",
+        "destination": "/en/dashboard/assessments/detail/index.html"
       },
       {
         "source": "/api/forms/newsletter",

@@ -223,6 +223,7 @@ const ForumTopic: React.FC<ForumTopicProps> = ({
         downvotes: 0,
         reactions: {},
         isEdited: false,
+        status: 'active',
         editHistory: [],
         attachments: [],
         mentions: [],

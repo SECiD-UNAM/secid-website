@@ -2,6 +2,7 @@ import React from 'react';
 import { AuthProvider } from '@/contexts/AuthContext';
 import BlogPost from '@/components/blog/BlogPost';
 import type { BlogPost as BlogPostType } from '@/lib/blog';
+import { useRouteIdBySegment } from '@/hooks/use-route-id';
 
 interface Props {
   slug?: string;
@@ -14,9 +15,11 @@ export default function BlogPostPage({
   lang = 'es',
   initialPost = null,
 }: Props) {
+  const routeSlug = useRouteIdBySegment('blog');
+  const effectiveSlug = slug || routeSlug || '';
   return (
     <AuthProvider>
-      <BlogPost slug={slug || ''} lang={lang} initialPost={initialPost} />
+      <BlogPost slug={effectiveSlug} lang={lang} initialPost={initialPost} />
     </AuthProvider>
   );
 }

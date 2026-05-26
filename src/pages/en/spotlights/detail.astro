@@ -1,17 +1,13 @@
 ---
-export const prerender = false;
-
 import ModernLayout from '../../../layouts/ModernLayout.astro';
 import Navigation from '../../../components/Navigation.astro';
 import Footer from '../../../components/Footer.astro';
-import EventDetailPage from '../../../components/wrappers/EventDetailPage';
-
-const { id } = Astro.params;
+import SpotlightDetailPage from '../../../components/wrappers/SpotlightDetailPage';
 ---
 
 <ModernLayout
-  title="Event Details - SECiD"
-  description="View details and register for this event"
+  title="Spotlight - SECiD"
+  description="Spotlight detail"
   lang="en"
 >
   <Navigation lang="en" />
@@ -19,7 +15,7 @@ const { id } = Astro.params;
   <main>
     <section class="secid-section">
       <div class="secid-container">
-        <EventDetailPage client:load eventId={id} lang="en" />
+        <SpotlightDetailPage client:only="react" lang="en" />
       </div>
     </section>
   </main>

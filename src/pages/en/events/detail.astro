@@ -1,17 +1,13 @@
 ---
-export const prerender = false;
-
 import ModernLayout from '../../../layouts/ModernLayout.astro';
 import Navigation from '../../../components/Navigation.astro';
 import Footer from '../../../components/Footer.astro';
-import NewsletterViewPage from '../../../components/wrappers/NewsletterViewPage';
-
-const { id } = Astro.params;
+import EventDetailPage from '../../../components/wrappers/EventDetailPage';
 ---
 
 <ModernLayout
-  title="Newsletter - SECiD"
-  description="Read this edition of the SECiD newsletter"
+  title="Event - SECiD"
+  description="SECiD event detail"
   lang="en"
 >
   <Navigation lang="en" />
@@ -19,7 +15,7 @@ const { id } = Astro.params;
   <main>
     <section class="secid-section">
       <div class="secid-container">
-        <NewsletterViewPage client:load newsletterId={id} lang="en" />
+        <EventDetailPage client:only="react" lang="en" />
       </div>
     </section>
   </main>

@@ -2,19 +2,19 @@
 import ModernLayout from '../../../layouts/ModernLayout.astro';
 import Navigation from '../../../components/Navigation.astro';
 import Footer from '../../../components/Footer.astro';
-import CompanyProfilePage from '../../../components/wrappers/CompanyProfilePage';
+import MemberProfilePage from '../../../components/wrappers/MemberProfilePage';
 ---
 
 <ModernLayout
-  title="Company - SECiD"
-  description="Company profile in the SECiD network - Data Science Alumni Society UNAM"
+  title="Member Profile - SECiD"
+  description="Profile of a SECiD community member"
   lang="en"
 >
   <Navigation lang="en" />
 
   <section class="secid-section">
     <div class="secid-container">
-      <CompanyProfilePage client:load lang="en" />
+      <MemberProfilePage client:only="react" lang="en" />
     </div>
   </section>
 

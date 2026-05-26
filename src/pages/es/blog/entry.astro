@@ -1,17 +1,13 @@
 ---
-export const prerender = false;
-
 import ModernLayout from '../../../layouts/ModernLayout.astro';
 import Navigation from '../../../components/Navigation.astro';
 import Footer from '../../../components/Footer.astro';
-import EventDetailPage from '../../../components/wrappers/EventDetailPage';
-
-const { id } = Astro.params;
+import BlogPostPage from '../../../components/wrappers/BlogPostPage';
 ---
 
 <ModernLayout
-  title="Detalle del Evento - SECiD"
-  description="Ver detalles y registrarse para este evento"
+  title="Blog - SECiD"
+  description="Artículo del blog SECiD"
   lang="es"
 >
   <Navigation lang="es" />
@@ -19,7 +15,7 @@ const { id } = Astro.params;
   <main>
     <section class="secid-section">
       <div class="secid-container">
-        <EventDetailPage client:load eventId={id} lang="es" />
+        <BlogPostPage client:only="react" lang="es" />
       </div>
     </section>
   </main>
