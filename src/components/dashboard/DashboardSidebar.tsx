@@ -297,11 +297,11 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     const target = href.replace(/\/$/, '');
     if (path === target) return true;
     // Only match as prefix if no more-specific sibling matches
-    if (path.startsWith(target + '/')) {
+    if (path.startsWith(`${target  }/`)) {
       return !allHrefs.some(
         (other) =>
           other !== href &&
-          other.startsWith(target + '/') &&
+          other.startsWith(`${target  }/`) &&
           path.startsWith(other.replace(/\/$/, ''))
       );
     }

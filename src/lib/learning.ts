@@ -207,7 +207,7 @@ export const getRecommendedPaths = async (
     }
 
     // Get recommended paths based on user's interests
-    let pathsQuery = query(
+    const pathsQuery = query(
       learningPathsRef,
       where('isRecommended', '==', true),
       orderBy('enrollmentCount', 'desc'),
@@ -215,7 +215,7 @@ export const getRecommendedPaths = async (
     );
 
     const snapshot = await getDocs(pathsQuery);
-    let paths = snapshot['docs'].map((doc) => ({
+    const paths = snapshot['docs'].map((doc) => ({
       id: doc['id'],
       ...doc.data(),
       createdAt: doc['data']().createdAt?.toDate() || new Date(),

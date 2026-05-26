@@ -345,10 +345,10 @@ export const UserManagement: React.FC = () => {
     if (csvData.length === 0) return;
 
     const csvContent =
-      'data:text/csv;charset=utf-8,' +
-      Object.keys(csvData[0] as Record<string, unknown>).join(',') +
-      '\n' +
-      csvData.map((row) => Object.values(row).join(',')).join('\n');
+      `data:text/csv;charset=utf-8,${ 
+      Object.keys(csvData[0] as Record<string, unknown>).join(',') 
+      }\n${ 
+      csvData.map((row) => Object.values(row).join(',')).join('\n')}`;
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');

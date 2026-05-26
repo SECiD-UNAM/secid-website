@@ -51,7 +51,7 @@ function buildAutoWorkEntry(
   if (!company) return undefined;
 
   return {
-    id: 'auto-' + Date.now(),
+    id: `auto-${  Date.now()}`,
     company,
     companyId: data.profile?.companyId || data.companyId || undefined,
     position: data.profile?.position || data.currentPosition || '',
@@ -77,7 +77,7 @@ function buildAutoEducationEntry(
   const graduationYear = data.profile?.graduationYear;
 
   return {
-    id: 'auto-edu-' + Date.now(),
+    id: `auto-edu-${  Date.now()}`,
     institution: 'Universidad Nacional Autónoma de México (UNAM)',
     degree:
       ACADEMIC_LEVEL_MAP[data.academicLevel] ||

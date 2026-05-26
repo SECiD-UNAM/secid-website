@@ -143,7 +143,7 @@ function StaticSessionCard({
   session: StaticSession;
   lang: string;
 }) {
-  const dateObj = new Date(session.date + 'T18:00:00'); // 6pm
+  const dateObj = new Date(`${session.date  }T18:00:00`); // 6pm
   const formattedDate = dateObj.toLocaleDateString(
     lang === 'es' ? 'es-MX' : 'en-US',
     { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
@@ -332,10 +332,10 @@ export default function JournalClubPublicList({
   // Split static sessions into upcoming vs completed
   const now = new Date();
   const upcomingSessions = STATIC_SESSIONS.filter(
-    (s) => new Date(s.date + 'T18:00:00') >= now
+    (s) => new Date(`${s.date  }T18:00:00`) >= now
   ).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   const pastSessions = STATIC_SESSIONS.filter(
-    (s) => new Date(s.date + 'T18:00:00') < now
+    (s) => new Date(`${s.date  }T18:00:00`) < now
   ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   if (loading) {

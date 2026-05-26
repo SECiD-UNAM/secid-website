@@ -10,8 +10,8 @@
  * 3. Set admin email: firebase functions:config:set admin.email="artemio@secid.mx"
  */
 
-import { google } from 'googleapis';
-import * as admin from 'firebase-admin';
+import { google } from "googleapis";
+import * as admin from "firebase-admin";
 
 // The admin email to impersonate for API calls
 function getAdminEmail(): string {
@@ -20,7 +20,7 @@ function getAdminEmail(): string {
   return (
     process.env.ADMIN_EMAIL ||
     (config as any)?.admin?.email ||
-    'contacto@secid.mx'
+    "contacto@secid.mx"
   );
 }
 
@@ -30,16 +30,16 @@ function getAdminEmail(): string {
 async function getAdminClient() {
   const auth = new google.auth.GoogleAuth({
     scopes: [
-      'https://www.googleapis.com/auth/admin.directory.group',
-      'https://www.googleapis.com/auth/admin.directory.group.member',
-      'https://www.googleapis.com/auth/spreadsheets',
+      "https://www.googleapis.com/auth/admin.directory.group",
+      "https://www.googleapis.com/auth/admin.directory.group.member",
+      "https://www.googleapis.com/auth/spreadsheets",
     ],
     clientOptions: {
       subject: getAdminEmail(),
     },
   });
 
-  return google.admin({ version: 'directory_v1', auth });
+  return google.admin({ version: "directory_v1", auth });
 }
 
 export interface GroupMember {
@@ -62,7 +62,7 @@ export interface GoogleGroup {
 export async function addMemberToGroup(
   groupEmail: string,
   memberEmail: string,
-  role: string = 'MEMBER'
+  role: string = "MEMBER"
 ): Promise<boolean> {
   try {
     const client = await getAdminClient();
@@ -151,10 +151,10 @@ export async function listGroupMembers(
       if (response.data.members) {
         for (const member of response.data.members) {
           members.push({
-            email: member.email || '',
-            role: member.role || 'MEMBER',
-            status: member.status || 'ACTIVE',
-            type: member.type || 'USER',
+            email: member.email || "",
+            role: member.role || "MEMBER",
+            status: member.status || "ACTIVE",
+            type: member.type || "USER",
           });
         }
       }
@@ -176,20 +176,20 @@ export async function listAllGroups(): Promise<GoogleGroup[]> {
   try {
     const client = await getAdminClient();
     const response = await client.groups.list({
-      domain: 'secid.mx',
+      domain: "secid.mx",
       maxResults: 100,
     });
 
     if (!response.data.groups) return [];
 
     return response.data.groups.map((group) => ({
-      email: group.email || '',
-      name: group.name || '',
-      description: group.description || '',
-      directMembersCount: group.directMembersCount || '0',
+      email: group.email || "",
+      name: group.name || "",
+      description: group.description || "",
+      directMembersCount: group.directMembersCount || "0",
     }));
   } catch (error: any) {
-    console.error('Error listing groups:', error?.message);
+    console.error("Error listing groups:", error?.message);
     return [];
   }
 }
@@ -228,19 +228,19 @@ export async function exportToGoogleSheets(
   title: string
 ): Promise<string> {
   const auth = new google.auth.GoogleAuth({
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
     clientOptions: {
       subject: getAdminEmail(),
     },
   });
 
-  const sheets = google.sheets({ version: 'v4', auth });
+  const sheets = google.sheets({ version: "v4", auth });
 
   // Create new spreadsheet
   const spreadsheet = await sheets.spreadsheets.create({
     requestBody: {
       properties: { title },
-      sheets: [{ properties: { title: 'Directorio' } }],
+      sheets: [{ properties: { title: "Directorio" } }],
     },
   });
 
@@ -249,8 +249,8 @@ export async function exportToGoogleSheets(
   // Write data
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: 'Directorio!A1',
-    valueInputOption: 'USER_ENTERED',
+    range: "Directorio!A1",
+    valueInputOption: "USER_ENTERED",
     requestBody: {
       values: [headers, ...data],
     },

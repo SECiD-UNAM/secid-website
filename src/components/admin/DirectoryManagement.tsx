@@ -384,10 +384,10 @@ export const DirectoryManagement: React.FC = () => {
     if (rows.length === 0) return;
 
     const csvContent =
-      'data:text/csv;charset=utf-8,' +
-      Object.keys(rows[0]).join(',') +
-      '\n' +
-      rows.map((r) => Object.values(r).join(',')).join('\n');
+      `data:text/csv;charset=utf-8,${ 
+      Object.keys(rows[0]).join(',') 
+      }\n${ 
+      rows.map((r) => Object.values(r).join(',')).join('\n')}`;
 
     const link = document.createElement('a');
     link.setAttribute('href', encodeURI(csvContent));

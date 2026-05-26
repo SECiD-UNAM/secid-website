@@ -420,7 +420,7 @@ test.describe('Viewport Responsiveness Tests', () => {
         });
 
         // Test at breakpoint
-        await page.setViewportSize({ width: width, height: 800 });
+        await page.setViewportSize({ width, height: 800 });
         await page.waitForTimeout(100); // Allow for reflow
 
         const atBreakpointLayout = await page.evaluate(() => {

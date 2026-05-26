@@ -146,7 +146,7 @@ export default function DashboardBottomNav({ lang = 'es' }: Props) {
 
   const isActive = useCallback(
     (href: string) =>
-      currentPath === href || currentPath.startsWith(href + '/'),
+      currentPath === href || currentPath.startsWith(`${href  }/`),
     [currentPath]
   );
 

@@ -356,8 +356,8 @@ export const AdminDashboard: React.FC = () => {
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
             {language === 'es'
-              ? 'Bienvenido de vuelta, ' + userProfile?.firstName
-              : 'Welcome back, ' + userProfile?.firstName}
+              ? `Bienvenido de vuelta, ${  userProfile?.firstName}`
+              : `Welcome back, ${  userProfile?.firstName}`}
           </p>
         </div>
         <div

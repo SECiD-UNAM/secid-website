@@ -353,7 +353,7 @@ export async function getNotificationHistory(
     const pageNumber = options.page || 1;
     const offset = (pageNumber - 1) * pageSize;
 
-    let q = query(
+    const q = query(
       collection(db, NOTIFICATIONS_COLLECTION),
       where('userId', '==', userId),
       orderBy('createdAt', 'desc'),

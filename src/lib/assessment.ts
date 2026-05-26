@@ -553,7 +553,7 @@ export async function submitAssessment(
     const result: Omit<AssessmentResult, 'attemptId'> = {
       userId: attempt['userId'],
       assessmentId: attempt.assessmentId,
-      score: score,
+      score,
       percentage: score,
       passed: score >= 70, // Assuming 70% passing score
       completedAt: new Date(),
@@ -573,7 +573,7 @@ export async function submitAssessment(
       status: 'completed',
       completedAt: new Date(),
       submittedAt: new Date(),
-      score: score,
+      score,
       percentage: score,
       passed: result.passed,
     });
@@ -753,7 +753,7 @@ export async function generateCertificate(
       description: 'Certified completion of Python Fundamentals Assessment',
       issuedAt: new Date(),
       verificationCode:
-        'SEC-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+        `SEC-${  Math.random().toString(36).substr(2, 9).toUpperCase()}`,
       score: 85,
       level: 'intermediate',
       skills: ['python'],
@@ -785,7 +785,7 @@ export async function generateCertificate(
       description: `Certified completion of ${assessment.title}`,
       issuedAt: new Date(),
       verificationCode:
-        'SEC-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+        `SEC-${  Math.random().toString(36).substr(2, 9).toUpperCase()}`,
       score: resultData.score,
       level: assessment.difficulty,
       skills: [assessment.category],

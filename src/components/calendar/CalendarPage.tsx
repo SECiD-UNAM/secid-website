@@ -102,11 +102,11 @@ const ACTIVITIES: CalendarActivity[] = [
 // ---------------------------------------------------------------------------
 
 function isPast(dateStr: string): boolean {
-  return new Date(dateStr + 'T23:59:00') < new Date();
+  return new Date(`${dateStr  }T23:59:00`) < new Date();
 }
 
 function formatDate(dateStr: string, lang: string): string {
-  return new Date(dateStr + 'T12:00:00').toLocaleDateString(
+  return new Date(`${dateStr  }T12:00:00`).toLocaleDateString(
     lang === 'es' ? 'es-MX' : 'en-US',
     { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
   );
@@ -275,7 +275,7 @@ function MonthView({ lang }: { lang: string }) {
   while (cells.length % 7 !== 0) cells.push(null);
 
   const activitiesThisMonth = ACTIVITIES.filter((a) => {
-    const d = new Date(a.date + 'T12:00:00');
+    const d = new Date(`${a.date  }T12:00:00`);
     return d.getFullYear() === year && d.getMonth() === month;
   });
 
@@ -334,7 +334,7 @@ function MonthView({ lang }: { lang: string }) {
         {cells.map((day, idx) => {
           const dayActivities = day
             ? activitiesThisMonth.filter(
-                (a) => new Date(a.date + 'T12:00:00').getDate() === day
+                (a) => new Date(`${a.date  }T12:00:00`).getDate() === day
               )
             : [];
           const isToday =

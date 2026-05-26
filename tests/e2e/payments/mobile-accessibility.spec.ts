@@ -674,7 +674,7 @@ test.describe('Accessibility Tests for Payment Flows', () => {
         number: cardData.number,
         expiry: cardData.exp,
         cvc: cardData.cvc,
-        name: billingAddress.firstName + ' ' + billingAddress.lastName,
+        name: `${billingAddress.firstName  } ${  billingAddress.lastName}`,
       });
 
       await checkoutPage.submitPayment();

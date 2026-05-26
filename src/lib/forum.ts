@@ -687,13 +687,13 @@ export const forumSearch = {
         id: topic['id'],
         title: topic.title,
         content: topic.content,
-        excerpt: topic.content.substring(0, 200) + '...',
+        excerpt: `${topic.content.substring(0, 200)  }...`,
         categoryId: topic.categoryId,
         categoryName: '', // Would need to fetch category name
         authorId: topic.authorId,
         authorName: topic.authorName,
         score: calculateRelevanceScore(
-          topic.title + ' ' + topic.content,
+          `${topic.title  } ${  topic.content}`,
           searchTerm
         ),
         highlights: extractHighlights(topic.content, searchTerm),
@@ -701,7 +701,7 @@ export const forumSearch = {
       }));
 
       // Search posts
-      let postsQuery = query(postsRef);
+      const postsQuery = query(postsRef);
       const postsSnapshot = await getDocs(postsQuery);
       const postResults = postsSnapshot.docs
         .map((doc) => convertDoc<ForumPost>(doc)!)
@@ -713,7 +713,7 @@ export const forumSearch = {
         id: post['id'],
         title: '',
         content: post.content,
-        excerpt: post.content.substring(0, 200) + '...',
+        excerpt: `${post.content.substring(0, 200)  }...`,
         categoryId: '',
         categoryName: '',
         authorId: post.authorId,

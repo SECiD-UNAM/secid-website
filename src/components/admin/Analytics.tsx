@@ -200,7 +200,7 @@ export const Analytics: React.FC = () => {
 
     const dataStr = JSON.stringify(exportData, null, 2);
     const dataUri =
-      'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+      `data:application/json;charset=utf-8,${  encodeURIComponent(dataStr)}`;
 
     const exportFileDefaultName = `analytics-${selectedTimeRange.value}-${new Date().toISOString().split('T')[0]}.json`;
 

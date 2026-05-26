@@ -627,7 +627,7 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
 
   // Time filter applied post-hook (requires date comparison against now)
   const displayedItems = useMemo(() => {
-    let result = items.filter((e) => !deletedIds.has(e.id));
+    const result = items.filter((e) => !deletedIds.has(e.id));
     if (timeFilter === 'all') return result;
     const now = new Date();
     return timeFilter === 'upcoming'

@@ -64,7 +64,7 @@ class CacheManager {
         ? 'hits'
         : operation === 'miss'
           ? 'misses'
-          : operation + 's'
+          : `${operation  }s`
     ]++;
     const total = this.stats.hits + this.stats.misses;
     this.stats.hitRate = total > 0 ? this.stats.hits / total : 0;

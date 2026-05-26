@@ -8,7 +8,7 @@
  * Locale: default 'es'. Pass `lang: 'en'` for English.
  */
 
-type Lang = 'es' | 'en';
+type Lang = "es" | "en";
 
 /**
  * Escape HTML entities so user-controlled values can't smuggle markup
@@ -20,13 +20,13 @@ type Lang = 'es' | 'en';
  * have been written by a user (QA pass §10.8 fallout).
  */
 function escapeHtml(s: string | undefined | null): string {
-  if (s == null) return '';
+  if (s == null) return "";
   return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 interface BaseTemplateParams {
@@ -53,7 +53,7 @@ function shell({
       ? `<p style="text-align:center; margin:24px 0;">
            <a href="${ctaHref}" style="display:inline-block; padding:12px 24px; background:#003B5C; color:#fff; text-decoration:none; border-radius:8px; font-weight:600;">${ctaLabel}</a>
          </p>`
-      : '';
+      : "";
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"></head>
@@ -66,7 +66,7 @@ function shell({
       <h2 style="margin:0 0 16px; font-size:20px; color:#003B5C;">${title}</h2>
       ${bodyHtml}
       ${cta}
-      ${footnote ? `<p style="font-size:12px; color:#999; margin-top:24px;">${footnote}</p>` : ''}
+      ${footnote ? `<p style="font-size:12px; color:#999; margin-top:24px;">${footnote}</p>` : ""}
     </div>
     <div style="padding:20px 30px; text-align:center; color:#999; font-size:12px; background:#fafafa;">
       <p style="margin:0;">SECiD — Sociedad de Egresados en Ciencia de Datos, UNAM</p>
@@ -93,36 +93,36 @@ export function generateWelcomeEmail(params: WelcomeParams): {
   subject: string;
   html: string;
 } {
-  const lang = params.lang ?? 'es';
+  const lang = params.lang ?? "es";
   const subject = t(
     {
-      es: '¡Bienvenido a SECiD! Completa tu perfil',
-      en: 'Welcome to SECiD! Complete your profile',
+      es: "¡Bienvenido a SECiD! Completa tu perfil",
+      en: "Welcome to SECiD! Complete your profile",
     },
     lang
   );
   const greeting = t(
     {
-      es: `Hola${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
-      en: `Hi${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
+      es: `Hola${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ""},`,
+      en: `Hi${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ""},`,
     },
     lang
   );
   const body = t(
     {
-      es: `Gracias por unirte a SECiD, la Sociedad de Egresados en Ciencia de Datos de la UNAM. Para acceder a todas las funciones (jobs, mentoría, foros, eventos), completa tu perfil y verifica tu cuenta UNAM.`,
-      en: `Thanks for joining SECiD, the UNAM Data Science Alumni Society. To unlock all features (jobs, mentorship, forums, events), please complete your profile and verify your UNAM account.`,
+      es: "Gracias por unirte a SECiD, la Sociedad de Egresados en Ciencia de Datos de la UNAM. Para acceder a todas las funciones (jobs, mentoría, foros, eventos), completa tu perfil y verifica tu cuenta UNAM.",
+      en: "Thanks for joining SECiD, the UNAM Data Science Alumni Society. To unlock all features (jobs, mentorship, forums, events), please complete your profile and verify your UNAM account.",
     },
     lang
   );
   const ctaLabel = t(
-    { es: 'Completar mi perfil', en: 'Complete my profile' },
+    { es: "Completar mi perfil", en: "Complete my profile" },
     lang
   );
   const footnote = t(
     {
-      es: 'Si no creaste esta cuenta, puedes ignorar este correo.',
-      en: 'If you did not create this account, you can ignore this email.',
+      es: "Si no creaste esta cuenta, puedes ignorar este correo.",
+      en: "If you did not create this account, you can ignore this email.",
     },
     lang
   );
@@ -161,18 +161,18 @@ export function generateAdminPendingNotif(params: AdminPendingParams): {
   const details = `
     <ul style="line-height:1.8;">
       <li><strong>Email</strong>: ${escapeHtml(params.memberEmail)}</li>
-      ${params.numeroCuenta ? `<li><strong>Número de cuenta</strong>: ${escapeHtml(params.numeroCuenta)}</li>` : ''}
-      ${params.registrationType ? `<li><strong>Tipo</strong>: ${escapeHtml(params.registrationType)}</li>` : ''}
+      ${params.numeroCuenta ? `<li><strong>Número de cuenta</strong>: ${escapeHtml(params.numeroCuenta)}</li>` : ""}
+      ${params.registrationType ? `<li><strong>Tipo</strong>: ${escapeHtml(params.registrationType)}</li>` : ""}
     </ul>`;
   return {
     subject,
     html: shell({
-      title: 'Nueva solicitud de membresía',
+      title: "Nueva solicitud de membresía",
       bodyHtml: `<p>Un usuario completó el onboarding y su solicitud está pendiente de revisión.</p>${details}`,
       ctaHref: params.adminPanelUrl,
-      ctaLabel: 'Revisar en el panel de admin',
+      ctaLabel: "Revisar en el panel de admin",
       footnote:
-        'Este correo se envió automáticamente al detectar el cambio de estado del usuario.',
+        "Este correo se envió automáticamente al detectar el cambio de estado del usuario.",
     }),
   };
 }
@@ -191,29 +191,29 @@ export function generateApprovedEmail(params: ApprovedParams): {
   subject: string;
   html: string;
 } {
-  const lang = params.lang ?? 'es';
+  const lang = params.lang ?? "es";
   const subject = t(
     {
-      es: '¡Tu solicitud fue aprobada! Bienvenido oficialmente a SECiD',
-      en: 'Your application was approved! Welcome to SECiD',
+      es: "¡Tu solicitud fue aprobada! Bienvenido oficialmente a SECiD",
+      en: "Your application was approved! Welcome to SECiD",
     },
     lang
   );
   const greeting = t(
     {
-      es: `Hola${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
-      en: `Hi${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
+      es: `Hola${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ""},`,
+      en: `Hi${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ""},`,
     },
     lang
   );
   const body = t(
     {
-      es: `Ya eres miembro oficial de SECiD. Tienes acceso completo al directorio, foros, jobs, eventos y mentoría. Te agregamos al grupo de miembros para recibir comunicados.`,
-      en: `You are now an official SECiD member. You have full access to the directory, forums, jobs, events, and mentorship. We have added you to the members group for announcements.`,
+      es: "Ya eres miembro oficial de SECiD. Tienes acceso completo al directorio, foros, jobs, eventos y mentoría. Te agregamos al grupo de miembros para recibir comunicados.",
+      en: "You are now an official SECiD member. You have full access to the directory, forums, jobs, events, and mentorship. We have added you to the members group for announcements.",
     },
     lang
   );
-  const ctaLabel = t({ es: 'Ir al dashboard', en: 'Go to dashboard' }, lang);
+  const ctaLabel = t({ es: "Ir al dashboard", en: "Go to dashboard" }, lang);
   return {
     subject,
     html: shell({
@@ -239,25 +239,25 @@ export function generateRejectedEmail(params: RejectedParams): {
   subject: string;
   html: string;
 } {
-  const lang = params.lang ?? 'es';
+  const lang = params.lang ?? "es";
   const subject = t(
     {
-      es: 'Tu solicitud de membresía requiere más información',
-      en: 'Your membership application needs more information',
+      es: "Tu solicitud de membresía requiere más información",
+      en: "Your membership application needs more information",
     },
     lang
   );
   const greeting = t(
     {
-      es: `Hola${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
-      en: `Hi${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
+      es: `Hola${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ""},`,
+      en: `Hi${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ""},`,
     },
     lang
   );
   const body = t(
     {
-      es: `Tu solicitud no pudo ser aprobada en esta ocasión. ${params.reason ? `Motivo: ${escapeHtml(params.reason)}.` : ''} Si crees que es un error, escríbenos a ${escapeHtml(params.contactEmail)} y revisamos.`,
-      en: `Your application could not be approved at this time. ${params.reason ? `Reason: ${escapeHtml(params.reason)}.` : ''} If you believe this is an error, write to ${escapeHtml(params.contactEmail)} and we'll review.`,
+      es: `Tu solicitud no pudo ser aprobada en esta ocasión. ${params.reason ? `Motivo: ${escapeHtml(params.reason)}.` : ""} Si crees que es un error, escríbenos a ${escapeHtml(params.contactEmail)} y revisamos.`,
+      en: `Your application could not be approved at this time. ${params.reason ? `Reason: ${escapeHtml(params.reason)}.` : ""} If you believe this is an error, write to ${escapeHtml(params.contactEmail)} and we'll review.`,
     },
     lang
   );
@@ -272,7 +272,7 @@ export function generateRejectedEmail(params: RejectedParams): {
 
 interface StatusChangeParams {
   recipientName: string;
-  newStatus: 'suspended' | 'deactivated' | 'alumni';
+  newStatus: "suspended" | "deactivated" | "alumni";
   contactEmail: string;
   lang?: Lang;
 }
@@ -284,26 +284,26 @@ export function generateStatusChangeEmail(params: StatusChangeParams): {
   subject: string;
   html: string;
 } {
-  const lang = params.lang ?? 'es';
+  const lang = params.lang ?? "es";
   const greeting = t(
     {
-      es: `Hola${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
-      en: `Hi${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ''},`,
+      es: `Hola${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ""},`,
+      en: `Hi${params.recipientName ? ` ${escapeHtml(params.recipientName)}` : ""},`,
     },
     lang
   );
   const subjects: Record<typeof params.newStatus, Record<Lang, string>> = {
     suspended: {
-      es: 'Tu cuenta SECiD fue suspendida',
-      en: 'Your SECiD account was suspended',
+      es: "Tu cuenta SECiD fue suspendida",
+      en: "Your SECiD account was suspended",
     },
     deactivated: {
-      es: 'Tu cuenta SECiD fue desactivada',
-      en: 'Your SECiD account was deactivated',
+      es: "Tu cuenta SECiD fue desactivada",
+      en: "Your SECiD account was deactivated",
     },
     alumni: {
-      es: 'Tu estatus en SECiD cambió a alumni',
-      en: 'Your SECiD status changed to alumni',
+      es: "Tu estatus en SECiD cambió a alumni",
+      en: "Your SECiD status changed to alumni",
     },
   };
   const bodies: Record<typeof params.newStatus, Record<Lang, string>> = {
@@ -316,8 +316,8 @@ export function generateStatusChangeEmail(params: StatusChangeParams): {
       en: `Your account was deactivated. If you want to reactivate it, write to ${params.contactEmail}.`,
     },
     alumni: {
-      es: `Tu estatus cambió a alumni. Sigues teniendo acceso al directorio y comunicados generales, pero ya no perteneces al grupo de miembros activos.`,
-      en: `Your status changed to alumni. You retain access to the directory and general announcements, but you no longer belong to the active members group.`,
+      es: "Tu estatus cambió a alumni. Sigues teniendo acceso al directorio y comunicados generales, pero ya no perteneces al grupo de miembros activos.",
+      en: "Your status changed to alumni. You retain access to the directory and general announcements, but you no longer belong to the active members group.",
     },
   };
   const subject = subjects[params.newStatus][lang];

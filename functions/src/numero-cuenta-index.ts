@@ -1,10 +1,10 @@
-import { onDocumentWritten } from 'firebase-functions/v2/firestore';
-import * as admin from 'firebase-admin';
+import { onDocumentWritten } from "firebase-functions/v2/firestore";
+import * as admin from "firebase-admin";
 
 const db = admin.firestore();
 
 export const onUserNumeroCuentaChange = onDocumentWritten(
-  'users/{userId}',
+  "users/{userId}",
   async (event) => {
     const beforeData = event.data?.before?.data();
     const afterData = event.data?.after?.data();
@@ -19,7 +19,7 @@ export const onUserNumeroCuentaChange = onDocumentWritten(
     // If old numeroCuenta was removed or changed, delete old index entry
     if (oldNumeroCuenta) {
       const oldIndexRef = db
-        .collection('numero_cuenta_index')
+        .collection("numero_cuenta_index")
         .doc(oldNumeroCuenta);
       const oldIndexSnap = await oldIndexRef.get();
       if (oldIndexSnap.exists && oldIndexSnap.data()?.uid === userId) {
@@ -33,7 +33,7 @@ export const onUserNumeroCuentaChange = onDocumentWritten(
     // If new numeroCuenta is set, create/update index entry
     if (newNumeroCuenta) {
       const indexRef = db
-        .collection('numero_cuenta_index')
+        .collection("numero_cuenta_index")
         .doc(newNumeroCuenta);
       const indexSnap = await indexRef.get();
 
@@ -46,7 +46,7 @@ export const onUserNumeroCuentaChange = onDocumentWritten(
               `attempted by ${userId}`
           );
           await db
-            .collection('users')
+            .collection("users")
             .doc(userId)
             .update({
               numeroCuentaConflict: {
@@ -62,9 +62,9 @@ export const onUserNumeroCuentaChange = onDocumentWritten(
       // No conflict — upsert the index
       const displayName =
         afterData?.displayName ||
-        `${afterData?.firstName || ''} ${afterData?.lastName || ''}`.trim() ||
+        `${afterData?.firstName || ""} ${afterData?.lastName || ""}`.trim() ||
         afterData?.email ||
-        '';
+        "";
 
       await indexRef.set({ uid: userId, displayName });
       console.log(`Indexed numeroCuenta ${newNumeroCuenta} → ${userId}`);

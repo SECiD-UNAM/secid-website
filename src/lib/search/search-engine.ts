@@ -358,7 +358,7 @@ function generateHighlights(
 
       highlights.push({
         field: 'content',
-        snippet: snippet,
+        snippet,
         matches: [matches[matches.length - 1]],
       });
     }
@@ -460,7 +460,7 @@ export class SearchEngine {
     const queryTerms = this.extractQueryTerms(query.query, syntax);
 
     // Filter content by type and other filters
-    let filteredContent = this.applyFilters(this.index, query.filters);
+    const filteredContent = this.applyFilters(this.index, query.filters);
 
     // Search and score results
     let results = this.scoreAndRankResults(

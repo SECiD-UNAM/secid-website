@@ -7,22 +7,22 @@
  *
  * Pure resolution logic lives in ./resolution-logic.ts for testability.
  */
-import { onDocumentWritten } from 'firebase-functions/v2/firestore';
-import { admin } from '../init';
-import type { PermissionGrant } from './defaultGroups';
+import { onDocumentWritten } from "firebase-functions/v2/firestore";
+import { admin } from "../init";
+import type { PermissionGrant } from "./defaultGroups";
 import {
   resolveGroupPermissions,
   encodeClaimsPermissions,
   buildClaimsPayload,
   type GroupDoc,
-} from './resolution-logic';
+} from "./resolution-logic";
 
 // Re-export pure functions so they remain accessible from the barrel
 export {
   resolveGroupPermissions,
   encodeClaimsPermissions,
   buildClaimsPayload,
-} from './resolution-logic';
+} from "./resolution-logic";
 
 // ---------------------------------------------------------------------------
 // Firestore Triggers
@@ -35,7 +35,7 @@ export {
  * encodes them into a compressed string, and sets Firebase Auth custom claims.
  */
 export const onUserGroupWrite = onDocumentWritten(
-  'rbac_user_groups/{userId}',
+  "rbac_user_groups/{userId}",
   async (event) => {
     const userId = event.params.userId;
     const afterData = event.data?.after?.data();
@@ -47,9 +47,9 @@ export const onUserGroupWrite = onDocumentWritten(
         const newClaims = { ...(currentUser.customClaims ?? {}) };
         delete newClaims.rbac;
         await admin.auth().setCustomUserClaims(userId, newClaims);
-        await writeAuditLog('permissions_resolved', 'system', userId, {
-          action: 'cleared',
-          reason: 'user_groups_deleted',
+        await writeAuditLog("permissions_resolved", "system", userId, {
+          action: "cleared",
+          reason: "user_groups_deleted",
         });
       } catch (error) {
         console.error(`Failed to clear claims for ${userId}:`, error);
@@ -72,7 +72,7 @@ export const onUserGroupWrite = onDocumentWritten(
       // Get existing role from Firestore user doc
       const userDoc = await admin
         .firestore()
-        .collection('users')
+        .collection("users")
         .doc(userId)
         .get();
       const existingRole = userDoc.data()?.role as string | undefined;
@@ -88,7 +88,7 @@ export const onUserGroupWrite = onDocumentWritten(
       await admin.auth().setCustomUserClaims(userId, newClaims);
 
       // Audit log
-      await writeAuditLog('permissions_resolved', 'system', userId, {
+      await writeAuditLog("permissions_resolved", "system", userId, {
         groups: groupIds,
         grantCount: resolved.length,
         encodedLength: encoded.length,
@@ -111,7 +111,7 @@ export const onUserGroupWrite = onDocumentWritten(
  * Uses Promise.allSettled with a concurrency limit of 10.
  */
 export const onGroupWrite = onDocumentWritten(
-  'rbac_groups/{groupId}',
+  "rbac_groups/{groupId}",
   async (event) => {
     const groupId = event.params.groupId;
 
@@ -119,8 +119,8 @@ export const onGroupWrite = onDocumentWritten(
       // Find all users assigned to this group
       const userGroupsSnapshot = await admin
         .firestore()
-        .collection('rbac_user_groups')
-        .where('groups', 'array-contains', groupId)
+        .collection("rbac_user_groups")
+        .where("groups", "array-contains", groupId)
         .get();
 
       if (userGroupsSnapshot.empty) {
@@ -140,10 +140,10 @@ export const onGroupWrite = onDocumentWritten(
         resolveUserPermissions
       );
 
-      const succeeded = results.filter((r) => r.status === 'fulfilled').length;
-      const failed = results.filter((r) => r.status === 'rejected').length;
+      const succeeded = results.filter((r) => r.status === "fulfilled").length;
+      const failed = results.filter((r) => r.status === "rejected").length;
 
-      await writeAuditLog('group_updated', 'system', groupId, {
+      await writeAuditLog("group_updated", "system", groupId, {
         affectedUserIds: userIds,
         affectedUsers: userIds.length,
         succeeded,
@@ -168,7 +168,7 @@ async function fetchGroupDocs(groupIds: string[]): Promise<GroupDoc[]> {
 
   const docs = await Promise.all(
     groupIds.map((id) =>
-      admin.firestore().collection('rbac_groups').doc(id).get()
+      admin.firestore().collection("rbac_groups").doc(id).get()
     )
   );
 
@@ -176,7 +176,7 @@ async function fetchGroupDocs(groupIds: string[]): Promise<GroupDoc[]> {
     .filter((doc) => doc.exists)
     .map((doc) => ({
       id: doc.id,
-      name: (doc.data()?.name as string) ?? '',
+      name: (doc.data()?.name as string) ?? "",
       permissions: (doc.data()?.permissions as PermissionGrant[]) ?? [],
     }));
 }
@@ -184,7 +184,7 @@ async function fetchGroupDocs(groupIds: string[]): Promise<GroupDoc[]> {
 async function resolveUserPermissions(userId: string): Promise<void> {
   const userGroupDoc = await admin
     .firestore()
-    .collection('rbac_user_groups')
+    .collection("rbac_user_groups")
     .doc(userId)
     .get();
 
@@ -193,7 +193,7 @@ async function resolveUserPermissions(userId: string): Promise<void> {
   const resolved = resolveGroupPermissions(groupDocs);
   const encoded = encodeClaimsPermissions(resolved);
 
-  const userDoc = await admin.firestore().collection('users').doc(userId).get();
+  const userDoc = await admin.firestore().collection("users").doc(userId).get();
   const existingRole = userDoc.data()?.role as string | undefined;
 
   const currentUser = await admin.auth().getUser(userId);
@@ -204,10 +204,10 @@ async function resolveUserPermissions(userId: string): Promise<void> {
     ...buildClaimsPayload(groupIds, encoded, existingRole),
   });
 
-  await writeAuditLog('permissions_resolved', 'system', userId, {
+  await writeAuditLog("permissions_resolved", "system", userId, {
     groups: groupIds,
     grantCount: resolved.length,
-    trigger: 'group_change',
+    trigger: "group_change",
   });
 }
 
@@ -234,7 +234,7 @@ async function writeAuditLog(
   changes: Record<string, unknown>
 ): Promise<void> {
   try {
-    await admin.firestore().collection('rbac_audit_log').add({
+    await admin.firestore().collection("rbac_audit_log").add({
       action,
       actorId,
       targetId,
@@ -242,6 +242,6 @@ async function writeAuditLog(
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
     });
   } catch (error) {
-    console.error('Failed to write audit log:', error);
+    console.error("Failed to write audit log:", error);
   }
 }

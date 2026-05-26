@@ -333,7 +333,7 @@ export const getConversations = async (
   includeArchived = false
 ): Promise<Conversation[]> => {
   try {
-    let conversationsQuery = query(
+    const conversationsQuery = query(
       conversationsRef,
       where('participants', 'array-contains', userId),
       orderBy('lastActivity', 'desc')

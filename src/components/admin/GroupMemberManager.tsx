@@ -183,7 +183,7 @@ export default function GroupMemberManager({
       const emailQuery = query(
         collection(db, 'users'),
         where('email', '>=', lower),
-        where('email', '<=', lower + '\uf8ff'),
+        where('email', '<=', `${lower  }\uf8ff`),
         limit(10)
       );
 
@@ -191,7 +191,7 @@ export default function GroupMemberManager({
       const nameQuery = query(
         collection(db, 'users'),
         where('displayName', '>=', trimmed),
-        where('displayName', '<=', trimmed + '\uf8ff'),
+        where('displayName', '<=', `${trimmed  }\uf8ff`),
         limit(10)
       );
 

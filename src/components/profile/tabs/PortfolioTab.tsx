@@ -68,7 +68,7 @@ function sortProjects(projects: ProjectShowcase[]): ProjectShowcase[] {
 
 function truncateDescription(text: string, maxLength = 120): string {
   if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength).trim() + '...';
+  return `${text.slice(0, maxLength).trim()  }...`;
 }
 
 export const PortfolioTab: React.FC<PortfolioTabProps> = ({
@@ -256,8 +256,8 @@ const ProjectCard: React.FC<{
       {/* Category badge */}
       <span
         className={
-          'inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ' +
-          badgeColor
+          `inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${ 
+          badgeColor}`
         }
       >
         {categoryLabel}

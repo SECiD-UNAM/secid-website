@@ -292,7 +292,7 @@ export const ContentModeration: React.FC = () => {
   const approveContent = async (item: ModerationItem) => {
     try {
       let targetCollection = '';
-      let updateData: any = {
+      const updateData: any = {
         status: 'active',
         moderatedAt: Timestamp.now(),
         moderatedBy: userProfile?.uid,

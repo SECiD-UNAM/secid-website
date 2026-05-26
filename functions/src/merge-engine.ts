@@ -1,85 +1,85 @@
-import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
-import * as admin from 'firebase-admin';
+import { onDocumentUpdated } from "firebase-functions/v2/firestore";
+import * as admin from "firebase-admin";
 
 const db = admin.firestore();
 
 // Field group -> Firestore paths mapping (must match src/lib/merge/field-groups.ts)
 const FIELD_GROUPS: Record<string, string[]> = {
-  basicInfo: ['firstName', 'lastName', 'displayName', 'photoURL'],
+  basicInfo: ["firstName", "lastName", "displayName", "photoURL"],
   professional: [
-    'profile.company',
-    'profile.companyId',
-    'profile.position',
-    'profile.bio',
-    'profile.location',
+    "profile.company",
+    "profile.companyId",
+    "profile.position",
+    "profile.bio",
+    "profile.location",
   ],
-  experience: ['experience'],
-  skills: ['skills'],
-  socialLinks: ['socialMedia', 'profile.linkedin'],
+  experience: ["experience"],
+  skills: ["skills"],
+  socialLinks: ["socialMedia", "profile.linkedin"],
   education: [
-    'numeroCuenta',
-    'academicLevel',
-    'campus',
-    'generation',
-    'graduationYear',
-    'profile.degree',
-    'profile.specialization',
+    "numeroCuenta",
+    "academicLevel",
+    "campus",
+    "generation",
+    "graduationYear",
+    "profile.degree",
+    "profile.specialization",
   ],
-  privacySettings: ['privacySettings'],
-  notificationSettings: ['notificationSettings'],
-  settings: ['settings'],
+  privacySettings: ["privacySettings"],
+  notificationSettings: ["notificationSettings"],
+  settings: ["settings"],
 };
 
 // Collections to migrate with their UID field(s)
 const SIMPLE_COLLECTIONS: Array<{ collection: string; field: string }> = [
-  { collection: 'jobs', field: 'postedBy' },
-  { collection: 'applications', field: 'applicantId' },
-  { collection: 'events', field: 'createdBy' },
-  { collection: 'eventRegistrations', field: 'userId' },
-  { collection: 'connectionRequests', field: 'from' },
-  { collection: 'connectionRequests', field: 'to' },
-  { collection: 'messages', field: 'senderId' },
-  { collection: 'messages', field: 'recipientId' },
-  { collection: 'resources', field: 'uploadedBy' },
-  { collection: 'resource_downloads', field: 'userId' },
-  { collection: 'resource_activities', field: 'userId' },
-  { collection: 'blog', field: 'authorId' },
-  { collection: 'companies', field: 'createdBy' },
-  { collection: 'commission_members', field: 'userId' },
-  { collection: 'reports', field: 'reportedBy' },
-  { collection: 'resource_reviews', field: 'reviewerId' },
-  { collection: 'resource_bookmarks', field: 'userId' },
-  { collection: 'resource_collections', field: 'createdBy' },
-  { collection: 'mentorship_matches', field: 'mentorId' },
-  { collection: 'mentorship_matches', field: 'menteeId' },
-  { collection: 'mentorship_sessions', field: 'mentorId' },
-  { collection: 'mentorship_sessions', field: 'menteeId' },
-  { collection: 'mentorship_requests', field: 'fromUserId' },
-  { collection: 'mentorship_requests', field: 'toUserId' },
-  { collection: 'mentorship_feedback', field: 'fromUserId' },
-  { collection: 'mentorship_feedback', field: 'toUserId' },
-  { collection: 'mentorship_goals', field: 'mentorId' },
-  { collection: 'mentorship_goals', field: 'menteeId' },
-  { collection: 'mentorship_resources', field: 'sharedBy' },
-  { collection: 'mentorship', field: 'mentorId' },
-  { collection: 'mentorship', field: 'menteeId' },
-  { collection: 'spotlights', field: 'featuredMemberId' },
+  { collection: "jobs", field: "postedBy" },
+  { collection: "applications", field: "applicantId" },
+  { collection: "events", field: "createdBy" },
+  { collection: "eventRegistrations", field: "userId" },
+  { collection: "connectionRequests", field: "from" },
+  { collection: "connectionRequests", field: "to" },
+  { collection: "messages", field: "senderId" },
+  { collection: "messages", field: "recipientId" },
+  { collection: "resources", field: "uploadedBy" },
+  { collection: "resource_downloads", field: "userId" },
+  { collection: "resource_activities", field: "userId" },
+  { collection: "blog", field: "authorId" },
+  { collection: "companies", field: "createdBy" },
+  { collection: "commission_members", field: "userId" },
+  { collection: "reports", field: "reportedBy" },
+  { collection: "resource_reviews", field: "reviewerId" },
+  { collection: "resource_bookmarks", field: "userId" },
+  { collection: "resource_collections", field: "createdBy" },
+  { collection: "mentorship_matches", field: "mentorId" },
+  { collection: "mentorship_matches", field: "menteeId" },
+  { collection: "mentorship_sessions", field: "mentorId" },
+  { collection: "mentorship_sessions", field: "menteeId" },
+  { collection: "mentorship_requests", field: "fromUserId" },
+  { collection: "mentorship_requests", field: "toUserId" },
+  { collection: "mentorship_feedback", field: "fromUserId" },
+  { collection: "mentorship_feedback", field: "toUserId" },
+  { collection: "mentorship_goals", field: "mentorId" },
+  { collection: "mentorship_goals", field: "menteeId" },
+  { collection: "mentorship_resources", field: "sharedBy" },
+  { collection: "mentorship", field: "mentorId" },
+  { collection: "mentorship", field: "menteeId" },
+  { collection: "spotlights", field: "featuredMemberId" },
 ];
 
 const NETWORKING_FIELDS = [
-  'networking.connections',
-  'networking.pendingConnections',
-  'networking.followers',
-  'networking.following',
-  'networking.blockedUsers',
+  "networking.connections",
+  "networking.pendingConnections",
+  "networking.followers",
+  "networking.following",
+  "networking.blockedUsers",
 ];
 
 function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
   return path
-    .split('.')
+    .split(".")
     .reduce(
       (curr: unknown, key: string) =>
-        curr != null && typeof curr === 'object'
+        curr != null && typeof curr === "object"
           ? (curr as Record<string, unknown>)[key]
           : undefined,
       obj
@@ -100,9 +100,9 @@ function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
  */
 export const onMergeRequestApproved = onDocumentUpdated(
   {
-    document: 'merge_requests/{requestId}',
+    document: "merge_requests/{requestId}",
     timeoutSeconds: 120,
-    memory: '256MiB',
+    memory: "256MiB",
   },
   async (event) => {
     const beforeData = event.data?.before.data();
@@ -110,11 +110,12 @@ export const onMergeRequestApproved = onDocumentUpdated(
     if (!beforeData || !afterData) return;
 
     // Only trigger on transition TO 'approved'
-    if (beforeData.status === 'approved' || afterData.status !== 'approved')
+    if (beforeData.status === "approved" || afterData.status !== "approved") {
       return;
+    }
 
     const requestId = event.params.requestId;
-    const requestRef = db.collection('merge_requests').doc(requestId);
+    const requestRef = db.collection("merge_requests").doc(requestId);
 
     const {
       sourceUid,
@@ -131,25 +132,27 @@ export const onMergeRequestApproved = onDocumentUpdated(
 
     try {
       // Step 1: Set status to executing
-      await requestRef.update({ status: 'executing' });
+      await requestRef.update({ status: "executing" });
 
       // Step 2: Read both docs
       const [sourceSnap, targetSnap] = await Promise.all([
-        db.collection('users').doc(sourceUid).get(),
-        db.collection('users').doc(targetUid).get(),
+        db.collection("users").doc(sourceUid).get(),
+        db.collection("users").doc(targetUid).get(),
       ]);
 
-      if (!sourceSnap.exists)
+      if (!sourceSnap.exists) {
         throw new Error(`Source user ${sourceUid} not found`);
-      if (!targetSnap.exists)
+      }
+      if (!targetSnap.exists) {
         throw new Error(`Target user ${targetUid} not found`);
+      }
 
       const sourceDoc = sourceSnap.data()!;
 
       // Step 3: Apply field selections
       const updates: Record<string, unknown> = {};
       for (const [groupKey, selection] of Object.entries(fieldSelections)) {
-        if (selection !== 'source') continue;
+        if (selection !== "source") continue;
         const fields = FIELD_GROUPS[groupKey];
         if (!fields) continue;
         for (const fieldPath of fields) {
@@ -164,11 +167,11 @@ export const onMergeRequestApproved = onDocumentUpdated(
       }
 
       // Write a merge-in-progress flag to prevent onMemberStatusChange from firing
-      updates['_mergeInProgress'] = true;
-      updates['updatedAt'] = admin.firestore.FieldValue.serverTimestamp();
+      updates["_mergeInProgress"] = true;
+      updates["updatedAt"] = admin.firestore.FieldValue.serverTimestamp();
 
       if (Object.keys(updates).length > 1) {
-        await db.collection('users').doc(targetUid).update(updates);
+        await db.collection("users").doc(targetUid).update(updates);
       }
 
       // Step 4: Migrate references
@@ -179,7 +182,7 @@ export const onMergeRequestApproved = onDocumentUpdated(
       // rewriting authorship is both unnecessary and semantically wrong —
       // also avoids the collection-group authorId index requirement.
       const shouldMigrateRefs =
-        migrateReferences !== false && oldDocAction !== 'alias';
+        migrateReferences !== false && oldDocAction !== "alias";
 
       if (shouldMigrateRefs) {
         // 4a: Simple collection field updates
@@ -216,25 +219,25 @@ export const onMergeRequestApproved = onDocumentUpdated(
       }
 
       // Step 5: Handle old doc
-      const action = oldDocAction || 'soft-delete';
-      if (action === 'soft-delete') {
-        await db.collection('users').doc(sourceUid).update({
+      const action = oldDocAction || "soft-delete";
+      if (action === "soft-delete") {
+        await db.collection("users").doc(sourceUid).update({
           merged: true,
           mergedInto: targetUid,
           mergedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
-      } else if (action === 'archive') {
-        await db.collection('archived_users').doc(sourceUid).set(sourceDoc);
-        await db.collection('users').doc(sourceUid).delete();
-      } else if (action === 'hard-delete') {
-        await db.collection('users').doc(sourceUid).delete();
-      } else if (action === 'alias') {
+      } else if (action === "archive") {
+        await db.collection("archived_users").doc(sourceUid).set(sourceDoc);
+        await db.collection("users").doc(sourceUid).delete();
+      } else if (action === "hard-delete") {
+        await db.collection("users").doc(sourceUid).delete();
+      } else if (action === "alias") {
         // Multi-email identity: the source account stays a usable login but
         // its profile doc becomes a thin alias stub pointing at the target.
         // Overwrite (NOT merge) so the stub carries NO role/isVerified/rbac
         // — a compromised alias must never self-escalate independently of
         // the canonical doc.
-        await db.collection('users').doc(sourceUid).set({
+        await db.collection("users").doc(sourceUid).set({
           aliasOf: targetUid,
           mergedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
@@ -244,13 +247,13 @@ export const onMergeRequestApproved = onDocumentUpdated(
         // if a prior partial run already overwrote the source doc to the
         // alias stub (so sourceDoc.email is missing), recover the email
         // from Firebase Auth so re-firing the merge completes the writes.
-        let sourceEmailLower = String(sourceDoc.email || '')
+        let sourceEmailLower = String(sourceDoc.email || "")
           .trim()
           .toLowerCase();
         if (!sourceEmailLower) {
           try {
             const authUser = await admin.auth().getUser(sourceUid);
-            sourceEmailLower = String(authUser.email || '')
+            sourceEmailLower = String(authUser.email || "")
               .trim()
               .toLowerCase();
           } catch {
@@ -258,12 +261,12 @@ export const onMergeRequestApproved = onDocumentUpdated(
           }
         }
         if (sourceEmailLower) {
-          const targetRef = db.collection('users').doc(targetUid);
+          const targetRef = db.collection("users").doc(targetUid);
           const targetCurrent = await targetRef.get();
           const existingAlts: { email: string; verifiedAt: unknown }[] =
             targetCurrent.data()?.alternateEmails || [];
           const dedupedAlts = existingAlts.filter(
-            (e) => String(e?.email || '').toLowerCase() !== sourceEmailLower
+            (e) => String(e?.email || "").toLowerCase() !== sourceEmailLower
           );
           // Firestore forbids FieldValue.serverTimestamp() inside array
           // elements; use a real Timestamp so the array write succeeds.
@@ -273,7 +276,7 @@ export const onMergeRequestApproved = onDocumentUpdated(
           });
           await targetRef.update({ alternateEmails: dedupedAlts });
 
-          await db.collection('email_alias').doc(sourceEmailLower).set({
+          await db.collection("email_alias").doc(sourceEmailLower).set({
             canonicalUid: targetUid,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
           });
@@ -287,7 +290,7 @@ export const onMergeRequestApproved = onDocumentUpdated(
       // — any session active at merge time would stay live until expiry.
       // revokeRefreshTokens forces re-auth immediately so a stolen pre-merge
       // session can't keep operating against the now-merged identity.
-      if (action !== 'alias') {
+      if (action !== "alias") {
         try {
           await admin.auth().updateUser(sourceUid, { disabled: true });
           await admin.auth().revokeRefreshTokens(sourceUid);
@@ -301,7 +304,7 @@ export const onMergeRequestApproved = onDocumentUpdated(
       }
 
       // Step 7: Clean up target doc
-      await db.collection('users').doc(targetUid).update({
+      await db.collection("users").doc(targetUid).update({
         potentialMergeMatch: admin.firestore.FieldValue.delete(),
         _mergeInProgress: admin.firestore.FieldValue.delete(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -313,10 +316,10 @@ export const onMergeRequestApproved = onDocumentUpdated(
       // deleting it. For all other actions, delete the stale entry.
       const numeroCuenta = afterData.numeroCuenta;
       if (numeroCuenta) {
-        const indexRef = db.collection('numero_cuenta_index').doc(numeroCuenta);
+        const indexRef = db.collection("numero_cuenta_index").doc(numeroCuenta);
         const indexSnap = await indexRef.get();
         if (indexSnap.exists && indexSnap.data()?.uid === sourceUid) {
-          if (action === 'alias') {
+          if (action === "alias") {
             await indexRef.update({ uid: targetUid });
           } else {
             await indexRef.delete();
@@ -328,7 +331,7 @@ export const onMergeRequestApproved = onDocumentUpdated(
       // #42: clear any stale `error` field from a prior failed run so the
       // surfaced status matches reality on retry.
       await requestRef.update({
-        status: 'completed',
+        status: "completed",
         completedAt: admin.firestore.FieldValue.serverTimestamp(),
         migratedCollections: migrated,
         error: admin.firestore.FieldValue.delete(),
@@ -340,7 +343,7 @@ export const onMergeRequestApproved = onDocumentUpdated(
       // afterData.reviewedBy / createdBy carry the admin uid from the client.
       try {
         await db
-          .collection('merge_audit_log')
+          .collection("merge_audit_log")
           .doc(requestId)
           .set({
             requestId,
@@ -351,8 +354,8 @@ export const onMergeRequestApproved = onDocumentUpdated(
             fieldSelections,
             migratedCollections: migrated,
             executorUid:
-              afterData.reviewedBy || afterData.createdBy || 'unknown',
-            initiatedBy: afterData.initiatedBy || 'unknown',
+              afterData.reviewedBy || afterData.createdBy || "unknown",
+            initiatedBy: afterData.initiatedBy || "unknown",
             matchedBy: afterData.matchedBy || null,
             numeroCuenta: afterData.numeroCuenta || null,
             completedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -371,7 +374,7 @@ export const onMergeRequestApproved = onDocumentUpdated(
       const msg = err instanceof Error ? err.message : String(err);
       console.error(`Merge failed for request ${requestId}:`, err);
       await requestRef.update({
-        status: 'failed',
+        status: "failed",
         error: msg,
       });
     }
@@ -386,7 +389,7 @@ async function migrateSimpleCollection(
   sourceUid: string,
   targetUid: string
 ) {
-  const q = db.collection(collName).where(field, '==', sourceUid);
+  const q = db.collection(collName).where(field, "==", sourceUid);
   const snap = await q.get();
   if (snap.empty) return;
 
@@ -411,16 +414,16 @@ async function migrateSubcollections(
   requestRef: FirebaseFirestore.DocumentReference
 ) {
   const subcollections = [
-    { parent: 'forums', sub: 'posts', field: 'authorId' },
-    { parent: 'jobs', sub: 'applications', field: 'applicantId' },
-    { parent: 'events', sub: 'registrations', field: 'userId' },
+    { parent: "forums", sub: "posts", field: "authorId" },
+    { parent: "jobs", sub: "applications", field: "applicantId" },
+    { parent: "events", sub: "registrations", field: "userId" },
   ];
 
   for (const { parent, sub, field } of subcollections) {
     const key = `${parent}/*/${sub}:${field}`;
     if (migrated.includes(key)) continue;
 
-    const q = db.collectionGroup(sub).where(field, '==', sourceUid);
+    const q = db.collectionGroup(sub).where(field, "==", sourceUid);
     const snap = await q.get();
     if (!snap.empty) {
       let batch = db.batch();
@@ -441,9 +444,9 @@ async function migrateSubcollections(
   }
 
   // Forum replies (nested deeper)
-  const repliesKey = 'forums/*/posts/*/replies:authorId';
+  const repliesKey = "forums/*/posts/*/replies:authorId";
   if (!migrated.includes(repliesKey)) {
-    const q = db.collectionGroup('replies').where('authorId', '==', sourceUid);
+    const q = db.collectionGroup("replies").where("authorId", "==", sourceUid);
     const snap = await q.get();
     if (!snap.empty) {
       let batch = db.batch();
@@ -470,7 +473,7 @@ async function migrateDocIdCollections(
   migrated: string[],
   requestRef: FirebaseFirestore.DocumentReference
 ) {
-  for (const collName of ['mentors', 'mentees']) {
+  for (const collName of ["mentors", "mentees"]) {
     const key = `${collName}:docId`;
     if (migrated.includes(key)) continue;
 
@@ -491,13 +494,13 @@ async function migrateNetworkingArrays(
   migrated: string[],
   requestRef: FirebaseFirestore.DocumentReference
 ) {
-  const key = 'users:networking-arrays';
+  const key = "users:networking-arrays";
   if (migrated.includes(key)) return;
 
   for (const fieldPath of NETWORKING_FIELDS) {
     const q = db
-      .collection('users')
-      .where(fieldPath, 'array-contains', sourceUid);
+      .collection("users")
+      .where(fieldPath, "array-contains", sourceUid);
     const snap = await q.get();
     if (snap.empty) continue;
 
@@ -545,12 +548,12 @@ async function migrateConversations(
   migrated: string[],
   requestRef: FirebaseFirestore.DocumentReference
 ) {
-  const key = 'conversations:participants';
+  const key = "conversations:participants";
   if (migrated.includes(key)) return;
 
   const q = db
-    .collection('conversations')
-    .where('participants', 'array-contains', sourceUid);
+    .collection("conversations")
+    .where("participants", "array-contains", sourceUid);
   const snap = await q.get();
 
   let batch = db.batch();

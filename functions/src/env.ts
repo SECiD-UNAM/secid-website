@@ -8,7 +8,7 @@
 
 function isEmulator(): boolean {
   return (
-    process.env.FUNCTIONS_EMULATOR === 'true' ||
+    process.env.FUNCTIONS_EMULATOR === "true" ||
     !!process.env.FIREBASE_EMULATOR_HUB
   );
 }
@@ -31,11 +31,11 @@ let warned = false;
  *        explicit add — that's the point.
  */
 export const ALLOWED_CALLABLE_ORIGINS: (string | RegExp)[] = [
-  'https://secid.mx',
-  'https://www.secid.mx',
-  'https://beta.secid.mx',
-  'https://secid.org',
-  'https://www.secid.org',
+  "https://secid.mx",
+  "https://www.secid.mx",
+  "https://beta.secid.mx",
+  "https://secid.org",
+  "https://www.secid.org",
   /^http:\/\/localhost(?::\d+)?$/,
   /^http:\/\/127\.0\.0\.1(?::\d+)?$/,
 ];
@@ -52,14 +52,14 @@ export const ALLOWED_CALLABLE_ORIGINS: (string | RegExp)[] = [
  *     any environment that hasn't been migrated to set APP_URL yet. The
  *     warning is the operational signal.
  */
-export function getAppUrl(fallback = 'https://beta.secid.mx'): string {
+export function getAppUrl(fallback = "https://beta.secid.mx"): string {
   const fromEnv = process.env.APP_URL;
   if (fromEnv) return fromEnv;
   if (!isEmulator() && !warned) {
     warned = true;
     console.warn(
       `[env] APP_URL not set in production env; falling back to ${fallback}. ` +
-        `User-visible links will point at the fallback domain — set APP_URL in the function runtime config.`
+        "User-visible links will point at the fallback domain — set APP_URL in the function runtime config."
     );
   }
   return fallback;
