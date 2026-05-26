@@ -6,6 +6,9 @@ import {
 } from 'firebase/storage';
 import { db, storage, analytics } from './firebase';
 import { logEvent } from 'firebase/analytics';
+import { logger } from './logger';
+
+const log = logger.child('onboarding');
 
 /**
  * Onboarding Utilities and Firebase Integration
@@ -96,7 +99,7 @@ export async function saveOnboardingProgress(
       });
     }
   } catch (error) {
-    console.error('Error saving onboarding progress:', error);
+    log.error('saving onboarding progress', { error });
     throw new Error('Failed to save onboarding progress');
   }
 }
@@ -128,7 +131,7 @@ export async function loadOnboardingProgress(
 
     return null;
   } catch (error) {
-    console.error('Error loading onboarding progress:', error);
+    log.error('loading onboarding progress', { error });
     throw new Error('Failed to load onboarding progress');
   }
 }
@@ -148,7 +151,7 @@ export async function deleteOnboardingProgress(userId: string): Promise<void> {
       logEvent(analytics, 'onboarding_progress_deleted', { user_id: userId });
     }
   } catch (error) {
-    console.error('Error deleting onboarding progress:', error);
+    log.error('deleting onboarding progress', { error });
     throw new Error('Failed to delete onboarding progress');
   }
 }
@@ -179,7 +182,7 @@ export async function trackOnboardingEvent(
       });
     }
   } catch (error) {
-    console.error('Error tracking onboarding event:', error);
+    log.error('tracking onboarding event', { error });
     // Don't throw error for analytics - it shouldn't break the flow
   }
 }
@@ -205,7 +208,7 @@ export async function getOnboardingAnalytics(
 
     return null;
   } catch (error) {
-    console.error('Error getting onboarding analytics:', error);
+    log.error('getting onboarding analytics', { error });
     return null;
   }
 }
@@ -218,7 +221,7 @@ export async function deleteOnboardingAnalytics(userId: string): Promise<void> {
     const analyticsRef = doc(db, ONBOARDING_ANALYTICS_COLLECTION, userId);
     await deleteDoc(analyticsRef);
   } catch (error) {
-    console.error('Error deleting onboarding analytics:', error);
+    log.error('deleting onboarding analytics', { error });
   }
 }
 
@@ -259,7 +262,7 @@ export async function uploadOnboardingProfilePhoto(
 
     return downloadURL;
   } catch (error) {
-    console.error('Error uploading profile photo:', error);
+    log.error('uploading profile photo', { error });
     throw new Error('Failed to upload profile photo');
   }
 }
@@ -276,7 +279,7 @@ export async function deleteOnboardingProfilePhoto(
       await deleteObject(photoRef);
     }
   } catch (error) {
-    console.error('Error deleting profile photo:', error);
+    log.error('deleting profile photo', { error });
     // Don't throw error - photo deletion is not critical
   }
 }
@@ -323,7 +326,7 @@ export async function getABTestVariant(
 
     return variant;
   } catch (error) {
-    console.error('Error getting A/B test variant:', error);
+    log.error('getting A/B test variant', { error });
     return null;
   }
 }
@@ -397,7 +400,7 @@ export async function generateOnboardingRecommendations(
       },
     };
   } catch (error) {
-    console.error('Error generating recommendations:', error);
+    log.error('generating recommendations', { error });
     return {
       recommendedConnections: [],
       suggestedJobs: [],
@@ -448,7 +451,7 @@ export async function createQuickStartGuide(
 
     return guide;
   } catch (error) {
-    console.error('Error creating quick start guide:', error);
+    log.error('creating quick start guide', { error });
     throw new Error('Failed to create quick start guide');
   }
 }
@@ -491,7 +494,7 @@ export async function triggerWelcomeEmail(
       logEvent(analytics, 'welcome_email_triggered', { user_id: userId });
     }
   } catch (error) {
-    console.error('Error triggering welcome email:', error);
+    log.error('triggering welcome email', { error });
     // Don't throw error - email is not critical for onboarding completion
   }
 }
@@ -533,7 +536,7 @@ export async function getPlatformTour(
       ? allTours.filter((tour) => focusAreas.includes(tour.category))
       : allTours.filter((tour) => tour.required);
   } catch (error) {
-    console.error('Error getting platform tour:', error);
+    log.error('getting platform tour', { error });
     return [];
   }
 }

@@ -3,6 +3,9 @@
  */
 
 import { db, isUsingMockAPI } from '../firebase';
+import { logger } from '../logger';
+
+const log = logger.child('members.queries');
 import {
   collection,
   doc,
@@ -130,7 +133,7 @@ export async function getMemberProfiles(
 
     return members;
   } catch (error) {
-    console.error('Error fetching member profiles:', error);
+    log.error('fetching member profiles', { error });
     throw error;
   }
 }
@@ -176,7 +179,7 @@ export async function searchMembers(
       relevantSkills: getRelevantSkills(member, filters),
     }));
   } catch (error) {
-    console.error('Error searching members:', error);
+    log.error('searching members', { error });
     throw error;
   }
 }
@@ -208,7 +211,7 @@ export async function getMemberProfile(
     // Fall back to slug query
     return getMemberBySlug(idOrSlug);
   } catch (error) {
-    console.error('Error fetching member profile:', error);
+    log.error('fetching member profile', { error });
     throw error;
   }
 }
@@ -252,7 +255,7 @@ async function getMemberBySlug(slug: string): Promise<MemberProfile | null> {
 
     return null;
   } catch (error) {
-    console.error('Error fetching member by slug:', error);
+    log.error('fetching member by slug', { error });
     throw error;
   }
 }
@@ -313,7 +316,7 @@ export async function getMemberStats(): Promise<MemberStats> {
       topLocations: [],
     };
   } catch (error) {
-    console.error('Error fetching member stats:', error);
+    log.error('fetching member stats', { error });
     throw error;
   }
 }
@@ -630,7 +633,7 @@ export async function getMemberStatistics(): Promise<MemberStatisticsData> {
         .sort((a, b) => b.count - a.count),
     };
   } catch (error) {
-    console.error('Error fetching member statistics:', error);
+    log.error('fetching member statistics', { error });
     throw error;
   }
 }
@@ -711,7 +714,7 @@ export async function getMemberRecommendations(
       .sort((a, b) => b.score - a.score)
       .slice(0, 10);
   } catch (error) {
-    console.error('Error getting member recommendations:', error);
+    log.error('getting member recommendations', { error });
     return [];
   }
 }

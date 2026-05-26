@@ -3,6 +3,9 @@
  */
 
 import { db, storage } from '../firebase';
+import { logger } from '../logger';
+
+const log = logger.child('mentorship.profiles');
 import {
   collection,
   doc,
@@ -45,7 +48,7 @@ export async function getMentorProfile(
 
     return null;
   } catch (error) {
-    console.error('Error getting mentor profile:', error);
+    log.error('getting mentor profile', { error });
     throw new Error('Failed to load mentor profile');
   }
 }
@@ -90,7 +93,7 @@ export async function getMentorProfiles(filters?: {
 
     return mentors;
   } catch (error) {
-    console.error('Error getting mentor profiles:', error);
+    log.error('getting mentor profiles', { error });
     throw new Error('Failed to load mentor profiles');
   }
 }
@@ -115,7 +118,7 @@ export async function createMentorProfile(
       id: docRef['id'],
     };
   } catch (error) {
-    console.error('Error creating mentor profile:', error);
+    log.error('creating mentor profile', { error });
     throw new Error('Failed to create mentor profile');
   }
 }
@@ -144,7 +147,7 @@ export async function updateMentorProfile(
 
     return updatedProfile;
   } catch (error) {
-    console.error('Error updating mentor profile:', error);
+    log.error('updating mentor profile', { error });
     throw new Error('Failed to update mentor profile');
   }
 }
@@ -170,7 +173,7 @@ export async function getMenteeProfile(
 
     return null;
   } catch (error) {
-    console.error('Error getting mentee profile:', error);
+    log.error('getting mentee profile', { error });
     throw new Error('Failed to load mentee profile');
   }
 }
@@ -195,7 +198,7 @@ export async function createMenteeProfile(
       id: docRef['id'],
     };
   } catch (error) {
-    console.error('Error creating mentee profile:', error);
+    log.error('creating mentee profile', { error });
     throw new Error('Failed to create mentee profile');
   }
 }
@@ -224,7 +227,7 @@ export async function updateMenteeProfile(
 
     return updatedProfile;
   } catch (error) {
-    console.error('Error updating mentee profile:', error);
+    log.error('updating mentee profile', { error });
     throw new Error('Failed to update mentee profile');
   }
 }
@@ -245,7 +248,7 @@ export async function uploadProfileImage(
 
     return downloadURL;
   } catch (error) {
-    console.error('Error uploading profile image:', error);
+    log.error('uploading profile image', { error });
     throw new Error('Failed to upload image');
   }
 }
