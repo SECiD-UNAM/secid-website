@@ -16,6 +16,7 @@ import { OverviewTab } from './OverviewTab';
 import { MembersTab } from './MembersTab';
 import { InsightsTab } from './InsightsTab';
 import type { FilterState } from './MemberFilters';
+import SurveyPromptBanner from '@/components/survey/SurveyPromptBanner';
 
 type DashboardTab = 'overview' | 'members' | 'insights';
 
@@ -104,6 +105,8 @@ export const MemberDashboard: React.FC<MemberDashboardProps> = ({
 
   return (
     <div className="space-y-6">
+      <SurveyPromptBanner lang={lang} />
+
       {/* Tab Navigation */}
       <div className="flex gap-2 border-b border-gray-200 pb-3 dark:border-gray-700">
         {tabs.map((tab) => (

@@ -1064,5 +1064,41 @@ service cloud.firestore {
     match /linkedin_auth_codes/{codeId} {
       allow read, write: if false;
     }
+
+    // Member inscription survey (1:1 with users). Owner-writable, others
+    // see per-field visibility honored. Aggregate exposure lives at
+    // /survey_aggregates so individual rows are never exposed by counting
+    // queries.
+    match /member_surveys/{uid} {
+      // Owner can always read + write their own survey
+      allow read, write: if isAuthenticated() && isOwner(uid);
+
+      // Other authenticated members can read public + members-visible surveys
+      allow read: if isAuthenticated()
+        && resource.data.get('visibility', 'private') in ['public', 'members'];
+
+      // Anonymous can read explicit public-visibility surveys
+      allow read: if !isAuthenticated()
+        && resource.data.get('visibility', 'private') == 'public';
+
+      // Admins/moderators can read all (for moderation + admin export)
+      allow read: if isAuthenticated()
+        && getCurrentUser().data.role in ['admin', 'moderator'];
+    }
+
+    // Pre-computed aggregates for public charts. Cloud Function writes;
+    // everyone reads. k-anonymity threshold applied in the aggregator.
+    match /survey_aggregates/{period} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Survey question definitions (admin-editable, public-readable so
+    // signup + profile editor can render the live question set).
+    match /survey_config/{docId} {
+      allow read: if true;
+      allow write: if isAuthenticated()
+        && getCurrentUser().data.role == 'admin';
+    }
   }
 }

@@ -3,8 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.completeRegistration = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
+const env_1 = require("./env");
 const db = admin.firestore();
-exports.completeRegistration = (0, https_1.onCall)({ cors: [/secid\.mx$/, /secid\.org$/, "localhost"] }, async (request) => {
+exports.completeRegistration = (0, https_1.onCall)({ cors: env_1.ALLOWED_CALLABLE_ORIGINS }, async (request) => {
     var _a;
     // 1. Validate caller is authenticated
     if (!request.auth) {
@@ -49,15 +50,15 @@ async function handleMemberRegistration(uid, data) {
         throw new https_1.HttpsError("invalid-argument", "numeroCuenta must be exactly 9 digits");
     }
     const updateData = {
-        registrationType: "member",
-        verificationStatus: "pending",
-        numeroCuenta: data.numeroCuenta,
-        academicLevel: data.academicLevel || null,
-        campus: data.campus || null,
-        generation: data.generation || null,
+        "registrationType": "member",
+        "verificationStatus": "pending",
+        "numeroCuenta": data.numeroCuenta,
+        "academicLevel": data.academicLevel || null,
+        "campus": data.campus || null,
+        "generation": data.generation || null,
         "lifecycle.status": "pending",
         "lifecycle.statusChangedAt": admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        "updatedAt": admin.firestore.FieldValue.serverTimestamp(),
     };
     if (data.graduationYear) {
         updateData["profile.graduationYear"] = data.graduationYear;
@@ -141,17 +142,17 @@ async function handleRecruiterRegistration(uid, data) {
         const completeness = calculateProfileCompleteness(mergedData);
         // Update user doc
         transaction.update(db.collection("users").doc(uid), {
-            role: "company",
-            registrationType: "recruiter",
-            isVerified: true,
+            "role": "company",
+            "registrationType": "recruiter",
+            "isVerified": true,
             "profile.company": data.companyName.trim(),
             "profile.companyId": companyId,
             "profile.position": data.companyPosition,
             "lifecycle.status": "active",
             "lifecycle.statusChangedAt": admin.firestore.FieldValue.serverTimestamp(),
-            profileCompleteness: completeness,
-            _skipGroupSync: true,
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            "profileCompleteness": completeness,
+            "_skipGroupSync": true,
+            "updatedAt": admin.firestore.FieldValue.serverTimestamp(),
         });
     });
     // Alert admins about new recruiter registration
@@ -183,8 +184,9 @@ function calculateProfileCompleteness(userData) {
     if (userData.photoURL || ((_c = userData.profile) === null || _c === void 0 ? void 0 : _c.photoURL))
         score += 10;
     // Registration type completed (20%)
-    if (userData.registrationType && userData.registrationType !== "collaborator")
+    if (userData.registrationType && userData.registrationType !== "collaborator") {
         score += 20;
+    }
     if (userData.registrationType === "collaborator")
         score += 10;
     // Education (15%)

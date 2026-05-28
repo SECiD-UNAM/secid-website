@@ -72,6 +72,7 @@ export type TabId =
   | 'career'
   | 'education'
   | 'portfolio'
+  | 'survey'
   | 'privacy'
   | 'security';
 

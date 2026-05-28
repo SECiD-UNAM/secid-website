@@ -170,3 +170,6 @@ crash.log
 # (see .github/workflows/deploy-beta.yml + cd.yml). Must never be checked in.
 functions/.env
 functions/.env.local
+
+# Playwright MCP capture artifacts
+.playwright-mcp/

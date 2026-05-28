@@ -1,12 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requirePermission = exports.backfillRbacUsers = exports.seedRbacGroups = exports.onGroupWrite = exports.onUserGroupWrite = exports.getSalaryStats = exports.submitPublicJob = exports.completeRegistration = exports.onMergeRequestApproved = exports.onUserNumeroCuentaChange = exports.onMemberCompanyChange = exports.getMemberGroupList = exports.updateMemberGroups = exports.syncGroupMembership = exports.onMemberStatusChange = exports.onUserDocCreated = exports.onNewJobPosted = exports.onUserDelete = exports.matchJobsForUser = exports.verifyUnamEmail = exports.onUserCreate = void 0;
+exports.requirePermission = exports.backfillRbacUsers = exports.seedRbacGroups = exports.onGroupWrite = exports.onUserGroupWrite = exports.refreshSurveyAggregates = exports.aggregateSurveyResponses = exports.getSalaryStats = exports.sendContactMessage = exports.subscribeNewsletter = exports.submitPublicJob = exports.confirmAlternateEmail = exports.requestAlternateEmail = exports.completeRegistration = exports.onMergeRequestApproved = exports.onUserNumeroCuentaChange = exports.onMemberCompanyChange = exports.getMemberGroupList = exports.updateMemberGroups = exports.syncGroupMembership = exports.onMemberStatusChange = exports.onUserDocCreated = exports.onNewJobPosted = exports.onUserDelete = exports.matchJobsForUser = exports.verifyUnamEmail = exports.onUserCreate = void 0;
 const firestore_1 = require("firebase-functions/v2/firestore");
 const https_1 = require("firebase-functions/v2/https");
 const identity_1 = require("firebase-functions/v2/identity");
 const functionsV1 = require("firebase-functions/v1");
 const init_1 = require("./init"); // Must be first — initializes Firebase before other imports
 const email_service_1 = require("./email-service");
+const email_templates_1 = require("./email-templates");
+const env_1 = require("./env");
 const google_admin_1 = require("./google-admin");
 const group_config_1 = require("./group-config");
 const numero_cuenta_index_1 = require("./numero-cuenta-index");
@@ -15,8 +17,14 @@ const merge_engine_1 = require("./merge-engine");
 Object.defineProperty(exports, "onMergeRequestApproved", { enumerable: true, get: function () { return merge_engine_1.onMergeRequestApproved; } });
 const complete_registration_1 = require("./complete-registration");
 Object.defineProperty(exports, "completeRegistration", { enumerable: true, get: function () { return complete_registration_1.completeRegistration; } });
+const alternate_email_1 = require("./alternate-email");
+Object.defineProperty(exports, "requestAlternateEmail", { enumerable: true, get: function () { return alternate_email_1.requestAlternateEmail; } });
+Object.defineProperty(exports, "confirmAlternateEmail", { enumerable: true, get: function () { return alternate_email_1.confirmAlternateEmail; } });
 const public_job_submit_1 = require("./public-job-submit");
 Object.defineProperty(exports, "submitPublicJob", { enumerable: true, get: function () { return public_job_submit_1.submitPublicJob; } });
+const public_forms_1 = require("./public-forms");
+Object.defineProperty(exports, "subscribeNewsletter", { enumerable: true, get: function () { return public_forms_1.subscribeNewsletter; } });
+Object.defineProperty(exports, "sendContactMessage", { enumerable: true, get: function () { return public_forms_1.sendContactMessage; } });
 // Firebase Admin initialized in ./init.ts (imported above)
 // User creation trigger - set up initial user profile
 exports.onUserCreate = (0, identity_1.beforeUserCreated)(async (event) => {
@@ -252,13 +260,40 @@ exports.onUserDocCreated = (0, firestore_1.onDocumentCreated)("users/{userId}", 
     const userData = snapshot.data();
     const email = userData.email;
     if (!email) {
-        console.log("No email for user, skipping group add");
+        console.log("No email for user, skipping group add + welcome email");
         return;
     }
-    // Add to collaborators group by default
+    // 1. Add to default collaborators Google Group.
     const added = await (0, google_admin_1.addMemberToGroup)((0, group_config_1.getDefaultGroup)(), email);
     if (added) {
         console.log(`Added ${email} to collaborators group`);
+    }
+    // 2. Send welcome email pointing the user at /onboarding (Phase 0 #1
+    // from docs/qa/2026-05-24-user-journey-validation-and-improvement-plan.md).
+    // Best-effort: log + continue on failure so Group sync above stays the
+    // contract of this trigger.
+    try {
+        const lang = userData.lang ||
+            userData.locale ||
+            "es";
+        const recipientName = userData.firstName ||
+            userData.displayName ||
+            (typeof email === "string" ? email.split("@")[0] : "");
+        // /onboarding doesn't exist as a route. The signup wizard
+        // (src/components/auth/SignUpForm.tsx) detects an existing auth
+        // session and skips the 'account' step, so /signup is where the
+        // user resumes completing their profile (numeroCuenta, proof,
+        // membership type) after email verification.
+        const { subject, html } = (0, email_templates_1.generateWelcomeEmail)({
+            recipientName,
+            onboardingUrl: `${(0, env_1.getAppUrl)()}/${lang}/signup`,
+            lang,
+        });
+        await (0, email_service_1.sendEmail)({ to: email, subject, html });
+        console.log(`Welcome email queued for ${email}`);
+    }
+    catch (err) {
+        console.error(`Failed to queue welcome email for ${email}:`, err);
     }
 });
 /**
@@ -297,28 +332,139 @@ exports.onMemberStatusChange = (0, firestore_1.onDocumentUpdated)("users/{userId
     if (!email)
         return;
     console.log(`Status change for ${email}: ${oldStatus} → ${newStatus}`);
+    // Common bits for the email payloads below.
+    const lang = afterData.lang ||
+        afterData.locale ||
+        "es";
+    const recipientName = afterData.firstName ||
+        afterData.displayName ||
+        (typeof email === "string" ? email.split("@")[0] : "");
+    const contactEmail = process.env.ADMIN_EMAIL || "contacto@secid.mx";
+    const baseUrl = (0, env_1.getAppUrl)();
+    // Best-effort email helper — never let an email failure block the
+    // Google Group sync below.
+    const queueEmail = async (to, payload) => {
+        try {
+            await (0, email_service_1.sendEmail)({ to, subject: payload.subject, html: payload.html });
+        }
+        catch (err) {
+            console.error(`Failed to queue email to ${to}:`, err);
+        }
+    };
+    // Resolve the recipient list for admin-targeted notifications.
+    // Query every user with role='admin' and email set (so notifications
+    // fanout to the whole admin team instead of dying with one stale
+    // ADMIN_EMAIL inbox). Fallback to env so bootstrap / empty-DB
+    // scenarios still work.
+    const resolveAdminRecipients = async () => {
+        try {
+            const snap = await init_1.admin
+                .firestore()
+                .collection("users")
+                .where("role", "==", "admin")
+                .get();
+            const emails = snap.docs
+                .map((d) => String(d.data().email || "").trim())
+                .filter((e) => e.length > 0);
+            const deduped = Array.from(new Set(emails));
+            if (deduped.length > 0)
+                return deduped;
+        }
+        catch (err) {
+            console.warn("Failed to resolve admin recipients from Firestore:", err);
+        }
+        return [contactEmail];
+    };
     switch (newStatus) {
         case "active":
             // Member approved or reinstated → add to miembros@, remove from colaboradores@
             await (0, google_admin_1.addMemberToGroup)((0, group_config_1.getMembersGroup)(), email);
             await (0, google_admin_1.removeMemberFromGroup)((0, group_config_1.getDefaultGroup)(), email);
+            // Notify the user that they were approved (Phase 0 #3).
+            // QA round 3 found my original guard `oldStatus === 'pending'` was
+            // too strict: the AdminMembersTable shows "Pendiente" as the
+            // default UI label when lifecycle.status is undefined, but the
+            // ACTUAL stored value is undefined or 'collaborator'. So real
+            // admin approvals manifest as `undefined → active` or
+            // `'collaborator' → active`, not `'pending' → active`. Relax
+            // the guard: send the approval email for any → active EXCEPT
+            // when reactivating from suspended/deactivated (which gets the
+            // reactivation copy).
+            if (oldStatus === "suspended" || oldStatus === "deactivated") {
+                await queueEmail(email, (0, email_templates_1.generateStatusChangeEmail)({
+                    recipientName,
+                    newStatus: "alumni", // reuse template; phrasing fits reactivation context loosely
+                    contactEmail,
+                    lang,
+                }));
+            }
+            else {
+                await queueEmail(email, (0, email_templates_1.generateApprovedEmail)({
+                    recipientName,
+                    dashboardUrl: `${baseUrl}/${lang}/dashboard`,
+                    lang,
+                }));
+            }
             break;
         case "suspended":
         case "deactivated":
             // Suspended or deactivated → remove from all groups
             await (0, google_admin_1.removeMemberFromAllGroups)(email, (0, group_config_1.getAllGroups)());
+            await queueEmail(email, (0, email_templates_1.generateStatusChangeEmail)({
+                recipientName,
+                newStatus,
+                contactEmail,
+                lang,
+            }));
             break;
         case "alumni":
             // Alumni → remove from miembros@, optionally keep in colaboradores@
             await (0, google_admin_1.removeMemberFromGroup)((0, group_config_1.getMembersGroup)(), email);
+            await queueEmail(email, (0, email_templates_1.generateStatusChangeEmail)({
+                recipientName,
+                newStatus: "alumni",
+                contactEmail,
+                lang,
+            }));
             break;
         case "collaborator":
             // Rejected or downgraded → ensure in colaboradores@, remove from miembros@
             await (0, google_admin_1.addMemberToGroup)((0, group_config_1.getDefaultGroup)(), email);
             await (0, google_admin_1.removeMemberFromGroup)((0, group_config_1.getMembersGroup)(), email);
+            // Only email the user if this is a real rejection (was pending),
+            // not just an initial creation that landed at collaborator.
+            if (oldStatus === "pending") {
+                await queueEmail(email, (0, email_templates_1.generateRejectedEmail)({
+                    recipientName,
+                    reason: afterData.rejectionReason,
+                    contactEmail,
+                    lang,
+                }));
+            }
             break;
         case "pending":
-            // Membership requested → no group change (still in colaboradores@)
+            // Membership requested → no group change (still in colaboradores@).
+            // Phase 0 #2: notify admins that there's something to review.
+            // Skip if already notified (defensive against re-fires of the
+            // same transition by a Firestore retry).
+            if (oldStatus !== "pending") {
+                // Fanout to every user with role='admin', not just a single
+                // ADMIN_EMAIL env var (QA round 4 redesign — single inbox was
+                // a stale-inbox risk).
+                const adminRecipients = await resolveAdminRecipients();
+                const adminPayload = (0, email_templates_1.generateAdminPendingNotif)({
+                    memberName: recipientName,
+                    memberEmail: email,
+                    numeroCuenta: afterData.numeroCuenta,
+                    registrationType: afterData.registrationType,
+                    // /admin/users doesn't exist; the actual admin members page is here.
+                    adminPanelUrl: `${baseUrl}/${lang}/dashboard/admin/members?status=pending`,
+                });
+                for (const adminTo of adminRecipients) {
+                    await queueEmail(adminTo, adminPayload);
+                }
+                console.log(`Admin pending notif fanout to ${adminRecipients.length} recipient(s)`);
+            }
             break;
         default:
             console.log(`Unknown status: ${newStatus}`);
@@ -456,6 +602,10 @@ Object.defineProperty(exports, "onMemberCompanyChange", { enumerable: true, get:
 // Salary stats: aggregated compensation analytics with tiered privacy enforcement
 var get_salary_stats_1 = require("./get-salary-stats");
 Object.defineProperty(exports, "getSalaryStats", { enumerable: true, get: function () { return get_salary_stats_1.getSalaryStats; } });
+// Member inscription survey: scheduled aggregation + admin-triggered refresh
+var aggregate_survey_1 = require("./aggregate-survey");
+Object.defineProperty(exports, "aggregateSurveyResponses", { enumerable: true, get: function () { return aggregate_survey_1.aggregateSurveyResponses; } });
+Object.defineProperty(exports, "refreshSurveyAggregates", { enumerable: true, get: function () { return aggregate_survey_1.refreshSurveyAggregates; } });
 // RBAC: permission resolution triggers + admin callable functions
 var resolvePermissions_1 = require("./rbac/resolvePermissions");
 Object.defineProperty(exports, "onUserGroupWrite", { enumerable: true, get: function () { return resolvePermissions_1.onUserGroupWrite; } });

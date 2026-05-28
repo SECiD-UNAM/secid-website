@@ -1,6 +1,6 @@
 import React from 'react';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { MemberShowcase } from '@/components/directory/MemberShowcase';
+import MemberInsights from '@/components/directory/MemberInsights';
 
 interface Props {
   lang?: 'es' | 'en';
@@ -9,7 +9,7 @@ interface Props {
 export default function MemberShowcasePage({ lang = 'es' }: Props) {
   return (
     <AuthProvider>
-      <MemberShowcase lang={lang} />
+      <MemberInsights lang={lang} />
     </AuthProvider>
   );
 }

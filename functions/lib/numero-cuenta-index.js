@@ -16,7 +16,9 @@ exports.onUserNumeroCuentaChange = (0, firestore_1.onDocumentWritten)("users/{us
         return;
     // If old numeroCuenta was removed or changed, delete old index entry
     if (oldNumeroCuenta) {
-        const oldIndexRef = db.collection("numero_cuenta_index").doc(oldNumeroCuenta);
+        const oldIndexRef = db
+            .collection("numero_cuenta_index")
+            .doc(oldNumeroCuenta);
         const oldIndexSnap = await oldIndexRef.get();
         if (oldIndexSnap.exists && ((_e = oldIndexSnap.data()) === null || _e === void 0 ? void 0 : _e.uid) === userId) {
             await oldIndexRef.delete();
@@ -25,7 +27,9 @@ exports.onUserNumeroCuentaChange = (0, firestore_1.onDocumentWritten)("users/{us
     }
     // If new numeroCuenta is set, create/update index entry
     if (newNumeroCuenta) {
-        const indexRef = db.collection("numero_cuenta_index").doc(newNumeroCuenta);
+        const indexRef = db
+            .collection("numero_cuenta_index")
+            .doc(newNumeroCuenta);
         const indexSnap = await indexRef.get();
         if (indexSnap.exists) {
             const existingUid = (_f = indexSnap.data()) === null || _f === void 0 ? void 0 : _f.uid;
@@ -33,7 +37,10 @@ exports.onUserNumeroCuentaChange = (0, firestore_1.onDocumentWritten)("users/{us
                 // Conflict: different user already owns this numeroCuenta
                 console.warn(`numeroCuenta conflict: ${newNumeroCuenta} owned by ${existingUid}, ` +
                     `attempted by ${userId}`);
-                await db.collection("users").doc(userId).update({
+                await db
+                    .collection("users")
+                    .doc(userId)
+                    .update({
                     numeroCuentaConflict: {
                         existingUid,
                         numeroCuenta: newNumeroCuenta,
@@ -46,7 +53,8 @@ exports.onUserNumeroCuentaChange = (0, firestore_1.onDocumentWritten)("users/{us
         // No conflict — upsert the index
         const displayName = (afterData === null || afterData === void 0 ? void 0 : afterData.displayName) ||
             `${(afterData === null || afterData === void 0 ? void 0 : afterData.firstName) || ""} ${(afterData === null || afterData === void 0 ? void 0 : afterData.lastName) || ""}`.trim() ||
-            (afterData === null || afterData === void 0 ? void 0 : afterData.email) || "";
+            (afterData === null || afterData === void 0 ? void 0 : afterData.email) ||
+            "";
         await indexRef.set({ uid: userId, displayName });
         console.log(`Indexed numeroCuenta ${newNumeroCuenta} → ${userId}`);
     }

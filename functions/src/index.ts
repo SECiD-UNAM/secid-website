@@ -786,6 +786,12 @@ export { subscribeNewsletter, sendContactMessage };
 // Salary stats: aggregated compensation analytics with tiered privacy enforcement
 export { getSalaryStats } from "./get-salary-stats";
 
+// Member inscription survey: scheduled aggregation + admin-triggered refresh
+export {
+  aggregateSurveyResponses,
+  refreshSurveyAggregates,
+} from "./aggregate-survey";
+
 // RBAC: permission resolution triggers + admin callable functions
 export { onUserGroupWrite, onGroupWrite } from "./rbac/resolvePermissions";
 export { seedRbacGroups } from "./rbac/seedGroups";

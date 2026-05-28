@@ -96,17 +96,18 @@ exports.onMergeRequestApproved = (0, firestore_1.onDocumentUpdated)({
     timeoutSeconds: 120,
     memory: "256MiB",
 }, async (event) => {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     const beforeData = (_a = event.data) === null || _a === void 0 ? void 0 : _a.before.data();
     const afterData = (_b = event.data) === null || _b === void 0 ? void 0 : _b.after.data();
     if (!beforeData || !afterData)
         return;
     // Only trigger on transition TO 'approved'
-    if (beforeData.status === "approved" || afterData.status !== "approved")
+    if (beforeData.status === "approved" || afterData.status !== "approved") {
         return;
+    }
     const requestId = event.params.requestId;
     const requestRef = db.collection("merge_requests").doc(requestId);
-    const { sourceUid, targetUid, fieldSelections, migrateReferences, oldDocAction, migratedCollections: alreadyMigrated, } = afterData;
+    const { sourceUid, targetUid, fieldSelections = {}, migrateReferences, oldDocAction, migratedCollections: alreadyMigrated, } = afterData;
     console.log(`Executing merge: ${sourceUid} → ${targetUid} (request ${requestId})`);
     try {
         // Step 1: Set status to executing
@@ -116,10 +117,12 @@ exports.onMergeRequestApproved = (0, firestore_1.onDocumentUpdated)({
             db.collection("users").doc(sourceUid).get(),
             db.collection("users").doc(targetUid).get(),
         ]);
-        if (!sourceSnap.exists)
+        if (!sourceSnap.exists) {
             throw new Error(`Source user ${sourceUid} not found`);
-        if (!targetSnap.exists)
+        }
+        if (!targetSnap.exists) {
             throw new Error(`Target user ${targetUid} not found`);
+        }
         const sourceDoc = sourceSnap.data();
         // Step 3: Apply field selections
         const updates = {};
@@ -144,7 +147,12 @@ exports.onMergeRequestApproved = (0, firestore_1.onDocumentUpdated)({
         }
         // Step 4: Migrate references
         const migrated = alreadyMigrated || [];
-        if (migrateReferences !== false) {
+        // For 'alias' action the source UID stays a valid identity (alias
+        // login resolves to the canonical via aliasOf in AuthContext), so
+        // rewriting authorship is both unnecessary and semantically wrong —
+        // also avoids the collection-group authorId index requirement.
+        const shouldMigrateRefs = migrateReferences !== false && oldDocAction !== "alias";
+        if (shouldMigrateRefs) {
             // 4a: Simple collection field updates
             for (const { collection: collName, field } of SIMPLE_COLLECTIONS) {
                 const collKey = `${collName}:${field}`;
@@ -179,13 +187,69 @@ exports.onMergeRequestApproved = (0, firestore_1.onDocumentUpdated)({
         else if (action === "hard-delete") {
             await db.collection("users").doc(sourceUid).delete();
         }
-        // Step 6: Disable old Firebase Auth account
-        try {
-            await admin.auth().updateUser(sourceUid, { disabled: true });
+        else if (action === "alias") {
+            // Multi-email identity: the source account stays a usable login but
+            // its profile doc becomes a thin alias stub pointing at the target.
+            // Overwrite (NOT merge) so the stub carries NO role/isVerified/rbac
+            // — a compromised alias must never self-escalate independently of
+            // the canonical doc.
+            await db.collection("users").doc(sourceUid).set({
+                aliasOf: targetUid,
+                mergedAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+            // Append the source user's email to the target's alternateEmails
+            // (deduped) and register the resolution index entry. Idempotent:
+            // if a prior partial run already overwrote the source doc to the
+            // alias stub (so sourceDoc.email is missing), recover the email
+            // from Firebase Auth so re-firing the merge completes the writes.
+            let sourceEmailLower = String(sourceDoc.email || "")
+                .trim()
+                .toLowerCase();
+            if (!sourceEmailLower) {
+                try {
+                    const authUser = await admin.auth().getUser(sourceUid);
+                    sourceEmailLower = String(authUser.email || "")
+                        .trim()
+                        .toLowerCase();
+                }
+                catch (_e) {
+                    // Auth user gone — nothing to recover; leave blank, guard below skips.
+                }
+            }
+            if (sourceEmailLower) {
+                const targetRef = db.collection("users").doc(targetUid);
+                const targetCurrent = await targetRef.get();
+                const existingAlts = ((_c = targetCurrent.data()) === null || _c === void 0 ? void 0 : _c.alternateEmails) || [];
+                const dedupedAlts = existingAlts.filter((e) => String((e === null || e === void 0 ? void 0 : e.email) || "").toLowerCase() !== sourceEmailLower);
+                // Firestore forbids FieldValue.serverTimestamp() inside array
+                // elements; use a real Timestamp so the array write succeeds.
+                dedupedAlts.push({
+                    email: sourceEmailLower,
+                    verifiedAt: admin.firestore.Timestamp.now(),
+                });
+                await targetRef.update({ alternateEmails: dedupedAlts });
+                await db.collection("email_alias").doc(sourceEmailLower).set({
+                    canonicalUid: targetUid,
+                    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                });
+            }
         }
-        catch (authErr) {
-            const msg = authErr instanceof Error ? authErr.message : String(authErr);
-            console.warn(`Could not disable auth for ${sourceUid}: ${msg}`);
+        // Step 6: Disable old Firebase Auth account + revoke active sessions.
+        // Skipped for 'alias': logging in with the source email must keep
+        // working (it read-through resolves to the canonical profile).
+        // S3: disabling alone doesn't invalidate already-issued refresh tokens
+        // — any session active at merge time would stay live until expiry.
+        // revokeRefreshTokens forces re-auth immediately so a stolen pre-merge
+        // session can't keep operating against the now-merged identity.
+        if (action !== "alias") {
+            try {
+                await admin.auth().updateUser(sourceUid, { disabled: true });
+                await admin.auth().revokeRefreshTokens(sourceUid);
+            }
+            catch (authErr) {
+                const msg = authErr instanceof Error ? authErr.message : String(authErr);
+                console.warn(`Could not disable/revoke auth for ${sourceUid}: ${msg}`);
+            }
         }
         // Step 7: Clean up target doc
         await db.collection("users").doc(targetUid).update({
@@ -193,23 +257,60 @@ exports.onMergeRequestApproved = (0, firestore_1.onDocumentUpdated)({
             _mergeInProgress: admin.firestore.FieldValue.delete(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
-        // Step 8: Delete old index entry
+        // Step 8: Clean up old index entry.
+        // For 'alias' the numeroCuenta stays valid (same person, both logins
+        // live) — repoint the index at the canonical (target) uid instead of
+        // deleting it. For all other actions, delete the stale entry.
         const numeroCuenta = afterData.numeroCuenta;
         if (numeroCuenta) {
-            const indexRef = db
-                .collection("numero_cuenta_index")
-                .doc(numeroCuenta);
+            const indexRef = db.collection("numero_cuenta_index").doc(numeroCuenta);
             const indexSnap = await indexRef.get();
-            if (indexSnap.exists && ((_c = indexSnap.data()) === null || _c === void 0 ? void 0 : _c.uid) === sourceUid) {
-                await indexRef.delete();
+            if (indexSnap.exists && ((_d = indexSnap.data()) === null || _d === void 0 ? void 0 : _d.uid) === sourceUid) {
+                if (action === "alias") {
+                    await indexRef.update({ uid: targetUid });
+                }
+                else {
+                    await indexRef.delete();
+                }
             }
         }
-        // Step 9: Mark complete
+        // Step 9: Mark complete.
+        // #42: clear any stale `error` field from a prior failed run so the
+        // surfaced status matches reality on retry.
         await requestRef.update({
             status: "completed",
             completedAt: admin.firestore.FieldValue.serverTimestamp(),
             migratedCollections: migrated,
+            error: admin.firestore.FieldValue.delete(),
         });
+        // Step 10: Audit log.
+        // S2: identity merges are high-privilege; record an immutable trail
+        // (server-only read+write per rules) of WHO did WHAT to WHICH ids.
+        // afterData.reviewedBy / createdBy carry the admin uid from the client.
+        try {
+            await db
+                .collection("merge_audit_log")
+                .doc(requestId)
+                .set({
+                requestId,
+                sourceUid,
+                targetUid,
+                action,
+                migrateReferences: migrateReferences !== false,
+                fieldSelections,
+                migratedCollections: migrated,
+                executorUid: afterData.reviewedBy || afterData.createdBy || "unknown",
+                initiatedBy: afterData.initiatedBy || "unknown",
+                matchedBy: afterData.matchedBy || null,
+                numeroCuenta: afterData.numeroCuenta || null,
+                completedAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+        }
+        catch (auditErr) {
+            // Audit failure must not roll back the merge — but it must be
+            // visible in logs. Operators reconcile against merge_requests.
+            console.error(`merge_audit_log write failed for ${requestId}:`, auditErr);
+        }
         console.log(`Merge completed: ${sourceUid} → ${targetUid}`);
     }
     catch (err) {
@@ -274,9 +375,7 @@ async function migrateSubcollections(sourceUid, targetUid, migrated, requestRef)
     // Forum replies (nested deeper)
     const repliesKey = "forums/*/posts/*/replies:authorId";
     if (!migrated.includes(repliesKey)) {
-        const q = db
-            .collectionGroup("replies")
-            .where("authorId", "==", sourceUid);
+        const q = db.collectionGroup("replies").where("authorId", "==", sourceUid);
         const snap = await q.get();
         if (!snap.empty) {
             let batch = db.batch();
@@ -368,12 +467,22 @@ async function migrateConversations(sourceUid, targetUid, migrated, requestRef) 
         .collection("conversations")
         .where("participants", "array-contains", sourceUid);
     const snap = await q.get();
+    let batch = db.batch();
+    let count = 0;
     for (const docSnap of snap.docs) {
         const data = docSnap.data();
         const participants = data.participants || [];
         const updated = participants.map((uid) => uid === sourceUid ? targetUid : uid);
-        await docSnap.ref.update({ participants: updated });
+        batch.update(docSnap.ref, { participants: updated });
+        count++;
+        if (count >= 500) {
+            await batch.commit();
+            batch = db.batch();
+            count = 0;
+        }
     }
+    if (count > 0)
+        await batch.commit();
     migrated.push(key);
     await requestRef.update({ migratedCollections: migrated });
 }

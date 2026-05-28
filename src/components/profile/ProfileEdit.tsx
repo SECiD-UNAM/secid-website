@@ -19,11 +19,13 @@ import {
   EyeIcon,
   RectangleStackIcon,
   ArrowLeftIcon,
+  ChartBarIcon,
 } from '@heroicons/react/24/outline';
 import { PersonalTab } from './tabs/PersonalTab';
 import { CareerTab } from './tabs/CareerTab';
 import { EducationTab } from './tabs/EducationTab';
 import { PortfolioTab } from './tabs/PortfolioTab';
+import SurveyTab from './tabs/SurveyTab';
 import { PrivacyTab } from './tabs/PrivacyTab';
 import { SecurityTab } from './tabs/SecurityTab';
 import type { TabId, ProfileEditProps } from './profile-edit-types';
@@ -57,6 +59,12 @@ const TAB_DEFINITIONS: {
     labelEs: 'Portafolio',
     labelEn: 'Portfolio',
     icon: RectangleStackIcon,
+  },
+  {
+    id: 'survey',
+    labelEs: 'Encuesta',
+    labelEn: 'Survey',
+    icon: ChartBarIcon,
   },
   { id: 'privacy', labelEs: 'Privacidad', labelEn: 'Privacy', icon: EyeIcon },
   {
@@ -737,6 +745,10 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
             setFormData={setFormData}
             lang={lang}
           />
+        )}
+
+        {activeTab === 'survey' && (
+          <SurveyTab lang={lang} targetUid={effectiveUid} />
         )}
 
         {activeTab === 'privacy' && (

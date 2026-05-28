@@ -21,6 +21,7 @@ import {
   setPotentialMergeMatch,
 } from '@/lib/merge/mutations';
 import { Building2 } from 'lucide-react';
+import SignupSurveyStep from './SignupSurveyStep';
 
 function getReturnUrl(lang: string): string {
   const defaultUrl = `/${lang}/dashboard`;
@@ -81,7 +82,7 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 type UnamFormData = z.infer<typeof unamVerificationSchema>;
 type RecruiterFormData = z.infer<typeof recruiterSchema>;
 type RegistrationType = 'member' | 'collaborator' | 'recruiter';
-type Step = 'account' | 'type' | 'unam' | 'company' | 'done';
+type Step = 'account' | 'type' | 'unam' | 'company' | 'survey' | 'done';
 
 interface SignUpFormProps {
   onSuccess?: () => void;
@@ -408,7 +409,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       setIsLoading(true);
       try {
         await callCompleteRegistration({ registrationType: 'collaborator' });
-        setStep('done');
+        setStep('survey');
       } catch (err) {
         console.error('completeRegistration failed for collaborator:', err);
         setError(
@@ -470,7 +471,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         console.warn('Merge match detection failed:', matchErr);
       }
 
-      setStep('done');
+      setStep('survey');
     } catch (err: any) {
       console.error('Error submitting UNAM verification:', err);
       setError(
@@ -495,7 +496,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         companyPosition: data.companyPosition,
         companyWebsite: data.companyWebsite || '',
       });
-      setStep('done');
+      setStep('survey');
     } catch (err) {
       setError(
         lang === 'es'
@@ -557,6 +558,10 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
           },
         ]
       : []),
+    {
+      key: 'survey' as Step,
+      label: lang === 'es' ? 'Encuesta' : 'Survey',
+    },
   ];
 
   const currentStepIndex = steps.findIndex((s) => s.key === step);
@@ -1266,6 +1271,29 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
               </Button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* Step 3.5: Optional survey */}
+      {step === 'survey' && user && (
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {lang === 'es'
+                ? 'Cuéntanos un poco más'
+                : 'Tell us a bit about yourself'}
+            </h2>
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              {lang === 'es'
+                ? 'Opcional — estas respuestas nos ayudan a entender mejor a la comunidad y a recomendarte mejor contenido. Puedes editarlas más tarde en tu perfil.'
+                : 'Optional — these responses help us understand the community better and tailor your experience. You can edit them later in your profile.'}
+            </p>
+          </div>
+          <SignupSurveyStep
+            uid={user.uid}
+            lang={lang}
+            onDone={() => setStep('done')}
+          />
         </div>
       )}
 

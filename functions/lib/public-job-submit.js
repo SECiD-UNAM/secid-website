@@ -3,12 +3,54 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.submitPublicJob = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
+const crypto_1 = require("crypto");
 const db = admin.firestore();
 const MAX_FIELD_LENGTH = 10000;
 const MAX_ARRAY_LENGTH = 50;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// This callable is intentionally unauthenticated (public job board), so
+// rate-limit by client IP to stop bot spam (each submission costs a
+// Firestore write + admin review). Fixed window, IP hashed (no raw PII).
+const RL_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const RL_MAX_PER_WINDOW = 5;
+function clientIp(request) {
+    var _a;
+    const raw = request.rawRequest;
+    const xff = (_a = raw === null || raw === void 0 ? void 0 : raw.headers) === null || _a === void 0 ? void 0 : _a["x-forwarded-for"];
+    if (typeof xff === "string" && xff.length > 0) {
+        return xff.split(",")[0].trim();
+    }
+    return (raw === null || raw === void 0 ? void 0 : raw.ip) || "unknown";
+}
+async function enforceRateLimit(ip) {
+    const key = (0, crypto_1.createHash)("sha256").update(ip).digest("hex").slice(0, 32);
+    const ref = db.collection("rate_limits").doc(`pubjob_${key}`);
+    await db.runTransaction(async (tx) => {
+        const snap = await tx.get(ref);
+        const now = Date.now();
+        const data = snap.exists
+            ? snap.data()
+            : null;
+        if (!data || now - data.windowStart > RL_WINDOW_MS) {
+            tx.set(ref, { count: 1, windowStart: now });
+            return;
+        }
+        if (data.count >= RL_MAX_PER_WINDOW) {
+            throw new https_1.HttpsError("resource-exhausted", "Too many submissions from this network. Please try again later.");
+        }
+        tx.update(ref, { count: data.count + 1 });
+    });
+}
 function sanitize(str, maxLen = MAX_FIELD_LENGTH) {
-    return str.replace(/<[^>]*>/g, "").trim().slice(0, maxLen);
+    // Strip tags iteratively until stable (a single /<[^>]*>/ pass can be
+    // bypassed by nested/overlapping constructs), then drop stray <>.
+    let out = str;
+    let prev;
+    do {
+        prev = out;
+        out = out.replace(/<[^>]*>/g, "");
+    } while (out !== prev);
+    return out.replace(/[<>]/g, "").trim().slice(0, maxLen);
 }
 function sanitizeArray(arr, maxLen = MAX_FIELD_LENGTH) {
     return arr.slice(0, MAX_ARRAY_LENGTH).map((item) => sanitize(item, maxLen));
@@ -55,7 +97,8 @@ function buildSanitizedDocument(data) {
     if (data.salaryPeriod) {
         doc.salaryPeriod = sanitize(data.salaryPeriod, 50);
     }
-    if (Array.isArray(data.responsibilities) && data.responsibilities.length > 0) {
+    if (Array.isArray(data.responsibilities) &&
+        data.responsibilities.length > 0) {
         doc.responsibilities = sanitizeArray(data.responsibilities);
     }
     if (Array.isArray(data.benefits) && data.benefits.length > 0) {
@@ -79,11 +122,14 @@ function buildSanitizedDocument(data) {
     return doc;
 }
 exports.submitPublicJob = (0, https_1.onCall)(async (request) => {
+    await enforceRateLimit(clientIp(request));
     const data = request.data;
     validateRequiredFields(data);
     validateEmailFormat(data.contactEmail);
     const sanitizedDoc = buildSanitizedDocument(data);
-    const docRef = await db.collection("public_job_submissions").add(sanitizedDoc);
+    const docRef = await db
+        .collection("public_job_submissions")
+        .add(sanitizedDoc);
     return { success: true, submissionId: docRef.id };
 });
 //# sourceMappingURL=public-job-submit.js.map
