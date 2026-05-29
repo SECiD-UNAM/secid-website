@@ -38,6 +38,10 @@ export async function getGlobalAggregates(): Promise<SurveyAggregates | null> {
     if (!snap.exists()) return null;
     return snap.data() as SurveyAggregates;
   } catch (error) {
+    const code = (error as { code?: string } | undefined)?.code;
+    if (code === 'permission-denied' || code === 'not-found') {
+      return null;
+    }
     log.error('getGlobalAggregates failed', { error });
     return null;
   }
@@ -45,6 +49,9 @@ export async function getGlobalAggregates(): Promise<SurveyAggregates | null> {
 
 /**
  * Admin-only uncensored aggregates. Rules restrict /admin to admin role.
+ * Firestore returns 'permission-denied' (not 'not-found') for missing
+ * docs to avoid leaking existence info — we silence that specific case
+ * so first-load before the aggregator has run doesn't look like a failure.
  */
 export async function getAdminAggregates(): Promise<SurveyAggregates | null> {
   try {
@@ -54,6 +61,11 @@ export async function getAdminAggregates(): Promise<SurveyAggregates | null> {
     if (!snap.exists()) return null;
     return snap.data() as SurveyAggregates;
   } catch (error) {
+    const code = (error as { code?: string } | undefined)?.code;
+    if (code === 'permission-denied' || code === 'not-found') {
+      // Doc not yet generated (first load before aggregator ran)
+      return null;
+    }
     log.error('getAdminAggregates failed', { error });
     return null;
   }

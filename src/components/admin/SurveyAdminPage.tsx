@@ -98,6 +98,38 @@ function AdminInner({ lang = 'es' }: Props) {
     );
   }
 
+  // First load — aggregator hasn't run yet
+  if (!aggregates) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-8 text-center dark:border-gray-700 dark:bg-gray-800">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          {lang === 'es'
+            ? 'Aún no se han generado agregados'
+            : 'Aggregates not generated yet'}
+        </h2>
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          {lang === 'es'
+            ? 'Haz clic en "Recalcular ahora" para generar el primer reporte. Después, se actualizará automáticamente cada 6 horas.'
+            : 'Click "Recompute now" to generate the first report. It will refresh automatically every 6 hours after that.'}
+        </p>
+        <button
+          type="button"
+          onClick={handleRefresh}
+          disabled={refreshing}
+          className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+        >
+          {refreshing
+            ? lang === 'es'
+              ? 'Generando...'
+              : 'Generating…'
+            : lang === 'es'
+              ? 'Recalcular ahora'
+              : 'Recompute now'}
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
