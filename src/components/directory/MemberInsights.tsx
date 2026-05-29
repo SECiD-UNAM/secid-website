@@ -70,7 +70,10 @@ export default function MemberInsights({ lang = 'es' }: Props) {
     };
   }, []);
 
-  const hasData = !!(aggregates && aggregates.totalRespondents > 0);
+  const hasData = !!(
+    aggregates &&
+    (aggregates.totalRespondents > 0 || (aggregates.totalFallbackUsers ?? 0) > 0)
+  );
   const tabs: Tab[] = hasData
     ? ['companies', 'industries', 'generations', 'tech-stack', 'areas-of-interest', 'mentorship']
     : ['companies'];
@@ -104,13 +107,20 @@ export default function MemberInsights({ lang = 'es' }: Props) {
           <span>
             {lang === 'es' ? 'Basado en' : 'Based on'}{' '}
             <strong>{aggregates.totalRespondents}</strong>{' '}
-            {lang === 'es' ? 'respuestas' : 'responses'}
+            {lang === 'es' ? 'respuestas de encuesta' : 'survey responses'}
+            {(aggregates.totalFallbackUsers ?? 0) > 0 && (
+              <>
+                {' '}
+                + <strong>{aggregates.totalFallbackUsers}</strong>{' '}
+                {lang === 'es' ? 'perfiles' : 'profiles'}
+              </>
+            )}
           </span>
           <span>
             ·{' '}
             {lang === 'es'
-              ? `Solo agregados de ${aggregates.kAnonymityThreshold}+ respuestas`
-              : `Only aggregates of ${aggregates.kAnonymityThreshold}+ responses shown`}
+              ? `Solo agregados de ${aggregates.kAnonymityThreshold}+ miembros`
+              : `Only aggregates of ${aggregates.kAnonymityThreshold}+ members shown`}
           </span>
         </div>
       )}

@@ -14,6 +14,7 @@ const log = logger.child('survey.queries');
 export const SURVEY_COLLECTION = 'member_surveys';
 export const AGGREGATES_COLLECTION = 'survey_aggregates';
 export const GLOBAL_AGGREGATES_DOC = 'global';
+export const ADMIN_AGGREGATES_DOC = 'admin';
 
 export async function getSurvey(
   uid: string
@@ -38,6 +39,22 @@ export async function getGlobalAggregates(): Promise<SurveyAggregates | null> {
     return snap.data() as SurveyAggregates;
   } catch (error) {
     log.error('getGlobalAggregates failed', { error });
+    return null;
+  }
+}
+
+/**
+ * Admin-only uncensored aggregates. Rules restrict /admin to admin role.
+ */
+export async function getAdminAggregates(): Promise<SurveyAggregates | null> {
+  try {
+    const snap = await getDoc(
+      doc(db, AGGREGATES_COLLECTION, ADMIN_AGGREGATES_DOC)
+    );
+    if (!snap.exists()) return null;
+    return snap.data() as SurveyAggregates;
+  } catch (error) {
+    log.error('getAdminAggregates failed', { error });
     return null;
   }
 }

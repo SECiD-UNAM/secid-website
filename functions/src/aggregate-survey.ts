@@ -13,7 +13,8 @@ import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions/v2";
 
 const K = 5;
-const AGGREGATES_PATH = "survey_aggregates/global";
+const AGGREGATES_PATH_PUBLIC = "survey_aggregates/global";
+const AGGREGATES_PATH_ADMIN = "survey_aggregates/admin";
 
 type Count = Record<string, number>;
 
@@ -42,7 +43,16 @@ function applyKAnonymity(counts: Count, otherKey = "other"): Count {
   return result;
 }
 
-async function buildAggregates(): Promise<Record<string, unknown>> {
+/**
+ * Build two parallel payloads:
+ * - public: k-anonymity applied to sensitive buckets; written to /global
+ * - admin: raw counts, no censorship; written to /admin
+ * Public charts read /global. Admin dashboard reads /admin via rules.
+ */
+async function buildAggregates(): Promise<{
+  publicPayload: Record<string, unknown>;
+  adminPayload: Record<string, unknown>;
+}> {
   const db = admin.firestore();
   const surveysSnap = await db.collection("member_surveys").get();
   const usersSnap = await db.collection("users").get();
@@ -62,6 +72,7 @@ async function buildAggregates(): Promise<Record<string, unknown>> {
 
   let totalRespondents = 0;
   let totalCompleted = 0;
+  let totalFallbackUsers = 0;
   const seenUids = new Set<string>();
 
   // First pass: survey responses (highest fidelity)
@@ -91,6 +102,7 @@ async function buildAggregates(): Promise<Record<string, unknown>> {
     if (seenUids.has(doc.id)) continue;
     const data = doc.data();
     if (data.role && data.role !== "member") continue;
+    totalFallbackUsers++;
     add(byGeneration, data.generation);
     add(byAcademicLevel, data.academicLevel);
     // Skills array from profile maps loosely to areasOfInterest if present
@@ -104,13 +116,41 @@ async function buildAggregates(): Promise<Record<string, unknown>> {
     }
   }
 
-  return {
+  const generatedFrom = totalRespondents > 0
+    ? (totalRespondents < usersSnap.size ? "mixed" : "survey")
+    : "user-profile-fallback";
+
+  // Raw / admin view — uncensored counts; admin dashboard reads this
+  const adminPayload: Record<string, unknown> = {
     totalRespondents,
     totalCompleted,
+    totalFallbackUsers,
+    kAnonymityThreshold: K,
+    byIndustry: { ...byIndustry },
+    bySeniority: { ...bySeniority },
+    byJobFunction: { ...byJobFunction },
+    byWorkMode: { ...byWorkMode },
+    byGeneration: { ...byGeneration },
+    byCountry: { ...byCountry },
+    byAreaOfInterest: { ...byAreaOfInterest },
+    byTechStack: { ...byTechStack },
+    byMentorship: { ...byMentorship },
+    byOpenToOpportunities: { ...byOpenToOpportunities },
+    byReasonsForJoining: { ...byReasonsForJoining },
+    byAcademicLevel: { ...byAcademicLevel },
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    generatedFrom,
+  };
+
+  // Public view — k-anonymized; everyone reads this
+  const publicPayload: Record<string, unknown> = {
+    totalRespondents,
+    totalCompleted,
+    totalFallbackUsers,
     kAnonymityThreshold: K,
     byIndustry: applyKAnonymity(byIndustry),
-    bySeniority,
-    byJobFunction,
+    bySeniority: applyKAnonymity(bySeniority),
+    byJobFunction: applyKAnonymity(byJobFunction),
     byWorkMode,
     byGeneration,
     byCountry: applyKAnonymity(byCountry),
@@ -118,13 +158,13 @@ async function buildAggregates(): Promise<Record<string, unknown>> {
     byTechStack: applyKAnonymity(byTechStack),
     byMentorship,
     byOpenToOpportunities,
-    byReasonsForJoining,
+    byReasonsForJoining: applyKAnonymity(byReasonsForJoining),
     byAcademicLevel,
     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    generatedFrom: totalRespondents > 0
-      ? (totalRespondents < usersSnap.size ? "mixed" : "survey")
-      : "user-profile-fallback",
+    generatedFrom,
   };
+
+  return { publicPayload, adminPayload };
 }
 
 export const aggregateSurveyResponses = onSchedule(
@@ -135,10 +175,15 @@ export const aggregateSurveyResponses = onSchedule(
   },
   async () => {
     try {
-      const payload = await buildAggregates();
-      await admin.firestore().doc(AGGREGATES_PATH).set(payload);
+      const { publicPayload, adminPayload } = await buildAggregates();
+      const db = admin.firestore();
+      await Promise.all([
+        db.doc(AGGREGATES_PATH_PUBLIC).set(publicPayload),
+        db.doc(AGGREGATES_PATH_ADMIN).set(adminPayload),
+      ]);
       logger.info("survey aggregates updated", {
-        total: payload.totalRespondents,
+        total: publicPayload.totalRespondents,
+        fallback: publicPayload.totalFallbackUsers,
       });
     } catch (err) {
       logger.error("aggregateSurveyResponses failed", err);
@@ -161,8 +206,12 @@ export const refreshSurveyAggregates = onCall(
     if (role !== "admin" && role !== "moderator") {
       throw new HttpsError("permission-denied", "Admin only");
     }
-    const payload = await buildAggregates();
-    await admin.firestore().doc(AGGREGATES_PATH).set(payload);
-    return { ok: true, ...payload };
+    const { publicPayload, adminPayload } = await buildAggregates();
+    const db = admin.firestore();
+    await Promise.all([
+      db.doc(AGGREGATES_PATH_PUBLIC).set(publicPayload),
+      db.doc(AGGREGATES_PATH_ADMIN).set(adminPayload),
+    ]);
+    return { ok: true, ...adminPayload };
   }
 );

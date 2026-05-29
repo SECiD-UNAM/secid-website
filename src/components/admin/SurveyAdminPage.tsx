@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from '@/lib/firebase';
-import { getGlobalAggregates } from '@/lib/survey/queries';
+import { getAdminAggregates } from '@/lib/survey/queries';
 import type { SurveyAggregates } from '@/types/survey';
 import IndustryDonut from '@/components/directory/charts/IndustryDonut';
 import GenerationHistogram from '@/components/directory/charts/GenerationHistogram';
@@ -20,7 +20,7 @@ function AdminInner({ lang = 'es' }: Props) {
 
   async function load() {
     setLoading(true);
-    const data = await getGlobalAggregates();
+    const data = await getAdminAggregates();
     setAggregates(data);
     setLoading(false);
   }
@@ -137,11 +137,23 @@ function AdminInner({ lang = 'es' }: Props) {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <Stat label={lang === 'es' ? 'Respuestas' : 'Responses'} value={aggregates?.totalRespondents ?? 0} />
         <Stat label={lang === 'es' ? 'Completas' : 'Completed'} value={aggregates?.totalCompleted ?? 0} />
         <Stat label={lang === 'es' ? '% Completas' : '% Completed'} value={`${respondentRate}%`} />
+        <Stat
+          label={lang === 'es' ? 'Miembros sin encuesta' : 'Members w/o survey'}
+          value={aggregates?.totalFallbackUsers ?? 0}
+        />
       </div>
+
+      {aggregates && (aggregates.totalRespondents === 0 && (aggregates.totalFallbackUsers ?? 0) > 0) && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800/50 dark:bg-amber-900/20 dark:text-amber-100">
+          {lang === 'es'
+            ? `Aún no hay respuestas de encuesta. Las gráficas muestran datos derivados de los perfiles de ${aggregates.totalFallbackUsers} miembros (generación, skills) como fallback.`
+            : `No survey responses yet. Charts use fallback data from ${aggregates.totalFallbackUsers} member profiles (generation, skills) until the survey collects responses.`}
+        </div>
+      )}
 
       {aggregates && (
         <div className="grid gap-6 lg:grid-cols-2">

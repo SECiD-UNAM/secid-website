@@ -198,6 +198,7 @@ export type SurveyInput = Partial<
 export interface SurveyAggregates {
   totalRespondents: number;
   totalCompleted: number;
+  totalFallbackUsers?: number;
   kAnonymityThreshold: number;
 
   byIndustry: Record<IndustryCategory | 'other', number>;

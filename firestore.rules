@@ -1086,10 +1086,14 @@ service cloud.firestore {
         && getCurrentUser().data.role in ['admin', 'moderator'];
     }
 
-    // Pre-computed aggregates for public charts. Cloud Function writes;
-    // everyone reads. k-anonymity threshold applied in the aggregator.
+    // Pre-computed aggregates. Two docs:
+    //   /global -> public read, k-anonymized (charts on /es/members)
+    //   /admin  -> admin-only read, uncensored (admin dashboard)
+    // Cloud Function (Admin SDK) writes both; no client writes.
     match /survey_aggregates/{period} {
-      allow read: if true;
+      allow read: if period == 'global'
+        || (isAuthenticated()
+            && getCurrentUser().data.role in ['admin', 'moderator']);
       allow write: if false;
     }
 
