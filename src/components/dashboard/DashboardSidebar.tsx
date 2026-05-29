@@ -23,6 +23,7 @@ import {
   NewspaperIcon,
   StarIcon,
   RectangleGroupIcon,
+  ClipboardDocumentListIcon,
 } from '@heroicons/react/24/outline';
 
 interface DashboardSidebarProps {
@@ -251,6 +252,12 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       href: `/${lang}/dashboard/admin/salary`,
       icon: CurrencyDollarIcon,
       requireRole: ['admin'],
+    },
+    {
+      name: lang === 'es' ? 'Encuesta' : 'Survey',
+      href: `/${lang}/dashboard/admin/survey`,
+      icon: ClipboardDocumentListIcon,
+      requireRole: ['admin', 'moderator'],
     },
     {
       name: lang === 'es' ? 'Reportes' : 'Reports',

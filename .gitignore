@@ -173,3 +173,8 @@ functions/.env.local
 
 # Playwright MCP capture artifacts
 .playwright-mcp/
+
+# Legacy migration source data — contains PII, never commit
+data/legacy/*
+!data/legacy/.gitignore
+!data/legacy/README.md
