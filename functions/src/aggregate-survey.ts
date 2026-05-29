@@ -73,45 +73,59 @@ async function buildAggregates(): Promise<{
   let totalRespondents = 0;
   let totalCompleted = 0;
   let totalFallbackUsers = 0;
-  const seenUids = new Set<string>();
+  const surveyByUid = new Map<string, Record<string, unknown>>();
 
-  // First pass: survey responses (highest fidelity)
+  // First pass: survey responses (highest fidelity per field)
   for (const doc of surveysSnap.docs) {
     const data = doc.data();
-    seenUids.add(doc.id);
+    surveyByUid.set(doc.id, data);
     totalRespondents++;
     if (data.completedAt) totalCompleted++;
 
-    add(byIndustry, data.industry);
-    add(bySeniority, data.seniority);
-    add(byJobFunction, data.jobFunction);
-    add(byWorkMode, data.workMode);
-    add(byGeneration, data.generation);
-    add(byCountry, data.countryCode);
-    add(byMentorship, data.mentorshipRole);
-    add(byOpenToOpportunities, data.openToOpportunities);
-    add(byAcademicLevel, data.academicLevel);
+    add(byIndustry, data.industry as string | undefined);
+    add(bySeniority, data.seniority as string | undefined);
+    add(byJobFunction, data.jobFunction as string | undefined);
+    add(byWorkMode, data.workMode as string | undefined);
+    add(byGeneration, data.generation as string | undefined);
+    add(byCountry, data.countryCode as string | undefined);
+    add(byMentorship, data.mentorshipRole as string | undefined);
+    add(byOpenToOpportunities, data.openToOpportunities as string | undefined);
+    add(byAcademicLevel, data.academicLevel as string | undefined);
     addMulti(byAreaOfInterest, data.areasOfInterest);
     addMulti(byTechStack, data.techStack);
     addMulti(byReasonsForJoining, data.reasonsForJoining);
   }
 
-  // Second pass: fall back to /users for members without surveys, so
-  // pre-existing community state isn't invisible until surveys roll in.
+  // Second pass: fall back to /users PER FIELD. A user can have a
+  // partial survey response (e.g. legacy import only has generation +
+  // academicLevel + areasOfInterest) — for the OTHER fields we still
+  // want to count their profile data. So we only fall back where the
+  // survey doc is missing that specific field.
   for (const doc of usersSnap.docs) {
-    if (seenUids.has(doc.id)) continue;
     const data = doc.data();
     if (data.role && data.role !== "member") continue;
-    totalFallbackUsers++;
-    add(byGeneration, data.generation);
-    add(byAcademicLevel, data.academicLevel);
-    // Skills array from profile maps loosely to areasOfInterest if present
-    const skills = data.skills || data.profile?.skills;
-    if (Array.isArray(skills)) {
-      for (const s of skills) {
-        if (typeof s !== "string") continue;
-        const norm = s.toLowerCase().replace(/\s+/g, "-");
-        add(byTechStack, norm);
+    const survey = surveyByUid.get(doc.id);
+
+    if (!survey) totalFallbackUsers++;
+
+    // Generation: prefer survey, fall back to user profile
+    if (!survey?.generation && data.generation) {
+      add(byGeneration, data.generation);
+    }
+    if (!survey?.academicLevel && data.academicLevel) {
+      add(byAcademicLevel, data.academicLevel);
+    }
+    // Tech stack: aggregate from user skills if survey didn't supply
+    // (legacy imports often won't have techStack). We DON'T require
+    // "no survey at all" — we require "no techStack in their survey".
+    if (!Array.isArray(survey?.techStack) || (survey?.techStack as unknown[]).length === 0) {
+      const skills = data.skills || data.profile?.skills;
+      if (Array.isArray(skills)) {
+        for (const s of skills) {
+          if (typeof s !== "string") continue;
+          const norm = s.toLowerCase().replace(/\s+/g, "-");
+          add(byTechStack, norm);
+        }
       }
     }
   }

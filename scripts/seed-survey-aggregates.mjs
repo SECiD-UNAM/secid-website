@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * One-shot seed of /survey_aggregates/global by replicating the Cloud
- * Function logic locally against prod Firestore. Uses Application Default
- * Credentials (or GOOGLE_APPLICATION_CREDENTIALS if set).
+ * One-shot seed of /survey_aggregates/{global,admin} by replicating the
+ * Cloud Function logic locally against prod Firestore. Uses Application
+ * Default Credentials.
  *
  * Run once after first deploy, or anytime you need to force an immediate
  * recompute outside the 6h schedule:
  *
- *   gcloud auth application-default login   # if not already done
+ *   gcloud auth application-default login --account=contacto@secid.mx
  *   node scripts/seed-survey-aggregates.mjs
  */
 import { createRequire } from 'module';
@@ -19,7 +19,8 @@ if (!admin.apps.length) {
 }
 
 const K = 5;
-const AGG = 'survey_aggregates/global';
+const AGG_PUBLIC = 'survey_aggregates/global';
+const AGG_ADMIN = 'survey_aggregates/admin';
 
 function add(t, k, n = 1) {
   if (!k) return;
@@ -61,11 +62,12 @@ const byAcademicLevel = {};
 
 let totalRespondents = 0;
 let totalCompleted = 0;
-const seen = new Set();
+let totalFallbackUsers = 0;
+const surveyByUid = new Map();
 
 for (const d of surveys.docs) {
   const x = d.data();
-  seen.add(d.id);
+  surveyByUid.set(d.id, x);
   totalRespondents++;
   if (x.completedAt) totalCompleted++;
   add(byIndustry, x.industry);
@@ -82,50 +84,77 @@ for (const d of surveys.docs) {
   addMulti(byReasonsForJoining, x.reasonsForJoining);
 }
 
+// Per-field fallback to /users (matches the Cloud Function logic)
 for (const d of users.docs) {
-  if (seen.has(d.id)) continue;
   const x = d.data();
   if (x.role && x.role !== 'member') continue;
-  add(byGeneration, x.generation);
-  add(byAcademicLevel, x.academicLevel);
-  const skills = x.skills || x.profile?.skills;
-  if (Array.isArray(skills)) {
-    for (const s of skills) {
-      if (typeof s === 'string') {
-        add(byTechStack, s.toLowerCase().replace(/\s+/g, '-'));
+  const survey = surveyByUid.get(d.id);
+  if (!survey) totalFallbackUsers++;
+
+  if (!survey?.generation && x.generation) add(byGeneration, x.generation);
+  if (!survey?.academicLevel && x.academicLevel) add(byAcademicLevel, x.academicLevel);
+  if (!Array.isArray(survey?.techStack) || survey.techStack.length === 0) {
+    const skills = x.skills || x.profile?.skills;
+    if (Array.isArray(skills)) {
+      for (const s of skills) {
+        if (typeof s === 'string') {
+          add(byTechStack, s.toLowerCase().replace(/\s+/g, '-'));
+        }
       }
     }
   }
 }
 
-const payload = {
+const generatedFrom = totalRespondents > 0
+  ? (totalRespondents < users.size ? 'mixed' : 'survey')
+  : 'user-profile-fallback';
+
+const adminPayload = {
   totalRespondents,
   totalCompleted,
+  totalFallbackUsers,
   kAnonymityThreshold: K,
+  byIndustry: { ...byIndustry },
+  bySeniority: { ...bySeniority },
+  byJobFunction: { ...byJobFunction },
+  byWorkMode: { ...byWorkMode },
+  byGeneration: { ...byGeneration },
+  byCountry: { ...byCountry },
+  byAreaOfInterest: { ...byAreaOfInterest },
+  byTechStack: { ...byTechStack },
+  byMentorship: { ...byMentorship },
+  byOpenToOpportunities: { ...byOpenToOpportunities },
+  byReasonsForJoining: { ...byReasonsForJoining },
+  byAcademicLevel: { ...byAcademicLevel },
+  updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  generatedFrom,
+};
+
+const publicPayload = {
+  ...adminPayload,
   byIndustry: kAnon(byIndustry),
-  bySeniority,
-  byJobFunction,
-  byWorkMode,
-  byGeneration,
+  bySeniority: kAnon(bySeniority),
+  byJobFunction: kAnon(byJobFunction),
   byCountry: kAnon(byCountry),
   byAreaOfInterest: kAnon(byAreaOfInterest),
   byTechStack: kAnon(byTechStack),
-  byMentorship,
-  byOpenToOpportunities,
-  byReasonsForJoining,
-  byAcademicLevel,
-  updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-  generatedFrom: totalRespondents > 0
-    ? (totalRespondents < users.size ? 'mixed' : 'survey')
-    : 'user-profile-fallback',
+  byReasonsForJoining: kAnon(byReasonsForJoining),
 };
 
-await db.doc(AGG).set(payload);
+await Promise.all([
+  db.doc(AGG_PUBLIC).set(publicPayload),
+  db.doc(AGG_ADMIN).set(adminPayload),
+]);
 
-console.log('Seeded /survey_aggregates/global');
-console.log(`  totalRespondents = ${totalRespondents}`);
-console.log(`  totalCompleted   = ${totalCompleted}`);
-console.log(`  generatedFrom    = ${payload.generatedFrom}`);
-console.log(`  byTechStack keys = ${Object.keys(payload.byTechStack).length}`);
-console.log(`  byGeneration keys= ${Object.keys(payload.byGeneration).length}`);
+console.log('Seeded /survey_aggregates/{global, admin}');
+console.log(`  totalRespondents   = ${totalRespondents}`);
+console.log(`  totalCompleted     = ${totalCompleted}`);
+console.log(`  totalFallbackUsers = ${totalFallbackUsers}`);
+console.log(`  generatedFrom      = ${generatedFrom}`);
+console.log(`  byTechStack keys   = ${Object.keys(adminPayload.byTechStack).length}`);
+console.log(`  byGeneration keys  = ${Object.keys(adminPayload.byGeneration).length}`);
+console.log(`  byAreaOfInterest   = ${Object.keys(adminPayload.byAreaOfInterest).length}`);
+console.log(`  byMentorship       = ${Object.keys(adminPayload.byMentorship).length}`);
+console.log(`  byAcademicLevel    = ${Object.keys(adminPayload.byAcademicLevel).length}`);
+console.log(`  byReasonsForJoining= ${Object.keys(adminPayload.byReasonsForJoining).length}`);
 process.exit(0);
