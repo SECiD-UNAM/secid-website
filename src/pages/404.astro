@@ -14,7 +14,7 @@ import Footer from '../components/Footer.astro';
 
   <section class="not-found-section">
     <div class="secid-container">
-      <div class="not-found-content">
+      <div class="not-found-content" data-locale="es">
         <div class="not-found-code">404</div>
 
         <h1 class="not-found-title">Página no encontrada</h1>
@@ -34,10 +34,38 @@ import Footer from '../components/Footer.astro';
           </a>
           <a
             href="/es/dashboard/members/"
-            class="secid-button secid-button--outline secid-button--lg"
+            class="secid-button secid-button--secondary secid-button--lg"
           >
             <i class="fas fa-users secid-button__icon"></i>
             Directorio de miembros
+          </a>
+        </div>
+      </div>
+
+      <div class="not-found-content" data-locale="en" hidden>
+        <div class="not-found-code">404</div>
+
+        <h1 class="not-found-title">Page not found</h1>
+
+        <p class="not-found-description">
+          Sorry, the page you are looking for does not exist or has been moved.
+          Check the URL or go back to a familiar place.
+        </p>
+
+        <div class="not-found-actions">
+          <a
+            href="/en/"
+            class="secid-button secid-button--primary secid-button--lg"
+          >
+            <i class="fas fa-home secid-button__icon"></i>
+            Go to homepage
+          </a>
+          <a
+            href="/en/dashboard/members/"
+            class="secid-button secid-button--secondary secid-button--lg"
+          >
+            <i class="fas fa-users secid-button__icon"></i>
+            Member directory
           </a>
         </div>
       </div>
@@ -46,6 +74,21 @@ import Footer from '../components/Footer.astro';
 
   <Footer lang="es" />
 </ModernLayout>
+
+<script is:inline>
+  // Show English copy when the missing URL is under the /en/ locale
+  (function () {
+    var path = window.location.pathname;
+    if (path === '/en' || path.indexOf('/en/') === 0) {
+      document.documentElement.lang = 'en';
+      document.title = 'Page Not Found - SECiD';
+      var es = document.querySelector('[data-locale="es"]');
+      var en = document.querySelector('[data-locale="en"]');
+      if (es) es.hidden = true;
+      if (en) en.hidden = false;
+    }
+  })();
+</script>
 
 <style>
   .not-found-section {

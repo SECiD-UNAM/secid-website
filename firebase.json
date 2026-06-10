@@ -164,6 +164,14 @@
         "destination": "/en/forum/topic/detail/index.html"
       },
       {
+        "source": "/es/dashboard/assessments/historial",
+        "destination": "/es/dashboard/assessments/historial/index.html"
+      },
+      {
+        "source": "/en/dashboard/assessments/history",
+        "destination": "/en/dashboard/assessments/history/index.html"
+      },
+      {
         "source": "/es/dashboard/assessments/*",
         "destination": "/es/dashboard/assessments/detail/index.html"
       },

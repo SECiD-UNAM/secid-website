@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from '../../hooks/useTranslations';
 import {
   /**
@@ -21,19 +22,30 @@ import type {
 } from '../../types/assessment';
 
 interface AssessmentHubProps {
-  userId: string;
+  /** Optional override (e.g. for tests); defaults to the signed-in user's uid */
+  userId?: string;
   onStartAssessment: (assessmentId: string) => void;
   onViewHistory: () => void;
   onViewCertificates: () => void;
 }
 
-export default function AssessmentHub({
-  userId,
+export default function AssessmentHub(props: AssessmentHubProps) {
+  return (
+    <AuthProvider>
+      <AssessmentHubContent {...props} />
+    </AuthProvider>
+  );
+}
+
+function AssessmentHubContent({
+  userId: userIdProp,
   onStartAssessment,
   onViewHistory,
   onViewCertificates,
 }: AssessmentHubProps) {
   const { t } = useTranslations();
+  const { user } = useAuth();
+  const userId = userIdProp ?? user?.uid;
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [progress, setProgress] = useState<AssessmentProgress | null>(null);
   const [leaderboard, setLeaderboard] = useState<Leaderboard | null>(null);
@@ -53,6 +65,7 @@ export default function AssessmentHub({
   >('explore');
 
   useEffect(() => {
+    if (!userId) return; // wait until auth resolves (or a userId prop arrives)
     loadInitialData();
   }, [userId]);
 
@@ -70,6 +83,7 @@ export default function AssessmentHub({
   }, [searchTerm, filters]);
 
   const loadInitialData = async () => {
+    if (!userId) return;
     try {
       setLoading(true);
       const [assessmentsData, progressData, leaderboardData] =
@@ -464,7 +478,10 @@ export default function AssessmentHub({
       )}
 
       {activeTab === 'leaderboard' && leaderboard && (
-        <LeaderboardTab leaderboard={leaderboard} currentUserId={userId} />
+        <LeaderboardTab
+          leaderboard={leaderboard}
+          currentUserId={userId ?? ''}
+        />
       )}
     </div>
   );
@@ -480,7 +497,7 @@ interface AssessmentCardProps {
 function AssessmentCard({
   assessment,
   onStart,
-  userProgress,
+  userProgress: _userProgress,
 }: AssessmentCardProps) {
   const { t } = useTranslations();
 

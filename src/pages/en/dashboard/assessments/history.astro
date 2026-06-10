@@ -10,7 +10,6 @@ import AssessmentHistory from '@/components/assessment/AssessmentHistory';
 >
   <AssessmentHistory
     client:load
-    userId="user123"
     onViewResult={(attemptId) => {
       window.location.href = `/en/dashboard/assessments/results/${attemptId}`;
     }}

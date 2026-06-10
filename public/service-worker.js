@@ -12,7 +12,7 @@ const PRECACHE_ASSETS = [
   '/en/',
   '/es/',
   '/offline.html',
-  '/manifest.json',
+  '/site.webmanifest',
   '/assets/css/main.css',
   '/assets/js/main.js',
   '/images/logo.png',
@@ -23,11 +23,11 @@ const PRECACHE_ASSETS = [
 // Routes that should work offline
 const OFFLINE_PAGES = [
   '/en/jobs',
-  '/es/empleos',
+  '/es/jobs',
   '/en/events',
-  '/es/eventos',
+  '/es/events',
   '/en/members',
-  '/es/miembros',
+  '/es/members',
   '/en/dashboard',
   '/es/dashboard',
 ];

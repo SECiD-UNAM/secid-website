@@ -5,6 +5,8 @@ interface Props {
 
 const { lang = 'es' } = Astro.props as Props;
 
+const currentYear = new Date().getFullYear();
+
 const t = {
   es: {
     footer: {
@@ -26,8 +28,7 @@ const t = {
       privacy: 'Privacidad',
       terms: 'Términos',
       cookies: 'Cookies',
-      copyright:
-        '© 2024 SECiD - Sociedad de Egresados en Ciencia de Datos UNAM',
+      copyright: `© ${currentYear} SECiD - Sociedad de Egresados en Ciencia de Datos UNAM`,
     },
   },
   en: {
@@ -50,7 +51,7 @@ const t = {
       privacy: 'Privacy',
       terms: 'Terms',
       cookies: 'Cookies',
-      copyright: '© 2024 SECiD - UNAM Data Science Alumni Society',
+      copyright: `© ${currentYear} SECiD - UNAM Data Science Alumni Society`,
     },
   },
 }[lang];

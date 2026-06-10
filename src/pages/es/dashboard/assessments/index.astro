@@ -10,15 +10,14 @@ import AssessmentHub from '@/components/assessment/AssessmentHub';
 >
   <AssessmentHub
     client:load
-    userId="user123"
     onStartAssessment={(assessmentId) => {
-      window.location.href = `/es/dashboard/evaluaciones/realizar/${assessmentId}`;
+      window.location.href = `/es/dashboard/assessments/${assessmentId}`;
     }}
     onViewHistory={() => {
-      window.location.href = '/es/dashboard/evaluaciones/historial';
+      window.location.href = '/es/dashboard/assessments/historial';
     }}
     onViewCertificates={() => {
-      window.location.href = '/es/dashboard/evaluaciones/certificados';
+      window.location.href = '/es/dashboard/assessments/historial';
     }}
   />
 </DashboardLayout>

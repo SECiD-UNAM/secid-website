@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from '../../hooks/useTranslations';
 import {
   /**
@@ -15,23 +16,33 @@ import type {
   Certificate,
   Assessment,
   SkillCategory,
-  DifficultyLevel,
 } from '../../types/assessment';
 
 interface AssessmentHistoryProps {
-  userId: string;
+  /** Optional override (e.g. for tests); defaults to the signed-in user's uid */
+  userId?: string;
   onViewResult?: (attemptId: string) => void;
   onRetakeAssessment?: (assessmentId: string) => void;
   onViewCertificate?: (certificateId: string) => void;
 }
 
-export default function AssessmentHistory({
-  userId,
+export default function AssessmentHistory(props: AssessmentHistoryProps) {
+  return (
+    <AuthProvider>
+      <AssessmentHistoryContent {...props} />
+    </AuthProvider>
+  );
+}
+
+function AssessmentHistoryContent({
+  userId: userIdProp,
   onViewResult,
   onRetakeAssessment,
   onViewCertificate,
 }: AssessmentHistoryProps) {
   const { t } = useTranslations();
+  const { user } = useAuth();
+  const userId = userIdProp ?? user?.uid;
   const [progress, setProgress] = useState<AssessmentProgress | null>(null);
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [assessments, setAssessments] = useState<Assessment[]>([]);
@@ -49,10 +60,12 @@ export default function AssessmentHistory({
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
+    if (!userId) return; // wait until auth resolves (or a userId prop arrives)
     loadHistoryData();
   }, [userId]);
 
   const loadHistoryData = async () => {
+    if (!userId) return;
     try {
       setLoading(true);
 
@@ -105,12 +118,13 @@ export default function AssessmentHistory({
             aValue = a.score;
             bValue = b.score;
             break;
-          case 'category':
+          case 'category': {
             const aAssessment = getAssessmentById(a.assessmentId);
             const bAssessment = getAssessmentById(b.assessmentId);
             aValue = aAssessment?.category || '';
             bValue = bAssessment?.category || '';
             break;
+          }
           default:
             return 0;
         }

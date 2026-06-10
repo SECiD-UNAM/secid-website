@@ -62,7 +62,10 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist/
+          # Hybrid build emits dist/client (static assets) + dist/server.
+          # GitHub Pages must serve the client half (matches firebase.json's
+          # "public": "dist/client").
+          path: dist/client/
 
   # ── Deploy ───────────────────────────────────────────────────────────────
   deploy:
@@ -71,7 +74,7 @@ jobs:
     needs: build
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}  # page_url is set by deploy-pages action in this job
+      url: ${{ steps.deployment.outputs.page_url }} # page_url is set by deploy-pages action in this job
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
@@ -140,7 +143,7 @@ jobs:
   validate:
     name: Post-deploy Health Check
     runs-on: ubuntu-latest
-    needs: [deploy, deploy-backend]  # wait for both frontend and backend
+    needs: [deploy, deploy-backend] # wait for both frontend and backend
     steps:
       - name: Check secid.mx responds
         run: |

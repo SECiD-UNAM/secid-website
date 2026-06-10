@@ -3,18 +3,15 @@ Allow: /
 
 # Allow all bots to access the site
 # Sitemap location
-Sitemap: http://localhost:3000/sitemap.xml
+Sitemap: https://secid.mx/sitemap-index.xml
+
+# Disallow crawling of private/authenticated areas
+Disallow: /admin/
+Disallow: /es/dashboard/
+Disallow: /en/dashboard/
 
 # Disallow crawling of template and development files
 Disallow: /raw_template/
 Disallow: /.git/
 Disallow: /CLAUDE.md
 Disallow: /README.md
-
-# Allow important pages explicitly
-Allow: /index.html
-Allow: /aboutus.html
-Allow: /job-submission.html
-Allow: /registro.html
-Allow: /assets/
-Allow: /images/

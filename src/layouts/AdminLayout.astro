@@ -116,29 +116,74 @@ const {
           });
         }
 
-        // Session timeout warning for admin users
+        // Session timeout warning for admin users (non-blocking banner,
+        // consistent with the error toast injected below)
         let sessionWarningShown = false;
         const SESSION_TIMEOUT = 60 * 60 * 1000; // 1 hour
         const WARNING_TIME = 55 * 60 * 1000; // 55 minutes
 
+        const showSessionBanner = (message, actionLabel, onAction) => {
+          const banner = document.createElement('div');
+          banner.className =
+            'fixed top-4 right-4 bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded shadow-lg z-50 flex items-center space-x-3';
+          banner.setAttribute('role', 'alert');
+
+          const text = document.createElement('span');
+          text.textContent = message;
+          banner.appendChild(text);
+
+          if (actionLabel && onAction) {
+            const action = document.createElement('button');
+            action.className =
+              'font-medium text-yellow-900 underline hover:text-yellow-700';
+            action.textContent = actionLabel;
+            action.addEventListener('click', () => {
+              onAction();
+              banner.remove();
+            });
+            banner.appendChild(action);
+          }
+
+          const close = document.createElement('button');
+          close.className = 'ml-2 text-yellow-600 hover:text-yellow-800';
+          close.innerHTML = '&times;';
+          close.setAttribute('aria-label', 'Cerrar');
+          close.addEventListener('click', () => banner.remove());
+          banner.appendChild(close);
+
+          document.body.appendChild(banner);
+          return banner;
+        };
+
         setTimeout(() => {
           if (!sessionWarningShown) {
             sessionWarningShown = true;
-            if (confirm('Su sesión expirará pronto. ¿Desea continuar?')) {
-              // Refresh session
-              fetch('/api/admin/refresh-session', { method: 'POST' }).catch(
-                console.error
-              );
-              sessionWarningShown = false;
-            }
+            showSessionBanner(
+              'Su sesión expirará pronto.',
+              'Continuar sesión',
+              () => {
+                // Refresh session
+                fetch('/api/admin/refresh-session', { method: 'POST' }).catch(
+                  console.error
+                );
+                sessionWarningShown = false;
+              }
+            );
           }
         }, WARNING_TIME);
 
-        // Auto-logout after session timeout
+        // Auto-logout after session timeout: warn, then redirect
         setTimeout(() => {
-          alert('Su sesión ha expirado. Será redirigido al login');
-          window.location.href =
-            '/login?returnUrl=' + encodeURIComponent(window.location.pathname);
+          showSessionBanner(
+            'Su sesión ha expirado. Será redirigido al login.',
+            null,
+            null
+          );
+          setTimeout(() => {
+            window.location.href =
+              '/login?returnUrl=' +
+              encodeURIComponent(window.location.pathname);
+          }, 5000);
         }, SESSION_TIMEOUT);
 
         // Activity tracking
@@ -176,41 +221,6 @@ const {
           5 * 60 * 1000
         );
       });
-    </script>
-
-    <!-- Load React components for admin -->
-    <script type="module">
-      import { AdminNavigation } from '/src/components/admin/AdminNavigation.tsx';
-      import { AdminAuthGuard } from '/src/components/admin/AdminAuthGuard.tsx';
-      import { AdminNotifications } from '/src/components/admin/AdminNotifications.tsx';
-
-      // Initialize admin components
-      const currentPath =
-        document.getElementById('admin-navigation')?.dataset.currentPath ||
-        '/admin';
-
-      // Render navigation
-      const navContainer = document.getElementById('admin-navigation');
-      if (navContainer && window.React && window.ReactDOM) {
-        const navElement = React.createElement(AdminNavigation, {
-          currentPath,
-        });
-        ReactDOM.render(navElement, navContainer);
-      }
-
-      // Render auth guard
-      const authContainer = document.getElementById('admin-auth-guard');
-      if (authContainer && window.React && window.ReactDOM) {
-        const authElement = React.createElement(AdminAuthGuard);
-        ReactDOM.render(authElement, authContainer);
-      }
-
-      // Render notifications
-      const notifContainer = document.getElementById('admin-notifications');
-      if (notifContainer && window.React && window.ReactDOM) {
-        const notifElement = React.createElement(AdminNotifications);
-        ReactDOM.render(notifElement, notifContainer);
-      }
     </script>
 
     <!-- Admin Analytics (separate from main site) -->
@@ -286,9 +296,6 @@ const {
         }
       });
     </script>
-
-    <!-- Load main admin script -->
-    <script is:inline src="/assets/js/admin.js" type="module"></script>
   </body>
 </html>
 

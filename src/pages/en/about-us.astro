@@ -3,9 +3,6 @@ import ModernLayout from '../../layouts/ModernLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
 import CommissionsListView from '../../components/commissions/CommissionsListView';
-import { getTranslations } from '../../i18n/translations';
-
-const t = getTranslations('en');
 ---
 
 <ModernLayout
@@ -107,7 +104,7 @@ const t = getTranslations('en');
           </p>
           <div class="secid-section__actions">
             <a
-              href="/registro"
+              href="/en/join"
               class="secid-button secid-button--primary secid-button--lg"
             >
               <i class="fas fa-users secid-button__icon"></i>
