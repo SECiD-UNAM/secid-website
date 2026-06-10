@@ -1,23 +1,23 @@
 import {
   onDocumentUpdated,
   onDocumentCreated,
-} from "firebase-functions/v2/firestore";
-import { onCall, HttpsError } from "firebase-functions/v2/https";
+} from 'firebase-functions/v2/firestore';
+import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import {
   beforeUserCreated,
   AuthBlockingEvent,
-} from "firebase-functions/v2/identity";
-import * as functionsV1 from "firebase-functions/v1";
-import { admin } from "./init"; // Must be first — initializes Firebase before other imports
-import { sendEmail, generateJobMatchEmail } from "./email-service";
+} from 'firebase-functions/v2/identity';
+import * as functionsV1 from 'firebase-functions/v1';
+import { admin } from './init'; // Must be first — initializes Firebase before other imports
+import { sendEmail, generateJobMatchEmail } from './email-service';
 import {
   generateWelcomeEmail,
   generateAdminPendingNotif,
   generateApprovedEmail,
   generateRejectedEmail,
   generateStatusChangeEmail,
-} from "./email-templates";
-import { getAppUrl } from "./env";
+} from './email-templates';
+import { getAppUrl } from './env';
 import {
   addMemberToGroup,
   removeMemberFromGroup,
@@ -25,22 +25,22 @@ import {
   listGroupMembers,
   listAllGroups,
   getMemberGroups,
-} from "./google-admin";
+} from './google-admin';
 import {
   GROUP_MAP,
   getAllGroups,
   getDefaultGroup,
   getMembersGroup,
-} from "./group-config";
-import { onUserNumeroCuentaChange } from "./numero-cuenta-index";
-import { onMergeRequestApproved } from "./merge-engine";
-import { completeRegistration } from "./complete-registration";
+} from './group-config';
+import { onUserNumeroCuentaChange } from './numero-cuenta-index';
+import { onMergeRequestApproved } from './merge-engine';
+import { completeRegistration } from './complete-registration';
 import {
   requestAlternateEmail,
   confirmAlternateEmail,
-} from "./alternate-email";
-import { submitPublicJob } from "./public-job-submit";
-import { subscribeNewsletter, sendContactMessage } from "./public-forms";
+} from './alternate-email';
+import { submitPublicJob } from './public-job-submit';
+import { subscribeNewsletter, sendContactMessage } from './public-forms';
 
 // Firebase Admin initialized in ./init.ts (imported above)
 
@@ -49,7 +49,7 @@ export const onUserCreate = beforeUserCreated(
   async (event: AuthBlockingEvent) => {
     const user = event.data;
     if (!user) {
-      console.log("No user data in event");
+      console.log('No user data in event');
       return;
     }
     const { uid, email, displayName, photoURL } = user;
@@ -58,23 +58,23 @@ export const onUserCreate = beforeUserCreated(
     // Users start as collaborators; membership requires admin approval
     await admin
       .firestore()
-      .collection("users")
+      .collection('users')
       .doc(uid)
       .set({
         email,
-        displayName: displayName || "",
-        photoURL: photoURL || "",
-        firstName: "",
-        lastName: "",
-        role: "collaborator",
-        registrationType: "collaborator",
-        verificationStatus: "none",
+        displayName: displayName || '',
+        photoURL: photoURL || '',
+        firstName: '',
+        lastName: '',
+        role: 'collaborator',
+        registrationType: 'collaborator',
+        verificationStatus: 'none',
         isActive: true,
         isVerified: false,
-        membershipTier: "free",
+        membershipTier: 'free',
         skills: [],
         lifecycle: {
-          status: "collaborator",
+          status: 'collaborator',
           statusChangedAt: admin.firestore.FieldValue.serverTimestamp(),
           statusHistory: [],
           lastActiveDate: admin.firestore.FieldValue.serverTimestamp(),
@@ -110,7 +110,7 @@ interface VerifyUnamEmailData {
 // UNAM email verification
 export const verifyUnamEmail = onCall<VerifyUnamEmailData>(async (request) => {
   if (!request.auth) {
-    throw new HttpsError("unauthenticated", "User must be authenticated");
+    throw new HttpsError('unauthenticated', 'User must be authenticated');
   }
 
   const { unamEmail, studentId, graduationYear } = request.data;
@@ -118,26 +118,27 @@ export const verifyUnamEmail = onCall<VerifyUnamEmailData>(async (request) => {
 
   // Validate UNAM email format
   if (
-    !unamEmail.includes("@alumno.unam.mx") &&
-    !unamEmail.includes("@unam.mx")
+    !unamEmail.includes('@alumno.unam.mx') &&
+    !unamEmail.includes('@unam.mx')
   ) {
-    throw new HttpsError("invalid-argument", "Email must be from UNAM domain");
+    throw new HttpsError('invalid-argument', 'Email must be from UNAM domain');
   }
 
   // UNAM verification API not yet integrated — block auto-approval
   // to prevent privilege escalation. Admin can manually verify members
   // via the admin panel until the real API is connected.
   throw new HttpsError(
-    "unimplemented",
-    "UNAM email verification is not yet available. Contact an administrator for manual verification."
+    'unimplemented',
+    'UNAM email verification is not yet available. Contact an administrator for manual verification.'
   );
 });
 
 // Job matching algorithm
 export const matchJobsForUser = onDocumentUpdated(
-  "users/{userId}",
+  'users/{userId}',
   async (event) => {
     const userId = event.params.userId;
+    const beforeData = event.data?.before.data();
     const afterData = event.data?.after.data();
 
     if (!afterData) {
@@ -154,11 +155,23 @@ export const matchJobsForUser = onDocumentUpdated(
       return null;
     }
 
+    // Skip when the matching inputs (skills + jobSearching flag) didn't
+    // change — every other profile update would otherwise re-scan jobs.
+    const beforeSkills = beforeData?.skills || [];
+    const inputsUnchanged =
+      beforeData?.privacySettings?.jobSearching ===
+        afterData.privacySettings?.jobSearching &&
+      JSON.stringify(beforeSkills) === JSON.stringify(userSkills);
+    if (inputsUnchanged) {
+      return null;
+    }
+
     // Find matching jobs
     const jobsSnapshot = await admin
       .firestore()
-      .collection("jobs")
-      .where("status", "==", "active")
+      .collection('jobs')
+      .where('status', '==', 'active')
+      .limit(500)
       .get();
 
     const matches: {
@@ -199,10 +212,10 @@ export const matchJobsForUser = onDocumentUpdated(
     if (matches.length > 0) {
       await admin
         .firestore()
-        .collection("users")
+        .collection('users')
         .doc(userId)
-        .collection("jobMatches")
-        .doc("latest")
+        .collection('jobMatches')
+        .doc('latest')
         .set({
           matches: matches.slice(0, 10),
           generatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -218,13 +231,13 @@ export const onUserDelete = functionsV1.auth.user().onDelete(async (user) => {
   const { uid } = user;
 
   // Delete user profile
-  await admin.firestore().collection("users").doc(uid).delete();
+  await admin.firestore().collection('users').doc(uid).delete();
 
   // Clean up user's job applications
   const applicationsSnapshot = await admin
     .firestore()
-    .collectionGroup("applications")
-    .where("applicantId", "==", uid)
+    .collectionGroup('applications')
+    .where('applicantId', '==', uid)
     .get();
 
   const batch = admin.firestore().batch();
@@ -239,7 +252,7 @@ export const onUserDelete = functionsV1.auth.user().onDelete(async (user) => {
 
 // Trigger when a new job is posted
 export const onNewJobPosted = onDocumentCreated(
-  "jobs/{jobId}",
+  'jobs/{jobId}',
   async (event) => {
     const snapshot = event.data;
     if (!snapshot) return;
@@ -248,17 +261,17 @@ export const onNewJobPosted = onDocumentCreated(
     const jobId = event.params.jobId;
 
     // Auto-publish for company-role users
-    if (jobData.status === "draft") {
+    if (jobData.status === 'draft') {
       const posterUid = jobData.postedBy;
       if (posterUid) {
         const posterDoc = await admin
           .firestore()
-          .collection("users")
+          .collection('users')
           .doc(posterUid)
           .get();
-        if (posterDoc.data()?.role === "company") {
+        if (posterDoc.data()?.role === 'company') {
           await event.data?.ref.update({
-            status: "active",
+            status: 'active',
             approvedAt: admin.firestore.FieldValue.serverTimestamp(),
           });
           // Continue to send notifications since job is now active
@@ -268,7 +281,7 @@ export const onNewJobPosted = onDocumentCreated(
       } else {
         return;
       }
-    } else if (jobData.status !== "active" && jobData.status !== "published") {
+    } else if (jobData.status !== 'active' && jobData.status !== 'published') {
       return;
     }
 
@@ -276,14 +289,15 @@ export const onNewJobPosted = onDocumentCreated(
       // Find users with job match notifications enabled
       const usersSnapshot = await admin
         .firestore()
-        .collection("users")
-        .where("notificationSettings.jobMatches", "==", true)
-        .where("privacySettings.jobSearching", "==", true)
+        .collection('users')
+        .where('notificationSettings.jobMatches', '==', true)
+        .where('privacySettings.jobSearching', '==', true)
         .limit(100)
         .get();
 
-      const siteUrl = process.env.SITE_URL || "https://secid.mx";
+      const siteUrl = getAppUrl();
 
+      const recipients: { uid: string; email: string; html: string }[] = [];
       for (const userDoc of usersSnapshot.docs) {
         const userData = userDoc.data();
         if (!userData.email) continue;
@@ -306,25 +320,58 @@ export const onNewJobPosted = onDocumentCreated(
         // Only send if match score is above threshold
         if (matchScore < 30) continue;
 
-        const html = generateJobMatchEmail({
-          recipientName:
-            userData.displayName || userData.firstName || "Miembro",
-          jobTitle: jobData.title,
-          company: jobData.company,
-          matchScore,
-          jobUrl: `${siteUrl}/es/jobs`,
+        recipients.push({
+          uid: userDoc.id,
+          email: userData.email,
+          html: generateJobMatchEmail({
+            recipientName:
+              userData.displayName || userData.firstName || 'Miembro',
+            jobTitle: jobData.title,
+            company: jobData.company,
+            matchScore,
+            jobUrl: `${siteUrl}/es/jobs`,
+          }),
         });
+      }
 
-        await sendEmail({
-          to: userData.email,
-          subject: `Nueva oportunidad: ${jobData.title} en ${jobData.company}`,
-          html,
+      // Send in parallel chunks. A marker doc per notified user at
+      // jobs/{jobId}/notifications/{userId} makes function retries
+      // idempotent — already-notified users are skipped.
+      const subject = `Nueva oportunidad: ${jobData.title} en ${jobData.company}`;
+      const CHUNK_SIZE = 25;
+      for (let i = 0; i < recipients.length; i += CHUNK_SIZE) {
+        const chunk = recipients.slice(i, i + CHUNK_SIZE);
+        const results = await Promise.allSettled(
+          chunk.map(async (recipient) => {
+            const markerRef = snapshot.ref
+              .collection('notifications')
+              .doc(recipient.uid);
+            const marker = await markerRef.get();
+            if (marker.exists) return; // already notified on a prior attempt
+
+            await sendEmail({
+              to: recipient.email,
+              subject,
+              html: recipient.html,
+            });
+            await markerRef.set({
+              sentAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+          })
+        );
+        results.forEach((result, idx) => {
+          if (result.status === 'rejected') {
+            console.error(
+              `Failed to notify user ${chunk[idx].uid} for job ${jobId}:`,
+              result.reason
+            );
+          }
         });
       }
 
       console.log(`Job notifications sent for job ${jobId}`);
     } catch (error) {
-      console.error("Error sending job notifications:", error);
+      console.error('Error sending job notifications:', error);
     }
   }
 );
@@ -337,7 +384,7 @@ export const onNewJobPosted = onDocumentCreated(
  * When a new user document is created, add them to the collaborators group.
  */
 export const onUserDocCreated = onDocumentCreated(
-  "users/{userId}",
+  'users/{userId}',
   async (event) => {
     const snapshot = event.data;
     if (!snapshot) return;
@@ -346,7 +393,7 @@ export const onUserDocCreated = onDocumentCreated(
     const email = userData.email;
 
     if (!email) {
-      console.log("No email for user, skipping group add + welcome email");
+      console.log('No email for user, skipping group add + welcome email');
       return;
     }
 
@@ -361,14 +408,14 @@ export const onUserDocCreated = onDocumentCreated(
     // Best-effort: log + continue on failure so Group sync above stays the
     // contract of this trigger.
     try {
-      const lang: "es" | "en" =
-        (userData.lang as "es" | "en") ||
-        (userData.locale as "es" | "en") ||
-        "es";
+      const lang: 'es' | 'en' =
+        (userData.lang as 'es' | 'en') ||
+        (userData.locale as 'es' | 'en') ||
+        'es';
       const recipientName =
         userData.firstName ||
         userData.displayName ||
-        (typeof email === "string" ? email.split("@")[0] : "");
+        (typeof email === 'string' ? email.split('@')[0] : '');
       // /onboarding doesn't exist as a route. The signup wizard
       // (src/components/auth/SignUpForm.tsx) detects an existing auth
       // session and skips the 'account' step, so /signup is where the
@@ -399,7 +446,7 @@ export const onUserDocCreated = onDocumentCreated(
  * - any → collaborator (rejected/downgraded): ensure in colaboradores@, remove from miembros@
  */
 export const onMemberStatusChange = onDocumentUpdated(
-  "users/{userId}",
+  'users/{userId}',
   async (event) => {
     const beforeData = event.data?.before.data();
     const afterData = event.data?.after.data();
@@ -429,15 +476,15 @@ export const onMemberStatusChange = onDocumentUpdated(
     console.log(`Status change for ${email}: ${oldStatus} → ${newStatus}`);
 
     // Common bits for the email payloads below.
-    const lang: "es" | "en" =
-      (afterData.lang as "es" | "en") ||
-      (afterData.locale as "es" | "en") ||
-      "es";
+    const lang: 'es' | 'en' =
+      (afterData.lang as 'es' | 'en') ||
+      (afterData.locale as 'es' | 'en') ||
+      'es';
     const recipientName =
       afterData.firstName ||
       afterData.displayName ||
-      (typeof email === "string" ? email.split("@")[0] : "");
-    const contactEmail = process.env.ADMIN_EMAIL || "contacto@secid.mx";
+      (typeof email === 'string' ? email.split('@')[0] : '');
+    const contactEmail = process.env.ADMIN_EMAIL || 'contacto@secid.mx';
     const baseUrl = getAppUrl();
 
     // Best-effort email helper — never let an email failure block the
@@ -462,136 +509,136 @@ export const onMemberStatusChange = onDocumentUpdated(
       try {
         const snap = await admin
           .firestore()
-          .collection("users")
-          .where("role", "==", "admin")
+          .collection('users')
+          .where('role', '==', 'admin')
           .get();
         const emails: string[] = snap.docs
           .map((d: FirebaseFirestore.QueryDocumentSnapshot) =>
-            String(d.data().email || "").trim()
+            String(d.data().email || '').trim()
           )
           .filter((e: string) => e.length > 0);
         const deduped: string[] = Array.from(new Set(emails));
         if (deduped.length > 0) return deduped;
       } catch (err) {
-        console.warn("Failed to resolve admin recipients from Firestore:", err);
+        console.warn('Failed to resolve admin recipients from Firestore:', err);
       }
       return [contactEmail];
     };
 
     switch (newStatus) {
-    case "active":
-      // Member approved or reinstated → add to miembros@, remove from colaboradores@
-      await addMemberToGroup(getMembersGroup(), email);
-      await removeMemberFromGroup(getDefaultGroup(), email);
-      // Notify the user that they were approved (Phase 0 #3).
-      // QA round 3 found my original guard `oldStatus === 'pending'` was
-      // too strict: the AdminMembersTable shows "Pendiente" as the
-      // default UI label when lifecycle.status is undefined, but the
-      // ACTUAL stored value is undefined or 'collaborator'. So real
-      // admin approvals manifest as `undefined → active` or
-      // `'collaborator' → active`, not `'pending' → active`. Relax
-      // the guard: send the approval email for any → active EXCEPT
-      // when reactivating from suspended/deactivated (which gets the
-      // reactivation copy).
-      if (oldStatus === "suspended" || oldStatus === "deactivated") {
+      case 'active':
+        // Member approved or reinstated → add to miembros@, remove from colaboradores@
+        await addMemberToGroup(getMembersGroup(), email);
+        await removeMemberFromGroup(getDefaultGroup(), email);
+        // Notify the user that they were approved (Phase 0 #3).
+        // QA round 3 found my original guard `oldStatus === 'pending'` was
+        // too strict: the AdminMembersTable shows "Pendiente" as the
+        // default UI label when lifecycle.status is undefined, but the
+        // ACTUAL stored value is undefined or 'collaborator'. So real
+        // admin approvals manifest as `undefined → active` or
+        // `'collaborator' → active`, not `'pending' → active`. Relax
+        // the guard: send the approval email for any → active EXCEPT
+        // when reactivating from suspended/deactivated (which gets the
+        // reactivation copy).
+        if (oldStatus === 'suspended' || oldStatus === 'deactivated') {
+          await queueEmail(
+            email,
+            generateStatusChangeEmail({
+              recipientName,
+              newStatus: 'alumni', // reuse template; phrasing fits reactivation context loosely
+              contactEmail,
+              lang,
+            })
+          );
+        } else {
+          await queueEmail(
+            email,
+            generateApprovedEmail({
+              recipientName,
+              dashboardUrl: `${baseUrl}/${lang}/dashboard`,
+              lang,
+            })
+          );
+        }
+        break;
+
+      case 'suspended':
+      case 'deactivated':
+        // Suspended or deactivated → remove from all groups
+        await removeMemberFromAllGroups(email, getAllGroups());
         await queueEmail(
           email,
           generateStatusChangeEmail({
             recipientName,
-            newStatus: "alumni", // reuse template; phrasing fits reactivation context loosely
+            newStatus,
             contactEmail,
             lang,
           })
         );
-      } else {
+        break;
+
+      case 'alumni':
+        // Alumni → remove from miembros@, optionally keep in colaboradores@
+        await removeMemberFromGroup(getMembersGroup(), email);
         await queueEmail(
           email,
-          generateApprovedEmail({
+          generateStatusChangeEmail({
             recipientName,
-            dashboardUrl: `${baseUrl}/${lang}/dashboard`,
-            lang,
-          })
-        );
-      }
-      break;
-
-    case "suspended":
-    case "deactivated":
-      // Suspended or deactivated → remove from all groups
-      await removeMemberFromAllGroups(email, getAllGroups());
-      await queueEmail(
-        email,
-        generateStatusChangeEmail({
-          recipientName,
-          newStatus,
-          contactEmail,
-          lang,
-        })
-      );
-      break;
-
-    case "alumni":
-      // Alumni → remove from miembros@, optionally keep in colaboradores@
-      await removeMemberFromGroup(getMembersGroup(), email);
-      await queueEmail(
-        email,
-        generateStatusChangeEmail({
-          recipientName,
-          newStatus: "alumni",
-          contactEmail,
-          lang,
-        })
-      );
-      break;
-
-    case "collaborator":
-      // Rejected or downgraded → ensure in colaboradores@, remove from miembros@
-      await addMemberToGroup(getDefaultGroup(), email);
-      await removeMemberFromGroup(getMembersGroup(), email);
-      // Only email the user if this is a real rejection (was pending),
-      // not just an initial creation that landed at collaborator.
-      if (oldStatus === "pending") {
-        await queueEmail(
-          email,
-          generateRejectedEmail({
-            recipientName,
-            reason: afterData.rejectionReason,
+            newStatus: 'alumni',
             contactEmail,
             lang,
           })
         );
-      }
-      break;
+        break;
 
-    case "pending":
-      // Membership requested → no group change (still in colaboradores@).
-      // Phase 0 #2: notify admins that there's something to review.
-      // Skip if already notified (defensive against re-fires of the
-      // same transition by a Firestore retry).
-      if (oldStatus !== "pending") {
-        // Fanout to every user with role='admin', not just a single
-        // ADMIN_EMAIL env var (QA round 4 redesign — single inbox was
-        // a stale-inbox risk).
-        const adminRecipients = await resolveAdminRecipients();
-        const adminPayload = generateAdminPendingNotif({
-          memberName: recipientName,
-          memberEmail: email,
-          numeroCuenta: afterData.numeroCuenta,
-          registrationType: afterData.registrationType,
-          // /admin/users doesn't exist; the actual admin members page is here.
-          adminPanelUrl: `${baseUrl}/${lang}/dashboard/admin/members?status=pending`,
-        });
-        for (const adminTo of adminRecipients) {
-          await queueEmail(adminTo, adminPayload);
+      case 'collaborator':
+        // Rejected or downgraded → ensure in colaboradores@, remove from miembros@
+        await addMemberToGroup(getDefaultGroup(), email);
+        await removeMemberFromGroup(getMembersGroup(), email);
+        // Only email the user if this is a real rejection (was pending),
+        // not just an initial creation that landed at collaborator.
+        if (oldStatus === 'pending') {
+          await queueEmail(
+            email,
+            generateRejectedEmail({
+              recipientName,
+              reason: afterData.rejectionReason,
+              contactEmail,
+              lang,
+            })
+          );
         }
-        console.log(
-          `Admin pending notif fanout to ${adminRecipients.length} recipient(s)`
-        );
-      }
-      break;
+        break;
 
-    default:
-      console.log(`Unknown status: ${newStatus}`);
+      case 'pending':
+        // Membership requested → no group change (still in colaboradores@).
+        // Phase 0 #2: notify admins that there's something to review.
+        // Skip if already notified (defensive against re-fires of the
+        // same transition by a Firestore retry).
+        if (oldStatus !== 'pending') {
+          // Fanout to every user with role='admin', not just a single
+          // ADMIN_EMAIL env var (QA round 4 redesign — single inbox was
+          // a stale-inbox risk).
+          const adminRecipients = await resolveAdminRecipients();
+          const adminPayload = generateAdminPendingNotif({
+            memberName: recipientName,
+            memberEmail: email,
+            numeroCuenta: afterData.numeroCuenta,
+            registrationType: afterData.registrationType,
+            // /admin/users doesn't exist; the actual admin members page is here.
+            adminPanelUrl: `${baseUrl}/${lang}/dashboard/admin/members?status=pending`,
+          });
+          for (const adminTo of adminRecipients) {
+            await queueEmail(adminTo, adminPayload);
+          }
+          console.log(
+            `Admin pending notif fanout to ${adminRecipients.length} recipient(s)`
+          );
+        }
+        break;
+
+      default:
+        console.log(`Unknown status: ${newStatus}`);
     }
   }
 );
@@ -602,21 +649,21 @@ export const onMemberStatusChange = onDocumentUpdated(
  */
 export const syncGroupMembership = onCall(async (request) => {
   if (!request.auth) {
-    throw new HttpsError("unauthenticated", "User must be authenticated");
+    throw new HttpsError('unauthenticated', 'User must be authenticated');
   }
 
   // Verify admin role
   const userDoc = await admin
     .firestore()
-    .collection("users")
+    .collection('users')
     .doc(request.auth.uid)
     .get();
 
   const userData = userDoc.data();
-  if (!userData || !["admin", "moderator"].includes(userData.role)) {
+  if (!userData || !['admin', 'moderator'].includes(userData.role)) {
     throw new HttpsError(
-      "permission-denied",
-      "Only admins and moderators can sync group membership"
+      'permission-denied',
+      'Only admins and moderators can sync group membership'
     );
   }
 
@@ -649,8 +696,8 @@ export const syncGroupMembership = onCall(async (request) => {
 
     return { success: true, groups: groupData };
   } catch (error: any) {
-    console.error("Error syncing group membership:", error?.message);
-    throw new HttpsError("internal", "Failed to sync group membership");
+    console.error('Error syncing group membership:', error?.message);
+    throw new HttpsError('internal', 'Failed to sync group membership');
   }
 });
 
@@ -659,21 +706,21 @@ export const syncGroupMembership = onCall(async (request) => {
  */
 export const updateMemberGroups = onCall(async (request) => {
   if (!request.auth) {
-    throw new HttpsError("unauthenticated", "User must be authenticated");
+    throw new HttpsError('unauthenticated', 'User must be authenticated');
   }
 
   // Verify admin role
   const userDoc = await admin
     .firestore()
-    .collection("users")
+    .collection('users')
     .doc(request.auth.uid)
     .get();
 
   const userData = userDoc.data();
-  if (!userData || !["admin", "moderator"].includes(userData.role)) {
+  if (!userData || !['admin', 'moderator'].includes(userData.role)) {
     throw new HttpsError(
-      "permission-denied",
-      "Only admins and moderators can manage group membership"
+      'permission-denied',
+      'Only admins and moderators can manage group membership'
     );
   }
 
@@ -684,7 +731,7 @@ export const updateMemberGroups = onCall(async (request) => {
   };
 
   if (!memberEmail) {
-    throw new HttpsError("invalid-argument", "memberEmail is required");
+    throw new HttpsError('invalid-argument', 'memberEmail is required');
   }
 
   // Validate group emails against known groups
@@ -692,7 +739,7 @@ export const updateMemberGroups = onCall(async (request) => {
   const allRequested = [...(addToGroups || []), ...(removeFromGroups || [])];
   for (const g of allRequested) {
     if (!validGroups.includes(g as any)) {
-      throw new HttpsError("invalid-argument", `Invalid group: ${g}`);
+      throw new HttpsError('invalid-argument', `Invalid group: ${g}`);
     }
   }
 
@@ -730,34 +777,34 @@ export const updateMemberGroups = onCall(async (request) => {
  */
 export const getMemberGroupList = onCall(async (request) => {
   if (!request.auth) {
-    throw new HttpsError("unauthenticated", "User must be authenticated");
+    throw new HttpsError('unauthenticated', 'User must be authenticated');
   }
 
   // Verify admin role
   const userDoc = await admin
     .firestore()
-    .collection("users")
+    .collection('users')
     .doc(request.auth.uid)
     .get();
 
   const userData = userDoc.data();
-  if (!userData || !["admin", "moderator"].includes(userData.role)) {
+  if (!userData || !['admin', 'moderator'].includes(userData.role)) {
     throw new HttpsError(
-      "permission-denied",
-      "Only admins and moderators can view group membership"
+      'permission-denied',
+      'Only admins and moderators can view group membership'
     );
   }
 
   const { memberEmail } = request.data as { memberEmail: string };
   if (!memberEmail) {
-    throw new HttpsError("invalid-argument", "memberEmail is required");
+    throw new HttpsError('invalid-argument', 'memberEmail is required');
   }
 
   const groups = await getMemberGroups(memberEmail, getAllGroups());
   return { success: true, groups };
 });
 
-export { onMemberCompanyChange } from "./companies";
+export { onMemberCompanyChange } from './companies';
 
 // Profile Merge: numero_cuenta_index maintenance
 export { onUserNumeroCuentaChange };
@@ -784,18 +831,18 @@ export { subscribeNewsletter, sendContactMessage };
 // export { parseLinkedInPdf } from "./parse-linkedin-pdf";
 
 // Salary stats: aggregated compensation analytics with tiered privacy enforcement
-export { getSalaryStats } from "./get-salary-stats";
+export { getSalaryStats } from './get-salary-stats';
 
 // Member inscription survey: scheduled aggregation + admin-triggered refresh
 export {
   aggregateSurveyResponses,
   refreshSurveyAggregates,
-} from "./aggregate-survey";
+} from './aggregate-survey';
 
 // RBAC: permission resolution triggers + admin callable functions
-export { onUserGroupWrite, onGroupWrite } from "./rbac/resolvePermissions";
-export { seedRbacGroups } from "./rbac/seedGroups";
-export { backfillRbacUsers } from "./rbac/backfillUsers";
+export { onUserGroupWrite, onGroupWrite } from './rbac/resolvePermissions';
+export { seedRbacGroups } from './rbac/seedGroups';
+export { backfillRbacUsers } from './rbac/backfillUsers';
 
 // RBAC: Express-style middleware for Cloud Function HTTP endpoints (Layer 2)
-export { requirePermission } from "./rbac/middleware";
+export { requirePermission } from './rbac/middleware';

@@ -1,9 +1,9 @@
-import { onRequest } from "firebase-functions/v2/https";
-import * as admin from "firebase-admin";
+import { onRequest } from 'firebase-functions/v2/https';
+import * as admin from 'firebase-admin';
 import {
   decodeClaimsPermissions,
   checkPermission,
-} from "./rbac/resolution-logic";
+} from './rbac/resolution-logic';
 
 function getDb() {
   return admin.firestore();
@@ -12,12 +12,16 @@ function getDb() {
 // Privacy: minimum data points per group
 const MIN_GROUP_SIZE = 3;
 
+// Keep in sync with the allowlist in public-forms.ts
 const ALLOWED_ORIGINS = [
-  "https://secid.mx",
-  "https://www.secid.mx",
-  "https://beta.secid.mx",
-  "http://localhost:4321",
-  "http://localhost:3000",
+  'https://secid.mx',
+  'https://www.secid.mx',
+  'https://beta.secid.mx',
+  'https://secid.org',
+  'https://www.secid.org',
+  'http://localhost:4321',
+  'http://localhost:3000',
+  'http://127.0.0.1:4321',
 ];
 
 function getCorsOrigin(requestOrigin: string | undefined): string | null {
@@ -79,35 +83,35 @@ function buildHistogram(values: number[], binCount = 12) {
 }
 
 export const getSalaryStats = onRequest(
-  { region: "us-central1" },
+  { region: 'us-central1' },
   async (req, res) => {
     // CORS handling
     const origin = getCorsOrigin(req.headers.origin);
     if (origin) {
-      res.set("Access-Control-Allow-Origin", origin);
-      res.set("Vary", "Origin");
+      res.set('Access-Control-Allow-Origin', origin);
+      res.set('Vary', 'Origin');
     }
-    res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
-    res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.set("Access-Control-Max-Age", "3600");
+    res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.set('Access-Control-Max-Age', '3600');
 
-    if (req.method === "OPTIONS") {
-      res.status(204).send("");
+    if (req.method === 'OPTIONS') {
+      res.status(204).send('');
       return;
     }
 
-    if (req.method !== "POST") {
-      res.status(405).json({ error: "Method not allowed" });
+    if (req.method !== 'POST') {
+      res.status(405).json({ error: 'Method not allowed' });
       return;
     }
 
     // Verify Firebase Auth token
     const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith("Bearer ")) {
+    if (!authHeader?.startsWith('Bearer ')) {
       res.status(401).json({
         error: {
-          message: "Authentication required",
-          status: "UNAUTHENTICATED",
+          message: 'Authentication required',
+          status: 'UNAUTHENTICATED',
         },
       });
       return;
@@ -117,10 +121,10 @@ export const getSalaryStats = onRequest(
     try {
       decodedToken = await admin
         .auth()
-        .verifyIdToken(authHeader.split("Bearer ")[1]!);
+        .verifyIdToken(authHeader.split('Bearer ')[1]!);
     } catch {
       res.status(401).json({
-        error: { message: "Invalid token", status: "UNAUTHENTICATED" },
+        error: { message: 'Invalid token', status: 'UNAUTHENTICATED' },
       });
       return;
     }
@@ -136,9 +140,9 @@ export const getSalaryStats = onRequest(
 
     if (rbacClaims?.p) {
       const tokens = decodeClaimsPermissions(rbacClaims.p);
-      const exportCheck = checkPermission(tokens, "salary-insights", "export");
-      isAdmin = exportCheck.allowed && exportCheck.scope === "all";
-      const viewCheck = checkPermission(tokens, "salary-insights", "view");
+      const exportCheck = checkPermission(tokens, 'salary-insights', 'export');
+      isAdmin = exportCheck.allowed && exportCheck.scope === 'all';
+      const viewCheck = checkPermission(tokens, 'salary-insights', 'view');
       isVerified = viewCheck.allowed;
     }
     // No RBAC claims → treated as unverified (public tier)
@@ -146,7 +150,7 @@ export const getSalaryStats = onRequest(
     if (!isVerified) {
       res.json({
         result: {
-          tier: "public",
+          tier: 'public',
           overview: null,
           distribution: null,
           byExperience: null,
@@ -161,14 +165,14 @@ export const getSalaryStats = onRequest(
 
     // Check if caller has contributed
     const callerCompSnap = await db
-      .collection("users")
+      .collection('users')
       .doc(callerUid)
-      .collection("compensation")
+      .collection('compensation')
       .limit(1)
       .get();
     const isContributor = !callerCompSnap.empty;
 
-    const tier = isAdmin ? "admin" : isContributor ? "contributor" : "member";
+    const tier = isAdmin ? 'admin' : isContributor ? 'contributor' : 'member';
 
     // Salary reciprocity: a verified member who has NOT shared their own
     // compensation gets NO salary aggregates (overview/distribution/by-
@@ -194,7 +198,7 @@ export const getSalaryStats = onRequest(
     }
 
     // Read ALL compensation docs via collectionGroup
-    const compSnap = await db.collectionGroup("compensation").get();
+    const compSnap = await db.collectionGroup('compensation').get();
 
     if (compSnap.empty) {
       res.json({
@@ -214,7 +218,7 @@ export const getSalaryStats = onRequest(
 
     // Extract userId from each doc path: users/{userId}/compensation/{entryId}
     const compDocs = compSnap.docs.map((doc) => {
-      const pathParts = doc.ref.path.split("/");
+      const pathParts = doc.ref.path.split('/');
       const userId = pathParts[1]!;
       return { userId, data: doc.data(), roleId: doc.id };
     });
@@ -224,7 +228,7 @@ export const getSalaryStats = onRequest(
     const userDocs = new Map<string, FirebaseFirestore.DocumentData>();
     for (let i = 0; i < uniqueUserIds.length; i += 10) {
       const batch = uniqueUserIds.slice(i, i + 10);
-      const refs = batch.map((uid) => db.collection("users").doc(uid));
+      const refs = batch.map((uid) => db.collection('users').doc(uid));
       const results = await db.getAll(...refs);
       results.forEach((doc) => {
         if (doc.exists) userDocs.set(doc.id, doc.data()!);
@@ -232,13 +236,13 @@ export const getSalaryStats = onRequest(
     }
 
     // Read all companies for industry mapping
-    const companiesSnap = await db.collection("companies").get();
+    const companiesSnap = await db.collection('companies').get();
     const companyMap = new Map<string, { name: string; industry: string }>();
     companiesSnap.docs.forEach((doc) => {
       const d = doc.data();
       companyMap.set(doc.id, {
-        name: d.name || "",
-        industry: d.industry || "Otros",
+        name: d.name || '',
+        industry: d.industry || 'Otros',
       });
     });
 
@@ -252,7 +256,7 @@ export const getSalaryStats = onRequest(
       const userData = userDocs.get(userId);
       if (!userData) continue;
 
-      const level = userData.experience?.level || "mid";
+      const level = userData.experience?.level || 'mid';
 
       // Find the matching role in work history for company/position info
       const roles = userData.experience?.previousRoles || [];
@@ -264,31 +268,31 @@ export const getSalaryStats = onRequest(
 
       dataPoints.push({
         monthlyGross: data.monthlyGross,
-        currency: data.currency || "MXN",
-        country: data.country || "MX",
-        fiscalRegime: data.fiscalRegime || "asalariado",
+        currency: data.currency || 'MXN',
+        country: data.country || 'MX',
+        fiscalRegime: data.fiscalRegime || 'asalariado',
         experienceLevel: level,
-        industry: company?.industry || "Otros",
+        industry: company?.industry || 'Otros',
         benefits: data.benefits || [],
         annualBonus: data.annualBonus || 0,
-        annualBonusType: data.annualBonusType || "fixed",
+        annualBonusType: data.annualBonusType || 'fixed',
         stockAnnualValue: data.stockAnnualValue || 0,
         signOnBonus: data.signOnBonus || 0,
         // PII only populated for admin tier — minimizes in-memory exposure
         ...(isAdmin
           ? {
-            memberName:
+              memberName:
                 userData.displayName ||
-                `${userData.firstName || ""} ${userData.lastName || ""}`.trim() ||
-                "Unknown",
-            memberEmail: userData.email || "",
-            company: matchingRole?.company || company?.name || "-",
-            position:
+                `${userData.firstName || ''} ${userData.lastName || ''}`.trim() ||
+                'Unknown',
+              memberEmail: userData.email || '',
+              company: matchingRole?.company || company?.name || '-',
+              position:
                 matchingRole?.position ||
                 userData.experience?.currentRole ||
-                "-",
-            current: matchingRole?.current || false,
-          }
+                '-',
+              current: matchingRole?.current || false,
+            }
           : {}),
       });
     }
@@ -316,28 +320,28 @@ export const getSalaryStats = onRequest(
     // Overview (always for members+)
     const overview = overallStats
       ? {
-        medianMonthlyGross: overallStats.median,
-        medianTotalComp:
+          medianMonthlyGross: overallStats.median,
+          medianTotalComp:
             safeAggregate(
               dataPoints.map((d) => {
                 const annual = d.monthlyGross * 12;
                 const bonus =
-                  d.annualBonusType === "percentage"
+                  d.annualBonusType === 'percentage'
                     ? annual * (d.annualBonus / 100)
                     : d.annualBonus;
                 return annual + bonus + d.stockAnnualValue + d.signOnBonus;
               })
             )?.median || overallStats.median * 12,
-        dataPointCount: dataPoints.length,
-        contributorCount: contributorUids.size,
-      }
+          dataPointCount: dataPoints.length,
+          contributorCount: contributorUids.size,
+        }
       : null;
 
     // Distribution histogram (always for members+)
     const distribution = buildHistogram(grossValues);
 
     // By experience level (always for members+)
-    const experienceLevels = ["junior", "mid", "senior", "lead", "executive"];
+    const experienceLevels = ['junior', 'mid', 'senior', 'lead', 'executive'];
     const byExperience = experienceLevels
       .map((level) => {
         const values = dataPoints
@@ -351,7 +355,7 @@ export const getSalaryStats = onRequest(
 
     // By industry (contributor+ only)
     let byIndustry = null;
-    if (tier === "contributor" || tier === "admin") {
+    if (tier === 'contributor' || tier === 'admin') {
       const industryMap = new Map<string, number[]>();
       dataPoints.forEach((d) => {
         if (!industryMap.has(d.industry)) industryMap.set(d.industry, []);
@@ -369,7 +373,7 @@ export const getSalaryStats = onRequest(
 
     // Benefits frequency (contributor+ only)
     let benefits = null;
-    if (tier === "contributor" || tier === "admin") {
+    if (tier === 'contributor' || tier === 'admin') {
       const benefitCounts = new Map<string, number>();
       dataPoints.forEach((d) => {
         d.benefits.forEach((b) => {
@@ -388,7 +392,7 @@ export const getSalaryStats = onRequest(
 
     // Compensation breakdown (contributor+ only)
     let breakdown = null;
-    if (tier === "contributor" || tier === "admin") {
+    if (tier === 'contributor' || tier === 'admin') {
       let totalBase = 0;
       let totalBonus = 0;
       let totalStock = 0;
@@ -397,7 +401,7 @@ export const getSalaryStats = onRequest(
         const annual = d.monthlyGross * 12;
         totalBase += annual;
         totalBonus +=
-          d.annualBonusType === "percentage"
+          d.annualBonusType === 'percentage'
             ? annual * (d.annualBonus / 100)
             : d.annualBonus;
         totalStock += d.stockAnnualValue;
@@ -416,7 +420,7 @@ export const getSalaryStats = onRequest(
 
     // Raw data (admin only)
     let rawData = null;
-    if (tier === "admin") {
+    if (tier === 'admin') {
       rawData = dataPoints.map((d) => ({
         memberName: d.memberName,
         memberEmail: d.memberEmail,

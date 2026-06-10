@@ -14,20 +14,17 @@ const LINKEDIN_USERINFO_URL = 'https://api.linkedin.com/v2/userinfo';
 const LINKEDIN_VERIFY_URL =
   'https://api.linkedin.com/v2/memberVerifications?q=member';
 
-function getCallbackUrl(req: {
-  headers: Record<string, string | string[] | undefined>;
-}): string {
-  const host = req.headers['x-forwarded-host'] || req.headers['host'];
-  const protocol = req.headers['x-forwarded-proto'] || 'https';
-  const hostStr = Array.isArray(host) ? host[0] : host;
-  const protoStr = Array.isArray(protocol) ? protocol[0] : protocol;
-  return `${protoStr}://${hostStr}/linkedinAuthCallback`;
-}
-
 import { getAppUrl as getRequiredAppUrl } from './env';
 
 function getAppUrl(): string {
   return getRequiredAppUrl('https://secid.org');
+}
+
+// OAuth redirect_uri must come from trusted config, never from
+// x-forwarded-host/host headers (a spoofed Host header could redirect the
+// auth code to an attacker-controlled callback).
+function getCallbackUrl(): string {
+  return `${getAppUrl()}/linkedinAuthCallback`;
 }
 
 /**
@@ -40,7 +37,7 @@ function getAppUrl(): string {
 export const linkedinAuthRedirect = onRequest(
   { secrets: [linkedinClientId], cors: true },
   (req, res) => {
-    const callbackUrl = getCallbackUrl(req);
+    const callbackUrl = getCallbackUrl();
     const state = Buffer.from(
       JSON.stringify({
         returnUrl: (req.query.returnUrl as string) || '/',
@@ -109,7 +106,7 @@ export const linkedinAuthCallback = onRequest(
         body: new URLSearchParams({
           grant_type: 'authorization_code',
           code: code as string,
-          redirect_uri: getCallbackUrl(req),
+          redirect_uri: getCallbackUrl(),
           client_id: linkedinClientId.value(),
           client_secret: linkedinClientSecret.value(),
         }).toString(),

@@ -57,30 +57,41 @@ const C = {
   LAST_NAME_M: 'Apellido Materno',
   GENDER: 'Indica el género con el que te identificas.',
   REGISTRATION_TYPE: 'Tipo de registro',
-  ACADEMIC_LEVEL: 'Indica el nivel académico en el que cursaste estudios de ciencia de datos en la UNAM.',
-  WHATSAPP_OPT_IN: '¿Autorizas que añadamos tu número de teléfono a la comunidad de WhatsApp de egresados de la SECiD?',
+  ACADEMIC_LEVEL:
+    'Indica el nivel académico en el que cursaste estudios de ciencia de datos en la UNAM.',
+  WHATSAPP_OPT_IN:
+    '¿Autorizas que añadamos tu número de teléfono a la comunidad de WhatsApp de egresados de la SECiD?',
   CAMPUS: 'Indica tu sede de estudios',
   GENERATION: 'Elige la generación a la que perteneces.',
-  ID_VERIFICATION_DS: 'Para verificar tu identidad, compártenos tu credencial de estudiante, título, tira de materias o credencial de egresado de la Lic. en Ciencia de Datos.',
+  ID_VERIFICATION_DS:
+    'Para verificar tu identidad, compártenos tu credencial de estudiante, título, tira de materias o credencial de egresado de la Lic. en Ciencia de Datos.',
   PROGRAM_TITLE: 'Escribe el título del programa académico.',
   PROGRAM_YEAR_START: 'Indica en qué año ingresaste al programa académico.',
-  ID_VERIFICATION_PROGRAM: 'Para verificar tu identidad, compártenos tu constancia,  diploma o algún documento que acredite tu inscripción al programa académico.',
-  COURSE_END_DATE: 'Indica en qué fecha terminaste el curso especializado o de actualización.',
+  ID_VERIFICATION_PROGRAM:
+    'Para verificar tu identidad, compártenos tu constancia,  diploma o algún documento que acredite tu inscripción al programa académico.',
+  COURSE_END_DATE:
+    'Indica en qué fecha terminaste el curso especializado o de actualización.',
   COURSE_NAME: 'Escribe el nombre del curso',
-  ID_VERIFICATION_COURSE: 'Para verificar tu identidad, compártenos tu constancia,  diploma o algún documento que acredite tu inscripción al curso.',
-  EXPERIENCE_LEVEL: 'Indica el nivel de experiencia que tienes en el área de ciencia de datos',
-  OBJECTIVES: '¿Cuáles son los principales objetivos de tu acercamiento a SECiD?',
-  EXPECTATIONS: 'Describe a mayor detalle cuáles son tus expectativas al colaborar con SECiD.',
+  ID_VERIFICATION_COURSE:
+    'Para verificar tu identidad, compártenos tu constancia,  diploma o algún documento que acredite tu inscripción al curso.',
+  EXPERIENCE_LEVEL:
+    'Indica el nivel de experiencia que tienes en el área de ciencia de datos',
+  OBJECTIVES:
+    '¿Cuáles son los principales objetivos de tu acercamiento a SECiD?',
+  EXPECTATIONS:
+    'Describe a mayor detalle cuáles son tus expectativas al colaborar con SECiD.',
   PROFESSIONAL_STATUS: 'Situación profesional',
   COMPANY: 'Última empresa o institución en la que laboras / laboraste',
   POSITION: 'Puesto de trabajo',
   IS_STUDENT: '¿Estudias actualmente?',
-  EXPECTED_GRADUATION: 'Si estudias actualmente, indica la fechas estimada de graduación.',
+  EXPECTED_GRADUATION:
+    'Si estudias actualmente, indica la fechas estimada de graduación.',
   AREAS_OF_INTEREST: 'Intereses / área de expertise',
   CV_URL: 'Currículum vitae',
   RESUME_URL: 'Resumé (CV highlights)',
   MAX_DEGREE: 'Máximo grado de estudios',
-  MAX_DEGREE_INSTITUTION: 'Institución en la que cursaste el máximo grado de estudios',
+  MAX_DEGREE_INSTITUTION:
+    'Institución en la que cursaste el máximo grado de estudios',
   MAX_DEGREE_PROGRAM: 'Nombre del programa del máximo grado de estudios',
   PHONE: 'Teléfono',
   LINKEDIN: 'LinkedIn',
@@ -88,22 +99,32 @@ const C = {
   TWITTER: 'Twitter',
   FACEBOOK: 'Facebook',
   OTHER_CONTACT: 'Otros medios de contacto que te gustaría compartir',
-  PRIO_JOBS: 'Selecciona el nivel de prioridad que le asignas a cada una de las siguientes iniciativas: [Bolsa Trabajo]',
-  PRIO_HACKATHONS: 'Selecciona el nivel de prioridad que le asignas a cada una de las siguientes iniciativas: [Hackatones]',
-  PRIO_COURSES: 'Selecciona el nivel de prioridad que le asignas a cada una de las siguientes iniciativas: [Cursos especializados]',
-  PRIO_SEMINARS: 'Selecciona el nivel de prioridad que le asignas a cada una de las siguientes iniciativas: [Seminarios]',
-  PRIO_CONSULTING: 'Selecciona el nivel de prioridad que le asignas a cada una de las siguientes iniciativas: [Asesorías]',
-  PRIO_MENTORSHIP: 'Selecciona el nivel de prioridad que le asignas a cada una de las siguientes iniciativas: [Mentoría]',
-  PRIO_NEWSLETTER: 'Selecciona el nivel de prioridad que le asignas a cada una de las siguientes iniciativas: [Newsletter]',
-  ADDITIONAL_COMMENTS: 'Comparte tus recomendaciones adicionales, comentarios, y sugerencias sobre cómo podríamos colaborar y mejorar.',
+  PRIO_JOBS:
+    'Selecciona el nivel de prioridad que le asignas a cada una de las siguientes iniciativas: [Bolsa Trabajo]',
+  PRIO_HACKATHONS:
+    'Selecciona el nivel de prioridad que le asignas a cada una de las siguientes iniciativas: [Hackatones]',
+  PRIO_COURSES:
+    'Selecciona el nivel de prioridad que le asignas a cada una de las siguientes iniciativas: [Cursos especializados]',
+  PRIO_SEMINARS:
+    'Selecciona el nivel de prioridad que le asignas a cada una de las siguientes iniciativas: [Seminarios]',
+  PRIO_CONSULTING:
+    'Selecciona el nivel de prioridad que le asignas a cada una de las siguientes iniciativas: [Asesorías]',
+  PRIO_MENTORSHIP:
+    'Selecciona el nivel de prioridad que le asignas a cada una de las siguientes iniciativas: [Mentoría]',
+  PRIO_NEWSLETTER:
+    'Selecciona el nivel de prioridad que le asignas a cada una de las siguientes iniciativas: [Newsletter]',
+  ADDITIONAL_COMMENTS:
+    'Comparte tus recomendaciones adicionales, comentarios, y sugerencias sobre cómo podríamos colaborar y mejorar.',
   BIRTH_DATE: 'Fecha de Nacimiento',
 };
 
 // === Value normalization tables ===
-function normLower(s) { return typeof s === 'string' ? s.trim().toLowerCase() : ''; }
+function normLower(s) {
+  return typeof s === 'string' ? s.trim().toLowerCase() : '';
+}
 
 const ACADEMIC_LEVEL_MAP = {
-  'licenciatura': 'licenciatura',
+  licenciatura: 'licenciatura',
   'licenciatura en ciencia de datos — unam': 'licenciatura',
   'curso especializado o actualización': 'curso',
 };
@@ -123,11 +144,11 @@ const AREA_MAP = {
   'aprendizaje automático': 'ml',
   'aprendizaje automatico': 'ml',
   'machine-learning': 'ml',
-  'ml': 'ml',
+  ml: 'ml',
   'deep learning': 'dl',
   'aprendizaje profundo': 'dl',
-  'dl': 'dl',
-  'nlp': 'nlp',
+  dl: 'dl',
+  nlp: 'nlp',
   'natural language processing': 'nlp',
   'procesamiento de lenguaje natural': 'nlp',
   'computer vision': 'cv',
@@ -136,48 +157,49 @@ const AREA_MAP = {
   'aprendizaje por refuerzo': 'rl',
   'generative ai': 'gen-ai',
   'gen ai': 'gen-ai',
-  'llms': 'gen-ai',
-  'mlops': 'mlops',
+  llms: 'gen-ai',
+  mlops: 'mlops',
   'data engineering': 'data-eng',
   'ingeniería de datos': 'data-eng',
   'ingenieria de datos': 'data-eng',
-  'analytics': 'analytics',
-  'analítica': 'analytics',
-  'analitica': 'analytics',
+  analytics: 'analytics',
+  analítica: 'analytics',
+  analitica: 'analytics',
   'business intelligence': 'bi',
-  'bi': 'bi',
-  'statistics': 'statistics',
-  'estadística': 'statistics',
-  'estadistica': 'statistics',
-  'research': 'research',
-  'investigación': 'research',
-  'investigacion': 'research',
-  'ethics': 'ethics',
-  'ética': 'ethics',
-  'product': 'product',
-  'producto': 'product',
-  'leadership': 'leadership',
-  'liderazgo': 'leadership',
+  bi: 'bi',
+  statistics: 'statistics',
+  estadística: 'statistics',
+  estadistica: 'statistics',
+  research: 'research',
+  investigación: 'research',
+  investigacion: 'research',
+  ethics: 'ethics',
+  ética: 'ethics',
+  product: 'product',
+  producto: 'product',
+  leadership: 'leadership',
+  liderazgo: 'leadership',
 };
 
 // Multi-select "objectives" → reasonsForJoining
 const OBJECTIVE_MAP = {
   'publicar vacantes en la bolsa de trabajo de secid': 'recruiting',
-  'participar en proyectos colaborativos o de investigación': 'community-building',
+  'participar en proyectos colaborativos o de investigación':
+    'community-building',
   'explorar oportunidades de networking y eventos': 'networking',
   'ofrecer servicios de mentoría o capacitación': 'mentorship',
   'buscar oportunidades de mentoría': 'mentorship',
   'buscar empleo': 'job-opportunities',
   'mantenerme actualizado': 'stay-updated',
-  'aprender': 'learning',
+  aprender: 'learning',
   'dar charlas': 'speaking',
 };
 
 const PRIORITY_MAP = {
   'muy alto': 5,
-  'alto': 4,
-  'moderado': 3,
-  'bajo': 2,
+  alto: 4,
+  moderado: 3,
+  bajo: 2,
   'muy bajo': 1,
 };
 
@@ -207,15 +229,30 @@ for (const u of usersSnap.docs) {
   for (const e of emails) {
     if (e) usersByEmail.set(String(e).trim().toLowerCase(), u.id);
   }
-  const fullName = `${d.firstName || ''} ${d.lastName || ''}`.trim().toLowerCase();
-  if (fullName) usersByName.set(fullName, u.id);
+  const fullName = `${d.firstName || ''} ${d.lastName || ''}`
+    .trim()
+    .toLowerCase();
+  if (fullName) {
+    const existingUid = usersByName.get(fullName);
+    if (existingUid && existingUid !== u.id) {
+      console.warn(
+        `  ⚠ name collision: "${fullName}" maps to multiple users ` +
+          `(${existingUid}, ${u.id}) — keeping first; name-based matching is ambiguous for this name`
+      );
+    } else {
+      usersByName.set(fullName, u.id);
+    }
+  }
 }
 console.log(`  ${usersByEmail.size} emails, ${usersByName.size} names indexed`);
 
 // === Transform helpers ===
 function splitMulti(s) {
   if (!s || typeof s !== 'string') return [];
-  return s.split(/,\s*(?=[A-Z¿])/u).map((v) => v.trim()).filter(Boolean);
+  return s
+    .split(/,\s*(?=[A-Z¿])/u)
+    .map((v) => v.trim())
+    .filter(Boolean);
 }
 
 function mapAreas(raw) {
@@ -267,11 +304,22 @@ for (let i = 0; i < rows.length; i++) {
   const row = rows[i];
   const email = row[C.EMAIL] ? String(row[C.EMAIL]).trim().toLowerCase() : null;
   const firstName = row[C.FIRST_NAME] ? String(row[C.FIRST_NAME]).trim() : null;
-  const lastNameP = row[C.LAST_NAME_P] ? String(row[C.LAST_NAME_P]).trim() : null;
-  const lastNameM = row[C.LAST_NAME_M] ? String(row[C.LAST_NAME_M]).trim() : null;
+  const lastNameP = row[C.LAST_NAME_P]
+    ? String(row[C.LAST_NAME_P]).trim()
+    : null;
+  const lastNameM = row[C.LAST_NAME_M]
+    ? String(row[C.LAST_NAME_M]).trim()
+    : null;
   const fullName = [firstName, lastNameP, lastNameM]
-    .filter(Boolean).join(' ').trim().toLowerCase();
-  const fullNameNoM = [firstName, lastNameP].filter(Boolean).join(' ').trim().toLowerCase();
+    .filter(Boolean)
+    .join(' ')
+    .trim()
+    .toLowerCase();
+  const fullNameNoM = [firstName, lastNameP]
+    .filter(Boolean)
+    .join(' ')
+    .trim()
+    .toLowerCase();
 
   let uid = null;
   let matchedBy = null;
@@ -288,7 +336,8 @@ for (let i = 0; i < rows.length; i++) {
 
   const areas = mapAreas(row[C.AREAS_OF_INTEREST]);
   const objectives = mapObjectives(row[C.OBJECTIVES]);
-  const registrationType = REGISTRATION_TYPE_MAP[normLower(row[C.REGISTRATION_TYPE])];
+  const registrationType =
+    REGISTRATION_TYPE_MAP[normLower(row[C.REGISTRATION_TYPE])];
   const academicLevel = ACADEMIC_LEVEL_MAP[normLower(row[C.ACADEMIC_LEVEL])];
   const seniority = SENIORITY_MAP[normLower(row[C.EXPERIENCE_LEVEL])];
 
@@ -328,9 +377,11 @@ for (let i = 0; i < rows.length; i++) {
   };
   if (registrationType) customAnswers.registration_type = registrationType;
   if (row[C.GENDER]) customAnswers.gender = row[C.GENDER];
-  if (row[C.WHATSAPP_OPT_IN]) customAnswers.whatsapp_opt_in = row[C.WHATSAPP_OPT_IN];
+  if (row[C.WHATSAPP_OPT_IN])
+    customAnswers.whatsapp_opt_in = row[C.WHATSAPP_OPT_IN];
   if (row[C.CAMPUS]) customAnswers.campus = row[C.CAMPUS];
-  if (row[C.PROFESSIONAL_STATUS]) customAnswers.professional_status = row[C.PROFESSIONAL_STATUS];
+  if (row[C.PROFESSIONAL_STATUS])
+    customAnswers.professional_status = row[C.PROFESSIONAL_STATUS];
   if (row[C.COMPANY]) customAnswers.company = row[C.COMPANY];
   if (row[C.POSITION]) customAnswers.position = row[C.POSITION];
   if (row[C.IS_STUDENT]) customAnswers.is_student = row[C.IS_STUDENT];
@@ -343,12 +394,17 @@ for (let i = 0; i < rows.length; i++) {
     if (iso) customAnswers.birth_date_iso = iso;
   }
   if (row[C.EXPECTATIONS]) customAnswers.expectations = row[C.EXPECTATIONS];
-  if (row[C.ADDITIONAL_COMMENTS]) customAnswers.additional_comments = row[C.ADDITIONAL_COMMENTS];
+  if (row[C.ADDITIONAL_COMMENTS])
+    customAnswers.additional_comments = row[C.ADDITIONAL_COMMENTS];
   if (row[C.MAX_DEGREE]) customAnswers.max_degree = row[C.MAX_DEGREE];
-  if (row[C.MAX_DEGREE_INSTITUTION]) customAnswers.max_degree_institution = row[C.MAX_DEGREE_INSTITUTION];
-  if (row[C.MAX_DEGREE_PROGRAM]) customAnswers.max_degree_program = row[C.MAX_DEGREE_PROGRAM];
-  if (areas.unmapped.length > 0) customAnswers.legacy_areas_raw = areas.unmapped;
-  if (objectives.unmapped.length > 0) customAnswers.legacy_objectives_raw = objectives.unmapped;
+  if (row[C.MAX_DEGREE_INSTITUTION])
+    customAnswers.max_degree_institution = row[C.MAX_DEGREE_INSTITUTION];
+  if (row[C.MAX_DEGREE_PROGRAM])
+    customAnswers.max_degree_program = row[C.MAX_DEGREE_PROGRAM];
+  if (areas.unmapped.length > 0)
+    customAnswers.legacy_areas_raw = areas.unmapped;
+  if (objectives.unmapped.length > 0)
+    customAnswers.legacy_objectives_raw = objectives.unmapped;
   payload.customAnswers = customAnswers;
 
   if (uid) {
@@ -369,17 +425,26 @@ console.log(`Unmatched: ${unmatched.length}`);
 
 // === Unmatched report ===
 if (unmatched.length > 0) {
-  const headers = ['rowIndex', 'email', 'fullName', 'registrationType', 'generation', 'seniority'];
+  const headers = [
+    'rowIndex',
+    'email',
+    'fullName',
+    'registrationType',
+    'generation',
+    'seniority',
+  ];
   const lines = [headers.join(',')];
   for (const u of unmatched) {
-    lines.push([
-      u.rowIndex,
-      `"${u.email || ''}"`,
-      `"${u.fullName || ''}"`,
-      u.registrationType || '',
-      u.payload.generation || '',
-      u.payload.seniority || '',
-    ].join(','));
+    lines.push(
+      [
+        u.rowIndex,
+        `"${u.email || ''}"`,
+        `"${u.fullName || ''}"`,
+        u.registrationType || '',
+        u.payload.generation || '',
+        u.payload.seniority || '',
+      ].join(',')
+    );
   }
   writeFileSync(UNMATCHED_REPORT_PATH, lines.join('\n'));
   console.log(`Report: ${UNMATCHED_REPORT_PATH}`);
@@ -389,7 +454,9 @@ if (unmatched.length > 0) {
 if (!COMMIT) {
   console.log('\n🟡 DRY RUN — sample of first 3 matched payloads:');
   for (const m of matched.slice(0, 3)) {
-    console.log(`  ${m.uid} (by ${m.matchedBy}): ${JSON.stringify(m.payload, null, 2)}`);
+    console.log(
+      `  ${m.uid} (by ${m.matchedBy}): ${JSON.stringify(m.payload, null, 2)}`
+    );
   }
   if (unmatched.length > 0) {
     console.log(`\n🟡 Sample of first 3 unmatched rows:`);
@@ -405,7 +472,10 @@ console.log(`\n🟢 COMMIT — writing ${matched.length} survey docs...`);
 let written = 0;
 for (let i = 0; i < matched.length; i += 100) {
   const batch = db.batch();
-  for (const { uid, payload, matchedBy, rowIndex } of matched.slice(i, i + 100)) {
+  for (const { uid, payload, matchedBy, rowIndex } of matched.slice(
+    i,
+    i + 100
+  )) {
     const ref = db.collection('member_surveys').doc(uid);
     batch.set(
       ref,
@@ -426,8 +496,12 @@ for (let i = 0; i < matched.length; i += 100) {
     written++;
   }
   await batch.commit();
-  console.log(`  batch ${Math.floor(i / 100) + 1}: ${written}/${matched.length}`);
+  console.log(
+    `  batch ${Math.floor(i / 100) + 1}: ${written}/${matched.length}`
+  );
 }
 
-console.log(`\n✅ Done. ${written} surveys imported. Now click "Recalcular ahora" on /es/dashboard/admin/survey to refresh aggregates.`);
+console.log(
+  `\n✅ Done. ${written} surveys imported. Now click "Recalcular ahora" on /es/dashboard/admin/survey to refresh aggregates.`
+);
 process.exit(0);

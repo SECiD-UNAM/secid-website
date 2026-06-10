@@ -1,8 +1,8 @@
-import { onCall, HttpsError } from "firebase-functions/v2/https";
-import * as admin from "firebase-admin";
-import * as crypto from "crypto";
-import { sendEmail } from "./email-service";
-import { getAppUrl, ALLOWED_CALLABLE_ORIGINS } from "./env";
+import { onCall, HttpsError } from 'firebase-functions/v2/https';
+import * as admin from 'firebase-admin';
+import * as crypto from 'crypto';
+import { sendEmail } from './email-service';
+import { getAppUrl, ALLOWED_CALLABLE_ORIGINS } from './env';
 
 const db = admin.firestore();
 
@@ -26,23 +26,23 @@ export const requestAlternateEmail = onCall(
   { cors: ALLOWED_CALLABLE_ORIGINS },
   async (request) => {
     if (!request.auth) {
-      throw new HttpsError("unauthenticated", "Must be authenticated");
+      throw new HttpsError('unauthenticated', 'Must be authenticated');
     }
 
     const uid = request.auth.uid;
     const data = request.data as RequestAlternateEmailData;
 
-    const emailLower = String(data?.email || "")
+    const emailLower = String(data?.email || '')
       .trim()
       .toLowerCase();
 
     if (!emailLower || !EMAIL_RE.test(emailLower)) {
-      throw new HttpsError("invalid-argument", "A valid email is required", {
-        reason: "invalid_format",
+      throw new HttpsError('invalid-argument', 'A valid email is required', {
+        reason: 'invalid_format',
       });
     }
 
-    const callerSnap = await db.collection("users").doc(uid).get();
+    const callerSnap = await db.collection('users').doc(uid).get();
     const callerData = callerSnap.data();
 
     // Multi-email identity is a first-class-member privilege only
@@ -50,49 +50,53 @@ export const requestAlternateEmail = onCall(
     // pending accounts cannot register alternate emails.
     if (!callerData?.isVerified) {
       throw new HttpsError(
-        "failed-precondition",
-        "Alternate emails are available to full members only",
-        { reason: "members_only" }
+        'failed-precondition',
+        'Alternate emails are available to full members only',
+        { reason: 'members_only' }
       );
     }
 
-    // Best-effort per-caller rate limit. The endpoint is authenticated so
-    // the enumeration surface is small, but this bounds probing of which
+    // Per-caller rate limit. The endpoint is authenticated so the
+    // enumeration surface is small, but this bounds probing of which
     // emails belong to SECiD accounts. Single-doc, no composite index.
+    // Atomic read-check-write via transaction (same pattern as
+    // public-job-submit.ts) so concurrent requests can't all pass.
     const RL_MAX = 5;
     const RL_WINDOW_MS = 10 * 60 * 1000;
-    const rlRef = db.collection("alternate_email_ratelimit").doc(uid);
-    const rlSnap = await rlRef.get();
-    const nowMs = Date.now();
-    const rl = rlSnap.exists ? rlSnap.data() : null;
-    if (
-      rl &&
-      nowMs - (rl.windowStart || 0) < RL_WINDOW_MS &&
-      (rl.count || 0) >= RL_MAX
-    ) {
+    const rlRef = db.collection('alternate_email_ratelimit').doc(uid);
+    const admitted = await db.runTransaction(async (tx) => {
+      const rlSnap = await tx.get(rlRef);
+      const nowMs = Date.now();
+      const rl = rlSnap.exists ? rlSnap.data() : null;
+      if (!rl || nowMs - (rl.windowStart || 0) >= RL_WINDOW_MS) {
+        tx.set(rlRef, { windowStart: nowMs, count: 1 });
+        return true;
+      }
+      if ((rl.count || 0) >= RL_MAX) {
+        return false;
+      }
+      tx.update(rlRef, { count: (rl.count || 0) + 1 });
+      return true;
+    });
+    if (!admitted) {
       throw new HttpsError(
-        "resource-exhausted",
-        "Too many attempts. Please try again later.",
-        { reason: "rate_limited" }
+        'resource-exhausted',
+        'Too many attempts. Please try again later.',
+        { reason: 'rate_limited' }
       );
-    }
-    if (!rl || nowMs - (rl.windowStart || 0) >= RL_WINDOW_MS) {
-      await rlRef.set({ windowStart: nowMs, count: 1 });
-    } else {
-      await rlRef.set({ count: (rl.count || 0) + 1 }, { merge: true });
     }
 
     // Reject if it equals the caller's own primary email.
     const callerPrimary = String(
-      callerData?.primaryEmail || callerData?.email || ""
+      callerData?.primaryEmail || callerData?.email || ''
     )
       .trim()
       .toLowerCase();
     if (callerPrimary && callerPrimary === emailLower) {
       throw new HttpsError(
-        "invalid-argument",
-        "That email is already your primary email",
-        { reason: "primary_email" }
+        'invalid-argument',
+        'That email is already your primary email',
+        { reason: 'primary_email' }
       );
     }
 
@@ -101,15 +105,15 @@ export const requestAlternateEmail = onCall(
     // generic success but do NOT create a token (no enumeration oracle).
     let alreadyClaimed = false;
 
-    const aliasSnap = await db.collection("email_alias").doc(emailLower).get();
+    const aliasSnap = await db.collection('email_alias').doc(emailLower).get();
     if (aliasSnap.exists) {
       alreadyClaimed = true;
     }
 
     if (!alreadyClaimed) {
       const primaryQuery = await db
-        .collection("users")
-        .where("email", "==", emailLower)
+        .collection('users')
+        .where('email', '==', emailLower)
         .limit(1)
         .get();
       if (!primaryQuery.empty && primaryQuery.docs[0].id !== uid) {
@@ -119,8 +123,8 @@ export const requestAlternateEmail = onCall(
 
     if (!alreadyClaimed) {
       const altQuery = await db
-        .collection("users")
-        .where("alternateEmails", "array-contains", emailLower)
+        .collection('users')
+        .where('alternateEmails', 'array-contains', emailLower)
         .limit(1)
         .get();
       if (!altQuery.empty && altQuery.docs[0].id !== uid) {
@@ -134,21 +138,21 @@ export const requestAlternateEmail = onCall(
       // truth instead of a misleading "we sent you a link". Audit the
       // attempt (server-only) to keep the reduced enumeration surface
       // accountable.
-      await db.collection("alternate_email_audit").add({
+      await db.collection('alternate_email_audit').add({
         uid,
         email: emailLower,
-        result: "already_in_use",
+        result: 'already_in_use',
         at: admin.firestore.FieldValue.serverTimestamp(),
       });
       return { ok: true, alreadyLinked: true };
     }
 
     // Create a single-use, time-boxed verification token.
-    const token = (crypto.randomUUID() + crypto.randomUUID()).replace(/-/g, "");
+    const token = (crypto.randomUUID() + crypto.randomUUID()).replace(/-/g, '');
     const now = Date.now();
 
     await db
-      .collection("alternate_email_tokens")
+      .collection('alternate_email_tokens')
       .doc(token)
       .set({
         canonicalUid: uid,
@@ -183,7 +187,7 @@ export const requestAlternateEmail = onCall(
 
     await sendEmail({
       to: emailLower,
-      subject: "Confirma tu correo alterno en SECiD",
+      subject: 'Confirma tu correo alterno en SECiD',
       html,
     });
 
@@ -199,18 +203,18 @@ export const confirmAlternateEmail = onCall(
   { cors: ALLOWED_CALLABLE_ORIGINS },
   async (request) => {
     if (!request.auth) {
-      throw new HttpsError("unauthenticated", "Must be authenticated");
+      throw new HttpsError('unauthenticated', 'Must be authenticated');
     }
 
     const uid = request.auth.uid;
     const data = request.data as ConfirmAlternateEmailData;
-    const token = String(data?.token || "").trim();
+    const token = String(data?.token || '').trim();
 
     if (!token) {
-      throw new HttpsError("invalid-argument", "A token is required");
+      throw new HttpsError('invalid-argument', 'A token is required');
     }
 
-    const tokenRef = db.collection("alternate_email_tokens").doc(token);
+    const tokenRef = db.collection('alternate_email_tokens').doc(token);
 
     // Pre-read token (outside the transaction) only to extract email +
     // canonicalUid so we can do the admin.auth() conflict check (which
@@ -218,18 +222,18 @@ export const confirmAlternateEmail = onCall(
     // and-consume happens inside the transaction below.
     const preReadSnap = await tokenRef.get();
     if (!preReadSnap.exists) {
-      throw new HttpsError("not-found", "Invalid verification token");
+      throw new HttpsError('not-found', 'Invalid verification token');
     }
     const preReadData = preReadSnap.data()!;
-    const emailLower = String(preReadData.email || "")
+    const emailLower = String(preReadData.email || '')
       .trim()
       .toLowerCase();
     const canonicalUid: string = preReadData.canonicalUid;
 
     if (request.auth.uid !== canonicalUid) {
       throw new HttpsError(
-        "permission-denied",
-        "This verification link belongs to a different account"
+        'permission-denied',
+        'This verification link belongs to a different account'
       );
     }
 
@@ -249,8 +253,8 @@ export const confirmAlternateEmail = onCall(
     }
     if (!conflictUid) {
       const primaryQuery = await db
-        .collection("users")
-        .where("email", "==", emailLower)
+        .collection('users')
+        .where('email', '==', emailLower)
         .limit(1)
         .get();
       if (!primaryQuery.empty && primaryQuery.docs[0].id !== canonicalUid) {
@@ -258,8 +262,8 @@ export const confirmAlternateEmail = onCall(
       }
     }
 
-    const canonicalRef = db.collection("users").doc(canonicalUid);
-    const aliasIndexRef = db.collection("email_alias").doc(emailLower);
+    const canonicalRef = db.collection('users').doc(canonicalUid);
+    const aliasIndexRef = db.collection('email_alias').doc(emailLower);
 
     // Atomic token consumption + state writes (B4). Two concurrent calls
     // with the same token previously could both pass the "used === true"
@@ -269,24 +273,24 @@ export const confirmAlternateEmail = onCall(
     const result = await db.runTransaction(async (tx) => {
       const tokenSnapTx = await tx.get(tokenRef);
       if (!tokenSnapTx.exists) {
-        throw new HttpsError("not-found", "Invalid verification token");
+        throw new HttpsError('not-found', 'Invalid verification token');
       }
       const tokenDataTx = tokenSnapTx.data()!;
       if (tokenDataTx.used === true) {
         throw new HttpsError(
-          "failed-precondition",
-          "This verification link has already been used"
+          'failed-precondition',
+          'This verification link has already been used'
         );
       }
       const expiresAtMs =
         tokenDataTx.expiresAt &&
-        typeof tokenDataTx.expiresAt.toMillis === "function"
+        typeof tokenDataTx.expiresAt.toMillis === 'function'
           ? tokenDataTx.expiresAt.toMillis()
           : 0;
       if (expiresAtMs && expiresAtMs < Date.now()) {
         throw new HttpsError(
-          "deadline-exceeded",
-          "This verification link has expired"
+          'deadline-exceeded',
+          'This verification link has expired'
         );
       }
 
@@ -304,19 +308,19 @@ export const confirmAlternateEmail = onCall(
       // single atomic commit.
       const canonicalSnapTx = await tx.get(canonicalRef);
       if (!canonicalSnapTx.exists) {
-        throw new HttpsError("not-found", "Canonical account not found");
+        throw new HttpsError('not-found', 'Canonical account not found');
       }
       if (!canonicalSnapTx.data()?.isVerified) {
         throw new HttpsError(
-          "failed-precondition",
-          "Alternate emails are available to full members only",
-          { reason: "members_only" }
+          'failed-precondition',
+          'Alternate emails are available to full members only',
+          { reason: 'members_only' }
         );
       }
       const existing: { email: string; verifiedAt: unknown }[] =
         canonicalSnapTx.data()?.alternateEmails || [];
       const deduped = existing.filter(
-        (e) => String(e?.email || "").toLowerCase() !== emailLower
+        (e) => String(e?.email || '').toLowerCase() !== emailLower
       );
       // Firestore forbids FieldValue.serverTimestamp() inside array
       // elements; use a real Timestamp so the array write succeeds.

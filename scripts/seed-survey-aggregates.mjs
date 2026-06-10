@@ -8,11 +8,14 @@
  * recompute outside the 6h schedule:
  *
  *   gcloud auth application-default login --account=contacto@secid.mx
- *   node scripts/seed-survey-aggregates.mjs
+ *   node scripts/seed-survey-aggregates.mjs            # dry-run
+ *   node scripts/seed-survey-aggregates.mjs --commit   # write
  */
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const admin = require('../functions/node_modules/firebase-admin');
+
+const COMMIT = process.argv.includes('--commit');
 
 if (!admin.apps.length) {
   admin.initializeApp({ projectId: 'secid-org' });
@@ -87,12 +90,15 @@ for (const d of surveys.docs) {
 // Per-field fallback to /users (matches the Cloud Function logic)
 for (const d of users.docs) {
   const x = d.data();
-  if (x.role && x.role !== 'member') continue;
+  // Explicit allowlist: only fold members into member stats. Legacy docs
+  // without a role are intentionally excluded (matches the Cloud Function).
+  if (x.role !== 'member') continue;
   const survey = surveyByUid.get(d.id);
   if (!survey) totalFallbackUsers++;
 
   if (!survey?.generation && x.generation) add(byGeneration, x.generation);
-  if (!survey?.academicLevel && x.academicLevel) add(byAcademicLevel, x.academicLevel);
+  if (!survey?.academicLevel && x.academicLevel)
+    add(byAcademicLevel, x.academicLevel);
   if (!Array.isArray(survey?.techStack) || survey.techStack.length === 0) {
     const skills = x.skills || x.profile?.skills;
     if (Array.isArray(skills)) {
@@ -105,9 +111,12 @@ for (const d of users.docs) {
   }
 }
 
-const generatedFrom = totalRespondents > 0
-  ? (totalRespondents < users.size ? 'mixed' : 'survey')
-  : 'user-profile-fallback';
+const generatedFrom =
+  totalRespondents > 0
+    ? totalRespondents < users.size
+      ? 'mixed'
+      : 'survey'
+    : 'user-profile-fallback';
 
 const adminPayload = {
   totalRespondents,
@@ -130,16 +139,42 @@ const adminPayload = {
   generatedFrom,
 };
 
+// Public doc: k-anonymity on EVERY dimension, and no totalFallbackUsers
+// (it leaks how many members lack a survey doc). Matches the Cloud Function.
 const publicPayload = {
   ...adminPayload,
   byIndustry: kAnon(byIndustry),
   bySeniority: kAnon(bySeniority),
   byJobFunction: kAnon(byJobFunction),
+  byWorkMode: kAnon(byWorkMode),
+  byGeneration: kAnon(byGeneration),
   byCountry: kAnon(byCountry),
   byAreaOfInterest: kAnon(byAreaOfInterest),
   byTechStack: kAnon(byTechStack),
+  byMentorship: kAnon(byMentorship),
+  byOpenToOpportunities: kAnon(byOpenToOpportunities),
   byReasonsForJoining: kAnon(byReasonsForJoining),
+  byAcademicLevel: kAnon(byAcademicLevel),
 };
+delete publicPayload.totalFallbackUsers;
+
+if (!COMMIT) {
+  console.log('🟡 DRY RUN — would write /survey_aggregates/{global, admin}:');
+  console.log('\n--- public (/survey_aggregates/global) ---');
+  console.log(
+    JSON.stringify(
+      { ...publicPayload, updatedAt: '<serverTimestamp>' },
+      null,
+      2
+    )
+  );
+  console.log('\n--- admin (/survey_aggregates/admin) ---');
+  console.log(
+    JSON.stringify({ ...adminPayload, updatedAt: '<serverTimestamp>' }, null, 2)
+  );
+  console.log('\nRe-run with --commit to write.');
+  process.exit(0);
+}
 
 await Promise.all([
   db.doc(AGG_PUBLIC).set(publicPayload),
@@ -151,10 +186,22 @@ console.log(`  totalRespondents   = ${totalRespondents}`);
 console.log(`  totalCompleted     = ${totalCompleted}`);
 console.log(`  totalFallbackUsers = ${totalFallbackUsers}`);
 console.log(`  generatedFrom      = ${generatedFrom}`);
-console.log(`  byTechStack keys   = ${Object.keys(adminPayload.byTechStack).length}`);
-console.log(`  byGeneration keys  = ${Object.keys(adminPayload.byGeneration).length}`);
-console.log(`  byAreaOfInterest   = ${Object.keys(adminPayload.byAreaOfInterest).length}`);
-console.log(`  byMentorship       = ${Object.keys(adminPayload.byMentorship).length}`);
-console.log(`  byAcademicLevel    = ${Object.keys(adminPayload.byAcademicLevel).length}`);
-console.log(`  byReasonsForJoining= ${Object.keys(adminPayload.byReasonsForJoining).length}`);
+console.log(
+  `  byTechStack keys   = ${Object.keys(adminPayload.byTechStack).length}`
+);
+console.log(
+  `  byGeneration keys  = ${Object.keys(adminPayload.byGeneration).length}`
+);
+console.log(
+  `  byAreaOfInterest   = ${Object.keys(adminPayload.byAreaOfInterest).length}`
+);
+console.log(
+  `  byMentorship       = ${Object.keys(adminPayload.byMentorship).length}`
+);
+console.log(
+  `  byAcademicLevel    = ${Object.keys(adminPayload.byAcademicLevel).length}`
+);
+console.log(
+  `  byReasonsForJoining= ${Object.keys(adminPayload.byReasonsForJoining).length}`
+);
 process.exit(0);
