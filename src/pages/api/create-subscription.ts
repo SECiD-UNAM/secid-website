@@ -1,6 +1,7 @@
 import {
   createSubscription,
   createCustomer,
+  verifyCustomerOwnership,
 } from '../../lib/stripe/stripe-server';
 import { SUBSCRIPTION_PLANS } from '../../lib/stripe/stripe-client';
 import {
@@ -68,6 +69,24 @@ export const POST: APIRoute = async ({ request }) => {
 
     let customerId = body.customerId;
 
+    // IDOR guard: a client-supplied customerId must belong to the caller,
+    // otherwise any authenticated user could create subscriptions against
+    // another member's Stripe customer.
+    if (customerId) {
+      const ownsCustomer =
+        !!auth.userId &&
+        (await verifyCustomerOwnership(customerId, auth.userId));
+      if (!ownsCustomer) {
+        return new Response(
+          JSON.stringify({ error: 'Customer does not belong to caller' }),
+          {
+            status: 403,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
+
     // Create customer if not provided
     if (!customerId && body.customerData) {
       try {
@@ -80,6 +99,9 @@ export const POST: APIRoute = async ({ request }) => {
             planId: body.planId,
             commissionType: body['commissionType'] || '',
             platform: 'secid',
+            // Bind the new customer to its creator so ownership checks
+            // (verifyCustomerOwnership) pass on subsequent requests.
+            firebaseUid: auth.userId ?? '',
           },
         });
         customerId = customer.id;

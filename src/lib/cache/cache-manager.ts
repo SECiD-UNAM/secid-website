@@ -64,7 +64,7 @@ class CacheManager {
         ? 'hits'
         : operation === 'miss'
           ? 'misses'
-          : `${operation  }s`
+          : `${operation}s`
     ]++;
     const total = this.stats.hits + this.stats.misses;
     this.stats.hitRate = total > 0 ? this.stats.hits / total : 0;
@@ -497,19 +497,21 @@ export function createCacheManager(
   }
 }
 
-// Singleton instances
-const cacheManagers = {
-  general: new CacheManager(),
-  jobs: new JobsCacheManager(),
-  users: new UsersCacheManager(),
-  events: new EventsCacheManager(),
-  search: new SearchCacheManager(),
-};
+// Singleton instances — created lazily on first access so importing this
+// module never constructs Redis clients at load time.
+type CacheManagerType = 'general' | 'jobs' | 'users' | 'events' | 'search';
+
+const cacheManagers: Partial<Record<CacheManagerType, CacheManager>> = {};
 
 export function getCacheManager(
-  type: keyof typeof cacheManagers = 'general'
+  type: CacheManagerType = 'general'
 ): CacheManager {
-  return cacheManagers[type];
+  let manager = cacheManagers[type];
+  if (!manager) {
+    manager = createCacheManager(type);
+    cacheManagers[type] = manager;
+  }
+  return manager;
 }
 
 export { CacheManager };

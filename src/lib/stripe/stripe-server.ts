@@ -1,14 +1,9 @@
-// @ts-nocheck
 // SERVER-ONLY Stripe module.
 //
 // This file imports the `stripe` Node SDK and reads STRIPE_SECRET_KEY, so it
 // MUST NOT be imported from any client/React island — doing so would bundle
 // the secret into browser JS. Browser/shared code imports `./stripe-client`
 // (publishable key + constants only), which has no Stripe SDK import.
-//
-// (@ts-nocheck retained: the Stripe SDK loose-typed `obj['prop']` access
-// pattern here predates this split; tightening it is a separate cleanup and
-// out of scope for the security fix that motivated the split.)
 import Stripe from 'stripe';
 import {
   SUBSCRIPTION_PLANS,
@@ -18,7 +13,37 @@ import {
   type InvoiceData,
 } from './stripe-client';
 
-const stripeSecretKey = import.meta.env.STRIPE_SECRET_KEY;
+const stripeSecretKey: string | undefined = import.meta.env.STRIPE_SECRET_KEY;
+
+// The SDK types only accept the latest pinned API version literal; we
+// intentionally stay on the acacia version the integration was built
+// against (e.g. top-level subscription period fields).
+const STRIPE_API_VERSION = '2024-12-18.acacia' as Stripe.LatestApiVersion;
+
+// Subscriptions on the pinned acacia API version still carry the billing
+// period at the top level (the Basil SDK types moved it onto items).
+type SubscriptionWithPeriod = Stripe.Subscription & {
+  current_period_end: number;
+};
+
+// Plans may optionally configure a dedicated annual price. The shared
+// SUBSCRIPTION_PLANS const does not declare it on every plan, so narrow here.
+interface PlanPriceIds {
+  priceId?: string;
+  annualPriceId?: string;
+}
+
+export interface UsageStats {
+  totalInvoices: number;
+  totalAmount: number;
+  activeSubscriptions: number;
+  subscriptions: Array<{
+    id: string;
+    status: Stripe.Subscription.Status;
+    planId: string | undefined;
+    currentPeriodEnd: Date;
+  }>;
+}
 
 // Lazy init so importing this module never throws at build/load time.
 let _stripe: Stripe | null = null;
@@ -29,7 +54,7 @@ export const getStripe = (): Stripe => {
       throw new Error('Stripe secret key is not configured');
     }
     _stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2024-12-18.acacia',
+      apiVersion: STRIPE_API_VERSION,
       typescript: true,
     });
   }
@@ -46,6 +71,31 @@ export const stripe: Stripe = new Proxy({} as Stripe, {
 });
 
 /**
+ * Verify that a Stripe customer belongs to the given Firebase user.
+ * Returns false when the customer is deleted, missing, or bound to a
+ * different (or no) Firebase UID — callers should respond 403 without
+ * leaking why.
+ */
+export async function verifyCustomerOwnership(
+  customerId: string,
+  firebaseUid: string
+): Promise<boolean> {
+  if (!customerId || !firebaseUid) {
+    return false;
+  }
+  try {
+    const customer = await stripe.customers.retrieve(customerId);
+    if (customer.deleted) {
+      return false;
+    }
+    return customer.metadata?.firebaseUid === firebaseUid;
+  } catch (error) {
+    console.error('Error verifying customer ownership:', error);
+    return false;
+  }
+}
+
+/**
  * Create a new customer in Stripe
  */
 export async function createCustomer(
@@ -54,7 +104,7 @@ export async function createCustomer(
   try {
     const customer = await stripe.customers.create({
       email: customerData.email,
-      name: customerData['name'],
+      name: customerData.name,
       address: customerData.address,
       metadata: {
         ...customerData.metadata,
@@ -77,11 +127,11 @@ export async function createSubscription(
   subscriptionData: SubscriptionData
 ): Promise<Stripe.Subscription> {
   try {
-    const plan = SUBSCRIPTION_PLANS[subscriptionData.planId];
+    const plan = SUBSCRIPTION_PLANS[subscriptionData.planId] as PlanPriceIds;
 
     if (!plan.priceId) {
       throw new Error(
-        `Price ID not configured for plan: ${subscriptionData['planId']}`
+        `Price ID not configured for plan: ${subscriptionData.planId}`
       );
     }
 
@@ -103,8 +153,8 @@ export async function createSubscription(
       ],
       metadata: {
         ...subscriptionData.metadata,
-        planId: subscriptionData['planId'],
-        commissionType: subscriptionData['commissionType'] || '',
+        planId: subscriptionData.planId,
+        commissionType: subscriptionData.commissionType || '',
         platform: 'secid',
       },
     });
@@ -166,7 +216,7 @@ export async function createInvoice(
     // Add IVA tax line item
     await stripe.invoiceItems.create({
       customer: invoiceData.customerId,
-      amount: Math.round(taxCalculation['iva'] * 100),
+      amount: Math.round(taxCalculation.iva * 100),
       currency: invoiceData.currency.toLowerCase(),
       description: 'IVA (16%)',
     });
@@ -180,7 +230,7 @@ export async function createInvoice(
       metadata: {
         ...invoiceData.metadata,
         subtotal: invoiceData.amount.toString(),
-        iva: taxCalculation['iva'].toString(),
+        iva: taxCalculation.iva.toString(),
         total: taxCalculation.total.toString(),
         platform: 'secid',
       },
@@ -205,7 +255,7 @@ export async function getCustomerSubscriptions(
       status: 'all',
     });
 
-    return subscriptions['data'];
+    return subscriptions.data;
   } catch (error) {
     console.error('Error fetching customer subscriptions:', error);
     throw new Error('Failed to fetch subscriptions');
@@ -242,21 +292,26 @@ export async function updateSubscription(
 ): Promise<Stripe.Subscription> {
   try {
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-    const newPlan = SUBSCRIPTION_PLANS[newPlanId];
+    const newPlan = SUBSCRIPTION_PLANS[newPlanId] as PlanPriceIds;
 
     if (!newPlan.priceId) {
       throw new Error(`Price ID not configured for plan: ${newPlanId}`);
     }
 
+    const currentItemId = subscription.items.data[0]?.id;
+    if (!currentItemId) {
+      throw new Error('Subscription has no items to update');
+    }
+
     return await stripe.subscriptions.update(subscriptionId, {
       items: [
         {
-          id: subscription.items.data?.[0].id,
+          id: currentItemId,
           price: newPlan.priceId,
         },
       ],
       metadata: {
-        ...subscription['metadata'],
+        ...subscription.metadata,
         planId: newPlanId,
       },
     });
@@ -292,7 +347,7 @@ export async function createCustomerPortalSession(
 export async function getUsageStats(
   customerId: string,
   period: 'month' | 'year' = 'month'
-) {
+): Promise<UsageStats> {
   try {
     const now = new Date();
     const startDate = new Date();
@@ -316,18 +371,20 @@ export async function getUsageStats(
     );
 
     return {
-      totalInvoices: invoices['data'].length,
+      totalInvoices: invoices.data.length,
       totalAmount:
-        invoices['data'].reduce(
+        invoices.data.reduce(
           (sum, invoice) => sum + (invoice.amount_paid || 0),
           0
         ) / 100,
       activeSubscriptions: activeSubscriptions.length,
       subscriptions: activeSubscriptions.map((sub) => ({
         id: sub.id,
-        status: sub['status'],
-        planId: sub['metadata'].planId,
-        currentPeriodEnd: new Date(sub['current_period_end'] * 1000),
+        status: sub.status,
+        planId: sub.metadata.planId,
+        currentPeriodEnd: new Date(
+          (sub as SubscriptionWithPeriod).current_period_end * 1000
+        ),
       })),
     };
   } catch (error) {
@@ -339,6 +396,7 @@ export async function getUsageStats(
 export default {
   stripe,
   getStripe,
+  verifyCustomerOwnership,
   createCustomer,
   createSubscription,
   createPaymentIntent,

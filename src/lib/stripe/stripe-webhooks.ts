@@ -74,6 +74,8 @@ const webhookHandlers: Record<string, WebhookHandler> = {
 
 /**
  * Record a webhook event in Firestore for auditing.
+ * Keyed by the Stripe event id so redelivered events overwrite their own
+ * audit doc instead of appending duplicates.
  * Fires-and-forgets so a logging failure never blocks the handler.
  */
 async function logWebhookEvent(
@@ -82,7 +84,7 @@ async function logWebhookEvent(
   errorMessage?: string
 ): Promise<void> {
   try {
-    await addDoc(webhookEventsRef, {
+    await setDoc(doc(webhookEventsRef, event.id), {
       eventId: event.id,
       eventType: event.type,
       status,
@@ -112,6 +114,16 @@ async function findFirebaseUidByCustomerId(
     return (customerDoc.data().firebaseUid as string) ?? null;
   }
   return null;
+}
+
+/**
+ * Idempotency guard: check whether a transaction doc was already written for
+ * a given Stripe event id (webhooks can be redelivered).
+ */
+async function transactionExistsForEvent(eventId: string): Promise<boolean> {
+  const q = query(transactionsRef, where('stripeEventId', '==', eventId));
+  const snapshot = await getDocs(q);
+  return !snapshot.empty;
 }
 
 /**
@@ -214,6 +226,15 @@ async function handleSubscriptionCreated(event: WebhookEvent): Promise<void> {
   log.info('Subscription created', { id: subscription.id });
 
   try {
+    // Idempotency: skip if this subscription is already stored (redelivery)
+    const existingDocId = await findSubscriptionDocId(subscription.id);
+    if (existingDocId) {
+      log.info('Subscription already stored. Skipping duplicate create.', {
+        stripeSubscriptionId: subscription.id,
+      });
+      return;
+    }
+
     const firebaseUid = await findFirebaseUidByCustomerId(customerId);
     const tier = derivePlanTier(subscription.metadata);
 
@@ -428,6 +449,15 @@ async function handleInvoicePaymentSucceeded(
   log.info('Invoice payment succeeded', { id: invoice.id });
 
   try {
+    // Idempotency: skip if this event was already processed (redelivery)
+    if (await transactionExistsForEvent(event.id)) {
+      log.info('Transaction already recorded for event. Skipping duplicate.', {
+        eventId: event.id,
+        invoiceId: invoice.id,
+      });
+      return;
+    }
+
     // Record the transaction
     const firebaseUid = await findFirebaseUidByCustomerId(customerId);
 
@@ -438,6 +468,7 @@ async function handleInvoicePaymentSucceeded(
       amount: (invoice.amount_paid ?? 0) / 100,
       currency: invoice.currency ?? 'mxn',
       description: `Invoice ${invoice.number ?? invoice.id}`,
+      stripeEventId: event.id,
       stripeInvoiceId: invoice.id,
       stripePaymentIntentId:
         typeof invoice.payment_intent === 'string'
@@ -498,6 +529,16 @@ async function handleInvoicePaymentFailed(event: WebhookEvent): Promise<void> {
   log.info('Invoice payment failed', { id: invoice.id });
 
   try {
+    // Idempotency: skip if this event was already processed (redelivery) —
+    // also prevents double-incrementing paymentFailureCount below.
+    if (await transactionExistsForEvent(event.id)) {
+      log.info('Transaction already recorded for event. Skipping duplicate.', {
+        eventId: event.id,
+        invoiceId: invoice.id,
+      });
+      return;
+    }
+
     // Record the failed transaction
     const firebaseUid = await findFirebaseUidByCustomerId(customerId);
 
@@ -508,6 +549,7 @@ async function handleInvoicePaymentFailed(event: WebhookEvent): Promise<void> {
       amount: (invoice.amount_due ?? 0) / 100,
       currency: invoice.currency ?? 'mxn',
       description: `Failed payment for invoice ${invoice.number ?? invoice.id}`,
+      stripeEventId: event.id,
       stripeInvoiceId: invoice.id,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
@@ -676,6 +718,15 @@ async function handlePaymentIntentSucceeded(
   log.info('Payment intent succeeded', { id: paymentIntent.id });
 
   try {
+    // Idempotency: skip if this event's transaction was already recorded
+    if (await transactionExistsForEvent(event.id)) {
+      log.info('Transaction already recorded for event. Skipping duplicate.', {
+        eventId: event.id,
+        paymentIntentId: paymentIntent.id,
+      });
+      return;
+    }
+
     const firebaseUid = customerId
       ? await findFirebaseUidByCustomerId(customerId)
       : null;
@@ -690,6 +741,7 @@ async function handlePaymentIntentSucceeded(
       amount: paymentIntent.amount / 100,
       currency: paymentIntent.currency,
       description: metadata.description ?? `Payment ${paymentIntent.id}`,
+      stripeEventId: event.id,
       stripePaymentIntentId: paymentIntent.id,
       metadata: {
         paymentType,
@@ -724,6 +776,15 @@ async function handlePaymentIntentFailed(event: WebhookEvent): Promise<void> {
   log.info('Payment intent failed', { id: paymentIntent.id });
 
   try {
+    // Idempotency: skip if this event's transaction was already recorded
+    if (await transactionExistsForEvent(event.id)) {
+      log.info('Transaction already recorded for event. Skipping duplicate.', {
+        eventId: event.id,
+        paymentIntentId: paymentIntent.id,
+      });
+      return;
+    }
+
     const firebaseUid = customerId
       ? await findFirebaseUidByCustomerId(customerId)
       : null;
@@ -735,6 +796,7 @@ async function handlePaymentIntentFailed(event: WebhookEvent): Promise<void> {
       amount: paymentIntent.amount / 100,
       currency: paymentIntent.currency,
       description: `Failed payment ${paymentIntent.id}`,
+      stripeEventId: event.id,
       stripePaymentIntentId: paymentIntent.id,
       failureMessage:
         paymentIntent.last_payment_error?.message ?? 'Unknown failure',

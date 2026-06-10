@@ -84,6 +84,36 @@ function validateRequest(
   };
 }
 
+const UPSTREAM_FETCH_TIMEOUT_MS = 5000;
+const IMAGE_CONTENT_TYPE_RE = /^image\//;
+
+/** Fetch with an AbortController timeout so a slow upstream can't hang the request. */
+async function fetchWithTimeout(url: string): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(),
+    UPSTREAM_FETCH_TIMEOUT_MS
+  );
+  try {
+    return await fetch(url, { signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+/**
+ * Validate the upstream response is actually an image. Returns the
+ * normalized content type, or null when the response must be rejected.
+ */
+function imageContentTypeOf(response: Response): string | null {
+  const contentType = response.headers.get('content-type');
+  if (!contentType) {
+    // No header — both upstreams serve PNG by default
+    return 'image/png';
+  }
+  return IMAGE_CONTENT_TYPE_RE.test(contentType) ? contentType : null;
+}
+
 async function fetchLogoImage(
   domain: string
 ): Promise<{ buffer: ArrayBuffer; contentType: string }> {
@@ -93,10 +123,10 @@ async function fetchLogoImage(
   if (logoDevToken) {
     try {
       const logoDevUrl = `https://img.logo.dev/${domain}?token=${logoDevToken}&format=png`;
-      const response = await fetch(logoDevUrl);
-      if (response.ok) {
+      const response = await fetchWithTimeout(logoDevUrl);
+      const contentType = response.ok ? imageContentTypeOf(response) : null;
+      if (response.ok && contentType) {
         const buffer = await response.arrayBuffer();
-        const contentType = response.headers.get('content-type') || 'image/png';
         return { buffer, contentType };
       }
     } catch (error) {
@@ -108,14 +138,19 @@ async function fetchLogoImage(
   }
 
   const googleUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
-  const response = await fetch(googleUrl);
+  const response = await fetchWithTimeout(googleUrl);
   if (!response.ok) {
     throw new Error(
       `Failed to fetch logo from any source for domain: ${domain}`
     );
   }
+  const contentType = imageContentTypeOf(response);
+  if (!contentType) {
+    throw new Error(
+      `Upstream returned a non-image response for domain: ${domain}`
+    );
+  }
   const buffer = await response.arrayBuffer();
-  const contentType = response.headers.get('content-type') || 'image/png';
   return { buffer, contentType };
 }
 

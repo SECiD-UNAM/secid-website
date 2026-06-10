@@ -1,4 +1,7 @@
-import { createInvoice } from '../../lib/stripe/stripe-server';
+import {
+  createInvoice,
+  verifyCustomerOwnership,
+} from '../../lib/stripe/stripe-server';
 import {
   calculateMexicanTaxes,
   validateRFC,
@@ -65,6 +68,22 @@ export const POST: APIRoute = async ({ request }) => {
         JSON.stringify({ error: 'Customer ID is required' }),
         {
           status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // IDOR guard: the client-supplied customerId must belong to the caller,
+    // otherwise any authenticated user could create invoices against another
+    // member's Stripe customer.
+    const ownsCustomer =
+      !!auth.userId &&
+      (await verifyCustomerOwnership(body.customerId, auth.userId));
+    if (!ownsCustomer) {
+      return new Response(
+        JSON.stringify({ error: 'Customer does not belong to caller' }),
+        {
+          status: 403,
           headers: { 'Content-Type': 'application/json' },
         }
       );

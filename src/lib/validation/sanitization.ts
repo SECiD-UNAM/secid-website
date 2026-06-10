@@ -134,7 +134,7 @@ export function sanitizeHtml(
     ALLOWED_TAGS: allowedTags as string[],
     ALLOWED_ATTR: Object.values(allowedAttributes).flat(),
     ALLOWED_URI_REGEXP:
-      /^(?:(?:(?:f|ht)tps?|mailto):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i,
+      /^(?:(?:(?:f|ht)tps?|mailto):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i,
     ADD_ATTR: ['target'],
     FORBID_ATTR: ['style', 'onclick', 'onerror', 'onload'],
     FORBID_TAGS: [
@@ -177,6 +177,8 @@ export function sanitizeText(
   let sanitized = text;
 
   // Remove null bytes and other control characters except newlines and tabs
+  // Intentional control-character strip — the control chars in the class are the point.
+  // eslint-disable-next-line no-control-regex
   sanitized = sanitized.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
 
   // Handle newlines
@@ -236,10 +238,8 @@ export function sanitizeUrl(url: string): string {
   );
 
   if (!hasValidScheme) {
-    // Prepend https:// if no scheme is present and it looks like a URL
-    if (sanitized.includes('.') && !sanitized.includes(' ')) {
-      return `https://${sanitized}`;
-    }
+    // Do NOT guess-prepend https:// to arbitrary dotted strings — that turns
+    // non-URL input (e.g. "evil.example") into a live link. Reject instead.
     return '';
   }
 
@@ -252,7 +252,7 @@ export function sanitizeUrl(url: string): string {
 export function sanitizePhone(phone: string): string {
   return phone
     .trim()
-    .replace(/[^\d+\-\s\(\)]/g, '') // Only allow digits, +, -, spaces, parentheses
+    .replace(/[^\d+\-\s()]/g, '') // Only allow digits, +, -, spaces, parentheses
     .substring(0, SanitizationConfig.maxLengths.phone);
 }
 
@@ -261,10 +261,10 @@ export function sanitizePhone(phone: string): string {
  */
 export function sanitizeFilename(filename: string): string {
   // Remove path separators and other dangerous characters
-  let sanitized = filename.replace(/[\/\\:*?"<>|]/g, '');
+  let sanitized = filename.replace(/[/\\:*?"<>|]/g, '');
 
   // Remove leading/trailing dots and spaces
-  sanitized = sanitized.replace(/^[\.\s]+|[\.\s]+$/g, '');
+  sanitized = sanitized.replace(/^[.\s]+|[.\s]+$/g, '');
 
   // Limit length
   const maxLength = 255;
@@ -416,7 +416,7 @@ export function preventXSS(input: string): string {
  */
 export function sanitizeCSRFToken(token: string): string {
   // CSRF tokens should only contain alphanumeric characters and hyphens
-  return token.replace(/[^a-zA-Z0-9\-]/g, '').substring(0, 100);
+  return token.replace(/[^a-zA-Z0-9-]/g, '').substring(0, 100);
 }
 
 /**
@@ -450,7 +450,7 @@ export function sanitizeForDatabase(input: any): any {
  */
 export function sanitizeRateLimitKey(key: string): string {
   return key
-    .replace(/[^\w:\-\.]/g, '') // Only allow word chars, colons, hyphens, dots
+    .replace(/[^\w:\-.]/g, '') // Only allow word chars, colons, hyphens, dots
     .substring(0, 100); // Limit length
 }
 

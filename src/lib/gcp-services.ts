@@ -3,14 +3,28 @@
  * Wraps Firebase Cloud Functions for Google Admin Groups management
  */
 
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import {
+  getFunctions,
+  httpsCallable,
+  type Functions,
+  type HttpsCallable,
+} from 'firebase/functions';
 
-const functions = getFunctions();
+// Lazy init so importing this module never touches Firebase at load time
+// (getFunctions() requires an initialized app and would throw during SSR/build).
+let _functions: Functions | null = null;
 
-// Cloud Function callables
-const syncGroupMembershipFn = httpsCallable(functions, 'syncGroupMembership');
-const updateMemberGroupsFn = httpsCallable(functions, 'updateMemberGroups');
-const getMemberGroupListFn = httpsCallable(functions, 'getMemberGroupList');
+function getFunctionsInstance(): Functions {
+  if (!_functions) {
+    _functions = getFunctions();
+  }
+  return _functions;
+}
+
+// Cloud Function callables (created on first use, never at import time)
+function getCallable(name: string): HttpsCallable {
+  return httpsCallable(getFunctionsInstance(), name);
+}
 
 export interface GroupData {
   name: string;
@@ -42,7 +56,7 @@ export interface MemberGroupsResult {
  * Fetch all Google Groups and their members (admin-only)
  */
 export async function syncGroupMembership(): Promise<GroupSyncResult> {
-  const result = await syncGroupMembershipFn();
+  const result = await getCallable('syncGroupMembership')();
   return result.data as GroupSyncResult;
 }
 
@@ -54,7 +68,7 @@ export async function updateMemberGroups(
   addToGroups?: string[],
   removeFromGroups?: string[]
 ): Promise<UpdateGroupsResult> {
-  const result = await updateMemberGroupsFn({
+  const result = await getCallable('updateMemberGroups')({
     memberEmail,
     addToGroups,
     removeFromGroups,
@@ -68,7 +82,7 @@ export async function updateMemberGroups(
 export async function getMemberGroupList(
   memberEmail: string
 ): Promise<MemberGroupsResult> {
-  const result = await getMemberGroupListFn({ memberEmail });
+  const result = await getCallable('getMemberGroupList')({ memberEmail });
   return result.data as MemberGroupsResult;
 }
 

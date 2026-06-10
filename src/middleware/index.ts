@@ -19,8 +19,15 @@ let securityManager: any = null;
 try {
   securityManager = createSecurityManagerFromEnv();
 } catch (error) {
-  console.warn('Security manager initialization failed:', error);
-  console.warn('Some security features may be disabled');
+  // In production a missing security layer is fatal — fail the boot rather
+  // than silently serving guarded routes with a 503 fallback.
+  if (process.env.NODE_ENV === 'production') {
+    throw error;
+  }
+  // Dev: log without the raw error contents (it can echo env/config values).
+  console.error(
+    'Security manager initialization failed; guarded routes will fail closed. Check security-related environment configuration.'
+  );
 }
 
 /**

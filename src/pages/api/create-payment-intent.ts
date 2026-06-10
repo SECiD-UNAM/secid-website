@@ -1,4 +1,7 @@
-import { createPaymentIntent } from '../../lib/stripe/stripe-server';
+import {
+  createPaymentIntent,
+  verifyCustomerOwnership,
+} from '../../lib/stripe/stripe-server';
 import {
   SUBSCRIPTION_PLANS,
   calculateMexicanTaxes,
@@ -31,6 +34,24 @@ export const POST: APIRoute = async ({ request }) => {
 
     const currency = body.currency || 'mxn';
     const customerId = body.customerId;
+
+    // IDOR guard: a client-supplied customerId must belong to the caller,
+    // otherwise any authenticated user could charge/attach to another
+    // member's Stripe customer.
+    if (customerId) {
+      const ownsCustomer =
+        !!auth.userId &&
+        (await verifyCustomerOwnership(customerId, auth.userId));
+      if (!ownsCustomer) {
+        return new Response(
+          JSON.stringify({ error: 'Customer does not belong to caller' }),
+          {
+            status: 403,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
 
     // Amount is always derived server-side from planId — never trust client
     if (!body.planId) {
