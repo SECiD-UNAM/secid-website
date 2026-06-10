@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useBeta } from '@/hooks/useBeta';
@@ -67,7 +67,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   const userTierRank = isVerified ? 2 : emailVerified ? 1 : 0;
   const tierRank = (t?: 'basic' | 'full') =>
     t === 'full' ? 2 : t === 'basic' ? 1 : 0;
-  const t = useTranslations(lang);
+  const _t = useTranslations(lang);
   const isBeta = useBeta();
 
   // Display-only toggle for hiding admin nav during demos. No security function.
@@ -77,6 +77,17 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   });
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Reuse a single AudioContext across toggles; browsers cap how many can
+  // exist at once. Closed on unmount.
+  const audioCtxRef = useRef<AudioContext | null>(null);
+
+  useEffect(() => {
+    return () => {
+      audioCtxRef.current?.close().catch(() => {});
+      audioCtxRef.current = null;
+    };
+  }, []);
+
   const onSettingsPointerDown = useCallback(() => {
     longPressTimer.current = setTimeout(() => {
       setShowAdminNav((prev) => {
@@ -84,7 +95,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
         sessionStorage.setItem('secid-admin-mode', String(next));
         // Play toggle sound
         try {
-          const ctx = new AudioContext();
+          const ctx = (audioCtxRef.current ??= new AudioContext());
           if (next) {
             // Activate: ascending two-tone chime
             [440, 660].forEach((freq, i) => {
@@ -304,11 +315,11 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     const target = href.replace(/\/$/, '');
     if (path === target) return true;
     // Only match as prefix if no more-specific sibling matches
-    if (path.startsWith(`${target  }/`)) {
+    if (path.startsWith(`${target}/`)) {
       return !allHrefs.some(
         (other) =>
           other !== href &&
-          other.startsWith(`${target  }/`) &&
+          other.startsWith(`${target}/`) &&
           path.startsWith(other.replace(/\/$/, ''))
       );
     }

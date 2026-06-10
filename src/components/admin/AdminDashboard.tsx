@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -80,9 +80,18 @@ export const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Calculate date ranges
-  const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  // Calculate date ranges once per mount. Fresh Date objects created on
+  // every render were in the effect deps and caused an infinite
+  // re-render/re-fetch loop.
+  const dateRangesRef = useRef<{ now: Date; startOfMonth: Date } | null>(null);
+  if (!dateRangesRef.current) {
+    const mountedAt = new Date();
+    dateRangesRef.current = {
+      now: mountedAt,
+      startOfMonth: new Date(mountedAt.getFullYear(), mountedAt.getMonth(), 1),
+    };
+  }
+  const { now, startOfMonth } = dateRangesRef.current;
 
   useEffect(() => {
     if (authLoading) return;
@@ -165,12 +174,15 @@ export const AdminDashboard: React.FC = () => {
       try {
         const forumsRef = collection(db, 'forums');
         const forumsSnapshot = await getDocs(forumsRef);
-        // Count posts across all forum subcollections
-        for (const forumDoc of forumsSnapshot.docs) {
-          const postsRef = collection(db, 'forums', forumDoc.id, 'posts');
-          const postsSnapshot = await getDocs(postsRef);
-          totalForumPosts += postsSnapshot.size;
-        }
+        // Count posts across all forum subcollections (in parallel)
+        const postCounts = await Promise.all(
+          forumsSnapshot.docs.map(async (forumDoc) => {
+            const postsRef = collection(db, 'forums', forumDoc.id, 'posts');
+            const postsSnapshot = await getDocs(postsRef);
+            return postsSnapshot.size;
+          })
+        );
+        totalForumPosts = postCounts.reduce((sum, count) => sum + count, 0);
       } catch (err) {
         console.warn('Error loading forum stats:', err);
       }
@@ -245,14 +257,9 @@ export const AdminDashboard: React.FC = () => {
     return () => {
       unsubscribeActivity();
     };
-  }, [isAdmin, startOfMonth, now]);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat(language === 'es' ? 'es-MX' : 'en-US', {
-      style: 'currency',
-      currency: 'MXN',
-    }).format(amount);
-  };
+    // `now`/`startOfMonth` come from a ref and are intentionally stable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin, authLoading]);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat(language === 'es' ? 'es-MX' : 'en-US', {
@@ -356,8 +363,8 @@ export const AdminDashboard: React.FC = () => {
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
             {language === 'es'
-              ? `Bienvenido de vuelta, ${  userProfile?.firstName}`
-              : `Welcome back, ${  userProfile?.firstName}`}
+              ? `Bienvenido de vuelta, ${userProfile?.firstName}`
+              : `Welcome back, ${userProfile?.firstName}`}
           </p>
         </div>
         <div
@@ -428,9 +435,7 @@ export const AdminDashboard: React.FC = () => {
                 )}
               </div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {language === 'es'
-                  ? 'Click para revisar'
-                  : 'Click to review'}
+                {language === 'es' ? 'Click para revisar' : 'Click to review'}
               </p>
             </div>
             <div

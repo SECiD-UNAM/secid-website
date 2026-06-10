@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,6 +8,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   sendEmailVerification,
+  type User,
 } from 'firebase/auth';
 import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -124,6 +124,9 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
   const [uploadProgress, setUploadProgress] = useState(false);
   const [matchChecking, setMatchChecking] = useState(false);
   const [matchFound, setMatchFound] = useState(false);
+  // Authenticated user, kept in sync by the auth listener below. The
+  // survey step needs the uid after account creation.
+  const [user, setUser] = useState<User | null>(null);
 
   const accountForm = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
@@ -170,6 +173,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
     auth.authStateReady().then(() => {
       if (cancelled) return;
       const advance = () => {
+        setUser(auth.currentUser);
         if (auth.currentUser) {
           setStep((current) => (current === 'account' ? 'type' : current));
         }
@@ -280,8 +284,11 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
     const message = err.message || '';
 
     // Check translations first
-    if (code && t.auth?.errors?.[code]) {
-      return t.auth.errors[code];
+    const translatedError = code
+      ? (t.auth?.errors as Record<string, string> | undefined)?.[code]
+      : undefined;
+    if (translatedError) {
+      return translatedError;
     }
 
     // Catch configuration errors that may come as auth/internal-error
@@ -497,7 +504,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         companyWebsite: data.companyWebsite || '',
       });
       setStep('survey');
-    } catch (err) {
+    } catch {
       setError(
         lang === 'es'
           ? 'Error al registrar. Inténtalo de nuevo.'

@@ -30,6 +30,7 @@ import {
   popularSearches,
   searchPreferences,
 } from '@/lib/search/search-analytics';
+import { getSearchTranslations } from '@/i18n/search-translations';
 
 // Action types
 type SearchAction =
@@ -303,7 +304,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
 
         const suggestions: SearchSuggestion[] = [
           ...response.suggestions,
-          ...response?.results?.slice(0, 3).map((result) => ({
+          ...(response.results ?? []).slice(0, 3).map((result) => ({
             text: result.title,
             type: 'query' as const,
             score: result.score,
@@ -380,7 +381,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         let mimeType: string;
 
         switch (config.format) {
-          case 'csv':
+          case 'csv': {
             const headers = Object.keys(dataToExport?.[0] || {});
             const csvRows = [
               headers['join'](','),
@@ -393,6 +394,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
             content = csvRows.join('\n');
             mimeType = 'text/csv';
             break;
+          }
 
           case 'json':
             content = JSON.stringify(dataToExport, null, 2);
@@ -438,14 +440,22 @@ export const useSearch = () => {
   return context;
 };
 
-// Custom hook for search translations
-export const useSearchTranslations = () => {
-  // This would integrate with the existing useTranslations hook
-  // For now, returning a simple function
+// Custom hook for search translations — resolves dot-notation keys
+// (e.g. 'search.results.title') against the per-locale search strings.
+export const useSearchTranslations = (lang: 'es' | 'en' = 'es') => {
+  const translations = getSearchTranslations(lang);
+
   return (key: string, fallback: string = '') => {
-    // In a real implementation, this would use the translation system
-    // and return the appropriate translation based on current language
-    return fallback || key;
+    const value = key
+      .split('.')
+      .reduce<unknown>(
+        (acc, part) =>
+          acc && typeof acc === 'object'
+            ? (acc as Record<string, unknown>)[part]
+            : undefined,
+        translations
+      );
+    return typeof value === 'string' ? value : fallback || key;
   };
 };
 

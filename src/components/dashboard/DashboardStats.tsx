@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import {
   BriefcaseIcon,
@@ -37,7 +37,8 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
         // Fetch job applications count
         const applicationsQuery = query(
           collection(db, 'applications'),
-          where('applicantId', '==', user.uid)
+          where('applicantId', '==', user.uid),
+          limit(50)
         );
         const applicationsSnapshot = await getDocs(applicationsQuery);
         const applicationsCount = applicationsSnapshot.size;
@@ -45,7 +46,8 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
         // Fetch registered events count
         const eventsQuery = query(
           collection(db, 'eventRegistrations'),
-          where('userId', '==', user.uid)
+          where('userId', '==', user.uid),
+          limit(50)
         );
         const eventsSnapshot = await getDocs(eventsQuery);
         const eventsCount = eventsSnapshot.size;

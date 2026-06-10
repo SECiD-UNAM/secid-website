@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase';
@@ -10,18 +9,14 @@ import {
   limit,
   startAfter,
   where,
-  doc,
-  updateDoc,
   getDocs,
   DocumentSnapshot,
-  Timestamp,
 } from 'firebase/firestore';
 import {
   Users,
   Search,
   Filter,
   Download,
-  Eye,
   UserCheck,
   UserX,
   Crown,
@@ -383,11 +378,9 @@ export const DirectoryManagement: React.FC = () => {
 
     if (rows.length === 0) return;
 
-    const csvContent =
-      `data:text/csv;charset=utf-8,${ 
-      Object.keys(rows[0]).join(',') 
-      }\n${ 
-      rows.map((r) => Object.values(r).join(',')).join('\n')}`;
+    const csvContent = `data:text/csv;charset=utf-8,${Object.keys(
+      rows[0] as Record<string, unknown>
+    ).join(',')}\n${rows.map((r) => Object.values(r).join(',')).join('\n')}`;
 
     const link = document.createElement('a');
     link.setAttribute('href', encodeURI(csvContent));

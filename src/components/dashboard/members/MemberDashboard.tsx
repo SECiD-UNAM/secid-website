@@ -27,13 +27,15 @@ interface MemberDashboardProps {
 export const MemberDashboard: React.FC<MemberDashboardProps> = ({
   lang = 'es',
 }) => {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
   const [statistics, setStatistics] = useState<MemberStatisticsData | null>(
     null
   );
   const [stats, setStats] = useState<MemberStats | null>(null);
   const [members, setMembers] = useState<MemberProfile[]>([]);
+  const [membersLoading, setMembersLoading] = useState(false);
+  const [membersLoaded, setMembersLoaded] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,16 +47,13 @@ export const MemberDashboard: React.FC<MemberDashboardProps> = ({
     try {
       setLoading(true);
       setError(null);
-      const [statisticsData, statsData, membersData, companiesData] =
-        await Promise.all([
-          getMemberStatistics(),
-          getMemberStats(),
-          getMemberProfiles({ limit: 200 }),
-          getCompaniesWithMembers(),
-        ]);
+      const [statisticsData, statsData, companiesData] = await Promise.all([
+        getMemberStatistics(),
+        getMemberStats(),
+        getCompaniesWithMembers(),
+      ]);
       setStatistics(statisticsData);
       setStats(statsData);
-      setMembers(membersData);
       setCompanies(companiesData);
     } catch (err) {
       console.error('Error loading dashboard data:', err);
@@ -68,9 +67,30 @@ export const MemberDashboard: React.FC<MemberDashboardProps> = ({
     }
   }, [lang]);
 
+  // Member profiles are heavy (up to 200 docs) — only fetch them when the
+  // members tab is actually opened.
+  const loadMembers = useCallback(async () => {
+    try {
+      setMembersLoading(true);
+      const membersData = await getMemberProfiles({ limit: 200 });
+      setMembers(membersData);
+      setMembersLoaded(true);
+    } catch (err) {
+      console.error('Error loading member profiles:', err);
+    } finally {
+      setMembersLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    if (activeTab === 'members' && !membersLoaded && !membersLoading) {
+      loadMembers();
+    }
+  }, [activeTab, membersLoaded, membersLoading, loadMembers]);
 
   if (loading) {
     return (
@@ -128,14 +148,22 @@ export const MemberDashboard: React.FC<MemberDashboardProps> = ({
       {activeTab === 'overview' && statistics && stats && (
         <OverviewTab statistics={statistics} stats={stats} lang={lang} />
       )}
-      {activeTab === 'members' && (
-        <MembersTab
-          members={members}
-          filters={filters}
-          onFiltersChange={setFilters}
-          lang={lang}
-        />
-      )}
+      {activeTab === 'members' &&
+        (membersLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary-600"></div>
+            <span className="ml-3 text-gray-600 dark:text-gray-400">
+              {lang === 'es' ? 'Cargando miembros...' : 'Loading members...'}
+            </span>
+          </div>
+        ) : (
+          <MembersTab
+            members={members}
+            filters={filters}
+            onFiltersChange={setFilters}
+            lang={lang}
+          />
+        ))}
       {activeTab === 'insights' && statistics && (
         <InsightsTab
           statistics={statistics}

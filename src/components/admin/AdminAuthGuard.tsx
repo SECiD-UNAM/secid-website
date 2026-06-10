@@ -44,8 +44,9 @@ export const AdminAuthGuard: React.FC<AdminAuthGuardProps> = ({
       const securityChecks = [
         // Check if user account is active
         userProfile.isActive !== false,
-        // Check if user is verified (optional, depending on requirements)
-        userProfile.isVerified !== false,
+        // Check if user is verified — must be explicitly true (an absent
+        // field must not grant access)
+        userProfile.isVerified === true,
         // Check if user has the required role
         hasRequiredRole,
       ];

@@ -71,7 +71,8 @@ interface Props {
 /* ------------------------------------------------------------------ */
 
 export const CompanyManagement: React.FC<Props> = ({ lang }) => {
-  const { user } = useAuth();
+  const { user, isAdmin, isModerator, loading: authLoading } = useAuth();
+  const canModerate = isAdmin || isModerator;
 
   /* ---- data state ---- */
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -502,6 +503,26 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
     activeTab === 'review' ? pendingCompanies : companies;
 
   /* ---- renders ---- */
+
+  if (!authLoading && !canModerate) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <BuildingOffice2Icon className="mx-auto mb-4 h-16 w-16 text-red-500" />
+          <h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
+            {t(lang, 'Acceso Denegado', 'Access Denied')}
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            {t(
+              lang,
+              'Se requieren privilegios de moderador para acceder a esta página.',
+              'Moderator privileges are required to access this page.'
+            )}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

@@ -1,6 +1,33 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTranslations } from '@/hooks/useTranslations';
+
+const routeCopy = {
+  es: {
+    loading: 'Cargando...',
+    authRequiredTitle: 'Autenticación requerida',
+    authRequiredMessage: 'Inicia sesión para acceder a esta página.',
+    signIn: 'Iniciar sesión',
+    verificationTitle: 'Verificación UNAM requerida',
+    verificationMessage: 'Verifica tu correo UNAM para acceder a esta función.',
+    completeVerification: 'Completar verificación',
+    accessDeniedTitle: 'Acceso denegado',
+    accessDeniedMessage: 'No tienes permiso para acceder a esta página.',
+    goToDashboard: 'Ir al panel',
+  },
+  en: {
+    loading: 'Loading...',
+    authRequiredTitle: 'Authentication Required',
+    authRequiredMessage: 'Please sign in to access this page.',
+    signIn: 'Sign In',
+    verificationTitle: 'UNAM Verification Required',
+    verificationMessage:
+      'Please verify your UNAM email to access this feature.',
+    completeVerification: 'Complete Verification',
+    accessDeniedTitle: 'Access Denied',
+    accessDeniedMessage: "You don't have permission to access this page.",
+    goToDashboard: 'Go to Dashboard',
+  },
+} as const;
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -20,11 +47,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requireVerified = false,
   requireRole = [],
-  redirectTo = '/login',
+  redirectTo: _redirectTo = '/login',
   lang = 'es',
 }) => {
   const { user, userProfile, loading, isAuthenticated, isVerified } = useAuth();
-  const t = useTranslations(lang);
+  const copy = routeCopy[lang];
 
   // No automatic redirect via useEffect — the render path below shows
   // a "Sign In" link when the user is not authenticated. The previous
@@ -59,7 +86,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
               ></path>
             </svg>
           </div>
-          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+          <p className="text-gray-600 dark:text-gray-400">{copy.loading}</p>
         </div>
       </div>
     );
@@ -71,16 +98,16 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="w-full max-w-md text-center">
           <h2 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
-            Authentication Required
+            {copy.authRequiredTitle}
           </h2>
           <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Please sign in to access this page.
+            {copy.authRequiredMessage}
           </p>
           <a
             href={`/${lang}/login`}
             className="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-600 px-6 py-3 text-base font-medium text-white hover:bg-primary-700"
           >
-            Sign In
+            {copy.signIn}
           </a>
         </div>
       </div>
@@ -108,16 +135,16 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             </svg>
           </div>
           <h2 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
-            UNAM Verification Required
+            {copy.verificationTitle}
           </h2>
           <p className="mb-6 text-gray-600 dark:text-gray-400">
-            Please verify your UNAM email to access this feature.
+            {copy.verificationMessage}
           </p>
           <a
             href={`/${lang}/dashboard/settings`}
             className="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-600 px-6 py-3 text-base font-medium text-white hover:bg-primary-700"
           >
-            Complete Verification
+            {copy.completeVerification}
           </a>
         </div>
       </div>
@@ -148,16 +175,16 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
               </svg>
             </div>
             <h2 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
-              Access Denied
+              {copy.accessDeniedTitle}
             </h2>
             <p className="mb-6 text-gray-600 dark:text-gray-400">
-              You don't have permission to access this page.
+              {copy.accessDeniedMessage}
             </p>
             <a
               href={`/${lang}/dashboard`}
               className="inline-flex items-center justify-center rounded-md border border-transparent bg-primary-600 px-6 py-3 text-base font-medium text-white hover:bg-primary-700"
             >
-              Go to Dashboard
+              {copy.goToDashboard}
             </a>
           </div>
         </div>

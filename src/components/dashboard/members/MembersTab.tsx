@@ -598,7 +598,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
                   onSort={handleSort}
                 />
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  Links
+                  {lang === 'es' ? 'Vínculos' : 'Links'}
                 </th>
               </tr>
             </thead>

@@ -7,13 +7,16 @@ import type { SurveyAggregates } from '@/types/survey';
 import IndustryDonut from '@/components/directory/charts/IndustryDonut';
 import GenerationHistogram from '@/components/directory/charts/GenerationHistogram';
 import HorizontalBars from '@/components/directory/charts/HorizontalBars';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 
 interface Props {
   lang?: 'es' | 'en';
 }
 
 function AdminInner({ lang = 'es' }: Props) {
+  // Raw (non k-anonymized) aggregates: strictly admin-only — moderators
+  // must not see this view.
+  const { isAdmin, loading: authLoading } = useAuth();
   const [aggregates, setAggregates] = useState<SurveyAggregates | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -26,8 +29,37 @@ function AdminInner({ lang = 'es' }: Props) {
   }
 
   useEffect(() => {
+    if (authLoading || !isAdmin) return;
     load();
-  }, []);
+  }, [authLoading, isAdmin]);
+
+  const respondentRate = useMemo(() => {
+    if (!aggregates || aggregates.totalRespondents === 0) return 0;
+    return Math.round(
+      (aggregates.totalCompleted / aggregates.totalRespondents) * 100
+    );
+  }, [aggregates]);
+
+  if (authLoading) {
+    return (
+      <div className="h-40 animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-8 text-center dark:border-gray-700 dark:bg-gray-800">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          {lang === 'es' ? 'Acceso denegado' : 'Access denied'}
+        </h2>
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          {lang === 'es'
+            ? 'Se requieren privilegios de administrador para ver los agregados sin censura.'
+            : 'Administrator privileges are required to view uncensored aggregates.'}
+        </p>
+      </div>
+    );
+  }
 
   async function handleRefresh() {
     setRefreshing(true);
@@ -35,7 +67,9 @@ function AdminInner({ lang = 'es' }: Props) {
       const callable = httpsCallable(functions, 'refreshSurveyAggregates');
       await callable({});
       await load();
-      toast.success(lang === 'es' ? 'Agregados actualizados' : 'Aggregates refreshed');
+      toast.success(
+        lang === 'es' ? 'Agregados actualizados' : 'Aggregates refreshed'
+      );
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Error';
       toast.error(msg);
@@ -57,8 +91,14 @@ function AdminInner({ lang = 'es' }: Props) {
       ['areaOfInterest', aggregates.byAreaOfInterest as Record<string, number>],
       ['techStack', aggregates.byTechStack as Record<string, number>],
       ['mentorship', aggregates.byMentorship as Record<string, number>],
-      ['openToOpportunities', aggregates.byOpenToOpportunities as Record<string, number>],
-      ['reasonsForJoining', aggregates.byReasonsForJoining as Record<string, number>],
+      [
+        'openToOpportunities',
+        aggregates.byOpenToOpportunities as Record<string, number>,
+      ],
+      [
+        'reasonsForJoining',
+        aggregates.byReasonsForJoining as Record<string, number>,
+      ],
       ['academicLevel', aggregates.byAcademicLevel as Record<string, number>],
     ];
     for (const [bucket, data] of sections) {
@@ -77,13 +117,6 @@ function AdminInner({ lang = 'es' }: Props) {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
-
-  const respondentRate = useMemo(() => {
-    if (!aggregates || aggregates.totalRespondents === 0) return 0;
-    return Math.round(
-      (aggregates.totalCompleted / aggregates.totalRespondents) * 100
-    );
-  }, [aggregates]);
 
   if (loading) {
     return (
@@ -170,42 +203,79 @@ function AdminInner({ lang = 'es' }: Props) {
       </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <Stat label={lang === 'es' ? 'Respuestas' : 'Responses'} value={aggregates?.totalRespondents ?? 0} />
-        <Stat label={lang === 'es' ? 'Completas' : 'Completed'} value={aggregates?.totalCompleted ?? 0} />
-        <Stat label={lang === 'es' ? '% Completas' : '% Completed'} value={`${respondentRate}%`} />
+        <Stat
+          label={lang === 'es' ? 'Respuestas' : 'Responses'}
+          value={aggregates?.totalRespondents ?? 0}
+        />
+        <Stat
+          label={lang === 'es' ? 'Completas' : 'Completed'}
+          value={aggregates?.totalCompleted ?? 0}
+        />
+        <Stat
+          label={lang === 'es' ? '% Completas' : '% Completed'}
+          value={`${respondentRate}%`}
+        />
         <Stat
           label={lang === 'es' ? 'Miembros sin encuesta' : 'Members w/o survey'}
           value={aggregates?.totalFallbackUsers ?? 0}
         />
       </div>
 
-      {aggregates && (aggregates.totalRespondents === 0 && (aggregates.totalFallbackUsers ?? 0) > 0) && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800/50 dark:bg-amber-900/20 dark:text-amber-100">
-          {lang === 'es'
-            ? `Aún no hay respuestas de encuesta. Las gráficas muestran datos derivados de los perfiles de ${aggregates.totalFallbackUsers} miembros (generación, skills) como fallback.`
-            : `No survey responses yet. Charts use fallback data from ${aggregates.totalFallbackUsers} member profiles (generation, skills) until the survey collects responses.`}
-        </div>
-      )}
+      {aggregates &&
+        aggregates.totalRespondents === 0 &&
+        (aggregates.totalFallbackUsers ?? 0) > 0 && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800/50 dark:bg-amber-900/20 dark:text-amber-100">
+            {lang === 'es'
+              ? `Aún no hay respuestas de encuesta. Las gráficas muestran datos derivados de los perfiles de ${aggregates.totalFallbackUsers} miembros (generación, skills) como fallback.`
+              : `No survey responses yet. Charts use fallback data from ${aggregates.totalFallbackUsers} member profiles (generation, skills) until the survey collects responses.`}
+          </div>
+        )}
 
       {aggregates && (
         <div className="grid gap-6 lg:grid-cols-2">
           <Card title={lang === 'es' ? 'Industria' : 'Industry'}>
-            <IndustryDonut data={aggregates.byIndustry as Record<string, number>} lang={lang} />
+            <IndustryDonut
+              data={aggregates.byIndustry as Record<string, number>}
+              lang={lang}
+            />
           </Card>
           <Card title={lang === 'es' ? 'Generación' : 'Generation'}>
             <GenerationHistogram data={aggregates.byGeneration} lang={lang} />
           </Card>
           <Card title={lang === 'es' ? 'Tech stack' : 'Tech stack'}>
-            <HorizontalBars data={aggregates.byTechStack as Record<string, number>} lang={lang} color="#059669" />
+            <HorizontalBars
+              data={aggregates.byTechStack as Record<string, number>}
+              lang={lang}
+              color="#059669"
+            />
           </Card>
-          <Card title={lang === 'es' ? 'Áreas de interés' : 'Areas of interest'}>
-            <HorizontalBars data={aggregates.byAreaOfInterest as Record<string, number>} lang={lang} color="#7C3AED" />
+          <Card
+            title={lang === 'es' ? 'Áreas de interés' : 'Areas of interest'}
+          >
+            <HorizontalBars
+              data={aggregates.byAreaOfInterest as Record<string, number>}
+              lang={lang}
+              color="#7C3AED"
+            />
           </Card>
           <Card title={lang === 'es' ? 'Mentoría' : 'Mentorship'}>
-            <HorizontalBars data={aggregates.byMentorship as Record<string, number>} lang={lang} color="#DB2777" heightPerRow={48} />
+            <HorizontalBars
+              data={aggregates.byMentorship as Record<string, number>}
+              lang={lang}
+              color="#DB2777"
+              heightPerRow={48}
+            />
           </Card>
-          <Card title={lang === 'es' ? 'Razones para unirse' : 'Reasons for joining'}>
-            <HorizontalBars data={aggregates.byReasonsForJoining as Record<string, number>} lang={lang} color="#EA580C" />
+          <Card
+            title={
+              lang === 'es' ? 'Razones para unirse' : 'Reasons for joining'
+            }
+          >
+            <HorizontalBars
+              data={aggregates.byReasonsForJoining as Record<string, number>}
+              lang={lang}
+              color="#EA580C"
+            />
           </Card>
         </div>
       )}
@@ -216,16 +286,28 @@ function AdminInner({ lang = 'es' }: Props) {
 function Stat({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
-      <div className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">{label}</div>
-      <div className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{value}</div>
+      <div className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+        {label}
+      </div>
+      <div className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
+        {value}
+      </div>
     </div>
   );
 }
 
-function Card({ title, children }: { title: string; children: React.ReactNode }) {
+function Card({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
-      <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">{title}</h3>
+      <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
+        {title}
+      </h3>
       {children}
     </div>
   );

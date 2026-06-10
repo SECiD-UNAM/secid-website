@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from '@/hooks/useTranslations';
 import {
@@ -110,7 +110,7 @@ export const Analytics: React.FC = () => {
     },
   ];
 
-  const COLORS = [
+  const _COLORS = [
     '#3B82F6',
     '#10B981',
     '#F59E0B',
@@ -119,18 +119,7 @@ export const Analytics: React.FC = () => {
     '#06B6D4',
   ];
 
-  useEffect(() => {
-    if (authLoading) return;
-    if (!isAdmin) {
-      setError('Unauthorized access. Admin privileges required.');
-      setLoading(false);
-      return;
-    }
-
-    loadAnalyticsData();
-  }, [authLoading, isAdmin, selectedTimeRange]);
-
-  const loadAnalyticsData = async () => {
+  const loadAnalyticsData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -176,7 +165,18 @@ export const Analytics: React.FC = () => {
       );
       setLoading(false);
     }
-  };
+  }, [language]);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!isAdmin) {
+      setError('Unauthorized access. Admin privileges required.');
+      setLoading(false);
+      return;
+    }
+
+    loadAnalyticsData();
+  }, [authLoading, isAdmin, selectedTimeRange, loadAnalyticsData]);
 
   const refreshData = async () => {
     setRefreshing(true);
@@ -199,8 +199,7 @@ export const Analytics: React.FC = () => {
     };
 
     const dataStr = JSON.stringify(exportData, null, 2);
-    const dataUri =
-      `data:application/json;charset=utf-8,${  encodeURIComponent(dataStr)}`;
+    const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
 
     const exportFileDefaultName = `analytics-${selectedTimeRange.value}-${new Date().toISOString().split('T')[0]}.json`;
 

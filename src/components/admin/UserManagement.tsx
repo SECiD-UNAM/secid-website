@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/lib/firebase';
 import { useTranslations } from '@/hooks/useTranslations';
@@ -119,7 +119,11 @@ function formatDate(date: Date, lang: string): string {
 }
 
 export const UserManagement: React.FC = () => {
-  const { userProfile, isAdmin, loading: authLoading } = useAuth();
+  const {
+    userProfile: _userProfile,
+    isAdmin,
+    loading: authLoading,
+  } = useAuth();
   const { language } = useTranslations();
   const lang = language as 'es' | 'en';
 
@@ -234,78 +238,81 @@ export const UserManagement: React.FC = () => {
     lang,
   });
 
-  const handleUserAction = async (action: string, userId: string) => {
-    try {
-      const userRef = doc(db, 'users', userId);
+  const handleUserAction = useCallback(
+    async (action: string, userId: string) => {
+      try {
+        const userRef = doc(db, 'users', userId);
 
-      switch (action) {
-        case 'verify':
-          await updateDoc(userRef, {
-            isVerified: true,
-            updatedAt: Timestamp.now(),
-          });
-          break;
-        case 'unverify':
-          await updateDoc(userRef, {
-            isVerified: false,
-            updatedAt: Timestamp.now(),
-          });
-          break;
-        case 'activate':
-          await updateDoc(userRef, {
-            isActive: true,
-            updatedAt: Timestamp.now(),
-          });
-          break;
-        case 'deactivate':
-          await updateDoc(userRef, {
-            isActive: false,
-            updatedAt: Timestamp.now(),
-          });
-          break;
-        case 'make_admin':
-          await updateDoc(userRef, {
-            role: 'admin',
-            updatedAt: Timestamp.now(),
-          });
-          break;
-        case 'make_moderator':
-          await updateDoc(userRef, {
-            role: 'moderator',
-            updatedAt: Timestamp.now(),
-          });
-          break;
-        case 'make_member':
-          await updateDoc(userRef, {
-            role: 'member',
-            updatedAt: Timestamp.now(),
-          });
-          break;
-        case 'delete':
-          if (
-            confirm(
-              lang === 'es'
-                ? '¿Estás seguro de eliminar este usuario?'
-                : 'Are you sure you want to delete this user?'
-            )
-          ) {
-            await deleteDoc(userRef);
-          }
-          break;
-        default:
-          throw new Error('Unknown action');
+        switch (action) {
+          case 'verify':
+            await updateDoc(userRef, {
+              isVerified: true,
+              updatedAt: Timestamp.now(),
+            });
+            break;
+          case 'unverify':
+            await updateDoc(userRef, {
+              isVerified: false,
+              updatedAt: Timestamp.now(),
+            });
+            break;
+          case 'activate':
+            await updateDoc(userRef, {
+              isActive: true,
+              updatedAt: Timestamp.now(),
+            });
+            break;
+          case 'deactivate':
+            await updateDoc(userRef, {
+              isActive: false,
+              updatedAt: Timestamp.now(),
+            });
+            break;
+          case 'make_admin':
+            await updateDoc(userRef, {
+              role: 'admin',
+              updatedAt: Timestamp.now(),
+            });
+            break;
+          case 'make_moderator':
+            await updateDoc(userRef, {
+              role: 'moderator',
+              updatedAt: Timestamp.now(),
+            });
+            break;
+          case 'make_member':
+            await updateDoc(userRef, {
+              role: 'member',
+              updatedAt: Timestamp.now(),
+            });
+            break;
+          case 'delete':
+            if (
+              confirm(
+                lang === 'es'
+                  ? '¿Estás seguro de eliminar este usuario?'
+                  : 'Are you sure you want to delete this user?'
+              )
+            ) {
+              await deleteDoc(userRef);
+            }
+            break;
+          default:
+            throw new Error('Unknown action');
+        }
+
+        retry();
+      } catch (err) {
+        console.error('Error performing user action:', err);
+        setActionError(
+          lang === 'es'
+            ? 'Error al realizar la acción'
+            : 'Error performing action'
+        );
       }
-
-      retry();
-    } catch (err) {
-      console.error('Error performing user action:', err);
-      setActionError(
-        lang === 'es'
-          ? 'Error al realizar la acción'
-          : 'Error performing action'
-      );
-    }
-  };
+    },
+    [lang, retry]
+  );
 
   const handleBulkAction = async () => {
     if (!bulkAction || selectedUsers.size === 0) return;
@@ -344,11 +351,11 @@ export const UserManagement: React.FC = () => {
 
     if (csvData.length === 0) return;
 
-    const csvContent =
-      `data:text/csv;charset=utf-8,${ 
-      Object.keys(csvData[0] as Record<string, unknown>).join(',') 
-      }\n${ 
-      csvData.map((row) => Object.values(row).join(',')).join('\n')}`;
+    const csvContent = `data:text/csv;charset=utf-8,${Object.keys(
+      csvData[0] as Record<string, unknown>
+    ).join(',')}\n${csvData
+      .map((row) => Object.values(row).join(','))
+      .join('\n')}`;
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
@@ -566,7 +573,7 @@ export const UserManagement: React.FC = () => {
         ),
       },
     ],
-    [lang, selectedUsers]
+    [lang, selectedUsers, handleUserAction]
   );
 
   if (authLoading) {

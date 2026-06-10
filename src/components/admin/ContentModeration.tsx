@@ -102,6 +102,11 @@ export const ContentModeration: React.FC = () => {
 
   const canModerate = isAdmin || isModerator;
 
+  // Only the status filter changes the Firestore query; the rest of the
+  // filters (type, priority, search) are applied client-side so typing in
+  // the search box doesn't tear down and recreate the listeners.
+  const statusFilter = filters['status'];
+
   useEffect(() => {
     if (authLoading) return;
 
@@ -118,11 +123,7 @@ export const ContentModeration: React.FC = () => {
     // Subscribe to moderation queue
     const moderationQuery = query(
       collection(db, 'moderation_queue'),
-      where(
-        'status',
-        '==',
-        filters['status'] === 'all' ? 'pending' : filters['status']
-      ),
+      where('status', '==', statusFilter === 'all' ? 'pending' : statusFilter),
       orderBy('priority', 'desc'),
       orderBy('submittedAt', 'asc'),
       limit(50)
@@ -197,7 +198,27 @@ export const ContentModeration: React.FC = () => {
       unsubscribeModerationItems();
       unsubscribeReports();
     };
-  }, [canModerate, authLoading, filters]);
+  }, [canModerate, authLoading, statusFilter]);
+
+  // Client-side filtering on snapshot data (type, priority, free-text search)
+  const filteredModerationItems = moderationItems.filter((item) => {
+    if (filters['type'] !== 'all' && item['type'] !== filters['type']) {
+      return false;
+    }
+    if (filters.priority !== 'all' && item.priority !== filters.priority) {
+      return false;
+    }
+    if (filters.search) {
+      const term = filters.search.toLowerCase();
+      return (
+        (item.title || '').toLowerCase().includes(term) ||
+        (item.content || '').toLowerCase().includes(term) ||
+        (item.authorName || '').toLowerCase().includes(term) ||
+        (item.authorEmail || '').toLowerCase().includes(term)
+      );
+    }
+    return true;
+  });
 
   const loadStats = async () => {
     try {
@@ -838,7 +859,7 @@ export const ContentModeration: React.FC = () => {
 
           {/* Moderation Items */}
           <div className="space-y-4">
-            {moderationItems.map((item) => (
+            {filteredModerationItems.map((item) => (
               <div
                 key={item['id']}
                 className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
@@ -950,7 +971,7 @@ export const ContentModeration: React.FC = () => {
               </div>
             ))}
 
-            {moderationItems.length === 0 && !loading && (
+            {filteredModerationItems.length === 0 && !loading && (
               <div className="py-12 text-center">
                 <CheckCircle className="mx-auto mb-4 h-12 w-12 text-green-500" />
                 <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">

@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import {
-  BriefcaseIcon,
-  CalendarIcon,
-  ChatBubbleLeftRightIcon,
-  UserGroupIcon,
-  DocumentTextIcon,
-  CheckCircleIcon,
-} from '@heroicons/react/24/outline';
 
 interface ActivityItem {
   id: string;
@@ -40,7 +32,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
     // TODO: Fetch real activities from Firestore when activity tracking is implemented
     setActivities([]);
     setLoading(false);
-  }, [userProfile, lang]);
+  }, [user, userProfile, lang]);
 
   const formatTimestamp = (date: Date): string => {
     const now = new Date();

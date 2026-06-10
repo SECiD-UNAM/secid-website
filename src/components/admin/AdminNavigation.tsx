@@ -45,8 +45,8 @@ export const AdminNavigation: React.FC<AdminNavigationProps> = ({
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
-  // Mock notification count - in real app, this would come from a context or API
-  const notificationCount = 3;
+  // Notification/badge counts intentionally omitted until they are backed
+  // by a real data source (context or API).
 
   const navigationItems: NavigationItem[] = [
     {
@@ -86,21 +86,18 @@ export const AdminNavigation: React.FC<AdminNavigationProps> = ({
       label: language === 'es' ? 'Moderación' : 'Moderation',
       icon: Shield,
       path: '/admin/moderation',
-      badge: 5, // Mock pending items count
       subItems: [
         {
           key: 'content-queue',
           label: language === 'es' ? 'Cola de Contenido' : 'Content Queue',
           icon: AlertTriangle,
           path: '/admin/moderation/queue',
-          badge: 3,
         },
         {
           key: 'reports',
           label: language === 'es' ? 'Reportes' : 'Reports',
           icon: AlertTriangle,
           path: '/admin/moderation/reports',
-          badge: 2,
         },
       ],
     },
@@ -345,11 +342,7 @@ export const AdminNavigation: React.FC<AdminNavigationProps> = ({
                 title={language === 'es' ? 'Notificaciones' : 'Notifications'}
               >
                 <Bell className="h-5 w-5" />
-                {notificationCount > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                    {notificationCount}
-                  </span>
-                )}
+                {/* Badge omitted: no real notification source yet */}
               </button>
 
               <div className="relative">
@@ -410,11 +403,7 @@ export const AdminNavigation: React.FC<AdminNavigationProps> = ({
               title={language === 'es' ? 'Notificaciones' : 'Notifications'}
             >
               <Bell className="h-5 w-5" />
-              {notificationCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                  {notificationCount}
-                </span>
-              )}
+              {/* Badge omitted: no real notification source yet */}
             </button>
 
             <div className="relative">

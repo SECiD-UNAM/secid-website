@@ -1,7 +1,5 @@
-// @ts-nocheck
-import React, { useEffect, useState } from 'react';
-import { onAuthStateChanged, type User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import React, { useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from '@/hooks/useTranslations';
 
 interface AuthGuardProps {
@@ -11,34 +9,44 @@ interface AuthGuardProps {
   lang?: 'es' | 'en';
 }
 
+const guardCopy = {
+  es: {
+    title: 'Autenticación requerida',
+    message: 'Inicia sesión para acceder a esta página.',
+    signIn: 'Iniciar sesión',
+    signUp: 'Crear cuenta',
+  },
+  en: {
+    title: 'Authentication Required',
+    message: 'Please sign in to access this page.',
+    signIn: 'Sign In',
+    signUp: 'Sign Up',
+  },
+} as const;
+
 export const AuthGuard: React.FC<AuthGuardProps> = ({
   children,
   fallback,
   redirectTo,
   lang = 'es',
 }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useAuth();
   const t = useTranslations(lang);
+  const copy = guardCopy[lang];
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
+    if (loading || user || !redirectTo) return;
 
-      if (!user && redirectTo) {
-        try {
-          sessionStorage.setItem(
-            'secid_returnUrl',
-            window.location.pathname + window.location.search
-          );
-        } catch {}
-        window.location.href = redirectTo;
-      }
-    });
-
-    return () => unsubscribe();
-  }, [redirectTo]);
+    try {
+      sessionStorage.setItem(
+        'secid_returnUrl',
+        window.location.pathname + window.location.search
+      );
+    } catch {
+      /* sessionStorage unavailable */
+    }
+    window.location.href = redirectTo;
+  }, [loading, user, redirectTo]);
 
   if (loading) {
     return (
@@ -62,23 +70,23 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <h2 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
-            {t.auth.unauthorized.title}
+            {copy.title}
           </h2>
           <p className="mb-8 text-gray-600 dark:text-gray-400">
-            {t.auth.unauthorized.message}
+            {copy.message}
           </p>
           <div className="space-x-4">
             <a
               href={`/${lang}/login`}
               className="inline-flex items-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
             >
-              {t.auth.unauthorized.signIn}
+              {copy.signIn}
             </a>
             <a
               href={`/${lang}/signup`}
               className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
             >
-              {t.auth.unauthorized.signUp}
+              {copy.signUp}
             </a>
           </div>
         </div>
