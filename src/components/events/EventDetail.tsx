@@ -6,7 +6,6 @@ import {
   setDoc,
   deleteDoc,
   updateDoc,
-  increment,
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -22,11 +21,8 @@ import {
   ShareIcon,
   BookmarkIcon,
   CheckCircleIcon,
-  XCircleIcon,
   ExclamationTriangleIcon,
   SparklesIcon,
-  TicketIcon,
-  CurrencyDollarIcon,
   ArrowLeftIcon,
   LinkIcon,
   CalendarDaysIcon,
@@ -112,14 +108,13 @@ export const EventDetail: React.FC<EventDetailProps> = ({
   eventId,
   lang = 'es',
 }) => {
-  const { user, userProfile } = useAuth();
+  const { user } = useAuth();
   const [event, setEvent] = useState<EventDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [isRegistered, setIsRegistered] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
-  const [registering, setRegistering] = useState(false);
   const [cancelling, setCancelling] = useState(false);
-  const [registration, setRegistration] = useState<Registration | null>(null);
+  const [_registration, setRegistration] = useState<Registration | null>(null);
   const [showVirtualDetails, setShowVirtualDetails] = useState(false);
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
 
@@ -145,104 +140,16 @@ export const EventDetail: React.FC<EventDetailProps> = ({
           registrationDeadline: data['registrationDeadline']?.toDate(),
         } as EventDetails);
       } else {
-        // Use mock data if event not found
-        setEvent(getMockEventDetails());
+        // Event not found — render the not-found state
+        setEvent(null);
       }
     } catch (error) {
       console.error('Error fetching event details:', error);
-      setEvent(getMockEventDetails());
+      setEvent(null);
     } finally {
       setLoading(false);
     }
   };
-
-  const getMockEventDetails = (): EventDetails => ({
-    id: eventId,
-    title: 'Data Science Career Fair 2024',
-    description: `Join us for the annual Data Science Career Fair, where top companies meet talented data science professionals and students. This is your opportunity to network with industry leaders, learn about job opportunities, and advance your career in data science.
-
-This event brings together over 30 companies actively hiring data scientists, machine learning engineers, and data analysts. Whether you're a recent graduate or an experienced professional, you'll find valuable connections and opportunities.`,
-    type: 'career-fair',
-    startDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    endDate: new Date(
-      Date.now() + 7 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000
-    ),
-    timezone: 'America/Mexico_City',
-    duration: 240,
-    location: {
-      type: 'hybrid',
-      venue: 'UNAM Campus Ciudad Universitaria',
-      address:
-        'Avenida Universidad 3000, Coyoacán, 04510 Ciudad de México, CDMX',
-      virtualLink: 'https://meet.google.com/xyz-abc-def',
-      virtualPlatform: 'meet',
-    },
-    registrationRequired: true,
-    registrationDeadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-    maxAttendees: 200,
-    currentAttendees: 156,
-    registrationFee: 0,
-    agenda: [
-      { time: '09:00', title: 'Registration & Welcome Coffee', duration: 60 },
-      {
-        time: '10:00',
-        title: 'Opening Keynote',
-        speaker: 'Dr. María González',
-        duration: 45,
-      },
-      { time: '10:45', title: 'Company Booths Open', duration: 120 },
-      { time: '12:45', title: 'Lunch Break', duration: 60 },
-      {
-        time: '13:45',
-        title: 'Panel: Future of Data Science',
-        speaker: 'Industry Leaders',
-        duration: 60,
-      },
-      { time: '14:45', title: 'Networking Session', duration: 75 },
-      {
-        time: '16:00',
-        title: 'Closing Remarks',
-        speaker: 'SECiD President',
-        duration: 30,
-      },
-    ],
-    speakers: [
-      {
-        name: 'Dr. María González',
-        title: 'Head of Data Science',
-        company: 'Tech Corp México',
-        bio: 'María has over 15 years of experience in data science and machine learning.',
-        photoUrl: '/images/speaker1.jpg',
-      },
-      {
-        name: 'Juan Carlos López',
-        title: 'ML Engineering Manager',
-        company: 'AI Startup',
-        bio: 'Juan leads a team of 20+ ML engineers building production systems.',
-        photoUrl: '/images/speaker2.jpg',
-      },
-    ],
-    tags: ['career', 'networking', 'professional-development', 'hiring'],
-    organizers: ['SECiD', 'UNAM Career Services'],
-    organizerDetails: {
-      name: 'SECiD Events Team',
-      email: 'eventos@secid.mx',
-      phone: '+52 55 1234 5678',
-    },
-    status: 'published',
-    featured: true,
-    requirements: [
-      'Bring printed copies of your resume',
-      'Professional attire recommended',
-      'Register in advance to secure your spot',
-    ],
-    whatToBring: [
-      'Business cards',
-      'Portfolio or laptop to showcase projects',
-      'Questions for recruiters',
-    ],
-    cancellationPolicy: 'Free cancellation up to 24 hours before the event',
-  });
 
   const checkRegistrationStatus = async () => {
     if (!user) return;
@@ -301,13 +208,27 @@ This event brings together over 30 companies actively hiring data scientists, ma
 
     setCancelling(true);
     try {
-      // Delete registration
-      await deleteDoc(doc(db, 'events', eventId, 'registrations', user.uid));
+      // Only decrement the attendee count if a registration actually existed
+      const registrationRef = doc(
+        db,
+        'events',
+        eventId,
+        'registrations',
+        user.uid
+      );
+      const registrationSnap = await getDoc(registrationRef);
 
-      // Update attendee count
-      await updateDoc(doc(db, 'events', eventId), {
-        currentAttendees: increment(-1),
-      });
+      if (registrationSnap.exists()) {
+        await deleteDoc(registrationRef);
+
+        // Update attendee count, never going below 0
+        const eventRef = doc(db, 'events', eventId);
+        const eventSnap = await getDoc(eventRef);
+        const currentAttendees = eventSnap.data()?.currentAttendees ?? 0;
+        await updateDoc(eventRef, {
+          currentAttendees: Math.max(0, currentAttendees - 1),
+        });
+      }
 
       // Remove from user's registered events
       await deleteDoc(doc(db, 'users', user.uid, 'registeredEvents', eventId));
@@ -315,7 +236,12 @@ This event brings together over 30 companies actively hiring data scientists, ma
       setIsRegistered(false);
       setRegistration(null);
       setEvent((prev) =>
-        prev ? { ...prev, currentAttendees: prev.currentAttendees - 1 } : null
+        prev
+          ? {
+              ...prev,
+              currentAttendees: Math.max(0, prev.currentAttendees - 1),
+            }
+          : null
       );
     } catch (error) {
       console.error('Error cancelling registration:', error);

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslations } from '../../hooks/useTranslations';
 import ConversationComponent from './Conversation';
-import MessageComposer from './MessageComposer';
 import type {
   Message,
   Conversation,
@@ -41,26 +40,34 @@ const DirectMessages: React.FC<DirectMessagesProps> = ({
     'conversations'
   );
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
+  const creatingConversationForRef = useRef<string | null>(null);
 
   useEffect(() => {
     loadConversations();
   }, [currentUser.id, showArchived]);
 
   useEffect(() => {
-    if (selectedUserId && conversations.length > 0) {
-      const conversation = conversations.find(
-        (conv) =>
-          conv.participants.includes(selectedUserId) &&
-          conv.participants.includes(currentUser.id)
-      );
-      if (conversation) {
-        setSelectedConversation(conversation);
-      } else {
-        // Create new conversation
-        handleCreateConversation(selectedUserId);
-      }
+    // Wait until conversations have loaded — users with zero conversations
+    // still need the create path to fire, and we must not race the initial
+    // loadConversations() fetch.
+    if (!selectedUserId || loading) return;
+
+    const conversation = conversations.find(
+      (conv) =>
+        conv.participants.includes(selectedUserId) &&
+        conv.participants.includes(currentUser.id)
+    );
+    if (conversation) {
+      setSelectedConversation(conversation);
+    } else if (creatingConversationForRef.current !== selectedUserId) {
+      // Create new conversation (guard against double-creation while a
+      // create for the same user is already in flight)
+      creatingConversationForRef.current = selectedUserId;
+      handleCreateConversation(selectedUserId).finally(() => {
+        creatingConversationForRef.current = null;
+      });
     }
-  }, [selectedUserId, conversations]);
+  }, [selectedUserId, conversations, loading]);
 
   const loadConversations = async () => {
     try {

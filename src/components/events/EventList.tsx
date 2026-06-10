@@ -1,4 +1,10 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
 import {
   collection,
   query,
@@ -242,14 +248,23 @@ function buildFilterDefinitions(lang: 'es' | 'en'): FilterDefinition[] {
 // Adapter factory
 // ---------------------------------------------------------------------------
 
-async function fetchAllEvents(): Promise<Event[]> {
-  // Fetch regular events
-  const eventsQuery = query(
-    collection(db, 'events'),
-    where('status', '==', 'published'),
-    orderBy('startDate', 'asc'),
-    limit(50)
-  );
+async function fetchAllEvents(upcomingOnly: boolean): Promise<Event[]> {
+  // Fetch regular events. The default ("upcoming") path filters past events
+  // server-side so we don't download the whole history on every visit.
+  const eventsQuery = upcomingOnly
+    ? query(
+        collection(db, 'events'),
+        where('status', '==', 'published'),
+        where('startDate', '>=', new Date()),
+        orderBy('startDate', 'asc'),
+        limit(50)
+      )
+    : query(
+        collection(db, 'events'),
+        where('status', '==', 'published'),
+        orderBy('startDate', 'asc'),
+        limit(50)
+      );
   const eventsSnap = await getDocs(eventsQuery);
   const events: Event[] = eventsSnap.docs.map((d) => {
     const data = d.data();
@@ -269,11 +284,18 @@ async function fetchAllEvents(): Promise<Event[]> {
     // status filter and rely on client-side date filtering — the events
     // tab only renders upcoming entries anyway. Also: 'cancelled' status
     // is filtered out below.
-    const jcQuery = query(
-      collection(db, 'journal_club_sessions'),
-      orderBy('date', 'desc'),
-      limit(50)
-    );
+    const jcQuery = upcomingOnly
+      ? query(
+          collection(db, 'journal_club_sessions'),
+          where('date', '>=', new Date()),
+          orderBy('date', 'desc'),
+          limit(50)
+        )
+      : query(
+          collection(db, 'journal_club_sessions'),
+          orderBy('date', 'desc'),
+          limit(50)
+        );
     const jcSnap = await getDocs(jcQuery);
     const jcEvents: Event[] = jcSnap.docs
       .filter((d) => {
@@ -284,31 +306,31 @@ async function fetchAllEvents(): Promise<Event[]> {
       })
       .map((d) => {
         const data = d.data();
-      const sessionDate = data['date']?.toDate() ?? new Date();
-      const endDate = new Date(sessionDate.getTime() + 90 * 60 * 1000); // 90 min default
-      return {
-        id: `jc-${d.id}`,
-        title: `Journal Club: ${data['topic'] || ''}`,
-        description: data['description'] || '',
-        type: 'journal-club' as const,
-        startDate: sessionDate,
-        endDate,
-        timezone: 'America/Mexico_City',
-        duration: 90,
-        location: {
-          type: 'virtual' as const,
-          virtualPlatform: 'Google Meet',
-        },
-        registrationRequired: false,
-        maxAttendees: 0,
-        currentAttendees: 0,
-        registrationFee: 0,
-        tags: data['tags'] || ['journal-club'],
-        organizers: [data['presenter'] || 'SECiD'],
-        status: 'published' as const,
-        featured: false,
-      };
-    });
+        const sessionDate = data['date']?.toDate() ?? new Date();
+        const endDate = new Date(sessionDate.getTime() + 90 * 60 * 1000); // 90 min default
+        return {
+          id: `jc-${d.id}`,
+          title: `Journal Club: ${data['topic'] || ''}`,
+          description: data['description'] || '',
+          type: 'journal-club' as const,
+          startDate: sessionDate,
+          endDate,
+          timezone: 'America/Mexico_City',
+          duration: 90,
+          location: {
+            type: 'virtual' as const,
+            virtualPlatform: 'Google Meet',
+          },
+          registrationRequired: false,
+          maxAttendees: 0,
+          currentAttendees: 0,
+          registrationFee: 0,
+          tags: data['tags'] || ['journal-club'],
+          organizers: [data['presenter'] || 'SECiD'],
+          status: 'published' as const,
+          featured: false,
+        };
+      });
     events.push(...jcEvents);
   } catch (err) {
     console.warn('Failed to load journal club sessions for events:', err);
@@ -319,9 +341,9 @@ async function fetchAllEvents(): Promise<Event[]> {
   return events;
 }
 
-function buildAdapter(): ClientSideAdapter<Event> {
+function buildAdapter(upcomingOnly: boolean): ClientSideAdapter<Event> {
   return new ClientSideAdapter<Event>({
-    fetchAll: fetchAllEvents,
+    fetchAll: () => fetchAllEvents(upcomingOnly),
     searchFields: ['title', 'description'],
     getId: (event) => event.id,
     toSearchable: (event) =>
@@ -571,13 +593,17 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
   );
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
 
-  const adapter = useMemo(() => buildAdapter(), []);
+  // Rebuild the adapter when leaving/entering "upcoming" so the default path
+  // never downloads past events; "all"/"past" fetch the full window instead.
+  const upcomingOnly = timeFilter === 'upcoming';
+  const adapter = useMemo(() => buildAdapter(upcomingOnly), [upcomingOnly]);
 
   const filterDefinitions = useMemo(() => buildFilterDefinitions(lang), [lang]);
 
   const {
     items,
     loading,
+    retry,
     query,
     setQuery,
     activeFilters,
@@ -599,6 +625,17 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
     filterDefinitions,
     lang,
   });
+
+  // The listing hook reads the adapter through a ref, so trigger a refetch
+  // when the adapter is swapped (upcoming-only <-> full window).
+  const isFirstAdapterRef = useRef(true);
+  useEffect(() => {
+    if (isFirstAdapterRef.current) {
+      isFirstAdapterRef.current = false;
+      return;
+    }
+    retry();
+  }, [adapter, retry]);
 
   const handleDelete = useCallback(
     async (event: Event) => {

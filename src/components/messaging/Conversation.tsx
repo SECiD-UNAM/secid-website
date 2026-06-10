@@ -1,13 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslations } from '../../hooks/useTranslations';
 import MessageComposer from './MessageComposer';
-import type {
-  Message,
-  Conversation,
-  User,
-  MessageReaction,
-  TypingIndicator,
-} from '@/types';
+import type { Message, Conversation, User, TypingIndicator } from '@/types';
 import {
   getMessages,
   sendMessage,
@@ -30,7 +24,6 @@ interface ConversationProps {
 const ConversationComponent: React.FC<ConversationProps> = ({
   conversation,
   currentUser,
-  onConversationUpdate,
 }) => {
   const { t } = useTranslations();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -44,6 +37,7 @@ const ConversationComponent: React.FC<ConversationProps> = ({
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const editTextareaRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
   const lastTypingRef = useRef<Date>(new Date(0));
 
@@ -314,6 +308,7 @@ const ConversationComponent: React.FC<ConversationProps> = ({
             {editingMessageId === message.id ? (
               <div className="space-y-2">
                 <textarea
+                  ref={editTextareaRef}
                   defaultValue={message.content}
                   className="w-full resize-none border-none bg-transparent focus:outline-none"
                   rows={Math.max(1, Math.ceil(message.content.length / 50))}
@@ -325,12 +320,11 @@ const ConversationComponent: React.FC<ConversationProps> = ({
                       setEditingMessageId(null);
                     }
                   }}
-                  autoFocus
                 />
                 <div className="flex space-x-2">
                   <button
                     onClick={() => {
-                      const textarea = document['querySelector']('textarea');
+                      const textarea = editTextareaRef.current;
                       if (textarea) {
                         handleEditMessage(message.id, textarea.value);
                       }
@@ -720,8 +714,8 @@ const ConversationComponent: React.FC<ConversationProps> = ({
         />
       </div>
 
-      {/* Typing indicator styles */}
-      <style jsx>{`
+      {/* Typing indicator styles (scoped via the .typing-indicator class) */}
+      <style>{`
         .typing-indicator {
           display: flex;
           align-items: center;

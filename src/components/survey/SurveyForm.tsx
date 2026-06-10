@@ -44,6 +44,8 @@ const COPY = {
     version: 'Versión',
     intro:
       'Estas respuestas son opcionales y nos ayudan a entender mejor a la comunidad. Las puedes cambiar en cualquier momento.',
+    signupVisibilityNote:
+      'Tus respuestas se usan solo de forma agregada por defecto; puedes cambiarlo después en tu perfil.',
   },
   en: {
     saveBtn: 'Save responses',
@@ -63,6 +65,8 @@ const COPY = {
     version: 'Version',
     intro:
       'These responses are optional and help us understand the community better. You can change them at any time.',
+    signupVisibilityNote:
+      'Your responses default to aggregate-only; you can change this later in your profile.',
   },
 } as const;
 
@@ -108,7 +112,14 @@ export default function SurveyForm({
       if (cancelled) return;
       setExisting(s);
       if (s) {
-        const { uid: _uid, version: _v, createdAt: _c, updatedAt: _u, completedAt: _cp, ...rest } = s;
+        const {
+          uid: _uid,
+          version: _v,
+          createdAt: _c,
+          updatedAt: _u,
+          completedAt: _cp,
+          ...rest
+        } = s;
         setAnswers(rest as SurveyInput);
       }
       setLoading(false);
@@ -131,7 +142,9 @@ export default function SurveyForm({
       return;
     }
     try {
-      await upsertSurvey(uid, parsed.data, { markComplete: scope === 'signup' });
+      await upsertSurvey(uid, parsed.data, {
+        markComplete: scope === 'signup',
+      });
       toast.success(t.saved);
       onSaved?.(parsed.data);
     } catch {
@@ -187,6 +200,12 @@ export default function SurveyForm({
           />
         ))}
       </div>
+
+      {scope === 'signup' && (
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          {t.signupVisibilityNote}
+        </p>
+      )}
 
       {scope === 'all' && (
         <div className="space-y-2">

@@ -8,20 +8,8 @@ import {
   Pin,
   Lock,
   CheckCircle,
-  MoreHorizontal,
-  ArrowLeft,
-  Clock,
   User,
-  Star,
-  Award,
   Reply,
-  Quote,
-  Flag,
-  Edit,
-  Trash2,
-  Link,
-  Heart,
-  Smile,
   FileText,
   ChevronDown,
   ChevronUp,
@@ -149,17 +137,18 @@ const ForumTopic: React.FC<ForumTopicProps> = ({
           votes[`topic_${topic.id}`] = topicVote.voteType;
         }
 
-        // Check votes for posts
-        for (const post of newPosts) {
-          const postVote = await forumVoting.getUserVote(
-            currentUser.id,
-            'post',
-            post.id
-          );
+        // Check votes for posts (in parallel)
+        const postVotes = await Promise.all(
+          newPosts.map((post) =>
+            forumVoting.getUserVote(currentUser.id, 'post', post.id)
+          )
+        );
+        newPosts.forEach((post, index) => {
+          const postVote = postVotes[index];
           if (postVote) {
             votes[`post_${post.id}`] = postVote.voteType;
           }
-        }
+        });
 
         setUserVotes((prev) => ({ ...prev, ...votes }));
       }
@@ -514,7 +503,7 @@ const ForumTopic: React.FC<ForumTopicProps> = ({
 
         {/* Posts */}
         <div className="space-y-4">
-          {posts.map((post, index) => (
+          {posts.map((post, _index) => (
             <div
               key={post.id}
               className={`rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 ${

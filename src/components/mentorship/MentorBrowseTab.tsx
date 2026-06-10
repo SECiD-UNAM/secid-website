@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslations } from '@/hooks/useTranslations';
 import type { MenteeProfile } from '@/types/mentorship';
 import MentorshipMatcher from './MentorshipMatcher';
 
@@ -20,6 +21,7 @@ function NeedProfileState({
 }: {
   onCreateProfile: () => void;
 }) {
+  const t = useTranslations();
   return (
     <div className="rounded-xl bg-white p-12 text-center shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
       <svg
@@ -36,17 +38,18 @@ function NeedProfileState({
         />
       </svg>
       <h3 className="mb-1 text-base font-semibold text-gray-900 dark:text-white">
-        Mentee Profile Required
+        {t?.mentorship?.matcher?.createProfile ?? 'Mentee Profile Required'}
       </h3>
       <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
-        Create a mentee profile to browse and match with mentors.
+        {t?.mentorship?.matcher?.createProfileDescription ??
+          'Create a mentee profile to browse and match with mentors.'}
       </p>
       <button
         type="button"
         onClick={onCreateProfile}
         className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
       >
-        Create Mentee Profile
+        {t?.mentorship?.matcher?.createMenteeProfile ?? 'Create Mentee Profile'}
       </button>
     </div>
   );

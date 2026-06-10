@@ -16,7 +16,6 @@ import {
 import type { SortOption } from '@components/listing/ListingSort';
 import {
   JobFirestoreAdapter,
-  type JobFilters,
   type Job,
 } from '@lib/listing/adapters/JobFirestoreAdapter';
 import type { ViewMode } from '@lib/listing/types';
@@ -126,13 +125,26 @@ export const JobBoard: React.FC<JobBoardProps> = ({ lang = 'es', filters }) => {
       v !== '' &&
       !(Array.isArray(v) && v.length === 0)
   );
+  const hasActiveSearch = !!listing.query.trim();
 
+  // Only suggest adjusting filters when there actually are filters/search
+  // active; otherwise show a friendlier "no jobs yet" zero-state.
   const emptyTitle =
-    lang === 'es' ? 'No se encontraron empleos' : 'No jobs found';
+    hasActiveFilters || hasActiveSearch
+      ? lang === 'es'
+        ? 'No se encontraron empleos'
+        : 'No jobs found'
+      : lang === 'es'
+        ? 'Aún no hay vacantes publicadas'
+        : 'No job postings yet';
   const emptyDescription =
-    lang === 'es'
-      ? 'Intenta ajustar tus filtros o términos de búsqueda'
-      : 'Try adjusting your filters or search terms';
+    hasActiveFilters || hasActiveSearch
+      ? lang === 'es'
+        ? 'Intenta ajustar tus filtros o términos de búsqueda'
+        : 'Try adjusting your filters or search terms'
+      : lang === 'es'
+        ? '¡Publica la primera!'
+        : 'Be the first to post one!';
 
   const renderJob = useCallback(
     (job: Job, _viewMode: ViewMode) => <JobCard job={job} lang={lang} />,

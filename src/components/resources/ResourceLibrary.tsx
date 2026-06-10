@@ -110,7 +110,7 @@ function buildFilterDefinitions(
 
 function buildAdapter(
   initialCategory: ResourceCategory | undefined,
-  pageSize: number
+  _pageSize: number
 ): ClientSideAdapter<Resource> {
   return new ClientSideAdapter<Resource>({
     fetchAll: async () => {
@@ -197,7 +197,6 @@ export default function ResourceLibrary({
     activeFilters,
     setFilter,
     clearFilters,
-    sort,
     setSort,
     page,
     totalPages,
@@ -473,13 +472,21 @@ export default function ResourceLibrary({
           title={
             activeTab === 'bookmarks'
               ? t?.resources?.bookmarks || 'Bookmarks'
-              : t?.resources?.noResults || 'No resources found'
+              : hasActiveFilters
+                ? t?.resources?.noResults || 'No resources found'
+                : lang === 'es'
+                  ? 'Aún no hay recursos publicados'
+                  : 'No resources published yet'
           }
           description={
             activeTab === 'bookmarks'
               ? undefined
-              : t?.resources?.noResultsDescription ||
-                'Try adjusting your search filters or browse by category.'
+              : hasActiveFilters
+                ? t?.resources?.noResultsDescription ||
+                  'Try adjusting your search filters or browse by category.'
+                : lang === 'es'
+                  ? '¡Comparte el primero con la comunidad!'
+                  : 'Be the first to share one with the community!'
           }
         />
       ) : (

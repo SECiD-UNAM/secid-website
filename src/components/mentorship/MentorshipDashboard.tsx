@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useTranslations } from '@/hooks/useTranslations';
 import type {
@@ -28,17 +34,48 @@ import MentorBrowseTab from './MentorBrowseTab';
 
 type Tab = 'overview' | 'matches' | 'sessions' | 'profile' | 'browse';
 
-const TAB_CONFIG: { key: Tab; label: string; shortLabel: string }[] = [
-  { key: 'overview', label: 'Overview', shortLabel: 'Overview' },
-  { key: 'matches', label: 'My Matches', shortLabel: 'Matches' },
-  { key: 'sessions', label: 'Sessions', shortLabel: 'Sessions' },
-  { key: 'profile', label: 'Profile', shortLabel: 'Profile' },
-  { key: 'browse', label: 'Browse Mentors', shortLabel: 'Browse' },
-];
+interface MentorshipDashboardProps {
+  lang?: 'es' | 'en';
+}
 
-export default function MentorshipDashboard() {
+export default function MentorshipDashboard({
+  lang = 'es',
+}: MentorshipDashboardProps) {
   const { user } = useAuthContext();
-  const t = useTranslations();
+  const t = useTranslations(lang);
+
+  const tabConfig: { key: Tab; label: string; shortLabel: string }[] = useMemo(
+    () => [
+      {
+        key: 'overview',
+        label: t?.mentorship?.dashboard?.overview ?? 'Overview',
+        shortLabel: t?.mentorship?.dashboard?.overview ?? 'Overview',
+      },
+      {
+        key: 'matches',
+        label: t?.mentorship?.dashboard?.yourMatches ?? 'My Matches',
+        shortLabel: t?.mentorship?.dashboard?.matches ?? 'Matches',
+      },
+      {
+        key: 'sessions',
+        label: t?.mentorship?.dashboard?.sessions ?? 'Sessions',
+        shortLabel: t?.mentorship?.dashboard?.sessions ?? 'Sessions',
+      },
+      {
+        key: 'profile',
+        label: t?.mentorship?.dashboard?.profile ?? 'Profile',
+        shortLabel: t?.mentorship?.dashboard?.profile ?? 'Profile',
+      },
+      {
+        key: 'browse',
+        label: t?.mentorship?.dashboard?.findMentor ?? 'Browse Mentors',
+        shortLabel: t?.mentorship?.dashboard?.findMentor ?? 'Browse',
+      },
+    ],
+    // Translations are static per mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [mentorProfile, setMentorProfile] = useState<MentorProfile | null>(
@@ -50,6 +87,9 @@ export default function MentorshipDashboard() {
   const [matches, setMatches] = useState<MentorshipMatch[]>([]);
   const [sessions, setSessions] = useState<MentorshipSession[]>([]);
   const [upcomingSessions, setUpcomingSessions] = useState<MentorshipSession[]>(
+    []
+  );
+  const [pendingRequests, setPendingRequests] = useState<MentorshipRequest[]>(
     []
   );
   const [globalStats, setGlobalStats] = useState<MentorshipStats | null>(null);
@@ -130,9 +170,9 @@ export default function MentorshipDashboard() {
 
     const unsubRequests = subscribeMentorshipRequests(
       user.uid,
-      (_requests: MentorshipRequest[]) => {
-        // When new requests arrive, refresh all data
-        loadData();
+      (requests: MentorshipRequest[]) => {
+        // Only update the requests state from the snapshot — no full reload
+        setPendingRequests(requests);
       }
     );
 
@@ -149,7 +189,7 @@ export default function MentorshipDashboard() {
       unsubscribeRefs.current.forEach((unsub) => unsub());
       unsubscribeRefs.current = [];
     };
-  }, [user, loadData]);
+  }, [user]);
 
   useEffect(() => {
     loadData();
@@ -159,7 +199,9 @@ export default function MentorshipDashboard() {
     setActiveTab(tab as Tab);
   }, []);
 
-  const pendingCount = matches.filter((m) => m.status === 'pending').length;
+  const pendingCount =
+    matches.filter((m) => m.status === 'pending').length +
+    pendingRequests.length;
 
   if (loading) {
     return (
@@ -167,7 +209,7 @@ export default function MentorshipDashboard() {
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-primary-600" />
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Loading mentorship data...
+            {t?.common?.loading ?? 'Loading...'}
           </p>
         </div>
       </div>
@@ -182,7 +224,7 @@ export default function MentorshipDashboard() {
           className="-mb-px flex gap-1 overflow-x-auto"
           aria-label="Mentorship tabs"
         >
-          {TAB_CONFIG.map((tab) => (
+          {tabConfig.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}

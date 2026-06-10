@@ -102,20 +102,33 @@ const ACTIVITIES: CalendarActivity[] = [
 // ---------------------------------------------------------------------------
 
 function isPast(dateStr: string): boolean {
-  return new Date(`${dateStr  }T23:59:00`) < new Date();
+  return new Date(`${dateStr}T23:59:00`) < new Date();
+}
+
+/**
+ * Capitalize only the first letter. Spanish locale dates come back fully
+ * lowercase ("viernes, 21 de agosto de 2026") — a CSS `capitalize` class
+ * would wrongly title-case every word ("Viernes, 21 De Agosto De 2026").
+ */
+function capitalizeFirst(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function formatDate(dateStr: string, lang: string): string {
-  return new Date(`${dateStr  }T12:00:00`).toLocaleDateString(
-    lang === 'es' ? 'es-MX' : 'en-US',
-    { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+  return capitalizeFirst(
+    new Date(`${dateStr}T12:00:00`).toLocaleDateString(
+      lang === 'es' ? 'es-MX' : 'en-US',
+      { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+    )
   );
 }
 
 function formatMonthYear(year: number, month: number, lang: string): string {
-  return new Date(year, month, 1).toLocaleDateString(
-    lang === 'es' ? 'es-MX' : 'en-US',
-    { month: 'long', year: 'numeric' }
+  return capitalizeFirst(
+    new Date(year, month, 1).toLocaleDateString(
+      lang === 'es' ? 'es-MX' : 'en-US',
+      { month: 'long', year: 'numeric' }
+    )
   );
 }
 
@@ -200,7 +213,7 @@ function ActivityBadge({
             <em className="font-normal opacity-70">{t('tbd', lang)}</em>
           )}
         </p>
-        <p className="mt-0.5 text-xs capitalize text-gray-600 dark:text-gray-400">
+        <p className="mt-0.5 text-xs text-gray-600 dark:text-gray-400">
           {formatDate(activity.date, lang)}
         </p>
         {activity.presenter && (
@@ -275,7 +288,7 @@ function MonthView({ lang }: { lang: string }) {
   while (cells.length % 7 !== 0) cells.push(null);
 
   const activitiesThisMonth = ACTIVITIES.filter((a) => {
-    const d = new Date(`${a.date  }T12:00:00`);
+    const d = new Date(`${a.date}T12:00:00`);
     return d.getFullYear() === year && d.getMonth() === month;
   });
 
@@ -308,7 +321,7 @@ function MonthView({ lang }: { lang: string }) {
         >
           <ChevronLeftIcon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
         </button>
-        <h3 className="text-base font-semibold capitalize text-gray-900 dark:text-white">
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white">
           {formatMonthYear(year, month, lang)}
         </h3>
         <button
@@ -334,7 +347,7 @@ function MonthView({ lang }: { lang: string }) {
         {cells.map((day, idx) => {
           const dayActivities = day
             ? activitiesThisMonth.filter(
-                (a) => new Date(`${a.date  }T12:00:00`).getDate() === day
+                (a) => new Date(`${a.date}T12:00:00`).getDate() === day
               )
             : [];
           const isToday =

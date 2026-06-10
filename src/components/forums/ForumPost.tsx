@@ -4,7 +4,6 @@ import {
   Bold,
   Italic,
   Link,
-  Image,
   Code,
   List,
   Quote,
@@ -25,7 +24,7 @@ import {
   forumCategories,
   forumFiles,
 } from '../../lib/forum';
-import type { ForumCategory, ForumTopic, Language } from '../../types';
+import type { ForumCategory, Language } from '../../types';
 
 interface ForumPostProps {
   mode: 'create-topic' | 'edit-topic' | 'create-post' | 'edit-post';
@@ -79,7 +78,6 @@ const ForumPost: React.FC<ForumPostProps> = ({
   const [uploadingFiles, setUploadingFiles] = useState<string[]>([]);
 
   // Editor state
-  const [cursorPosition, setCursorPosition] = useState(0);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -150,6 +148,11 @@ const ForumPost: React.FC<ForumPostProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!currentUser) {
+      setErrors({ submit: t.forum.errors.postingFailed });
+      return;
+    }
 
     if (!validateForm()) return;
 

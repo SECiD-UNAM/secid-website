@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Elements,
   CardElement,
@@ -70,7 +70,10 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
   const [useExistingCard, setUseExistingCard] = useState(false);
 
   const plan = SUBSCRIPTION_PLANS[planId];
-  const taxCalculation = calculateMexicanTaxes(plan.price);
+  const taxCalculation = useMemo(
+    () => calculateMexicanTaxes(plan.price),
+    [plan.price]
+  );
 
   // Initialize payment intent
   useEffect(() => {
@@ -242,7 +245,7 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
 
   const handleInputChange = (field: string, value: string) => {
     if (field.includes('.')) {
-      const [parent, child] = field.split('');
+      const [parent, child] = field.split('.');
       setCustomerInfo((prev) => ({
         ...prev,
         [parent]: {

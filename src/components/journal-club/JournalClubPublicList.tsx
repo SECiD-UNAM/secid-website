@@ -143,11 +143,14 @@ function StaticSessionCard({
   session: StaticSession;
   lang: string;
 }) {
-  const dateObj = new Date(`${session.date  }T18:00:00`); // 6pm
-  const formattedDate = dateObj.toLocaleDateString(
+  const dateObj = new Date(`${session.date}T18:00:00`); // 6pm
+  const rawDate = dateObj.toLocaleDateString(
     lang === 'es' ? 'es-MX' : 'en-US',
     { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
   );
+  // Capitalize only the first letter; a blanket `capitalize` class
+  // title-cases Spanish particles ("21 De Agosto De 2026").
+  const formattedDate = rawDate.charAt(0).toUpperCase() + rawDate.slice(1);
 
   const isCompleted = session.status === 'completed';
   const isUpcoming = session.status === 'upcoming';
@@ -181,7 +184,7 @@ function StaticSessionCard({
           {/* Date */}
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <CalendarIcon className="h-4 w-4 flex-shrink-0" />
-            <span className="capitalize">{formattedDate}</span>
+            <span>{formattedDate}</span>
           </div>
 
           {/* Presenter */}
@@ -332,10 +335,10 @@ export default function JournalClubPublicList({
   // Split static sessions into upcoming vs completed
   const now = new Date();
   const upcomingSessions = STATIC_SESSIONS.filter(
-    (s) => new Date(`${s.date  }T18:00:00`) >= now
+    (s) => new Date(`${s.date}T18:00:00`) >= now
   ).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   const pastSessions = STATIC_SESSIONS.filter(
-    (s) => new Date(`${s.date  }T18:00:00`) < now
+    (s) => new Date(`${s.date}T18:00:00`) < now
   ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   if (loading) {

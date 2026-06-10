@@ -27,7 +27,6 @@ import type {
   DirectMessage,
   Conversation,
 } from '@/types/member';
-import { mapUserDocToMemberProfile } from './mapper';
 import { logger } from '@/lib/logger';
 
 const log = logger.child('MemberMutations');
@@ -204,25 +203,36 @@ async function getOrCreateConversation(
 ): Promise<string> {
   const participants = [uid1, uid2].sort();
 
+  // Deterministic doc ID from the sorted participant UIDs: concurrent sends
+  // for the same pair resolve to the same document, so no duplicates (TOCTOU).
+  const conversationId = participants.join('_');
   const conversationsRef = collection(db, COLLECTIONS.CONVERSATIONS);
+  const conversationRef = doc(conversationsRef, conversationId);
+
+  const existing = await getDoc(conversationRef);
+  if (existing.exists()) {
+    return conversationId;
+  }
+
+  // Backwards compatibility: conversations created before deterministic IDs
+  // have random doc IDs — reuse them instead of creating a duplicate.
   const q = query(conversationsRef, where('participants', '==', participants));
   const snapshot = await getDocs(q);
-
   if (!snapshot['empty'] && snapshot['docs'][0]) {
     return snapshot['docs'][0].id;
   }
 
-  const conversationRef = doc(conversationsRef);
   const conversation: Conversation = {
-    id: conversationRef['id'],
+    id: conversationId,
     participants,
     unreadCount: { [uid1]: 0, [uid2]: 0 },
     createdAt: new Date(),
     updatedAt: new Date(),
   };
 
-  await setDoc(conversationRef, conversation);
-  return conversationRef['id'];
+  // merge:true keeps concurrent creators from clobbering each other
+  await setDoc(conversationRef, conversation, { merge: true });
+  return conversationId;
 }
 
 /**

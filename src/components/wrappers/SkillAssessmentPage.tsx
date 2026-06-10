@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import SkillAssessment from '@/components/assessment/SkillAssessment';
 import { useRouteIdBySegment } from '@/hooks/use-route-id';
 
@@ -43,36 +43,43 @@ const SKILL_MAP: Record<string, string> = {
   hadoop: 'hadoop',
 };
 
-export default function SkillAssessmentPage({
-  skillId,
-  lang = 'es',
-}: Props) {
+function SkillAssessmentInner({ skillId, lang = 'es' }: Props) {
+  const { user, loading } = useAuth();
   const routeId = useRouteIdBySegment('assessments');
   const effectiveId = skillId || routeId || 'python';
   const skillCategory = useMemo(
     () => SKILL_MAP[effectiveId] || 'python',
     [effectiveId]
   );
+  if (loading || !user?.uid) {
+    return null;
+  }
+  return (
+    <SkillAssessment
+      skillCategory={skillCategory as any}
+      userId={user.uid}
+      onStartAssessment={(assessmentId: string) => {
+        const path =
+          lang === 'es'
+            ? `/es/dashboard/assessments/${assessmentId}`
+            : `/en/dashboard/assessments/${assessmentId}`;
+        window.location.href = path;
+      }}
+      onViewCertificate={() => {
+        const path =
+          lang === 'es'
+            ? '/es/dashboard/assessments/historial'
+            : '/en/dashboard/assessments/history';
+        window.location.href = path;
+      }}
+    />
+  );
+}
+
+export default function SkillAssessmentPage(props: Props) {
   return (
     <AuthProvider>
-      <SkillAssessment
-        skillCategory={skillCategory as any}
-        userId="user123"
-        onStartAssessment={(assessmentId: string) => {
-          const path =
-            lang === 'es'
-              ? `/es/dashboard/evaluaciones/realizar/${assessmentId}`
-              : `/en/dashboard/assessments/take/${assessmentId}`;
-          window.location.href = path;
-        }}
-        onViewCertificate={(certificateId: string) => {
-          const path =
-            lang === 'es'
-              ? `/es/dashboard/evaluaciones/certificados/${certificateId}`
-              : `/en/dashboard/assessments/certificates/${certificateId}`;
-          window.location.href = path;
-        }}
-      />
+      <SkillAssessmentInner {...props} />
     </AuthProvider>
   );
 }

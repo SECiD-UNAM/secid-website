@@ -74,13 +74,12 @@ export const JobDetail: React.FC<JobDetailProps> = ({ jobId, lang = 'es' }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [hasApplied, setHasApplied] = useState(false);
   const [similarJobs, setSimilarJobs] = useState<any[]>([]);
-  const [showApplicationModal, setShowApplicationModal] = useState(false);
+  const [_showApplicationModal, setShowApplicationModal] = useState(false);
 
   useEffect(() => {
     fetchJobDetails();
     trackView();
     checkApplicationStatus();
-    fetchSimilarJobs();
   }, [jobId]);
 
   const fetchJobDetails = async () => {
@@ -112,81 +111,40 @@ export const JobDetail: React.FC<JobDetailProps> = ({ jobId, lang = 'es' }) => {
           applicationDeadline: data?.applicationDeadline?.toDate(),
           matchScore,
         } as JobDetails);
+
+        if (data['company']) {
+          fetchSimilarJobs(data['company']);
+        }
       } else {
-        // Use mock data if job not found
-        setJob(getMockJobDetails());
+        // Job not found — render the not-found state
+        setJob(null);
       }
     } catch (error) {
       console.error('Error fetching job details:', error);
-      setJob(getMockJobDetails());
+      setJob(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const getMockJobDetails = (): JobDetails => ({
-    id: jobId,
-    title: 'Senior Data Scientist',
-    company: 'TechCorp México',
-    companyDescription:
-      'Leading technology company specializing in AI and machine learning solutions for enterprise clients.',
-    location: 'Ciudad de México, CDMX',
-    locationType: 'hybrid',
-    employmentType: 'full-time',
-    salaryRange: {
-      min: 60000,
-      max: 90000,
-      currency: 'MXN',
-      period: 'monthly',
-    },
-    description: `We are looking for an experienced Data Scientist to join our growing team. You will be responsible for developing and implementing machine learning models, analyzing complex datasets, and driving data-driven decision making across the organization.
-
-This is an exciting opportunity to work with cutting-edge technologies and make a significant impact on our products and services. You'll collaborate with cross-functional teams including engineering, product, and business stakeholders.`,
-    requirements: [
-      '3+ years of experience in data science or related field',
-      'Strong programming skills in Python and SQL',
-      'Experience with machine learning frameworks (TensorFlow, PyTorch, Scikit-learn)',
-      'Solid understanding of statistical analysis and modeling',
-      'Experience with cloud platforms (AWS, GCP, or Azure)',
-      'Excellent communication and presentation skills',
-      "Bachelor's or Master's degree in Computer Science, Statistics, or related field",
-    ],
-    responsibilities: [
-      'Develop and deploy machine learning models to production',
-      'Analyze large datasets to extract insights and patterns',
-      'Collaborate with engineering teams to integrate ML solutions',
-      'Present findings and recommendations to stakeholders',
-      'Mentor junior data scientists and analysts',
-      'Stay updated with latest ML/AI trends and technologies',
-    ],
-    benefits: [
-      'Seguro de gastos médicos mayores',
-      'Vales de despensa',
-      'Home office flexible (3 días en oficina, 2 desde casa)',
-      'Capacitación y certificaciones pagadas',
-      'Bono anual por desempeño',
-      'Vacaciones superiores a la ley',
-      'Gimnasio en las instalaciones',
-      'Estacionamiento gratuito',
-    ],
-    tags: ['python', 'machine-learning', 'sql', 'tensorflow', 'aws', 'senior'],
-    postedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-    postedBy: 'company123',
-    applicationMethod: 'platform',
-    applicationDeadline: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
-    applicationCount: 23,
-    viewCount: 156,
-    featured: true,
-    status: 'active',
-    matchScore: 85,
-  });
-
   const trackView = async () => {
     if (!user) return;
+    const viewedKey = `job_viewed_${jobId}`;
+    try {
+      // Deduplicate views per browser so reloads don't inflate viewCount
+      if (localStorage.getItem(viewedKey)) return;
+    } catch {
+      // localStorage unavailable — fall through and track anyway
+    }
     try {
       await updateDoc(doc(db, 'jobs', jobId), {
         viewCount: increment(1),
       });
+      try {
+        localStorage.setItem(viewedKey, new Date().toISOString());
+      } catch {
+        // Ignore storage failures
+      }
     } catch (error) {
       console.error('Error tracking view:', error);
     }
@@ -206,13 +164,13 @@ This is an exciting opportunity to work with cutting-edge technologies and make 
     }
   };
 
-  const fetchSimilarJobs = async () => {
+  const fetchSimilarJobs = async (company: string) => {
     try {
       // Fetch jobs from the same company or with similar tags
       const jobsQuery = query(
         collection(db, 'jobs'),
         where('status', '==', 'active'),
-        where('company', '==', job?.company || '')
+        where('company', '==', company)
       );
       const snapshot = await getDocs(jobsQuery);
       const jobs = snapshot['docs']
