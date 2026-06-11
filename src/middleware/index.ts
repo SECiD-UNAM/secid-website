@@ -18,13 +18,12 @@ let securityManager: any = null;
 
 try {
   securityManager = createSecurityManagerFromEnv();
-} catch (error) {
-  // In production a missing security layer is fatal — fail the boot rather
-  // than silently serving guarded routes with a 503 fallback.
-  if (process.env.NODE_ENV === 'production') {
-    throw error;
-  }
-  // Dev: log without the raw error contents (it can echo env/config values).
+} catch {
+  // Do NOT throw here: `astro build` prerenders with NODE_ENV=production and
+  // without runtime secrets (SESSION_SECRET/JWT_SECRET), so a fatal init
+  // would break every static build. Guarded routes fail closed at request
+  // time via securityUnavailableResponse() when the manager is missing.
+  // Log without the raw error contents (it can echo env/config values).
   console.error(
     'Security manager initialization failed; guarded routes will fail closed. Check security-related environment configuration.'
   );
