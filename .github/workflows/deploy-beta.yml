@@ -94,13 +94,9 @@ jobs:
       # and the security rules might never have shipped, all while CI
       # stayed green. `set -o pipefail` keeps full output AND the real
       # exit status.
-      - name: Deploy Cloud Functions
-        run: |
-          set -o pipefail
-          npx firebase-tools deploy --only functions \
-            --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
-            --non-interactive --force 2>&1
-
+      # Rules deploy BEFORE functions: rules don't require the Blaze plan,
+      # and a billing-gated functions failure must never leave security
+      # rules unshipped (rules carry the privacy/authz fixes).
       - name: Deploy Firestore Rules & Indexes
         run: |
           set -o pipefail
@@ -114,3 +110,10 @@ jobs:
           npx firebase-tools deploy --only storage \
             --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
             --non-interactive 2>&1
+
+      - name: Deploy Cloud Functions
+        run: |
+          set -o pipefail
+          npx firebase-tools deploy --only functions \
+            --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
+            --non-interactive --force 2>&1
