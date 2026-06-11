@@ -446,3 +446,57 @@ duplicate findings from different tracks were merged.
    full-collection client scans.
 5. **Polish**: copy/accents, date capitalization, empty states,
    logged-in CTAs, footer year, i18n gaps.
+
+---
+
+## Implementation status (2026-06-10)
+
+The findings above were implemented in the commit series
+`f374c66..955cc7f` on `feature/hub`:
+
+- `f374c66` fix(functions) — C1, C9, and the Functions/scripts High,
+  Medium, and Low items (fan-outs, transactional rate limits,
+  linkedin-auth, merge-engine, seed-script guard, CORS alignment,
+  import-script collision warning).
+- `48059fc` fix(security) — C2 (rules layer), C10, payment IDOR set,
+  Firestore rules (networking bypass, conversations `isActive()`),
+  webhook idempotency, fetch-logo timeout/content-type, middleware
+  fail-fast, `sanitizeUrl`, lazy gcp-services/cache-manager.
+- `88f4b52` fix(dashboard) — C2 (UI layer), C3, C4, `AdminAuthGuard`
+  `isVerified`, `CompanyManagement` guard, ContentModeration listeners,
+  mock badges, DashboardStats limits, MemberDashboard lazy load,
+  AudioContext leak, ProtectedRoute/SearchContext i18n, dep fixes, and
+  three `@ts-nocheck` removals.
+- `4f99a5e` fix(components) — C5, C6, JobDetail/EventDetail mock
+  removal and counters, DirectMessages effect, forum guard and vote
+  batching, EventList server-side filter, deterministic conversation
+  IDs, mentorship i18n + `lang` wiring, `user123` in
+  SkillAssessmentPage, Spanish date casing, zero-state copy,
+  SurveyForm disclosure, PrivacyTab `@ts-nocheck`.
+- `955cc7f` fix(pages) — C7, C8, assessments `user123` pages + route
+  fixes + rewrite ordering, BaseLayout deletion, AdminLayout dead code
+  and `confirm()`/`alert()`, manifest consolidation, service-worker
+  routes, bilingual 404, `/registro` CTA targets, `es/register`,
+  dynamic footer year, mentorship accents, `public/assets/sass/`
+  removal.
+
+### Deferred (not implemented — needs a decision or a larger refactor)
+
+| Item                                                                  | Finding                                                                                                             | Why deferred / next step                                                                                                                                                        |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stripe webhooks on the client Firebase SDK (H)                        | `src/lib/stripe/stripe-webhooks.ts:4-18`                                                                            | Requires a server-side `firebase-admin` instance for Astro API routes — a structural refactor. Idempotency guards WERE added; the SDK migration must land before payments ship. |
+| Public profile reads return the whole user doc (M)                    | `firestore.rules:139-144`                                                                                           | Needs a `users_public` projection collection maintained by a Cloud Function, plus rule/reader changes. Product decision on which fields are public comes first.                 |
+| Full `users` collection scans for member stats (H)                    | `src/lib/members/queries.ts`                                                                                        | Proper fix is a scheduled Cloud Function writing `/stats/members`; client query rewrite depends on it.                                                                          |
+| `JobMatches`/`UpcomingEvents` bypass the universal listing system (H) | `src/components/dashboard/`                                                                                         | Mechanical but nontrivial migration to `useUniversalListing` + adapters.                                                                                                        |
+| React hydration errors #418/#423/#425 on dashboard (H)                | observed live                                                                                                       | Root cause not yet identified; reproduce with a dev build (unminified errors) before changing rendering. Likely fixes the logged-in-CTA mismatch too.                           |
+| No enforced CSP in production (M)                                     | `firebase.json:205`                                                                                                 | Adding an enforced header requires deciding how to handle Astro's inline hydration scripts (nonces/hashes).                                                                     |
+| Canonical domain inconsistency (M)                                    | `public/CNAME` vs `DEPLOYMENT.md` vs `astro.config.mjs`                                                             | Infra/product decision: secid.mx vs secid.org. Align CNAME, `site`, CORS lists, and docs once decided.                                                                          |
+| Dependency upgrades (M)                                               | Sentry v7→v8, `eslint-plugin-astro` 0.31→1.x, `vitest` 1.x→2/3                                                      | Each is a breaking-change migration; do individually with test runs.                                                                                                            |
+| `onUserDelete` on Functions v1 (L)                                    | `functions/src/index.ts:217-238`                                                                                    | Migrate to v2 `beforeUserDeleted`; low risk but touches deploy config.                                                                                                          |
+| `@ts-nocheck` in `security-config.ts` (M)                             | `src/lib/security-config.ts:1`                                                                                      | File-wide typing cleanup (`session/captcha/any`); not attempted in this pass.                                                                                                   |
+| Inline role checks → RBAC consolidation (L)                           | files listed above                                                                                                  | Tracked in the RBAC migration effort (see `project_rbac_legacy_hotspots`).                                                                                                      |
+| `api-docs.astro` removal decision (M)                                 | `src/pages/api-docs.astro`                                                                                          | `noIndex` applied; deciding whether to delete the page or build the API is a product call.                                                                                      |
+| `/es/forums` unrouted (live)                                          | forum components exist, no page                                                                                     | Confirm whether forums are in launch scope; route or remove entry points.                                                                                                       |
+| UX redesigns (Part I)                                                 | heroes, auth-aware CTAs, hamburger overlap, "Why join" grid, calendar auto-advance, beta banner, chat badge, X logo | Design-level changes; not bug fixes. Auth-aware CTAs should follow the hydration fix.                                                                                           |
+| Pre-existing type errors in `tsconfig`-excluded dirs                  | `src/lib/stripe/**`, `src/lib/cache/**`, `src/pages/api/**`, `src/middleware/**`                                    | ~26 pre-existing errors invisible to `npm run type-check` (these dirs are excluded). Worth re-including in tsconfig after a cleanup pass.                                       |
+| CI test-suite hang                                                    | `npm test`                                                                                                          | Pre-existing leaked-handle hang (~25 files in); test job already non-blocking. Unit tests were NOT run as part of this fix series — type-check, `astro check`, and ESLint were. |
