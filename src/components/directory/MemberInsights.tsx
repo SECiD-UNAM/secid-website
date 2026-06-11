@@ -72,10 +72,18 @@ export default function MemberInsights({ lang = 'es' }: Props) {
 
   const hasData = !!(
     aggregates &&
-    (aggregates.totalRespondents > 0 || (aggregates.totalFallbackUsers ?? 0) > 0)
+    (aggregates.totalRespondents > 0 ||
+      (aggregates.totalFallbackUsers ?? 0) > 0)
   );
   const tabs: Tab[] = hasData
-    ? ['companies', 'industries', 'generations', 'tech-stack', 'areas-of-interest', 'mentorship']
+    ? [
+        'companies',
+        'industries',
+        'generations',
+        'tech-stack',
+        'areas-of-interest',
+        'mentorship',
+      ]
     : ['companies'];
 
   return (
@@ -133,7 +141,10 @@ export default function MemberInsights({ lang = 'es' }: Props) {
         )}
 
         {!loading && tab === 'industries' && aggregates && (
-          <IndustryDonut data={aggregates.byIndustry as Record<string, number>} lang={lang} />
+          <IndustryDonut
+            data={aggregates.byIndustry as Record<string, number>}
+            lang={lang}
+          />
         )}
 
         {!loading && tab === 'generations' && aggregates && (

@@ -405,7 +405,7 @@ export async function generateCvPdf(
         const bulletFontSize = format === 'summary' ? 8.5 : 8.9;
         let descText = job.description;
         if (format === 'summary' && jobIndex > 0 && descText.length > 120) {
-          descText = `${descText.slice(0, 120)  }...`;
+          descText = `${descText.slice(0, 120)}...`;
         }
         renderBulletParagraph(descText, bulletFontSize);
       }
@@ -613,12 +613,12 @@ export async function generateCvPdf(
       if (nameWidth > maxNameWidth) {
         let truncated = project.title;
         while (
-          pdf.getTextWidth(`${truncated  }...`) > maxNameWidth &&
+          pdf.getTextWidth(`${truncated}...`) > maxNameWidth &&
           truncated.length > 4
         ) {
           truncated = truncated.slice(0, -1);
         }
-        displayName = `${truncated  }...`;
+        displayName = `${truncated}...`;
       }
       pdf.text(sanitizeText(displayName), leftMargin, yPos);
       pdf.setFont('helvetica', 'normal');

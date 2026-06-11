@@ -95,11 +95,7 @@ export type TechTool =
   | 'power-bi'
   | 'looker';
 
-export type MentorshipRole =
-  | 'want-mentor'
-  | 'want-mentee'
-  | 'both'
-  | 'neither';
+export type MentorshipRole = 'want-mentor' | 'want-mentee' | 'both' | 'neither';
 
 export type OpenToOpportunities = 'actively-looking' | 'open' | 'not-looking';
 

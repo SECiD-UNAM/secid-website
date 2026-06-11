@@ -1,6 +1,6 @@
-import { onCall, HttpsError } from "firebase-functions/v2/https";
-import * as admin from "firebase-admin";
-import { createHash } from "crypto";
+import { onCall, HttpsError } from 'firebase-functions/v2/https';
+import * as admin from 'firebase-admin';
+import { createHash } from 'crypto';
 
 const db = admin.firestore();
 const MAX_FIELD_LENGTH = 10000;
@@ -17,16 +17,16 @@ function clientIp(request: { rawRequest?: unknown }): string {
   const raw = request.rawRequest as
     | { headers?: Record<string, unknown>; ip?: string }
     | undefined;
-  const xff = raw?.headers?.["x-forwarded-for"];
-  if (typeof xff === "string" && xff.length > 0) {
-    return xff.split(",")[0]!.trim();
+  const xff = raw?.headers?.['x-forwarded-for'];
+  if (typeof xff === 'string' && xff.length > 0) {
+    return xff.split(',')[0]!.trim();
   }
-  return raw?.ip || "unknown";
+  return raw?.ip || 'unknown';
 }
 
 async function enforceRateLimit(ip: string): Promise<void> {
-  const key = createHash("sha256").update(ip).digest("hex").slice(0, 32);
-  const ref = db.collection("rate_limits").doc(`pubjob_${key}`);
+  const key = createHash('sha256').update(ip).digest('hex').slice(0, 32);
+  const ref = db.collection('rate_limits').doc(`pubjob_${key}`);
   await db.runTransaction(async (tx) => {
     const snap = await tx.get(ref);
     const now = Date.now();
@@ -40,8 +40,8 @@ async function enforceRateLimit(ip: string): Promise<void> {
     }
     if (data.count >= RL_MAX_PER_WINDOW) {
       throw new HttpsError(
-        "resource-exhausted",
-        "Too many submissions from this network. Please try again later."
+        'resource-exhausted',
+        'Too many submissions from this network. Please try again later.'
       );
     }
     tx.update(ref, { count: data.count + 1 });
@@ -55,9 +55,9 @@ function sanitize(str: string, maxLen = MAX_FIELD_LENGTH): string {
   let prev;
   do {
     prev = out;
-    out = out.replace(/<[^>]*>/g, "");
+    out = out.replace(/<[^>]*>/g, '');
   } while (out !== prev);
-  return out.replace(/[<>]/g, "").trim().slice(0, maxLen);
+  return out.replace(/[<>]/g, '').trim().slice(0, maxLen);
 }
 
 function sanitizeArray(arr: string[], maxLen = MAX_FIELD_LENGTH): string[] {
@@ -87,17 +87,17 @@ interface PublicJobSubmissionData {
 
 function validateRequiredFields(data: PublicJobSubmissionData): void {
   const requiredFields: (keyof PublicJobSubmissionData)[] = [
-    "title",
-    "company",
-    "description",
-    "contactEmail",
-    "contactName",
+    'title',
+    'company',
+    'description',
+    'contactEmail',
+    'contactName',
   ];
 
   for (const field of requiredFields) {
     const value = data[field];
-    if (!value || (typeof value === "string" && value.trim().length === 0)) {
-      throw new HttpsError("invalid-argument", `${field} is required`);
+    if (!value || (typeof value === 'string' && value.trim().length === 0)) {
+      throw new HttpsError('invalid-argument', `${field} is required`);
     }
   }
 }
@@ -105,8 +105,8 @@ function validateRequiredFields(data: PublicJobSubmissionData): void {
 function validateEmailFormat(email: string): void {
   if (!EMAIL_REGEX.test(email)) {
     throw new HttpsError(
-      "invalid-argument",
-      "contactEmail is not a valid email address"
+      'invalid-argument',
+      'contactEmail is not a valid email address'
     );
   }
 }
@@ -120,7 +120,7 @@ function buildSanitizedDocument(
     description: sanitize(data.description),
     contactEmail: sanitize(data.contactEmail, 254),
     contactName: sanitize(data.contactName, 200),
-    status: "pending_review",
+    status: 'pending_review',
     submittedAt: admin.firestore.FieldValue.serverTimestamp(),
   };
 
@@ -175,7 +175,7 @@ export const submitPublicJob = onCall(async (request) => {
   const sanitizedDoc = buildSanitizedDocument(data);
 
   const docRef = await db
-    .collection("public_job_submissions")
+    .collection('public_job_submissions')
     .add(sanitizedDoc);
 
   return { success: true, submissionId: docRef.id };

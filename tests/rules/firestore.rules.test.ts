@@ -98,24 +98,22 @@ describe.skipIf(!emulatorRunning)('firestore.rules — users collection', () => 
     });
 
     const anonDb = testEnv.unauthenticatedContext().firestore();
-    await assertSucceeds(anonDb.collection('users').doc('public-cv-user').get());
+    await assertSucceeds(
+      anonDb.collection('users').doc('public-cv-user').get()
+    );
   });
 
   it('anonymous CANNOT read user without public visibility flags', async () => {
     if (!testEnv) throw new Error('testEnv not initialized');
 
     await testEnv.withSecurityRulesDisabled(async (ctx) => {
-      await ctx
-        .firestore()
-        .collection('users')
-        .doc('private-user')
-        .set({
-          email: 'private@example.com',
-          // No privacy field at all — the rule must handle missing fields
-          // safely (regression test for #64 — null access on undefined
-          // privacy field used to error and deny everything including
-          // owner reads).
-        });
+      await ctx.firestore().collection('users').doc('private-user').set({
+        email: 'private@example.com',
+        // No privacy field at all — the rule must handle missing fields
+        // safely (regression test for #64 — null access on undefined
+        // privacy field used to error and deny everything including
+        // owner reads).
+      });
     });
 
     const anonDb = testEnv.unauthenticatedContext().firestore();
@@ -126,13 +124,9 @@ describe.skipIf(!emulatorRunning)('firestore.rules — users collection', () => 
     if (!testEnv) throw new Error('testEnv not initialized');
 
     await testEnv.withSecurityRulesDisabled(async (ctx) => {
-      await ctx
-        .firestore()
-        .collection('users')
-        .doc('owner-uid')
-        .set({
-          email: 'owner@example.com',
-        });
+      await ctx.firestore().collection('users').doc('owner-uid').set({
+        email: 'owner@example.com',
+      });
     });
 
     const ownerDb = testEnv.authenticatedContext('owner-uid').firestore();

@@ -35,18 +35,18 @@ const db = getFirestore();
 // Existing companies already in Firestore (name -> docId)
 // ---------------------------------------------------------------------------
 const EXISTING_COMPANIES = {
-  'UNAM': 'vI5VTNuPadfgvDmU13pz',
-  'BBVA': 'hGDGpxAvFE7WlyCa6tqC',
-  'Oracle': 'v7vRcNRiN5rttZOFBi9w',
-  'NielsenIQ': 'KVaOwh3EF6BHGo3L4Pzt',
-  'Zendesk': 'YlO5n1n7NBuuIK8iHfwD',
+  UNAM: 'vI5VTNuPadfgvDmU13pz',
+  BBVA: 'hGDGpxAvFE7WlyCa6tqC',
+  Oracle: 'v7vRcNRiN5rttZOFBi9w',
+  NielsenIQ: 'KVaOwh3EF6BHGo3L4Pzt',
+  Zendesk: 'YlO5n1n7NBuuIK8iHfwD',
   'SAS Institute': 'AB4spJLRbFYkaurJOC4A',
   'Universal Pictures International': '1STxuuJbfS0oXz7cXtBr',
-  'Algorithia': 'm43w69hXc6z6B8QhjufK',
-  'XalDigital': 'a9MZ1mtvtDFzlLK4nkaA',
+  Algorithia: 'm43w69hXc6z6B8QhjufK',
+  XalDigital: 'a9MZ1mtvtDFzlLK4nkaA',
   'El puerto de Liverpool': 'VEdiw46eAFQje52ejcnn',
-  'Datateam': 'tWe6vKmuVGrcRKPxpGRY',
-  'Cognodata': 'LJKgHsynHbphAOnrW6zb',
+  Datateam: 'tWe6vKmuVGrcRKPxpGRY',
+  Cognodata: 'LJKgHsynHbphAOnrW6zb',
   'Secretaria de Finanzas de la CDMX': 'nTSXp1pr2pYJ9mSWOjLV',
   'SAS INSTITUTE': 'AB4spJLRbFYkaurJOC4A',
 };
@@ -55,12 +55,24 @@ const EXISTING_COMPANIES = {
 // New companies to create
 // ---------------------------------------------------------------------------
 const NEW_COMPANIES = [
-  { name: 'Bluetab Solutions', industry: 'Tecnología', location: 'Ciudad de México' },
-  { name: 'Santander Bank', industry: 'Finanzas', location: 'Ciudad de México' },
+  {
+    name: 'Bluetab Solutions',
+    industry: 'Tecnología',
+    location: 'Ciudad de México',
+  },
+  {
+    name: 'Santander Bank',
+    industry: 'Finanzas',
+    location: 'Ciudad de México',
+  },
   { name: 'PRGX Global', industry: 'Consultoría', location: 'Global' },
   { name: 'Alldatum', industry: 'Tecnología', location: 'Ciudad de México' },
   { name: 'Banco Azteca', industry: 'Finanzas', location: 'Ciudad de México' },
-  { name: 'Consejo de la Judicatura Federal', industry: 'Gobierno', location: 'Ciudad de México' },
+  {
+    name: 'Consejo de la Judicatura Federal',
+    industry: 'Gobierno',
+    location: 'Ciudad de México',
+  },
   { name: 'SEFIRA', industry: 'Tecnología', location: 'Ciudad de México' },
   { name: 'Tecnosim', industry: 'Tecnología', location: 'Ciudad de México' },
   { name: 'Klu', industry: 'Fintech', location: 'Ciudad de México' },
@@ -72,11 +84,27 @@ const NEW_COMPANIES = [
   { name: 'Quarksoft', industry: 'Tecnología', location: 'Ciudad de México' },
   { name: 'GFT', industry: 'Tecnología', location: 'Global' },
   { name: 'Intekglobal', industry: 'Tecnología', location: 'Tijuana' },
-  { name: 'Grupo Salinas', industry: 'Conglomerado', location: 'Ciudad de México' },
-  { name: 'Instituto Belisario Domínguez', industry: 'Gobierno', location: 'Ciudad de México' },
+  {
+    name: 'Grupo Salinas',
+    industry: 'Conglomerado',
+    location: 'Ciudad de México',
+  },
+  {
+    name: 'Instituto Belisario Domínguez',
+    industry: 'Gobierno',
+    location: 'Ciudad de México',
+  },
   { name: 'Unifin', industry: 'Finanzas', location: 'Ciudad de México' },
-  { name: 'Harvard University', industry: 'Educación', location: 'Massachusetts, USA' },
-  { name: 'Northeastern University', industry: 'Educación', location: 'Massachusetts, USA' },
+  {
+    name: 'Harvard University',
+    industry: 'Educación',
+    location: 'Massachusetts, USA',
+  },
+  {
+    name: 'Northeastern University',
+    industry: 'Educación',
+    location: 'Massachusetts, USA',
+  },
   { name: 'MIT', industry: 'Educación', location: 'Massachusetts, USA' },
   { name: 'ITAM', industry: 'Educación', location: 'Ciudad de México' },
 ];
@@ -87,7 +115,10 @@ const NEW_COMPANIES = [
 let idCounter = 0;
 function makeId(prefix, label) {
   idCounter += 1;
-  const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  const slug = label
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
   return `cv-${prefix}-${slug}-${idCounter}`;
 }
 
@@ -104,7 +135,20 @@ function buildMembers(companyIds) {
       name: 'Sofía Ixchel Michaelian',
       bio: "Data Analyst with a background in Physics and a Master's in Computer Science. Experienced in data analysis, machine learning, predictive modeling, and data visualization with Power BI. Research experience in wind farm lightning prediction and genetic algorithms.",
       location: 'Ciudad de México',
-      skills: ['Python', 'PyTorch', 'Pandas', 'SQL', 'Java', 'C++', 'Power BI', 'MATLAB', 'LaTeX', 'ELT', 'GitHub', 'Google Cloud'],
+      skills: [
+        'Python',
+        'PyTorch',
+        'Pandas',
+        'SQL',
+        'Java',
+        'C++',
+        'Power BI',
+        'MATLAB',
+        'LaTeX',
+        'ELT',
+        'GitHub',
+        'Google Cloud',
+      ],
       languages: [
         { name: 'Español', proficiency: 'Nativo' },
         { name: 'Inglés', proficiency: 'Fluido' },
@@ -119,7 +163,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2024, 1, 1),
           endDate: null,
           current: true,
-          description: 'Data analysis and visualization for institutional technology projects.',
+          description:
+            'Data analysis and visualization for institutional technology projects.',
           technologies: ['Python', 'Power BI', 'APIs'],
         },
         {
@@ -142,7 +187,8 @@ function buildMembers(companyIds) {
           endDate: new Date(2024, 5, 1),
           current: false,
           gpa: null,
-          description: 'Research on wind farm lightning prediction and genetic algorithms.',
+          description:
+            'Research on wind farm lightning prediction and genetic algorithms.',
         },
         {
           institution: 'Facultad de Ciencias UNAM',
@@ -165,7 +211,23 @@ function buildMembers(companyIds) {
       name: 'Sara Kenia Cisneros',
       bio: 'Data scientist with Actuary background. Experience in predictive modeling with machine learning, deep learning, NLP, big data, data quality and BI. Specialized in breast cancer prediction research.',
       location: 'Guadalajara',
-      skills: ['Python', 'Spark', 'R', 'Java', 'Julia', 'Azure', 'AWS', 'SQL', 'PostgreSQL', 'MySQL', 'Neo4j', 'Cassandra', 'NLP', 'Machine Learning', 'Deep Learning'],
+      skills: [
+        'Python',
+        'Spark',
+        'R',
+        'Java',
+        'Julia',
+        'Azure',
+        'AWS',
+        'SQL',
+        'PostgreSQL',
+        'MySQL',
+        'Neo4j',
+        'Cassandra',
+        'NLP',
+        'Machine Learning',
+        'Deep Learning',
+      ],
       languages: [
         { name: 'Español', proficiency: 'Nativo' },
         { name: 'Inglés', proficiency: 'B1' },
@@ -179,7 +241,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2023, 6, 1),
           endDate: null,
           current: true,
-          description: 'Business intelligence analysis and reporting for international operations.',
+          description:
+            'Business intelligence analysis and reporting for international operations.',
           technologies: [],
         },
         {
@@ -209,7 +272,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2020, 7, 1),
           endDate: new Date(2021, 9, 1),
           current: false,
-          description: 'Research in predictive modeling and breast cancer prediction.',
+          description:
+            'Research in predictive modeling and breast cancer prediction.',
           technologies: ['Python', 'Machine Learning'],
         },
       ],
@@ -232,7 +296,8 @@ function buildMembers(companyIds) {
           endDate: new Date(2018, 5, 1),
           current: false,
           gpa: null,
-          description: 'Completed four semesters before transferring to Data Science.',
+          description:
+            'Completed four semesters before transferring to Data Science.',
         },
       ],
     },
@@ -245,7 +310,29 @@ function buildMembers(companyIds) {
       name: 'José Marcos Yáñez',
       bio: 'Data Engineer with experience in Big Data, ETL pipelines, ML model productionization, and data governance. Strong background in Spark/Scala, Python/PySpark, and AWS services.',
       location: 'Ciudad de México',
-      skills: ['Python', 'Pandas', 'NumPy', 'TensorFlow', 'PyTorch', 'Scikit-learn', 'PySpark', 'R', 'Java', 'Git', 'Scala', 'Spark', 'AWS', 'Jenkins', 'PostgreSQL', 'MySQL', 'MongoDB', 'Cassandra', 'Redis', 'Neo4j', 'Power BI'],
+      skills: [
+        'Python',
+        'Pandas',
+        'NumPy',
+        'TensorFlow',
+        'PyTorch',
+        'Scikit-learn',
+        'PySpark',
+        'R',
+        'Java',
+        'Git',
+        'Scala',
+        'Spark',
+        'AWS',
+        'Jenkins',
+        'PostgreSQL',
+        'MySQL',
+        'MongoDB',
+        'Cassandra',
+        'Redis',
+        'Neo4j',
+        'Power BI',
+      ],
       languages: [
         { name: 'Español', proficiency: 'Nativo' },
         { name: 'Inglés', proficiency: 'B2' },
@@ -259,8 +346,17 @@ function buildMembers(companyIds) {
           startDate: new Date(2023, 9, 1),
           endDate: null,
           current: true,
-          description: 'Big Data engineering with Spark/Scala and AWS services for cross-functional data initiatives.',
-          technologies: ['Spark', 'Scala', 'PySpark', 'AWS', 'EMR', 'S3', 'SageMaker'],
+          description:
+            'Big Data engineering with Spark/Scala and AWS services for cross-functional data initiatives.',
+          technologies: [
+            'Spark',
+            'Scala',
+            'PySpark',
+            'AWS',
+            'EMR',
+            'S3',
+            'SageMaker',
+          ],
         },
         {
           company: 'Bluetab Solutions',
@@ -269,17 +365,20 @@ function buildMembers(companyIds) {
           startDate: new Date(2022, 7, 1),
           endDate: new Date(2023, 9, 1),
           current: false,
-          description: 'ETL pipeline development and data governance with Spark/Scala.',
+          description:
+            'ETL pipeline development and data governance with Spark/Scala.',
           technologies: ['Spark', 'Scala', 'PySpark', 'DevOps'],
         },
         {
           company: 'UNAM',
           companyId: companyIds['UNAM'] || null,
-          position: 'Data Science Internship - Instituto de Investigaciones Económicas',
+          position:
+            'Data Science Internship - Instituto de Investigaciones Económicas',
           startDate: new Date(2021, 11, 1),
           endDate: new Date(2022, 6, 1),
           current: false,
-          description: 'Data analysis and ML modeling for economic research projects.',
+          description:
+            'Data analysis and ML modeling for economic research projects.',
           technologies: ['Python', 'Power BI', 'Machine Learning'],
         },
       ],
@@ -305,7 +404,19 @@ function buildMembers(companyIds) {
       name: 'Fernando Raúl Garay',
       bio: 'Growth Marketing Specialist with a Mathematics background. Experience as Python developer, data consultant, and teaching assistant. Skilled in web development, data analysis, and software engineering.',
       location: 'Ciudad de México',
-      skills: ['Python', 'SQL', 'Java', 'JavaScript', 'Flask', 'Spring', 'Git', 'Linux', 'Docker', 'Postman', 'BS4'],
+      skills: [
+        'Python',
+        'SQL',
+        'Java',
+        'JavaScript',
+        'Flask',
+        'Spring',
+        'Git',
+        'Linux',
+        'Docker',
+        'Postman',
+        'BS4',
+      ],
       languages: [
         { name: 'Español', proficiency: 'Nativo' },
         { name: 'Inglés', proficiency: 'Avanzado' },
@@ -329,7 +440,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2023, 0, 1),
           endDate: new Date(2023, 5, 1),
           current: false,
-          description: 'Backend development with Python, REST APIs, and database integration.',
+          description:
+            'Backend development with Python, REST APIs, and database integration.',
           technologies: ['Python', 'REST APIs', 'Databases'],
         },
         {
@@ -375,7 +487,27 @@ function buildMembers(companyIds) {
       name: 'Misael López Sánchez',
       bio: 'Mathematician and Actuary passionate about data science, data mining, business intelligence, and cloud technologies. Senior consultant with SAS expertise and multilingual skills.',
       location: 'Cuautitlán, Estado de México',
-      skills: ['Python', 'R', 'Scala', 'Java', 'SAS', 'SAS Viya', 'Azure', 'GCP', 'AWS', 'Spark', 'SQL', 'NoSQL', 'Power BI', 'Tableau', 'Git', 'Jira', 'Hadoop', 'Cloudera', 'Databricks'],
+      skills: [
+        'Python',
+        'R',
+        'Scala',
+        'Java',
+        'SAS',
+        'SAS Viya',
+        'Azure',
+        'GCP',
+        'AWS',
+        'Spark',
+        'SQL',
+        'NoSQL',
+        'Power BI',
+        'Tableau',
+        'Git',
+        'Jira',
+        'Hadoop',
+        'Cloudera',
+        'Databricks',
+      ],
       languages: [
         { name: 'Español', proficiency: 'Nativo' },
         { name: 'Inglés', proficiency: 'IELTS 6' },
@@ -391,7 +523,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2021, 2, 1),
           endDate: null,
           current: true,
-          description: 'Senior consulting with SAS Viya, Visual Analytics, ML, and BI solutions.',
+          description:
+            'Senior consulting with SAS Viya, Visual Analytics, ML, and BI solutions.',
           technologies: ['SAS Viya', 'SAS Visual Analytics', 'ML', 'BI'],
         },
         {
@@ -401,7 +534,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2020, 10, 1),
           endDate: new Date(2021, 2, 1),
           current: false,
-          description: 'Analytical consulting with Spark, Python, and cloud platforms.',
+          description:
+            'Analytical consulting with Spark, Python, and cloud platforms.',
           technologies: ['Spark', 'Python', 'Databricks', 'Cloudera'],
         },
         {
@@ -447,7 +581,16 @@ function buildMembers(companyIds) {
       name: 'Rodrigo Alan García',
       bio: "Data Scientist with a background in Computer Engineering, pursuing a Master's in Data Science at ITAM. Experience in data analysis, ETL pipelines, infrastructure monitoring, and automation. Bilingual Spanish/English.",
       location: 'Ciudad de México',
-      skills: ['Python', 'R', 'SQL', 'Machine Learning', 'Big Data', 'Time Series', 'Data Visualization', 'Statistical Analysis'],
+      skills: [
+        'Python',
+        'R',
+        'SQL',
+        'Machine Learning',
+        'Big Data',
+        'Time Series',
+        'Data Visualization',
+        'Statistical Analysis',
+      ],
       languages: [
         { name: 'Español', proficiency: 'Nativo' },
         { name: 'Inglés', proficiency: 'Nativo/Bilingüe' },
@@ -462,7 +605,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2022, 0, 1),
           endDate: null,
           current: true,
-          description: 'Infrastructure monitoring, dashboards, and automation using Python.',
+          description:
+            'Infrastructure monitoring, dashboards, and automation using Python.',
           technologies: ['Python', 'Monitoring', 'Dashboards'],
         },
         {
@@ -508,7 +652,34 @@ function buildMembers(companyIds) {
       name: 'Héctor Moisés Pech',
       bio: 'Data scientist and database developer with a strong aptitude for data analysis, visualization, and machine learning. Dual degree in Physics and Data Science with experience in NLP, Big Data, and statistical modeling.',
       location: 'Ciudad de México',
-      skills: ['Python', 'R', 'SQL', 'Julia', 'Java', 'C++', 'MySQL', 'PostgreSQL', 'SQL Server', 'MongoDB', 'Cassandra', 'Neo4j', 'Riak', 'Pandas', 'NumPy', 'TensorFlow', 'Scikit-learn', 'PySpark', 'Keras', 'PyTorch', 'Power BI', 'Tableau', 'Qlik Sense', 'NLP', 'Machine Learning', 'Deep Learning'],
+      skills: [
+        'Python',
+        'R',
+        'SQL',
+        'Julia',
+        'Java',
+        'C++',
+        'MySQL',
+        'PostgreSQL',
+        'SQL Server',
+        'MongoDB',
+        'Cassandra',
+        'Neo4j',
+        'Riak',
+        'Pandas',
+        'NumPy',
+        'TensorFlow',
+        'Scikit-learn',
+        'PySpark',
+        'Keras',
+        'PyTorch',
+        'Power BI',
+        'Tableau',
+        'Qlik Sense',
+        'NLP',
+        'Machine Learning',
+        'Deep Learning',
+      ],
       languages: [
         { name: 'Español', proficiency: 'Nativo' },
         { name: 'Inglés', proficiency: 'C1' },
@@ -523,7 +694,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2023, 7, 1),
           endDate: null,
           current: true,
-          description: 'Machine learning and statistical modeling for market research.',
+          description:
+            'Machine learning and statistical modeling for market research.',
           technologies: ['Machine Learning', 'Python'],
         },
         {
@@ -569,7 +741,30 @@ function buildMembers(companyIds) {
       name: 'Ingrid Pamela Ruíz',
       bio: 'Actuaria y Científica de Datos con casi 3 años de experiencia en análisis de datos, construcción de modelos de ML y consultoría. Apasionada de la ciencia, las matemáticas y resolver problemas de gran impacto.',
       location: 'Ciudad de México',
-      skills: ['Python', 'R', 'Spark', 'Julia', 'SAS', 'Java', 'JavaScript', 'SQL', 'PostgreSQL', 'MySQL', 'Docker', 'MongoDB', 'Cassandra', 'Redis', 'Neo4j', 'Git', 'HTML', 'Bootstrap', 'Power BI', 'Tableau', 'Data Studio', 'Qlik'],
+      skills: [
+        'Python',
+        'R',
+        'Spark',
+        'Julia',
+        'SAS',
+        'Java',
+        'JavaScript',
+        'SQL',
+        'PostgreSQL',
+        'MySQL',
+        'Docker',
+        'MongoDB',
+        'Cassandra',
+        'Redis',
+        'Neo4j',
+        'Git',
+        'HTML',
+        'Bootstrap',
+        'Power BI',
+        'Tableau',
+        'Data Studio',
+        'Qlik',
+      ],
       languages: [
         { name: 'Español', proficiency: 'Nativo' },
         { name: 'Inglés', proficiency: 'B2' },
@@ -603,7 +798,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2018, 0, 1),
           endDate: new Date(2021, 11, 1),
           current: false,
-          description: 'Statistical analysis, Power BI dashboards, and CRM management.',
+          description:
+            'Statistical analysis, Power BI dashboards, and CRM management.',
           technologies: ['Power BI', 'CRM'],
         },
         {
@@ -613,7 +809,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2020, 0, 1),
           endDate: new Date(2021, 11, 1),
           current: false,
-          description: 'Teaching assistant in Mathematics and Statistics courses.',
+          description:
+            'Teaching assistant in Mathematics and Statistics courses.',
           technologies: [],
         },
       ],
@@ -659,7 +856,28 @@ function buildMembers(companyIds) {
       name: 'Yaotzin Velázquez',
       bio: 'Data and backend lead with experience as team coordinator for data and software development. Understanding of Big Data, ML, cloud architecture, B2B projects, quality assurance, and business requirements analysis.',
       location: 'Ciudad de México',
-      skills: ['Python', 'Java', 'Node.js', 'Django', 'Flask', 'Selenium', 'PostgreSQL', 'MySQL', 'Linux', 'Docker', 'AWS', 'PySpark', 'Kafka', 'MongoDB', 'Redis', 'Elasticsearch', 'Kibana', 'Tableau', 'Airflow', 'Serverless Framework'],
+      skills: [
+        'Python',
+        'Java',
+        'Node.js',
+        'Django',
+        'Flask',
+        'Selenium',
+        'PostgreSQL',
+        'MySQL',
+        'Linux',
+        'Docker',
+        'AWS',
+        'PySpark',
+        'Kafka',
+        'MongoDB',
+        'Redis',
+        'Elasticsearch',
+        'Kibana',
+        'Tableau',
+        'Airflow',
+        'Serverless Framework',
+      ],
       languages: [
         { name: 'Español', proficiency: 'Nativo' },
         { name: 'Inglés', proficiency: 'B1' },
@@ -683,7 +901,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2022, 10, 1),
           endDate: new Date(2023, 1, 1),
           current: false,
-          description: 'Data governance, cloud architecture, and streaming pipelines.',
+          description:
+            'Data governance, cloud architecture, and streaming pipelines.',
           technologies: ['Data Governance', 'Cloud', 'Streaming'],
         },
         {
@@ -763,7 +982,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2016, 0, 1),
           endDate: new Date(2017, 1, 1),
           current: false,
-          description: 'Software quality coordination with Linux, Python, Jenkins, and CI/CD.',
+          description:
+            'Software quality coordination with Linux, Python, Jenkins, and CI/CD.',
           technologies: ['Linux', 'Python', 'Jenkins', 'Java', 'CI/CD'],
         },
       ],
@@ -799,7 +1019,28 @@ function buildMembers(companyIds) {
       name: 'Fernando Avitúa',
       bio: 'Científico de Datos y Maestro en Física. Capacidad de abstraer problemas hacia formulaciones matemáticas. Experiencia en modelos de ML, series de tiempo, MLFlow, y desarrollo de soluciones analíticas para negocios financieros.',
       location: 'Ciudad de México',
-      skills: ['Python', 'R', 'SQL', 'JavaScript', 'Node.js', 'HTML/CSS', 'NumPy', 'Pandas', 'Scikit-learn', 'PyTorch', 'TensorFlow', 'MLFlow', 'Networkx', 'Statsmodels', 'PySpark', 'Seaborn', 'Power BI', 'Knime', 'Linux', 'Git'],
+      skills: [
+        'Python',
+        'R',
+        'SQL',
+        'JavaScript',
+        'Node.js',
+        'HTML/CSS',
+        'NumPy',
+        'Pandas',
+        'Scikit-learn',
+        'PyTorch',
+        'TensorFlow',
+        'MLFlow',
+        'Networkx',
+        'Statsmodels',
+        'PySpark',
+        'Seaborn',
+        'Power BI',
+        'Knime',
+        'Linux',
+        'Git',
+      ],
       languages: [
         { name: 'Español', proficiency: 'Nativo' },
         { name: 'Inglés', proficiency: 'C1' },
@@ -813,7 +1054,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2024, 5, 1),
           endDate: null,
           current: true,
-          description: 'Data science coordination and analytical solutions development.',
+          description:
+            'Data science coordination and analytical solutions development.',
           technologies: [],
         },
         {
@@ -823,7 +1065,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2023, 11, 1),
           endDate: new Date(2024, 4, 1),
           current: false,
-          description: 'AI consulting with ML, MLFlow, and time series analysis for financial businesses.',
+          description:
+            'AI consulting with ML, MLFlow, and time series analysis for financial businesses.',
           technologies: ['ML', 'MLFlow', 'Time Series'],
         },
         {
@@ -843,7 +1086,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2022, 0, 1),
           endDate: new Date(2023, 0, 1),
           current: false,
-          description: 'Data leadership and ML model development for educational analytics.',
+          description:
+            'Data leadership and ML model development for educational analytics.',
           technologies: ['Machine Learning'],
         },
         {
@@ -913,7 +1157,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2022, 5, 1),
           endDate: new Date(2023, 5, 1),
           current: false,
-          description: 'Economic analysis and research support at the Senate institute.',
+          description:
+            'Economic analysis and research support at the Senate institute.',
           technologies: [],
         },
       ],
@@ -939,7 +1184,16 @@ function buildMembers(companyIds) {
       name: 'Jennifer Itzel García',
       bio: 'Actuaria y Científica de Datos de la primera generación. Experiencia en Credit Scoring, modelado con grafos, y consultoría de datos. Conocimientos en Matemáticas avanzadas, Estadística, Machine Learning y visualización de datos.',
       location: 'Naucalpan, Estado de México',
-      skills: ['Python', 'SQL', 'NoSQL', 'MongoDB', 'Neo4j', 'Tableau', 'Data Studio', 'Linux'],
+      skills: [
+        'Python',
+        'SQL',
+        'NoSQL',
+        'MongoDB',
+        'Neo4j',
+        'Tableau',
+        'Data Studio',
+        'Linux',
+      ],
       languages: [
         { name: 'Español', proficiency: 'Nativo' },
         { name: 'Inglés', proficiency: 'B2' },
@@ -953,7 +1207,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2023, 9, 1),
           endDate: null,
           current: true,
-          description: 'CLTV analysis and graph-based modeling for consulting projects.',
+          description:
+            'CLTV analysis and graph-based modeling for consulting projects.',
           technologies: ['CLTV', 'Grafos'],
         },
         {
@@ -963,7 +1218,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2021, 5, 1),
           endDate: new Date(2023, 8, 1),
           current: false,
-          description: 'Credit scoring and graph-based modeling for financial services.',
+          description:
+            'Credit scoring and graph-based modeling for financial services.',
           technologies: ['Credit Scoring', 'Grafos'],
         },
         {
@@ -1027,9 +1283,27 @@ function buildMembers(companyIds) {
     {
       uid: 'Ogm3tyIM5GToz8GN9LNQ97DFPB23',
       name: 'Leonardo Damián Cázares',
-      bio: "Data Scientist and Physicist with dual BSc from UNAM. Research experience at Harvard, MIT, and Northeastern University in ML for health, molecular simulations, and epidemiological forecasting. Publications in peer-reviewed journals.",
+      bio: 'Data Scientist and Physicist with dual BSc from UNAM. Research experience at Harvard, MIT, and Northeastern University in ML for health, molecular simulations, and epidemiological forecasting. Publications in peer-reviewed journals.',
       location: 'Ciudad de México',
-      skills: ['Python', 'PyTorch', 'TensorFlow', 'JAX', 'PySpark', 'Pandas', 'NumPy', 'Scikit-learn', 'Julia', 'R', 'MATLAB', 'SQL', 'MongoDB', 'Cassandra', 'Neo4j', 'Git', 'C'],
+      skills: [
+        'Python',
+        'PyTorch',
+        'TensorFlow',
+        'JAX',
+        'PySpark',
+        'Pandas',
+        'NumPy',
+        'Scikit-learn',
+        'Julia',
+        'R',
+        'MATLAB',
+        'SQL',
+        'MongoDB',
+        'Cassandra',
+        'Neo4j',
+        'Git',
+        'C',
+      ],
       languages: [
         { name: 'Español', proficiency: 'Nativo' },
         { name: 'Inglés', proficiency: 'IELTS 6.5' },
@@ -1043,7 +1317,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2024, 0, 1),
           endDate: null,
           current: true,
-          description: 'Data science leadership for government finance analytics.',
+          description:
+            'Data science leadership for government finance analytics.',
           technologies: [],
         },
         {
@@ -1053,7 +1328,8 @@ function buildMembers(companyIds) {
           startDate: new Date(2022, 7, 1),
           endDate: null,
           current: true,
-          description: 'ML for health research and epidemiological forecasting at Harvard / Northeastern University.',
+          description:
+            'ML for health research and epidemiological forecasting at Harvard / Northeastern University.',
           technologies: ['Python', 'Machine Learning', 'Deep Learning'],
         },
         {
@@ -1151,7 +1427,8 @@ async function createCompanies(companyIds) {
     }
 
     // Check Firestore for existing company by name
-    const existing = await db.collection('companies')
+    const existing = await db
+      .collection('companies')
       .where('name', '==', company.name)
       .limit(1)
       .get();
@@ -1159,7 +1436,9 @@ async function createCompanies(companyIds) {
     if (!existing.empty) {
       const existingId = existing.docs[0].id;
       companyIds[company.name] = existingId;
-      console.log(`  SKIP (found in Firestore): ${company.name} (${existingId})`);
+      console.log(
+        `  SKIP (found in Firestore): ${company.name} (${existingId})`
+      );
       skipped += 1;
       continue;
     }
@@ -1175,7 +1454,9 @@ async function createCompanies(companyIds) {
     };
 
     if (isDryRun) {
-      console.log(`  DRY RUN - Would create: ${company.name} (${company.industry}, ${company.location})`);
+      console.log(
+        `  DRY RUN - Would create: ${company.name} (${company.industry}, ${company.location})`
+      );
       companyIds[company.name] = `dry-run-${company.name}`;
     } else {
       const ref = await db.collection('companies').add(companyData);
@@ -1245,14 +1526,20 @@ async function updateMembers(companyIds) {
 
     if (isDryRun) {
       console.log(`  DRY RUN - Would update: ${member.name} (${member.uid})`);
-      console.log(`    - ${experience.length} experience entries, ${education.length} education entries`);
-      console.log(`    - ${member.skills.length} skills, ${member.languages.length} languages`);
+      console.log(
+        `    - ${experience.length} experience entries, ${education.length} education entries`
+      );
+      console.log(
+        `    - ${member.skills.length} skills, ${member.languages.length} languages`
+      );
     } else {
       try {
         await db.doc(`users/${member.uid}`).update(updateData);
         console.log(`  UPDATED: ${member.name} (${member.uid})`);
       } catch (err) {
-        console.error(`  FAILED: ${member.name} (${member.uid}) - ${err.message}`);
+        console.error(
+          `  FAILED: ${member.name} (${member.uid}) - ${err.message}`
+        );
         failed += 1;
         continue;
       }

@@ -1480,7 +1480,7 @@ export default function MentorshipSessions({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex gap-2">
           <select
-            className={`${inputClass  } w-auto`}
+            className={`${inputClass} w-auto`}
             value={filter}
             onChange={(e) => setFilter(e.target.value as typeof filter)}
           >
@@ -1491,7 +1491,7 @@ export default function MentorshipSessions({
           </select>
 
           <select
-            className={`${inputClass  } w-auto`}
+            className={`${inputClass} w-auto`}
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
           >

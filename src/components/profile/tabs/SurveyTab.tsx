@@ -14,7 +14,9 @@ export default function SurveyTab({ lang = 'es', targetUid }: Props) {
   if (!uid) {
     return (
       <p className="text-sm text-gray-500">
-        {lang === 'es' ? 'Inicia sesión para editar tu encuesta.' : 'Sign in to edit your survey.'}
+        {lang === 'es'
+          ? 'Inicia sesión para editar tu encuesta.'
+          : 'Sign in to edit your survey.'}
       </p>
     );
   }

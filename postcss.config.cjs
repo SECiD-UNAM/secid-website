@@ -5,11 +5,14 @@ module.exports = {
     // Add CSS optimization for production
     ...(process.env.NODE_ENV === 'production' && {
       cssnano: {
-        preset: ['default', {
-          discardComments: {
-            removeAll: true,
+        preset: [
+          'default',
+          {
+            discardComments: {
+              removeAll: true,
+            },
           },
-        }],
+        ],
       },
     }),
   },

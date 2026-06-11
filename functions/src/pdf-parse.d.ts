@@ -1,4 +1,4 @@
-declare module "pdf-parse" {
+declare module 'pdf-parse' {
   interface PDFData {
     numpages: number;
     numrender: number;

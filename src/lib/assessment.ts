@@ -752,8 +752,7 @@ export async function generateCertificate(
       title: 'Python Fundamentals Certificate',
       description: 'Certified completion of Python Fundamentals Assessment',
       issuedAt: new Date(),
-      verificationCode:
-        `SEC-${  Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+      verificationCode: `SEC-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
       score: 85,
       level: 'intermediate',
       skills: ['python'],
@@ -784,8 +783,7 @@ export async function generateCertificate(
       title: `${assessment.title} Certificate`,
       description: `Certified completion of ${assessment.title}`,
       issuedAt: new Date(),
-      verificationCode:
-        `SEC-${  Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+      verificationCode: `SEC-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
       score: resultData.score,
       level: assessment.difficulty,
       skills: [assessment.category],

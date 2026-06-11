@@ -19,10 +19,7 @@ const PASSWORD = process.env.E2E_QA_PASSWORD;
 const WRONG_PASSWORD = process.env.E2E_QA_WRONG_PASSWORD || 'wrong-pw-12345';
 
 test.describe('Journey F — Login + password reset', () => {
-  test.skip(
-    !EMAIL || !PASSWORD,
-    'Set E2E_QA_EMAIL + E2E_QA_PASSWORD to run'
-  );
+  test.skip(!EMAIL || !PASSWORD, 'Set E2E_QA_EMAIL + E2E_QA_PASSWORD to run');
 
   test('F1 login OK with valid credentials', async ({ page }) => {
     await page.goto('/es/login');
@@ -49,7 +46,9 @@ test.describe('Journey F — Login + password reset', () => {
     // The error should be GENERIC — not "email exists, password wrong"
     // (anti-enumeration). Assert that the text doesn't differentiate.
     const txt = await errorText.first().textContent();
-    expect(txt?.toLowerCase()).not.toMatch(/email.*(exists|not found|no encontrado)/);
+    expect(txt?.toLowerCase()).not.toMatch(
+      /email.*(exists|not found|no encontrado)/
+    );
   });
 
   test('F3 nonexistent email same generic error', async ({ page }) => {
@@ -88,11 +87,17 @@ test.describe('Journey F — Login + password reset', () => {
   });
 
   test('F6 unverified email login bloqueado o con CTA reenvío', async () => {
-    test.skip(true, 'Requires a SECOND test account that is registered but NOT email-verified — out of automated scope; document manually');
+    test.skip(
+      true,
+      'Requires a SECOND test account that is registered but NOT email-verified — out of automated scope; document manually'
+    );
   });
 
   test('F7 pending status user accede a BASIC tier dashboard', async () => {
-    test.skip(true, 'Requires a test account in lifecycle.status="pending" — set up via admin');
+    test.skip(
+      true,
+      'Requires a test account in lifecycle.status="pending" — set up via admin'
+    );
   });
 
   test('F8 suspended user blocked at login', async () => {
@@ -100,6 +105,9 @@ test.describe('Journey F — Login + password reset', () => {
   });
 
   test('F9 "recordarme" persiste sesión', async ({ browser }) => {
-    test.skip(true, 'Requires closing/reopening browser context — not reliable in headless CI');
+    test.skip(
+      true,
+      'Requires closing/reopening browser context — not reliable in headless CI'
+    );
   });
 });

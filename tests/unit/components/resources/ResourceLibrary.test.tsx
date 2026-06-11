@@ -371,13 +371,17 @@ describe.sequential('ResourceLibrary', () => {
        * TC-RL-008
        * Verifies: AC-rl-08 — empty state component is rendered when items list is empty
        */
-      it('shows no-results message', async () => {
+      it('shows the true zero-state message when no filters are active', async () => {
         mockSearchResources.mockResolvedValue(makeSearchResult([]));
 
         render(<ResourceLibrary />);
 
         await waitFor(() => {
-          expect(screen.getByText('No resources found')).toBeInTheDocument();
+          // Default lang is 'es'; with no active filters the true zero-state
+          // copy renders instead of the filter-adjustment message.
+          expect(
+            screen.getByText('Aún no hay recursos publicados')
+          ).toBeInTheDocument();
         });
       });
     });

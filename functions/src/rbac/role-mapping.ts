@@ -6,14 +6,14 @@
  */
 
 const ROLE_GROUP_MAP: Record<string, string[]> = {
-  admin: ["super-admin", "member"],
-  moderator: ["moderator", "member"],
-  member: ["member"],
-  collaborator: ["member"],
-  company: ["company"],
+  admin: ['super-admin', 'member'],
+  moderator: ['moderator', 'member'],
+  member: ['member'],
+  collaborator: ['member'],
+  company: ['company'],
 };
 
-const DEFAULT_GROUPS = ["member"];
+const DEFAULT_GROUPS = ['member'];
 
 /**
  * Maps a legacy role string to an array of RBAC group IDs.

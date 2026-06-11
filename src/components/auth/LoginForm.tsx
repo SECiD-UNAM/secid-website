@@ -191,7 +191,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         );
         twoFactorEnabled = twoFactorStatus.isEnabled;
       } catch (err) {
-        console.warn('2FA status check failed/timed out; assuming disabled:', err);
+        console.warn(
+          '2FA status check failed/timed out; assuming disabled:',
+          err
+        );
       }
 
       if (twoFactorEnabled) {

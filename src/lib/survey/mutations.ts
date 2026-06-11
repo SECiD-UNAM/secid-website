@@ -32,7 +32,8 @@ export async function upsertSurvey(
 
   const payload: Record<string, unknown> = {
     ...stripUndefined(input as Record<string, unknown>),
-    visibility: input.visibility ?? existing.data()?.visibility ?? 'aggregate-only',
+    visibility:
+      input.visibility ?? existing.data()?.visibility ?? 'aggregate-only',
     updatedAt: serverTimestamp(),
     schemaVersion: SURVEY_CURRENT_VERSION,
   };

@@ -840,7 +840,7 @@ function CodingChallengeQuestion({
       await new Promise((resolve) => setTimeout(resolve, 1000));
       setOutput('Code executed successfully!\nOutput: Hello, World!');
     } catch (error) {
-      setOutput(`Error: ${  (error as Error).message}`);
+      setOutput(`Error: ${(error as Error).message}`);
     } finally {
       setIsRunning(false);
     }

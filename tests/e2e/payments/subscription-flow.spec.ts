@@ -115,7 +115,7 @@ test.describe('Subscription Flow Tests', () => {
           number: cardData.number,
           expiry: cardData.exp,
           cvc: cardData.cvc,
-          name: `${billingAddress.firstName  } ${  billingAddress.lastName}`,
+          name: `${billingAddress.firstName} ${billingAddress.lastName}`,
         },
         billingAddress
       );
@@ -135,7 +135,7 @@ test.describe('Subscription Flow Tests', () => {
           number: cardData.number,
           expiry: cardData.exp,
           cvc: cardData.cvc,
-          name: `${billingAddress.firstName  } ${  billingAddress.lastName}`,
+          name: `${billingAddress.firstName} ${billingAddress.lastName}`,
         },
         billingAddress
       );
@@ -155,7 +155,7 @@ test.describe('Subscription Flow Tests', () => {
         number: cardData.number,
         expiry: cardData.exp,
         cvc: cardData.cvc,
-        name: `${billingAddress.firstName  } ${  billingAddress.lastName}`,
+        name: `${billingAddress.firstName} ${billingAddress.lastName}`,
       });
       await checkoutPage.fillBillingAddress(billingAddress);
       await checkoutPage.acceptTermsAndConditions();
@@ -233,7 +233,7 @@ test.describe('Subscription Flow Tests', () => {
           number: cardData.number,
           expiry: cardData.exp,
           cvc: cardData.cvc,
-          name: `${billingAddress.firstName  } ${  billingAddress.lastName}`,
+          name: `${billingAddress.firstName} ${billingAddress.lastName}`,
         },
         billingAddress
       );
@@ -566,7 +566,7 @@ test.describe('Subscription Flow Tests', () => {
           number: expiredCard.number,
           expiry: expiredCard.exp,
           cvc: expiredCard.cvc,
-          name: `${billingAddress.firstName  } ${  billingAddress.lastName}`,
+          name: `${billingAddress.firstName} ${billingAddress.lastName}`,
         },
         billingAddress
       );
@@ -587,7 +587,7 @@ test.describe('Subscription Flow Tests', () => {
           number: insufficientCard.number,
           expiry: insufficientCard.exp,
           cvc: insufficientCard.cvc,
-          name: `${billingAddress.firstName  } ${  billingAddress.lastName}`,
+          name: `${billingAddress.firstName} ${billingAddress.lastName}`,
         },
         billingAddress
       );
@@ -608,7 +608,7 @@ test.describe('Subscription Flow Tests', () => {
           number: processingErrorCard.number,
           expiry: processingErrorCard.exp,
           cvc: processingErrorCard.cvc,
-          name: `${billingAddress.firstName  } ${  billingAddress.lastName}`,
+          name: `${billingAddress.firstName} ${billingAddress.lastName}`,
         },
         billingAddress
       );
@@ -666,7 +666,7 @@ test.describe('Subscription Flow Tests', () => {
           number: internationalCard.number,
           expiry: internationalCard.exp,
           cvc: internationalCard.cvc,
-          name: `${billingAddress.firstName  } ${  billingAddress.lastName}`,
+          name: `${billingAddress.firstName} ${billingAddress.lastName}`,
         },
         billingAddress
       );
@@ -761,7 +761,7 @@ test.describe('Subscription Flow Tests', () => {
         number: cardData.number,
         expiry: cardData.exp,
         cvc: cardData.cvc,
-        name: `${billingAddress.firstName  } ${  billingAddress.lastName}`,
+        name: `${billingAddress.firstName} ${billingAddress.lastName}`,
       });
       const fillTime = Date.now() - startTime;
 
@@ -803,7 +803,7 @@ test.describe('Advanced Payment Scenarios', () => {
           number: cardData.number,
           expiry: cardData.exp,
           cvc: cardData.cvc,
-          name: `${billingAddress.firstName  } ${  billingAddress.lastName}`,
+          name: `${billingAddress.firstName} ${billingAddress.lastName}`,
         },
         billingAddress
       );
@@ -888,7 +888,7 @@ test.describe('Advanced Payment Scenarios', () => {
           number: lostCard.number,
           expiry: lostCard.exp,
           cvc: lostCard.cvc,
-          name: `${billingAddress.firstName  } ${  billingAddress.lastName}`,
+          name: `${billingAddress.firstName} ${billingAddress.lastName}`,
         },
         billingAddress
       );
@@ -909,7 +909,7 @@ test.describe('Advanced Payment Scenarios', () => {
           number: stolenCard.number,
           expiry: stolenCard.exp,
           cvc: stolenCard.cvc,
-          name: `${billingAddress.firstName  } ${  billingAddress.lastName}`,
+          name: `${billingAddress.firstName} ${billingAddress.lastName}`,
         },
         billingAddress
       );
@@ -930,7 +930,7 @@ test.describe('Advanced Payment Scenarios', () => {
           number: incorrectCvcCard.number,
           expiry: incorrectCvcCard.exp,
           cvc: incorrectCvcCard.cvc,
-          name: `${billingAddress.firstName  } ${  billingAddress.lastName}`,
+          name: `${billingAddress.firstName} ${billingAddress.lastName}`,
         },
         billingAddress
       );
@@ -962,7 +962,7 @@ test.describe('Advanced Payment Scenarios', () => {
             number: cardData.number,
             expiry: cardData.exp,
             cvc: cardData.cvc,
-            name: `${billingAddress.firstName  } ${  billingAddress.lastName}`,
+            name: `${billingAddress.firstName} ${billingAddress.lastName}`,
           },
           billingAddress
         );

@@ -394,7 +394,7 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
           {subtitle && <p className="mt-1 text-sm text-gray-500">{subtitle}</p>}
         </div>
       )}
-      <div className="p-6" style={{ height: `${height  }px` }}>
+      <div className="p-6" style={{ height: `${height}px` }}>
         {renderChart()}
       </div>
     </div>

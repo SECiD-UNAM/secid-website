@@ -75,7 +75,7 @@ jobs:
             "axios@0.21.0"
             "minimist@1.2.5"
           )
-          
+
           for package in "${VULNERABLE_PACKAGES[@]}"; do
             if grep -q "$package" package-lock.json; then
               echo "⚠️ Found vulnerable package: $package"
@@ -91,13 +91,13 @@ jobs:
           echo "**Repository:** ${{ github.repository }}" >> security-report.md
           echo "**Commit:** ${{ github.sha }}" >> security-report.md
           echo "" >> security-report.md
-          
+
           if [[ "$AUDIT_ISSUES" == "true" ]]; then
             echo "❌ **NPM Audit:** Issues found" >> security-report.md
           else
             echo "✅ **NPM Audit:** No issues found" >> security-report.md
           fi
-          
+
           if [[ "$VULNERABLE_DEPS" == "true" ]]; then
             echo "❌ **Known Vulnerabilities:** Found in dependencies" >> security-report.md
           else
@@ -111,7 +111,7 @@ jobs:
           script: |
             const fs = require('fs');
             const reportPath = 'security-report.md';
-            
+
             if (fs.existsSync(reportPath)) {
               const report = fs.readFileSync(reportPath, 'utf8');
               
@@ -225,15 +225,15 @@ jobs:
             "auth"
             "credential"
           )
-          
+
           echo "🔍 Scanning for potential secrets..."
-          
+
           for pattern in "${SECRET_PATTERNS[@]}"; do
             # Scan JavaScript/TypeScript files
             grep -r -i --include="*.js" --include="*.ts" --include="*.jsx" --include="*.tsx" \
               "$pattern.*=.*['\"][^'\"]*['\"]" . || true
           done
-          
+
           # Check for Firebase config exposure
           if grep -r "apiKey.*:" src/ --include="*.js" --include="*.ts"; then
             echo "⚠️ Potential Firebase config exposure found"
@@ -247,7 +247,7 @@ jobs:
             echo "⚠️ .env files found in repository"
             echo "ENV_FILES_COMMITTED=true" >> $GITHUB_ENV
           fi
-          
+
           # Check .env.example for sensitive data
           if [ -f ".env.example" ]; then
             if grep -i "password\|secret\|key" .env.example | grep -v "your_"; then
@@ -344,14 +344,14 @@ jobs:
       - name: Check security policy files
         run: |
           echo "🔍 Checking security policy compliance..."
-          
+
           # Check for required security files
           REQUIRED_FILES=(
             "SECURITY.md"
             ".github/workflows/security.yml"
             ".gitignore"
           )
-          
+
           for file in "${REQUIRED_FILES[@]}"; do
             if [ -f "$file" ]; then
               echo "✅ Found: $file"
@@ -367,7 +367,7 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            
+
             try {
               const { data: branch } = await github.rest.repos.getBranch({
                 owner,

@@ -22,12 +22,7 @@ export type QuestionType = 'single' | 'multi' | 'text' | 'number';
 export interface SurveyQuestion<TValue = string> {
   id: keyof import('@/types/survey').MemberSurveyResponse;
   type: QuestionType;
-  category:
-    | 'demographic'
-    | 'career'
-    | 'interests'
-    | 'community'
-    | 'sensitive';
+  category: 'demographic' | 'career' | 'interests' | 'community' | 'sensitive';
   required?: boolean;
   options?: { value: TValue; label: { es: string; en: string } }[];
   label: { es: string; en: string };
@@ -55,9 +50,15 @@ const industryOptions: SurveyQuestion<IndustryCategory>['options'] = [
 
 const seniorityOptions: SurveyQuestion<SeniorityLevel>['options'] = [
   { value: 'student', label: { es: 'Estudiante', en: 'Student' } },
-  { value: 'junior', label: { es: 'Junior (0-2 años)', en: 'Junior (0-2 yrs)' } },
+  {
+    value: 'junior',
+    label: { es: 'Junior (0-2 años)', en: 'Junior (0-2 yrs)' },
+  },
   { value: 'mid', label: { es: 'Mid (2-5 años)', en: 'Mid (2-5 yrs)' } },
-  { value: 'senior', label: { es: 'Senior (5-8 años)', en: 'Senior (5-8 yrs)' } },
+  {
+    value: 'senior',
+    label: { es: 'Senior (5-8 años)', en: 'Senior (5-8 yrs)' },
+  },
   { value: 'lead', label: { es: 'Lead / Staff', en: 'Lead / Staff' } },
   { value: 'manager', label: { es: 'Manager', en: 'Manager' } },
   { value: 'director', label: { es: 'Director', en: 'Director' } },
@@ -66,13 +67,25 @@ const seniorityOptions: SurveyQuestion<SeniorityLevel>['options'] = [
 ];
 
 const jobFunctionOptions: SurveyQuestion<JobFunction>['options'] = [
-  { value: 'data-scientist', label: { es: 'Data Scientist', en: 'Data Scientist' } },
+  {
+    value: 'data-scientist',
+    label: { es: 'Data Scientist', en: 'Data Scientist' },
+  },
   { value: 'ml-engineer', label: { es: 'ML Engineer', en: 'ML Engineer' } },
-  { value: 'data-engineer', label: { es: 'Data Engineer', en: 'Data Engineer' } },
+  {
+    value: 'data-engineer',
+    label: { es: 'Data Engineer', en: 'Data Engineer' },
+  },
   { value: 'data-analyst', label: { es: 'Data Analyst', en: 'Data Analyst' } },
   { value: 'research', label: { es: 'Investigación', en: 'Research' } },
-  { value: 'product-manager', label: { es: 'Product Manager', en: 'Product Manager' } },
-  { value: 'engineering-manager', label: { es: 'Engineering Manager', en: 'Engineering Manager' } },
+  {
+    value: 'product-manager',
+    label: { es: 'Product Manager', en: 'Product Manager' },
+  },
+  {
+    value: 'engineering-manager',
+    label: { es: 'Engineering Manager', en: 'Engineering Manager' },
+  },
   { value: 'founder', label: { es: 'Fundador / CEO', en: 'Founder / CEO' } },
   { value: 'consultant', label: { es: 'Consultor', en: 'Consultant' } },
   { value: 'student', label: { es: 'Estudiante', en: 'Student' } },
@@ -90,16 +103,31 @@ const areasOfInterestOptions: SurveyQuestion<AreaOfInterest>['options'] = [
   { value: 'dl', label: { es: 'Deep Learning', en: 'Deep Learning' } },
   { value: 'nlp', label: { es: 'NLP', en: 'NLP' } },
   { value: 'cv', label: { es: 'Computer Vision', en: 'Computer Vision' } },
-  { value: 'rl', label: { es: 'Reinforcement Learning', en: 'Reinforcement Learning' } },
-  { value: 'gen-ai', label: { es: 'Generative AI / LLMs', en: 'Generative AI / LLMs' } },
+  {
+    value: 'rl',
+    label: { es: 'Reinforcement Learning', en: 'Reinforcement Learning' },
+  },
+  {
+    value: 'gen-ai',
+    label: { es: 'Generative AI / LLMs', en: 'Generative AI / LLMs' },
+  },
   { value: 'mlops', label: { es: 'MLOps', en: 'MLOps' } },
-  { value: 'data-eng', label: { es: 'Data Engineering', en: 'Data Engineering' } },
+  {
+    value: 'data-eng',
+    label: { es: 'Data Engineering', en: 'Data Engineering' },
+  },
   { value: 'analytics', label: { es: 'Analítica', en: 'Analytics' } },
-  { value: 'bi', label: { es: 'Business Intelligence', en: 'Business Intelligence' } },
+  {
+    value: 'bi',
+    label: { es: 'Business Intelligence', en: 'Business Intelligence' },
+  },
   { value: 'statistics', label: { es: 'Estadística', en: 'Statistics' } },
   { value: 'research', label: { es: 'Investigación', en: 'Research' } },
   { value: 'ethics', label: { es: 'Ética en IA', en: 'AI Ethics' } },
-  { value: 'product', label: { es: 'Product / Strategy', en: 'Product / Strategy' } },
+  {
+    value: 'product',
+    label: { es: 'Product / Strategy', en: 'Product / Strategy' },
+  },
   { value: 'leadership', label: { es: 'Liderazgo', en: 'Leadership' } },
 ];
 
@@ -120,7 +148,10 @@ const techToolOptions: SurveyQuestion<TechTool>['options'] = [
   { value: 'tensorflow', label: { es: 'TensorFlow', en: 'TensorFlow' } },
   { value: 'pytorch', label: { es: 'PyTorch', en: 'PyTorch' } },
   { value: 'sklearn', label: { es: 'scikit-learn', en: 'scikit-learn' } },
-  { value: 'transformers', label: { es: 'Transformers (HF)', en: 'Transformers (HF)' } },
+  {
+    value: 'transformers',
+    label: { es: 'Transformers (HF)', en: 'Transformers (HF)' },
+  },
   { value: 'langchain', label: { es: 'LangChain', en: 'LangChain' } },
   { value: 'aws', label: { es: 'AWS', en: 'AWS' } },
   { value: 'gcp', label: { es: 'GCP', en: 'GCP' } },
@@ -134,32 +165,69 @@ const techToolOptions: SurveyQuestion<TechTool>['options'] = [
 ];
 
 const mentorshipOptions: SurveyQuestion<MentorshipRole>['options'] = [
-  { value: 'want-mentor', label: { es: 'Quiero un mentor', en: 'Want a mentor' } },
-  { value: 'want-mentee', label: { es: 'Quiero ser mentor', en: 'Want to mentor' } },
+  {
+    value: 'want-mentor',
+    label: { es: 'Quiero un mentor', en: 'Want a mentor' },
+  },
+  {
+    value: 'want-mentee',
+    label: { es: 'Quiero ser mentor', en: 'Want to mentor' },
+  },
   { value: 'both', label: { es: 'Ambos', en: 'Both' } },
   { value: 'neither', label: { es: 'Ninguno', en: 'Neither' } },
 ];
 
-const openToOpportunitiesOptions: SurveyQuestion<OpenToOpportunities>['options'] = [
-  { value: 'actively-looking', label: { es: 'Buscando activamente', en: 'Actively looking' } },
-  { value: 'open', label: { es: 'Abierto a propuestas', en: 'Open to opportunities' } },
-  { value: 'not-looking', label: { es: 'No estoy buscando', en: 'Not looking' } },
-];
+const openToOpportunitiesOptions: SurveyQuestion<OpenToOpportunities>['options'] =
+  [
+    {
+      value: 'actively-looking',
+      label: { es: 'Buscando activamente', en: 'Actively looking' },
+    },
+    {
+      value: 'open',
+      label: { es: 'Abierto a propuestas', en: 'Open to opportunities' },
+    },
+    {
+      value: 'not-looking',
+      label: { es: 'No estoy buscando', en: 'Not looking' },
+    },
+  ];
 
 const reasonsForJoiningOptions: SurveyQuestion<ReasonForJoining>['options'] = [
   { value: 'networking', label: { es: 'Networking', en: 'Networking' } },
-  { value: 'job-opportunities', label: { es: 'Oportunidades laborales', en: 'Job opportunities' } },
-  { value: 'stay-updated', label: { es: 'Mantenerme actualizado', en: 'Stay updated' } },
+  {
+    value: 'job-opportunities',
+    label: { es: 'Oportunidades laborales', en: 'Job opportunities' },
+  },
+  {
+    value: 'stay-updated',
+    label: { es: 'Mantenerme actualizado', en: 'Stay updated' },
+  },
   { value: 'learning', label: { es: 'Aprender', en: 'Learning' } },
   { value: 'mentorship', label: { es: 'Mentoría', en: 'Mentorship' } },
-  { value: 'speaking', label: { es: 'Compartir / dar charlas', en: 'Speaking / share' } },
+  {
+    value: 'speaking',
+    label: { es: 'Compartir / dar charlas', en: 'Speaking / share' },
+  },
   { value: 'recruiting', label: { es: 'Reclutar talento', en: 'Recruiting' } },
-  { value: 'community-building', label: { es: 'Construir comunidad', en: 'Community building' } },
+  {
+    value: 'community-building',
+    label: { es: 'Construir comunidad', en: 'Community building' },
+  },
 ];
 
 const heardAboutUsOptions: SurveyQuestion<HeardAboutUsFrom>['options'] = [
-  { value: 'unam', label: { es: 'UNAM (profesor, compañero)', en: 'UNAM (professor, classmate)' } },
-  { value: 'friend', label: { es: 'Amigo / colega', en: 'Friend / colleague' } },
+  {
+    value: 'unam',
+    label: {
+      es: 'UNAM (profesor, compañero)',
+      en: 'UNAM (professor, classmate)',
+    },
+  },
+  {
+    value: 'friend',
+    label: { es: 'Amigo / colega', en: 'Friend / colleague' },
+  },
   { value: 'event', label: { es: 'Evento', en: 'Event' } },
   { value: 'social', label: { es: 'Redes sociales', en: 'Social media' } },
   { value: 'search', label: { es: 'Búsqueda', en: 'Search' } },
@@ -205,7 +273,10 @@ export const SURVEY_QUESTIONS: SurveyQuestion[] = [
     id: 'countryCode',
     type: 'text',
     category: 'demographic',
-    label: { es: 'País (código ISO, ej. MX)', en: 'Country (ISO code, e.g. MX)' },
+    label: {
+      es: 'País (código ISO, ej. MX)',
+      en: 'Country (ISO code, e.g. MX)',
+    },
   },
   {
     id: 'city',
@@ -238,7 +309,10 @@ export const SURVEY_QUESTIONS: SurveyQuestion[] = [
     id: 'openToOpportunities',
     type: 'single',
     category: 'community',
-    label: { es: '¿Buscando nuevas oportunidades?', en: 'Open to opportunities?' },
+    label: {
+      es: '¿Buscando nuevas oportunidades?',
+      en: 'Open to opportunities?',
+    },
     options: openToOpportunitiesOptions as SurveyQuestion['options'],
   },
   {

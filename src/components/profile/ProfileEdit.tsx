@@ -131,7 +131,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
         profile.currentPosition)
     ) {
       workHistory.unshift({
-        id: `auto-${  Date.now()}`,
+        id: `auto-${Date.now()}`,
         company: profile.profile?.company || profile.currentCompany || '',
         companyId: profile.profile?.companyId || null,
         position: profile.profile?.position || profile.currentPosition || '',
@@ -143,7 +143,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
       !workHistory.some((w: { current?: boolean }) => w.current)
     ) {
       workHistory.unshift({
-        id: `auto-${  Date.now()}`,
+        id: `auto-${Date.now()}`,
         company: profile.currentCompany || '',
         position: profile.currentPosition || '',
         startDate: new Date(),
@@ -167,7 +167,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
         curso: 'Curso de Actualización en Ciencia de Datos',
       };
       educationHistory.push({
-        id: `auto-edu-${  Date.now()}`,
+        id: `auto-edu-${Date.now()}`,
         institution:
           rd.maxDegreeInstitution ||
           'Universidad Nacional Autónoma de México (UNAM)',
@@ -424,7 +424,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
           } else {
             // Create company directly in Firestore (rules allow slug + memberCount)
             try {
-              const domain = `${nameLC.replace(/[^a-z0-9]+/g, '')  }.com`;
+              const domain = `${nameLC.replace(/[^a-z0-9]+/g, '')}.com`;
               const newId = await createCompany(
                 { name: entry.company, domain },
                 effectiveUid

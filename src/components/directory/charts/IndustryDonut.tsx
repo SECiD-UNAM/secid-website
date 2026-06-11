@@ -9,25 +9,58 @@ import {
 } from 'recharts';
 
 const PALETTE = [
-  '#2563EB', '#7C3AED', '#DB2777', '#DC2626', '#EA580C',
-  '#CA8A04', '#65A30D', '#059669', '#0891B2', '#0284C7',
-  '#4F46E5', '#9333EA', '#C026D3', '#E11D48', '#F59E0B', '#737373',
+  '#2563EB',
+  '#7C3AED',
+  '#DB2777',
+  '#DC2626',
+  '#EA580C',
+  '#CA8A04',
+  '#65A30D',
+  '#059669',
+  '#0891B2',
+  '#0284C7',
+  '#4F46E5',
+  '#9333EA',
+  '#C026D3',
+  '#E11D48',
+  '#F59E0B',
+  '#737373',
 ];
 
 const LABEL_ES: Record<string, string> = {
-  tech: 'Tecnología', finance: 'Finanzas', consulting: 'Consultoría',
-  academia: 'Academia', healthcare: 'Salud', retail: 'Retail',
-  consumer: 'Consumo', energy: 'Energía', government: 'Gobierno',
-  manufacturing: 'Manufactura', media: 'Medios', fintech: 'Fintech',
-  biotech: 'Biotech', logistics: 'Logística', gaming: 'Gaming',
+  tech: 'Tecnología',
+  finance: 'Finanzas',
+  consulting: 'Consultoría',
+  academia: 'Academia',
+  healthcare: 'Salud',
+  retail: 'Retail',
+  consumer: 'Consumo',
+  energy: 'Energía',
+  government: 'Gobierno',
+  manufacturing: 'Manufactura',
+  media: 'Medios',
+  fintech: 'Fintech',
+  biotech: 'Biotech',
+  logistics: 'Logística',
+  gaming: 'Gaming',
   other: 'Otro',
 };
 const LABEL_EN: Record<string, string> = {
-  tech: 'Technology', finance: 'Finance', consulting: 'Consulting',
-  academia: 'Academia', healthcare: 'Healthcare', retail: 'Retail',
-  consumer: 'Consumer', energy: 'Energy', government: 'Government',
-  manufacturing: 'Manufacturing', media: 'Media', fintech: 'Fintech',
-  biotech: 'Biotech', logistics: 'Logistics', gaming: 'Gaming',
+  tech: 'Technology',
+  finance: 'Finance',
+  consulting: 'Consulting',
+  academia: 'Academia',
+  healthcare: 'Healthcare',
+  retail: 'Retail',
+  consumer: 'Consumer',
+  energy: 'Energy',
+  government: 'Government',
+  manufacturing: 'Manufacturing',
+  media: 'Media',
+  fintech: 'Fintech',
+  biotech: 'Biotech',
+  logistics: 'Logistics',
+  gaming: 'Gaming',
   other: 'Other',
 };
 
@@ -75,9 +108,7 @@ export default function IndustryDonut({ data, lang = 'es' }: Props) {
           ))}
         </Pie>
         <Tooltip
-          formatter={(v: number) =>
-            `${v} (${Math.round((v / total) * 100)}%)`
-          }
+          formatter={(v: number) => `${v} (${Math.round((v / total) * 100)}%)`}
         />
         <Legend wrapperStyle={{ fontSize: 12 }} />
       </PieChart>

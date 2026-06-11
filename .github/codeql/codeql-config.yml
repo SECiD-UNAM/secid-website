@@ -1,4 +1,4 @@
-name: "SECiD CodeQL Config"
+name: 'SECiD CodeQL Config'
 
 paths:
   - src
@@ -10,6 +10,6 @@ paths-ignore:
   - functions/lib
   - public/assets
   - tests
-  - "**/*.test.ts"
-  - "**/*.test.tsx"
-  - "**/*.spec.ts"
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+  - '**/*.spec.ts'

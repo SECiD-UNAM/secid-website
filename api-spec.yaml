@@ -3,7 +3,7 @@ info:
   title: SECiD Platform API
   description: |
     The SECiD (Sociedad de Egresados en Ciencia de Datos) Platform API provides comprehensive access to all platform features including user management, job postings, events, forums, member directory, and gamification systems.
-    
+
     ## Features
     - 🔐 JWT-based authentication
     - 📊 Comprehensive job board management
@@ -13,12 +13,12 @@ info:
     - 👥 Member directory and networking
     - 🔍 Advanced search capabilities
     - 📧 Notification and messaging systems
-    
+
     ## Rate Limits
     - Free Tier: 1,000 requests/hour
     - Premium Tier: 10,000 requests/hour
     - Enterprise: 100,000 requests/hour
-    
+
     ## Base URL
     Production: `https://api.secid.org/v1`
     Sandbox: `https://api-sandbox.secid.org/v1`

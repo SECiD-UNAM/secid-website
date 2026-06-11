@@ -19,7 +19,9 @@ initializeApp({ projectId: PROJECT_ID, credential: applicationDefault() });
 const db = getFirestore();
 
 async function main() {
-  console.log(`\n${isDryRun ? '🔍 DRY RUN' : '🚀 EXECUTING'} — Migrate compensation to sub-collection\n`);
+  console.log(
+    `\n${isDryRun ? '🔍 DRY RUN' : '🚀 EXECUTING'} — Migrate compensation to sub-collection\n`
+  );
 
   const usersSnap = await db.collection('users').get();
   let totalMigrated = 0;
@@ -33,13 +35,17 @@ async function main() {
 
     if (!roles || !Array.isArray(roles)) continue;
 
-    const rolesToMigrate = roles.filter((r) => r.compensation && r.compensation.monthlyGross);
+    const rolesToMigrate = roles.filter(
+      (r) => r.compensation && r.compensation.monthlyGross
+    );
 
     if (rolesToMigrate.length === 0) continue;
 
     usersAffected++;
     const displayName = data.displayName || data.email || uid;
-    console.log(`\n👤 ${displayName} (${uid}) — ${rolesToMigrate.length} entries`);
+    console.log(
+      `\n👤 ${displayName} (${uid}) — ${rolesToMigrate.length} entries`
+    );
 
     for (const role of rolesToMigrate) {
       const roleId = role.id;
@@ -59,16 +65,25 @@ async function main() {
         ...(comp.annualBonus && { annualBonus: comp.annualBonus }),
         ...(comp.annualBonusType && { annualBonusType: comp.annualBonusType }),
         ...(comp.signOnBonus && { signOnBonus: comp.signOnBonus }),
-        ...(comp.stockAnnualValue && { stockAnnualValue: comp.stockAnnualValue }),
+        ...(comp.stockAnnualValue && {
+          stockAnnualValue: comp.stockAnnualValue,
+        }),
         ...(comp.benefits?.length > 0 && { benefits: comp.benefits }),
         updatedAt: FieldValue.serverTimestamp(),
       };
 
-      console.log(`  📝 ${role.company} — ${role.position} — $${comp.monthlyGross} ${comp.currency || 'MXN'}`);
+      console.log(
+        `  📝 ${role.company} — ${role.position} — $${comp.monthlyGross} ${comp.currency || 'MXN'}`
+      );
 
       if (!isDryRun) {
         // Write to sub-collection
-        await db.collection('users').doc(uid).collection('compensation').doc(roleId).set(compDoc);
+        await db
+          .collection('users')
+          .doc(uid)
+          .collection('compensation')
+          .doc(roleId)
+          .set(compDoc);
       }
 
       totalMigrated++;
@@ -86,7 +101,9 @@ async function main() {
       await db.collection('users').doc(uid).update({
         'experience.previousRoles': updatedRoles,
       });
-      console.log(`  ✅ Cleaned compensation from ${rolesToMigrate.length} work history entries`);
+      console.log(
+        `  ✅ Cleaned compensation from ${rolesToMigrate.length} work history entries`
+      );
     }
   }
 
@@ -94,7 +111,9 @@ async function main() {
   console.log(`Users affected: ${usersAffected}`);
   console.log(`Entries migrated: ${totalMigrated}`);
   console.log(`Entries skipped: ${totalSkipped}`);
-  console.log(`Mode: ${isDryRun ? 'DRY RUN (use --execute to apply)' : 'EXECUTED'}`);
+  console.log(
+    `Mode: ${isDryRun ? 'DRY RUN (use --execute to apply)' : 'EXECUTED'}`
+  );
   console.log(`${'='.repeat(50)}\n`);
 }
 

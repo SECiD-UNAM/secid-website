@@ -438,8 +438,9 @@ export function LinkedInImportModal({
               `mb-4 flex cursor-pointer flex-col items-center justify-center ` +
               `rounded-lg border-2 border-dashed border-gray-300 px-4 py-5 ` +
               `text-center transition-colors hover:border-primary-400 ` +
-              `dark:border-gray-600 dark:hover:border-primary-500 ${ 
-              pdfUploading ? 'opacity-60' : ''}`
+              `dark:border-gray-600 dark:hover:border-primary-500 ${
+                pdfUploading ? 'opacity-60' : ''
+              }`
             }
             onClick={() => !pdfUploading && fileInputRef.current?.click()}
             role="button"
@@ -490,12 +491,11 @@ export function LinkedInImportModal({
                   key={tab.id}
                   type="button"
                   onClick={() => handleTabChange(tab.id)}
-                  className={
-                    `flex shrink-0 items-center gap-1.5 border-b-2 px-4 py-2 text-sm font-medium transition-colors ${ 
+                  className={`flex shrink-0 items-center gap-1.5 border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
                     isActive
                       ? 'border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'}`
-                  }
+                      : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                  }`}
                   aria-selected={isActive}
                   role="tab"
                 >

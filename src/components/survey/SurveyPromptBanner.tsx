@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { ClipboardDocumentListIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import {
+  ClipboardDocumentListIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
 import { getSurvey } from '@/lib/survey/queries';
 
@@ -74,7 +77,9 @@ export default function SurveyPromptBanner({ lang = 'es' }: Props) {
   if (!show) return null;
 
   const profileHref =
-    lang === 'es' ? '/es/dashboard/profile/edit#survey' : '/en/dashboard/profile/edit#survey';
+    lang === 'es'
+      ? '/es/dashboard/profile/edit#survey'
+      : '/en/dashboard/profile/edit#survey';
 
   return (
     <div className="mb-6 flex items-start gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-800/50 dark:bg-blue-900/20">

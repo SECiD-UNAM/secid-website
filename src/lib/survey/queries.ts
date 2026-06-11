@@ -4,10 +4,7 @@
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { logger } from '../logger';
-import type {
-  MemberSurveyResponse,
-  SurveyAggregates,
-} from '@/types/survey';
+import type { MemberSurveyResponse, SurveyAggregates } from '@/types/survey';
 
 const log = logger.child('survey.queries');
 

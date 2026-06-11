@@ -31,11 +31,11 @@ try {
   const mockApiPath = path.join(__dirname, '..', 'src', 'lib', 'mock-api.ts');
   const authPath = path.join(__dirname, '..', 'src', 'lib', 'auth.ts');
   const jobsPath = path.join(__dirname, '..', 'src', 'lib', 'jobs.ts');
-  
+
   require('fs').accessSync(mockApiPath);
   require('fs').accessSync(authPath);
   require('fs').accessSync(jobsPath);
-  
+
   console.log(`${colors.green}✓ All required files exist${colors.reset}`);
 } catch (error) {
   console.log(`${colors.red}✗ Missing required files${colors.reset}`);
@@ -43,23 +43,31 @@ try {
 }
 
 // Test TypeScript compilation
-console.log(`\n${colors.yellow}2. Testing TypeScript compilation...${colors.reset}`);
+console.log(
+  `\n${colors.yellow}2. Testing TypeScript compilation...${colors.reset}`
+);
 try {
   execSync('npm run type-check', { stdio: 'pipe' });
-  console.log(`${colors.green}✓ TypeScript compilation successful${colors.reset}`);
+  console.log(
+    `${colors.green}✓ TypeScript compilation successful${colors.reset}`
+  );
 } catch (error) {
-  console.log(`${colors.yellow}⚠ TypeScript has some warnings (this is expected)${colors.reset}`);
+  console.log(
+    `${colors.yellow}⚠ TypeScript has some warnings (this is expected)${colors.reset}`
+  );
 }
 
 // Test mock data structure
-console.log(`\n${colors.yellow}3. Verifying mock data structure...${colors.reset}`);
+console.log(
+  `\n${colors.yellow}3. Verifying mock data structure...${colors.reset}`
+);
 const mockDataChecks = [
   { name: 'Authentication methods', path: 'mockAuth.signIn' },
   { name: 'Firestore methods', path: 'mockFirestore.getDoc' },
   { name: 'Storage methods', path: 'mockStorageService.uploadFile' },
 ];
 
-mockDataChecks.forEach(check => {
+mockDataChecks.forEach((check) => {
   console.log(`   - ${check.name}: ${colors.green}✓${colors.reset}`);
 });
 

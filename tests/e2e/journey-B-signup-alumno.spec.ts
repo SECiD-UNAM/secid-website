@@ -197,7 +197,9 @@ test.describe('Journey B — Signup nuevo alumno end-to-end', () => {
     // Settings → Cuentas debe mostrar alternate email section (members-only)
     await page.goto('/es/dashboard/settings');
     await page.click('button:has-text("Cuentas"), a:has-text("Cuentas")');
-    await expect(page.locator('text=/correo alterno|alternate email/i')).toBeVisible({
+    await expect(
+      page.locator('text=/correo alterno|alternate email/i')
+    ).toBeVisible({
       timeout: 5000,
     });
 

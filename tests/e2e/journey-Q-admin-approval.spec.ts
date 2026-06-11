@@ -39,7 +39,9 @@ test.describe('Journey Q — Admin', () => {
 
     // Pending badge nuevo (Phase 0 #2)
     const pendingTile = page
-      .locator('a[href*="status=pending"], a:has-text("Solicitudes pendientes")')
+      .locator(
+        'a[href*="status=pending"], a:has-text("Solicitudes pendientes")'
+      )
       .first();
     await expect(pendingTile).toBeVisible({ timeout: 10000 });
 
@@ -76,9 +78,7 @@ test.describe('Journey Q — Admin', () => {
     await expect(row).toBeVisible({ timeout: 10000 });
     await row.click();
 
-    await page.click(
-      'button:has-text("Aprobar"), button:has-text("Approve")'
-    );
+    await page.click('button:has-text("Aprobar"), button:has-text("Approve")');
     // Confirmation modal
     const confirmBtn = page.locator(
       'button:has-text("Confirmar"), button:has-text("Confirm")'
