@@ -25,18 +25,9 @@ vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn(() => mockAuthContext),
 }));
 
-vi.mock('@/hooks/useTranslations', () => ({
-  useTranslations: vi.fn(() => ({
-    common: { loading: 'Loading...' },
-    auth: {
-      unauthorized: {
-        title: 'Authentication Required',
-        message: 'Please sign in to access this page.',
-        signIn: 'Sign In',
-      },
-    },
-  })),
-}));
+// NOTE: ProtectedRoute localizes its UI strings via an internal `routeCopy`
+// map keyed by lang ('es' is the default), so tests without an explicit
+// lang prop assert the Spanish copy.
 
 const mockUser = {
   uid: 'user123',
@@ -82,7 +73,7 @@ describe('ProtectedRoute: shows loading spinner', () => {
         <div>Protected</div>
       </ProtectedRoute>
     );
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    expect(screen.getByText(/cargando/i)).toBeInTheDocument();
     expect(screen.queryByText('Protected')).not.toBeInTheDocument();
   });
 });
@@ -128,11 +119,10 @@ describe('ProtectedRoute: unauthenticated shows sign-in', () => {
         <div>Protected</div>
       </ProtectedRoute>
     );
-    expect(screen.getByText(/authentication required/i)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /sign in/i })).toHaveAttribute(
-      'href',
-      '/es/login'
-    );
+    expect(screen.getByText(/autenticación requerida/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: /iniciar sesión/i })
+    ).toHaveAttribute('href', '/es/login');
   });
 });
 
@@ -165,7 +155,7 @@ describe('ProtectedRoute: unauthenticated prioritizes auth', () => {
         <div>Protected</div>
       </ProtectedRoute>
     );
-    expect(screen.getByText(/authentication required/i)).toBeInTheDocument();
+    expect(screen.getByText(/autenticación requerida/i)).toBeInTheDocument();
   });
 });
 
@@ -181,7 +171,7 @@ describe('ProtectedRoute: user=null but isAuthenticated=true', () => {
         <div>Protected</div>
       </ProtectedRoute>
     );
-    expect(screen.getByText(/authentication required/i)).toBeInTheDocument();
+    expect(screen.getByText(/autenticación requerida/i)).toBeInTheDocument();
   });
 });
 
@@ -340,7 +330,7 @@ describe('ProtectedRoute: blocks unverified user', () => {
     );
     await waitFor(() => {
       expect(
-        screen.getByText(/unam verification required/i)
+        screen.getByText(/verificación unam requerida/i)
       ).toBeInTheDocument();
       expect(screen.queryByText('Content')).not.toBeInTheDocument();
     });
@@ -383,9 +373,9 @@ describe('ProtectedRoute: verification priority over role', () => {
     );
     await waitFor(() => {
       expect(
-        screen.getByText(/unam verification required/i)
+        screen.getByText(/verificación unam requerida/i)
       ).toBeInTheDocument();
-      expect(screen.queryByText(/access denied/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/acceso denegado/i)).not.toBeInTheDocument();
     });
   });
 });
@@ -406,7 +396,7 @@ describe('ProtectedRoute: blocks wrong role', () => {
       </ProtectedRoute>
     );
     await waitFor(() => {
-      expect(screen.getByText(/access denied/i)).toBeInTheDocument();
+      expect(screen.getByText(/acceso denegado/i)).toBeInTheDocument();
       expect(screen.queryByText('Admin')).not.toBeInTheDocument();
     });
   });
@@ -444,7 +434,7 @@ describe('ProtectedRoute: loading state accessibility', () => {
         <div>Content</div>
       </ProtectedRoute>
     );
-    const loadingDiv = screen.getByText(/loading/i).closest('div');
+    const loadingDiv = screen.getByText(/cargando/i).closest('div');
     expect(loadingDiv).toBeInTheDocument();
   });
 });
@@ -464,10 +454,10 @@ describe('ProtectedRoute: access denied semantic structure', () => {
     );
     await waitFor(() => {
       expect(
-        screen.getByRole('heading', { name: /access denied/i })
+        screen.getByRole('heading', { name: /acceso denegado/i })
       ).toBeInTheDocument();
       expect(
-        screen.getByRole('link', { name: /go to dashboard/i })
+        screen.getByRole('link', { name: /ir al panel/i })
       ).toBeInTheDocument();
     });
   });

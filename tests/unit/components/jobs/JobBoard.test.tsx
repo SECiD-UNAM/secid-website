@@ -25,7 +25,7 @@ vi.mock('@lib/listing/adapters/JobFirestoreAdapter', async (importOriginal) => {
 
 // Mock JobCard to keep tests focused on JobBoard behavior
 vi.mock('@/components/jobs/JobCard', () => ({
-  default: ({ job, lang }: { job: Job; lang: string }) => (
+  default: ({ job, lang: _lang }: { job: Job; lang: string }) => (
     <div data-testid={`job-card-${job.id}`}>
       <h3>{job.title}</h3>
       <p>{job.company}</p>
@@ -302,6 +302,9 @@ describe.sequential('JobBoard', () => {
       /**
        * TC-JOBBOARD-011
        * Verifies: AC-jobboard-11 — empty state with i18n text when adapter returns zero items
+       *
+       * No filters or search are active here, so the friendlier zero-state
+       * copy renders instead of the filter-adjustment message.
        */
       mockFetch.mockResolvedValue({
         items: [],
@@ -313,11 +316,9 @@ describe.sequential('JobBoard', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText('No se encontraron empleos')
+          screen.getByText('Aún no hay vacantes publicadas')
         ).toBeInTheDocument();
-        expect(
-          screen.getByText('Intenta ajustar tus filtros o términos de búsqueda')
-        ).toBeInTheDocument();
+        expect(screen.getByText('¡Publica la primera!')).toBeInTheDocument();
       });
     });
 
@@ -325,6 +326,9 @@ describe.sequential('JobBoard', () => {
       /**
        * TC-JOBBOARD-012
        * Verifies: AC-jobboard-12 — empty state uses English text when lang="en"
+       *
+       * No filters or search are active here, so the friendlier zero-state
+       * copy renders instead of the filter-adjustment message.
        */
       mockFetch.mockResolvedValue({
         items: [],
@@ -335,9 +339,9 @@ describe.sequential('JobBoard', () => {
       render(<JobBoard lang="en" />);
 
       await waitFor(() => {
-        expect(screen.getByText('No jobs found')).toBeInTheDocument();
+        expect(screen.getByText('No job postings yet')).toBeInTheDocument();
         expect(
-          screen.getByText('Try adjusting your filters or search terms')
+          screen.getByText('Be the first to post one!')
         ).toBeInTheDocument();
       });
     });

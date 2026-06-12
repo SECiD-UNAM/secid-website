@@ -80,30 +80,33 @@ Object.defineProperty(window, 'scrollTo', {
   value: () => {},
 });
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: (key: string) => localStorage.getItem(key),
-  setItem: (key: string, value: string) => localStorage.setItem(key, value),
-  removeItem: (key: string) => localStorage.removeItem(key),
-  clear: () => localStorage.clear(),
-  length: 0,
-  key: () => null,
+// In-memory Storage mock. The previous version delegated to the global
+// localStorage/sessionStorage — which, after defineProperty, WAS the mock
+// itself, so any call recursed infinitely once a component touched storage.
+const createStorageMock = (): Storage => {
+  const store = new Map<string, string>();
+  return {
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      store.set(key, String(value));
+    },
+    removeItem: (key: string) => {
+      store.delete(key);
+    },
+    clear: () => {
+      store.clear();
+    },
+    key: (index: number) => [...store.keys()][index] ?? null,
+    get length() {
+      return store.size;
+    },
+  } as Storage;
 };
 
 Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock,
+  value: createStorageMock(),
 });
 
-// Mock sessionStorage
-const sessionStorageMock = {
-  getItem: (key: string) => sessionStorage.getItem(key),
-  setItem: (key: string, value: string) => sessionStorage.setItem(key, value),
-  removeItem: (key: string) => sessionStorage.removeItem(key),
-  clear: () => sessionStorage.clear(),
-  length: 0,
-  key: () => null,
-};
-
 Object.defineProperty(window, 'sessionStorage', {
-  value: sessionStorageMock,
+  value: createStorageMock(),
 });
