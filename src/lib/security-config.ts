@@ -1,11 +1,11 @@
-// @ts-nocheck
 import { SessionManager, MemorySessionStore } from './session-manager';
 import {
   RateLimiter,
   MemoryRateLimitStore,
   RateLimitPresets,
+  RecaptchaV3Provider as RateLimitCaptchaProvider,
 } from './rate-limiter';
-import { CaptchaManager, RecaptchaV3Provider } from './captcha';
+import { CaptchaManager } from './captcha';
 
 /**
  * Security configuration and integration for SECiD platform
@@ -154,6 +154,16 @@ export interface SecurityConfig {
 }
 
 /**
+ * The environment-specific portion of a {@link SecurityConfig}: the literal
+ * value of one {@link SecurityEnvironments} entry. It is deeply `readonly`
+ * (the entries are declared `as const`) and omits the runtime-supplied
+ * `environment` discriminator and `secrets`, which are merged in by
+ * {@link SecurityManager.fromEnvironment}.
+ */
+export type EnvironmentSecurityConfig =
+  (typeof SecurityEnvironments)[keyof typeof SecurityEnvironments];
+
+/**
  * Security manager class
  */
 export class SecurityManager {
@@ -175,7 +185,7 @@ export class SecurityManager {
     this.rateLimiter = new RateLimiter(
       new MemoryRateLimitStore(),
       config?.captcha?.secretKey
-        ? new RecaptchaV3Provider(config?.captcha?.secretKey)
+        ? new RateLimitCaptchaProvider(config?.captcha?.secretKey)
         : undefined
     );
 
@@ -231,7 +241,7 @@ export class SecurityManager {
    */
   static getEnvironmentConfig(
     environment: keyof typeof SecurityEnvironments = 'production'
-  ): Partial<SecurityConfig> {
+  ): EnvironmentSecurityConfig {
     return SecurityEnvironments[environment];
   }
 
@@ -244,16 +254,24 @@ export class SecurityManager {
   ): SecurityManager {
     const envConfig = SecurityManager.getEnvironmentConfig(environment);
 
+    // The env entries are declared `as const`, so their sections (and the
+    // arrays within, e.g. captcha.enabledForActions) are deeply `readonly`.
+    // Materialize mutable copies so the result satisfies the mutable
+    // `SecurityConfig` shape without leaking the shared frozen literals.
     const config: SecurityConfig = {
       environment,
-      session: envConfig.session,
-      rateLimiting: envConfig.rateLimiting,
+      session: { ...envConfig.session },
+      rateLimiting: {
+        ...envConfig.rateLimiting,
+        presets: { ...envConfig.rateLimiting.presets },
+      },
       captcha: {
         ...envConfig.captcha,
+        enabledForActions: [...envConfig.captcha.enabledForActions],
         siteKey: secrets.captchaSiteKey,
         secretKey: secrets.captchaSecretKey,
       },
-      logging: envConfig.logging,
+      logging: { ...envConfig.logging },
       secrets,
     };
 
@@ -462,7 +480,7 @@ export class SecurityManager {
     const forwarded = request.headers.get('x-forwarded-for');
     const realIP = request.headers.get('x-real-ip');
 
-    return forwarded?.split(',')[0].trim() || realIP || 'unknown';
+    return forwarded?.split(',')[0]?.trim() || realIP || 'unknown';
   }
 
   /**
@@ -479,9 +497,15 @@ export class SecurityManager {
  * Create security manager from environment variables
  */
 export function createSecurityManagerFromEnv(): SecurityManager {
-  const environment =
-    (process.env.NODE_ENV as string as keyof typeof SecurityEnvironments) ||
-    'production';
+  // `NODE_ENV` is an arbitrary runtime string (e.g. Vitest sets it to
+  // 'test', which is not one of the configured SecurityEnvironments keys),
+  // so keep the raw value for the local-env check below and only narrow to a
+  // config key when selecting the environment profile.
+  const nodeEnv = process.env.NODE_ENV ?? '';
+  const environment: keyof typeof SecurityEnvironments =
+    nodeEnv in SecurityEnvironments
+      ? (nodeEnv as keyof typeof SecurityEnvironments)
+      : 'production';
 
   const sessionSecretEnv = process.env['SESSION_SECRET'];
   const jwtSecretEnv = process.env.JWT_SECRET as string | undefined;
@@ -490,7 +514,7 @@ export function createSecurityManagerFromEnv(): SecurityManager {
   // only. Any environment other than development/test (staging, preview,
   // production, ...) MUST supply real secrets — silently running on the
   // well-known dev defaults would allow session/JWT forgery (W-SEC-3).
-  const isLocalEnv = environment === 'development' || environment === 'test';
+  const isLocalEnv = nodeEnv === 'development' || nodeEnv === 'test';
   if (!isLocalEnv) {
     const missingSecrets = (
       [
