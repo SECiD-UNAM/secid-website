@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useMemo } from 'react';
 import {
   collection,
   query,
@@ -10,6 +9,12 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import {
+  formatDate as formatDateTz,
+  formatTime as formatTimeTz,
+} from '@/lib/format-date';
+import { useUniversalListing } from '@/hooks/useUniversalListing';
+import { ClientSideAdapter } from '@lib/listing/adapters/ClientSideAdapter';
 import {
   CalendarIcon,
   MapPinIcon,
@@ -42,117 +47,115 @@ interface UpcomingEventsProps {
   lang?: 'es' | 'en';
 }
 
+// Number of upcoming events shown on the dashboard card.
+const UPCOMING_EVENTS_LIMIT = 3;
+
+// Fetch upcoming events plus journal-club sessions and merge them into a
+// single chronological list. This join cannot be expressed by a single
+// Firestore adapter, so it lives in a ClientSideAdapter fetchAll (same
+// pattern as EventList).
+async function fetchUpcomingEvents(): Promise<Event[]> {
+  const events: Event[] = [];
+
+  // Upcoming published events
+  const eventsQuery = query(
+    collection(db, 'events'),
+    where('startDate', '>=', Timestamp.now()),
+    where('status', '==', 'published'),
+    orderBy('startDate', 'asc'),
+    limit(UPCOMING_EVENTS_LIMIT)
+  );
+  const snapshot = await getDocs(eventsQuery);
+  snapshot.docs.forEach((d) => {
+    const data = d.data();
+    events.push({
+      id: d.id,
+      title: data['title'],
+      description: data['description'],
+      type: data['type'],
+      startDate: data['startDate']?.toDate() ?? new Date(),
+      endDate: data['endDate']?.toDate() ?? new Date(),
+      location: data['location'],
+      registrationRequired: data['registrationRequired'],
+      maxAttendees: data['maxAttendees'],
+      currentAttendees: data['currentAttendees'],
+      imageUrl: data['imageUrl'],
+    } as Event);
+  });
+
+  // Upcoming journal club sessions, transformed to the Event shape
+  try {
+    const jcQuery = query(
+      collection(db, 'journal_club_sessions'),
+      where('status', '==', 'published'),
+      where('date', '>=', Timestamp.now()),
+      orderBy('date', 'asc'),
+      limit(UPCOMING_EVENTS_LIMIT)
+    );
+    const jcSnap = await getDocs(jcQuery);
+    jcSnap.docs.forEach((d) => {
+      const data = d.data();
+      const sessionDate = data['date']?.toDate() ?? new Date();
+      events.push({
+        id: `jc-${d.id}`,
+        title: `Journal Club: ${data['topic'] || ''}`,
+        description: data['description'] || '',
+        type: 'webinar' as Event['type'],
+        startDate: sessionDate,
+        endDate: new Date(sessionDate.getTime() + 90 * 60 * 1000),
+        location: { type: 'virtual', virtualPlatform: 'Google Meet' },
+        registrationRequired: false,
+        maxAttendees: 0,
+        currentAttendees: 0,
+      });
+    });
+  } catch (jcErr) {
+    console.warn('Failed to load journal club for upcoming:', jcErr);
+  }
+
+  // Merge chronologically; the hook's pageSize caps the rendered count.
+  events.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+  return events.map((event) => ({ ...event, isRegistered: false }));
+}
+
 export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
   lang = 'es',
 }) => {
-  const { user } = useAuth();
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
+  // ClientSideAdapter gives this card cancellation + caching while still
+  // letting us express the events + journal-club join in fetchAll.
+  const adapter = useMemo(
+    () =>
+      new ClientSideAdapter<Event>({
+        fetchAll: fetchUpcomingEvents,
+        searchFields: ['title', 'description'],
+        getId: (event) => event.id,
+        toSearchable: (event) => `${event.title} ${event.description}`,
+      }),
+    []
+  );
 
-  useEffect(() => {
-    const fetchUpcomingEvents = async () => {
-      if (!user) return;
-
-      try {
-        // Fetch upcoming events
-        const eventsQuery = query(
-          collection(db, 'events'),
-          where('startDate', '>=', Timestamp.now()),
-          where('status', '==', 'published'),
-          orderBy('startDate', 'asc'),
-          limit(3)
-        );
-
-        const snapshot = await getDocs(eventsQuery);
-        const fetchedEvents = snapshot['docs'].map((doc) => {
-          const data = doc['data']();
-          return {
-            id: doc['id'],
-            title: data['title'],
-            description: data['description'],
-            type: data['type'],
-            startDate: data['startDate']?.toDate() || new Date(),
-            endDate: data['endDate']?.toDate() || new Date(),
-            location: data.location,
-            registrationRequired: data['registrationRequired'],
-            maxAttendees: data['maxAttendees'],
-            currentAttendees: data['currentAttendees'],
-            imageUrl: data['imageUrl'],
-          } as Event;
-        });
-
-        // Also fetch upcoming journal club sessions
-        try {
-          const jcQuery = query(
-            collection(db, 'journal_club_sessions'),
-            where('status', '==', 'published'),
-            where('date', '>=', Timestamp.now()),
-            orderBy('date', 'asc'),
-            limit(3)
-          );
-          const jcSnap = await getDocs(jcQuery);
-          jcSnap.docs.forEach((d) => {
-            const data = d.data();
-            const sessionDate = data['date']?.toDate() ?? new Date();
-            fetchedEvents.push({
-              id: `jc-${d.id}`,
-              title: `Journal Club: ${data['topic'] || ''}`,
-              description: data['description'] || '',
-              type: 'webinar' as Event['type'],
-              startDate: sessionDate,
-              endDate: new Date(sessionDate.getTime() + 90 * 60 * 1000),
-              location: { type: 'virtual', virtualPlatform: 'Google Meet' },
-              registrationRequired: false,
-              maxAttendees: 0,
-              currentAttendees: 0,
-            });
-          });
-        } catch (jcErr) {
-          console.warn('Failed to load journal club for upcoming:', jcErr);
-        }
-
-        // Sort by date and take top 3
-        fetchedEvents.sort(
-          (a, b) => a.startDate.getTime() - b.startDate.getTime()
-        );
-        const top3 = fetchedEvents.slice(0, 3);
-
-        const eventsWithRegistration = top3.map((event) => ({
-          ...event,
-          isRegistered: false,
-        }));
-
-        setEvents(eventsWithRegistration);
-      } catch (error) {
-        console.error('Error fetching events:', error);
-        setEvents([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUpcomingEvents();
-  }, [user, lang]);
+  const { items: events, loading } = useUniversalListing<Event>({
+    adapter,
+    defaultViewMode: 'grid',
+    paginationMode: 'offset',
+    defaultPageSize: UPCOMING_EVENTS_LIMIT,
+    defaultSort: { field: 'startDate', direction: 'asc' },
+    lang,
+  });
 
   const formatEventDate = (startDate: Date, endDate: Date): string => {
-    const options: Intl.DateTimeFormatOptions = {
+    // Pinned to the org timezone (see @/lib/format-date): event times are
+    // shown in Mexico City time and SSR/CSR renders stay identical.
+    const start = formatDateTz(startDate, lang, {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    };
-
-    const start = startDate.toLocaleDateString(
-      lang === 'es' ? 'es-MX' : 'en-US',
-      options
-    );
-    const endTime = endDate.toLocaleTimeString(
-      lang === 'es' ? 'es-MX' : 'en-US',
-      {
-        hour: '2-digit',
-        minute: '2-digit',
-      }
-    );
+    });
+    const endTime = formatTimeTz(endDate, lang, {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
 
     return `${start} - ${endTime}`;
   };

@@ -1,14 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUniversalListing } from '@/hooks/useUniversalListing';
 import {
-  collection,
-  query,
-  where,
-  orderBy,
-  limit,
-  getDocs,
-} from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+  JobFirestoreAdapter,
+  type Job,
+} from '@lib/listing/adapters/JobFirestoreAdapter';
 import {
   MapPinIcon,
   CurrencyDollarIcon,
@@ -16,90 +12,63 @@ import {
   ArrowRightIcon,
 } from '@heroicons/react/24/outline';
 
-interface JobMatch {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  locationType: 'remote' | 'hybrid' | 'onsite';
-  salaryRange?: {
-    min: number;
-    max: number;
-    currency: string;
-    period: string;
-  };
-  matchScore: number;
-  postedAt: Date;
-  tags: string[];
-}
+type JobMatch = Pick<
+  Job,
+  | 'id'
+  | 'title'
+  | 'company'
+  | 'location'
+  | 'locationType'
+  | 'salaryRange'
+  | 'postedAt'
+  | 'tags'
+> & { matchScore: number };
 
 interface JobMatchesProps {
   lang?: 'es' | 'en';
 }
 
+// Number of recommended jobs shown on the dashboard card.
+const JOB_MATCHES_LIMIT = 3;
+
 export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
-  const { user, userProfile } = useAuth();
-  const [jobs, setJobs] = useState<JobMatch[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { userProfile } = useAuth();
 
-  useEffect(() => {
-    const fetchJobMatches = async () => {
-      if (!user) return;
+  // Reuse the shared JobFirestoreAdapter so this card gets the same
+  // status/isApproved gating, match-score calculation, cancellation and
+  // caching guarantees as the full job board.
+  const adapter = useMemo(
+    () =>
+      new JobFirestoreAdapter({
+        userSkills: userProfile?.skills ?? [],
+        pageSize: JOB_MATCHES_LIMIT,
+      }),
+    // Recreate adapter when user skills change so match scores stay current.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(userProfile?.skills)]
+  );
 
-      try {
-        // In production, this would use the job matching algorithm
-        // For now, fetch recent active jobs
-        const jobsQuery = query(
-          collection(db, 'jobs'),
-          where('status', '==', 'active'),
-          where('isApproved', '==', true),
-          orderBy('postedAt', 'desc'),
-          limit(3)
-        );
+  const { items, loading } = useUniversalListing<Job>({
+    adapter,
+    defaultViewMode: 'list',
+    paginationMode: 'cursor',
+    defaultPageSize: JOB_MATCHES_LIMIT,
+    // Order by best compatibility, matching the "recommended jobs" intent.
+    defaultSort: { field: 'matchScore', direction: 'desc' },
+    lang,
+  });
 
-        const snapshot = await getDocs(jobsQuery);
-        const fetchedJobs = snapshot['docs'].map((doc) => {
-          const data = doc['data']();
-          // Calculate match score based on user skills overlap with job requirements
-          const userSkills = userProfile?.skills || [];
-          const jobRequirements = data.requirements || [];
-          const matchingSkills = userSkills.filter((skill: string) =>
-            jobRequirements.some((req: string) =>
-              req.toLowerCase().includes(skill.toLowerCase())
-            )
-          );
-          const matchScore = Math.min(
-            95,
-            Math.round(
-              (matchingSkills.length / Math.max(jobRequirements.length, 1)) *
-                100
-            )
-          );
-
-          return {
-            id: doc['id'],
-            title: data['title'],
-            company: data['company'],
-            location: data['location'],
-            locationType: data['locationType'],
-            salaryRange: data['salaryRange'],
-            matchScore,
-            postedAt: data['postedAt']?.toDate() || new Date(),
-            tags: data.tags || [],
-          } as JobMatch;
-        });
-
-        setJobs(fetchedJobs);
-      } catch (error) {
-        console.error('Error fetching job matches:', error);
-        setJobs([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchJobMatches();
-  }, [user, userProfile]);
+  const jobs: JobMatch[] = items.map((job) => ({
+    id: job.id,
+    title: job.title,
+    company: job.company,
+    location: job.location,
+    locationType: job.locationType,
+    salaryRange: job.salaryRange,
+    matchScore: Math.min(95, job.matchScore ?? 0),
+    postedAt: job.postedAt,
+    tags: job.tags,
+  }));
 
   const formatSalary = (salaryRange?: JobMatch['salaryRange']): string => {
     if (!salaryRange) return '';
