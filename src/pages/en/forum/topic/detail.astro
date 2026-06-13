@@ -1,0 +1,16 @@
+---
+import ModernLayout from '../../../../layouts/ModernLayout.astro';
+import Navigation from '../../../../components/Navigation.astro';
+import Footer from '../../../../components/Footer.astro';
+import ForumTopicPage from '../../../../components/wrappers/ForumTopicPage';
+---
+
+<ModernLayout
+  title="Topic - Forum - SECiD"
+  description="Discussion topic in the SECiD forum"
+  lang="en"
+>
+  <Navigation lang="en" />
+  <ForumTopicPage client:only="react" language="en" />
+  <Footer lang="en" />
+</ModernLayout>

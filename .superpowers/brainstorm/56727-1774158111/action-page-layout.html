@@ -1,0 +1,70 @@
+<h2>Where should the "clear actions" page live?</h2>
+<p class="subtitle">New users need to understand their options before committing. Currently, the homepage has a generic "Únete" button that goes straight to signup.</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Dedicated /join Page</h3>
+      <p>A new standalone page at <code>/es/join</code> with cards for each path (Member, Collaborator, Recruiter, Post a Job). The homepage "Únete" button links here instead of directly to signup.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Redesign Step 2 of SignUpForm</h3>
+      <p>Keep the current flow but expand Step 2 (role selection) to include all 4 paths with better descriptions, icons, and a migration check. No new page — just a better signup experience.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Both: /join Page + Improved Signup</h3>
+      <p>The <code>/join</code> page explains options and links to the appropriate flow. "Post a Job" goes to the public form. "Member/Collaborator/Recruiter" go to signup with the role pre-selected. The signup form also allows switching roles at Step 2.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 2rem;">
+  <h3>Current Flow vs Proposed</h3>
+  <div class="split">
+    <div class="mockup">
+      <div class="mockup-header">Current: Homepage → Signup</div>
+      <div class="mockup-body" style="padding: 1rem; font-size: 0.85rem;">
+        <div style="padding: 0.5rem; background: #f3f4f6; border-radius: 6px; margin-bottom: 0.5rem;">
+          <strong>Homepage</strong><br>
+          "Únete" button → <code>/es/signup</code>
+        </div>
+        <div style="padding: 0.5rem; background: #f3f4f6; border-radius: 6px; margin-bottom: 0.5rem;">
+          <strong>Step 1:</strong> Create account (email/password)
+        </div>
+        <div style="padding: 0.5rem; background: #fef3c7; border-radius: 6px; margin-bottom: 0.5rem;">
+          <strong>Step 2:</strong> Member or Collaborator?<br>
+          <em style="color: #92400e;">⚠ Only 2 options, no recruiter path</em>
+        </div>
+        <div style="padding: 0.5rem; background: #f3f4f6; border-radius: 6px;">
+          <strong>Step 3:</strong> UNAM verification (members only)
+        </div>
+      </div>
+    </div>
+    <div class="mockup">
+      <div class="mockup-header">Proposed: /join → Targeted Flows</div>
+      <div class="mockup-body" style="padding: 1rem; font-size: 0.85rem;">
+        <div style="padding: 0.5rem; background: #dbeafe; border-radius: 6px; margin-bottom: 0.5rem;">
+          <strong>/join page</strong> — 4 clear cards:<br>
+          🎓 Member &nbsp; 🤝 Collaborator<br>
+          🏢 Recruiter &nbsp; 📋 Post a Job
+        </div>
+        <div style="padding: 0.5rem; background: #f3f4f6; border-radius: 6px; margin-bottom: 0.5rem;">
+          Member/Collab/Recruiter → Signup (role pre-selected)
+        </div>
+        <div style="padding: 0.5rem; background: #dcfce7; border-radius: 6px; margin-bottom: 0.5rem;">
+          <em style="color: #166534;">✓ Member path checks for existing profile (migration)</em>
+        </div>
+        <div style="padding: 0.5rem; background: #f3f4f6; border-radius: 6px;">
+          Post a Job → Public form (no account needed)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

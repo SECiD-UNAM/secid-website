@@ -1,0 +1,38 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import BlogListPage from '../../components/wrappers/BlogListPage';
+import { getContentCollectionPosts } from '../../lib/blog-server';
+
+const initialPosts = await getContentCollectionPosts('es');
+---
+
+<ModernLayout
+  title="Blog - SECiD"
+  description="Artículos, tutoriales y recursos sobre ciencia de datos, machine learning e inteligencia artificial"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <main>
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Blog SECiD</h1>
+          <p class="secid-hero__subtitle">
+            Conocimiento, experiencias y tendencias en ciencia de datos
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="secid-section">
+      <div class="secid-container">
+        <BlogListPage client:load lang="es" initialPosts={initialPosts} />
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="es" />
+</ModernLayout>

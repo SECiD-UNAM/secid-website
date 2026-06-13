@@ -1,0 +1,20 @@
+---
+import ModernLayout from '../../../layouts/ModernLayout.astro';
+import Navigation from '../../../components/Navigation.astro';
+import Footer from '../../../components/Footer.astro';
+import EventDetailPage from '../../../components/wrappers/EventDetailPage';
+---
+
+<ModernLayout title="Event - SECiD" description="SECiD event detail" lang="en">
+  <Navigation lang="en" />
+
+  <main>
+    <section class="secid-section">
+      <div class="secid-container">
+        <EventDetailPage client:only="react" lang="en" />
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</ModernLayout>

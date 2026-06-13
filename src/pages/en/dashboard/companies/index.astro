@@ -1,0 +1,13 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import CompanyListPage from '@/components/wrappers/CompanyListPage';
+---
+
+<DashboardLayout
+  title="Company Network - SECiD"
+  description="Directory of companies where SECiD members work"
+  lang="en"
+  requireVerified={true}
+>
+  <CompanyListPage client:only="react" lang="en" />
+</DashboardLayout>

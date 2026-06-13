@@ -1,0 +1,66 @@
+---
+import type { CVData } from '@/types/cv';
+
+interface Props {
+  languages: CVData['languages'];
+  lang: 'es' | 'en';
+}
+
+const { languages, lang } = Astro.props;
+
+const sectionTitle = lang === 'es' ? 'Idiomas' : 'Languages';
+
+const proficiencyColors: Record<string, string> = {
+  native:
+    'border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400',
+  nativo:
+    'border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400',
+  fluent:
+    'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
+  avanzado:
+    'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
+  advanced:
+    'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
+  intermediate:
+    'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400',
+  intermedio:
+    'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400',
+  basic:
+    'border-gray-200 bg-gray-50 text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400',
+  basico:
+    'border-gray-200 bg-gray-50 text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400',
+};
+
+const defaultBadge =
+  'border-gray-200 bg-gray-50 text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400';
+
+function getBadgeClasses(proficiency: string): string {
+  return proficiencyColors[proficiency.toLowerCase()] || defaultBadge;
+}
+---
+
+<section
+  id="languages"
+  class="border-t border-gray-200 py-10 dark:border-gray-800"
+>
+  <h2 class="mb-8 text-2xl font-bold text-gray-900 dark:text-white">
+    {sectionTitle}
+  </h2>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      languages.map((language) => (
+        <div class="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800/50">
+          <span class="font-medium text-gray-900 dark:text-white">
+            {language.name}
+          </span>
+          <span
+            class={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${getBadgeClasses(language.proficiency)}`}
+          >
+            {language.proficiency}
+          </span>
+        </div>
+      ))
+    }
+  </div>
+</section>

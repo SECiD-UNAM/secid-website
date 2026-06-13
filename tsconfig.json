@@ -1,0 +1,131 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+
+    // Strict type checking
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false,
+
+    // Module resolution
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    // Path aliases
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"],
+      "@layouts/*": ["src/layouts/*"],
+      "@pages/*": ["src/pages/*"],
+      "@lib/*": ["src/lib/*"],
+      "@utils/*": ["src/utils/*"],
+      "@styles/*": ["src/styles/*"],
+      "@types/*": ["src/types/*"],
+      "@assets/*": ["src/assets/*"],
+      "@i18n/*": ["src/i18n/*"],
+      "@config/*": ["src/config/*"]
+    },
+
+    // Output
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "removeComments": true,
+
+    // Interop
+    "isolatedModules": true,
+    "allowJs": true,
+    "checkJs": false,
+
+    // Experimental
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    // Type roots
+    "typeRoots": ["node_modules/@types", "src/types"],
+    "types": ["astro/client"]
+  },
+  "include": [
+    "src/**/*",
+    "src/**/*.astro",
+    "src/**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.jsx",
+    "src/**/*.js",
+    "src/**/*.json"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".astro",
+    "build",
+    "coverage",
+    "public",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "src/test/**",
+    "src/components/mentorship/**",
+    "src/components/onboarding/**",
+    "src/components/forums/**",
+    "src/components/resources/**",
+    "src/components/learning/**",
+    "src/components/payments/**",
+    "src/components/messaging/**",
+    "src/components/notifications/**",
+    "src/components/gamification/**",
+    "src/components/assessment/**",
+    "src/components/commissions/**",
+    "src/components/search/**",
+    "src/components/tour/**",
+    "src/lib/search/**",
+    "src/lib/stripe/**",
+    "src/lib/cache/**",
+    "src/lib/monitoring/**",
+    "src/lib/pwa/**",
+    "src/lib/keyboard/**",
+    "src/lib/forum.ts",
+    "src/lib/gamification.ts",
+    "src/lib/learning.ts",
+    "src/lib/mentorship.ts",
+    "src/lib/messaging.ts",
+    "src/lib/notifications.ts",
+    "src/lib/onboarding.ts",
+    "src/lib/payments.ts",
+    "src/lib/resources.ts",
+    "src/lib/data-export.ts",
+    "src/lib/email-templates.ts",
+    "src/lib/session-manager.ts",
+    "src/lib/captcha.ts",
+    "src/lib/theme/**",
+    "src/lib/validation/**",
+    "src/lib/auth/two-factor.ts",
+    "src/components/profile/**",
+    "src/pages/api/**",
+    "src/middleware/**",
+    "src/types/search.ts"
+  ]
+}

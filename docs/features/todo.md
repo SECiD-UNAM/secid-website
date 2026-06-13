@@ -1,0 +1,31 @@
+- [ ] tipos de usuario (admin, miembro, aliado, externo, empleador, etc)
+- [ ] admin panel
+- [ ] pagina de blog
+- [ ] pagina de calendario integrada con calendario de google oficial
+- [ ] donaciones (paypal)
+- [ ] agregar info de comisiones y lideres de comisiones
+- [ ] notificaciones a miembros
+- [ ] manejo de base de datos de miembros
+- [ ] integración de empleos con firebase y tipos de usuario
+- [ ] empleos con caducidad automática (30 días)
+- [ ] registro de miembros desde la página. Deprecar google forms
+- [ ] encuestas periodicas (estatus de empleo, academico, encuesta de salarios, publicacion de agregados)
+- [ ] Networking & mentorship
+- [ ] Entrepreneur matching (tinder para emprendedores)
+- [ ] Formulario para agregar empleos
+- [ ] Foro comunitario con features por tipo de usuario
+- [ ] Habilidad de actualizar o tener multiples correos en un solo usuario
+- [ ] Pagina para buscar colaboraciones con sociedad civil (hackatones, consultorias, etc)
+- [ ] Poder mostrar miembros que quieran dar consultoria y su experiencia
+- [ ] Página de miembros rica (linkedin, cv, etc)
+- [ ] Página Adopta a un estudiante (dar becas / apoyo económico directamente a alguien estudiando actualmente)
+- [ ] TDD
+- [ ] MCP de playwright y lighthouse
+- [ ] Bot de whatsapp para notificaciones
+- [ ] Integración con redes sociales oficiales (mostrar publicaciones y perfiles de la sociedad)
+- [ ] Organigrama en about us
+- [ ] Portal para elecciones / accountability / reportes de resultados y planes anuales
+- [ ] Mejora de CI/CD con unit tests, e2e tests, format + lint, lighthouse, ambiente de QA, etc
+- [ ] remove all referenes to html5 (Design: HTML5 UP.)
+- [ ] CEO optimization
+- [ ] User journeys for different user types

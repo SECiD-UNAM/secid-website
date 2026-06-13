@@ -1,0 +1,20 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import AssessmentHistory from '@/components/assessment/AssessmentHistory';
+---
+
+<DashboardLayout
+  title="Historial de Evaluaciones - SECiD"
+  description="Tu historial de evaluaciones y seguimiento de progreso"
+  lang="es"
+>
+  <AssessmentHistory
+    client:load
+    onViewResult={(attemptId) => {
+      window.location.href = `/es/dashboard/assessments/${attemptId}`;
+    }}
+    onRetakeAssessment={(assessmentId) => {
+      window.location.href = `/es/dashboard/assessments/${assessmentId}`;
+    }}
+  />
+</DashboardLayout>

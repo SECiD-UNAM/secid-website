@@ -1,0 +1,39 @@
+{
+  "invalidEmail": {
+    "email": "invalid-email",
+    "password": "TestPassword123!",
+    "firstName": "Test",
+    "lastName": "User"
+  },
+  "weakPassword": {
+    "email": "weak@secid.mx",
+    "password": "123",
+    "firstName": "Test",
+    "lastName": "User"
+  },
+  "missingRequiredFields": {
+    "email": "missing@secid.mx"
+  },
+  "duplicateEmail": {
+    "email": "test@secid.mx",
+    "password": "AnotherPassword123!",
+    "firstName": "Duplicate",
+    "lastName": "User"
+  },
+  "sqlInjection": {
+    "email": "test@secid.mx' OR '1'='1",
+    "password": "'; DROP TABLE users; --"
+  },
+  "xssAttempt": {
+    "email": "xss@secid.mx",
+    "password": "TestPassword123!",
+    "firstName": "<script>alert('XSS')</script>",
+    "lastName": "User"
+  },
+  "tooLongInput": {
+    "email": "toolong@secid.mx",
+    "password": "TestPassword123!",
+    "firstName": "ThisIsAVeryLongFirstNameThatExceedsTheMaximumAllowedCharacterLimitAndShouldBeRejectedByTheValidation",
+    "lastName": "User"
+  }
+}

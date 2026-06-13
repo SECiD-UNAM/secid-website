@@ -33,13 +33,13 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22.12.0'
 
       - name: Claude Code
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: "--max-turns 25 --dangerously-skip-permissions"
+          claude_args: '--max-turns 25 --dangerously-skip-permissions'
 
   # Auto-review new and updated PRs
   claude-review:
@@ -62,13 +62,13 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22.12.0'
 
       - name: Claude Code — Review PR
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: "--max-turns 15 --dangerously-skip-permissions"
+          claude_args: '--max-turns 15 --dangerously-skip-permissions'
           prompt: |
             You are the code reviewer for SECiD (secid.org / beta.secid.mx).
             Review this pull request thoroughly.
@@ -111,13 +111,13 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22.12.0'
 
       - name: Claude Code — Handle Issue
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: "--max-turns 30 --dangerously-skip-permissions"
+          claude_args: '--max-turns 30 --dangerously-skip-permissions'
           prompt: |
             You are the automated developer for SECiD (secid.org / beta.secid.mx).
             A new issue has been opened. Handle it end-to-end:
