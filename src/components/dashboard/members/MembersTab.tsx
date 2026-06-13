@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { formatDate as formatDateTz } from '@/lib/format-date';
 import type { MemberProfile } from '@/types/member';
 import { MemberFilters, filterMembers } from './MemberFilters';
 import type { FilterState } from './MemberFilters';
@@ -241,7 +242,7 @@ function ExpandedRow({ member, lang, isAdmin }: ExpandedRowProps) {
   );
   const joinedDate =
     member.joinedAt instanceof Date
-      ? member.joinedAt.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', {
+      ? formatDateTz(member.joinedAt, lang, {
           year: 'numeric',
           month: 'long',
           day: 'numeric',

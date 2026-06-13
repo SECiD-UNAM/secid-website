@@ -7,6 +7,7 @@ import {
   getVisibleFields,
 } from '@/lib/members';
 import { MessageModal } from './MessageModal';
+import { formatDate } from '@/lib/format-date';
 import {
   MapPinIcon,
   BuildingOfficeIcon,
@@ -120,9 +121,11 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
   };
 
   const formatJoinDate = (date: Date): string => {
-    return date.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', {
+    // Pinned to the org timezone (see @/lib/format-date) so SSR/CSR match.
+    return formatDate(date, lang, {
       year: 'numeric',
       month: 'long',
+      day: undefined,
     });
   };
 
@@ -773,9 +776,11 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                           </p>
                           <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">
                             <time dateTime={role.startDate.toISOString()}>
-                              {role.startDate.toLocaleDateString(
-                                lang === 'es' ? 'es-MX' : 'en-US'
-                              )}
+                              {formatDate(role.startDate, lang, {
+                                year: 'numeric',
+                                month: 'numeric',
+                                day: 'numeric',
+                              })}
                             </time>
                             {' - '}
                             {role.current
@@ -784,9 +789,11 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                                 : 'Present'
                               : role?.endDate && (
                                   <time dateTime={role.endDate.toISOString()}>
-                                    {role.endDate.toLocaleDateString(
-                                      lang === 'es' ? 'es-MX' : 'en-US'
-                                    )}
+                                    {formatDate(role.endDate, lang, {
+                                      year: 'numeric',
+                                      month: 'numeric',
+                                      day: 'numeric',
+                                    })}
                                   </time>
                                 )}
                           </p>
@@ -963,9 +970,11 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-500">
                             <time dateTime={achievement.earnedAt.toISOString()}>
-                              {achievement.earnedAt.toLocaleDateString(
-                                lang === 'es' ? 'es-MX' : 'en-US'
-                              )}
+                              {formatDate(achievement.earnedAt, lang, {
+                                year: 'numeric',
+                                month: 'numeric',
+                                day: 'numeric',
+                              })}
                             </time>
                           </p>
                         </div>
@@ -1008,9 +1017,11 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                               </p>
                               <p className="text-xs text-gray-500 dark:text-gray-500">
                                 <time dateTime={cert.issueDate.toISOString()}>
-                                  {cert.issueDate.toLocaleDateString(
-                                    lang === 'es' ? 'es-MX' : 'en-US'
-                                  )}
+                                  {formatDate(cert.issueDate, lang, {
+                                    year: 'numeric',
+                                    month: 'numeric',
+                                    day: 'numeric',
+                                  })}
                                 </time>
                                 {cert.expiryDate && (
                                   <>
@@ -1018,9 +1029,11 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                                     <time
                                       dateTime={cert.expiryDate.toISOString()}
                                     >
-                                      {cert.expiryDate.toLocaleDateString(
-                                        lang === 'es' ? 'es-MX' : 'en-US'
-                                      )}
+                                      {formatDate(cert.expiryDate, lang, {
+                                        year: 'numeric',
+                                        month: 'numeric',
+                                        day: 'numeric',
+                                      })}
                                     </time>
                                   </>
                                 )}

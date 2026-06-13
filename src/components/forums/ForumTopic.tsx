@@ -15,6 +15,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { useTranslations } from '../../hooks/useTranslations';
+import { formatDate as formatDateTz } from '@/lib/format-date';
 import {
   forumTopics,
   forumPosts,
@@ -245,7 +246,8 @@ const ForumTopic: React.FC<ForumTopicProps> = ({
   };
 
   const formatDate = (date: Date): string => {
-    return date.toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
+    // Pinned to the org timezone (see @/lib/format-date) so SSR/CSR match.
+    return formatDateTz(date, language === 'en' ? 'en' : 'es', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getBlogPost, type BlogPost as BlogPostType } from '@/lib/blog';
+import { formatDate as formatDateTz } from '@/lib/format-date';
 import { sanitizeHtml } from '@/lib/validation/sanitization';
 
 interface Props {
@@ -41,11 +42,12 @@ const translations = {
 };
 
 function formatDate(date: Date, lang: string): string {
-  return new Intl.DateTimeFormat(lang === 'es' ? 'es-MX' : 'en-US', {
+  // Pinned to the org timezone via @/lib/format-date for SSR/CSR consistency.
+  return formatDateTz(date, lang === 'en' ? 'en' : 'es', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
-  }).format(date);
+  });
 }
 
 function getInitials(name: string): string {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getJournalClubSessions } from '@/lib/journal-club';
 import type { JournalClubSession } from '@/lib/journal-club';
+import { formatDate } from '@/lib/format-date';
 import {
   DocumentTextIcon,
   PresentationChartBarIcon,
@@ -143,14 +144,13 @@ function StaticSessionCard({
   session: StaticSession;
   lang: string;
 }) {
-  const dateObj = new Date(`${session.date}T18:00:00`); // 6pm
-  const rawDate = dateObj.toLocaleDateString(
-    lang === 'es' ? 'es-MX' : 'en-US',
-    { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
-  );
-  // Capitalize only the first letter; a blanket `capitalize` class
-  // title-cases Spanish particles ("21 De Agosto De 2026").
-  const formattedDate = rawDate.charAt(0).toUpperCase() + rawDate.slice(1);
+  // Anchor the date-only value to noon UTC so the calendar day is stable in
+  // the org timezone (and identical on the SSR/CSR pass). formatDate pins the
+  // timezone and capitalizes only the first letter.
+  const locale = lang === 'en' ? 'en' : 'es';
+  const formattedDate = formatDate(`${session.date}T12:00:00Z`, locale, {
+    weekday: 'long',
+  });
 
   const isCompleted = session.status === 'completed';
   const isUpcoming = session.status === 'upcoming';
@@ -215,13 +215,6 @@ function FirestoreSessionCard({
   session: JournalClubSession;
   lang: string;
 }) {
-  function formatDate(date: Date): string {
-    return new Date(date).toLocaleDateString(
-      lang === 'es' ? 'es-MX' : 'en-US',
-      { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
-    );
-  }
-
   function isUpcoming(date: Date): boolean {
     return new Date(date) >= new Date();
   }
@@ -243,7 +236,11 @@ function FirestoreSessionCard({
 
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <CalendarIcon className="h-4 w-4" />
-            <span>{formatDate(session.date)}</span>
+            <span>
+              {formatDate(session.date, lang === 'en' ? 'en' : 'es', {
+                weekday: 'long',
+              })}
+            </span>
             <span className="text-gray-400">·</span>
             <span>{session.presenter}</span>
           </div>

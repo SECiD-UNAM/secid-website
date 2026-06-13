@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getNewsletter, type NewsletterIssue } from '@/lib/newsletter';
+import { formatDate } from '@/lib/format-date';
 import { sanitizeHtml } from '@/lib/validation/sanitization';
 
 interface Props {
@@ -86,10 +87,11 @@ export default function NewsletterView({ newsletterId, lang = 'es' }: Props) {
       >
         <span style={{ fontSize: '0.875rem', opacity: 0.9 }}>
           {t.issue} #{newsletter.issueNumber} &middot;{' '}
-          {newsletter.publishedAt.toLocaleDateString(
-            lang === 'es' ? 'es-MX' : 'en-US',
-            { year: 'numeric', month: 'long', day: 'numeric' }
-          )}
+          {formatDate(newsletter.publishedAt, lang, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
         </span>
         <h1 style={{ fontSize: '2rem', fontWeight: 700, marginTop: '0.5rem' }}>
           {newsletter.title}

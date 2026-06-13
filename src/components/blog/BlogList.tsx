@@ -6,6 +6,7 @@ import {
   type BlogPost,
 } from '@/lib/blog';
 import { useUniversalListing } from '@/hooks/useUniversalListing';
+import { formatDate as formatDateTz } from '@/lib/format-date';
 import { ClientSideAdapter } from '@lib/listing/adapters/ClientSideAdapter';
 import {
   ListingSearch,
@@ -68,11 +69,12 @@ const CATEGORY_KEYS = [
 const POSTS_PER_PAGE = 6;
 
 function formatDate(date: Date, lang: string): string {
-  return new Intl.DateTimeFormat(lang === 'es' ? 'es-MX' : 'en-US', {
+  // Pinned to the org timezone via @/lib/format-date for SSR/CSR consistency.
+  return formatDateTz(date, lang === 'en' ? 'en' : 'es', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
-  }).format(date);
+  });
 }
 
 function getInitials(name: string): string {

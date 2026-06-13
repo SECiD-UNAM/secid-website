@@ -9,9 +9,10 @@ import {
   searchResources,
 } from '@/lib/resources';
 import { getCurrentUser } from '@/lib/auth';
+import { formatDate } from '@/lib/format-date';
 import { useTranslations } from '@/hooks/useTranslations';
 import ResourceCard from './ResourceCard';
-import type { Resource, ResourceReview } from '@/types/resource';
+import type { Resource } from '@/types/resource';
 
 /**
  * ResourceDetail Component
@@ -274,7 +275,11 @@ export default function ResourceDetail({
               </div>
               <span>•</span>
               <span>
-                {new Date(resource['createdAt']).toLocaleDateString()}
+                {formatDate(resource['createdAt'], 'es', {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric',
+                })}
               </span>
               <span>•</span>
               <span>{formatFileSize(resource.fileSize)}</span>
@@ -618,7 +623,7 @@ export default function ResourceDetail({
               </h3>
 
               <div className="space-y-4">
-                {resource.versions.map((version, index) => (
+                {resource.versions.map((version, _index) => (
                   <div
                     key={version.id}
                     className="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
@@ -626,7 +631,11 @@ export default function ResourceDetail({
                     <div className="mb-2 flex items-center justify-between">
                       <h4 className="font-medium">v{version.version}</h4>
                       <span className="text-sm text-gray-500 dark:text-gray-400">
-                        {new Date(version.releaseDate).toLocaleDateString()}
+                        {formatDate(version.releaseDate, 'es', {
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric',
+                        })}
                       </span>
                     </div>
                     <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">

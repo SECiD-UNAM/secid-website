@@ -16,6 +16,10 @@ import {
   doc,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import {
+  formatDate as formatDateTz,
+  formatTime as formatTimeTz,
+} from '@/lib/format-date';
 import { usePermissions } from '@/lib/rbac/hooks';
 import {
   CalendarIcon,
@@ -87,7 +91,9 @@ interface EventListProps {
 // ---------------------------------------------------------------------------
 
 function formatDate(date: Date, lang: 'es' | 'en'): string {
-  return date.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', {
+  // Pinned to the org timezone (see @/lib/format-date) so the SSR (UTC) and
+  // browser renders produce the same string — no hydration mismatch.
+  return formatDateTz(date, lang, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
@@ -96,7 +102,7 @@ function formatDate(date: Date, lang: 'es' | 'en'): string {
 }
 
 function formatTime(date: Date, lang: 'es' | 'en'): string {
-  return date.toLocaleTimeString(lang === 'es' ? 'es-MX' : 'en-US', {
+  return formatTimeTz(date, lang, {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,

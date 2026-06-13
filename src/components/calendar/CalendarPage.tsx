@@ -6,6 +6,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
+import { formatDate } from '@/lib/format-date';
 
 // ---------------------------------------------------------------------------
 // i18n
@@ -105,31 +106,27 @@ function isPast(dateStr: string): boolean {
   return new Date(`${dateStr}T23:59:00`) < new Date();
 }
 
-/**
- * Capitalize only the first letter. Spanish locale dates come back fully
- * lowercase ("viernes, 21 de agosto de 2026") — a CSS `capitalize` class
- * would wrongly title-case every word ("Viernes, 21 De Agosto De 2026").
- */
-function capitalizeFirst(s: string): string {
-  return s.charAt(0).toUpperCase() + s.slice(1);
+function asLocale(lang: string): 'es' | 'en' {
+  return lang === 'en' ? 'en' : 'es';
 }
 
-function formatDate(dateStr: string, lang: string): string {
-  return capitalizeFirst(
-    new Date(`${dateStr}T12:00:00`).toLocaleDateString(
-      lang === 'es' ? 'es-MX' : 'en-US',
-      { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
-    )
-  );
+function formatActivityDate(dateStr: string, lang: string): string {
+  // Anchor the date-only value to noon UTC so the calendar day is stable in
+  // the org timezone (and identical across the SSR/CSR render).
+  return formatDate(`${dateStr}T12:00:00Z`, asLocale(lang), {
+    weekday: 'long',
+  });
 }
 
 function formatMonthYear(year: number, month: number, lang: string): string {
-  return capitalizeFirst(
-    new Date(year, month, 1).toLocaleDateString(
-      lang === 'es' ? 'es-MX' : 'en-US',
-      { month: 'long', year: 'numeric' }
-    )
-  );
+  // Build the 1st of the month at noon UTC so the month/year never shifts
+  // when formatted in the org timezone.
+  const anchor = new Date(Date.UTC(year, month, 1, 12, 0, 0));
+  return formatDate(anchor, asLocale(lang), {
+    month: 'long',
+    year: 'numeric',
+    day: undefined,
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -214,7 +211,7 @@ function ActivityBadge({
           )}
         </p>
         <p className="mt-0.5 text-xs text-gray-600 dark:text-gray-400">
-          {formatDate(activity.date, lang)}
+          {formatActivityDate(activity.date, lang)}
         </p>
         {activity.presenter && (
           <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-500">

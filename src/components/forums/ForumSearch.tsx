@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { sanitizeHtml } from '@/lib/validation/sanitization';
+import { formatDate as formatDateTz } from '@/lib/format-date';
 import {
   Search,
   Filter,
@@ -189,10 +190,6 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
   };
 
   const clearFilters = () => {
-    const resetFilters: Record<string, unknown> = {
-      topicType: 'all',
-      hasAttachments: false,
-    };
     listing.clearFilters();
     setTempFilters({
       topicType: 'all',
@@ -203,15 +200,6 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
     setShowFilters(false);
   };
 
-  const addTagFilter = (tag: string) => {
-    const currentTags = (listing.activeFilters['tags'] as string[]) ?? [];
-    if (!currentTags.includes(tag)) {
-      const newTags = [...currentTags, tag];
-      listing.setFilter('tags', newTags);
-      setTempFilters((prev) => ({ ...prev, tags: newTags }));
-    }
-  };
-
   const removeTagFilter = (tag: string) => {
     const currentTags = (listing.activeFilters['tags'] as string[]) ?? [];
     const newTags = currentTags.filter((t) => t !== tag);
@@ -220,7 +208,8 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
   };
 
   const formatDate = (date: Date): string => {
-    return date.toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', {
+    // Pinned to the org timezone (see @/lib/format-date) so SSR/CSR match.
+    return formatDateTz(date, language === 'en' ? 'en' : 'es', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -458,10 +447,14 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
 
               {/* Topic Type */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="forum-search-topic-type"
+                  className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
                   Topic Type
                 </label>
                 <select
+                  id="forum-search-topic-type"
                   value={(tempFilters['topicType'] as string) ?? 'all'}
                   onChange={(e) =>
                     setTempFilters((prev) => ({
@@ -480,9 +473,9 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
 
               {/* Other Options */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <span className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Options
-                </label>
+                </span>
                 <div className="space-y-2">
                   <label className="flex items-center gap-2">
                     <input

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { formatDate, formatTime } from '@/lib/format-date';
 import type {
   MemberProfile,
   ConnectionRequest,
@@ -10,7 +11,6 @@ import type {
 import {
   UserPlusIcon,
   ChatBubbleLeftEllipsisIcon,
-  BellIcon,
   UserGroupIcon,
   MagnifyingGlassIcon,
   PaperAirplaneIcon,
@@ -18,7 +18,6 @@ import {
   XMarkIcon,
   CheckIcon,
   ClockIcon,
-  HeartIcon,
   StarIcon,
   SparklesIcon,
   ArrowPathIcon,
@@ -393,9 +392,11 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({
                           </h4>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
                             <ClockIcon className="mr-1 inline h-3 w-3" />
-                            {request['createdAt'].toLocaleDateString(
-                              lang === 'es' ? 'es-MX' : 'en-US'
-                            )}
+                            {formatDate(request['createdAt'], lang, {
+                              year: 'numeric',
+                              month: 'numeric',
+                              day: 'numeric',
+                            })}
                           </p>
                           {request['message'] && (
                             <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
@@ -540,7 +541,7 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({
                                   : 'text-gray-500 dark:text-gray-400'
                               }`}
                             >
-                              {message['timestamp'].toLocaleTimeString([], {
+                              {formatTime(message['timestamp'], lang, {
                                 hour: '2-digit',
                                 minute: '2-digit',
                               })}

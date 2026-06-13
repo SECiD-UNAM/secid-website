@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { trackView, bookmarkResource, removeBookmark } from '@/lib/resources';
+import { formatDate } from '@/lib/format-date';
 import { useTranslations } from '@/hooks/useTranslations';
 
 /**
@@ -294,7 +295,13 @@ export default function ResourceCard({
       {/* File Info */}
       <div className="mb-4 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
         <span>{formatFileSize(resource.fileSize)}</span>
-        <span>{new Date(resource.createdAt).toLocaleDateString()}</span>
+        <span>
+          {formatDate(resource.createdAt, 'es', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+          })}
+        </span>
       </div>
 
       {/* Actions */}

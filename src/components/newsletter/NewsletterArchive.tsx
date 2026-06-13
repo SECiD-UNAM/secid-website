@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getNewsletterArchive, type NewsletterIssue } from '@/lib/newsletter';
+import { formatDate } from '@/lib/format-date';
 
 interface Props {
   lang?: 'es' | 'en';
@@ -117,10 +118,11 @@ export default function NewsletterArchive({ lang = 'es' }: Props) {
                   {t.issue} #{newsletter.issueNumber}
                 </span>
                 <span>
-                  {newsletter.publishedAt.toLocaleDateString(
-                    lang === 'es' ? 'es-MX' : 'en-US',
-                    { year: 'numeric', month: 'short', day: 'numeric' }
-                  )}
+                  {formatDate(newsletter.publishedAt, lang, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
                 </span>
               </div>
               <h3

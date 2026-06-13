@@ -9,6 +9,10 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import {
+  formatDate as formatDateTz,
+  formatTime as formatTimeTz,
+} from '@/lib/format-date';
 import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid';
 import EventRegistrationForm from './EventRegistrationForm';
 import {
@@ -312,7 +316,9 @@ export const EventDetail: React.FC<EventDetailProps> = ({
   };
 
   const formatDate = (date: Date): string => {
-    return date.toLocaleDateString(lang === 'es' ? 'es-MX' : 'en-US', {
+    // Pinned to the org timezone (see @/lib/format-date) so SSR (UTC) and
+    // browser renders match — prevents the hydration mismatch.
+    return formatDateTz(date, lang, {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -321,7 +327,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({
   };
 
   const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString(lang === 'es' ? 'es-MX' : 'en-US', {
+    return formatTimeTz(date, lang, {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
