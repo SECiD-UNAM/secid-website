@@ -10,6 +10,10 @@ locals {
     "cloudbuild.googleapis.com",
     "artifactregistry.googleapis.com",
     "eventarc.googleapis.com",
+    # onSchedule functions (aggregateSurveyResponses) — the Firebase CLI
+    # enables this during deploy, but declaring it keeps "the project is
+    # wired correctly" out of tribal knowledge, like the rest of this list.
+    "cloudscheduler.googleapis.com",
     "identitytoolkit.googleapis.com",
     "firestore.googleapis.com",
     "firebasestorage.googleapis.com",

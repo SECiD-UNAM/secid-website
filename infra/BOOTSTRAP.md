@@ -35,7 +35,35 @@ gcloud resource-manager org-policies describe \
   iam.allowedPolicyMemberDomains --project secid-org
 ```
 
-## 3. Residual console toggle (only if needed)
+## 3. Cloud Scheduler role for the functions deployer
+
+`aggregateSurveyResponses` is an `onSchedule('every 6 hours')` function, so
+`firebase deploy --only functions` creates/updates a Cloud Scheduler job
+(`firebase-schedule-aggregateSurveyResponses-us-central1`). Without
+`roles/cloudscheduler.admin` the **entire** functions deploy fails:
+
+```
+had HTTP Error: 403, The principal (user or service account) lacks IAM
+permission "cloudscheduler.jobs.update"
+```
+
+This broke Deploy Beta from 2026-05-29 onward; from 2026-06-11 the expired
+free trial (project dropped off Blaze) failed the deploy earlier and masked
+it. `infra/bootstrap/main.tf` now grants the role to **both** `tf-deployer`
+and the legacy `FIREBASE_SERVICE_ACCOUNT` SA that `deploy-beta.yml` /
+`cd.yml` still use (`var.legacy_functions_deployer_sa`). Re-run the
+bootstrap apply to pick it up:
+
+```
+cd infra/bootstrap && terraform apply
+```
+
+It must live here, not in `infra/`: `tf-deployer` has no `projectIamAdmin`
+by design, so it cannot grant project-level roles. Once the deploy
+workflows move to WIF (§1), set `legacy_functions_deployer_sa = ""` and the
+extra binding goes away.
+
+## 4. Residual console toggle (only if needed)
 
 `infra/identity_platform.tf` enables Email/Password + authorized domains
 and PATCHes the Identity Toolkit config. The **"Allow users to sign up"**

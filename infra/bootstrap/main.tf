@@ -37,10 +37,41 @@ resource "google_project_iam_member" "deployer_roles" {
     "roles/datastore.indexAdmin",           # firestore indexes
     "roles/storage.admin",                  # tfstate bucket + function src
     "roles/firebasestorage.admin",          # deploy Storage rules (default bucket get)
+    "roles/cloudscheduler.admin",           # onSchedule fns -> firebase-schedule-* jobs
   ])
   project = var.project_id
   role    = each.value
   member  = "serviceAccount:${google_service_account.deployer.email}"
+}
+
+# ── Cloud Scheduler for the SA that actually deploys functions today ──────
+# Deploying an onSchedule function makes the Firebase CLI create/update a
+# Cloud Scheduler job named firebase-schedule-<fn>-<region>. Today that is
+# aggregateSurveyResponses (functions/src/aggregate-survey.ts, 'every 6
+# hours'). Without Cloud Scheduler admin the whole functions deploy dies:
+#
+#   .../jobs/firebase-schedule-aggregateSurveyResponses-us-central1
+#   had HTTP Error: 403, The principal ... lacks IAM permission
+#   "cloudscheduler.jobs.update"
+#
+# That is what broke Deploy Beta from 2026-05-29 on; from 2026-06-11 the
+# free-trial/Blaze outage failed the deploy earlier and masked it.
+#
+# Why here and not in the main infra/ root: tf-deployer deliberately has no
+# projectIamAdmin, so it cannot grant project-level roles — only an admin
+# running this bootstrap can. Same reason the role list above lives here.
+#
+# The deploy workflows still authenticate with the legacy
+# FIREBASE_SERVICE_ACCOUNT key, so the grant must target that SA. Once they
+# migrate to WIF/tf-deployer (see BOOTSTRAP.md §1, "delete any legacy
+# FIREBASE_SERVICE_ACCOUNT key secret"), set this variable to "" and the
+# binding disappears — tf-deployer already has the role above.
+resource "google_project_iam_member" "legacy_deployer_scheduler_admin" {
+  for_each = toset(compact([var.legacy_functions_deployer_sa]))
+
+  project = var.project_id
+  role    = "roles/cloudscheduler.admin"
+  member  = "serviceAccount:${each.value}"
 }
 
 # ── Workload Identity Federation: GitHub OIDC → impersonate deployer SA ───
