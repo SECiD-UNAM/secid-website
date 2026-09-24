@@ -8,9 +8,9 @@ import { isDemoMode } from '@/lib/firebase';
 import Button from '@/components/ui/Button';
 import SocialLoginButtons from './SocialLoginButtons';
 import TwoFactorVerification from './TwoFactorVerification';
-import { useTranslations } from '@/hooks/useTranslations';
 import { Eye, EyeOff, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { toSafeInternalPath } from '@/lib/auth/safe-redirect';
 
 function getReturnUrl(lang: string): string {
   const defaultUrl = `/${lang}/dashboard`;
@@ -18,22 +18,15 @@ function getReturnUrl(lang: string): string {
     const params = new URLSearchParams(window.location.search);
     const paramUrl = params.get('returnUrl') || params.get('redirect');
     const stored = sessionStorage.getItem('secid_returnUrl');
-    const url = paramUrl || stored || defaultUrl;
     sessionStorage.removeItem('secid_returnUrl');
-    // Only allow relative paths (prevent open redirect)
-    return url.startsWith('/') && !url.startsWith('//') ? url : defaultUrl;
+    return toSafeInternalPath(paramUrl || stored, defaultUrl);
   } catch {
     return defaultUrl;
   }
 }
 
-/**
- * Navigate after auth. `getReturnUrl` already guarantees a same-origin
- * relative path (must start with a single '/'), so this is not an open
- * redirect — CodeQL's interprocedural taint can't see that guard.
- */
+/** Navigate after auth. `path` must come from `getReturnUrl`. */
 function redirectTo(path: string): void {
-  // codeql[js/client-side-unvalidated-url-redirection]
   window.location.href = path;
 }
 
@@ -69,7 +62,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   lang = 'es',
   className = '',
 }) => {
-  const t = useTranslations(lang);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -305,7 +297,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       toast.success(
         lang === 'es' ? 'Correo de recuperación enviado' : 'Recovery email sent'
       );
-    } catch (error) {
+    } catch {
       toast['error'](
         lang === 'es'
           ? 'Error al enviar correo de recuperación'
@@ -349,7 +341,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         } else {
           localStorage.removeItem('secid_remember_user');
         }
-      } catch (error) {
+      } catch {
         localStorage.removeItem('secid_remember_user');
       }
     }

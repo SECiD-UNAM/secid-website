@@ -22,15 +22,14 @@ import {
 } from '@/lib/merge/mutations';
 import { Building2 } from 'lucide-react';
 import SignupSurveyStep from './SignupSurveyStep';
+import { toSafeInternalPath } from '@/lib/auth/safe-redirect';
 
 function getReturnUrl(lang: string): string {
   const defaultUrl = `/${lang}/dashboard`;
   try {
     const stored = sessionStorage.getItem('secid_returnUrl');
     sessionStorage.removeItem('secid_returnUrl');
-    return stored && stored.startsWith('/') && !stored.startsWith('//')
-      ? stored
-      : defaultUrl;
+    return toSafeInternalPath(stored, defaultUrl);
   } catch {
     return defaultUrl;
   }
