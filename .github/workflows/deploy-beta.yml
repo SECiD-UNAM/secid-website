@@ -70,7 +70,13 @@ jobs:
           channelId: live
           projectId: ${{ secrets.STAGING_FIREBASE_PROJECT_ID }}
 
+      # Backend (functions + rules) is shared with production: one project
+      # backs both hosts. Until promotion, beta deploys it. After promotion
+      # set repo variable BACKEND_DEPLOYED_FROM_MAIN=true so only cd.yml
+      # (main) deploys it — otherwise every push here would overwrite prod
+      # functions and point APP_URL (email links) at beta.
       - name: Install Cloud Functions dependencies
+        if: vars.BACKEND_DEPLOYED_FROM_MAIN != 'true'
         run: cd functions && npm ci
 
       # Write functions runtime env. Gen2 reads functions/.env at deploy
@@ -78,6 +84,7 @@ jobs:
       # S5 (APP_URL) and the server-side half of #48 (RECAPTCHA_SECRET_KEY).
       # File is gitignored — never committed; written fresh per deploy.
       - name: Write functions runtime env (beta)
+        if: vars.BACKEND_DEPLOYED_FROM_MAIN != 'true'
         env:
           RECAPTCHA_SECRET_KEY: ${{ secrets.STAGING_RECAPTCHA_SECRET_KEY }}
         run: |
@@ -98,6 +105,7 @@ jobs:
       # and a billing-gated functions failure must never leave security
       # rules unshipped (rules carry the privacy/authz fixes).
       - name: Deploy Firestore Rules & Indexes
+        if: vars.BACKEND_DEPLOYED_FROM_MAIN != 'true'
         run: |
           set -o pipefail
           npx firebase-tools deploy --only firestore:rules,firestore:indexes \
@@ -105,6 +113,7 @@ jobs:
             --non-interactive 2>&1
 
       - name: Deploy Storage Rules
+        if: vars.BACKEND_DEPLOYED_FROM_MAIN != 'true'
         run: |
           set -o pipefail
           npx firebase-tools deploy --only storage \
@@ -112,6 +121,7 @@ jobs:
             --non-interactive 2>&1
 
       - name: Deploy Cloud Functions
+        if: vars.BACKEND_DEPLOYED_FROM_MAIN != 'true'
         run: |
           set -o pipefail
           npx firebase-tools deploy --only functions \

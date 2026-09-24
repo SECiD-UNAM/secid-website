@@ -2,19 +2,61 @@
 
 ## Environments
 
-| Environment | Branch        | URL                   | Workflow          |
-| ----------- | ------------- | --------------------- | ----------------- |
-| Beta        | `feature/hub` | https://beta.secid.mx | `deploy-beta.yml` |
-| Production  | `main`        | https://secid.org     | `cd.yml`          |
+| Environment | Branch        | URL                   | Host                                     | Workflow          |
+| ----------- | ------------- | --------------------- | ---------------------------------------- | ----------------- |
+| Beta        | `feature/hub` | https://beta.secid.mx | Firebase Hosting, default site           | `deploy-beta.yml` |
+| Production  | `main`        | https://secid.mx      | GitHub Pages today → Firebase Hosting ⚠️ | `cd.yml`          |
+
+⚠️ As of 2026-09, `secid.mx` still serves the legacy pre-Astro site from
+`main` via GitHub Pages. The Astro app is only live on beta. See
+[Production cutover](#production-cutover) — GitHub Pages cannot serve this
+app, so promotion requires moving production to Firebase Hosting.
+
+Both environments use ONE Firebase project (`secid-org`): same Auth users,
+same Firestore data, same Cloud Functions. Only the static frontend differs.
 
 ## What Gets Deployed
 
-Each deploy pushes:
+- **Hosting** — static site from `dist/client/`, per environment.
+- **Backend** — Cloud Functions (`functions/src/`), Firestore rules and
+  indexes, Storage rules. Shared by both environments, so exactly ONE
+  branch may deploy it (see cutover step 5). Whoever deploys it also writes
+  `APP_URL` into `functions/.env`, which ends up in user-facing email links.
 
-1. **Firebase Hosting** — static site from `dist/client/`
-2. **Cloud Functions** — from `functions/src/`
-3. **Firestore Rules & Indexes** — from `firestore.rules` and `firestore.indexes.json`
-4. **Storage Rules** — from `storage.rules`
+## Production cutover
+
+GitHub Pages has no rewrites and no custom headers. On Pages, the 44
+dynamic-route rewrites in `firebase.json` (member, event, blog, company,
+forum and dashboard detail pages) return 404, `/api/forms/contact` and
+`/api/forms/newsletter` (Cloud Function rewrites) return 404, and none of
+the security headers are sent. Production must be a second Firebase
+Hosting site in `secid-org`.
+
+Do these in order. Steps 1–4 do not affect the live site.
+
+1. **Create the prod Hosting site** (owner):
+   `firebase hosting:sites:create <site-id> --project secid-org`
+2. **Set repo variable** `FIREBASE_PROD_HOSTING_SITE=<site-id>`
+   (Settings → Secrets and variables → Actions → Variables).
+3. **Switch `cd.yml` to Firebase Hosting** — replace the GitHub Pages
+   upload/deploy with a `firebase deploy --only hosting` to that site
+   (`jq '.hosting.site = $site' firebase.json`, so both environments keep
+   one `firebase.json`). Not done yet: pending owner approval.
+4. **Authorized domains**: Firebase Console → Authentication → Settings →
+   Authorized domains must include `secid.mx` (and `www.secid.mx` if used),
+   or sign-in fails on prod.
+5. **Merge PR #1** to `main`. `cd.yml` builds and deploys to the new site
+   (reachable at `https://<site-id>.web.app`; check dynamic routes and
+   `/api/forms/*` there before touching DNS).
+6. **Hand the backend to `main`**: set repo variable
+   `BACKEND_DEPLOYED_FROM_MAIN=true` so `deploy-beta.yml` stops deploying
+   functions/rules. From then on backend changes ship only via `main`.
+7. **Connect the domain**: Firebase Console → Hosting → `<site-id>` → Add
+   custom domain `secid.mx`, then update DNS in Cloudflare with the records
+   Firebase shows (DNS-only / grey cloud until the certificate is issued).
+   This is the moment the live site changes.
+8. **Retire GitHub Pages**: remove the `secid.mx` custom domain and disable
+   Pages (Settings → Pages), so Pages no longer claims the domain.
 
 ## Prerequisites
 
@@ -116,6 +158,21 @@ gcloud projects add-iam-policy-binding secid-org \
   --member="serviceAccount:firebase-adminsdk-fbsvc@secid-org.iam.gserviceaccount.com" \
   --role="roles/iam.serviceAccountUser"
 ```
+
+### Every Cloud Function returns 503; sign-up fails with `auth/error-code:-47`
+
+The project fell off the Blaze plan (in 2026-06 the GCP free trial
+expired). Gen2 functions stop serving, including the `beforeUserCreated`
+blocking function, so account creation fails for every provider. Deploys
+fail with `Extensions require the Blaze plan`. Fix: Cloud Console →
+Billing → **Activate full account**. Tell-tale: an existing function
+returns 503 while a nonexistent function name returns 404.
+
+### Functions deploy: `lacks IAM permission "cloudscheduler.jobs.update"`
+
+`aggregateSurveyResponses` is a scheduled function; the deploy SA needs
+`roles/cloudscheduler.admin` (granted 2026-08-20). Use the grant command
+above with that role.
 
 ### Build fails: "Cannot find module X"
 
