@@ -49,10 +49,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      # Runs before checkout, so gh needs --repo. A nicety, not a gate:
+      # a missing Copilot seat must not fail the Claude review.
       - name: Request Copilot review
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh pr edit ${{ github.event.pull_request.number }} --add-reviewer copilot
+        run: gh pr edit ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --add-reviewer copilot
 
       - name: Checkout
         uses: actions/checkout@v4
