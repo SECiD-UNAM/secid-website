@@ -174,6 +174,16 @@ returns 503 while a nonexistent function name returns 404.
 `roles/cloudscheduler.admin` (granted 2026-08-20). Use the grant command
 above with that role.
 
+### Functions deploy: `Quota exceeded for total allowable CPU per project per region`
+
+The Cloud Run CPU quota in `us-central1` is 20 vCPU. Deploying many
+functions at once starts one health-check instance each; above the quota,
+revisions fail and Cloud Run then rejects requests to every revision for
+~30 minutes (HTTP 503/429, log: "exceeded its quota limit ... recently").
+`functions/src/init.ts` sets `cpu: 'gcf_gen1'` (0.167 vCPU per instance) to
+keep a full deploy near 3.5 vCPU. Check that setting first; raising CPU per
+function needs a quota increase.
+
 ### Build fails: "Cannot find module X"
 
 A file is imported but not committed to git. Check:
