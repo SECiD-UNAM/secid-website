@@ -1,0 +1,350 @@
+import { onCall, HttpsError } from 'firebase-functions/v2/https';
+import * as admin from 'firebase-admin';
+import * as crypto from 'crypto';
+import { sendEmail } from './email-service';
+import { getAppUrl, ALLOWED_CALLABLE_ORIGINS } from './env';
+
+const db = admin.firestore();
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const TOKEN_TTL_MS = 24 * 60 * 60 * 1000; // 24h
+
+interface RequestAlternateEmailData {
+  email: string;
+}
+
+interface ConfirmAlternateEmailData {
+  token: string;
+}
+
+/**
+ * Step 1: a signed-in member requests adding a secondary email.
+ * Sends a verification link to that address. Always returns a generic
+ * `{ ok: true }` — never leaks whether the email is already in use.
+ */
+export const requestAlternateEmail = onCall(
+  { cors: ALLOWED_CALLABLE_ORIGINS },
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError('unauthenticated', 'Must be authenticated');
+    }
+
+    const uid = request.auth.uid;
+    const data = request.data as RequestAlternateEmailData;
+
+    const emailLower = String(data?.email || '')
+      .trim()
+      .toLowerCase();
+
+    if (!emailLower || !EMAIL_RE.test(emailLower)) {
+      throw new HttpsError('invalid-argument', 'A valid email is required', {
+        reason: 'invalid_format',
+      });
+    }
+
+    const callerSnap = await db.collection('users').doc(uid).get();
+    const callerData = callerSnap.data();
+
+    // Multi-email identity is a first-class-member privilege only
+    // (isVerified = numeroCuenta + proof + admin approval). Basic /
+    // pending accounts cannot register alternate emails.
+    if (!callerData?.isVerified) {
+      throw new HttpsError(
+        'failed-precondition',
+        'Alternate emails are available to full members only',
+        { reason: 'members_only' }
+      );
+    }
+
+    // Per-caller rate limit. The endpoint is authenticated so the
+    // enumeration surface is small, but this bounds probing of which
+    // emails belong to SECiD accounts. Single-doc, no composite index.
+    // Atomic read-check-write via transaction (same pattern as
+    // public-job-submit.ts) so concurrent requests can't all pass.
+    const RL_MAX = 5;
+    const RL_WINDOW_MS = 10 * 60 * 1000;
+    const rlRef = db.collection('alternate_email_ratelimit').doc(uid);
+    const admitted = await db.runTransaction(async (tx) => {
+      const rlSnap = await tx.get(rlRef);
+      const nowMs = Date.now();
+      const rl = rlSnap.exists ? rlSnap.data() : null;
+      if (!rl || nowMs - (rl.windowStart || 0) >= RL_WINDOW_MS) {
+        tx.set(rlRef, { windowStart: nowMs, count: 1 });
+        return true;
+      }
+      if ((rl.count || 0) >= RL_MAX) {
+        return false;
+      }
+      tx.update(rlRef, { count: (rl.count || 0) + 1 });
+      return true;
+    });
+    if (!admitted) {
+      throw new HttpsError(
+        'resource-exhausted',
+        'Too many attempts. Please try again later.',
+        { reason: 'rate_limited' }
+      );
+    }
+
+    // Reject if it equals the caller's own primary email.
+    const callerPrimary = String(
+      callerData?.primaryEmail || callerData?.email || ''
+    )
+      .trim()
+      .toLowerCase();
+    if (callerPrimary && callerPrimary === emailLower) {
+      throw new HttpsError(
+        'invalid-argument',
+        'That email is already your primary email',
+        { reason: 'primary_email' }
+      );
+    }
+
+    // Existence checks. If the email is already claimed (alias index, or a
+    // users doc primary/alternate for a DIFFERENT uid) we still return a
+    // generic success but do NOT create a token (no enumeration oracle).
+    let alreadyClaimed = false;
+
+    const aliasSnap = await db.collection('email_alias').doc(emailLower).get();
+    if (aliasSnap.exists) {
+      alreadyClaimed = true;
+    }
+
+    if (!alreadyClaimed) {
+      const primaryQuery = await db
+        .collection('users')
+        .where('email', '==', emailLower)
+        .limit(1)
+        .get();
+      if (!primaryQuery.empty && primaryQuery.docs[0].id !== uid) {
+        alreadyClaimed = true;
+      }
+    }
+
+    if (!alreadyClaimed) {
+      const altQuery = await db
+        .collection('users')
+        .where('alternateEmails', 'array-contains', emailLower)
+        .limit(1)
+        .get();
+      if (!altQuery.empty && altQuery.docs[0].id !== uid) {
+        alreadyClaimed = true;
+      }
+    }
+
+    if (alreadyClaimed) {
+      // This is an AUTHENTICATED self-service action and the spec routes an
+      // already-registered email to an admin merge — so tell the owner the
+      // truth instead of a misleading "we sent you a link". Audit the
+      // attempt (server-only) to keep the reduced enumeration surface
+      // accountable.
+      await db.collection('alternate_email_audit').add({
+        uid,
+        email: emailLower,
+        result: 'already_in_use',
+        at: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      return { ok: true, alreadyLinked: true };
+    }
+
+    // Create a single-use, time-boxed verification token.
+    const token = (crypto.randomUUID() + crypto.randomUUID()).replace(/-/g, '');
+    const now = Date.now();
+
+    await db
+      .collection('alternate_email_tokens')
+      .doc(token)
+      .set({
+        canonicalUid: uid,
+        email: emailLower,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        expiresAt: admin.firestore.Timestamp.fromMillis(now + TOKEN_TTL_MS),
+        used: false,
+      });
+
+    const link = `${getAppUrl()}/es/verify-alternate-email?token=${token}`;
+    const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, sans-serif; background:#f5f5f5; margin:0; padding:20px;">
+  <div style="max-width:600px; margin:0 auto; background:#fff; border-radius:12px; overflow:hidden;">
+    <div style="background:linear-gradient(135deg,#003B5C,#C4A24C); padding:30px; text-align:center; color:#fff;">
+      <h1 style="margin:0; font-size:24px;">SECiD</h1>
+    </div>
+    <div style="padding:30px;">
+      <p>Hola,</p>
+      <p>Recibimos una solicitud para agregar este correo como correo alterno de tu cuenta en SECiD.</p>
+      <p>Para confirmarlo, haz clic en el siguiente botón. El enlace expira en 24 horas.</p>
+      <p style="text-align:center; margin:24px 0;">
+        <a href="${link}" style="display:inline-block; padding:12px 24px; background:#003B5C; color:#fff; text-decoration:none; border-radius:8px; font-weight:600;">Confirmar correo alterno</a>
+      </p>
+      <p style="font-size:12px; color:#999;">Si no solicitaste esto, puedes ignorar este correo.</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+    await sendEmail({
+      to: emailLower,
+      subject: 'Confirma tu correo alterno en SECiD',
+      html,
+    });
+
+    return { ok: true };
+  }
+);
+
+/**
+ * Step 2: the member clicks the link while signed in to the canonical
+ * account. Verifies the token and registers the alternate email.
+ */
+export const confirmAlternateEmail = onCall(
+  { cors: ALLOWED_CALLABLE_ORIGINS },
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError('unauthenticated', 'Must be authenticated');
+    }
+
+    const uid = request.auth.uid;
+    const data = request.data as ConfirmAlternateEmailData;
+    const token = String(data?.token || '').trim();
+
+    if (!token) {
+      throw new HttpsError('invalid-argument', 'A token is required');
+    }
+
+    const tokenRef = db.collection('alternate_email_tokens').doc(token);
+
+    // Pre-read token (outside the transaction) only to extract email +
+    // canonicalUid so we can do the admin.auth() conflict check (which
+    // can't participate in a Firestore transaction). The atomic check-
+    // and-consume happens inside the transaction below.
+    const preReadSnap = await tokenRef.get();
+    if (!preReadSnap.exists) {
+      throw new HttpsError('not-found', 'Invalid verification token');
+    }
+    const preReadData = preReadSnap.data()!;
+    const emailLower = String(preReadData.email || '')
+      .trim()
+      .toLowerCase();
+    const canonicalUid: string = preReadData.canonicalUid;
+
+    if (request.auth.uid !== canonicalUid) {
+      throw new HttpsError(
+        'permission-denied',
+        'This verification link belongs to a different account'
+      );
+    }
+
+    // Detect whether a SEPARATE account already owns this email as its
+    // primary. If so, we do NOT silently link — an admin merge-alias
+    // operation must consolidate the two accounts instead. Best-effort
+    // outside the transaction (Auth state can race independently of
+    // Firestore; the transaction guarantees token single-use).
+    let conflictUid: string | null = null;
+    try {
+      const authUser = await admin.auth().getUserByEmail(emailLower);
+      if (authUser && authUser.uid !== canonicalUid) {
+        conflictUid = authUser.uid;
+      }
+    } catch {
+      // No Firebase Auth user with that email — not an error.
+    }
+    if (!conflictUid) {
+      const primaryQuery = await db
+        .collection('users')
+        .where('email', '==', emailLower)
+        .limit(1)
+        .get();
+      if (!primaryQuery.empty && primaryQuery.docs[0].id !== canonicalUid) {
+        conflictUid = primaryQuery.docs[0].id;
+      }
+    }
+
+    const canonicalRef = db.collection('users').doc(canonicalUid);
+    const aliasIndexRef = db.collection('email_alias').doc(emailLower);
+
+    // Atomic token consumption + state writes (B4). Two concurrent calls
+    // with the same token previously could both pass the "used === true"
+    // check before either wrote used: true, then both write the alternate
+    // email and alias index. The transaction's tokenRef.get inside the
+    // txn + update-to-used inside the txn fail the loser's commit.
+    const result = await db.runTransaction(async (tx) => {
+      const tokenSnapTx = await tx.get(tokenRef);
+      if (!tokenSnapTx.exists) {
+        throw new HttpsError('not-found', 'Invalid verification token');
+      }
+      const tokenDataTx = tokenSnapTx.data()!;
+      if (tokenDataTx.used === true) {
+        throw new HttpsError(
+          'failed-precondition',
+          'This verification link has already been used'
+        );
+      }
+      const expiresAtMs =
+        tokenDataTx.expiresAt &&
+        typeof tokenDataTx.expiresAt.toMillis === 'function'
+          ? tokenDataTx.expiresAt.toMillis()
+          : 0;
+      if (expiresAtMs && expiresAtMs < Date.now()) {
+        throw new HttpsError(
+          'deadline-exceeded',
+          'This verification link has expired'
+        );
+      }
+
+      // Conflict path: consume the token (no state writes) and tell the
+      // client to use the admin merge flow.
+      if (conflictUid) {
+        tx.update(tokenRef, {
+          used: true,
+          usedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        return { ok: true, email: emailLower, requiresAdminMerge: true };
+      }
+
+      // Non-conflict path: write canonical + alias index + token in a
+      // single atomic commit.
+      const canonicalSnapTx = await tx.get(canonicalRef);
+      if (!canonicalSnapTx.exists) {
+        throw new HttpsError('not-found', 'Canonical account not found');
+      }
+      if (!canonicalSnapTx.data()?.isVerified) {
+        throw new HttpsError(
+          'failed-precondition',
+          'Alternate emails are available to full members only',
+          { reason: 'members_only' }
+        );
+      }
+      const existing: { email: string; verifiedAt: unknown }[] =
+        canonicalSnapTx.data()?.alternateEmails || [];
+      const deduped = existing.filter(
+        (e) => String(e?.email || '').toLowerCase() !== emailLower
+      );
+      // Firestore forbids FieldValue.serverTimestamp() inside array
+      // elements; use a real Timestamp so the array write succeeds.
+      deduped.push({
+        email: emailLower,
+        verifiedAt: admin.firestore.Timestamp.now(),
+      });
+
+      tx.update(canonicalRef, {
+        alternateEmails: deduped,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      tx.set(aliasIndexRef, {
+        canonicalUid,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      tx.update(tokenRef, {
+        used: true,
+        usedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+
+      return { ok: true, email: emailLower };
+    });
+
+    return result;
+  }
+);

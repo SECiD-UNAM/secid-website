@@ -1,0 +1,94 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import CalendarPageWrapper from '@/components/wrappers/CalendarPageWrapper';
+---
+
+<ModernLayout
+  title="Activity Calendar - SECiD"
+  description="Check the SECiD activity calendar: Journal Club, Knowledge Exchange and upcoming community events."
+  lang="en"
+>
+  <Navigation lang="en" />
+
+  <!-- Hero -->
+  <section class="secid-hero secid-hero--calendar">
+    <div class="secid-hero__container">
+      <div class="secid-hero__content">
+        <h1 class="secid-hero__title">Activity Calendar</h1>
+        <p class="secid-hero__subtitle">
+          Journal Club, Knowledge Exchange and more — all SECiD community
+          activities in one place
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Calendar -->
+  <section class="secid-section">
+    <div class="secid-container">
+      <CalendarPageWrapper client:only="react" lang="en" />
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="secid-section secid-bg-light">
+    <div class="secid-container">
+      <div class="secid-content secid-content--center">
+        <h2 class="secid-section__title">Want to participate?</h2>
+        <p class="secid-section__description">
+          Register as a member to join the Journal Club, propose sessions, and
+          connect with the SECiD community.
+        </p>
+        <div class="secid-section__actions">
+          <a
+            href="/register"
+            class="secid-button secid-button--primary secid-button--lg"
+          >
+            <i class="fas fa-users secid-button__icon"></i>
+            Register Now
+          </a>
+          <a
+            href="/en/journal-club"
+            class="secid-button secid-button--outline secid-button--lg"
+          >
+            <i class="fas fa-book-reader secid-button__icon"></i>
+            Journal Club
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer lang="en" />
+</ModernLayout>
+
+<style>
+  .secid-hero--calendar {
+    background: linear-gradient(
+      135deg,
+      var(--secid-dark-blue) 0%,
+      var(--secid-secondary) 100%
+    );
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .secid-hero--calendar .secid-hero__title {
+    color: white;
+    margin-bottom: 1rem;
+  }
+
+  .secid-hero--calendar .secid-hero__subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .secid-content--center {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+</style>

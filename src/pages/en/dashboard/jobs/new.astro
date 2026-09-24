@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import JobPostingFormPage from '@/components/wrappers/JobPostingFormPage';
+---
+
+<DashboardLayout
+  title="Post a Job - SECiD"
+  description="Post a job opportunity for the alumni community"
+  lang="en"
+>
+  <JobPostingFormPage client:only="react" lang="en" />
+</DashboardLayout>

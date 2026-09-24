@@ -1,0 +1,20 @@
+---
+import ModernLayout from '../../../layouts/ModernLayout.astro';
+import Navigation from '../../../components/Navigation.astro';
+import Footer from '../../../components/Footer.astro';
+import BlogPostPage from '../../../components/wrappers/BlogPostPage';
+---
+
+<ModernLayout title="Blog - SECiD" description="SECiD blog post" lang="en">
+  <Navigation lang="en" />
+
+  <main>
+    <section class="secid-section">
+      <div class="secid-container">
+        <BlogPostPage client:only="react" lang="en" />
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="en" />
+</ModernLayout>

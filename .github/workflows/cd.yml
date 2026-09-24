@@ -1,0 +1,163 @@
+name: Deploy to Production (Firebase Hosting)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '22.12.0'
+
+permissions:
+  contents: read
+
+jobs:
+  # ── Build ────────────────────────────────────────────────────────────────
+  deploy-hosting:
+    name: Build & Deploy Hosting (secid.mx)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npx astro build
+        env:
+          NODE_ENV: production
+          SITE_URL: https://secid.mx
+          PUBLIC_BUILD_SHA: ${{ github.sha }}
+          # Same Firebase project as beta — same credentials
+          PUBLIC_FIREBASE_API_KEY: ${{ secrets.STAGING_FIREBASE_API_KEY }}
+          PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.STAGING_FIREBASE_AUTH_DOMAIN }}
+          PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.STAGING_FIREBASE_PROJECT_ID }}
+          PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.STAGING_FIREBASE_STORAGE_BUCKET }}
+          PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.STAGING_FIREBASE_MESSAGING_SENDER_ID }}
+          PUBLIC_FIREBASE_APP_ID: ${{ secrets.STAGING_FIREBASE_APP_ID }}
+          PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.STAGING_FIREBASE_MEASUREMENT_ID }}
+          PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STAGING_STRIPE_PUBLISHABLE_KEY }}
+          # Browser push notifications (B2). See deploy-beta.yml for context.
+          PUBLIC_FIREBASE_VAPID_KEY: ${{ secrets.STAGING_FIREBASE_VAPID_KEY }}
+          # reCAPTCHA v3 site key (#48). See deploy-beta.yml for context.
+          PUBLIC_RECAPTCHA_SITE_KEY: ${{ secrets.STAGING_RECAPTCHA_SITE_KEY }}
+
+      # Production is a SECOND Firebase Hosting site in the same project
+      # (beta.secid.mx is the project's default site). GitHub Pages cannot
+      # serve this app: it has no rewrites (the dynamic detail routes and
+      # the /api/forms/* function rewrites in firebase.json would 404) and
+      # sends none of the firebase.json security headers.
+      #
+      # firebase.json stays single-site so beta and prod share one config;
+      # only `hosting.site` is pointed at the prod site for this deploy.
+      - name: Target the production Hosting site
+        env:
+          PROD_SITE: ${{ vars.FIREBASE_PROD_HOSTING_SITE }}
+        run: |
+          if [ -z "$PROD_SITE" ]; then
+            echo "::error::Repo variable FIREBASE_PROD_HOSTING_SITE is not set. See docs/DEPLOYMENT.md (Production cutover)."
+            exit 1
+          fi
+          jq --arg site "$PROD_SITE" '.hosting.site = $site' firebase.json > firebase.prod.json
+          mv firebase.prod.json firebase.json
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Deploy to Firebase Hosting (production site)
+        run: |
+          set -o pipefail
+          npx firebase-tools deploy --only hosting \
+            --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
+            --non-interactive 2>&1
+
+  # ── Functions + Rules (Firebase — same project as beta) ──────────────────
+  # One project backs beta AND prod, so exactly one branch may deploy the
+  # backend (it also writes APP_URL, which ends up in user-facing email
+  # links). After promotion that branch is main: set the repo variable
+  # BACKEND_DEPLOYED_FROM_MAIN=true, which turns off the backend steps in
+  # deploy-beta.yml. Runs in parallel with hosting; rules are
+  # backward-compatible.
+  deploy-backend:
+    name: Deploy Firebase Backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Install Cloud Functions dependencies
+        run: cd functions && npm ci
+
+      # Write functions runtime env. Gen2 reads functions/.env at deploy
+      # time, baking values into process.env. Closes S5 (APP_URL) and the
+      # server-side half of #48 (RECAPTCHA_SECRET_KEY). File is gitignored
+      # — never committed; written fresh per deploy.
+      - name: Write functions runtime env (prod)
+        env:
+          RECAPTCHA_SECRET_KEY: ${{ secrets.STAGING_RECAPTCHA_SECRET_KEY }}
+        run: |
+          {
+            echo "APP_URL=https://secid.mx"
+            if [ -n "$RECAPTCHA_SECRET_KEY" ]; then
+              echo "RECAPTCHA_SECRET_KEY=$RECAPTCHA_SECRET_KEY"
+            fi
+          } > functions/.env
+
+      # Fail loud (prod). Swallowing these is how the prod Firebase project
+      # ended up with completeRegistration returning 403 and unverified
+      # rule state. set -o pipefail preserves output AND the real exit.
+      - name: Deploy Cloud Functions
+        run: |
+          set -o pipefail
+          npx firebase-tools deploy --only functions \
+            --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
+            --non-interactive --force 2>&1
+
+      - name: Deploy Firestore Rules & Indexes
+        run: |
+          set -o pipefail
+          npx firebase-tools deploy --only firestore:rules,firestore:indexes \
+            --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
+            --non-interactive 2>&1
+
+      - name: Deploy Storage Rules
+        run: |
+          set -o pipefail
+          npx firebase-tools deploy --only storage \
+            --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
+            --non-interactive 2>&1
+
+  # ── Health check ─────────────────────────────────────────────────────────
+  validate:
+    name: Post-deploy Health Check
+    runs-on: ubuntu-latest
+    needs: [deploy-hosting, deploy-backend] # wait for both frontend and backend
+    steps:
+      - name: Check secid.mx responds
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://secid.mx/ || echo "000")
+          echo "secid.mx status: $STATUS"
+          # Non-200 is soft-fail: GitHub Pages CDN propagation can take 1-3 min after deploy
+          if [ "$STATUS" != "200" ]; then
+            echo "::warning::secid.mx returned $STATUS — Pages may still be propagating"
+          fi

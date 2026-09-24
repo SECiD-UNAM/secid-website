@@ -1,0 +1,47 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import NewsletterFormPage from '@/components/wrappers/NewsletterFormPage';
+---
+
+<DashboardLayout
+  title="Editar Newsletter - SECiD"
+  description="Actualiza la informacion del newsletter"
+  lang="es"
+>
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+          Editar Newsletter
+        </h1>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">
+          Actualiza el contenido y configuracion del newsletter
+        </p>
+      </div>
+      <div class="flex space-x-3">
+        <a
+          href="/es/dashboard/newsletter"
+          class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+        >
+          <svg
+            class="-ml-1 mr-2 h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Volver a Newsletter
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <NewsletterFormPage client:only="react" lang="es" />
+</DashboardLayout>

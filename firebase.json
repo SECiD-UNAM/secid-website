@@ -1,0 +1,312 @@
+{
+  "hosting": {
+    "public": "dist/client",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "/es/dashboard/admin/groups/edit/*",
+        "destination": "/es/dashboard/admin/groups/edit/index.html"
+      },
+      {
+        "source": "/en/dashboard/admin/groups/edit/*",
+        "destination": "/en/dashboard/admin/groups/edit/index.html"
+      },
+      {
+        "source": "/es/dashboard/admin/groups/*",
+        "destination": "/es/dashboard/admin/groups/detail/index.html"
+      },
+      {
+        "source": "/en/dashboard/admin/groups/*",
+        "destination": "/en/dashboard/admin/groups/detail/index.html"
+      },
+      {
+        "source": "/es/dashboard/journal-club/edit/*",
+        "destination": "/es/dashboard/journal-club/edit/index.html"
+      },
+      {
+        "source": "/en/dashboard/journal-club/edit/*",
+        "destination": "/en/dashboard/journal-club/edit/index.html"
+      },
+      {
+        "source": "/es/dashboard/journal-club/*",
+        "destination": "/es/dashboard/journal-club/detail/index.html"
+      },
+      {
+        "source": "/en/dashboard/journal-club/*",
+        "destination": "/en/dashboard/journal-club/detail/index.html"
+      },
+      {
+        "source": "/es/dashboard/newsletter/edit/*",
+        "destination": "/es/dashboard/newsletter/edit/index.html"
+      },
+      {
+        "source": "/en/dashboard/newsletter/edit/*",
+        "destination": "/en/dashboard/newsletter/edit/index.html"
+      },
+      {
+        "source": "/es/dashboard/spotlights/edit/*",
+        "destination": "/es/dashboard/spotlights/edit/index.html"
+      },
+      {
+        "source": "/en/dashboard/spotlights/edit/*",
+        "destination": "/en/dashboard/spotlights/edit/index.html"
+      },
+      {
+        "source": "/es/dashboard/events/edit/*",
+        "destination": "/es/dashboard/events/edit/index.html"
+      },
+      {
+        "source": "/en/dashboard/events/edit/*",
+        "destination": "/en/dashboard/events/edit/index.html"
+      },
+      {
+        "source": "/es/dashboard/events/*",
+        "destination": "/es/dashboard/events/detail/index.html"
+      },
+      {
+        "source": "/en/dashboard/events/*",
+        "destination": "/en/dashboard/events/detail/index.html"
+      },
+      {
+        "source": "/es/dashboard/jobs/*",
+        "destination": "/es/dashboard/jobs/detail/index.html"
+      },
+      {
+        "source": "/en/dashboard/jobs/*",
+        "destination": "/en/dashboard/jobs/detail/index.html"
+      },
+      {
+        "source": "/es/members/*/cv",
+        "destination": "/es/cv/index.html"
+      },
+      {
+        "source": "/en/members/*/cv",
+        "destination": "/en/cv/index.html"
+      },
+      {
+        "source": "/es/dashboard/admin/members/*/edit",
+        "destination": "/es/dashboard/admin/members/edit/index.html"
+      },
+      {
+        "source": "/en/dashboard/admin/members/*/edit",
+        "destination": "/en/dashboard/admin/members/edit/index.html"
+      },
+      {
+        "source": "/es/members/*",
+        "destination": "/es/members/detail/index.html"
+      },
+      {
+        "source": "/en/members/*",
+        "destination": "/en/members/detail/index.html"
+      },
+      {
+        "source": "/es/companies/*",
+        "destination": "/es/companies/detail/index.html"
+      },
+      {
+        "source": "/en/companies/*",
+        "destination": "/en/companies/detail/index.html"
+      },
+      {
+        "source": "/es/blog/*",
+        "destination": "/es/blog/entry/index.html"
+      },
+      {
+        "source": "/en/blog/*",
+        "destination": "/en/blog/entry/index.html"
+      },
+      {
+        "source": "/es/resources/*",
+        "destination": "/es/resources/detail/index.html"
+      },
+      {
+        "source": "/en/resources/*",
+        "destination": "/en/resources/detail/index.html"
+      },
+      {
+        "source": "/es/spotlights/*",
+        "destination": "/es/spotlights/detail/index.html"
+      },
+      {
+        "source": "/en/spotlights/*",
+        "destination": "/en/spotlights/detail/index.html"
+      },
+      {
+        "source": "/es/events/*",
+        "destination": "/es/events/detail/index.html"
+      },
+      {
+        "source": "/en/events/*",
+        "destination": "/en/events/detail/index.html"
+      },
+      {
+        "source": "/es/newsletter/*",
+        "destination": "/es/newsletter/detail/index.html"
+      },
+      {
+        "source": "/en/newsletter/*",
+        "destination": "/en/newsletter/detail/index.html"
+      },
+      {
+        "source": "/es/forum/category/*",
+        "destination": "/es/forum/category/detail/index.html"
+      },
+      {
+        "source": "/en/forum/category/*",
+        "destination": "/en/forum/category/detail/index.html"
+      },
+      {
+        "source": "/es/forum/topic/*",
+        "destination": "/es/forum/topic/detail/index.html"
+      },
+      {
+        "source": "/en/forum/topic/*",
+        "destination": "/en/forum/topic/detail/index.html"
+      },
+      {
+        "source": "/es/dashboard/assessments/historial",
+        "destination": "/es/dashboard/assessments/historial/index.html"
+      },
+      {
+        "source": "/en/dashboard/assessments/history",
+        "destination": "/en/dashboard/assessments/history/index.html"
+      },
+      {
+        "source": "/es/dashboard/assessments/*",
+        "destination": "/es/dashboard/assessments/detail/index.html"
+      },
+      {
+        "source": "/en/dashboard/assessments/*",
+        "destination": "/en/dashboard/assessments/detail/index.html"
+      },
+      {
+        "source": "/api/forms/newsletter",
+        "function": {
+          "functionId": "subscribeNewsletter",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/api/forms/contact",
+        "function": {
+          "functionId": "sendContactMessage",
+          "region": "us-central1"
+        }
+      }
+    ],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          { "key": "X-Content-Type-Options", "value": "nosniff" },
+          { "key": "X-Frame-Options", "value": "DENY" },
+          {
+            "key": "Referrer-Policy",
+            "value": "strict-origin-when-cross-origin"
+          },
+          {
+            "key": "Permissions-Policy",
+            "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+          },
+          {
+            "key": "Content-Security-Policy-Report-Only",
+            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://js.stripe.com https://apis.google.com https://www.googletagmanager.com https://*.firebaseio.com https://*.firebaseapp.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.cloudfunctions.net https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://api.stripe.com https://*.google.com https://www.recaptcha.net wss://*.firebaseio.com; frame-src https://www.google.com https://recaptcha.google.com https://js.stripe.com https://hooks.stripe.com; object-src 'none'; base-uri 'self'; form-action 'self'"
+          }
+        ]
+      },
+      {
+        "source": "/assets/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        "source": "/images/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=2592000"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(woff2|woff|ttf|eot)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(jpg|jpeg|png|gif|svg|webp|avif|ico)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=2592000"
+          }
+        ]
+      },
+      {
+        "source": "**/*.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "/",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "**/!(*.@(js|css|woff2|woff|ttf|eot|jpg|jpeg|png|gif|svg|webp|avif|ico|json|map))",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ]
+      }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": {
+    "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"],
+    "source": "functions"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8088
+    },
+    "storage": {
+      "port": 9199
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    },
+    "singleProjectMode": true
+  }
+}

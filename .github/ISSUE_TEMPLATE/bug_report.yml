@@ -1,7 +1,7 @@
 name: "\U0001F41B Bug Report"
 description: Something isn't working correctly
-title: "[Bug]: "
-labels: ["bug", "triage"]
+title: '[Bug]: '
+labels: ['bug', 'triage']
 body:
   - type: markdown
     attributes:
