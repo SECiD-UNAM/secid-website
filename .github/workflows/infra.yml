@@ -33,6 +33,11 @@ jobs:
     name: Terraform ${{ github.event_name == 'pull_request' && 'plan' || 'apply' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Skip (not fail) until infra/bootstrap has been applied and its outputs
+    # set as repo variables. Without GCP_WIF_PROVIDER the auth step fails in
+    # seconds and leaves a permanent red check on every PR. See
+    # infra/BOOTSTRAP.md.
+    if: vars.GCP_WIF_PROVIDER != ''
     permissions:
       contents: read
       pull-requests: write
