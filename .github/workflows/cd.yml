@@ -1,4 +1,4 @@
-name: Deploy to Production (GitHub Pages)
+name: Deploy to Production (Firebase Hosting)
 
 on:
   push:
@@ -14,13 +14,11 @@ env:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 jobs:
   # ── Build ────────────────────────────────────────────────────────────────
-  build:
-    name: Build for Production
+  deploy-hosting:
+    name: Build & Deploy Hosting (secid.mx)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -56,37 +54,47 @@ jobs:
           # reCAPTCHA v3 site key (#48). See deploy-beta.yml for context.
           PUBLIC_RECAPTCHA_SITE_KEY: ${{ secrets.STAGING_RECAPTCHA_SITE_KEY }}
 
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v5
+      # Production is a SECOND Firebase Hosting site in the same project
+      # (beta.secid.mx is the project's default site). GitHub Pages cannot
+      # serve this app: it has no rewrites (the dynamic detail routes and
+      # the /api/forms/* function rewrites in firebase.json would 404) and
+      # sends none of the firebase.json security headers.
+      #
+      # firebase.json stays single-site so beta and prod share one config;
+      # only `hosting.site` is pointed at the prod site for this deploy.
+      - name: Target the production Hosting site
+        env:
+          PROD_SITE: ${{ vars.FIREBASE_PROD_HOSTING_SITE }}
+        run: |
+          if [ -z "$PROD_SITE" ]; then
+            echo "::error::Repo variable FIREBASE_PROD_HOSTING_SITE is not set. See docs/DEPLOYMENT.md (Production cutover)."
+            exit 1
+          fi
+          jq --arg site "$PROD_SITE" '.hosting.site = $site' firebase.json > firebase.prod.json
+          mv firebase.prod.json firebase.json
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
         with:
-          # Hybrid build emits dist/client (static assets) + dist/server.
-          # GitHub Pages must serve the client half (matches firebase.json's
-          # "public": "dist/client").
-          path: dist/client/
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
 
-  # ── Deploy ───────────────────────────────────────────────────────────────
-  deploy:
-    name: Deploy to GitHub Pages
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }} # page_url is set by deploy-pages action in this job
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Deploy to Firebase Hosting (production site)
+        run: |
+          set -o pipefail
+          npx firebase-tools deploy --only hosting \
+            --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
+            --non-interactive 2>&1
 
   # ── Functions + Rules (Firebase — same project as beta) ──────────────────
-  # Runs in parallel with deploy (GitHub Pages) intentionally.
-  # Firestore rules are backward-compatible, so parallel deploy is safe.
+  # One project backs beta AND prod, so exactly one branch may deploy the
+  # backend (it also writes APP_URL, which ends up in user-facing email
+  # links). After promotion that branch is main: set the repo variable
+  # BACKEND_DEPLOYED_FROM_MAIN=true, which turns off the backend steps in
+  # deploy-beta.yml. Runs in parallel with hosting; rules are
+  # backward-compatible.
   deploy-backend:
     name: Deploy Firebase Backend
     runs-on: ubuntu-latest
-    needs: build
     timeout-minutes: 15
     steps:
       - name: Checkout repository
@@ -143,7 +151,7 @@ jobs:
   validate:
     name: Post-deploy Health Check
     runs-on: ubuntu-latest
-    needs: [deploy, deploy-backend] # wait for both frontend and backend
+    needs: [deploy-hosting, deploy-backend] # wait for both frontend and backend
     steps:
       - name: Check secid.mx responds
         run: |

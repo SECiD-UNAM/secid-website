@@ -38,10 +38,10 @@ Do these in order. Steps 1–4 do not affect the live site.
    `firebase hosting:sites:create <site-id> --project secid-org`
 2. **Set repo variable** `FIREBASE_PROD_HOSTING_SITE=<site-id>`
    (Settings → Secrets and variables → Actions → Variables).
-3. **Switch `cd.yml` to Firebase Hosting** — replace the GitHub Pages
-   upload/deploy with a `firebase deploy --only hosting` to that site
-   (`jq '.hosting.site = $site' firebase.json`, so both environments keep
-   one `firebase.json`). Not done yet: pending owner approval.
+3. **`cd.yml` deploys to that site** (done): it sets
+   `hosting.site` from the variable with `jq` and runs
+   `firebase deploy --only hosting`, so both environments keep one
+   `firebase.json`. The job fails fast if the variable is unset.
 4. **Authorized domains**: Firebase Console → Authentication → Settings →
    Authorized domains must include `secid.mx` (and `www.secid.mx` if used),
    or sign-in fails on prod.
