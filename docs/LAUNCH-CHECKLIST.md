@@ -54,9 +54,9 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [x] Secretos: los workflows leen `FIREBASE_*` y caen a `STAGING_FIREBASE_*`. Renombrar es opcional y sin downtime (owner: `gh secret set FIREBASE_X --body ...` y luego borrar el viejo)
 - [x] Sección "Shared-backend rules" en `docs/DEPLOYMENT.md`
 - [x] Workflow `Production Cutover` (`cutover.yml`) para la Fase 2 y la Fase 4 desde CI
-- [ ] PR `fix/shared-backend-hardening` → `feature/hub` en verde
-- [ ] Deploy de beta OK con el nuevo orden; smoke test manual: `scripts/ci/smoke-test.sh https://beta.secid.mx https://us-central1-secid-org.cloudfunctions.net`
-- [ ] Merge a `feature/hub` (actualiza PR #1)
+- [x] PR #75 `fix/shared-backend-hardening` → `feature/hub` en verde (13 checks) y mergeado 2026-10-15 (`7225aac`)
+- [x] Deploy Beta OK con el nuevo orden (hosting + backend, guardia de borrado pasó); smoke test 12/12 contra beta
+- [x] Merge a `feature/hub` (PR #1 actualizado)
 
 ## Fase 2: sitio de prod + dominios autorizados + variables (CI, ~5 min; antes del merge) — runbook [prod-cutover §1](./runbooks/prod-cutover.md)
 
