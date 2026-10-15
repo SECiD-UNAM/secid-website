@@ -38,7 +38,9 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [ ] (owner) Notificaciones de la cuenta de facturación (runbook §B)
 - [ ] (owner) Correo de prueba de la alerta recibido
 - [x] (dev) Workflow `Firestore Backup` (`.github/workflows/firestore-backup.yml`): semanal + a demanda
-- [ ] (CI) `gh workflow run firestore-backup.yml --ref feature/hub -f label=pre-cutover` en verde (si falla por permisos, el runbook trae el `add-iam-policy-binding`)
+- [ ] (owner, una vez) la SA de deploy necesita `roles/datastore.importExportAdmin` — confirmado 2026-10-15, run 38665050186 falló con `PERMISSION_DENIED`:
+      `gcloud projects add-iam-policy-binding secid-org --member serviceAccount:firebase-adminsdk-fbsvc@secid-org.iam.gserviceaccount.com --role roles/datastore.importExportAdmin`
+- [ ] (CI) `gh workflow run firestore-backup.yml --ref feature/hub -f label=pre-cutover` en verde
 
 ## Fase 1: PR de endurecimiento (dev, 1–2 días) — `fix/shared-backend-hardening` → `feature/hub`
 
