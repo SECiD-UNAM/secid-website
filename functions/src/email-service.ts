@@ -7,14 +7,34 @@ interface EmailData {
 }
 
 /**
+ * QA accounts never receive automated email.
+ *
+ * Beta and production share one backend, so a test signup on beta fires
+ * the same welcome / job-match / status-change emails as a real member.
+ * Convention: test accounts use a plus-tag on the local part
+ * (`name+qa@…`, `name+secidtest…@…`, `name+test…@…`). Keeping the check
+ * here, in the only place mail is queued, means every trigger honours it.
+ */
+const QA_PLUS_TAGS = /^[^@]+\+(qa|secidtest|test)[^@]*@/i;
+
+export function isQaRecipient(email: string | undefined | null): boolean {
+  return typeof email === 'string' && QA_PLUS_TAGS.test(email.trim());
+}
+
+/**
  * Writes an email document to the 'mail' collection.
  * Firebase Trigger Email extension picks these up and sends via configured SMTP/SendGrid.
+ * Resolves to '' (nothing queued) for QA recipients.
  */
 export async function sendEmail({
   to,
   subject,
   html,
 }: EmailData): Promise<string> {
+  if (isQaRecipient(to)) {
+    console.log(`[email] skipped for QA account ${to}: ${subject}`);
+    return '';
+  }
   const docRef = await admin.firestore().collection('mail').add({
     to,
     message: {
@@ -34,6 +54,7 @@ export async function sendBatchEmails(emails: EmailData[]): Promise<void> {
   const mailCollection = admin.firestore().collection('mail');
 
   for (const email of emails) {
+    if (isQaRecipient(email.to)) continue;
     const docRef = mailCollection.doc();
     batch.set(docRef, {
       to: email.to,

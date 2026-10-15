@@ -2,22 +2,9 @@ import { onRequest, Request } from 'firebase-functions/v2/https';
 import type { Response } from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
 import * as crypto from 'crypto';
+import { isAllowedOrigin } from './env';
 
 const db = admin.firestore();
-
-// CORS: same allowlist contract as the callables. onRequest exposes the
-// raw Express-like req/res so we set headers manually.
-// Keep in sync with the allowlist in get-salary-stats.ts
-const ALLOWED_ORIGINS = [
-  'https://secid.mx',
-  'https://www.secid.mx',
-  'https://beta.secid.mx',
-  'https://secid.org',
-  'https://www.secid.org',
-  'http://localhost:4321',
-  'http://localhost:3000',
-  'http://127.0.0.1:4321',
-];
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -25,9 +12,11 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const RL_WINDOW_MS = 10 * 60 * 1000;
 const RL_MAX = 5;
 
+// CORS: same allowlist as the callables (env.ts). onRequest exposes the
+// raw Express-like req/res so we set headers manually.
 function setCors(req: Request, res: Response): void {
   const origin = req.headers.origin;
-  if (typeof origin === 'string' && ALLOWED_ORIGINS.includes(origin)) {
+  if (typeof origin === 'string' && isAllowedOrigin(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
   res.setHeader('Vary', 'Origin');

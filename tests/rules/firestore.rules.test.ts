@@ -1,3 +1,5 @@
+// @vitest-environment node
+// (happy-dom's fetch cannot reach the emulator; see emulatorReachable().)
 /**
  * Firestore security rules tests (#50).
  *
@@ -15,7 +17,7 @@
  * the emulator running. Add a CI step that boots the emulator + runs this
  * suite for full coverage.
  */
-import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import { describe, it, beforeAll, afterAll, afterEach } from 'vitest';
 import {
   initializeTestEnvironment,
   assertSucceeds,
@@ -43,13 +45,17 @@ async function emulatorReachable(): Promise<boolean> {
 }
 
 let testEnv: RulesTestEnvironment | undefined;
-let emulatorRunning = false;
+
+// Resolved at collection time (top-level await): `describe.skipIf` below
+// is evaluated while the file is collected, before any beforeAll runs, so
+// probing the emulator inside beforeAll skipped every suite even with the
+// emulator up. CI boots the emulator in the "Firestore Rules Tests" job.
+const emulatorRunning = await emulatorReachable();
 
 beforeAll(async () => {
   if (!existsSync(RULES_PATH)) {
     throw new Error(`firestore.rules not found at ${RULES_PATH}`);
   }
-  emulatorRunning = await emulatorReachable();
   if (!emulatorRunning) {
     console.warn(
       `Firestore emulator not running on ${EMULATOR_HOST}. ` +

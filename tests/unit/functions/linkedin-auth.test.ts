@@ -35,8 +35,9 @@ function getCallbackUrl(req: {
   return `${protoStr}://${hostStr}/linkedinAuthCallback`;
 }
 
+// Mirrors functions/src/env.ts: the fallback is production (secid.mx).
 function getAppUrl(): string {
-  return process.env.APP_URL || 'https://secid.org';
+  return process.env.APP_URL || 'https://secid.mx';
 }
 
 function buildLinkedInAuthorizeUrl(
@@ -143,10 +144,10 @@ describe('getAppUrl', () => {
     delete process.env.APP_URL;
   });
 
-  describe('TC-linkedin-oauth-004: defaults to secid.org', () => {
-    it('should return https://secid.org when APP_URL is not set', () => {
+  describe('TC-linkedin-oauth-004: defaults to production secid.mx', () => {
+    it('should return https://secid.mx when APP_URL is not set', () => {
       /** Verifies: AC-4 -- default app URL */
-      expect(getAppUrl()).toBe('https://secid.org');
+      expect(getAppUrl()).toBe('https://secid.mx');
     });
   });
 

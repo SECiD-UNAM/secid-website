@@ -23,6 +23,40 @@ same Firestore data, same Cloud Functions. Only the static frontend differs.
   branch may deploy it (see cutover step 5). Whoever deploys it also writes
   `APP_URL` into `functions/.env`, which ends up in user-facing email links.
 
+## Shared-backend rules
+
+The repo variable `BACKEND_DEPLOYED_FROM_MAIN` picks the one branch that
+deploys the backend: unset → `feature/hub` (`deploy-beta.yml`), `true` →
+`main` (`cd.yml`). The other branch's backend job is skipped, not failed.
+Both backend jobs share the concurrency group `firebase-backend`, so they
+never run at the same time.
+
+Once `main` owns the backend:
+
+1. **Backend changes go to `main` first**, in a small PR, then `main` is
+   merged into `feature/hub`. Beta cannot test a function or rule that
+   only exists on `feature/hub`.
+2. **Backend changes are additive**: new optional fields, new callables,
+   rules that allow more. Remove or restrict only when no deployed
+   frontend uses it. `tests/rules/` runs in CI ("Firestore Rules Tests")
+   on every PR, so a rule change that breaks an existing path fails there.
+3. **Deploys never delete functions by accident.** Both backend jobs run
+   `scripts/ci/check-function-deletions.mjs` before `firebase deploy
+--force`; it fails if the branch stopped exporting a deployed function.
+   For an intended removal set `ALLOW_FUNCTION_DELETIONS=name1,name2` on
+   that run.
+4. **Deploy order is rules → storage → functions**, so a functions failure
+   (billing, quota) never leaves security rules unshipped.
+5. **QA accounts use a plus-tag** (`name+qa@`, `name+secidtest…@`,
+   `name+test…@`). `functions/src/email-service.ts` queues no mail for
+   them, so testing on beta does not email real-looking welcome / job-match
+   / status messages. Beta still writes real data: destructive tests belong
+   in the emulators (`npm run dev`).
+6. **Post-deploy smoke test** (`scripts/ci/smoke-test.sh`) runs against the
+   site's `.web.app` URL and the shared functions after every prod deploy;
+   it is a hard failure. Run it by hand against any environment:
+   `scripts/ci/smoke-test.sh https://beta.secid.mx https://us-central1-secid-org.cloudfunctions.net`.
+
 ## Production cutover
 
 GitHub Pages has no rewrites and no custom headers. On Pages, the 44
@@ -32,47 +66,70 @@ forum and dashboard detail pages) return 404, `/api/forms/contact` and
 the security headers are sent. Production must be a second Firebase
 Hosting site in `secid-org`.
 
+Tracked step by step in [`LAUNCH-CHECKLIST.md`](./LAUNCH-CHECKLIST.md).
+Steps 1, 2, 4, 6 and the domain request in 7 are done by the
+**`Production Cutover` workflow** (`.github/workflows/cutover.yml`,
+`workflow_dispatch`) with the deploy service account; each prints a manual
+fallback in the job summary if the account lacks a permission.
+
 Do these in order. Steps 1–4 do not affect the live site.
 
-1. **Create the prod Hosting site** (owner):
-   `firebase hosting:sites:create <site-id> --project secid-org`
-2. **Set repo variable** `FIREBASE_PROD_HOSTING_SITE=<site-id>`
-   (Settings → Secrets and variables → Actions → Variables).
+1. **Create the prod Hosting site**: run `Production Cutover` with
+   `site_id` (default `secid-mx`), or by hand
+   `firebase hosting:sites:create <site-id> --project secid-org`.
+2. **Set repo variable** `FIREBASE_PROD_HOSTING_SITE=<site-id>` (the
+   workflow does it; fallback `gh variable set FIREBASE_PROD_HOSTING_SITE
+--body <site-id>`).
 3. **`cd.yml` deploys to that site** (done): it sets
    `hosting.site` from the variable with `jq` and runs
    `firebase deploy --only hosting`, so both environments keep one
    `firebase.json`. The job fails fast if the variable is unset.
-4. **Authorized domains**: Firebase Console → Authentication → Settings →
-   Authorized domains must include `secid.mx` (and `www.secid.mx` if used),
-   or sign-in fails on prod.
-5. **Merge PR #1** to `main`. `cd.yml` builds and deploys to the new site
-   (reachable at `https://<site-id>.web.app`; check dynamic routes and
-   `/api/forms/*` there before touching DNS).
-6. **Hand the backend to `main`**: set repo variable
-   `BACKEND_DEPLOYED_FROM_MAIN=true` so `deploy-beta.yml` stops deploying
-   functions/rules. From then on backend changes ship only via `main`.
-7. **Connect the domain**: Firebase Console → Hosting → `<site-id>` → Add
-   custom domain `secid.mx`, then update DNS in Cloudflare with the records
-   Firebase shows (DNS-only / grey cloud until the certificate is issued).
-   This is the moment the live site changes.
+4. **Authorized domains**: `<site-id>.web.app`, `secid.mx` and
+   `www.secid.mx` must be in Firebase Console → Authentication → Settings →
+   Authorized domains, or sign-in fails on prod. The workflow adds them via
+   the Identity Toolkit API.
+5. **Hand the backend to `main` BEFORE merging**: run the workflow with
+   `backend_from_main=true` (or `gh variable set BACKEND_DEPLOYED_FROM_MAIN
+--body true`). From then on `deploy-beta.yml` skips functions/rules and
+   `cd.yml` deploys them; there is never a window with two deployers.
+6. **Merge PR #1** to `main`. `cd.yml` builds, deploys to the new site and
+   runs `scripts/ci/smoke-test.sh` against `https://<site-id>.web.app`
+   (locale pages, a dynamic rewrite, security headers, `/api/forms/*`, a
+   callable). Check login + signup there by hand before touching DNS.
+7. **Connect the domain**: the workflow requests `secid.mx` and
+   `www.secid.mx` on the site and prints the DNS records in its summary
+   (console fallback: Hosting → `<site-id>` → Add custom domain). Put
+   them in Cloudflare as DNS-only / grey cloud until the certificate is
+   issued. **This is the moment the live site changes.** Keep the old
+   GitHub Pages records noted for rollback.
 8. **Retire GitHub Pages**: remove the `secid.mx` custom domain and disable
-   Pages (Settings → Pages), so Pages no longer claims the domain.
+   Pages (Settings → Pages), so Pages no longer claims the domain. Then
+   make the `secid.mx` check in `cd.yml`'s `validate` job a hard failure.
 
 ## Prerequisites
 
 ### GitHub Secrets Required
 
-| Secret                                 | Description                                                              |
-| -------------------------------------- | ------------------------------------------------------------------------ |
-| `FIREBASE_SERVICE_ACCOUNT`             | JSON key for `firebase-adminsdk-fbsvc@secid-org.iam.gserviceaccount.com` |
-| `STAGING_FIREBASE_API_KEY`             | Firebase web API key                                                     |
-| `STAGING_FIREBASE_AUTH_DOMAIN`         | Firebase Auth domain                                                     |
-| `STAGING_FIREBASE_PROJECT_ID`          | `secid-org`                                                              |
-| `STAGING_FIREBASE_STORAGE_BUCKET`      | Firebase Storage bucket                                                  |
-| `STAGING_FIREBASE_MESSAGING_SENDER_ID` | FCM sender ID                                                            |
-| `STAGING_FIREBASE_APP_ID`              | Firebase app ID                                                          |
-| `STAGING_FIREBASE_MEASUREMENT_ID`      | Google Analytics measurement ID                                          |
-| `STAGING_STRIPE_PUBLISHABLE_KEY`       | Stripe public key                                                        |
+One project serves both environments, so one set of secrets does too. They
+were created as `STAGING_*` when beta was the only environment; the
+workflows read the un-prefixed name first and fall back to `STAGING_*`
+(`${{ secrets.FIREBASE_API_KEY || secrets.STAGING_FIREBASE_API_KEY }}`),
+so they can be renamed at any time without an outage: set the new name,
+confirm a green deploy, delete the old one.
+
+| Secret (preferred)                   | Legacy name                            | Description                                                              |
+| ------------------------------------ | -------------------------------------- | ------------------------------------------------------------------------ |
+| `FIREBASE_SERVICE_ACCOUNT`           | —                                      | JSON key for `firebase-adminsdk-fbsvc@secid-org.iam.gserviceaccount.com` |
+| `FIREBASE_API_KEY`                   | `STAGING_FIREBASE_API_KEY`             | Firebase web API key                                                     |
+| `FIREBASE_AUTH_DOMAIN`               | `STAGING_FIREBASE_AUTH_DOMAIN`         | Firebase Auth domain                                                     |
+| `FIREBASE_PROJECT_ID`                | `STAGING_FIREBASE_PROJECT_ID`          | `secid-org`                                                              |
+| `FIREBASE_STORAGE_BUCKET`            | `STAGING_FIREBASE_STORAGE_BUCKET`      | Firebase Storage bucket                                                  |
+| `FIREBASE_MESSAGING_SENDER_ID`       | `STAGING_FIREBASE_MESSAGING_SENDER_ID` | FCM sender ID                                                            |
+| `FIREBASE_APP_ID`                    | `STAGING_FIREBASE_APP_ID`              | Firebase app ID                                                          |
+| `FIREBASE_MEASUREMENT_ID`            | `STAGING_FIREBASE_MEASUREMENT_ID`      | Google Analytics measurement ID                                          |
+| `FIREBASE_VAPID_KEY`                 | `STAGING_FIREBASE_VAPID_KEY`           | Web push VAPID key                                                       |
+| `RECAPTCHA_SITE_KEY` / `_SECRET_KEY` | `STAGING_RECAPTCHA_*`                  | reCAPTCHA v3                                                             |
+| `STRIPE_PUBLISHABLE_KEY`             | `STAGING_STRIPE_PUBLISHABLE_KEY`       | Stripe public key (payments are beta-gated)                              |
 
 ### IAM Roles for Service Account
 

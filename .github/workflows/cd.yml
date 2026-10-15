@@ -40,19 +40,22 @@ jobs:
           NODE_ENV: production
           SITE_URL: https://secid.mx
           PUBLIC_BUILD_SHA: ${{ github.sha }}
-          # Same Firebase project as beta — same credentials
-          PUBLIC_FIREBASE_API_KEY: ${{ secrets.STAGING_FIREBASE_API_KEY }}
-          PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.STAGING_FIREBASE_AUTH_DOMAIN }}
-          PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.STAGING_FIREBASE_PROJECT_ID }}
-          PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.STAGING_FIREBASE_STORAGE_BUCKET }}
-          PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.STAGING_FIREBASE_MESSAGING_SENDER_ID }}
-          PUBLIC_FIREBASE_APP_ID: ${{ secrets.STAGING_FIREBASE_APP_ID }}
-          PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.STAGING_FIREBASE_MEASUREMENT_ID }}
-          PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STAGING_STRIPE_PUBLISHABLE_KEY }}
+          # Same Firebase project as beta — same credentials. The secrets
+          # were created as STAGING_* when beta was the only environment;
+          # the un-prefixed names are preferred and the STAGING_* ones are
+          # a fallback so they can be renamed without an outage.
+          PUBLIC_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY || secrets.STAGING_FIREBASE_API_KEY }}
+          PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN || secrets.STAGING_FIREBASE_AUTH_DOMAIN }}
+          PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID || secrets.STAGING_FIREBASE_PROJECT_ID }}
+          PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET || secrets.STAGING_FIREBASE_STORAGE_BUCKET }}
+          PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID || secrets.STAGING_FIREBASE_MESSAGING_SENDER_ID }}
+          PUBLIC_FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID || secrets.STAGING_FIREBASE_APP_ID }}
+          PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID || secrets.STAGING_FIREBASE_MEASUREMENT_ID }}
+          PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY || secrets.STAGING_STRIPE_PUBLISHABLE_KEY }}
           # Browser push notifications (B2). See deploy-beta.yml for context.
-          PUBLIC_FIREBASE_VAPID_KEY: ${{ secrets.STAGING_FIREBASE_VAPID_KEY }}
+          PUBLIC_FIREBASE_VAPID_KEY: ${{ secrets.FIREBASE_VAPID_KEY || secrets.STAGING_FIREBASE_VAPID_KEY }}
           # reCAPTCHA v3 site key (#48). See deploy-beta.yml for context.
-          PUBLIC_RECAPTCHA_SITE_KEY: ${{ secrets.STAGING_RECAPTCHA_SITE_KEY }}
+          PUBLIC_RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY || secrets.STAGING_RECAPTCHA_SITE_KEY }}
 
       # Production is a SECOND Firebase Hosting site in the same project
       # (beta.secid.mx is the project's default site). GitHub Pages cannot
@@ -82,23 +85,41 @@ jobs:
         run: |
           set -o pipefail
           npx firebase-tools deploy --only hosting \
-            --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
+            --project ${{ secrets.FIREBASE_PROJECT_ID || secrets.STAGING_FIREBASE_PROJECT_ID }} \
             --non-interactive 2>&1
 
   # ── Functions + Rules (Firebase — same project as beta) ──────────────────
   # One project backs beta AND prod, so exactly one branch may deploy the
   # backend (it also writes APP_URL, which ends up in user-facing email
-  # links). After promotion that branch is main: set the repo variable
-  # BACKEND_DEPLOYED_FROM_MAIN=true, which turns off the backend steps in
-  # deploy-beta.yml. Runs in parallel with hosting; rules are
+  # links). The repo variable BACKEND_DEPLOYED_FROM_MAIN picks that branch:
+  # unset → deploy-beta.yml (feature/hub) deploys it and this job is
+  # skipped; 'true' → this job deploys it and deploy-beta.yml skips. Set it
+  # to 'true' BEFORE merging the promotion PR so there is never a window
+  # with two deployers. Runs in parallel with hosting; rules are
   # backward-compatible.
   deploy-backend:
     name: Deploy Firebase Backend
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    if: vars.BACKEND_DEPLOYED_FROM_MAIN == 'true'
+    # Serialise against deploy-beta.yml's backend job: both target the same
+    # functions/rules, and two concurrent `firebase deploy --force` runs
+    # from different branches can delete each other's functions.
+    concurrency:
+      group: firebase-backend
+      cancel-in-progress: false
+    env:
+      FIREBASE_PROJECT: ${{ secrets.FIREBASE_PROJECT_ID || secrets.STAGING_FIREBASE_PROJECT_ID }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: functions/package-lock.json
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -114,7 +135,7 @@ jobs:
       # — never committed; written fresh per deploy.
       - name: Write functions runtime env (prod)
         env:
-          RECAPTCHA_SECRET_KEY: ${{ secrets.STAGING_RECAPTCHA_SECRET_KEY }}
+          RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY || secrets.STAGING_RECAPTCHA_SECRET_KEY }}
         run: |
           {
             echo "APP_URL=https://secid.mx"
@@ -126,38 +147,57 @@ jobs:
       # Fail loud (prod). Swallowing these is how the prod Firebase project
       # ended up with completeRegistration returning 403 and unverified
       # rule state. set -o pipefail preserves output AND the real exit.
-      - name: Deploy Cloud Functions
-        run: |
-          set -o pipefail
-          npx firebase-tools deploy --only functions \
-            --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
-            --non-interactive --force 2>&1
-
+      #
+      # Rules deploy BEFORE functions: rules carry the authz fixes and don't
+      # depend on billing/quota, so a functions failure must never leave
+      # them unshipped.
       - name: Deploy Firestore Rules & Indexes
         run: |
           set -o pipefail
           npx firebase-tools deploy --only firestore:rules,firestore:indexes \
-            --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
-            --non-interactive 2>&1
+            --project "$FIREBASE_PROJECT" --non-interactive 2>&1
 
       - name: Deploy Storage Rules
         run: |
           set -o pipefail
           npx firebase-tools deploy --only storage \
-            --project ${{ secrets.STAGING_FIREBASE_PROJECT_ID }} \
-            --non-interactive 2>&1
+            --project "$FIREBASE_PROJECT" --non-interactive 2>&1
+
+      # `--force` lets the CLI delete deployed functions this branch no
+      # longer exports. With a shared backend that must be a deliberate
+      # choice, never a side effect of a stale branch.
+      - name: Refuse to delete functions another branch still uses
+        run: node scripts/ci/check-function-deletions.mjs --project "$FIREBASE_PROJECT"
+
+      - name: Deploy Cloud Functions
+        run: |
+          set -o pipefail
+          npx firebase-tools deploy --only functions \
+            --project "$FIREBASE_PROJECT" --non-interactive --force 2>&1
 
   # ── Health check ─────────────────────────────────────────────────────────
+  # Runs against the Hosting site's own .web.app URL, which is valid before
+  # and after the DNS cutover, plus the shared backend. A failure here is a
+  # real failure — unlike the old "GitHub Pages may be propagating" warning.
   validate:
     name: Post-deploy Health Check
     runs-on: ubuntu-latest
-    needs: [deploy-hosting, deploy-backend] # wait for both frontend and backend
+    needs: [deploy-hosting, deploy-backend]
+    # deploy-backend is skipped until BACKEND_DEPLOYED_FROM_MAIN=true; still
+    # validate hosting in that case.
+    if: ${{ !cancelled() && needs.deploy-hosting.result == 'success' && needs.deploy-backend.result != 'failure' }}
+    env:
+      SITE_URL: https://${{ vars.FIREBASE_PROD_HOSTING_SITE }}.web.app
+      FUNCTIONS_URL: https://us-central1-${{ secrets.FIREBASE_PROJECT_ID || secrets.STAGING_FIREBASE_PROJECT_ID }}.cloudfunctions.net
     steps:
-      - name: Check secid.mx responds
-        run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://secid.mx/ || echo "000")
-          echo "secid.mx status: $STATUS"
-          # Non-200 is soft-fail: GitHub Pages CDN propagation can take 1-3 min after deploy
-          if [ "$STATUS" != "200" ]; then
-            echo "::warning::secid.mx returned $STATUS — Pages may still be propagating"
-          fi
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Smoke-test hosting, rewrites and backend
+        run: scripts/ci/smoke-test.sh "$SITE_URL" "$FUNCTIONS_URL"
+
+      # secid.mx points at GitHub Pages until the DNS cutover (see
+      # docs/LAUNCH-CHECKLIST.md, Fase 4). Warn-only until then; flip to a
+      # hard check by removing `|| true` once the custom domain is live.
+      - name: Check secid.mx serves this build
+        run: scripts/ci/smoke-test.sh https://secid.mx "$FUNCTIONS_URL" || echo "::warning::secid.mx is not serving the Astro build yet (DNS still on GitHub Pages?)"
