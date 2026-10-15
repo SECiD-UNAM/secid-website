@@ -3,6 +3,8 @@
 Tracking del corte de producción con backend compartido (un solo proyecto
 `secid-org` para beta y prod). El detalle técnico de cada paso está en
 [`DEPLOYMENT.md` → Production cutover](./DEPLOYMENT.md#production-cutover).
+**Todo paso de operador tiene su runbook en [`runbooks/`](./runbooks/README.md)**
+con comandos, verificación y reversa; este archivo solo lleva el track.
 
 Convención: `(owner)` = consola GCP/Firebase o GitHub, lo hace el dueño del
 proyecto. `(dev)` = cambios en el repo, entran por PR. `(CI)` = lo hace el
@@ -30,13 +32,13 @@ Si se usa otro, reemplazarlo en todo el documento.
 
 ---
 
-## Fase 0: red de seguridad (owner, ~15 min, hacer ya)
+## Fase 0: red de seguridad (owner, ~15 min, hacer ya) — runbooks [billing-and-budget](./runbooks/billing-and-budget.md), [firestore-backup](./runbooks/firestore-backup.md)
 
-- [ ] Alerta de presupuesto en GCP → Billing → Budgets & alerts (p. ej. $20/mes, avisos al 50/90/100%)
-- [ ] Notificaciones de la cuenta de facturación al correo del owner
-- [ ] Correo de prueba de la alerta recibido
-- [ ] Export de Firestore antes de tocar reglas o datos:
-      `gcloud firestore export gs://secid-org.appspot.com/backups/$(date +%F) --project secid-org`
+- [ ] (owner) Alerta de presupuesto en GCP (runbook §A)
+- [ ] (owner) Notificaciones de la cuenta de facturación (runbook §B)
+- [ ] (owner) Correo de prueba de la alerta recibido
+- [x] (dev) Workflow `Firestore Backup` (`.github/workflows/firestore-backup.yml`): semanal + a demanda
+- [ ] (CI) `gh workflow run firestore-backup.yml --ref feature/hub -f label=pre-cutover` en verde (si falla por permisos, el runbook trae el `add-iam-policy-binding`)
 
 ## Fase 1: PR de endurecimiento (dev, 1–2 días) — `fix/shared-backend-hardening` → `feature/hub`
 
@@ -56,7 +58,7 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [ ] Deploy de beta OK con el nuevo orden; smoke test manual: `scripts/ci/smoke-test.sh https://beta.secid.mx https://us-central1-secid-org.cloudfunctions.net`
 - [ ] Merge a `feature/hub` (actualiza PR #1)
 
-## Fase 2: sitio de prod + dominios autorizados + variables (CI, ~5 min; antes del merge)
+## Fase 2: sitio de prod + dominios autorizados + variables (CI, ~5 min; antes del merge) — runbook [prod-cutover §1](./runbooks/prod-cutover.md)
 
 - [ ] (owner) Actions → `Production Cutover` → Run workflow con `site_id=secid-mx`, `custom_domains=secid.mx,www.secid.mx`, `backend_from_main=true`
 - [ ] (CI) Sitio de Hosting `secid-mx` creado → https://secid-mx.web.app
@@ -67,7 +69,7 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [ ] (owner) OAuth de Google y GitHub: callbacks siguen en `secid-org.firebaseapp.com` (no hay que cambiar nada)
 - [ ] `gh variable list` muestra las dos variables
 
-## Fase 3: merge y prueba en `.web.app` (owner hace merge, dev verifica, ~1 h)
+## Fase 3: merge y prueba en `.web.app` (owner hace merge, dev verifica, ~1 h) — runbook [prod-cutover §2–3](./runbooks/prod-cutover.md)
 
 - [ ] Merge de PR #1 (por PR, nunca push directo a `main`)
 - [ ] Run de `cd.yml` en verde: hosting + backend + validate (el smoke test ya cubre locales, rewrite dinámico, headers, `/api/forms/*` y un callable)
@@ -79,7 +81,7 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [ ] Beta (`beta.secid.mx`) sigue funcionando contra el backend desplegado por `main`
 - [ ] Si algo falla: secid.mx no se afecta (DNS sigue en Pages); corregir con otro PR
 
-## Fase 4: DNS (owner, ~20 min + propagación)
+## Fase 4: DNS (owner, ~20 min + propagación) — runbook [prod-cutover §4](./runbooks/prod-cutover.md), reversa en [rollback §C](./runbooks/rollback.md)
 
 - [ ] Anotar aquí los registros DNS actuales de `secid.mx` y `www` en Cloudflare (plan de reversa, apuntan a GitHub Pages):
       `_________________________________________`
@@ -89,7 +91,7 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [ ] Login y registro probados sobre `https://secid.mx`
 - [ ] (dev) PR: quitar el `|| echo ::warning` del check de `secid.mx` en `cd.yml` → `validate` falla si prod no sirve el build
 
-## Fase 5: limpieza (1–2 semanas después)
+## Fase 5: limpieza (1–2 semanas después) — runbook [prod-cutover §5](./runbooks/prod-cutover.md)
 
 - [ ] Desactivar GitHub Pages (Settings → Pages) y quitar el custom domain
 - [ ] PR: borrar `static.yml` y el `public/CNAME` viejo

@@ -66,7 +66,9 @@ forum and dashboard detail pages) return 404, `/api/forms/contact` and
 the security headers are sent. Production must be a second Firebase
 Hosting site in `secid-org`.
 
-Tracked step by step in [`LAUNCH-CHECKLIST.md`](./LAUNCH-CHECKLIST.md).
+Tracked step by step in [`LAUNCH-CHECKLIST.md`](./LAUNCH-CHECKLIST.md);
+operator runbooks (commands, verification, rollback) live in
+[`runbooks/`](./runbooks/README.md).
 Steps 1, 2, 4, 6 and the domain request in 7 are done by the
 **`Production Cutover` workflow** (`.github/workflows/cutover.yml`,
 `workflow_dispatch`) with the deploy service account; each prints a manual

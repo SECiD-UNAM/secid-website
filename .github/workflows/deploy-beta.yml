@@ -152,6 +152,10 @@ jobs:
       # longer exports. With a shared backend that must be a deliberate
       # choice, never a side effect of a stale branch.
       - name: Refuse to delete functions another branch still uses
+        env:
+          # Intended removals: set this repo variable for one deploy, then
+          # delete it (docs/runbooks/shared-backend-change.md).
+          ALLOW_FUNCTION_DELETIONS: ${{ vars.ALLOW_FUNCTION_DELETIONS }}
         run: node scripts/ci/check-function-deletions.mjs --project "$FIREBASE_PROJECT"
 
       - name: Deploy Cloud Functions
