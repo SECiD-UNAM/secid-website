@@ -4,7 +4,9 @@ on:
   push:
     branches: [main, develop, feature/*]
   pull_request:
-    branches: [main, develop]
+    # feature/hub is the integration branch for beta: PRs into it must be
+    # tested too, otherwise a fix/* branch gets no CI until it reaches main.
+    branches: [main, develop, feature/hub]
   workflow_dispatch:
 
 concurrency:
@@ -96,6 +98,52 @@ jobs:
           files: ./coverage/lcov.info
           flags: unittests
           fail_ci_if_error: false
+
+  # Firestore security rules. One backend serves beta AND production, so a
+  # rules change shipped from either branch applies to both sites at once.
+  # tests/rules/* skip silently without an emulator; this job boots one so
+  # the suite actually gates merges.
+  rules:
+    name: Firestore Rules Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      # The Firestore emulator is a Java program.
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Firebase emulators
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      # Port 8088 matches firebase.json `emulators.firestore.port`, which
+      # is also the suite's default FIRESTORE_EMULATOR_HOST.
+      - name: Run rules tests against the Firestore emulator
+        run: |
+          npx firebase-tools emulators:exec --only firestore \
+            --project secid-rules-test \
+            "npx vitest run tests/rules"
+        env:
+          CI: true
+          NODE_ENV: test
+          FIRESTORE_EMULATOR_HOST: 127.0.0.1:8088
 
   # Build validation
   build:

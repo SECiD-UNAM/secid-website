@@ -14,11 +14,9 @@ const LINKEDIN_USERINFO_URL = 'https://api.linkedin.com/v2/userinfo';
 const LINKEDIN_VERIFY_URL =
   'https://api.linkedin.com/v2/memberVerifications?q=member';
 
-import { getAppUrl as getRequiredAppUrl } from './env';
-
-function getAppUrl(): string {
-  return getRequiredAppUrl('https://secid.org');
-}
+// Same fallback as every other function (env.ts): links and OAuth
+// callbacks must land on the production site, never on a stale domain.
+import { getAppUrl } from './env';
 
 // OAuth redirect_uri must come from trusted config, never from
 // x-forwarded-host/host headers (a spoofed Host header could redirect the

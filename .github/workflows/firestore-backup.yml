@@ -1,0 +1,56 @@
+name: Firestore Backup
+
+# Exports the whole Firestore database to the project's default Storage
+# bucket. One backend serves beta AND production, so a bad rules or data
+# migration hits both sites at once; this is the restore point.
+# Runbook: docs/runbooks/firestore-backup.md
+on:
+  schedule:
+    - cron: '0 8 * * 0'
+  workflow_dispatch:
+    inputs:
+      label:
+        description: 'Why this backup (goes into the folder name)'
+        required: false
+        default: 'manual'
+
+concurrency:
+  group: firestore-backup
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    name: Export Firestore to Cloud Storage
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID || secrets.STAGING_FIREBASE_PROJECT_ID }}
+      BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET || secrets.STAGING_FIREBASE_STORAGE_BUCKET }}
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Export
+        run: |
+          set -o pipefail
+          stamp="$(date -u +%Y-%m-%dT%H%MZ)-${{ inputs.label || 'scheduled' }}"
+          dest="gs://$BUCKET/firestore-backups/$stamp"
+          gcloud firestore export "$dest" --project "$PROJECT_ID" --format=json | tee /tmp/export.json
+          {
+            echo "### Firestore backup"
+            echo "- Destination: \`$dest\`"
+            echo "- Restore: \`gcloud firestore import $dest --project $PROJECT_ID\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Manual fallback
+        if: failure()
+        run: |
+          echo "::warning::Export failed — the service account may lack roles/datastore.importExportAdmin, or the bucket name is wrong. See docs/runbooks/firestore-backup.md"

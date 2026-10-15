@@ -59,54 +59,58 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() {}
 };
 
-// Mock matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: (query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: () => {},
-    removeListener: () => {},
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    dispatchEvent: () => {},
-  }),
-});
+// Browser-only mocks. Files that opt into `@vitest-environment node`
+// (tests/rules/*, which talk to the Firestore emulator) have no window.
+if (typeof window !== 'undefined') {
+  // Mock matchMedia
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => {},
+    }),
+  });
 
-// Mock scrollTo
-Object.defineProperty(window, 'scrollTo', {
-  writable: true,
-  value: () => {},
-});
+  // Mock scrollTo
+  Object.defineProperty(window, 'scrollTo', {
+    writable: true,
+    value: () => {},
+  });
 
-// In-memory Storage mock. The previous version delegated to the global
-// localStorage/sessionStorage — which, after defineProperty, WAS the mock
-// itself, so any call recursed infinitely once a component touched storage.
-const createStorageMock = (): Storage => {
-  const store = new Map<string, string>();
-  return {
-    getItem: (key: string) => store.get(key) ?? null,
-    setItem: (key: string, value: string) => {
-      store.set(key, String(value));
-    },
-    removeItem: (key: string) => {
-      store.delete(key);
-    },
-    clear: () => {
-      store.clear();
-    },
-    key: (index: number) => [...store.keys()][index] ?? null,
-    get length() {
-      return store.size;
-    },
-  } as Storage;
-};
+  // In-memory Storage mock. The previous version delegated to the global
+  // localStorage/sessionStorage — which, after defineProperty, WAS the mock
+  // itself, so any call recursed infinitely once a component touched storage.
+  const createStorageMock = (): Storage => {
+    const store = new Map<string, string>();
+    return {
+      getItem: (key: string) => store.get(key) ?? null,
+      setItem: (key: string, value: string) => {
+        store.set(key, String(value));
+      },
+      removeItem: (key: string) => {
+        store.delete(key);
+      },
+      clear: () => {
+        store.clear();
+      },
+      key: (index: number) => [...store.keys()][index] ?? null,
+      get length() {
+        return store.size;
+      },
+    } as Storage;
+  };
 
-Object.defineProperty(window, 'localStorage', {
-  value: createStorageMock(),
-});
+  Object.defineProperty(window, 'localStorage', {
+    value: createStorageMock(),
+  });
 
-Object.defineProperty(window, 'sessionStorage', {
-  value: createStorageMock(),
-});
+  Object.defineProperty(window, 'sessionStorage', {
+    value: createStorageMock(),
+  });
+}

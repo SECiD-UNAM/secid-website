@@ -34,11 +34,27 @@ export const ALLOWED_CALLABLE_ORIGINS: (string | RegExp)[] = [
   'https://secid.mx',
   'https://www.secid.mx',
   'https://beta.secid.mx',
+  // Production Hosting site's own URL, used to verify a deploy before the
+  // secid.mx DNS cutover (docs/LAUNCH-CHECKLIST.md). Keep in sync with the
+  // repo variable FIREBASE_PROD_HOSTING_SITE.
+  'https://secid-mx.web.app',
   'https://secid.org',
   'https://www.secid.org',
   /^http:\/\/localhost(?::\d+)?$/,
   /^http:\/\/127\.0\.0\.1(?::\d+)?$/,
 ];
+
+/**
+ * Single origin check for the onRequest handlers that set CORS headers by
+ * hand (public-forms, get-salary-stats). Same allowlist as the callables,
+ * so a new environment is added in exactly one place.
+ */
+export function isAllowedOrigin(origin: string | undefined): origin is string {
+  if (!origin) return false;
+  return ALLOWED_CALLABLE_ORIGINS.some((allowed) =>
+    typeof allowed === 'string' ? allowed === origin : allowed.test(origin)
+  );
+}
 
 /**
  * Absolute base URL for user-visible links sent from Cloud Functions
@@ -51,8 +67,12 @@ export const ALLOWED_CALLABLE_ORIGINS: (string | RegExp)[] = [
  *     start. We do NOT throw — throwing would brick callable endpoints on
  *     any environment that hasn't been migrated to set APP_URL yet. The
  *     warning is the operational signal.
+ *
+ * The fallback is production: one backend serves both sites, and a link
+ * that lands on secid.mx is right for every member, while one that lands
+ * on beta is right only for testers.
  */
-export function getAppUrl(fallback = 'https://beta.secid.mx'): string {
+export function getAppUrl(fallback = 'https://secid.mx'): string {
   const fromEnv = process.env.APP_URL;
   if (fromEnv) return fromEnv;
   if (!isEmulator() && !warned) {

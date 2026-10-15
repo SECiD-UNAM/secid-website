@@ -4,6 +4,7 @@ import {
   decodeClaimsPermissions,
   checkPermission,
 } from './rbac/resolution-logic';
+import { isAllowedOrigin } from './env';
 
 function getDb() {
   return admin.firestore();
@@ -12,21 +13,9 @@ function getDb() {
 // Privacy: minimum data points per group
 const MIN_GROUP_SIZE = 3;
 
-// Keep in sync with the allowlist in public-forms.ts
-const ALLOWED_ORIGINS = [
-  'https://secid.mx',
-  'https://www.secid.mx',
-  'https://beta.secid.mx',
-  'https://secid.org',
-  'https://www.secid.org',
-  'http://localhost:4321',
-  'http://localhost:3000',
-  'http://127.0.0.1:4321',
-];
-
+// Same allowlist as the callables and public-forms (env.ts).
 function getCorsOrigin(requestOrigin: string | undefined): string | null {
-  if (!requestOrigin) return null;
-  return ALLOWED_ORIGINS.includes(requestOrigin) ? requestOrigin : null;
+  return isAllowedOrigin(requestOrigin) ? requestOrigin : null;
 }
 
 interface SalaryDataPoint {
