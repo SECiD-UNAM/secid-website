@@ -1,0 +1,75 @@
+---
+import type { CVData } from '@/types/cv';
+
+interface Props {
+  experience: CVData['experience'];
+  lang: 'es' | 'en';
+}
+
+const { experience, lang } = Astro.props;
+
+const sectionTitle =
+  lang === 'es' ? 'Experiencia Profesional' : 'Professional Experience';
+const currentLabel = lang === 'es' ? 'Actual' : 'Current';
+---
+
+<section
+  id="experience"
+  class="border-t border-gray-200 py-10 dark:border-gray-800"
+>
+  <h2 class="mb-8 text-2xl font-bold text-gray-900 dark:text-white">
+    {sectionTitle}
+  </h2>
+
+  <div class="space-y-0">
+    {
+      experience.map((exp) => (
+        <div class="border-b border-gray-100 py-5 last:border-b-0 dark:border-gray-800/50">
+          <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                {exp.title}
+              </h3>
+              <p class="font-medium text-primary-600 dark:text-primary-400">
+                {exp.company}
+                {exp.location && (
+                  <span class="font-normal text-gray-500 dark:text-gray-400">
+                    {' '}
+                    &middot; {exp.location}
+                  </span>
+                )}
+              </p>
+            </div>
+
+            <div class="flex flex-shrink-0 items-center gap-2">
+              <span class="whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                {exp.startDate} &ndash; {exp.endDate || currentLabel}
+              </span>
+              {exp.current && (
+                <span class="inline-flex items-center rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400">
+                  {currentLabel}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {exp.description && (
+            <p class="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+              {exp.description}
+            </p>
+          )}
+
+          {exp.technologies && exp.technologies.length > 0 && (
+            <div class="mt-3 flex flex-wrap gap-1.5">
+              {exp.technologies.map((tech) => (
+                <span class="rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                  {tech}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      ))
+    }
+  </div>
+</section>

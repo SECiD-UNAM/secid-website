@@ -1,0 +1,23 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import AdminMergeTool from '@/components/admin/AdminMergeTool.tsx';
+import AdminAuthGuard from '@/components/admin/AdminAuthGuard.tsx';
+
+// Static-prerender: frontmatter has no SSR-only logic; the page is pure
+// client islands (AdminAuthGuard + AdminMergeTool with client:load). The
+// previous prerender:false made it 404 on the static Firebase Hosting.
+
+const title = 'Fusionar Perfiles - Admin SECiD';
+const description =
+  'Herramienta administrativa para fusionar perfiles duplicados en la plataforma SECiD';
+---
+
+<AdminLayout
+  title={title}
+  description={description}
+  currentPath="/admin/merge-profiles"
+>
+  <AdminAuthGuard requiredRole="admin" client:load>
+    <AdminMergeTool client:load />
+  </AdminAuthGuard>
+</AdminLayout>

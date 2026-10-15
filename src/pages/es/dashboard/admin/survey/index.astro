@@ -1,0 +1,14 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import SurveyAdminPage from '@/components/admin/SurveyAdminPage';
+---
+
+<DashboardLayout
+  title="Encuesta de Miembros - Admin SECiD"
+  description="Resultados agregados de la encuesta de inscripción"
+  lang="es"
+  requireVerified={true}
+  requireRole={['admin', 'moderator']}
+>
+  <SurveyAdminPage client:only="react" lang="es" />
+</DashboardLayout>

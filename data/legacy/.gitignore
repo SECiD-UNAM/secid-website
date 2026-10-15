@@ -1,0 +1,3 @@
+data/legacy/*
+!data/legacy/.gitignore
+!data/legacy/README.md

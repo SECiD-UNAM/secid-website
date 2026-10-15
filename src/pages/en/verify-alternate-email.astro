@@ -1,0 +1,20 @@
+---
+import ModernLayout from '@/layouts/ModernLayout.astro';
+import Navigation from '@/components/Navigation.astro';
+import Footer from '@/components/Footer.astro';
+import VerifyAlternateEmailPage from '@/components/wrappers/VerifyAlternateEmailPage';
+---
+
+<ModernLayout
+  title="Verify alternate email - SECiD"
+  description="Verify your alternate email to access the same profile with either of your emails."
+  lang="en"
+>
+  <Navigation lang="en" />
+  <div
+    class="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 dark:bg-gray-900 sm:px-6 lg:px-8"
+  >
+    <VerifyAlternateEmailPage client:only="react" lang="en" />
+  </div>
+  <Footer lang="en" />
+</ModernLayout>

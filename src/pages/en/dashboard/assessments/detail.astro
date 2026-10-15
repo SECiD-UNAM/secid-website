@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import SkillAssessmentPage from '@/components/wrappers/SkillAssessmentPage';
+---
+
+<DashboardLayout
+  title="Assessments - SECiD"
+  description="Assess and certify your skills"
+  lang="en"
+>
+  <SkillAssessmentPage client:only="react" lang="en" />
+</DashboardLayout>

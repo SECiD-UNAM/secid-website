@@ -1,0 +1,212 @@
+name: Production Cutover (one-time setup)
+
+# Does the owner-side setup for serving secid.mx from Firebase Hosting
+# (docs/LAUNCH-CHECKLIST.md, Fase 2 + Fase 4) from CI instead of the
+# console, using the same service account that already deploys:
+#
+#   1. creates the production Hosting site in project secid-org
+#   2. adds <site>.web.app, secid.mx and www.secid.mx to the Auth
+#      authorized domains (sign-in fails on prod without them)
+#   3. requests the custom domains on the site and prints the DNS records
+#      Cloudflare needs (the DNS change itself stays manual: it is the
+#      moment the live site switches, and must be reversible by a human)
+#   4. sets the repo variables the deploy workflows read
+#
+# Idempotent: re-running with the same inputs is safe. Manual fallbacks
+# for each step are printed in the job summary if a step is refused.
+on:
+  # GitHub only lets you dispatch a workflow it has registered, and it
+  # registers one the first time it runs by any trigger. main still holds
+  # the legacy site, so this push trigger (file-scoped, job skipped below)
+  # is what makes `gh workflow run cutover.yml --ref feature/hub` possible.
+  push:
+    branches: [feature/hub, main]
+    paths: ['.github/workflows/cutover.yml']
+  workflow_dispatch:
+    inputs:
+      site_id:
+        description: 'Production Hosting site id (<site_id>.web.app)'
+        required: true
+        default: 'secid-mx'
+      custom_domains:
+        description: 'Comma-separated custom domains to attach to the site'
+        required: true
+        default: 'secid.mx,www.secid.mx'
+      backend_from_main:
+        description: 'Set BACKEND_DEPLOYED_FROM_MAIN=true (hand the shared backend to main). Do this BEFORE merging the promotion PR.'
+        type: boolean
+        default: false
+
+concurrency:
+  group: production-cutover
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: write # repo variables
+
+env:
+  PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID || secrets.STAGING_FIREBASE_PROJECT_ID }}
+  SITE_ID: ${{ inputs.site_id }}
+
+jobs:
+  cutover:
+    name: Hosting site + Auth domains + custom domains
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          token_format: access_token
+
+      # ── 1. Hosting site ──────────────────────────────────────────────────
+      - name: Create the production Hosting site
+        run: |
+          set -o pipefail
+          if npx firebase-tools hosting:sites:list --project "$PROJECT_ID" --json \
+               | jq -e --arg s "$SITE_ID" '.result.sites[]? | select(.name | endswith("/sites/" + $s))' >/dev/null; then
+            echo "Site $SITE_ID already exists."
+          else
+            npx firebase-tools hosting:sites:create "$SITE_ID" --project "$PROJECT_ID" --non-interactive 2>&1
+          fi
+          echo "### Hosting site" >> "$GITHUB_STEP_SUMMARY"
+          echo "- \`$SITE_ID\` → https://$SITE_ID.web.app" >> "$GITHUB_STEP_SUMMARY"
+
+      # ── 2. Auth authorized domains ───────────────────────────────────────
+      # Identity Toolkit admin API; merges into the existing list so nothing
+      # already authorized (localhost, beta, firebaseapp.com) is dropped.
+      - name: Add authorized domains to Firebase Auth
+        id: authdomains
+        continue-on-error: true
+        env:
+          TOKEN: ${{ steps.auth.outputs.access_token }}
+          DOMAINS: ${{ inputs.custom_domains }}
+        run: |
+          set -o pipefail
+          API="https://identitytoolkit.googleapis.com/admin/v2/projects/$PROJECT_ID/config"
+          current=$(curl -sS --fail -H "Authorization: Bearer $TOKEN" "$API" | jq -c '.authorizedDomains // []')
+          wanted=$(jq -nc --arg site "$SITE_ID.web.app" --arg d "$DOMAINS" \
+            '[$site] + ($d | split(",") | map(gsub("\\s";"")) | map(select(length>0)))')
+          merged=$(jq -nc --argjson a "$current" --argjson b "$wanted" '$a + $b | unique')
+          echo "Authorized domains → $merged"
+          curl -sS --fail -X PATCH -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+            "$API?updateMask=authorizedDomains" \
+            --data "{\"authorizedDomains\": $merged}" | jq -r '.authorizedDomains | join(", ")'
+          echo "### Auth authorized domains" >> "$GITHUB_STEP_SUMMARY"
+          echo "- $(echo "$merged" | jq -r 'join(", ")')" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Manual fallback for authorized domains
+        if: steps.authdomains.outcome == 'failure'
+        run: |
+          echo "::warning::Could not update Auth authorized domains from CI (service account lacks the permission?)."
+          {
+            echo "### Auth authorized domains — MANUAL"
+            echo "Firebase Console → Authentication → Settings → Authorized domains → add:"
+            echo "- \`$SITE_ID.web.app\`"
+            echo "- \`${{ inputs.custom_domains }}\` (each one)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ── 3. Custom domains + DNS records ──────────────────────────────────
+      # Firebase Hosting REST API. Creating the custom domain starts
+      # ownership verification; the resource then lists the exact DNS
+      # records Cloudflare must hold (requiredDnsUpdates). Nothing changes
+      # for visitors until those records are set.
+      - name: Request custom domains and print the DNS records
+        id: customdomains
+        continue-on-error: true
+        env:
+          TOKEN: ${{ steps.auth.outputs.access_token }}
+          DOMAINS: ${{ inputs.custom_domains }}
+        run: |
+          set -o pipefail
+          BASE="https://firebasehosting.googleapis.com/v1beta1/projects/$PROJECT_ID/sites/$SITE_ID/customDomains"
+          echo "### Custom domains — DNS records for Cloudflare (proxy OFF / grey cloud until the cert is issued)" >> "$GITHUB_STEP_SUMMARY"
+          IFS=',' read -ra LIST <<< "$DOMAINS"
+          for raw in "${LIST[@]}"; do
+            domain=$(echo "$raw" | tr -d '[:space:]')
+            [ -z "$domain" ] && continue
+            # 409 = already requested; anything else non-2xx is a real error.
+            code=$(curl -sS -o /tmp/create.json -w '%{http_code}' -X POST \
+              -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+              "$BASE?customDomainId=$domain" --data '{}')
+            if [ "$code" != "200" ] && [ "$code" != "409" ]; then
+              echo "::error::customDomains.create $domain → HTTP $code: $(cat /tmp/create.json)"
+              exit 1
+            fi
+            # Give verification a moment to compute the required records.
+            sleep 10
+            curl -sS --fail -H "Authorization: Bearer $TOKEN" "$BASE/$domain" > /tmp/domain.json
+            state=$(jq -r '.hostState // "UNKNOWN"' /tmp/domain.json)
+            echo "#### $domain — hostState: $state" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            jq -r '
+              [.requiredDnsUpdates.desired[]?.records[]?] as $r
+              | if ($r | length) == 0 then "(no DNS changes required yet — re-run in a few minutes if hostState is not HOST_ACTIVE)"
+                else $r[] | "\(.type)\t\(.domainName)\t\(.rdata)"
+                end' /tmp/domain.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            echo "$domain → $state"
+            jq -c '.requiredDnsUpdates // {}' /tmp/domain.json
+          done
+
+      - name: Manual fallback for custom domains
+        if: steps.customdomains.outcome == 'failure'
+        run: |
+          echo "::warning::Could not request custom domains from CI."
+          {
+            echo "### Custom domains — MANUAL"
+            echo "Firebase Console → Hosting → \`$SITE_ID\` → Add custom domain → \`${{ inputs.custom_domains }}\`, then copy the DNS records it shows into Cloudflare."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ── 4. Repo variables read by cd.yml / deploy-beta.yml ───────────────
+      - name: Set repo variables
+        id: vars
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BACKEND_FROM_MAIN: ${{ inputs.backend_from_main }}
+        run: |
+          gh variable set FIREBASE_PROD_HOSTING_SITE --body "$SITE_ID" --repo "${{ github.repository }}"
+          if [ "$BACKEND_FROM_MAIN" = "true" ]; then
+            gh variable set BACKEND_DEPLOYED_FROM_MAIN --body "true" --repo "${{ github.repository }}"
+          fi
+          {
+            echo "### Repo variables"
+            gh variable list --repo "${{ github.repository }}" | sed 's/^/- /'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Manual fallback for repo variables
+        if: steps.vars.outcome == 'failure'
+        run: |
+          echo "::warning::GITHUB_TOKEN could not write repo variables; run these locally:"
+          {
+            echo "### Repo variables — MANUAL"
+            echo '```'
+            echo "gh variable set FIREBASE_PROD_HOSTING_SITE --body $SITE_ID"
+            if [ "${{ inputs.backend_from_main }}" = "true" ]; then
+              echo "gh variable set BACKEND_DEPLOYED_FROM_MAIN --body true"
+            fi
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Next steps
+        run: |
+          {
+            echo "### Next"
+            echo "1. Merge the promotion PR → \`cd.yml\` deploys to https://$SITE_ID.web.app and runs the smoke test."
+            echo "2. Put the DNS records above into Cloudflare (grey cloud) and wait for the certificate."
+            echo "3. Re-run this workflow to see \`hostState\` reach HOST_ACTIVE; then retire GitHub Pages."
+            echo "Full checklist: docs/LAUNCH-CHECKLIST.md"
+          } >> "$GITHUB_STEP_SUMMARY"
