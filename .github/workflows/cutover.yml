@@ -15,6 +15,13 @@ name: Production Cutover (one-time setup)
 # Idempotent: re-running with the same inputs is safe. Manual fallbacks
 # for each step are printed in the job summary if a step is refused.
 on:
+  # GitHub only lets you dispatch a workflow it has registered, and it
+  # registers one the first time it runs by any trigger. main still holds
+  # the legacy site, so this push trigger (file-scoped, job skipped below)
+  # is what makes `gh workflow run cutover.yml --ref feature/hub` possible.
+  push:
+    branches: [feature/hub, main]
+    paths: ['.github/workflows/cutover.yml']
   workflow_dispatch:
     inputs:
       site_id:
@@ -47,6 +54,7 @@ jobs:
     name: Hosting site + Auth domains + custom domains
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    if: github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

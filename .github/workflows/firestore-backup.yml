@@ -5,6 +5,11 @@ name: Firestore Backup
 # migration hits both sites at once; this is the restore point.
 # Runbook: docs/runbooks/firestore-backup.md
 on:
+  # File-scoped push trigger so GitHub registers the workflow and it can be
+  # dispatched before it exists on main (job skipped for pushes, see below).
+  push:
+    branches: [feature/hub, main]
+    paths: ['.github/workflows/firestore-backup.yml']
   schedule:
     - cron: '0 8 * * 0'
   workflow_dispatch:
@@ -26,6 +31,7 @@ jobs:
     name: Export Firestore to Cloud Storage
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    if: github.event_name != 'push'
     env:
       PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID || secrets.STAGING_FIREBASE_PROJECT_ID }}
       BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET || secrets.STAGING_FIREBASE_STORAGE_BUCKET }}
