@@ -95,7 +95,7 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [ ] PR: borrar `static.yml` y el `public/CNAME` viejo
 - [ ] Borrar la cuenta de prueba `artemiopadilla+secidtest0802@gmail.com`
 - [ ] Opcional: quitar `secid-mx.web.app` de CORS si ya no se usa
-- [ ] Actualizar la tabla de entornos en `docs/DEPLOYMENT.md` y `README.md`
+- [x] (dev) Tabla de entornos y sección de deploy actualizadas en `docs/DEPLOYMENT.md` y `README.md` (sin GitHub Pages ni `staging`)
 
 ---
 

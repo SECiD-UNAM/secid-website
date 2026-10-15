@@ -51,8 +51,7 @@ Our platform serves as the central hub for:
 - **[TypeScript](https://www.typescriptlang.org/)** - Type-safe development
 - **[React](https://react.dev)** - Interactive UI components
 - **[Tailwind CSS](https://tailwindcss.com)** - Modern utility-first styling
-- **[Firebase](https://firebase.google.com)** - Backend services and authentication
-- **[GitHub Pages](https://pages.github.com)** - Zero-cost hosting
+- **[Firebase](https://firebase.google.com)** - Hosting, Auth, Firestore, Storage, Cloud Functions
 
 ### 🎨 **Modern Features**
 
@@ -190,52 +189,41 @@ secid-website/
 
 ## 🚀 Deployment
 
-### **GitHub Pages (Production)**
+Both environments run on **Firebase Hosting** in one Firebase project
+(`secid-org`), sharing Auth, Firestore, Storage and Cloud Functions. Only
+the static frontend differs per site. Details, runbook and rules for the
+shared backend: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md); launch
+tracking: [`docs/LAUNCH-CHECKLIST.md`](docs/LAUNCH-CHECKLIST.md).
 
-Automatic deployment on push to `main` branch:
-
-```bash
-# Manual deployment
-make deploy-gh-pages
-```
-
-### **Firebase Hosting (Alternative)**
-
-```bash
-# Login to Firebase
-make firebase-login
-
-# Deploy to production
-make firebase-deploy
-
-# Create preview channel
-make firebase-preview
-```
+- `feature/hub` → **beta.secid.mx** (`deploy-beta.yml`)
+- `main` → **secid.mx** (`cd.yml`, production Hosting site; `main` only
+  changes via pull request)
+- Backend (functions, rules, indexes) is deployed by exactly one branch,
+  chosen by the repo variable `BACKEND_DEPLOYED_FROM_MAIN`.
 
 ## 🔄 CI/CD Pipeline
 
-The project uses GitHub Actions for continuous integration and deployment:
-
-**🔄 Automated on:**
-
-- Push to `main` branch
-- Pull requests
-- Manual dispatch
+GitHub Actions, on push to `main` / `feature/*`, on pull requests into
+`main` / `feature/hub`, and on manual dispatch:
 
 **✅ Quality Gates:**
 
 - TypeScript compilation
 - ESLint & Prettier checks
-- Unit tests (Vitest)
+- Unit tests (Vitest, 4 shards)
+- Firestore security rules tests (against the emulator)
 - E2E tests (Playwright)
 - Build verification
 - Lighthouse CI performance audit
 
 **🚀 Deployment:**
 
-- Automatic deployment to GitHub Pages
-- Preview deployments for PRs
-- Zero-downtime updates
+- Hosting deploy per branch, then rules → storage → functions
+- A guard refuses to delete functions another branch still exports
+- Post-deploy smoke test (locale pages, dynamic rewrites, security
+  headers, `/api/forms/*`, a callable)
+- `Production Cutover` and `Firestore Backup` workflows for the one-off
+  setup and restore points
 
 ## 🤝 Contributing
 
@@ -333,18 +321,18 @@ We use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ### **Hosting**
 
-- **💾 GitHub Pages** - Static site hosting (free)
-- **🔥 Firebase** - Backend services only
-- **🌐 Cloudflare** - DNS & CDN
+- **🔥 Firebase Hosting** - Static site hosting, one site per environment
+- **🔥 Firebase** - Auth, Firestore, Storage, Cloud Functions (shared)
+- **🌐 Cloudflare** - DNS
 - **🔒 SSL/TLS** - Automatic HTTPS
 
 ### **Environments**
 
-| Environment | URL                      | Branch      |
-| ----------- | ------------------------ | ----------- |
-| Production  | https://secid.mx         | `main`      |
-| Staging     | https://staging.secid.mx | `staging`   |
-| Development | http://localhost:4321    | `feature/*` |
+| Environment | URL                                        | Branch        |
+| ----------- | ------------------------------------------ | ------------- |
+| Production  | https://secid.mx                           | `main`        |
+| Beta        | https://beta.secid.mx                      | `feature/hub` |
+| Development | http://localhost:4321 (Firebase emulators) | any           |
 
 ## 📚 Resources
 
