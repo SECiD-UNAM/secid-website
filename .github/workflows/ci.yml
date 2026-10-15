@@ -4,7 +4,9 @@ on:
   push:
     branches: [main, develop, feature/*]
   pull_request:
-    branches: [main, develop]
+    # feature/hub is the integration branch for beta: PRs into it must be
+    # tested too, otherwise a fix/* branch gets no CI until it reaches main.
+    branches: [main, develop, feature/hub]
   workflow_dispatch:
 
 concurrency:
