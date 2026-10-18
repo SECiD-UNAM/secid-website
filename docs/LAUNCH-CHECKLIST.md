@@ -73,14 +73,14 @@ Si se usa otro, reemplazarlo en todo el documento.
 
 ## Fase 3: merge y prueba en `.web.app` (owner hace merge, dev verifica, ~1 h) — runbook [prod-cutover §2–3](./runbooks/prod-cutover.md)
 
-- [ ] Merge de PR #1 (por PR, nunca push directo a `main`)
-- [ ] Run de `cd.yml` en verde: hosting + backend + validate (el smoke test ya cubre locales, rewrite dinámico, headers, `/api/forms/*` y un callable)
+- [x] Merge de PR #1 (por PR, nunca push directo a `main`) — mergeado 2026-10-18 03:43 UTC, merge commit b8a91fa
+- [x] Run de `cd.yml` en verde: hosting + backend + validate (el smoke test ya cubre locales, rewrite dinámico, headers, `/api/forms/*` y un callable) — run 39094640657: guard `deployed: 27, exported locally: 27 / OK`, smoke test aprobado en secid-mx.web.app, aviso esperado en secid.mx (DNS aún en Pages). `https://secid-mx.web.app/es/` sirve `build-sha=b8a91fa`
 - [ ] A mano en `https://secid-mx.web.app`:
   - [ ] Login con email
   - [ ] Login con Google
   - [ ] Registro completo con una cuenta `+qa` (no recibe correos automáticos; verificación de email sí llega porque la manda Firebase Auth, no nosotros)
   - [ ] Enviar el formulario de contacto
-- [ ] Beta (`beta.secid.mx`) sigue funcionando contra el backend desplegado por `main`
+- [x] Beta (`beta.secid.mx`) sigue funcionando contra el backend desplegado por `main` — smoke test local aprobado tras el deploy de prod; beta sirve `build-sha=793e8b6`
 - [ ] Si algo falla: secid.mx no se afecta (DNS sigue en Pages); corregir con otro PR
 
 ## Fase 4: DNS (owner, ~20 min + propagación) — runbook [prod-cutover §4](./runbooks/prod-cutover.md), reversa en [rollback §C](./runbooks/rollback.md)
