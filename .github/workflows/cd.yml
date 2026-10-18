@@ -200,8 +200,8 @@ jobs:
       - name: Smoke-test hosting, rewrites and backend
         run: scripts/ci/smoke-test.sh "$SITE_URL" "$FUNCTIONS_URL"
 
-      # secid.mx points at GitHub Pages until the DNS cutover (see
-      # docs/LAUNCH-CHECKLIST.md, Fase 4). Warn-only until then; flip to a
-      # hard check by removing `|| true` once the custom domain is live.
+      # secid.mx is served by Firebase Hosting since the DNS cutover
+      # (docs/LAUNCH-CHECKLIST.md, Fase 4): a failure here means production
+      # is not serving this build and the deploy must be treated as broken.
       - name: Check secid.mx serves this build
-        run: scripts/ci/smoke-test.sh https://secid.mx "$FUNCTIONS_URL" || echo "::warning::secid.mx is not serving the Astro build yet (DNS still on GitHub Pages?)"
+        run: scripts/ci/smoke-test.sh https://secid.mx "$FUNCTIONS_URL"
