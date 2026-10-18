@@ -27,6 +27,11 @@ gcloud projects add-iam-policy-binding secid-org \
   --role roles/datastore.importExportAdmin
 ```
 
+El grant tarda 1–3 min en propagarse: un reintento inmediato vuelve a fallar
+con el mismo `PERMISSION_DENIED` (pasó el 2026-10-18); espera y relanza.
+Ya está otorgado desde esa fecha; el primer respaldo bueno quedó en
+`firestore-backups/2026-10-18T0122Z-pre-cutover/`.
+
 ## Respaldar (manual)
 
 ```bash
