@@ -69,20 +69,20 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [x] (CI) Dominios `secid.mx` y `www.secid.mx` solicitados en el sitio (`hostState=HOST_MISMATCH`, `ownershipState=OWNERSHIP_MISSING`: esperan DNS); registros copiados a la Fase 4
 - [x] (owner) Revisar el resumen del run: solo "Repo variables — MANUAL", resuelto arriba
 - [x] (owner) OAuth de Google y GitHub: callbacks siguen en `secid-org.firebaseapp.com` (no hay que cambiar nada)
-- [ ] (owner) Clave de reCAPTCHA Enterprise `secid-website`: añadir `secid-mx.web.app` y `www.secid.mx` a los dominios permitidos (hoy: secid.mx, beta.secid.mx, localhost) — descubierto 2026-10-18 en la prueba del formulario de contacto; comando en [prod-cutover §1b](./runbooks/prod-cutover.md); PR #80 lo añade a `cutover.yml` como paso con fallback MANUAL. Me lo niega el clasificador: `gcloud recaptcha keys update 6Lf0GPssAAAAAMXkNpzJDzISkep0YRM14GmKCPSB --project secid-org --web --domains=secid.mx,www.secid.mx,beta.secid.mx,secid-mx.web.app,localhost`
+- [x] (owner) Clave de reCAPTCHA Enterprise `secid-website` — hecho por el owner 2026-10-18 con el comando de abajo (verificado: el formulario de contacto pasa; ver Fase 3): añadir `secid-mx.web.app` y `www.secid.mx` a los dominios permitidos (hoy: secid.mx, beta.secid.mx, localhost) — descubierto 2026-10-18 en la prueba del formulario de contacto; comando en [prod-cutover §1b](./runbooks/prod-cutover.md); PR #80 lo añade a `cutover.yml` como paso con fallback MANUAL. Me lo niega el clasificador: `gcloud recaptcha keys update 6Lf0GPssAAAAAMXkNpzJDzISkep0YRM14GmKCPSB --project secid-org --web --domains=secid.mx,www.secid.mx,beta.secid.mx,secid-mx.web.app,localhost`
 - [x] `gh variable list` muestra las dos variables (2026-10-18 03:33 UTC). Desde este momento `deploy-beta.yml` ya NO despliega backend; lo hará `cd.yml` al mergear PR #1
 
 ## Fase 3: merge y prueba en `.web.app` (owner hace merge, dev verifica, ~1 h) — runbook [prod-cutover §2–3](./runbooks/prod-cutover.md)
 
 - [x] Merge de PR #1 (por PR, nunca push directo a `main`) — mergeado 2026-10-18 03:43 UTC, merge commit b8a91fa
 - [x] Run de `cd.yml` en verde: hosting + backend + validate (el smoke test ya cubre locales, rewrite dinámico, headers, `/api/forms/*` y un callable) — run 39094640657: guard `deployed: 27, exported locally: 27 / OK`, smoke test aprobado en secid-mx.web.app, aviso esperado en secid.mx (DNS aún en Pages). `https://secid-mx.web.app/es/` sirve `build-sha=b8a91fa`
-- [ ] A mano en `https://secid-mx.web.app`:
+- [x] A mano en `https://secid-mx.web.app`:
   - [x] Login con email — 2026-10-18 OK tras crear contraseña con "¿Olvidaste tu contraseña?" (la cuenta del owner solo tenía Google). Hallazgos: el formulario no mapeaba `auth/invalid-credential` → PR #77 (mergeado, ab808c6); el enlace de restablecer abre la página genérica `secid-org.firebaseapp.com/__/auth/action` porque el sitio no tiene handler propio → issue de seguimiento (post-lanzamiento)
   - [x] Login con Google — 2026-10-18 OK en secid-mx.web.app
   - [x] Registro completo con una cuenta `+qa` — 2026-10-18 OK en secid-mx.web.app con `artemiopadilla+qa@gmail.com` (uid `fSR9sRWj4UXW7cypeCOcCX4Q2o62`, proveedor password; el owner tecleó la contraseña, el resto lo hizo Claude desde Chrome). Evidencia: usuario en Auth; `users/{uid}` con numeroCuenta 300000001, sede Otro, `verificationStatus=pending`, `role=collaborator`; `completeRegistration` 200; encuesta en `member_surveys/{uid}`; correo de bienvenida **saltado** por ser QA (`[email] skipped for QA account`); correo "Nueva solicitud pendiente" al admin recibido (su enlace apunta a secid.mx: 404 hasta la Fase 4, esperado); panel y "Mi Perfil" cargan. Pendiente menor: clic en el correo de verificación de Firebase Auth (la cuenta sigue `emailVerified=false`). Hallazgos → issues: errores de hidratación de React (#418/#423/#425) en signup y dashboard; `onUserDocCreated` falla al añadir al grupo colaboradores@secid.mx (`Admin SDK API has not been used in project… or it is disabled`; API habilitada hoy, falta verificar en el próximo alta); al cerrar sesión en una pestaña, otra pestaña abierta con la sesión anterior la vuelve a escribir y "gana" (solo afecta a navegadores compartidos)
   - [x] Enviar el formulario de contacto — 2026-10-18 OK en secid-mx.web.app tras PR #81 (verificación con la API de reCAPTCHA Enterprise) + rol `recaptchaenterprise.agent` en la SA de runtime: función 200, documento nuevo en `contactMessages` (05:12 UTC). Historia: llevaba roto desde el 25-may en beta y prod (clave Enterprise + endpoint legacy `siteverify` → `incorrect-captcha-sol`; antes además faltaba `secid-mx.web.app` en los dominios de la clave → `browser-error`). Newsletter usa la misma ruta, así que también queda arreglado
 - [x] Beta (`beta.secid.mx`) sigue funcionando contra el backend desplegado por `main` — smoke test local aprobado tras el deploy de prod; beta sirve `build-sha=793e8b6`
-- [ ] Si algo falla: secid.mx no se afecta (DNS sigue en Pages); corregir con otro PR
+- [x] Si algo falla: secid.mx no se afecta (DNS sigue en Pages); corregir con otro PR — no hizo falta: lo que falló (contacto, mensaje de login) se corrigió con PR #77/#78/#81 antes del DNS
 
 ## Fase 4: DNS (owner, ~20 min + propagación) — runbook [prod-cutover §4](./runbooks/prod-cutover.md), reversa en [rollback §C](./runbooks/rollback.md)
 
@@ -91,7 +91,8 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [x] `hostState=HOST_ACTIVE` y `ownershipState=OWNERSHIP_ACTIVE` para `secid.mx` y `www.secid.mx` (leído por API, 06:09 UTC); certificado emitido por Google Trust Services (notBefore 05:13 UTC, tipo TEMPORARY/CERT_PROPAGATING mientras llega el definitivo); `https://secid.mx` respondió 200 desde las 06:28 UTC
 - [x] `scripts/ci/smoke-test.sh https://secid.mx https://us-central1-secid-org.cloudfunctions.net` pasa — 2026-10-18 06:31 UTC; `secid.mx` y `www.secid.mx` sirven `build-sha=0475b38`
 - [ ] Login y registro probados sobre `https://secid.mx` (owner: login con Google y con email; el registro ya se probó en `secid-mx.web.app` con el mismo backend)
-- [ ] (dev) PR: quitar el `|| echo ::warning` del check de `secid.mx` en `cd.yml` → `validate` falla si prod no sirve el build — PR #76 (`fix/validate-secid-mx-hard`) marcado ready el 2026-10-18 tras HOST_ACTIVE; falta mergear
+- [ ] (owner) Cloudflare: borrar los 4 NS residuales `ns-cloud-a1..a4.googledomains.com` en la raíz de `secid.mx` (herencia de Google Domains; no afectan al servicio, solo limpieza)
+- [x] (dev) PR: quitar el `|| echo ::warning` del check de `secid.mx` en `cd.yml` → `validate` falla si prod no sirve el build — PR #76 (`fix/validate-secid-mx-hard`) mergeado por el owner 2026-10-18 18:41 UTC (ac7ac8f); run 39155294693 de `cd.yml` en verde con el check duro ("Check secid.mx serves this build" OK)
 
 ## Fase 5: limpieza (1–2 semanas después) — runbook [prod-cutover §5](./runbooks/prod-cutover.md)
 
@@ -106,6 +107,19 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [x] (dev) Tabla de entornos y sección de deploy actualizadas en `docs/DEPLOYMENT.md` y `README.md` (sin GitHub Pages ni `staging`)
 
 ---
+
+## Seguimiento post-lanzamiento (no bloquea el lanzamiento; hallazgos del 2026-10-18)
+
+- [ ] (owner) Solicitud real pendiente desde el 22-sep-2026: Luis Enrique Morales Flores (`fmJmXgOQGETpkZQEUCs4JXJxys42`) — aprobar o rechazar en `https://secid.mx/es/dashboard/admin/members?status=pending`
+- [ ] (owner) Fase 0 §B y correo de prueba del presupuesto (arriba) — siguen abiertos
+- [ ] Issue #79: restablecer contraseña / verificar email desde `secid.mx` en vez de la página genérica `secid-org.firebaseapp.com/__/auth/action`
+- [ ] Issue #82: errores de hidratación de React (#418/#423/#425) en `/es/signup` y `/es/dashboard`
+- [ ] Issue #83: `onUserDocCreated` no añade al grupo `colaboradores@secid.mx` (Admin SDK API recién habilitada; puede requerir delegación a nivel de dominio) — verificar con el próximo registro real
+- [ ] PR #80 (opcional): paso de dominios reCAPTCHA en `cutover.yml`, por si se repite el cutover
+- [ ] (dev) `lint-staged` ignora `.ts/.tsx` ("No staged files match any configured task"): los fallos de Prettier llegan a CI
+- [ ] (dev) ESLint de `functions/` roto en local (falta `eslint-plugin-import`)
+- [ ] (dev) Suite `LoginForm` en `describe.skip` en `main`; falla entera al activarla
+- [ ] (dev) Opcional: alerta/monitoreo de uptime para `https://secid.mx` (el smoke test solo corre en cada deploy)
 
 ## Reglas de trabajo con backend compartido (desde la Fase 3)
 
