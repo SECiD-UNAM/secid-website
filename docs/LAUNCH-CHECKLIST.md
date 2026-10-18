@@ -123,7 +123,7 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [ ] (dev) Suite `LoginForm` en `describe.skip` en `main`; falla entera al activarla
 - [ ] (owner, 1 comando) El check `claude-review` falla en TODOS los PRs porque el secret `ANTHROPIC_API_KEY` del repo está vacío (visto en el log del run 39170448605): `gh secret set ANTHROPIC_API_KEY` con una clave de API de Anthropic, o quitar el workflow si no se quiere pagar por él
 - [ ] (dev) Dependabot reporta 63 vulnerabilidades en `main` (7 críticas, 30 altas) — revisar `npm audit` y actualizar dependencias en un PR aparte
-- [ ] Roadmap (no bloquea): MCP de SECiD + skill para coding assistants — spec en `docs/specs/secid-mcp-and-assistant-skill.md`, ítems en `docs/features/todo.md`
+- [ ] Roadmap (no bloquea): MCP de SECiD + skill para coding assistants — spec en `docs/specs/secid-mcp-and-assistant-skill.md`, ítems en `docs/features/todo.md`. Skill `.claude/skills/secid-ops/` lista en PR #91 (probada con agente nuevo: 4 lecturas vs 17 sin skill); el MCP queda para después
 - [ ] (dev) Opcional: alerta/monitoreo de uptime para `https://secid.mx` (el smoke test solo corre en cada deploy)
 
 ## Reglas de trabajo con backend compartido (desde la Fase 3)
