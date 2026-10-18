@@ -86,12 +86,31 @@ y ver `200` en `gcloud logging read 'resource.labels.service_name="sendcontactme
 
 Diagnóstico de otros rechazos (log `[public-forms] CAPTCHA rejected`):
 
-| errorCodes / score       | Causa                                    | Arreglo                                                                                           |
-| ------------------------ | ---------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `browser-error`          | dominio no registrado en la clave        | comando de arriba                                                                                 |
-| `invalid-input-secret`   | `RECAPTCHA_SECRET_KEY` no es de la clave | regenerar el secreto legacy en la consola de reCAPTCHA Enterprise y actualizar el secret del repo |
-| `invalid-input-response` | token caducado o falso                   | normal en pruebas con curl; el sitio real manda token fresco                                      |
-| `score < 0.5`            | tráfico sospechoso (automatización)      | probar a mano; ajustar `CAPTCHA_MIN_SCORE` si hay falsos positivos                                |
+| errorCodes / score       | Causa                                                                                                  | Arreglo                                                            |
+| ------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `browser-error`          | dominio no registrado en la clave                                                                      | comando de arriba                                                  |
+| `invalid-input-secret`   | `RECAPTCHA_SECRET_KEY` no es un secreto válido                                                         | ver abajo: secreto legacy de la clave                              |
+| `incorrect-captcha-sol`  | el secreto es válido pero de **otra** clave: el token lo emitió `6Lf0GPss…` y el secreto no es el suyo | ver abajo: secreto legacy de la clave                              |
+| `invalid-input-response` | token caducado o falso                                                                                 | normal en pruebas con curl; el sitio real manda token fresco       |
+| `score < 0.5`            | tráfico sospechoso (automatización)                                                                    | probar a mano; ajustar `CAPTCHA_MIN_SCORE` si hay falsos positivos |
+
+Secreto legacy de la clave Enterprise (lo que debe estar en
+`STAGING_RECAPTCHA_SECRET_KEY` / `RECAPTCHA_SECRET_KEY` del repo). Solo
+el owner; no lo pegues en ningún sitio:
+
+```bash
+TOKEN=$(gcloud auth print-access-token)
+LEGACY=$(curl -sS -H "Authorization: Bearer $TOKEN" -H "x-goog-user-project: secid-org" \
+  "https://recaptchaenterprise.googleapis.com/v1/projects/secid-org/keys/6Lf0GPssAAAAAMXkNpzJDzISkep0YRM14GmKCPSB:retrieveLegacySecretKey" \
+  | python3 -c "import json,sys; print(json.load(sys.stdin)['legacySecretKey'])")
+# ¿coincide con lo desplegado?
+DEPLOYED=$(gcloud run services describe sendcontactmessage --region us-central1 --project secid-org --format=json \
+  | python3 -c "import json,sys; d=json.load(sys.stdin); print(next(e['value'] for e in d['spec']['template']['spec']['containers'][0]['env'] if e['name']=='RECAPTCHA_SECRET_KEY'))")
+[ "$LEGACY" = "$DEPLOYED" ] && echo IGUALES || echo DIFERENTES
+# si DIFERENTES:
+gh secret set STAGING_RECAPTCHA_SECRET_KEY --body "$LEGACY"
+gh run rerun $(gh run list --workflow cd.yml --limit 1 --json databaseId -q '.[0].databaseId')   # redespliega functions con el secret nuevo
+```
 
 ## 2. Merge a `main`
 
