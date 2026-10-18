@@ -36,6 +36,10 @@ on:
         description: 'Set BACKEND_DEPLOYED_FROM_MAIN=true (hand the shared backend to main). Do this BEFORE merging the promotion PR.'
         type: boolean
         default: false
+      recaptcha_key:
+        description: 'reCAPTCHA Enterprise key id whose allowed domains must include the site and custom domains (empty = skip)'
+        required: false
+        default: '6Lf0GPssAAAAAMXkNpzJDzISkep0YRM14GmKCPSB'
 
 concurrency:
   group: production-cutover
@@ -116,6 +120,46 @@ jobs:
             echo "Firebase Console → Authentication → Settings → Authorized domains → add:"
             echo "- \`$SITE_ID.web.app\`"
             echo "- \`${{ inputs.custom_domains }}\` (each one)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ── 2b. reCAPTCHA Enterprise allowed domains ─────────────────────────
+      # The public forms verify reCAPTCHA v3 server-side; Google only issues
+      # valid tokens on domains registered on the key. Without the prod
+      # domain every contact/newsletter submit is `400 captcha_failed`
+      # (siteverify → browser-error). Merges into the current list.
+      - name: Set up gcloud
+        if: inputs.recaptcha_key != ''
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Add the site and custom domains to the reCAPTCHA key
+        id: recaptcha
+        if: inputs.recaptcha_key != ''
+        continue-on-error: true
+        env:
+          KEY: ${{ inputs.recaptcha_key }}
+          DOMAINS: ${{ inputs.custom_domains }}
+        run: |
+          set -o pipefail
+          current=$(gcloud recaptcha keys describe "$KEY" --project "$PROJECT_ID" \
+            --format='value(webSettings.allowedDomains)' | tr ';' '\n')
+          wanted=$(printf '%s\n' "$SITE_ID.web.app" $(echo "$DOMAINS" | tr ',' ' '))
+          merged=$(printf '%s\n%s\n' "$current" "$wanted" | sed '/^\s*$/d' | sort -u | paste -sd, -)
+          echo "reCAPTCHA domains → $merged"
+          gcloud recaptcha keys update "$KEY" --project "$PROJECT_ID" --domains="$merged" \
+            --format='value(webSettings.allowedDomains)'
+          echo "### reCAPTCHA key domains" >> "$GITHUB_STEP_SUMMARY"
+          echo "- $merged" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Manual fallback for reCAPTCHA domains
+        if: inputs.recaptcha_key != '' && steps.recaptcha.outcome == 'failure'
+        run: |
+          echo "::warning::Could not update the reCAPTCHA key domains from CI (service account lacks recaptchaenterprise.admin?)."
+          {
+            echo "### reCAPTCHA key domains — MANUAL"
+            echo '```'
+            echo "gcloud recaptcha keys update ${{ inputs.recaptcha_key }} --project $PROJECT_ID --domains=$SITE_ID.web.app,${{ inputs.custom_domains }},beta.secid.mx,localhost"
+            echo '```'
+            echo "Runbook: docs/runbooks/prod-cutover.md §1b"
           } >> "$GITHUB_STEP_SUMMARY"
 
       # ── 3. Custom domains + DNS records ──────────────────────────────────
