@@ -181,6 +181,33 @@ export interface Translations {
       googleSignIn: string;
       button: string;
     };
+    action: {
+      loading: string;
+      errorTitle: string;
+      requestNew: string;
+      goToLogin: string;
+      resetTitle: string;
+      resetSubtitle: string;
+      newPassword: string;
+      confirmPassword: string;
+      passwordHint: string;
+      submit: string;
+      resetSuccessTitle: string;
+      resetSuccessBody: string;
+      verifySuccessTitle: string;
+      verifySuccessBody: string;
+      recoverSuccessTitle: string;
+      recoverSuccessBody: string;
+      recoverHint: string;
+      errors: {
+        missing: string;
+        passwordTooShort: string;
+        passwordNeedsUppercase: string;
+        passwordNeedsNumber: string;
+        passwordsMismatch: string;
+        generic: string;
+      };
+    };
     or: string;
     acceptTerms: {
       prefix: string;

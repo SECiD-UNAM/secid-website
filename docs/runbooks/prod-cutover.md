@@ -109,6 +109,29 @@ y repite login + registro sobre `https://secid.mx`.
 
 ## 5. Después (1–2 semanas)
 
+### 5.1 URL de acción de Firebase Auth (correos de contraseña/verificación)
+
+Los correos de restablecer contraseña, verificar email y revertir cambio de
+email abren por defecto `https://secid-org.firebaseapp.com/__/auth/action`.
+El sitio ya sirve una página con marca e idioma en `/es/auth/action` y
+`/en/auth/action` (issue #79). Hazlo **después** del corte de DNS (paso 4)
+para que el enlace sea `secid.mx` y no `secid-mx.web.app`:
+
+1. Firebase Console → **Authentication → Templates** → cualquier plantilla →
+   lápiz → **Customize action URL** → `https://secid.mx/es/auth/action` →
+   Save. Aplica a todas las plantillas a la vez; Firebase conserva los
+   parámetros `mode`, `oobCode`, `continueUrl` y `lang`.
+2. Comprueba con "¿Olvidaste tu contraseña?" en `https://secid.mx/es/login`:
+   el enlace del correo debe abrir la página de SECiD, no la de Firebase.
+
+Por API (mismo patrón que `cutover.yml` usa para `authorizedDomains`), el
+campo de Identity Platform es `notification.sendEmail.callbackUri` en
+`projects.updateConfig` con `updateMask=notification.sendEmail.callbackUri`.
+
+Reversa: borrar el valor de "Customize action URL" vuelve a la página de
+Firebase; los enlaces ya enviados siguen funcionando porque el `oobCode` no
+depende de la URL.
+
 - GitHub → Settings → Pages: quitar el custom domain y desactivar Pages.
 - PR: quitar `public/CNAME`; en `cd.yml`, convertir el check de `secid.mx`
   del job `validate` en fallo duro (quitar el `|| echo ::warning`).
