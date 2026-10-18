@@ -26,8 +26,13 @@ gcloud services enable billingbudgets.googleapis.com --project secid-org
 ACC=$(gcloud billing projects describe secid-org --format='value(billingAccountName)' | sed 's#billingAccounts/##')
 gcloud billing budgets create --billing-account="$ACC" --display-name="secid-org monthly" \
   --budget-amount=20USD --threshold-rule=percent=0.5 --threshold-rule=percent=0.9 --threshold-rule=percent=1.0 \
-  --filter-projects=projects/secid-org
+  --filter-projects=projects/706604039024
 ```
+
+Ojo: `--filter-projects` necesita el **número** de proyecto
+(`gcloud projects describe secid-org --format='value(projectNumber)'`);
+con el id (`projects/secid-org`) la API responde `INVALID_ARGUMENT`
+(pasó el 2026-10-18).
 
 ## B. Notificaciones de la cuenta de facturación
 
