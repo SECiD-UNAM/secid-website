@@ -13,6 +13,7 @@ import {
   bulkUpdateMemberStatus,
 } from '@/lib/members';
 import type { MemberProfile, MemberStatus } from '@/types/member';
+import { parseStatusParam } from '@/lib/admin/members-filter';
 import type { VerificationStatus } from '@/types/user';
 import { PencilIcon } from '@heroicons/react/24/outline';
 import { db } from '@/lib/firebase';
@@ -241,8 +242,12 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
 
   /* ---- multiselect filter state (pill toggles, not managed by listing) ---- */
   const [roleFilter, setRoleFilter] = useState<Set<MemberRole>>(new Set());
-  const [statusFilter, setStatusFilter] = useState<Set<MemberStatus>>(
-    new Set()
+  // Honour `?status=pending` from the admin notification email (and any
+  // other deep link); SSR has no window, so fall back to no filter.
+  const [statusFilter, setStatusFilter] = useState<Set<MemberStatus>>(() =>
+    typeof window === 'undefined'
+      ? new Set()
+      : parseStatusParam(window.location.search)
   );
   const [verificationFilter, setVerificationFilter] = useState<
     Set<VerificationStatus>
