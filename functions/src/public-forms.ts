@@ -67,6 +67,7 @@ async function checkRateLimit(ip: string, endpoint: string): Promise<boolean> {
  * defense until CAPTCHA is wired up. The client can pass any value (or
  * none) in `captchaToken` for now.
  */
+const CAPTCHA_MIN_SCORE = 0.5;
 let captchaWarned = false;
 async function verifyCaptcha(token?: string): Promise<boolean> {
   const secret = process.env.RECAPTCHA_SECRET_KEY;
@@ -86,11 +87,29 @@ async function verifyCaptcha(token?: string): Promise<boolean> {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`,
     });
-    const data = (await res.json()) as { success?: boolean; score?: number };
+    const data = (await res.json()) as {
+      success?: boolean;
+      score?: number;
+      action?: string;
+      hostname?: string;
+      'error-codes'?: string[];
+    };
     // For v3, accept score >= 0.5. For v2, just check success.
-    if (data.success === false) return false;
-    if (typeof data.score === 'number' && data.score < 0.5) return false;
-    return true;
+    const ok =
+      data.success !== false &&
+      !(typeof data.score === 'number' && data.score < CAPTCHA_MIN_SCORE);
+    if (!ok) {
+      // Never the secret or the token: just what siteverify said, so a
+      // failing form in prod is diagnosable from the function logs.
+      console.warn('[public-forms] CAPTCHA rejected', {
+        success: data.success,
+        score: data.score,
+        action: data.action,
+        hostname: data.hostname,
+        errorCodes: data['error-codes'],
+      });
+    }
+    return ok;
   } catch (err) {
     console.error('[public-forms] CAPTCHA verify error:', err);
     return false;
