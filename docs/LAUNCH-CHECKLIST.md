@@ -90,7 +90,7 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [ ] Re-lanzar `Production Cutover` (mismos inputs): `hostState` debe llegar a `HOST_ACTIVE` para `secid.mx` y `www.secid.mx`
 - [ ] `scripts/ci/smoke-test.sh https://secid.mx https://us-central1-secid-org.cloudfunctions.net` pasa
 - [ ] Login y registro probados sobre `https://secid.mx`
-- [ ] (dev) PR: quitar el `|| echo ::warning` del check de `secid.mx` en `cd.yml` → `validate` falla si prod no sirve el build
+- [ ] (dev) PR: quitar el `|| echo ::warning` del check de `secid.mx` en `cd.yml` → `validate` falla si prod no sirve el build — listo en borrador: PR #76 (`fix/validate-secid-mx-hard`); marcar como ready y mergear solo cuando `hostState=HOST_ACTIVE`
 
 ## Fase 5: limpieza (1–2 semanas después) — runbook [prod-cutover §5](./runbooks/prod-cutover.md)
 
