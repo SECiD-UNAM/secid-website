@@ -87,11 +87,11 @@ Si se usa otro, reemplazarlo en todo el documento.
 ## Fase 4: DNS (owner, ~20 min + propagación) — runbook [prod-cutover §4](./runbooks/prod-cutover.md), reversa en [rollback §C](./runbooks/rollback.md)
 
 - [x] Registros DNS actuales (descubiertos por Firebase el 2026-10-18, plan de reversa): - `secid.mx` A → 185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153 (GitHub Pages) - `www.secid.mx` A → 104.21.28.15, 172.67.170.40 y AAAA → 2606:4700:3036::6815:1c0f, 2606:4700:3037::ac43:aa28 (IPs del proxy de Cloudflare; el origen real está detrás) - TXT que se conservan: `google-site-verification=vUD6e8cmWAEjaLUSYC3paK6QsCzsTBahTeGYBAVteos`, `v=spf1 include:_spf.google.com ~all`
-- [ ] Poner en Cloudflare, con proxy apagado (nube gris) hasta que Firebase emita el certificado: - `secid.mx`: quitar los 4 A de GitHub Pages; añadir A `199.36.158.100`; añadir TXT `hosting-site=secid-mx` - `www.secid.mx`: quitar A/AAAA; añadir CNAME → `secid-mx.web.app` - No tocar los TXT de verificación de Google ni el SPF
-- [ ] Re-lanzar `Production Cutover` (mismos inputs): `hostState` debe llegar a `HOST_ACTIVE` para `secid.mx` y `www.secid.mx`
-- [ ] `scripts/ci/smoke-test.sh https://secid.mx https://us-central1-secid-org.cloudfunctions.net` pasa
-- [ ] Login y registro probados sobre `https://secid.mx`
-- [ ] (dev) PR: quitar el `|| echo ::warning` del check de `secid.mx` en `cd.yml` → `validate` falla si prod no sirve el build — listo en borrador: PR #76 (`fix/validate-secid-mx-hard`); marcar como ready y mergear solo cuando `hostState=HOST_ACTIVE`
+- [x] Poner en Cloudflare, con proxy apagado (nube gris) hasta que Firebase emita el certificado — hecho 2026-10-18 ~06:00 UTC (primer intento en el panel del registrador no surtió efecto: los NS son de Cloudflare; `www` quedó un rato con proxy naranja y se corrigió a DNS only). Quedan 4 NS residuales `ns-cloud-a*.googledomains.com` en la raíz: borrar cuando se pueda: - `secid.mx`: quitar los 4 A de GitHub Pages; añadir A `199.36.158.100`; añadir TXT `hosting-site=secid-mx` - `www.secid.mx`: quitar A/AAAA; añadir CNAME → `secid-mx.web.app` - No tocar los TXT de verificación de Google ni el SPF
+- [x] `hostState=HOST_ACTIVE` y `ownershipState=OWNERSHIP_ACTIVE` para `secid.mx` y `www.secid.mx` (leído por API, 06:09 UTC); certificado emitido por Google Trust Services (notBefore 05:13 UTC, tipo TEMPORARY/CERT_PROPAGATING mientras llega el definitivo); `https://secid.mx` respondió 200 desde las 06:28 UTC
+- [x] `scripts/ci/smoke-test.sh https://secid.mx https://us-central1-secid-org.cloudfunctions.net` pasa — 2026-10-18 06:31 UTC; `secid.mx` y `www.secid.mx` sirven `build-sha=0475b38`
+- [ ] Login y registro probados sobre `https://secid.mx` (owner: login con Google y con email; el registro ya se probó en `secid-mx.web.app` con el mismo backend)
+- [ ] (dev) PR: quitar el `|| echo ::warning` del check de `secid.mx` en `cd.yml` → `validate` falla si prod no sirve el build — PR #76 (`fix/validate-secid-mx-hard`) marcado ready el 2026-10-18 tras HOST_ACTIVE; falta mergear
 
 ## Fase 5: limpieza (1–2 semanas después) — runbook [prod-cutover §5](./runbooks/prod-cutover.md)
 
