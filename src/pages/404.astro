@@ -1,0 +1,157 @@
+---
+import ModernLayout from '../layouts/ModernLayout.astro';
+import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<ModernLayout
+  title="Página no encontrada - SECiD"
+  description="La página que buscas no existe. Regresa al inicio o explora el directorio de miembros de SECiD."
+  lang="es"
+  noIndex={true}
+>
+  <Navigation lang="es" />
+
+  <section class="not-found-section">
+    <div class="secid-container">
+      <div class="not-found-content" data-locale="es">
+        <div class="not-found-code">404</div>
+
+        <h1 class="not-found-title">Página no encontrada</h1>
+
+        <p class="not-found-description">
+          Lo sentimos, la página que buscas no existe o ha sido movida. Verifica
+          la URL o regresa a un lugar conocido.
+        </p>
+
+        <div class="not-found-actions">
+          <a
+            href="/es/"
+            class="secid-button secid-button--primary secid-button--lg"
+          >
+            <i class="fas fa-home secid-button__icon"></i>
+            Ir al inicio
+          </a>
+          <a
+            href="/es/dashboard/members/"
+            class="secid-button secid-button--secondary secid-button--lg"
+          >
+            <i class="fas fa-users secid-button__icon"></i>
+            Directorio de miembros
+          </a>
+        </div>
+      </div>
+
+      <div class="not-found-content" data-locale="en" hidden>
+        <div class="not-found-code">404</div>
+
+        <h1 class="not-found-title">Page not found</h1>
+
+        <p class="not-found-description">
+          Sorry, the page you are looking for does not exist or has been moved.
+          Check the URL or go back to a familiar place.
+        </p>
+
+        <div class="not-found-actions">
+          <a
+            href="/en/"
+            class="secid-button secid-button--primary secid-button--lg"
+          >
+            <i class="fas fa-home secid-button__icon"></i>
+            Go to homepage
+          </a>
+          <a
+            href="/en/dashboard/members/"
+            class="secid-button secid-button--secondary secid-button--lg"
+          >
+            <i class="fas fa-users secid-button__icon"></i>
+            Member directory
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer lang="es" />
+</ModernLayout>
+
+<script is:inline>
+  // Show English copy when the missing URL is under the /en/ locale
+  (function () {
+    var path = window.location.pathname;
+    if (path === '/en' || path.indexOf('/en/') === 0) {
+      document.documentElement.lang = 'en';
+      document.title = 'Page Not Found - SECiD';
+      var es = document.querySelector('[data-locale="es"]');
+      var en = document.querySelector('[data-locale="en"]');
+      if (es) es.hidden = true;
+      if (en) en.hidden = false;
+    }
+  })();
+</script>
+
+<style>
+  .not-found-section {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    padding: 6rem 0;
+    background: var(--secid-gray-50, #f9fafb);
+  }
+
+  .not-found-content {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .not-found-code {
+    font-size: 8rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--secid-primary, #f65425);
+    margin-bottom: 1.5rem;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .not-found-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--secid-dark-blue, #1e3a5f);
+    margin-bottom: 1rem;
+  }
+
+  .not-found-description {
+    font-size: 1.125rem;
+    color: var(--secid-gray-600, #4b5563);
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+  }
+
+  .not-found-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  @media (max-width: 480px) {
+    .not-found-code {
+      font-size: 5rem;
+    }
+
+    .not-found-title {
+      font-size: 1.5rem;
+    }
+
+    .not-found-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .not-found-actions .secid-button {
+      width: 100%;
+      max-width: 280px;
+    }
+  }
+</style>

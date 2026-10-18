@@ -7,14 +7,8 @@
     },
     "standard": "WCAG2AA",
     "level": "error",
-    "reporters": [
-      "cli",
-      "json"
-    ],
-    "ignore": [
-      "color-contrast",
-      "notice"
-    ]
+    "reporters": ["cli", "json"],
+    "ignore": ["color-contrast", "notice"]
   },
   "urls": [
     "http://localhost:3000",

@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import JobDetailPage from '@/components/wrappers/JobDetailPage';
+---
+
+<DashboardLayout
+  title="Job Details - SECiD"
+  description="View details and apply to this job opportunity"
+  lang="en"
+>
+  <JobDetailPage client:only="react" lang="en" />
+</DashboardLayout>

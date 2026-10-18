@@ -1,0 +1,23 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import AssessmentHub from '@/components/assessment/AssessmentHub';
+---
+
+<DashboardLayout
+  title="Centro de Evaluaciones - SECiD"
+  description="Centro de Evaluaciones de Habilidades SECiD - Evalúa y certifica tus habilidades en ciencia de datos"
+  lang="es"
+>
+  <AssessmentHub
+    client:load
+    onStartAssessment={(assessmentId) => {
+      window.location.href = `/es/dashboard/assessments/${assessmentId}`;
+    }}
+    onViewHistory={() => {
+      window.location.href = '/es/dashboard/assessments/historial';
+    }}
+    onViewCertificates={() => {
+      window.location.href = '/es/dashboard/assessments/historial';
+    }}
+  />
+</DashboardLayout>

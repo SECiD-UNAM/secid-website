@@ -1,0 +1,12 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import EventDetailPage from '@/components/wrappers/EventDetailPage';
+---
+
+<DashboardLayout
+  title="Event Detail - SECiD"
+  description="View details and register for this event"
+  lang="en"
+>
+  <EventDetailPage client:only="react" lang="en" />
+</DashboardLayout>

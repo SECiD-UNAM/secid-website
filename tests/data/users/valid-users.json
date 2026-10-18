@@ -1,0 +1,57 @@
+{
+  "regularUser": {
+    "email": "test@secid.mx",
+    "password": "TestPassword123!",
+    "firstName": "Test",
+    "lastName": "User",
+    "graduationYear": 2020,
+    "specialization": "Machine Learning",
+    "role": "user"
+  },
+  "premiumUser": {
+    "email": "premium@secid.mx",
+    "password": "PremiumPassword123!",
+    "firstName": "Premium",
+    "lastName": "Member",
+    "graduationYear": 2019,
+    "specialization": "Data Engineering",
+    "role": "premium",
+    "subscription": {
+      "plan": "premium",
+      "status": "active"
+    }
+  },
+  "adminUser": {
+    "email": "admin@secid.mx",
+    "password": "AdminPassword123!",
+    "firstName": "Admin",
+    "lastName": "User",
+    "role": "admin",
+    "permissions": ["all"]
+  },
+  "companyUser": {
+    "email": "company@techcorp.mx",
+    "password": "CompanyPassword123!",
+    "companyName": "TechCorp México",
+    "contactName": "María García",
+    "role": "company",
+    "subscription": {
+      "plan": "corporate",
+      "jobSlots": 10
+    }
+  },
+  "mentorUser": {
+    "email": "mentor@secid.mx",
+    "password": "MentorPassword123!",
+    "firstName": "Carlos",
+    "lastName": "Mendoza",
+    "graduationYear": 2015,
+    "specialization": "Machine Learning",
+    "role": "mentor",
+    "mentorProfile": {
+      "expertise": ["Machine Learning", "Career Development"],
+      "yearsExperience": 8,
+      "rate": 800
+    }
+  }
+}

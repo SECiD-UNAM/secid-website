@@ -1,0 +1,73 @@
+---
+import type { CVData } from '@/types/cv';
+
+interface Props {
+  education: CVData['education'];
+  lang: 'es' | 'en';
+}
+
+const { education, lang } = Astro.props;
+
+const sectionTitle = lang === 'es' ? 'Educacion' : 'Education';
+const currentLabel = lang === 'es' ? 'Actual' : 'Current';
+const gpaLabel = 'GPA';
+---
+
+<section
+  id="education"
+  class="border-t border-gray-200 py-10 dark:border-gray-800"
+>
+  <h2 class="mb-8 text-2xl font-bold text-gray-900 dark:text-white">
+    {sectionTitle}
+  </h2>
+
+  <div class="space-y-0">
+    {
+      education.map((edu) => (
+        <div class="border-b border-gray-100 py-5 last:border-b-0 dark:border-gray-800/50">
+          <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                {edu.degree}
+              </h3>
+              <p class="font-medium text-primary-600 dark:text-primary-400">
+                {edu.institution}
+              </p>
+              {edu.fieldOfStudy && (
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  {edu.fieldOfStudy}
+                </p>
+              )}
+            </div>
+
+            <div class="flex flex-shrink-0 items-center gap-2">
+              <span class="whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                {edu.startDate} &ndash; {edu.endDate || currentLabel}
+              </span>
+              {edu.current && (
+                <span class="inline-flex items-center rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400">
+                  {currentLabel}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {edu.gpa != null && (
+            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              <span class="font-medium text-gray-700 dark:text-gray-300">
+                {gpaLabel}:
+              </span>{' '}
+              {edu.gpa}
+            </p>
+          )}
+
+          {edu.description && (
+            <p class="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+              {edu.description}
+            </p>
+          )}
+        </div>
+      ))
+    }
+  </div>
+</section>

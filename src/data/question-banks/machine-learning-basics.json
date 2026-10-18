@@ -1,0 +1,389 @@
+{
+  "id": "machine_learning_basics_bank",
+  "name": "Machine Learning Fundamentals Question Bank",
+  "description": "Questions covering fundamental machine learning concepts including supervised/unsupervised learning, algorithms, evaluation metrics, and practical applications.",
+  "category": "machine_learning",
+  "language": "es",
+  "version": "1.0",
+  "created_at": "2024-01-01",
+  "questions": [
+    {
+      "id": "ml_basic_001",
+      "type": "single_choice",
+      "category": "machine_learning",
+      "difficulty": "beginner",
+      "title": "Tipos de Aprendizaje Automático",
+      "description": "¿Cuál es la principal diferencia entre aprendizaje supervisado y no supervisado?",
+      "points": 10,
+      "timeLimit": 90,
+      "options": [
+        {
+          "id": "a",
+          "text": "El supervisado usa más datos que el no supervisado",
+          "isCorrect": false,
+          "explanation": "La cantidad de datos no es la diferencia principal."
+        },
+        {
+          "id": "b",
+          "text": "El supervisado tiene etiquetas conocidas, el no supervisado no",
+          "isCorrect": true,
+          "explanation": "El aprendizaje supervisado usa datos etiquetados para entrenar, mientras que el no supervisado encuentra patrones en datos sin etiquetas."
+        },
+        {
+          "id": "c",
+          "text": "El no supervisado es más preciso que el supervisado",
+          "isCorrect": false,
+          "explanation": "La precisión depende del problema y los datos, no del tipo de aprendizaje."
+        },
+        {
+          "id": "d",
+          "text": "Solo el supervisado puede hacer predicciones",
+          "isCorrect": false,
+          "explanation": "Ambos tipos pueden hacer predicciones, pero de manera diferente."
+        }
+      ],
+      "explanation": "La diferencia clave es que el aprendizaje supervisado utiliza datos con etiquetas conocidas para entrenar el modelo, mientras que el no supervisado encuentra patrones ocultos en datos sin etiquetas.",
+      "resources": [
+        {
+          "title": "Introduction to Machine Learning",
+          "url": "https://scikit-learn.org/stable/tutorial/basic/tutorial.html",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["supervisado", "no-supervisado", "conceptos-basicos"]
+    },
+    {
+      "id": "ml_basic_002",
+      "type": "multiple_choice",
+      "category": "machine_learning",
+      "difficulty": "intermediate",
+      "title": "Algoritmos de Clasificación",
+      "description": "¿Cuáles de los siguientes son algoritmos de clasificación? (Selecciona todos los correctos)",
+      "points": 15,
+      "timeLimit": 120,
+      "options": [
+        {
+          "id": "a",
+          "text": "Random Forest",
+          "isCorrect": true,
+          "explanation": "Random Forest es un algoritmo de clasificación basado en múltiples árboles de decisión."
+        },
+        {
+          "id": "b",
+          "text": "K-Means",
+          "isCorrect": false,
+          "explanation": "K-Means es un algoritmo de clustering (no supervisado), no de clasificación."
+        },
+        {
+          "id": "c",
+          "text": "Logistic Regression",
+          "isCorrect": true,
+          "explanation": "La regresión logística se usa para problemas de clasificación binaria y multiclase."
+        },
+        {
+          "id": "d",
+          "text": "Support Vector Machine (SVM)",
+          "isCorrect": true,
+          "explanation": "SVM puede usarse tanto para clasificación como para regresión."
+        },
+        {
+          "id": "e",
+          "text": "Linear Regression",
+          "isCorrect": false,
+          "explanation": "La regresión lineal es para predecir valores continuos, no para clasificación."
+        }
+      ],
+      "explanation": "Los algoritmos de clasificación predicen categorías o clases discretas. Random Forest, Logistic Regression y SVM son algoritmos de clasificación.",
+      "resources": [
+        {
+          "title": "Classification Algorithms",
+          "url": "https://scikit-learn.org/stable/supervised_learning.html#classification",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["clasificacion", "random-forest", "svm", "logistic-regression"]
+    },
+    {
+      "id": "ml_basic_003",
+      "type": "true_false",
+      "category": "machine_learning",
+      "difficulty": "beginner",
+      "title": "Overfitting",
+      "description": "El overfitting ocurre cuando un modelo funciona bien en datos de entrenamiento pero mal en datos nuevos.",
+      "points": 8,
+      "timeLimit": 45,
+      "correctAnswer": true,
+      "explanation": "Correcto. El overfitting es cuando el modelo memoriza los datos de entrenamiento pero no generaliza bien a datos nuevos.",
+      "resources": [
+        {
+          "title": "Overfitting and Underfitting",
+          "url": "https://scikit-learn.org/stable/auto_examples/model_selection/plot_underfitting_overfitting.html",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["overfitting", "generalizacion", "validacion"]
+    },
+    {
+      "id": "ml_basic_004",
+      "type": "coding_challenge",
+      "category": "machine_learning",
+      "difficulty": "intermediate",
+      "title": "Evaluación de Modelo",
+      "description": "Escribe código Python para calcular la precisión (accuracy) de un modelo de clasificación dados los valores reales y predichos.",
+      "points": 20,
+      "timeLimit": 240,
+      "codingChallenge": {
+        "starterCode": "def calculate_accuracy(y_true, y_pred):\n    \"\"\"\n    Calcula la precisión de clasificación\n    \n    Args:\n        y_true (list): Valores reales\n        y_pred (list): Valores predichos\n    \n    Returns:\n        float: Precisión (accuracy) entre 0 y 1\n    \"\"\"\n    # Tu código aquí\n    pass",
+        "language": "python",
+        "testCases": [
+          {
+            "input": "y_true=[1,0,1,1,0], y_pred=[1,0,1,0,0]",
+            "expectedOutput": 0.8,
+            "description": "Accuracy = 4/5 = 0.8",
+            "isVisible": true
+          },
+          {
+            "input": "y_true=[1,1,1], y_pred=[1,1,1]",
+            "expectedOutput": 1.0,
+            "description": "Predicciones perfectas",
+            "isVisible": true
+          }
+        ],
+        "timeLimit": 4
+      },
+      "explanation": "Accuracy = (predicciones correctas) / (total de predicciones). Código: return sum(a == b for a, b in zip(y_true, y_pred)) / len(y_true)",
+      "resources": [
+        {
+          "title": "Classification Metrics",
+          "url": "https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["accuracy", "metricas", "evaluacion", "clasificacion"]
+    },
+    {
+      "id": "ml_basic_005",
+      "type": "single_choice",
+      "category": "machine_learning",
+      "difficulty": "intermediate",
+      "title": "Train-Validation-Test Split",
+      "description": "¿Cuál es el propósito principal del conjunto de validación en machine learning?",
+      "points": 12,
+      "timeLimit": 90,
+      "options": [
+        {
+          "id": "a",
+          "text": "Entrenar el modelo final",
+          "isCorrect": false,
+          "explanation": "El conjunto de entrenamiento se usa para entrenar el modelo."
+        },
+        {
+          "id": "b",
+          "text": "Ajustar hiperparámetros y seleccionar modelos",
+          "isCorrect": true,
+          "explanation": "El conjunto de validación se usa para tuning de hiperparámetros y selección de modelos sin contaminar el test set."
+        },
+        {
+          "id": "c",
+          "text": "Evaluar el rendimiento final del modelo",
+          "isCorrect": false,
+          "explanation": "El conjunto de test se usa para la evaluación final."
+        },
+        {
+          "id": "d",
+          "text": "Aumentar la cantidad de datos de entrenamiento",
+          "isCorrect": false,
+          "explanation": "El conjunto de validación no se combina con el entrenamiento."
+        }
+      ],
+      "explanation": "El conjunto de validación permite ajustar hiperparámetros y seleccionar el mejor modelo sin usar el conjunto de test, evitando data leakage.",
+      "resources": [
+        {
+          "title": "Train-Validation-Test Split",
+          "url": "https://scikit-learn.org/stable/modules/cross_validation.html",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["train-test-split", "validacion", "hiperparametros"]
+    },
+    {
+      "id": "ml_basic_006",
+      "type": "fill_blank",
+      "category": "machine_learning",
+      "difficulty": "beginner",
+      "title": "Métricas de Evaluación",
+      "description": "Completa: En un problema de clasificación binaria, _____ mide la proporción de positivos reales que fueron correctamente identificados.",
+      "points": 10,
+      "timeLimit": 60,
+      "fillBlanks": ["recall", "sensibilidad", "sensitivity"],
+      "explanation": "Recall (o sensibilidad) = TP / (TP + FN), donde TP son verdaderos positivos y FN son falsos negativos.",
+      "resources": [
+        {
+          "title": "Precision and Recall",
+          "url": "https://scikit-learn.org/stable/auto_examples/model_selection/plot_precision_recall.html",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["recall", "precision", "metricas-binarias"]
+    },
+    {
+      "id": "ml_basic_007",
+      "type": "practical_scenario",
+      "category": "machine_learning",
+      "difficulty": "advanced",
+      "title": "Selección de Algoritmo",
+      "description": "Tienes un dataset con 100,000 muestras, 50 features, y quieres predecir si un email es spam (clasificación binaria). Los datos están balanceados y la interpretabilidad es importante. ¿Qué algoritmos considerarías y por qué?",
+      "points": 25,
+      "timeLimit": 300,
+      "requiresPeerReview": true,
+      "reviewCriteria": [
+        "Comprensión del problema",
+        "Justificación de algoritmos propuestos",
+        "Consideración de interpretabilidad",
+        "Manejo de datasets grandes"
+      ],
+      "explanation": "Para este caso consideraría: Logistic Regression (interpretable, eficiente), Random Forest (buen rendimiento, feature importance), y SVM con kernel lineal (eficiente para datasets grandes). Evitaría modelos muy complejos como deep learning por el requisito de interpretabilidad.",
+      "resources": [
+        {
+          "title": "Choosing the Right Algorithm",
+          "url": "https://scikit-learn.org/stable/tutorial/machine_learning_map/index.html",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["seleccion-algoritmo", "spam-detection", "interpretabilidad"]
+    },
+    {
+      "id": "ml_basic_008",
+      "type": "multiple_choice",
+      "category": "machine_learning",
+      "difficulty": "intermediate",
+      "title": "Feature Engineering",
+      "description": "¿Cuáles de las siguientes son técnicas de feature engineering? (Selecciona todas las correctas)",
+      "points": 18,
+      "timeLimit": 120,
+      "options": [
+        {
+          "id": "a",
+          "text": "One-hot encoding",
+          "isCorrect": true,
+          "explanation": "Convierte variables categóricas en vectores binarios."
+        },
+        {
+          "id": "b",
+          "text": "Feature scaling/normalization",
+          "isCorrect": true,
+          "explanation": "Escala las features a rangos similares para mejorar el rendimiento."
+        },
+        {
+          "id": "c",
+          "text": "Cross-validation",
+          "isCorrect": false,
+          "explanation": "Cross-validation es una técnica de evaluación, no de feature engineering."
+        },
+        {
+          "id": "d",
+          "text": "Principal Component Analysis (PCA)",
+          "isCorrect": true,
+          "explanation": "PCA reduce la dimensionalidad creando nuevas features."
+        },
+        {
+          "id": "e",
+          "text": "Feature selection",
+          "isCorrect": true,
+          "explanation": "Selecciona las features más relevantes para el modelo."
+        }
+      ],
+      "explanation": "Feature engineering incluye transformaciones de datos como encoding, scaling, reducción de dimensionalidad y selección de features.",
+      "resources": [
+        {
+          "title": "Feature Engineering Guide",
+          "url": "https://scikit-learn.org/stable/modules/preprocessing.html",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["feature-engineering", "preprocessing", "encoding", "scaling"]
+    },
+    {
+      "id": "ml_basic_009",
+      "type": "coding_challenge",
+      "category": "machine_learning",
+      "difficulty": "advanced",
+      "title": "Cross-Validation",
+      "description": "Implementa k-fold cross-validation para evaluar un modelo. Divide los datos en k folds y retorna las métricas de cada fold.",
+      "points": 30,
+      "timeLimit": 360,
+      "codingChallenge": {
+        "starterCode": "def k_fold_cross_validation(X, y, model, k=5):\n    \"\"\"\n    Implementa k-fold cross validation\n    \n    Args:\n        X: Features (array-like)\n        y: Target (array-like) \n        model: Modelo de ML con métodos fit() y predict()\n        k: Número de folds\n    \n    Returns:\n        list: Accuracy de cada fold\n    \"\"\"\n    # Tu código aquí\n    pass",
+        "language": "python",
+        "testCases": [
+          {
+            "input": "Datos simples con 10 muestras, k=5",
+            "expectedOutput": "Lista con 5 valores de accuracy",
+            "description": "Implementación correcta de k-fold CV",
+            "isVisible": true
+          }
+        ],
+        "timeLimit": 6
+      },
+      "explanation": "Divide los datos en k partes, entrena en k-1 y evalúa en 1, repite k veces. Usar numpy.array_split() para dividir los datos.",
+      "resources": [
+        {
+          "title": "Cross-Validation",
+          "url": "https://scikit-learn.org/stable/modules/cross_validation.html",
+          "type": "documentation"
+        }
+      ],
+      "tags": ["cross-validation", "k-fold", "evaluacion", "validacion"]
+    },
+    {
+      "id": "ml_basic_010",
+      "type": "single_choice",
+      "category": "machine_learning",
+      "difficulty": "intermediate",
+      "title": "Bias-Variance Tradeoff",
+      "description": "¿Qué sucede cuando un modelo tiene alto bias y baja variance?",
+      "points": 15,
+      "timeLimit": 90,
+      "options": [
+        {
+          "id": "a",
+          "text": "El modelo está overfitting",
+          "isCorrect": false,
+          "explanation": "Alto bias y baja variance indica underfitting, no overfitting."
+        },
+        {
+          "id": "b",
+          "text": "El modelo está underfitting",
+          "isCorrect": true,
+          "explanation": "Alto bias indica que el modelo es demasiado simple y no captura la complejidad de los datos (underfitting)."
+        },
+        {
+          "id": "c",
+          "text": "El modelo está perfectamente balanceado",
+          "isCorrect": false,
+          "explanation": "Un modelo balanceado tendría bias y variance moderados."
+        },
+        {
+          "id": "d",
+          "text": "El modelo es impredecible",
+          "isCorrect": false,
+          "explanation": "Baja variance significa que el modelo es consistente, no impredecible."
+        }
+      ],
+      "explanation": "Alto bias significa que el modelo hace suposiciones demasiado simplificadas y no captura patrones importantes (underfitting). Baja variance significa consistencia en las predicciones.",
+      "resources": [
+        {
+          "title": "Bias-Variance Tradeoff",
+          "url": "https://scott.fortmann-roe.com/docs/BiasVariance.html",
+          "type": "article"
+        }
+      ],
+      "tags": [
+        "bias-variance",
+        "underfitting",
+        "overfitting",
+        "model-complexity"
+      ]
+    }
+  ]
+}

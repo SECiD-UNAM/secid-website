@@ -1,0 +1,120 @@
+<h2>Approach B — Interactive Network Map</h2>
+<p class="subtitle">Visual graph showing companies connected to members, with timeline slider</p>
+
+<div class="mockup">
+  <div class="mockup-header">Preview: /es/dashboard/network (Graph View)</div>
+  <div class="mockup-body" style="padding: 0; background: #0f172a; min-height: 600px; position: relative; overflow: hidden;">
+
+    <!-- Top bar -->
+    <div style="padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b;">
+      <div>
+        <h3 style="margin: 0; font-size: 18px; color: #f1f5f9;">Red de Empresas SECiD</h3>
+        <p style="margin: 2px 0 0; font-size: 12px; color: #64748b;">20 empresas · 29 miembros · 45 conexiones</p>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <div style="padding: 6px 14px; background: #1e293b; border: 1px solid #334155; border-radius: 6px; font-size: 12px; color: #94a3b8; cursor: pointer;">🔍 Buscar</div>
+        <div style="padding: 6px 14px; background: #3b82f6; border-radius: 6px; font-size: 12px; color: white; cursor: pointer;">📊 Vista Lista</div>
+      </div>
+    </div>
+
+    <!-- Graph area -->
+    <div style="position: relative; height: 440px;">
+      <!-- SVG-like network visualization -->
+      <svg width="100%" height="100%" style="position: absolute; top: 0; left: 0;">
+        <!-- Connection lines -->
+        <line x1="300" y1="200" x2="180" y2="120" stroke="#334155" stroke-width="1.5" opacity="0.6"/>
+        <line x1="300" y1="200" x2="420" y2="100" stroke="#334155" stroke-width="1.5" opacity="0.6"/>
+        <line x1="300" y1="200" x2="150" y2="280" stroke="#334155" stroke-width="1.5" opacity="0.6"/>
+        <line x1="300" y1="200" x2="500" y2="250" stroke="#334155" stroke-width="1.5" opacity="0.6"/>
+        <line x1="300" y1="200" x2="350" y2="340" stroke="#334155" stroke-width="1.5" opacity="0.6"/>
+
+        <line x1="600" y1="180" x2="500" y2="250" stroke="#334155" stroke-width="1.5" opacity="0.6"/>
+        <line x1="600" y1="180" x2="700" y2="120" stroke="#334155" stroke-width="1.5" opacity="0.6"/>
+        <line x1="600" y1="180" x2="720" y2="280" stroke="#334155" stroke-width="1.5" opacity="0.6"/>
+
+        <line x1="180" y1="120" x2="100" y2="60" stroke="#334155" stroke-width="1" opacity="0.4"/>
+        <line x1="180" y1="120" x2="250" y2="50" stroke="#334155" stroke-width="1" opacity="0.4"/>
+
+        <line x1="420" y1="100" x2="500" y2="250" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4" opacity="0.4"/>
+
+        <!-- Company nodes (larger) -->
+        <circle cx="300" cy="200" r="32" fill="#1e40af" stroke="#3b82f6" stroke-width="2"/>
+        <text x="300" y="205" text-anchor="middle" fill="white" font-size="11" font-weight="bold">BBVA</text>
+
+        <circle cx="600" cy="180" r="28" fill="#059669" stroke="#10b981" stroke-width="2"/>
+        <text x="600" y="185" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Microsoft</text>
+
+        <circle cx="420" cy="100" r="24" fill="#dc2626" stroke="#ef4444" stroke-width="2"/>
+        <text x="420" y="105" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Uber</text>
+
+        <circle cx="150" cy="280" r="22" fill="#7c3aed" stroke="#8b5cf6" stroke-width="2"/>
+        <text x="150" y="285" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Algorithmia</text>
+
+        <circle cx="700" cy="120" r="20" fill="#ea580c" stroke="#f97316" stroke-width="2"/>
+        <text x="700" y="125" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Banorte</text>
+
+        <circle cx="350" cy="340" r="20" fill="#0891b2" stroke="#06b6d4" stroke-width="2"/>
+        <text x="350" y="345" text-anchor="middle" fill="white" font-size="9" font-weight="bold">NielsenIQ</text>
+
+        <circle cx="720" cy="280" r="18" fill="#c026d3" stroke="#d946ef" stroke-width="2"/>
+        <text x="720" y="285" text-anchor="middle" fill="white" font-size="8" font-weight="bold">Oracle</text>
+
+        <!-- Member nodes (smaller) -->
+        <circle cx="180" cy="120" r="14" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/>
+        <text x="180" y="124" text-anchor="middle" fill="#e2e8f0" font-size="7" font-weight="600">EG</text>
+
+        <circle cx="500" cy="250" r="14" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="500" y="254" text-anchor="middle" fill="#e2e8f0" font-size="7" font-weight="600">AP</text>
+
+        <circle cx="100" cy="60" r="12" fill="#1e293b" stroke="#64748b" stroke-width="1"/>
+        <text x="100" y="64" text-anchor="middle" fill="#94a3b8" font-size="7">IP</text>
+
+        <circle cx="250" cy="50" r="12" fill="#1e293b" stroke="#64748b" stroke-width="1"/>
+        <text x="250" y="54" text-anchor="middle" fill="#94a3b8" font-size="7">IC</text>
+      </svg>
+
+      <!-- Hover tooltip -->
+      <div style="position: absolute; top: 150px; left: 460px; background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 12px 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); min-width: 200px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: #f59e0b; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 600;">AP</div>
+          <div>
+            <div style="font-weight: 600; font-size: 13px; color: #f1f5f9;">Artemio Padilla</div>
+            <div style="font-size: 11px; color: #94a3b8;">Deep Learning Architect</div>
+          </div>
+        </div>
+        <div style="font-size: 11px; color: #94a3b8; border-top: 1px solid #334155; padding-top: 8px;">
+          <div>🏢 AWS (actual)</div>
+          <div style="color: #64748b;">📋 Círculo de Crédito (2022-2025)</div>
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <span style="padding: 3px 8px; background: #0f172a; border: 1px solid #334155; border-radius: 4px; font-size: 10px; color: #94a3b8; cursor: pointer;">in LinkedIn</span>
+          <span style="padding: 3px 8px; background: #1e3a5f; border-radius: 4px; font-size: 10px; color: #93c5fd; cursor: pointer;">📞 Referencia</span>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div style="position: absolute; bottom: 12px; left: 20px; background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 10px 14px; font-size: 11px; color: #94a3b8;">
+        <div style="display: flex; gap: 16px;">
+          <span>● Empresa</span>
+          <span>○ Miembro</span>
+          <span style="color: #ef4444;">--- Cambió de empresa</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline slider -->
+    <div style="padding: 12px 24px; background: #1e293b; border-top: 1px solid #334155;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 11px; color: #64748b;">2019</span>
+        <div style="flex: 1; height: 4px; background: #334155; border-radius: 2px; position: relative;">
+          <div style="width: 85%; height: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6); border-radius: 2px;"></div>
+          <div style="position: absolute; right: 15%; top: -6px; width: 16px; height: 16px; background: #8b5cf6; border: 2px solid #c4b5fd; border-radius: 50%; cursor: pointer;"></div>
+        </div>
+        <span style="font-size: 11px; color: #e2e8f0; font-weight: 600;">2026</span>
+      </div>
+      <p style="margin: 4px 0 0; font-size: 11px; color: #64748b; text-align: center;">Desliza para ver cómo ha evolucionado la red</p>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top: 1.5rem;">Approach B: Dark-themed interactive network graph with hover tooltips and timeline slider</p>

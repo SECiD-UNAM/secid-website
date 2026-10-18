@@ -1,0 +1,119 @@
+---
+import ModernLayout from '../../layouts/ModernLayout.astro';
+import Navigation from '../../components/Navigation.astro';
+import Footer from '../../components/Footer.astro';
+import EventListPage from '../../components/wrappers/EventListPage';
+import { getTranslations } from '../../i18n/translations';
+
+const t = getTranslations('es');
+---
+
+<ModernLayout
+  title="Eventos - SECiD"
+  description="Eventos, talleres y webinars para profesionales en ciencia de datos"
+  lang="es"
+>
+  <Navigation lang="es" />
+
+  <main>
+    <!-- Hero Section -->
+    <section class="secid-hero secid-hero--secondary">
+      <div class="secid-hero__container">
+        <div class="secid-hero__content">
+          <h1 class="secid-hero__title">Eventos SECiD</h1>
+          <p class="secid-hero__subtitle">
+            Conecta, aprende y crece con la comunidad de ciencia de datos
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Event List -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <EventListPage client:load lang="es" />
+      </div>
+    </section>
+
+    <!-- Event Registration CTA -->
+    <section class="secid-section">
+      <div class="secid-container">
+        <div class="secid-events__cta">
+          <div class="secid-events__cta-content">
+            <i class="fas fa-microphone-alt secid-events__cta-icon"></i>
+            <h2 class="secid-events__cta-title">
+              ¿Quieres proponer un evento?
+            </h2>
+            <p class="secid-events__cta-description">
+              Si tienes una idea para un taller, webinar o evento de networking,
+              nos encantaría escucharla
+            </p>
+            <div class="secid-events__cta-actions">
+              <a
+                href="/es/dashboard/events/new"
+                class="secid-button secid-button--primary secid-button--lg"
+              >
+                <i class="fas fa-plus"></i>
+                Proponer Evento
+              </a>
+              <a
+                href="/es/dashboard/events"
+                class="secid-button secid-button--outline secid-button--lg"
+              >
+                <i class="fas fa-calendar"></i>
+                Ver Calendario Completo
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer lang="es" />
+</ModernLayout>
+
+<style>
+  /* Events CTA */
+  .secid-events__cta {
+    text-align: center;
+    padding: var(--space-3xl);
+    background: linear-gradient(
+      135deg,
+      var(--secid-secondary),
+      var(--secid-secondary-dark)
+    );
+    border-radius: var(--radius-xl);
+    color: white;
+  }
+
+  .secid-events__cta-icon {
+    font-size: 3rem;
+    margin-bottom: var(--space-lg);
+  }
+
+  .secid-events__cta-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .secid-events__cta-description {
+    font-size: 1.125rem;
+    margin: 0 0 var(--space-xl) 0;
+    opacity: 0.95;
+  }
+
+  .secid-events__cta-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .secid-events__cta-actions {
+      flex-direction: column;
+    }
+  }
+</style>

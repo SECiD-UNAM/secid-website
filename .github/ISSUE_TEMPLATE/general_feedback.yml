@@ -1,7 +1,7 @@
 name: "\U0001F4AC General Feedback"
 description: Share your thoughts, questions, or suggestions
-title: "[Feedback]: "
-labels: ["feedback", "triage"]
+title: '[Feedback]: '
+labels: ['feedback', 'triage']
 body:
   - type: markdown
     attributes:
@@ -14,9 +14,9 @@ body:
       label: Environment
       description: Which version of the site is this about?
       options:
-        - "Beta (beta.secid.mx) — pre-release"
-        - "Production (secid.org) — stable release"
-        - "Both / Not sure"
+        - 'Beta (beta.secid.mx) — pre-release'
+        - 'Production (secid.org) — stable release'
+        - 'Both / Not sure'
     validations:
       required: true
 
