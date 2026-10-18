@@ -28,6 +28,51 @@ describe('mapUserDocToMemberProfile', () => {
     vi.restoreAllMocks();
   });
 
+  describe('admin status fields (TC-mapper-020..022)', () => {
+    it('TC-mapper-020: copies lifecycle with Firestore Timestamps converted to Date', () => {
+      /** Verifies: admin table shows the real lifecycle status, not the 'pending' fallback */
+      const changedAt = new Date('2026-09-22T10:00:00Z');
+      const lastActive = new Date('2026-10-01T10:00:00Z');
+      const doc = createFirestoreDoc({
+        lifecycle: {
+          status: 'active',
+          statusChangedAt: { toDate: () => changedAt },
+          statusChangedBy: 'admin-uid',
+          statusHistory: [],
+          lastActiveDate: { toDate: () => lastActive },
+        },
+      });
+
+      const result = mapUserDocToMemberProfile('uid-020', doc);
+
+      expect(result.lifecycle?.status).toBe('active');
+      expect(result.lifecycle?.statusChangedAt).toEqual(changedAt);
+      expect(result.lifecycle?.lastActiveDate).toEqual(lastActive);
+      expect(result.lifecycle?.statusChangedBy).toBe('admin-uid');
+    });
+
+    it('TC-mapper-021: copies verificationStatus and isVerified', () => {
+      /** Verifies: admin table shows 'Aprobado' instead of the 'none' fallback */
+      const doc = createFirestoreDoc({
+        verificationStatus: 'approved',
+        isVerified: true,
+      });
+
+      const result = mapUserDocToMemberProfile('uid-021', doc);
+
+      expect(result.verificationStatus).toBe('approved');
+      expect(result.isVerified).toBe(true);
+    });
+
+    it('TC-mapper-022: leaves lifecycle and verificationStatus undefined when the doc has none', () => {
+      /** Verifies: legacy docs keep falling back in the UI instead of inventing a status */
+      const result = mapUserDocToMemberProfile('uid-022', createFirestoreDoc());
+
+      expect(result.lifecycle).toBeUndefined();
+      expect(result.verificationStatus).toBeUndefined();
+    });
+  });
+
   describe('basic mapping', () => {
     it('TC-mapper-001: maps uid and basic fields correctly', () => {
       /** Verifies: basic field mapping */
