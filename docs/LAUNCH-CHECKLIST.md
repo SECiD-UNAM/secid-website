@@ -76,8 +76,8 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [x] Merge de PR #1 (por PR, nunca push directo a `main`) — mergeado 2026-10-18 03:43 UTC, merge commit b8a91fa
 - [x] Run de `cd.yml` en verde: hosting + backend + validate (el smoke test ya cubre locales, rewrite dinámico, headers, `/api/forms/*` y un callable) — run 39094640657: guard `deployed: 27, exported locally: 27 / OK`, smoke test aprobado en secid-mx.web.app, aviso esperado en secid.mx (DNS aún en Pages). `https://secid-mx.web.app/es/` sirve `build-sha=b8a91fa`
 - [ ] A mano en `https://secid-mx.web.app`:
-  - [ ] Login con email
-  - [ ] Login con Google
+  - [ ] Login con email — 2026-10-18: falló para el owner porque su cuenta solo tiene el proveedor Google (sin contraseña); Firebase responde `auth/invalid-credential` y el formulario mostraba el error genérico → PR #77 mapea el mensaje. Para probarlo: "¿Olvidaste tu contraseña?" con tu Gmail (el enlace crea la contraseña) o registrar una cuenta `+qa` nueva con email/contraseña
+  - [x] Login con Google — 2026-10-18 OK en secid-mx.web.app
   - [ ] Registro completo con una cuenta `+qa` (no recibe correos automáticos; verificación de email sí llega porque la manda Firebase Auth, no nosotros)
   - [ ] Enviar el formulario de contacto
 - [x] Beta (`beta.secid.mx`) sigue funcionando contra el backend desplegado por `main` — smoke test local aprobado tras el deploy de prod; beta sirve `build-sha=793e8b6`
