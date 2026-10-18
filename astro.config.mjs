@@ -36,7 +36,11 @@ export default defineConfig({
     }),
     compress({
       CSS: true,
-      HTML: true,
+      // html-minifier-terser strips the `<!-- -->` text-node separators React
+      // emits inside prerendered islands, so the client saw different text
+      // nodes and threw hydration errors #425/#418/#423 on /signup (issue
+      // #82). Astro's own compressHTML (default on) already minifies safely.
+      HTML: false,
       Image: true,
       JavaScript: true,
       SVG: true,
