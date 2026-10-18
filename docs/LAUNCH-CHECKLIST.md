@@ -111,16 +111,17 @@ Si se usa otro, reemplazarlo en todo el documento.
 ## Seguimiento post-lanzamiento (no bloquea el lanzamiento; hallazgos del 2026-10-18)
 
 - [x] Solicitud real pendiente desde el 22-sep-2026: Luis Enrique Morales Flores (`fmJmXgOQGETpkZQEUCs4JXJxys42`) — APROBADA 2026-10-18 21:55 UTC por decisión del owner, ejecutada por Claude desde el panel (Estado → Activo = `updateMemberStatus`: `lifecycle.status=active`, `role=member`, `verificationStatus=approved`, `isVerified=true`)
-- [ ] (dev) BUG hallado al aprobar: la tabla de admin muestra a TODOS como "Pendiente" / "Sin verificar" (36 filas con `?status=pending`) porque `src/lib/members/mapper.ts` no copia `lifecycle` ni `verificationStatus`/`isVerified` al `MemberProfile`; además `admin/members/index.astro` tiene `Gesti\u00f3n` escapado literal en título y h1 → PR en curso
+- [ ] (dev) BUG hallado al aprobar (PR #88 listo, checks requeridos en verde, falta merge del owner): la tabla de admin muestra a TODOS como "Pendiente" / "Sin verificar" (36 filas con `?status=pending`) porque `src/lib/members/mapper.ts` no copia `lifecycle` ni `verificationStatus`/`isVerified` al `MemberProfile`; además `admin/members/index.astro` tiene `Gesti\u00f3n` escapado literal en título y h1 → PR en curso
 - [ ] (owner) Fase 0 §B y correo de prueba del presupuesto (arriba) — siguen abiertos
 - [ ] Issue #79: restablecer contraseña / verificar email desde `secid.mx` en vez de la página genérica `secid-org.firebaseapp.com/__/auth/action`
 - [ ] Issue #82: errores de hidratación de React (#418/#423/#425) en `/es/signup` y `/es/dashboard`
 - [x] Issue #86 (cerrado): `onUserDelete` (gen1, corre como `secid-org@appspot.gserviceaccount.com`) — IAM `roles/datastore.user` otorgado por el owner 2026-10-18 19:30 UTC (runbook prod-cutover + `infra/runtime_iam.tf`); segundo fallo (índice de colección-grupo `applications.applicantId`) resuelto con PR #87 mergeado 2026-10-18 (`cd.yml` run 39161186760). Verificado 20:03 UTC: borrar un usuario Auth desechable → `status: 'ok'`, `User data cleaned up`
 - [ ] Issue #83: `onUserDocCreated` no añade al grupo `colaboradores@secid.mx` (Admin SDK API recién habilitada; puede requerir delegación a nivel de dominio) — verificar con el próximo registro real
 - [ ] PR #80 (opcional): paso de dominios reCAPTCHA en `cutover.yml`, por si se repite el cutover
-- [ ] (dev) `lint-staged` ignora `.ts/.tsx` ("No staged files match any configured task"): los fallos de Prettier llegan a CI
-- [ ] (dev) ESLint de `functions/` roto en local (falta `eslint-plugin-import`)
+- [ ] (dev) `lint-staged` ignora `.ts/.tsx` ("No staged files match any configured task"): los fallos de Prettier llegan a CI — PR #89 listo (checks requeridos en verde), falta merge del owner
+- [ ] (dev) ESLint de `functions/`: eran 1263 errores de formato (eslint-config-google vs Prettier), no un plugin faltante — PR #90 (eslint-config-prettier, 0 errores) listo, falta merge del owner. Colateral: `functions/lib/` compilado está versionado y desactualizado respecto a `src/` → gitignorar o regenerar en PR aparte
 - [ ] (dev) Suite `LoginForm` en `describe.skip` en `main`; falla entera al activarla
+- [ ] (owner, 1 comando) El check `claude-review` falla en TODOS los PRs porque el secret `ANTHROPIC_API_KEY` del repo está vacío (visto en el log del run 39170448605): `gh secret set ANTHROPIC_API_KEY` con una clave de API de Anthropic, o quitar el workflow si no se quiere pagar por él
 - [ ] (dev) Dependabot reporta 63 vulnerabilidades en `main` (7 críticas, 30 altas) — revisar `npm audit` y actualizar dependencias en un PR aparte
 - [ ] Roadmap (no bloquea): MCP de SECiD + skill para coding assistants — spec en `docs/specs/secid-mcp-and-assistant-skill.md`, ítems en `docs/features/todo.md`
 - [ ] (dev) Opcional: alerta/monitoreo de uptime para `https://secid.mx` (el smoke test solo corre en cada deploy)
