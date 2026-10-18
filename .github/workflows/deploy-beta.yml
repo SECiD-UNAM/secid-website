@@ -119,9 +119,15 @@ jobs:
       - name: Write functions runtime env (beta)
         env:
           RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY || secrets.STAGING_RECAPTCHA_SECRET_KEY }}
+          # Enterprise key → the function verifies via the assessments API
+          # (no secret needed; runtime SA needs roles/recaptchaenterprise.agent).
+          RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY || secrets.STAGING_RECAPTCHA_SITE_KEY }}
         run: |
           {
             echo "APP_URL=https://beta.secid.mx"
+            if [ -n "$RECAPTCHA_SITE_KEY" ]; then
+              echo "RECAPTCHA_SITE_KEY=$RECAPTCHA_SITE_KEY"
+            fi
             if [ -n "$RECAPTCHA_SECRET_KEY" ]; then
               echo "RECAPTCHA_SECRET_KEY=$RECAPTCHA_SECRET_KEY"
             fi
