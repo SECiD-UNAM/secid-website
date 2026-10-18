@@ -65,6 +65,92 @@ Fase 4 del [checklist](../LAUNCH-CHECKLIST.md).
 functions/reglas y que `cd.yml` lo haga. Se pone **antes** del merge a `main`
 para que nunca haya dos deployers.
 
+## 1b. Dominios de la clave de reCAPTCHA (owner, 1 comando)
+
+Los formularios públicos (`/api/forms/contact`, `/api/forms/newsletter`)
+verifican reCAPTCHA v3 en el servidor. La clave es de reCAPTCHA
+**Enterprise** (`secid-website`, `6Lf0GPss…`) y solo acepta tokens de los
+dominios que tiene registrados. Si el dominio de prod no está, cada envío
+responde `400 captcha_failed` y en los logs de la función aparece
+`errorCodes: [ 'browser-error' ]` (pasó el 2026-10-18 con
+`secid-mx.web.app`).
+
+```bash
+gcloud recaptcha keys list --project secid-org --format='value(name,webSettings.allowedDomains)'
+gcloud recaptcha keys update 6Lf0GPssAAAAAMXkNpzJDzISkep0YRM14GmKCPSB --project secid-org --web \
+  --domains=secid.mx,www.secid.mx,beta.secid.mx,secid-mx.web.app,localhost
+```
+
+Verificar: enviar el formulario de contacto en `https://<site>.web.app/es/contact`
+y ver `200` en `gcloud logging read 'resource.labels.service_name="sendcontactmessage"'`.
+
+Diagnóstico de otros rechazos (log `[public-forms] CAPTCHA rejected`):
+
+| errorCodes / score       | Causa                                                                                                  | Arreglo                                                            |
+| ------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `browser-error`          | dominio no registrado en la clave                                                                      | comando de arriba                                                  |
+| `invalid-input-secret`   | `RECAPTCHA_SECRET_KEY` no es un secreto válido                                                         | ver abajo: secreto legacy de la clave                              |
+| `incorrect-captcha-sol`  | el secreto es válido pero de **otra** clave: el token lo emitió `6Lf0GPss…` y el secreto no es el suyo | ver abajo: secreto legacy de la clave                              |
+| `invalid-input-response` | token caducado o falso                                                                                 | normal en pruebas con curl; el sitio real manda token fresco       |
+| `score < 0.5`            | tráfico sospechoso (automatización)                                                                    | probar a mano; ajustar `CAPTCHA_MIN_SCORE` si hay falsos positivos |
+
+Secreto legacy de la clave Enterprise (lo que debe estar en
+`STAGING_RECAPTCHA_SECRET_KEY` / `RECAPTCHA_SECRET_KEY` del repo). Solo
+el owner; no lo pegues en ningún sitio:
+
+```bash
+TOKEN=$(gcloud auth print-access-token)
+LEGACY=$(curl -sS -H "Authorization: Bearer $TOKEN" -H "x-goog-user-project: secid-org" \
+  "https://recaptchaenterprise.googleapis.com/v1/projects/secid-org/keys/6Lf0GPssAAAAAMXkNpzJDzISkep0YRM14GmKCPSB:retrieveLegacySecretKey" \
+  | python3 -c "import json,sys; print(json.load(sys.stdin)['legacySecretKey'])")
+# ¿coincide con lo desplegado?
+DEPLOYED=$(gcloud run services describe sendcontactmessage --region us-central1 --project secid-org --format=json \
+  | python3 -c "import json,sys; d=json.load(sys.stdin); print(next(e['value'] for e in d['spec']['template']['spec']['containers'][0]['env'] if e['name']=='RECAPTCHA_SECRET_KEY'))")
+[ "$LEGACY" = "$DEPLOYED" ] && echo IGUALES || echo DIFERENTES
+# si DIFERENTES:
+gh secret set STAGING_RECAPTCHA_SECRET_KEY --body "$LEGACY"
+gh run rerun $(gh run list --workflow cd.yml --limit 1 --json databaseId -q '.[0].databaseId')   # redespliega functions con el secret nuevo
+```
+
+Desde PR #81 la función **no usa `siteverify`** cuando `RECAPTCHA_SITE_KEY`
+está en su env (lo escriben `cd.yml` / `deploy-beta.yml`): verifica con la
+API de evaluación de reCAPTCHA Enterprise autenticada como su propia
+cuenta de servicio. Ese camino necesita, una vez:
+
+```bash
+gcloud projects add-iam-policy-binding secid-org \
+  --member serviceAccount:706604039024-compute@developer.gserviceaccount.com \
+  --role roles/recaptchaenterprise.agent
+```
+
+### Roles de las cuentas de servicio de runtime (una vez por proyecto)
+
+Las funciones **gen2** corren como `706604039024-compute@developer.gserviceaccount.com`
+(tiene `datastore.user`, `firebaseauth.admin`, `recaptchaenterprise.agent`,
+`eventarc.eventReceiver`, `run.invoker`). La única **gen1** (`onUserDelete`,
+trigger de Auth) corre como `secid-org@appspot.gserviceaccount.com`, que se
+quedó sin roles al retirarle Editor: sin esto el borrado de usuarios deja
+`users/{uid}` huérfanos (`PERMISSION_DENIED` en los logs; issue #86). Fix:
+
+```bash
+gcloud projects add-iam-policy-binding secid-org \
+  --member serviceAccount:secid-org@appspot.gserviceaccount.com \
+  --role roles/datastore.user
+```
+
+Verificación sin ruido: crear un usuario Auth desechable **sin** documento
+(`POST identitytoolkit…/projects/secid-org/accounts {"email":…,"disabled":true}`),
+esperar ~2 min de propagación de IAM, borrarlo (`accounts:delete`) y buscar
+`User data cleaned up for <uid>` en `gcloud functions logs read onUserDelete --region us-central1`.
+Ambos bindings están también en `infra/runtime_iam.tf`.
+
+Log de la función: `[captcha] rejected { action, backend, reason, score }`
+cuando rechaza; `[captcha] verify error` (403) si falta el rol. Para
+reproducir un token real sin navegador a mano:
+`node <script Playwright> | curl …/assessments` (ver historial del
+2026-10-18 en el checklist; un navegador headless puntúa ~0.1, así que el
+score bajo en esa prueba es normal, lo que importa es `valid: true`).
+
 ## 2. Merge a `main`
 
 `main` solo cambia por PR (branch protection). Mergea el PR de promoción

@@ -21,6 +21,8 @@
 - [ ] Página Adopta a un estudiante (dar becas / apoyo económico directamente a alguien estudiando actualmente)
 - [ ] TDD
 - [ ] MCP de playwright y lighthouse
+- [ ] MCP de SECiD: servidor MCP con operaciones de admin de dominio (aprobar/rechazar membresía, fusionar duplicados, borrar miembro con todos sus docs, listar pendientes), sobre el Admin SDK y los callables existentes — spec en `docs/specs/secid-mcp-and-assistant-skill.md`
+- [ ] Skill para coding assistants (Claude Code / Codex / Cursor): `.claude/skills/secid-ops/` con los procedimientos de operación (APIs con token de gcloud, colecciones a limpiar por miembro, reglas de main-solo-por-PR, qué acciones son del owner) — misma spec
 - [ ] Bot de whatsapp para notificaciones
 - [ ] Integración con redes sociales oficiales (mostrar publicaciones y perfiles de la sociedad)
 - [ ] Organigrama en about us
