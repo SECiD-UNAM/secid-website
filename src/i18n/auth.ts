@@ -49,6 +49,8 @@ export const authTranslations = {
       errors: {
         'auth/user-not-found': 'No existe una cuenta con este correo',
         'auth/wrong-password': 'Contraseña incorrecta',
+        'auth/invalid-credential':
+          'Correo o contraseña incorrectos. Si te registraste con Google, usa ese botón o restablece tu contraseña.',
         'auth/email-already-in-use': 'Este correo ya está registrado',
         'auth/weak-password': 'La contraseña es muy débil',
         'auth/invalid-email': 'Correo electrónico inválido',
@@ -106,6 +108,8 @@ export const authTranslations = {
       errors: {
         'auth/user-not-found': 'No account exists with this email',
         'auth/wrong-password': 'Incorrect password',
+        'auth/invalid-credential':
+          'Incorrect email or password. If you signed up with Google, use that button or reset your password.',
         'auth/email-already-in-use': 'This email is already registered',
         'auth/weak-password': 'Password is too weak',
         'auth/invalid-email': 'Invalid email address',

@@ -15,9 +15,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   render,
   screen,
-  fireEvent,
   waitFor,
-  within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { LoginForm } from '@/components/auth/LoginForm';
@@ -351,6 +349,22 @@ describe.skip('LoginForm', () => {
       await waitFor(() => {
         expect(screen.getByText(/incorrect password/i)).toBeInTheDocument();
         expect(mockToast.error).toHaveBeenCalledWith('Incorrect password');
+      });
+    });
+
+    it('explains auth/invalid-credential (bad password or Google-only account)', async () => {
+      mockSignIn.mockRejectedValue({ code: 'auth/invalid-credential' });
+
+      render(<LoginForm />);
+
+      await user.type(screen.getByLabelText(/email address/i), 'google-only@example.com');
+      await user.type(screen.getByLabelText(/password/i), 'whatever');
+      await user.click(screen.getByRole('button', { name: /sign in/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/incorrect email or password.*signed up with google/i)
+        ).toBeInTheDocument();
       });
     });
 
