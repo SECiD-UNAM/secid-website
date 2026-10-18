@@ -3,6 +3,7 @@ import type { Response } from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
 import * as crypto from 'crypto';
 import { isAllowedOrigin } from './env';
+import { verifyCaptcha } from './captcha';
 
 const db = admin.firestore();
 
@@ -61,61 +62,6 @@ async function checkRateLimit(ip: string, endpoint: string): Promise<boolean> {
   });
 }
 
-/**
- * Optional CAPTCHA verification. If RECAPTCHA_SECRET_KEY isn't set, we
- * accept the request but log a warning — rate limiting is the only
- * defense until CAPTCHA is wired up. The client can pass any value (or
- * none) in `captchaToken` for now.
- */
-const CAPTCHA_MIN_SCORE = 0.5;
-let captchaWarned = false;
-async function verifyCaptcha(token?: string): Promise<boolean> {
-  const secret = process.env.RECAPTCHA_SECRET_KEY;
-  if (!secret) {
-    if (!captchaWarned) {
-      captchaWarned = true;
-      console.warn(
-        '[public-forms] RECAPTCHA_SECRET_KEY not set — CAPTCHA verification is skipped. Set it to enable.'
-      );
-    }
-    return true;
-  }
-  if (!token) return false;
-  try {
-    const res = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`,
-    });
-    const data = (await res.json()) as {
-      success?: boolean;
-      score?: number;
-      action?: string;
-      hostname?: string;
-      'error-codes'?: string[];
-    };
-    // For v3, accept score >= 0.5. For v2, just check success.
-    const ok =
-      data.success !== false &&
-      !(typeof data.score === 'number' && data.score < CAPTCHA_MIN_SCORE);
-    if (!ok) {
-      // Never the secret or the token: just what siteverify said, so a
-      // failing form in prod is diagnosable from the function logs.
-      console.warn('[public-forms] CAPTCHA rejected', {
-        success: data.success,
-        score: data.score,
-        action: data.action,
-        hostname: data.hostname,
-        errorCodes: data['error-codes'],
-      });
-    }
-    return ok;
-  } catch (err) {
-    console.error('[public-forms] CAPTCHA verify error:', err);
-    return false;
-  }
-}
-
 interface NewsletterBody {
   email?: unknown;
   name?: unknown;
@@ -171,7 +117,12 @@ export const subscribeNewsletter = onRequest(
       return;
     }
 
-    if (!(await verifyCaptcha(body.captchaToken as string | undefined))) {
+    if (
+      !(await verifyCaptcha(
+        body.captchaToken as string | undefined,
+        'newsletter_subscribe'
+      ))
+    ) {
       res.status(400).json({ error: 'captcha_failed' });
       return;
     }
@@ -247,7 +198,12 @@ export const sendContactMessage = onRequest(
       return;
     }
 
-    if (!(await verifyCaptcha(body.captchaToken as string | undefined))) {
+    if (
+      !(await verifyCaptcha(
+        body.captchaToken as string | undefined,
+        'contact_send'
+      ))
+    ) {
       res.status(400).json({ error: 'captcha_failed' });
       return;
     }
