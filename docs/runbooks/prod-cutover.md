@@ -112,6 +112,24 @@ gh secret set STAGING_RECAPTCHA_SECRET_KEY --body "$LEGACY"
 gh run rerun $(gh run list --workflow cd.yml --limit 1 --json databaseId -q '.[0].databaseId')   # redespliega functions con el secret nuevo
 ```
 
+Desde PR #81 la función **no usa `siteverify`** cuando `RECAPTCHA_SITE_KEY`
+está en su env (lo escriben `cd.yml` / `deploy-beta.yml`): verifica con la
+API de evaluación de reCAPTCHA Enterprise autenticada como su propia
+cuenta de servicio. Ese camino necesita, una vez:
+
+```bash
+gcloud projects add-iam-policy-binding secid-org \
+  --member serviceAccount:706604039024-compute@developer.gserviceaccount.com \
+  --role roles/recaptchaenterprise.agent
+```
+
+Log de la función: `[captcha] rejected { action, backend, reason, score }`
+cuando rechaza; `[captcha] verify error` (403) si falta el rol. Para
+reproducir un token real sin navegador a mano:
+`node <script Playwright> | curl …/assessments` (ver historial del
+2026-10-18 en el checklist; un navegador headless puntúa ~0.1, así que el
+score bajo en esa prueba es normal, lo que importa es `valid: true`).
+
 ## 2. Merge a `main`
 
 `main` solo cambia por PR (branch protection). Mergea el PR de promoción
