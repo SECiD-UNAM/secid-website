@@ -20,6 +20,11 @@ locals {
     "firebaserules.googleapis.com",
     "firebase.googleapis.com",
     "iam.googleapis.com",
+    # Keyless domain-wide delegation for Workspace groups (issue #83):
+    # google-admin.ts signs its JWT via iamcredentials and calls the
+    # Admin SDK Directory API. See runtime_iam.tf.
+    "iamcredentials.googleapis.com",
+    "admin.googleapis.com",
     "cloudresourcemanager.googleapis.com",
   ]
 }
