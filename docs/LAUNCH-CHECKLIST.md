@@ -97,7 +97,11 @@ Si se usa otro, reemplazarlo en todo el documento.
 
 - [ ] Desactivar GitHub Pages (Settings → Pages) y quitar el custom domain
 - [ ] PR: borrar `static.yml` y el `public/CNAME` viejo
-- [ ] Borrar la cuenta de prueba `artemiopadilla+secidtest0802@gmail.com`
+- [ ] Borrar la cuenta de prueba `artemiopadilla+secidtest0802@gmail.com` (uid `pc1FbpU8YtZndJ9K6LnDmlzbWIs1`)
+- [ ] Borrar la cuenta QA del lanzamiento `artemiopadilla+qa@gmail.com` (uid `fSR9sRWj4UXW7cypeCOcCX4Q2o62`, solicitud pendiente de membresía: rechazar o borrar, no aprobar) y su `member_surveys/{uid}`
+- [ ] Limpiar cuentas basura detectadas en el panel de admin el 2026-10-18 (Auth + `users/{uid}`): `kotom83154@nuitx.com` (QA de mayo, uid `GFaWlLZbOSNCqHbtM1Vhvo3dqbk1`, ¡verificación aprobada!), `gcpmap-probe-9605be7ef69ba722be9b@example.com` ×2 (`E2a51HHDvMSfnoExo0bHUSWYyWx2`, `EXmlbmwRFkUwF5rRqXa1QkgVUNu1`), `gcpmap-dp-df2d0476cd9f5ec67ace@example.com` (`Vi3ICe5Vu1QoSKCNRvXipAVS0wu1`), `gcpmap-probe-367e9e8c3e0c7cae9b05@example.com` (`BTV4aX9vB1gqk5wsIfVIeNYlRz82`)
+- [ ] Resolver duplicados: `jalejandrobondi@gmail.com` tiene dos cuentas admin (`nDpgqaFmiweL4zXtV08DVjllxbP2` y `pScvueLKGiPqT18sfPWEztkZNh03`); `luis.morales130702@gmail.com` tiene un stub sin nombre (`dHivtgBs9Pd2HUsbknw07r0A2qP2`) además de su cuenta real (`fmJmXgOQGETpkZQEUCs4JXJxys42`, pendiente de aprobación desde el 22-sep-2026)
+- [ ] Revisar el stub `users/aHlVPULyTNPTnwUh6h8RPWdBx203` (Auth: `artemiopadilla@ciencias.unam.mx`, correo alterno del owner; doc casi vacío que aparece como "Miembro" sin correo en el panel)
 - [ ] Opcional: quitar `secid-mx.web.app` de CORS si ya no se usa
 - [x] (dev) Tabla de entornos y sección de deploy actualizadas en `docs/DEPLOYMENT.md` y `README.md` (sin GitHub Pages ni `staging`)
 
