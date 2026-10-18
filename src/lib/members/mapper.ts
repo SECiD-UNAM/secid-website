@@ -93,6 +93,33 @@ function buildAutoEducationEntry(
   };
 }
 
+/** Firestore Timestamp | Date | undefined → Date | undefined */
+type DateLike = Date | { toDate?: () => Date } | null | undefined;
+
+function toDate(value: DateLike): Date | undefined {
+  if (!value) return undefined;
+  if (value instanceof Date) return value;
+  return value.toDate?.();
+}
+
+/**
+ * Copy the admin lifecycle block, converting Timestamps. Returns undefined
+ * when the document has none so the UI keeps its explicit fallback.
+ */
+function mapLifecycle(
+  raw: Record<string, unknown> | undefined
+): MemberProfile['lifecycle'] {
+  if (!raw || typeof raw.status !== 'string') return undefined;
+  return {
+    status: raw.status as NonNullable<MemberProfile['lifecycle']>['status'],
+    statusChangedAt: toDate(raw.statusChangedAt as DateLike) ?? new Date(0),
+    statusChangedBy: raw.statusChangedBy as string | undefined,
+    statusReason: raw.statusReason as string | undefined,
+    statusHistory: Array.isArray(raw.statusHistory) ? raw.statusHistory : [],
+    lastActiveDate: toDate(raw.lastActiveDate as DateLike) ?? new Date(0),
+  };
+}
+
 /**
  * Map a flat Firestore user document (as written by Cloud Functions)
  * to the MemberProfile shape expected by the UI components.
@@ -117,6 +144,9 @@ export function mapUserDocToMemberProfile(
     uid,
     email: data.email || '',
     role: data.role || 'member',
+    lifecycle: mapLifecycle(data.lifecycle),
+    verificationStatus: data.verificationStatus,
+    isVerified: data.isVerified,
     createdAt: data.createdAt?.toDate?.() || data.createdAt || new Date(),
     onboardingCompleted: data.onboardingCompleted || false,
     displayName,
