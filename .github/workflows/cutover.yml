@@ -145,7 +145,7 @@ jobs:
           wanted=$(printf '%s\n%s\n' "$SITE_ID.web.app" "$(echo "$DOMAINS" | tr ',' '\n')")
           merged=$(printf '%s\n%s\n' "$current" "$wanted" | sed '/^\s*$/d' | sort -u | paste -sd, -)
           echo "reCAPTCHA domains → $merged"
-          gcloud recaptcha keys update "$KEY" --project "$PROJECT_ID" --domains="$merged" \
+          gcloud recaptcha keys update "$KEY" --project "$PROJECT_ID" --web --domains="$merged" \
             --format='value(webSettings.allowedDomains)'
           {
             echo "### reCAPTCHA key domains"
@@ -159,7 +159,7 @@ jobs:
           {
             echo "### reCAPTCHA key domains — MANUAL"
             echo '```'
-            echo "gcloud recaptcha keys update ${{ inputs.recaptcha_key }} --project $PROJECT_ID --domains=$SITE_ID.web.app,${{ inputs.custom_domains }},beta.secid.mx,localhost"
+            echo "gcloud recaptcha keys update ${{ inputs.recaptcha_key }} --project $PROJECT_ID --web --domains=$SITE_ID.web.app,${{ inputs.custom_domains }},beta.secid.mx,localhost"
             echo '```'
             echo "Runbook: docs/runbooks/prod-cutover.md §1b"
           } >> "$GITHUB_STEP_SUMMARY"
