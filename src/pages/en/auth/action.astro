@@ -1,0 +1,29 @@
+---
+import ModernLayout from '@/layouts/ModernLayout.astro';
+import Navigation from '@/components/Navigation.astro';
+import Footer from '@/components/Footer.astro';
+import { AuthActionHandler } from '@/components/auth/AuthActionHandler';
+import { getTranslations } from '@/i18n/translations';
+
+// Target of Firebase Auth email links (password reset, email verification,
+// email-change revert). Replaces secid-org.firebaseapp.com/__/auth/action;
+// see docs/runbooks/prod-cutover.md §5.1 for the console step.
+const t = getTranslations('en');
+---
+
+<ModernLayout
+  title={`${t.auth.action.resetTitle} - ${t.site.name}`}
+  description={t.auth.action.resetSubtitle}
+  lang="en"
+  noIndex={true}
+>
+  <Navigation lang="en" />
+  <div
+    class="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 dark:bg-gray-900 sm:px-6 lg:px-8"
+  >
+    <div class="w-full max-w-md">
+      <AuthActionHandler client:only="react" lang="en" />
+    </div>
+  </div>
+  <Footer lang="en" />
+</ModernLayout>

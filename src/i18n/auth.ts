@@ -41,6 +41,37 @@ export const authTranslations = {
         googleSignIn: 'Iniciar sesión con Google',
         button: 'Iniciar Sesión',
       },
+      action: {
+        loading: 'Verificando tu enlace...',
+        errorTitle: 'Este enlace no funciona',
+        requestNew: 'Solicitar un correo nuevo',
+        goToLogin: 'Ir a iniciar sesión',
+        resetTitle: 'Restablece tu contraseña',
+        resetSubtitle: 'Elige una contraseña nueva para la cuenta',
+        newPassword: 'Contraseña nueva',
+        confirmPassword: 'Confirmar contraseña',
+        passwordHint: 'Mínimo 8 caracteres, una mayúscula y un número.',
+        submit: 'Guardar contraseña nueva',
+        resetSuccessTitle: 'Contraseña actualizada',
+        resetSuccessBody: 'Ya puedes iniciar sesión con tu contraseña nueva.',
+        verifySuccessTitle: 'Correo verificado',
+        verifySuccessBody:
+          'Tu correo electrónico quedó confirmado. Ya puedes iniciar sesión.',
+        recoverSuccessTitle: 'Correo restaurado',
+        recoverSuccessBody: 'Tu correo de acceso volvió a ser',
+        recoverHint:
+          'Si no solicitaste el cambio, restablece tu contraseña ahora mismo.',
+        errors: {
+          missing:
+            'El enlace está incompleto o no es válido. Solicita un correo nuevo e inténtalo de nuevo.',
+          passwordTooShort: 'La contraseña debe tener al menos 8 caracteres',
+          passwordNeedsUppercase:
+            'La contraseña debe incluir al menos una mayúscula',
+          passwordNeedsNumber: 'La contraseña debe incluir al menos un número',
+          passwordsMismatch: 'Las contraseñas no coinciden',
+          generic: 'Algo salió mal. Inténtalo de nuevo.',
+        },
+      },
       or: 'o',
       acceptTerms: {
         prefix: 'Acepto los',
@@ -59,6 +90,14 @@ export const authTranslations = {
           'El servicio de autenticación no está configurado. Contacta al administrador.',
         'auth/unauthorized-domain':
           'Este dominio no está autorizado para iniciar sesión. Contacta al administrador.',
+        'auth/invalid-action-code':
+          'Este enlace no es válido o ya fue utilizado. Solicita uno nuevo.',
+        'auth/expired-action-code':
+          'Este enlace ya expiró. Solicita uno nuevo.',
+        'auth/user-disabled': 'Esta cuenta ha sido deshabilitada',
+        'auth/too-many-requests': 'Demasiados intentos. Inténtalo más tarde',
+        'auth/network-request-failed':
+          'Error de conexión. Verifica tu internet',
         default: 'Ha ocurrido un error',
       },
     },
@@ -100,6 +139,38 @@ export const authTranslations = {
         googleSignIn: 'Sign in with Google',
         button: 'Sign In',
       },
+      action: {
+        loading: 'Checking your link...',
+        errorTitle: 'This link does not work',
+        requestNew: 'Request a new email',
+        goToLogin: 'Go to sign in',
+        resetTitle: 'Reset your password',
+        resetSubtitle: 'Choose a new password for the account',
+        newPassword: 'New password',
+        confirmPassword: 'Confirm password',
+        passwordHint:
+          'At least 8 characters, one uppercase letter and one number.',
+        submit: 'Save new password',
+        resetSuccessTitle: 'Password updated',
+        resetSuccessBody: 'You can now sign in with your new password.',
+        verifySuccessTitle: 'Email verified',
+        verifySuccessBody:
+          'Your email address has been confirmed. You can now sign in.',
+        recoverSuccessTitle: 'Email restored',
+        recoverSuccessBody: 'Your sign-in email is back to',
+        recoverHint:
+          'If you did not request the change, reset your password right away.',
+        errors: {
+          missing:
+            'The link is incomplete or not valid. Request a new email and try again.',
+          passwordTooShort: 'Password must be at least 8 characters',
+          passwordNeedsUppercase:
+            'Password must contain at least one uppercase letter',
+          passwordNeedsNumber: 'Password must contain at least one number',
+          passwordsMismatch: 'Passwords do not match',
+          generic: 'Something went wrong. Please try again.',
+        },
+      },
       or: 'or',
       acceptTerms: {
         prefix: 'I accept the',
@@ -118,6 +189,12 @@ export const authTranslations = {
           'Authentication service is not configured. Contact the administrator.',
         'auth/unauthorized-domain':
           'This domain is not authorized for sign-in. Contact the administrator.',
+        'auth/invalid-action-code':
+          'This link is invalid or has already been used. Request a new one.',
+        'auth/expired-action-code': 'This link has expired. Request a new one.',
+        'auth/user-disabled': 'This account has been disabled',
+        'auth/too-many-requests': 'Too many attempts. Try again later',
+        'auth/network-request-failed': 'Connection error. Check your internet',
         default: 'An error occurred',
       },
     },
