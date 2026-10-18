@@ -110,7 +110,8 @@ Si se usa otro, reemplazarlo en todo el documento.
 
 ## Seguimiento post-lanzamiento (no bloquea el lanzamiento; hallazgos del 2026-10-18)
 
-- [ ] (owner) Solicitud real pendiente desde el 22-sep-2026: Luis Enrique Morales Flores (`fmJmXgOQGETpkZQEUCs4JXJxys42`) — aprobar o rechazar en `https://secid.mx/es/dashboard/admin/members?status=pending`
+- [x] Solicitud real pendiente desde el 22-sep-2026: Luis Enrique Morales Flores (`fmJmXgOQGETpkZQEUCs4JXJxys42`) — APROBADA 2026-10-18 21:55 UTC por decisión del owner, ejecutada por Claude desde el panel (Estado → Activo = `updateMemberStatus`: `lifecycle.status=active`, `role=member`, `verificationStatus=approved`, `isVerified=true`)
+- [ ] (dev) BUG hallado al aprobar: la tabla de admin muestra a TODOS como "Pendiente" / "Sin verificar" (36 filas con `?status=pending`) porque `src/lib/members/mapper.ts` no copia `lifecycle` ni `verificationStatus`/`isVerified` al `MemberProfile`; además `admin/members/index.astro` tiene `Gesti\u00f3n` escapado literal en título y h1 → PR en curso
 - [ ] (owner) Fase 0 §B y correo de prueba del presupuesto (arriba) — siguen abiertos
 - [ ] Issue #79: restablecer contraseña / verificar email desde `secid.mx` en vez de la página genérica `secid-org.firebaseapp.com/__/auth/action`
 - [ ] Issue #82: errores de hidratación de React (#418/#423/#425) en `/es/signup` y `/es/dashboard`
