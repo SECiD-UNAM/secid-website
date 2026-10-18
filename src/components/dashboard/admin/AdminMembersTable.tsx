@@ -180,10 +180,7 @@ function formatRelativeTime(
 function getMemberVerificationStatus(
   member: MemberProfile
 ): VerificationStatus {
-  return (
-    (member as unknown as { verificationStatus?: VerificationStatus })
-      .verificationStatus ?? 'none'
-  );
+  return member.verificationStatus ?? 'none';
 }
 
 function getMemberLifecycleStatus(member: MemberProfile): MemberStatus {

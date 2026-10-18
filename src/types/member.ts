@@ -3,7 +3,7 @@
  * Enhanced member types with networking and privacy features
  */
 
-import type { UserProfile } from './user';
+import type { UserProfile, VerificationStatus } from './user';
 
 // Member lifecycle status
 export type MemberStatus =
@@ -119,6 +119,10 @@ export interface MemberProfile extends UserProfile {
 
   // Lifecycle management
   lifecycle?: MemberLifecycle;
+
+  // Membership verification (numeroCuenta + proof + admin approval); mirrors users/{uid}
+  verificationStatus?: VerificationStatus;
+  isVerified?: boolean;
 
   // Search and filtering metadata
   searchableKeywords: string[];
