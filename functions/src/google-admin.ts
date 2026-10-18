@@ -2,16 +2,51 @@
  * Google Admin SDK integration for SECiD
  * Uses domain-wide delegation to manage Google Workspace Groups
  *
- * Setup required (one-time):
- * 1. Enable domain-wide delegation on the Firebase service account
- * 2. In Google Admin Console → Security → API Controls → Domain-wide delegation:
- *    - Add the service account's client ID
- *    - Scopes: admin.directory.group, admin.directory.group.member
- * 3. Set admin email: firebase functions:config:set admin.email="artemio@secid.mx"
+ * How auth works (keyless domain-wide delegation, issue #83):
+ * Gen2 functions run on Cloud Run with the Compute Engine default service
+ * account and no private key, so the ADC client cannot impersonate a
+ * Workspace user by itself (`clientOptions.subject` fails with "Not
+ * Authorized to access this resource/api"). Instead we:
+ *   1. ask the IAM Credentials API to sign a JWT *as the runtime SA*
+ *      (`projects/-/serviceAccounts/{SA}:signJwt`) with `sub` = the
+ *      Workspace admin to impersonate and the Directory scopes;
+ *   2. exchange that assertion at the OAuth token endpoint with the
+ *      `jwt-bearer` grant for a delegated access token;
+ *   3. build the Directory client with that token (cached until ~5 min
+ *      before expiry).
+ *
+ * Setup required (one-time, see docs/runbooks/prod-cutover.md):
+ * 1. Grant the runtime SA `roles/iam.serviceAccountTokenCreator` on itself
+ *    and enable `iamcredentials.googleapis.com` (infra/runtime_iam.tf).
+ * 2. Google Admin Console → Security → API controls → Domain-wide
+ *    delegation: add the SA's OAuth client ID with the scopes
+ *    admin.directory.group and admin.directory.group.member.
+ * 3. Set ADMIN_EMAIL (Workspace admin to impersonate). Optional:
+ *    GOOGLE_GROUPS_SA_EMAIL to sign as a different SA than the runtime one.
  */
 
 import { google } from 'googleapis';
+import type { GoogleAuth } from 'google-auth-library';
 import * as admin from 'firebase-admin';
+
+const TOKEN_URL = 'https://oauth2.googleapis.com/token';
+const JWT_BEARER_GRANT = 'urn:ietf:params:oauth:grant-type:jwt-bearer';
+const TOKEN_LIFETIME_SECONDS = 3600;
+const REFRESH_MARGIN_MS = 5 * 60 * 1000;
+
+const DIRECTORY_SCOPES = [
+  'https://www.googleapis.com/auth/admin.directory.group',
+  'https://www.googleapis.com/auth/admin.directory.group.member',
+];
+const SHEETS_SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
+
+interface DelegatedToken {
+  accessToken: string;
+  expiresAt: number;
+}
+
+// Keyed by the space-separated scope string (one token per scope set).
+const tokenCache = new Map<string, DelegatedToken>();
 
 // The admin email to impersonate for API calls
 function getAdminEmail(): string {
@@ -25,20 +60,121 @@ function getAdminEmail(): string {
 }
 
 /**
+ * Service account that signs the delegation JWT. Defaults to the runtime
+ * identity reported by ADC (the Compute default SA on gen2).
+ */
+async function resolveServiceAccountEmail(auth: GoogleAuth): Promise<string> {
+  const override = process.env.GOOGLE_GROUPS_SA_EMAIL;
+  if (override) return override;
+  const credentials = await auth.getCredentials();
+  if (!credentials.client_email) {
+    throw new Error(
+      'Could not resolve the runtime service account email from ADC; ' +
+        'set GOOGLE_GROUPS_SA_EMAIL'
+    );
+  }
+  return credentials.client_email;
+}
+
+/**
+ * Sign the domain-wide-delegation assertion through the IAM Credentials
+ * API. Requires roles/iam.serviceAccountTokenCreator on `saEmail`.
+ */
+async function signDelegationJwt(
+  auth: GoogleAuth,
+  saEmail: string,
+  subject: string,
+  scopes: string[]
+): Promise<string> {
+  const iat = Math.floor(Date.now() / 1000);
+  const payload = {
+    iss: saEmail,
+    sub: subject,
+    scope: scopes.join(' '),
+    aud: TOKEN_URL,
+    iat,
+    exp: iat + TOKEN_LIFETIME_SECONDS,
+  };
+  const iamcredentials = google.iamcredentials({ version: 'v1', auth });
+  const response = await iamcredentials.projects.serviceAccounts.signJwt({
+    name: `projects/-/serviceAccounts/${saEmail}`,
+    requestBody: { payload: JSON.stringify(payload) },
+  });
+  if (!response.data.signedJwt) {
+    throw new Error('IAM Credentials signJwt returned no signedJwt');
+  }
+  return response.data.signedJwt;
+}
+
+/**
+ * Exchange the signed assertion for a delegated access token.
+ */
+async function exchangeJwtForToken(signedJwt: string): Promise<DelegatedToken> {
+  const response = await fetch(TOKEN_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: JWT_BEARER_GRANT,
+      assertion: signedJwt,
+    }),
+  });
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`Token exchange failed (${response.status}): ${detail}`);
+  }
+  const data = (await response.json()) as {
+    access_token: string;
+    expires_in: number;
+  };
+  return {
+    accessToken: data.access_token,
+    expiresAt: Date.now() + data.expires_in * 1000,
+  };
+}
+
+function isFresh(token: DelegatedToken | undefined): token is DelegatedToken {
+  return !!token && token.expiresAt - REFRESH_MARGIN_MS > Date.now();
+}
+
+/**
+ * Delegated access token for `scopes`, impersonating the admin email.
+ * Cached until ~5 minutes before expiry.
+ */
+async function getDelegatedAccessToken(scopes: string[]): Promise<string> {
+  const cacheKey = scopes.join(' ');
+  const cached = tokenCache.get(cacheKey);
+  if (isFresh(cached)) return cached.accessToken;
+
+  const auth = new google.auth.GoogleAuth({
+    scopes: ['https://www.googleapis.com/auth/cloud-platform'],
+  });
+  const saEmail = await resolveServiceAccountEmail(auth);
+  const signedJwt = await signDelegationJwt(
+    auth,
+    saEmail,
+    getAdminEmail(),
+    scopes
+  );
+  const token = await exchangeJwtForToken(signedJwt);
+  tokenCache.set(cacheKey, token);
+  return token.accessToken;
+}
+
+/**
+ * OAuth2 client carrying a delegated access token for `scopes`.
+ */
+async function getDelegatedAuth(scopes: string[]) {
+  const accessToken = await getDelegatedAccessToken(scopes);
+  const auth = new google.auth.OAuth2();
+  auth.setCredentials({ access_token: accessToken });
+  return auth;
+}
+
+/**
  * Get authenticated Google Admin SDK client using domain-wide delegation
  */
 async function getAdminClient() {
-  const auth = new google.auth.GoogleAuth({
-    scopes: [
-      'https://www.googleapis.com/auth/admin.directory.group',
-      'https://www.googleapis.com/auth/admin.directory.group.member',
-      'https://www.googleapis.com/auth/spreadsheets',
-    ],
-    clientOptions: {
-      subject: getAdminEmail(),
-    },
-  });
-
+  const auth = await getDelegatedAuth(DIRECTORY_SCOPES);
   return google.admin({ version: 'directory_v1', auth });
 }
 
@@ -227,13 +363,7 @@ export async function exportToGoogleSheets(
   headers: string[],
   title: string
 ): Promise<string> {
-  const auth = new google.auth.GoogleAuth({
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-    clientOptions: {
-      subject: getAdminEmail(),
-    },
-  });
-
+  const auth = await getDelegatedAuth(SHEETS_SCOPES);
   const sheets = google.sheets({ version: 'v4', auth });
 
   // Create new spreadsheet

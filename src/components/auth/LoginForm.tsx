@@ -335,6 +335,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     }
   };
 
+  // `/login?reset=1` (linked from /auth/action when a reset link is invalid
+  // or expired) opens the forgot-password dialog straight away.
+  useEffect(() => {
+    try {
+      if (new URLSearchParams(window.location.search).get('reset') === '1') {
+        setShowForgotPassword(true);
+      }
+    } catch {
+      /* no-op: window unavailable */
+    }
+  }, []);
+
   // Load remembered user
   useEffect(() => {
     const remembered = localStorage.getItem('secid_remember_user');

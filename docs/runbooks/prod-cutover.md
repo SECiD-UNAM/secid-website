@@ -195,10 +195,87 @@ y repite login + registro sobre `https://secid.mx`.
 
 ## 5. Después (1–2 semanas)
 
+### 5.1 URL de acción de Firebase Auth (correos de contraseña/verificación)
+
+Los correos de restablecer contraseña, verificar email y revertir cambio de
+email abren por defecto `https://secid-org.firebaseapp.com/__/auth/action`.
+El sitio ya sirve una página con marca e idioma en `/es/auth/action` y
+`/en/auth/action` (issue #79). Hazlo **después** del corte de DNS (paso 4)
+para que el enlace sea `secid.mx` y no `secid-mx.web.app`:
+
+1. Firebase Console → **Authentication → Templates** → cualquier plantilla →
+   lápiz → **Customize action URL** → `https://secid.mx/es/auth/action` →
+   Save. Aplica a todas las plantillas a la vez; Firebase conserva los
+   parámetros `mode`, `oobCode`, `continueUrl` y `lang`.
+2. Comprueba con "¿Olvidaste tu contraseña?" en `https://secid.mx/es/login`:
+   el enlace del correo debe abrir la página de SECiD, no la de Firebase.
+
+Por API (mismo patrón que `cutover.yml` usa para `authorizedDomains`), el
+campo de Identity Platform es `notification.sendEmail.callbackUri` en
+`projects.updateConfig` con `updateMask=notification.sendEmail.callbackUri`.
+
+Reversa: borrar el valor de "Customize action URL" vuelve a la página de
+Firebase; los enlaces ya enviados siguen funcionando porque el `oobCode` no
+depende de la URL.
+
 - GitHub → Settings → Pages: quitar el custom domain y desactivar Pages.
 - PR: quitar `public/CNAME`; en `cd.yml`, convertir el check de `secid.mx`
   del job `validate` en fallo duro (quitar el `|| echo ::warning`).
 - Borrar cuentas de prueba (Firebase Console → Authentication).
+
+## 6. Grupos de Google Workspace (delegación sin clave)
+
+`onUserDocCreated` y `onMemberStatusChange` meten y sacan gente de
+`colaboradores@secid.mx` y `miembros@secid.mx` con la Directory API de
+Google Workspace. En gen2 la función corre como la cuenta de servicio de
+Compute (`706604039024-compute@developer.gserviceaccount.com`) **sin clave
+privada**, así que `functions/src/google-admin.ts` firma el JWT de
+delegación con la API de IAM Credentials en lugar de un key file (issue
+#83). Hacen falta dos pasos de operador, una sola vez:
+
+1. **IAM (GCP).** La SA debe poder firmar como ella misma y las APIs de
+   IAM Credentials y Admin SDK deben estar activas. Lo aplica el workflow
+   de infra (`infra/runtime_iam.tf`, `infra/apis.tf`); a mano:
+
+   ```bash
+   gcloud services enable iamcredentials.googleapis.com admin.googleapis.com --project secid-org
+   gcloud iam service-accounts add-iam-policy-binding \
+     706604039024-compute@developer.gserviceaccount.com \
+     --member serviceAccount:706604039024-compute@developer.gserviceaccount.com \
+     --role roles/iam.serviceAccountTokenCreator \
+     --project secid-org
+   ```
+
+2. **Delegación en todo el dominio (Workspace).** Obtén el client ID OAuth
+   de la SA:
+
+   ```bash
+   gcloud iam service-accounts describe \
+     706604039024-compute@developer.gserviceaccount.com \
+     --project secid-org --format='value(oauth2ClientId)'
+   ```
+
+   En Admin Console → **Security** → **Access and data control** →
+   **API controls** → **Domain-wide delegation** → **Add new**: pega el
+   client ID y, en **OAuth scopes**, exactamente:
+
+   ```text
+   https://www.googleapis.com/auth/admin.directory.group,https://www.googleapis.com/auth/admin.directory.group.member
+   ```
+
+Verificar: aprueba a un miembro (`pending → active`) desde el panel de
+admin y revisa los logs de `onMemberStatusChange`:
+
+```bash
+gcloud functions logs read onMemberStatusChange --gen2 --region us-central1 \
+  --project secid-org --limit 20
+```
+
+Debe aparecer `Added <correo> to miembros@secid.mx` y ningún
+`Not Authorized to access this resource/api`. `ADMIN_EMAIL` (el admin de
+Workspace al que se impersona) se sigue configurando como variable de
+entorno de las functions; `GOOGLE_GROUPS_SA_EMAIL` es opcional, solo si la
+firma debe hacerla otra SA distinta a la de runtime.
 
 ## Reversa
 
