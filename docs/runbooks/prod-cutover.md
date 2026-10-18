@@ -42,6 +42,25 @@ el resumen trae el paso de consola exacto. Equivalentes manuales:
 
 Verificar: `gh variable list` muestra las dos variables.
 
+Lo que pasó el 2026-10-18 (run 39093945487): sitio, dominios de Auth y
+dominios custom salieron bien desde CI; **el paso de variables siempre
+cae a MANUAL** porque el `GITHUB_TOKEN` de Actions no puede escribir
+variables del repo (HTTP 403 `Resource not accessible by integration`).
+Cuenta con correr los dos `gh variable set` de la tabla desde tu máquina.
+
+Para leer el estado desde local sin `firebase login`, las APIs aceptan el
+token de `gcloud` si mandas el proyecto de cuota:
+
+```bash
+TOKEN=$(gcloud auth print-access-token)
+H=(-H "Authorization: Bearer $TOKEN" -H "x-goog-user-project: secid-org")
+curl -sS "${H[@]}" https://firebasehosting.googleapis.com/v1beta1/projects/secid-org/sites/secid-mx/customDomains \
+  | jq -r '.customDomains[] | "\(.name|split("/")[-1])\t\(.hostState)\t\(.ownershipState)\t\(.certState)"'
+```
+
+Los registros descubiertos y deseados de ese run están copiados en la
+Fase 4 del [checklist](../LAUNCH-CHECKLIST.md).
+
 `backend_from_main=true` hace que `deploy-beta.yml` deje de desplegar
 functions/reglas y que `cd.yml` lo haga. Se pone **antes** del merge a `main`
 para que nunca haya dos deployers.
