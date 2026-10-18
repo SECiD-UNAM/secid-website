@@ -11,6 +11,9 @@ module.exports = {
     'plugin:import/typescript',
     'google',
     'plugin:@typescript-eslint/recommended',
+    // Must stay last: turns off every formatting rule from the configs
+    // above so ESLint never fights the repo-wide Prettier config.
+    'prettier',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -20,17 +23,18 @@ module.exports = {
     project: ['tsconfig.json', 'tsconfig.dev.json'],
     sourceType: 'module',
   },
-  ignorePatterns: ['/lib/**/*'],
+  ignorePatterns: [
+    '/lib/**/*',
+    // Excluded from tsconfig.json (never compiled or deployed), so the typed
+    // parser has no program for them.
+    '/src/linkedin-auth.ts',
+    '/src/parse-linkedin-pdf.ts',
+  ],
   plugins: ['@typescript-eslint', 'import'],
   rules: {
-    quotes: ['error', 'double'],
     'import/no-unresolved': 0,
-    indent: ['error', 2],
-    'max-len': ['error', { code: 120 }],
     'require-jsdoc': 'off',
     'valid-jsdoc': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
-    'object-curly-spacing': 'off',
-    'operator-linebreak': 'off',
   },
 };

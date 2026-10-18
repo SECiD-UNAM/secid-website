@@ -113,8 +113,7 @@ export const verifyUnamEmail = onCall<VerifyUnamEmailData>(async (request) => {
     throw new HttpsError('unauthenticated', 'User must be authenticated');
   }
 
-  const { unamEmail, studentId, graduationYear } = request.data;
-  const userId = request.auth.uid;
+  const { unamEmail } = request.data;
 
   // Validate UNAM email format
   if (
