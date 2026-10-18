@@ -34,9 +34,9 @@ Si se usa otro, reemplazarlo en todo el documento.
 
 ## Fase 0: red de seguridad (owner, ~15 min, hacer ya) — runbooks [billing-and-budget](./runbooks/billing-and-budget.md), [firestore-backup](./runbooks/firestore-backup.md)
 
-- [ ] (owner) Alerta de presupuesto en GCP (runbook §A)
-- [ ] (owner) Notificaciones de la cuenta de facturación (runbook §B)
-- [ ] (owner) Correo de prueba de la alerta recibido
+- [x] (owner) Alerta de presupuesto en GCP (runbook §A) — creada 2026-10-18 por CLI: `secid-org monthly`, 400 MXN/mes, umbrales 50/90/100 %, correo a admins de facturación (id `fd5dd63b-f849-4152-81a0-b3c2dc9629be`)
+- [ ] (owner) Notificaciones de la cuenta de facturación (runbook §B) — consola: Billing → Account management → confirmar que al menos un correo leído recibe avisos de pago
+- [ ] (owner) Correo de prueba de la alerta recibido — GCP no manda correo al crear el presupuesto; se verifica con el primer umbral o editando la alerta a 1 MXN un momento (runbook §A)
 - [x] (dev) Workflow `Firestore Backup` (`.github/workflows/firestore-backup.yml`): semanal + a demanda
 - [x] (owner, una vez) la SA de deploy tiene `roles/datastore.importExportAdmin` — otorgado 2026-10-18 (el run 38665050186 del 2026-10-15 había fallado con `PERMISSION_DENIED`; el primer reintento tras el grant también falló por propagación de IAM, ~2 min después ya pasó):
       `gcloud projects add-iam-policy-binding secid-org --member serviceAccount:firebase-adminsdk-fbsvc@secid-org.iam.gserviceaccount.com --role roles/datastore.importExportAdmin`
