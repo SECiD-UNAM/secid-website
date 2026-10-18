@@ -114,7 +114,7 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [ ] (owner) Fase 0 §B y correo de prueba del presupuesto (arriba) — siguen abiertos
 - [ ] Issue #79: restablecer contraseña / verificar email desde `secid.mx` en vez de la página genérica `secid-org.firebaseapp.com/__/auth/action`
 - [ ] Issue #82: errores de hidratación de React (#418/#423/#425) en `/es/signup` y `/es/dashboard`
-- [ ] (owner, 1 comando) Issue #86: `onUserDelete` (gen1, corre como `secid-org@appspot.gserviceaccount.com`, SA sin roles) falla con PERMISSION_DENIED al borrar `users/{uid}` → `gcloud projects add-iam-policy-binding secid-org --member serviceAccount:secid-org@appspot.gserviceaccount.com --role roles/datastore.user`; descubierto al limpiar cuentas (los docs se borraron a mano)
+- [ ] Issue #86: `onUserDelete` (gen1, corre como `secid-org@appspot.gserviceaccount.com`) — IAM `roles/datastore.user` otorgado por el owner 2026-10-18 19:30 UTC (PERMISSION_DENIED resuelto; runbook prod-cutover + `infra/runtime_iam.tf`). Segundo fallo: falta índice de colección-grupo `applications.applicantId` → PR #87 (`firestore.indexes.json`, lo despliega `cd.yml`). Falta: owner `! gh pr merge 87 --merge`, luego verificación (usuario Auth desechable sin doc → borrar → `User data cleaned up` en logs)
 - [ ] Issue #83: `onUserDocCreated` no añade al grupo `colaboradores@secid.mx` (Admin SDK API recién habilitada; puede requerir delegación a nivel de dominio) — verificar con el próximo registro real
 - [ ] PR #80 (opcional): paso de dominios reCAPTCHA en `cutover.yml`, por si se repite el cutover
 - [ ] (dev) `lint-staged` ignora `.ts/.tsx` ("No staged files match any configured task"): los fallos de Prettier llegan a CI
