@@ -65,6 +65,34 @@ Fase 4 del [checklist](../LAUNCH-CHECKLIST.md).
 functions/reglas y que `cd.yml` lo haga. Se pone **antes** del merge a `main`
 para que nunca haya dos deployers.
 
+## 1b. Dominios de la clave de reCAPTCHA (owner, 1 comando)
+
+Los formularios públicos (`/api/forms/contact`, `/api/forms/newsletter`)
+verifican reCAPTCHA v3 en el servidor. La clave es de reCAPTCHA
+**Enterprise** (`secid-website`, `6Lf0GPss…`) y solo acepta tokens de los
+dominios que tiene registrados. Si el dominio de prod no está, cada envío
+responde `400 captcha_failed` y en los logs de la función aparece
+`errorCodes: [ 'browser-error' ]` (pasó el 2026-10-18 con
+`secid-mx.web.app`).
+
+```bash
+gcloud recaptcha keys list --project secid-org --format='value(name,webSettings.allowedDomains)'
+gcloud recaptcha keys update 6Lf0GPssAAAAAMXkNpzJDzISkep0YRM14GmKCPSB --project secid-org \
+  --domains=secid.mx,www.secid.mx,beta.secid.mx,secid-mx.web.app,localhost
+```
+
+Verificar: enviar el formulario de contacto en `https://<site>.web.app/es/contact`
+y ver `200` en `gcloud logging read 'resource.labels.service_name="sendcontactmessage"'`.
+
+Diagnóstico de otros rechazos (log `[public-forms] CAPTCHA rejected`):
+
+| errorCodes / score       | Causa                                    | Arreglo                                                                                           |
+| ------------------------ | ---------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `browser-error`          | dominio no registrado en la clave        | comando de arriba                                                                                 |
+| `invalid-input-secret`   | `RECAPTCHA_SECRET_KEY` no es de la clave | regenerar el secreto legacy en la consola de reCAPTCHA Enterprise y actualizar el secret del repo |
+| `invalid-input-response` | token caducado o falso                   | normal en pruebas con curl; el sitio real manda token fresco                                      |
+| `score < 0.5`            | tráfico sospechoso (automatización)      | probar a mano; ajustar `CAPTCHA_MIN_SCORE` si hay falsos positivos                                |
+
 ## 2. Merge a `main`
 
 `main` solo cambia por PR (branch protection). Mergea el PR de promoción

@@ -69,6 +69,7 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [x] (CI) Dominios `secid.mx` y `www.secid.mx` solicitados en el sitio (`hostState=HOST_MISMATCH`, `ownershipState=OWNERSHIP_MISSING`: esperan DNS); registros copiados a la Fase 4
 - [x] (owner) Revisar el resumen del run: solo "Repo variables — MANUAL", resuelto arriba
 - [x] (owner) OAuth de Google y GitHub: callbacks siguen en `secid-org.firebaseapp.com` (no hay que cambiar nada)
+- [ ] (owner) Clave de reCAPTCHA Enterprise `secid-website`: añadir `secid-mx.web.app` y `www.secid.mx` a los dominios permitidos (hoy: secid.mx, beta.secid.mx, localhost) — descubierto 2026-10-18 en la prueba del formulario de contacto; comando en [prod-cutover §1b](./runbooks/prod-cutover.md). Me lo niega el clasificador: `gcloud recaptcha keys update 6Lf0GPssAAAAAMXkNpzJDzISkep0YRM14GmKCPSB --project secid-org --domains=secid.mx,www.secid.mx,beta.secid.mx,secid-mx.web.app,localhost`
 - [x] `gh variable list` muestra las dos variables (2026-10-18 03:33 UTC). Desde este momento `deploy-beta.yml` ya NO despliega backend; lo hará `cd.yml` al mergear PR #1
 
 ## Fase 3: merge y prueba en `.web.app` (owner hace merge, dev verifica, ~1 h) — runbook [prod-cutover §2–3](./runbooks/prod-cutover.md)
@@ -79,7 +80,7 @@ Si se usa otro, reemplazarlo en todo el documento.
   - [x] Login con email — 2026-10-18 OK tras crear contraseña con "¿Olvidaste tu contraseña?" (la cuenta del owner solo tenía Google). Hallazgos: el formulario no mapeaba `auth/invalid-credential` → PR #77 (mergeado, ab808c6); el enlace de restablecer abre la página genérica `secid-org.firebaseapp.com/__/auth/action` porque el sitio no tiene handler propio → issue de seguimiento (post-lanzamiento)
   - [x] Login con Google — 2026-10-18 OK en secid-mx.web.app
   - [ ] Registro completo con una cuenta `+qa` (no recibe correos automáticos; verificación de email sí llega porque la manda Firebase Auth, no nosotros)
-  - [ ] Enviar el formulario de contacto — 2026-10-18 FALLA en secid-mx.web.app: `POST /api/forms/contact` → `400 {"error":"captcha_failed"}` incluso con token fresco de `grecaptcha.execute` en la misma página; beta responde igual (mismo backend, mismo par `STAGING_RECAPTCHA_*`). La función no registraba el motivo → PR #78 añade log de siteverify (score / error-codes). Pendiente: probar a mano (puntuación v3 baja por automatización vs. secreto que no corresponde a la clave de sitio) y, si falla, mergear #78 y leer los logs
+  - [ ] Enviar el formulario de contacto — 2026-10-18 FALLA en secid-mx.web.app: `400 captcha_failed`. Causa confirmada con los logs de PR #78 (mergeado, 3997978): con token real Google responde `browser-error` = el dominio `secid-mx.web.app` no está registrado en la clave de reCAPTCHA Enterprise; el secreto es correcto (token falso → solo `invalid-input-response`). Arreglo: ítem nuevo de Fase 2 (dominios de la clave). Repetir el envío después
 - [x] Beta (`beta.secid.mx`) sigue funcionando contra el backend desplegado por `main` — smoke test local aprobado tras el deploy de prod; beta sirve `build-sha=793e8b6`
 - [ ] Si algo falla: secid.mx no se afecta (DNS sigue en Pages); corregir con otro PR
 
