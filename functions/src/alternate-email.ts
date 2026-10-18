@@ -230,7 +230,7 @@ export const confirmAlternateEmail = onCall(
       .toLowerCase();
     const canonicalUid: string = preReadData.canonicalUid;
 
-    if (request.auth.uid !== canonicalUid) {
+    if (uid !== canonicalUid) {
       throw new HttpsError(
         'permission-denied',
         'This verification link belongs to a different account'
