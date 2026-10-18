@@ -226,6 +226,7 @@ export function handleFirebaseError(error: any): string {
   const errorMessages: Record<string, string> = {
     'auth/user-not-found': 'Usuario no encontrado',
     'auth/wrong-password': 'Contrasena incorrecta',
+    'auth/invalid-credential': 'Correo o contrasena incorrectos',
     'auth/email-already-in-use': 'El correo electronico ya esta en uso',
     'auth/weak-password': 'La contrasena es muy debil',
     'auth/invalid-email': 'Correo electronico invalido',
