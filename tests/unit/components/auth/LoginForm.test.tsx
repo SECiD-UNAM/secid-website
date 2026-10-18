@@ -12,11 +12,7 @@
  * TD-013 tracking: ~34 tests (30 failing, 4 passing)
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { signIn, resetPassword, updateLastLogin } from '@/lib/auth';
@@ -357,13 +353,18 @@ describe.skip('LoginForm', () => {
 
       render(<LoginForm />);
 
-      await user.type(screen.getByLabelText(/email address/i), 'google-only@example.com');
+      await user.type(
+        screen.getByLabelText(/email address/i),
+        'google-only@example.com'
+      );
       await user.type(screen.getByLabelText(/password/i), 'whatever');
       await user.click(screen.getByRole('button', { name: /sign in/i }));
 
       await waitFor(() => {
         expect(
-          screen.getByText(/incorrect email or password.*signed up with google/i)
+          screen.getByText(
+            /incorrect email or password.*signed up with google/i
+          )
         ).toBeInTheDocument();
       });
     });
