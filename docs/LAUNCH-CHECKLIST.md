@@ -62,14 +62,14 @@ Si se usa otro, reemplazarlo en todo el documento.
 
 ## Fase 2: sitio de prod + dominios autorizados + variables (CI, ~5 min; antes del merge) — runbook [prod-cutover §1](./runbooks/prod-cutover.md)
 
-- [ ] (owner) Actions → `Production Cutover` → Run workflow con `site_id=secid-mx`, `custom_domains=secid.mx,www.secid.mx`, `backend_from_main=true`
-- [ ] (CI) Sitio de Hosting `secid-mx` creado → https://secid-mx.web.app
-- [ ] (CI) Auth authorized domains incluyen `secid-mx.web.app`, `secid.mx`, `www.secid.mx`
-- [ ] (CI) `FIREBASE_PROD_HOSTING_SITE=secid-mx` y `BACKEND_DEPLOYED_FROM_MAIN=true` (fallback: `gh variable set ...`, el resumen del run lo imprime)
-- [ ] (CI) Dominios `secid.mx` y `www.secid.mx` solicitados en el sitio; el resumen del run muestra los registros DNS para la Fase 4 (no cambian nada todavía)
-- [ ] (owner) Revisar el resumen del run: si algún paso dice MANUAL, hacerlo en consola como indica
-- [ ] (owner) OAuth de Google y GitHub: callbacks siguen en `secid-org.firebaseapp.com` (no hay que cambiar nada)
-- [ ] `gh variable list` muestra las dos variables
+- [x] (owner) Actions → `Production Cutover` → Run workflow con `site_id=secid-mx`, `custom_domains=secid.mx,www.secid.mx`, `backend_from_main=true` — run 39093945487 (2026-10-18), verde
+- [x] (CI) Sitio de Hosting `secid-mx` creado → https://secid-mx.web.app (responde 404 hasta el primer deploy de `cd.yml`)
+- [x] (CI) Auth authorized domains incluyen `secid-mx.web.app`, `secid.mx`, `www.secid.mx` — verificado por API: beta.secid.mx, localhost, secid-mx.web.app, secid-org.firebaseapp.com, secid-org.web.app, secid.mx, www.secid.mx
+- [x] (CI) `FIREBASE_PROD_HOSTING_SITE=secid-mx` y `BACKEND_DEPLOYED_FROM_MAIN=true` — el paso de CI falló (`GITHUB_TOKEN` no puede escribir variables: HTTP 403 "Resource not accessible by integration"); hecho con el fallback `gh variable set` desde local
+- [x] (CI) Dominios `secid.mx` y `www.secid.mx` solicitados en el sitio (`hostState=HOST_MISMATCH`, `ownershipState=OWNERSHIP_MISSING`: esperan DNS); registros copiados a la Fase 4
+- [x] (owner) Revisar el resumen del run: solo "Repo variables — MANUAL", resuelto arriba
+- [x] (owner) OAuth de Google y GitHub: callbacks siguen en `secid-org.firebaseapp.com` (no hay que cambiar nada)
+- [x] `gh variable list` muestra las dos variables (2026-10-18 03:33 UTC). Desde este momento `deploy-beta.yml` ya NO despliega backend; lo hará `cd.yml` al mergear PR #1
 
 ## Fase 3: merge y prueba en `.web.app` (owner hace merge, dev verifica, ~1 h) — runbook [prod-cutover §2–3](./runbooks/prod-cutover.md)
 
@@ -85,9 +85,8 @@ Si se usa otro, reemplazarlo en todo el documento.
 
 ## Fase 4: DNS (owner, ~20 min + propagación) — runbook [prod-cutover §4](./runbooks/prod-cutover.md), reversa en [rollback §C](./runbooks/rollback.md)
 
-- [ ] Anotar aquí los registros DNS actuales de `secid.mx` y `www` en Cloudflare (plan de reversa, apuntan a GitHub Pages):
-      `_________________________________________`
-- [ ] Poner en Cloudflare los registros que imprimió `Production Cutover` (Fase 2), con proxy apagado (nube gris) hasta que Firebase emita el certificado
+- [x] Registros DNS actuales (descubiertos por Firebase el 2026-10-18, plan de reversa): - `secid.mx` A → 185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153 (GitHub Pages) - `www.secid.mx` A → 104.21.28.15, 172.67.170.40 y AAAA → 2606:4700:3036::6815:1c0f, 2606:4700:3037::ac43:aa28 (IPs del proxy de Cloudflare; el origen real está detrás) - TXT que se conservan: `google-site-verification=vUD6e8cmWAEjaLUSYC3paK6QsCzsTBahTeGYBAVteos`, `v=spf1 include:_spf.google.com ~all`
+- [ ] Poner en Cloudflare, con proxy apagado (nube gris) hasta que Firebase emita el certificado: - `secid.mx`: quitar los 4 A de GitHub Pages; añadir A `199.36.158.100`; añadir TXT `hosting-site=secid-mx` - `www.secid.mx`: quitar A/AAAA; añadir CNAME → `secid-mx.web.app` - No tocar los TXT de verificación de Google ni el SPF
 - [ ] Re-lanzar `Production Cutover` (mismos inputs): `hostState` debe llegar a `HOST_ACTIVE` para `secid.mx` y `www.secid.mx`
 - [ ] `scripts/ci/smoke-test.sh https://secid.mx https://us-central1-secid-org.cloudfunctions.net` pasa
 - [ ] Login y registro probados sobre `https://secid.mx`
