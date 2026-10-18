@@ -121,6 +121,7 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [ ] (dev) ESLint de `functions/` roto en local (falta `eslint-plugin-import`)
 - [ ] (dev) Suite `LoginForm` en `describe.skip` en `main`; falla entera al activarla
 - [ ] (dev) Dependabot reporta 63 vulnerabilidades en `main` (7 críticas, 30 altas) — revisar `npm audit` y actualizar dependencias en un PR aparte
+- [ ] Roadmap (no bloquea): MCP de SECiD + skill para coding assistants — spec en `docs/specs/secid-mcp-and-assistant-skill.md`, ítems en `docs/features/todo.md`
 - [ ] (dev) Opcional: alerta/monitoreo de uptime para `https://secid.mx` (el smoke test solo corre en cada deploy)
 
 ## Reglas de trabajo con backend compartido (desde la Fase 3)
