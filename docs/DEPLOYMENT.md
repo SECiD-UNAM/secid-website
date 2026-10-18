@@ -269,6 +269,40 @@ Astro is configured with `output: 'static'`. Server-side API routes (`prerender 
 
 The file must be `lighthouserc.cjs` (not `.js`) because `package.json` has `"type": "module"`.
 
+## Monitoreo de uptime
+
+`.github/workflows/uptime.yml` vigila producción desde GitHub Actions sin servicios
+externos ni secretos: sólo `curl` y `gh` con el `GITHUB_TOKEN` del run (no hay checkout
+ni `npm install`, así que cada corrida cuesta unos segundos).
+
+**Qué verifica** (cada sonda se reintenta hasta 3 veces con 20 s entre intentos;
+cualquier 5xx, 404 o timeout cuenta como caída):
+
+| Sonda     | URL                                                               | Esperado                             |
+| --------- | ----------------------------------------------------------------- | ------------------------------------ |
+| `prod`    | `https://secid.mx/es/`                                            | 200 y el HTML contiene `build-sha=`  |
+| `www`     | `https://www.secid.mx/`                                           | 200 o redirección a `secid.mx`       |
+| `beta`    | `https://beta.secid.mx/es/`                                       | 200                                  |
+| `backend` | `POST …cloudfunctions.net/completeRegistration` con `{"data":{}}` | 401 (o 400/405): la función responde |
+
+**Cadencia:** cada 15 minutos (`*/15 * * * *`) más `workflow_dispatch` para una
+corrida manual. GitHub sólo ejecuta `schedule` en la rama por defecto (`main`) y puede
+retrasar o saltar corridas en horas pico; el resultado de cada corrida queda en
+Actions → _Uptime Monitor_ (el resumen del run lista las cuatro sondas).
+
+**Dónde aparecen las alertas:** en los Issues del repo. Al fallar, el workflow abre un
+issue `🔴 secid.mx caído: <fecha UTC>` con la etiqueta `incident` (la crea si no
+existe) y el detalle de cada sonda. Mientras ese issue siga abierto no se abre otro,
+aunque las corridas sigan fallando. Cuando las cuatro sondas vuelven a pasar, comenta
+`Recuperado <fecha UTC>` en el issue abierto y lo cierra. Si quieres recibir el aviso
+por correo o móvil, activa las notificaciones del repo para issues (o suscríbete a la
+etiqueta `incident`).
+
+**Cómo silenciarlo** (mantenimiento planeado, migración de DNS, etc.): Actions →
+_Uptime Monitor_ → menú `…` → _Disable workflow_; vuelve a habilitarlo al terminar.
+También puedes cerrar el issue `incident` a mano; el monitor abrirá uno nuevo si la
+caída persiste en la siguiente corrida.
+
 ## Monitoring Deploys
 
 ```bash

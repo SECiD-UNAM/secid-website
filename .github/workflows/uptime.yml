@@ -1,0 +1,194 @@
+name: Uptime Monitor
+
+# Cheap uptime check for production: curl only, no checkout, no npm, no
+# secrets. Every 15 minutes it probes secid.mx, www, beta and one callable
+# on the shared backend. On failure it opens ONE GitHub issue labelled
+# `incident` (never a second one while that is open); once every probe
+# passes again it comments "Recuperado <ts>" and closes it.
+# Runbook: docs/DEPLOYMENT.md ("Monitoreo de uptime").
+#
+# Silence it: Actions → Uptime Monitor → "…" → Disable workflow.
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: uptime
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    name: Probe secid.mx, beta and backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      INCIDENT_LABEL: incident
+    steps:
+      # Same probe style as scripts/ci/smoke-test.sh (curl -w '%{http_code}',
+      # expected-status regex) but inlined so the job needs no checkout.
+      # Each failing probe is retried up to 3 times, 20 s apart; probes
+      # that already passed are not repeated. Worst case (everything
+      # timing out) is 3 × 4 × 15 s + 2 × 20 s ≈ 4 min, inside the job
+      # timeout.
+      - name: Probe production, www, beta and backend
+        id: probe
+        shell: bash
+        env:
+          PROD_URL: https://secid.mx/es/
+          WWW_URL: https://www.secid.mx/
+          BETA_URL: https://beta.secid.mx/es/
+          CALLABLE_URL: https://us-central1-secid-org.cloudfunctions.net/completeRegistration
+          MAX_TIME: '15'
+          ATTEMPTS: '3'
+          RETRY_DELAY: '20'
+        run: |
+          set -uo pipefail
+          BODY="$RUNNER_TEMP/uptime-body"
+          # RESULT_<check> holds one markdown line with that check's last outcome.
+
+          # fetch <curl args…> → prints "<http_code> <redirect_url>" (000 on
+          # timeout / connection error); response body lands in $BODY.
+          fetch() {
+            local out
+            if out=$(curl -sS -o "$BODY" -w '%{http_code} %{redirect_url}' \
+                       --max-time "$MAX_TIME" "$@" 2>/dev/null); then
+              echo "$out"
+            else
+              echo "000"
+            fi
+          }
+
+          # Each check_* prints a detail string and returns 0 (up) / 1 (down).
+          check_prod() {
+            local res code; res=$(fetch "$PROD_URL"); code=${res%% *}
+            if [ "$code" = 200 ] && grep -q 'build-sha=' "$BODY"; then
+              echo "$PROD_URL → 200, build-sha presente"; return 0
+            fi
+            if [ "$code" = 200 ]; then
+              echo "$PROD_URL → 200 pero sin \`build-sha=\` (¿no es nuestro build?)"
+            else
+              echo "$PROD_URL → $code (esperado 200)"
+            fi
+            return 1
+          }
+
+          check_www() {
+            local res code loc; res=$(fetch "$WWW_URL"); code=${res%% *}; loc=${res#* }
+            case "$code" in
+              200) echo "$WWW_URL → 200"; return 0 ;;
+              301|302|307|308)
+                if [[ "$loc" =~ ^https?://secid\.mx(/|$) ]]; then
+                  echo "$WWW_URL → $code → $loc"; return 0
+                fi
+                echo "$WWW_URL → $code hacia $loc (esperado redirección a secid.mx)"; return 1 ;;
+              *) echo "$WWW_URL → $code (esperado 200 o redirección a secid.mx)"; return 1 ;;
+            esac
+          }
+
+          check_beta() {
+            local res code; res=$(fetch "$BETA_URL"); code=${res%% *}
+            if [ "$code" = 200 ]; then echo "$BETA_URL → 200"; return 0; fi
+            echo "$BETA_URL → $code (esperado 200)"; return 1
+          }
+
+          # Callable with an empty payload answers 401 (unauthenticated) or
+          # 400/405; 404 = not deployed, 5xx/000 = project or quota broken
+          # (both 2026 outages showed up here first).
+          check_backend() {
+            local res code
+            res=$(fetch -X POST -H 'Content-Type: application/json' --data '{"data":{}}' "$CALLABLE_URL")
+            code=${res%% *}
+            if [[ "$code" =~ ^(400|401|405)$ ]]; then
+              echo "completeRegistration → $code"; return 0
+            fi
+            echo "completeRegistration → $code (esperado 401/405)"; return 1
+          }
+
+          pending="prod www beta backend"
+          for attempt in $(seq 1 "$ATTEMPTS"); do
+            failed=""
+            for c in $pending; do
+              if detail=$("check_$c"); then
+                printf -v "RESULT_$c" '%s' "- ✅ $c: $detail"
+                echo "ok   $c → $detail"
+              else
+                printf -v "RESULT_$c" '%s' "- ❌ $c: $detail (intento $attempt/$ATTEMPTS)"
+                echo "FAIL $c → $detail (intento $attempt/$ATTEMPTS)"
+                failed="$failed $c"
+              fi
+            done
+            pending="${failed# }"
+            [ -z "$pending" ] && break
+            if [ "$attempt" -lt "$ATTEMPTS" ]; then
+              echo "Reintentando en ${RETRY_DELAY}s: $pending"
+              sleep "$RETRY_DELAY"
+            fi
+          done
+
+          report=$(for c in prod www beta backend; do v="RESULT_$c"; echo "${!v}"; done)
+          {
+            echo "report<<EOF"; echo "$report"; echo "EOF"
+            echo "failed=$pending"
+          } >> "$GITHUB_OUTPUT"
+          { echo "### Uptime $(date -u +'%Y-%m-%d %H:%M UTC')"; echo "$report"; } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -n "$pending" ]; then
+            echo "::error::Caído tras $ATTEMPTS intentos: $pending"
+            exit 1
+          fi
+          echo "Todo arriba."
+
+      - name: Ensure the incident label exists
+        if: always() && steps.probe.outcome != 'skipped'
+        run: |
+          gh label create "$INCIDENT_LABEL" --force \
+            --color B60205 \
+            --description 'Caída de producción detectada por el monitor de uptime'
+
+      # One open incident at a time: while it exists, repeated failures only
+      # show up in the Actions run list, never as a second issue.
+      - name: Open incident issue
+        if: failure() && steps.probe.outcome == 'failure'
+        env:
+          REPORT: ${{ steps.probe.outputs.report }}
+          FAILED: ${{ steps.probe.outputs.failed }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          open=$(gh issue list --label "$INCIDENT_LABEL" --state open --json number --jq '.[].number')
+          if [ -n "$open" ]; then
+            echo "Ya hay un incidente abierto (#${open//$'\n'/, #}); no se abre otro."
+            exit 0
+          fi
+          ts=$(date -u +'%Y-%m-%d %H:%M UTC')
+          body="El monitor de uptime (\`.github/workflows/uptime.yml\`) detectó que producción no responde correctamente a las **$ts** tras 3 intentos.
+
+          Verificaciones fallidas: **$FAILED**
+
+          ### Resultado de las verificaciones
+          $REPORT
+
+          Run: $RUN_URL
+
+          Qué revisar: \`docs/DEPLOYMENT.md\` → \"Monitoreo de uptime\" y \"Common Deploy Issues\". Este issue se cierra solo cuando todas las verificaciones vuelven a pasar."
+          gh issue create --title "🔴 secid.mx caído: $ts" --label "$INCIDENT_LABEL" --body "$body"
+
+      - name: Close open incident (recovered)
+        if: success()
+        run: |
+          set -euo pipefail
+          open=$(gh issue list --label "$INCIDENT_LABEL" --state open --json number --jq '.[].number')
+          [ -z "$open" ] && { echo "Sin incidentes abiertos."; exit 0; }
+          ts=$(date -u +'%Y-%m-%d %H:%M UTC')
+          for n in $open; do
+            gh issue comment "$n" --body "Recuperado $ts — todas las verificaciones del monitor de uptime pasan de nuevo."
+            gh issue close "$n" --reason completed
+            echo "Cerrado #$n"
+          done
