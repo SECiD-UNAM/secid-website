@@ -23,6 +23,8 @@ _UNAM's Data Science Alumni Society Platform_
 
 ---
 
+> Contributing? Read [CONTRIBUTING.md](CONTRIBUTING.md) first: branch flow, local setup, tests, CI checks and what not to do.
+
 ## 🎯 About SECiD
 
 **SECiD** (Sociedad de Egresados en Ciencia de Datos) is UNAM's premier Data Science Alumni Society, dedicated to connecting graduates, fostering professional growth, and building a strong community within Mexico's data science ecosystem.
