@@ -10,8 +10,9 @@ prueba gratuita expiró y todas las Cloud Functions respondieron 503 durante
 
 1. https://console.cloud.google.com/billing → selecciona la cuenta de
    facturación de `secid-org` → **Budgets & alerts** → **Create budget**.
-2. Scope: proyecto `secid-org`. Amount: _Specified amount_, p. ej. **$20 USD/mes**
-   (el gasto real es de centavos; la alerta es para detectar anomalías).
+2. Scope: proyecto `secid-org`. Amount: _Specified amount_, p. ej. **$400 MXN/mes**
+   (la cuenta factura en MXN; el gasto real es de centavos, la alerta es
+   para detectar anomalías).
 3. Thresholds: 50 %, 90 %, 100 % del real.
 4. Notifications: marca _Email alerts to billing admins and users_; agrega el
    correo del operador si no es admin de facturación.
@@ -25,14 +26,18 @@ habilitada en `secid-org` desde 2026-10-18; si vuelve a salir
 gcloud services enable billingbudgets.googleapis.com --project secid-org
 ACC=$(gcloud billing projects describe secid-org --format='value(billingAccountName)' | sed 's#billingAccounts/##')
 gcloud billing budgets create --billing-account="$ACC" --display-name="secid-org monthly" \
-  --budget-amount=20USD --threshold-rule=percent=0.5 --threshold-rule=percent=0.9 --threshold-rule=percent=1.0 \
+  --budget-amount=400MXN --threshold-rule=percent=0.5 --threshold-rule=percent=0.9 --threshold-rule=percent=1.0 \
   --filter-projects=projects/706604039024
 ```
 
-Ojo: `--filter-projects` necesita el **número** de proyecto
-(`gcloud projects describe secid-org --format='value(projectNumber)'`);
-con el id (`projects/secid-org`) la API responde `INVALID_ARGUMENT`
-(pasó el 2026-10-18).
+Dos trampas que devuelven `INVALID_ARGUMENT` sin más detalle (2026-10-18):
+
+- La moneda debe ser la de la cuenta de facturación, que es **MXN**
+  (`gcloud billing accounts describe <cuenta> --format='value(currencyCode)'`);
+  `20USD` falla.
+- `--filter-projects` necesita el **número** de proyecto
+  (`gcloud projects describe secid-org --format='value(projectNumber)'`),
+  no el id.
 
 ## B. Notificaciones de la cuenta de facturación
 
