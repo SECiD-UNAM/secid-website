@@ -38,9 +38,9 @@ Si se usa otro, reemplazarlo en todo el documento.
 - [ ] (owner) Notificaciones de la cuenta de facturación (runbook §B)
 - [ ] (owner) Correo de prueba de la alerta recibido
 - [x] (dev) Workflow `Firestore Backup` (`.github/workflows/firestore-backup.yml`): semanal + a demanda
-- [ ] (owner, una vez) la SA de deploy necesita `roles/datastore.importExportAdmin` — confirmado 2026-10-15, run 38665050186 falló con `PERMISSION_DENIED`:
+- [x] (owner, una vez) la SA de deploy tiene `roles/datastore.importExportAdmin` — otorgado 2026-10-18 (el run 38665050186 del 2026-10-15 había fallado con `PERMISSION_DENIED`; el primer reintento tras el grant también falló por propagación de IAM, ~2 min después ya pasó):
       `gcloud projects add-iam-policy-binding secid-org --member serviceAccount:firebase-adminsdk-fbsvc@secid-org.iam.gserviceaccount.com --role roles/datastore.importExportAdmin`
-- [ ] (CI) `gh workflow run firestore-backup.yml --ref feature/hub -f label=pre-cutover` en verde
+- [x] (CI) `gh workflow run firestore-backup.yml --ref feature/hub -f label=pre-cutover` en verde — run 39086251312, export en `gs://secid-org.firebasestorage.app/firestore-backups/2026-10-18T0122Z-pre-cutover/`
 
 ## Fase 1: PR de endurecimiento (dev, 1–2 días) — `fix/shared-backend-hardening` → `feature/hub`
 
