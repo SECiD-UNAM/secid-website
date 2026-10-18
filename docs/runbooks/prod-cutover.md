@@ -77,7 +77,7 @@ responde `400 captcha_failed` y en los logs de la función aparece
 
 ```bash
 gcloud recaptcha keys list --project secid-org --format='value(name,webSettings.allowedDomains)'
-gcloud recaptcha keys update 6Lf0GPssAAAAAMXkNpzJDzISkep0YRM14GmKCPSB --project secid-org \
+gcloud recaptcha keys update 6Lf0GPssAAAAAMXkNpzJDzISkep0YRM14GmKCPSB --project secid-org --web \
   --domains=secid.mx,www.secid.mx,beta.secid.mx,secid-mx.web.app,localhost
 ```
 
