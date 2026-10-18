@@ -123,6 +123,27 @@ gcloud projects add-iam-policy-binding secid-org \
   --role roles/recaptchaenterprise.agent
 ```
 
+### Roles de las cuentas de servicio de runtime (una vez por proyecto)
+
+Las funciones **gen2** corren como `706604039024-compute@developer.gserviceaccount.com`
+(tiene `datastore.user`, `firebaseauth.admin`, `recaptchaenterprise.agent`,
+`eventarc.eventReceiver`, `run.invoker`). La única **gen1** (`onUserDelete`,
+trigger de Auth) corre como `secid-org@appspot.gserviceaccount.com`, que se
+quedó sin roles al retirarle Editor: sin esto el borrado de usuarios deja
+`users/{uid}` huérfanos (`PERMISSION_DENIED` en los logs; issue #86). Fix:
+
+```bash
+gcloud projects add-iam-policy-binding secid-org \
+  --member serviceAccount:secid-org@appspot.gserviceaccount.com \
+  --role roles/datastore.user
+```
+
+Verificación sin ruido: crear un usuario Auth desechable **sin** documento
+(`POST identitytoolkit…/projects/secid-org/accounts {"email":…,"disabled":true}`),
+esperar ~2 min de propagación de IAM, borrarlo (`accounts:delete`) y buscar
+`User data cleaned up for <uid>` en `gcloud functions logs read onUserDelete --region us-central1`.
+Ambos bindings están también en `infra/runtime_iam.tf`.
+
 Log de la función: `[captcha] rejected { action, backend, reason, score }`
 cuando rechaza; `[captcha] verify error` (403) si falta el rol. Para
 reproducir un token real sin navegador a mano:
