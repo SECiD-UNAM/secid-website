@@ -102,6 +102,9 @@ describe('Firebase Service', () => {
       expect(handleFirebaseError({ code: 'auth/wrong-password' })).toBe(
         'Contrasena incorrecta'
       );
+      expect(handleFirebaseError({ code: 'auth/invalid-credential' })).toBe(
+        'Correo o contrasena incorrectos'
+      );
       expect(handleFirebaseError({ code: 'auth/email-already-in-use' })).toBe(
         'El correo electronico ya esta en uso'
       );

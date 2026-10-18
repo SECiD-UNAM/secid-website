@@ -245,6 +245,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         es: 'Contraseña incorrecta',
         en: 'Incorrect password',
       },
+      // Firebase returns this (instead of user-not-found / wrong-password)
+      // for any bad email+password combo, including accounts that only
+      // have a Google provider and no password yet.
+      'auth/invalid-credential': {
+        es: 'Correo o contraseña incorrectos. Si te registraste con Google, usa ese botón o restablece tu contraseña.',
+        en: 'Incorrect email or password. If you signed up with Google, use that button or reset your password.',
+      },
       'auth/invalid-email': {
         es: 'Correo electrónico inválido',
         en: 'Invalid email address',
