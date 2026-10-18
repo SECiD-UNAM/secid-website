@@ -173,6 +173,9 @@
   "homepage": "https://secid.mx",
   "overrides": {
     "esbuild": "^0.25.0",
-    "yaml": "^2.8.3"
+    "yaml": "^2.8.3",
+    "sharp": "^0.35.5",
+    "svgo": "^4.1.0",
+    "@grpc/grpc-js": "^1.14.6"
   }
 }
