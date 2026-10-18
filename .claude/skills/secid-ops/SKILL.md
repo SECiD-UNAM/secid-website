@@ -37,18 +37,18 @@ breaks the URL. Always write `"${FS}:..."`.
 
 ## What references a member
 
-| Where | Key | Note |
-| --- | --- | --- |
-| Auth user | uid | deleting it fires gen1 `onUserDelete` |
-| `users/{uid}` | uid | `onUserDelete` deletes it; subcollections do NOT cascade |
-| `applications` (collection group) | `applicantId` | `onUserDelete` deletes them |
-| `member_surveys/{uid}` | uid | delete by hand |
-| `numero_cuenta_index/{numeroCuenta}` | field `uid` | delete ONLY if `uid` matches |
-| `email_alias/{email}` | field `canonicalUid` | alias → canonical account; keep if it points elsewhere |
-| `rbac_user_groups/{uid}` | uid | delete by hand if present |
-| `users/{uid}/{activity,notifications,compensation,jobMatches}` | subcollections | list with `users/<uid>:listCollectionIds`, delete each doc |
-| `connectionRequests`, `messages`, `conversations`, `companies`, … | uid fields | the full field map is `SIMPLE_COLLECTIONS` in `functions/src/merge-engine.ts`; query with `runQuery` |
-| `merge_requests`, `archived_users` | `sourceUid`/`targetUid` | duplicate accounts go through the merge engine, not raw deletes |
+| Where                                                             | Key                     | Note                                                                                                 |
+| ----------------------------------------------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------- |
+| Auth user                                                         | uid                     | deleting it fires gen1 `onUserDelete`                                                                |
+| `users/{uid}`                                                     | uid                     | `onUserDelete` deletes it; subcollections do NOT cascade                                             |
+| `applications` (collection group)                                 | `applicantId`           | `onUserDelete` deletes them                                                                          |
+| `member_surveys/{uid}`                                            | uid                     | delete by hand                                                                                       |
+| `numero_cuenta_index/{numeroCuenta}`                              | field `uid`             | delete ONLY if `uid` matches                                                                         |
+| `email_alias/{email}`                                             | field `canonicalUid`    | alias → canonical account; keep if it points elsewhere                                               |
+| `rbac_user_groups/{uid}`                                          | uid                     | delete by hand if present                                                                            |
+| `users/{uid}/{activity,notifications,compensation,jobMatches}`    | subcollections          | list with `users/<uid>:listCollectionIds`, delete each doc                                           |
+| `connectionRequests`, `messages`, `conversations`, `companies`, … | uid fields              | the full field map is `SIMPLE_COLLECTIONS` in `functions/src/merge-engine.ts`; query with `runQuery` |
+| `merge_requests`, `archived_users`                                | `sourceUid`/`targetUid` | duplicate accounts go through the merge engine, not raw deletes                                      |
 
 Approve a membership = set the Estado dropdown to Activo in
 `/es/dashboard/admin/members` (calls `updateMemberStatus`: lifecycle active,
@@ -65,13 +65,13 @@ listed inventory first.
 
 ## Recipes
 
-| Need | Do |
-| --- | --- |
+| Need                                       | Do                                                                                                                                                                                                             |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Verify `onUserDelete` without side effects | create a disabled Auth user with no `users` doc (`POST $IT/accounts` `{"email":…,"disabled":true}`), delete it, read `gcloud functions logs read onUserDelete --region us-central1` for `User data cleaned up` |
-| Firestore backup before risky work | owner: `gh workflow run firestore-backup.yml --ref feature/hub -f label=<why>` (runbook `docs/runbooks/firestore-backup.md`) |
-| Index just deployed | `GET $FS/../collectionGroups/<cg>/fields/<field>`; wait for `state: READY` (~4 min) |
-| Prod deploy status | `gh run list --workflow=cd.yml --limit 1`; smoke test = `scripts/ci/smoke-test.sh https://secid.mx https://us-central1-secid-org.cloudfunctions.net` |
-| Record what you did | `docs/LAUNCH-CHECKLIST.md`: account work under "Fase 5: limpieza", anything else under "Seguimiento post-lanzamiento" (checkbox + UTC time + what was touched); commit on `feature/hub` |
+| Firestore backup before risky work         | owner: `gh workflow run firestore-backup.yml --ref feature/hub -f label=<why>` (runbook `docs/runbooks/firestore-backup.md`)                                                                                   |
+| Index just deployed                        | `GET $FS/../collectionGroups/<cg>/fields/<field>`; wait for `state: READY` (~4 min)                                                                                                                            |
+| Prod deploy status                         | `gh run list --workflow=cd.yml --limit 1`; smoke test = `scripts/ci/smoke-test.sh https://secid.mx https://us-central1-secid-org.cloudfunctions.net`                                                           |
+| Record what you did                        | `docs/LAUNCH-CHECKLIST.md`: account work under "Fase 5: limpieza", anything else under "Seguimiento post-lanzamiento" (checkbox + UTC time + what was touched); commit on `feature/hub`                        |
 
 ## Common mistakes
 
