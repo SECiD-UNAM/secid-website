@@ -96,7 +96,7 @@ Si se usa otro, reemplazarlo en todo el documento.
 ## Fase 5: limpieza (1–2 semanas después) — runbook [prod-cutover §5](./runbooks/prod-cutover.md)
 
 - [ ] Desactivar GitHub Pages (Settings → Pages) y quitar el custom domain
-- [ ] PR: borrar `static.yml` y el `public/CNAME` viejo
+- [ ] PR: borrar el `public/CNAME` viejo (`static.yml` ya no existía; Pages está en modo workflow sin despliegues desde marzo) — listo en borrador: PR #85, mergear tras desactivar Pages
 - [ ] Borrar la cuenta de prueba `artemiopadilla+secidtest0802@gmail.com` (uid `pc1FbpU8YtZndJ9K6LnDmlzbWIs1`)
 - [ ] Borrar la cuenta QA del lanzamiento `artemiopadilla+qa@gmail.com` (uid `fSR9sRWj4UXW7cypeCOcCX4Q2o62`, solicitud pendiente de membresía: rechazar o borrar, no aprobar) y su `member_surveys/{uid}`
 - [ ] Limpiar cuentas basura detectadas en el panel de admin el 2026-10-18 (Auth + `users/{uid}`): `kotom83154@nuitx.com` (QA de mayo, uid `GFaWlLZbOSNCqHbtM1Vhvo3dqbk1`, ¡verificación aprobada!), `gcpmap-probe-9605be7ef69ba722be9b@example.com` ×2 (`E2a51HHDvMSfnoExo0bHUSWYyWx2`, `EXmlbmwRFkUwF5rRqXa1QkgVUNu1`), `gcpmap-dp-df2d0476cd9f5ec67ace@example.com` (`Vi3ICe5Vu1QoSKCNRvXipAVS0wu1`), `gcpmap-probe-367e9e8c3e0c7cae9b05@example.com` (`BTV4aX9vB1gqk5wsIfVIeNYlRz82`)
