@@ -100,6 +100,10 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       `Coverage` es check requerido de `main` desde el 2026-10-19 (11
       contextos; [runbooks/github-governance.md](./runbooks/github-governance.md)).
 
+- [x] B9. TruffleHog fallaba en cada push a `main` con "BASE and HEAD
+      commits are the same" (base `origin/main` == HEAD). Ahora en push usa
+      `github.event.before`, en PR la base del PR y en schedule/dispatch
+      escanea el repo completo.
 ## Bloque C — Pasos del owner (~30 min en total)
 
 - [ ] C8. Firebase → Authentication → Templates → "Customize action URL" →
