@@ -35,6 +35,10 @@ async function openEvent(page: Page, id: string, title: string) {
 }
 
 test.describe('Event detail and registration', () => {
+  // Serial: the full registration (last test) changes the state the earlier
+  // tests assert on the single upcoming seeded event.
+  test.describe.configure({ mode: 'serial' });
+
   test.beforeEach(async ({ page }) => {
     await login(page, SEEDED.member);
   });
@@ -120,4 +124,63 @@ test.describe('Event detail and registration', () => {
       page.getByRole('link', { name: 'Volver a eventos' })
     ).toHaveAttribute('href', '/es/dashboard/events');
   });
+
+  // Last on purpose (serial mode): it registers for the only upcoming event
+  // and the tests above expect its "Registrarse" button and seeded count.
+  // The attendee counter is maintained by the Cloud Function triggers on
+  // registrations create/delete, so both directions are asserted with a
+  // reload-and-check loop; cancelling at the end leaves the seed as found.
+  test('registers for the webinar, bumps the attendee count and cancels', async ({
+    page,
+  }) => {
+    await openEvent(page, UPCOMING_ID, UPCOMING);
+    const seeded = await attendeeCount(page);
+
+    await registerButton(page).click({ timeout: 20000 });
+    await expect(formHeading(page)).toBeVisible();
+    const next = page.getByRole('button', { name: 'Siguiente' });
+    await page.locator('input[type="tel"]').fill('+52 55 1234 5678');
+    await next.click(); // -> requirements (optional)
+    await next.click(); // -> organiser questions (none seeded)
+    await expect(
+      page.getByText('No hay preguntas adicionales para este evento.')
+    ).toBeVisible();
+    await next.click(); // -> review & terms
+    await expect(
+      page.getByRole('heading', { name: 'Resumen del registro' })
+    ).toBeVisible();
+    await page.locator('#acceptTerms').check();
+    await page.locator('#acceptPrivacy').check();
+    await page.getByRole('button', { name: 'Confirmar registro' }).click();
+    await expect(
+      page.getByRole('heading', { name: '¡Registro completado exitosamente!' })
+    ).toBeVisible({ timeout: 15000 });
+
+    // The form reloads the page, which now shows the registered state.
+    await expect(
+      page.getByText('Estás registrado para este evento')
+    ).toBeVisible({ timeout: 20000 });
+    await expectAttendeeCount(page, seeded + 1);
+
+    page.once('dialog', (dialog) => dialog.accept());
+    await page.getByRole('button', { name: 'Cancelar registro' }).click();
+    await expect(registerButton(page)).toBeVisible({ timeout: 20000 });
+    await expectAttendeeCount(page, seeded);
+  });
 });
+
+/** "12/100" on the detail page -> 12. */
+async function attendeeCount(page: Page): Promise<number> {
+  const text = await page.getByText(/^\d+\/100$/).textContent();
+  return Number(text?.split('/')[0]);
+}
+
+/** The counter is written by a trigger; poll by reloading. */
+async function expectAttendeeCount(page: Page, expected: number) {
+  await expect(async () => {
+    await page.reload();
+    await expect(page.getByText(`${expected}/100`)).toBeVisible({
+      timeout: 5000,
+    });
+  }).toPass({ timeout: 30000 });
+}
