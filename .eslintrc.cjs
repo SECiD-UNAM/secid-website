@@ -178,9 +178,18 @@ module.exports = {
   ignorePatterns: [
     'dist/',
     'node_modules/',
+    // Separate package with its own root ESLint config and devDependencies
+    // (eslint-plugin-import lives in functions/node_modules, which the root
+    // install does not provide). Linted via `npm run lint --prefix functions`.
+    'functions/',
     '.astro/',
     'public/',
     '*.min.js',
     'raw_template/',
+    // Local tool output (untracked); vitest's HTML report ships minified JS.
+    'test-results/',
+    'coverage/',
+    'playwright-report/',
+    '.firebase/',
   ],
 };
