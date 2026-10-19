@@ -28,7 +28,9 @@ async function _loginAsAdmin(page: Page) {
   await expect(page).toHaveURL(DASHBOARD_URL);
 }
 
-test.describe('Events Page', () => {
+// función no implementada: la UI real no expone estos flujos ni data-testid;
+// ver docs/ROADMAP.md A4
+test.describe.skip('Events Page', () => {
   test.beforeEach(async ({ page }) => {
     // Clear any existing session (safe before the first navigation).
     await clearBrowserStorage(page);

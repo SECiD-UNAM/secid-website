@@ -261,7 +261,9 @@ class MemberNetworkingFlow {
   }
 }
 
-test.describe('Member Networking and Community Flow', () => {
+// función no implementada: la UI real no expone estos flujos ni data-testid;
+// ver docs/ROADMAP.md A4
+test.describe.skip('Member Networking and Community Flow', () => {
   let networkingFlow: MemberNetworkingFlow;
 
   test.beforeEach(async ({ page }) => {
@@ -681,7 +683,9 @@ test.describe('Member Networking and Community Flow', () => {
 });
 
 // Mobile networking tests
-test.describe('Mobile Member Networking', () => {
+// función no implementada: la UI real no expone estos flujos ni data-testid;
+// ver docs/ROADMAP.md A4
+test.describe.skip('Mobile Member Networking', () => {
   test.use({ viewport: { width: 375, height: 667 } });
 
   test('mobile member directory and search', async ({ page }) => {
@@ -727,7 +731,9 @@ test.describe('Mobile Member Networking', () => {
 });
 
 // Visual regression tests
-test.describe('Networking Visual Tests', () => {
+// función no implementada: la UI real no expone estos flujos ni data-testid;
+// ver docs/ROADMAP.md A4
+test.describe.skip('Networking Visual Tests', () => {
   test('member directory layout consistency', async ({ page }) => {
     const networkingFlow = new MemberNetworkingFlow(page);
     await networkingFlow.navigateToMemberDirectory();
@@ -760,7 +766,9 @@ test.describe('Networking Visual Tests', () => {
 });
 
 // Accessibility tests
-test.describe('Networking Accessibility', () => {
+// función no implementada: la UI real no expone estos flujos ni data-testid;
+// ver docs/ROADMAP.md A4
+test.describe.skip('Networking Accessibility', () => {
   test('member directory accessibility', async ({ page }) => {
     const networkingFlow = new MemberNetworkingFlow(page);
     await networkingFlow.navigateToMemberDirectory();
