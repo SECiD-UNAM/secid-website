@@ -64,7 +64,13 @@ const unamVerificationSchema = z.object({
   academicLevel: z.enum(['licenciatura', 'posgrado', 'curso']),
   campus: z.string().min(1, 'Campus is required'),
   generation: z.string().optional(),
-  graduationYear: z.coerce.number().min(2000).max(2030).optional(),
+  // The field is optional, but an untouched <input type="number"> submits ''
+  // and z.coerce.number('') is 0, which fails min(2000) and silently blocked
+  // the whole form. Map the empty string to undefined before coercing.
+  graduationYear: z.preprocess(
+    (value) => (value === '' || value === null ? undefined : value),
+    z.coerce.number().min(2000).max(2030).optional()
+  ),
 });
 
 // Step 3 alt: Recruiter company schema
@@ -1093,6 +1099,11 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                 {...unamForm.register('graduationYear')}
                 className={inputClass}
               />
+              {unamForm.formState.errors.graduationYear && (
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                  {unamForm.formState.errors.graduationYear.message}
+                </p>
+              )}
             </div>
 
             {/* Verification document upload */}
