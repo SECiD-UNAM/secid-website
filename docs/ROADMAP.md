@@ -206,11 +206,22 @@ Estado real hoy:
       `/es|en/dashboard/admin/communications` y enlace "Comunicados" en el
       panel. Pendiente al desplegar: añadir el permiso a los docs vivos de
       `rbac_groups` (el seed no sobrescribe grupos existentes).
-- [ ] F21. Newsletter por correo (½ día, después de F20): botón "enviar a
+- [x] F21. Newsletter por correo (½ día, después de F20): botón "enviar a
       suscriptores" en `NewsletterFormPage` usando el mismo callable con la
       audiencia `newsletter` (suscriptores confirmados) y enlace de baja
       (`unsubscribe` firmado). Hoy el formulario público acepta altas sin
       doble opt-in; añadir confirmación por correo antes de enviar nada.
+      Hecho en PR #136: doble opt-in en `subscribeNewsletter` (doc
+      `pending` + `confirmTokenHash`, correo de confirmación), endpoints
+      públicos `confirmNewsletter` y `unsubscribeNewsletter`
+      (`/api/newsletter/confirm|unsubscribe`, token de baja por suscriptor),
+      callable `sendNewsletterIssue` (`functions/src/newsletter-send.ts`,
+      `newsletter:publish`, HTML saneado + enlace de baja, `sentAt` /
+      `recipientCount` en la edición, segundo envío solo con `force`),
+      panel "Enviar a suscriptores" en el editor, reglas (`newsletter` solo
+      legible con `nl:e.a`; recibo de envío no escribible desde cliente) y
+      runbook `docs/runbooks/communications.md`. Los docs sin `status`
+      (anteriores) cuentan como confirmados.
 - [ ] F22. Notificaciones in-app (1 día, opcional): o se borran
       `NotificationCenter`/`notifications.ts` y su página de settings, o se
       conectan de verdad: escribir en `users/{uid}/notifications` desde los
