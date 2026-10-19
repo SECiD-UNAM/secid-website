@@ -39,9 +39,16 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       `jsx-key` falsos positivos en `.astro`, 3 `var` del snippet de Amplitude,
       1 `triple-slash` de Astro). Falta: resolverlos o acotarlos por override y
       quitar el `continue-on-error` del lint en CI.
-- [ ] B6. Umbrales de cobertura fijados al nivel actual (hoy están en 0);
-      quitar `skip` a SignUpForm (29 tests), TwoFactorVerification (49), auth
-      (13), jobs (20) y Button (10), una suite por PR (como LoginForm, PR #94).
+- [x] B6. Cobertura y suites saltadas (2026-10-19). PR #105: umbrales en
+      16/16/43/71 (líneas/sentencias/funciones/ramas, el piso medido) y bug de
+      config corregido: `thresholds.global` es forma de Jest, Vitest la
+      ignoraba, así que nunca se aplicaron. PR #106 SignUpForm (29→44 tests;
+      arregló bug real: "año de graduación" vacío bloqueaba el formulario de
+      verificación UNAM sin mostrar error), #107 TwoFactorVerification
+      (49→54), #110 Button (10→13). #108 auth.test y #109 jobs.test borrados:
+      los 33 tests describían APIs inexistentes y ya tienen suites propias.
+      Pendiente (follow-up): CI corre vitest por shards sin `--coverage`, así
+      que el umbral no se evalúa en CI y codecov sube un lcov que no existe.
 - [x] B7. PR #103 (2026-10-19): README, `AGENTS.md` y `docs/DEPLOYMENT.md`
       actualizados; `functions/lib` fuera del repo (el `predeploy` de
       `firebase.json` lo recompila en cada deploy).
