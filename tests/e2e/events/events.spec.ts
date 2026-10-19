@@ -1,688 +1,162 @@
-import { test, expect, Page } from '@playwright/test';
-import { clearBrowserStorage } from '../../utils/browser-storage';
+import { test, expect, type Page } from '@playwright/test';
+import { SEEDED, login } from '../../utils/session';
 
-// Test URLs
-const BASE_URL = process.env.BASE_URL || 'http://localhost:4321';
-const EVENTS_URL = `${BASE_URL}/en/events`;
-const DASHBOARD_URL = `${BASE_URL}/en/dashboard`;
+/**
+ * Member events listing: /es/dashboard/events mounts
+ * src/components/events/EventList.tsx (useUniversalListing over a
+ * client-side adapter of `events` with status == 'published'). The seed
+ * has two past events (2024) and one upcoming webinar whose dates are
+ * relative to the seed run, so the default "Próximos" tab shows exactly
+ * one card. The public /es/events page mounts the same component.
+ */
+const UPCOMING = 'Webinar: Carreras en Ciencia de Datos';
+const CAREER_FAIR = 'Data Science Career Fair 2024';
+const WORKSHOP = 'Introduction to MLOps Workshop';
+const ALL = [UPCOMING, CAREER_FAIR, WORKSHOP];
 
-// Helper functions
-async function navigateToEvents(page: Page) {
-  await page.goto(EVENTS_URL);
-  await expect(page).toHaveTitle(/events/i);
+function eventCard(page: Page, title: string) {
+  return page.getByRole('heading', { level: 3, name: title });
 }
 
-async function loginAsUser(page: Page) {
-  await page.goto(`${BASE_URL}/en/login`);
-  await page.fill('[data-testid="email-input"]', 'user@example.com');
-  await page.fill('[data-testid="password-input"]', 'password123');
-  await page.click('[data-testid="login-button"]');
-  await expect(page).toHaveURL(DASHBOARD_URL);
+async function expectEvents(page: Page, titles: string[]) {
+  await expect(
+    page.getByText(new RegExp(`^${titles.length} eventos`))
+  ).toBeVisible({ timeout: 15000 });
+  for (const title of ALL) {
+    await expect(eventCard(page, title)).toHaveCount(
+      titles.includes(title) ? 1 : 0
+    );
+  }
 }
 
-async function _loginAsAdmin(page: Page) {
-  await page.goto(`${BASE_URL}/en/login`);
-  await page.fill('[data-testid="email-input"]', 'admin@secid.mx');
-  await page.fill('[data-testid="password-input"]', 'password123');
-  await page.click('[data-testid="login-button"]');
-  await expect(page).toHaveURL(DASHBOARD_URL);
+function typeFilter(page: Page) {
+  return page.getByRole('combobox').filter({ hasText: 'Todos los tipos' });
 }
 
-// función no implementada: la UI real no expone estos flujos ni data-testid;
-// ver docs/ROADMAP.md A4
-test.describe.skip('Events Page', () => {
+test.describe('Events listing (member)', () => {
   test.beforeEach(async ({ page }) => {
-    // Clear any existing session (safe before the first navigation).
-    await clearBrowserStorage(page);
+    await login(page, SEEDED.member);
+    await page.goto('/es/dashboard/events');
+    await expect(eventCard(page, UPCOMING)).toBeVisible({ timeout: 20000 });
   });
 
-  test.describe('Event Listing Display', () => {
-    test('should display upcoming events correctly', async ({ page }) => {
-      await navigateToEvents(page);
-
-      // Wait for events to load
-      await expect(
-        page.locator('[data-testid="event-card"]').first()
-      ).toBeVisible();
-
-      // Check event card elements
-      const firstEventCard = page.locator('[data-testid="event-card"]').first();
-      await expect(
-        firstEventCard.locator('[data-testid="event-title"]')
-      ).toBeVisible();
-      await expect(
-        firstEventCard.locator('[data-testid="event-date"]')
-      ).toBeVisible();
-      await expect(
-        firstEventCard.locator('[data-testid="event-location"]')
-      ).toBeVisible();
-      await expect(
-        firstEventCard.locator('[data-testid="event-category"]')
-      ).toBeVisible();
-    });
-
-    test('should show event type badges', async ({ page }) => {
-      await navigateToEvents(page);
-
-      // Look for different event types
-      const workshopEvents = page.locator(
-        '[data-testid="event-card"][data-category="workshop"]'
-      );
-      const webinarEvents = page.locator(
-        '[data-testid="event-card"][data-category="webinar"]'
-      );
-      const _conferenceEvents = page.locator(
-        '[data-testid="event-card"][data-category="conference"]'
-      );
-
-      if ((await workshopEvents.count()) > 0) {
-        await expect(
-          workshopEvents.first().locator('[data-testid="workshop-badge"]')
-        ).toBeVisible();
-      }
-
-      if ((await webinarEvents.count()) > 0) {
-        await expect(
-          webinarEvents.first().locator('[data-testid="webinar-badge"]')
-        ).toBeVisible();
-      }
-    });
-
-    test('should show featured event badges', async ({ page }) => {
-      await navigateToEvents(page);
-
-      const featuredEvents = page.locator(
-        '[data-testid="event-card"][data-featured="true"]'
-      );
-      if ((await featuredEvents.count()) > 0) {
-        await expect(
-          featuredEvents.first().locator('[data-testid="featured-badge"]')
-        ).toBeVisible();
-      }
-    });
-
-    test('should display virtual/physical location indicators', async ({
-      page,
-    }) => {
-      await navigateToEvents(page);
-
-      const virtualEvents = page.locator(
-        '[data-testid="event-card"][data-location-type="virtual"]'
-      );
-      const physicalEvents = page.locator(
-        '[data-testid="event-card"][data-location-type="physical"]'
-      );
-
-      if ((await virtualEvents.count()) > 0) {
-        await expect(
-          virtualEvents.first().locator('[data-testid="virtual-badge"]')
-        ).toBeVisible();
-      }
-
-      if ((await physicalEvents.count()) > 0) {
-        await expect(
-          physicalEvents.first().locator('[data-testid="physical-badge"]')
-        ).toBeVisible();
-      }
-    });
-
-    test('should show price information', async ({ page }) => {
-      await navigateToEvents(page);
-
-      const paidEvents = page.locator(
-        '[data-testid="event-card"]:has([data-testid="event-price"])'
-      );
-      const freeEvents = page.locator(
-        '[data-testid="event-card"]:has([data-testid="free-badge"])'
-      );
-
-      if ((await paidEvents.count()) > 0) {
-        await expect(
-          paidEvents.first().locator('[data-testid="event-price"]')
-        ).toBeVisible();
-      }
-
-      if ((await freeEvents.count()) > 0) {
-        await expect(
-          freeEvents.first().locator('[data-testid="free-badge"]')
-        ).toBeVisible();
-      }
-    });
+  test('shows only the upcoming seeded event by default', async ({ page }) => {
+    await expectEvents(page, [UPCOMING]);
+    const card = page
+      .locator('article, div', { has: eventCard(page, UPCOMING) })
+      .last();
+    await expect(card).toContainText('Virtual');
+    await expect(card).toContainText('12/100 asistentes');
+    await expect(card).toContainText('Registro abierto');
+    await expect(
+      page.getByRole('link', { name: 'Ver detalles' })
+    ).toHaveAttribute(
+      'href',
+      '/es/dashboard/events/seed-event-upcoming-webinar'
+    );
   });
 
-  test.describe('Event Filtering', () => {
-    test('should filter events by category', async ({ page }) => {
-      await navigateToEvents(page);
+  test('"Todos" and "Pasados" reveal the past events', async ({ page }) => {
+    await page.getByRole('button', { name: 'Todos', exact: true }).click();
+    await expectEvents(page, ALL);
 
-      await expect(
-        page.locator('[data-testid="event-card"]').first()
-      ).toBeVisible();
+    await page.getByRole('button', { name: 'Pasados' }).click();
+    await expectEvents(page, [CAREER_FAIR, WORKSHOP]);
+    await expect(page.getByText('Registro cerrado')).toHaveCount(2);
 
-      // Apply category filter
-      await page.selectOption('[data-testid="category-filter"]', 'workshop');
-
-      await page.waitForTimeout(1000);
-
-      // Verify all visible events are workshops
-      const eventCards = page.locator('[data-testid="event-card"]');
-      const count = await eventCards.count();
-
-      for (let i = 0; i < count; i++) {
-        const category = await eventCards.nth(i).getAttribute('data-category');
-        expect(category).toBe('workshop');
-      }
-    });
-
-    test('should filter events by date range', async ({ page }) => {
-      await navigateToEvents(page);
-
-      await expect(
-        page.locator('[data-testid="event-card"]').first()
-      ).toBeVisible();
-
-      // Set date range filter
-      const today = new Date();
-      const nextMonth = new Date(
-        today.getFullYear(),
-        today.getMonth() + 1,
-        today.getDate()
-      );
-
-      await page.fill(
-        '[data-testid="date-from-input"]',
-        today.toISOString().split('T')[0]
-      );
-      await page.fill(
-        '[data-testid="date-to-input"]',
-        nextMonth.toISOString().split('T')[0]
-      );
-
-      await page.waitForTimeout(1000);
-
-      // Verify all events are within date range
-      const eventCards = page.locator('[data-testid="event-card"]');
-      const count = await eventCards.count();
-
-      expect(count).toBeGreaterThanOrEqual(0);
-    });
-
-    test('should filter events by location type', async ({ page }) => {
-      await navigateToEvents(page);
-
-      await expect(
-        page.locator('[data-testid="event-card"]').first()
-      ).toBeVisible();
-
-      // Filter for virtual events only
-      await page.check('[data-testid="virtual-only-filter"]');
-
-      await page.waitForTimeout(1000);
-
-      // Verify all visible events are virtual
-      const eventCards = page.locator('[data-testid="event-card"]');
-      const count = await eventCards.count();
-
-      for (let i = 0; i < count; i++) {
-        const locationType = await eventCards
-          .nth(i)
-          .getAttribute('data-location-type');
-        expect(locationType).toMatch(/virtual|hybrid/);
-      }
-    });
-
-    test('should filter events by price', async ({ page }) => {
-      await navigateToEvents(page);
-
-      await expect(
-        page.locator('[data-testid="event-card"]').first()
-      ).toBeVisible();
-
-      // Filter for free events only
-      await page.check('[data-testid="free-only-filter"]');
-
-      await page.waitForTimeout(1000);
-
-      // Verify all visible events are free
-      const freeEvents = page.locator(
-        '[data-testid="event-card"]:has([data-testid="free-badge"])'
-      );
-      const totalEvents = page.locator('[data-testid="event-card"]');
-
-      const freeCount = await freeEvents.count();
-      const totalCount = await totalEvents.count();
-
-      expect(freeCount).toBe(totalCount);
-    });
+    await page.getByRole('button', { name: 'Próximos' }).click();
+    await expectEvents(page, [UPCOMING]);
   });
 
-  test.describe('Event Search', () => {
-    test('should search events by title', async ({ page }) => {
-      await navigateToEvents(page);
+  test('search narrows the listing', async ({ page }) => {
+    await page.getByRole('button', { name: 'Todos', exact: true }).click();
+    await expectEvents(page, ALL);
 
-      await expect(
-        page.locator('[data-testid="event-card"]').first()
-      ).toBeVisible();
-
-      // Search for specific event
-      await page.fill('[data-testid="search-input"]', 'Machine Learning');
-      await page.press('[data-testid="search-input"]', 'Enter');
-
-      await page.waitForTimeout(1000);
-
-      // Verify search results
-      const eventCards = page.locator('[data-testid="event-card"]');
-      const count = await eventCards.count();
-
-      if (count > 0) {
-        for (let i = 0; i < count; i++) {
-          const title = await eventCards
-            .nth(i)
-            .locator('[data-testid="event-title"]')
-            .textContent();
-          expect(title?.toLowerCase()).toContain('machine learning');
-        }
-      }
+    const search = page.getByRole('searchbox', { name: 'Buscar...' });
+    await search.fill('MLOps');
+    await expect(page.getByText(/^1 eventos para/)).toBeVisible({
+      timeout: 15000,
     });
+    await expect(eventCard(page, WORKSHOP)).toBeVisible();
+    await expect(eventCard(page, CAREER_FAIR)).toHaveCount(0);
 
-    test('should show no results message for invalid search', async ({
-      page,
-    }) => {
-      await navigateToEvents(page);
-
-      await expect(
-        page.locator('[data-testid="event-card"]').first()
-      ).toBeVisible();
-
-      // Search for non-existent event
-      await page.fill('[data-testid="search-input"]', 'NonExistentEvent12345');
-      await page.press('[data-testid="search-input"]', 'Enter');
-
-      await page.waitForTimeout(1000);
-
-      // Should show no results message
-      await expect(
-        page.locator('[data-testid="no-events-message"]')
-      ).toBeVisible();
-      await expect(
-        page.locator('[data-testid="no-events-message"]')
-      ).toContainText(/no events found/i);
-    });
+    await page.getByRole('button', { name: 'Limpiar búsqueda' }).click();
+    await expectEvents(page, ALL);
   });
 
-  test.describe('Event Detail View', () => {
-    test('should open event detail modal when event card is clicked', async ({
-      page,
-    }) => {
-      await navigateToEvents(page);
-
-      await expect(
-        page.locator('[data-testid="event-card"]').first()
-      ).toBeVisible();
-
-      // Click on first event card
-      await page.click('[data-testid="event-card"]');
-
-      // Should open event detail modal
-      await expect(
-        page.locator('[data-testid="event-detail-modal"]')
-      ).toBeVisible();
-      await expect(
-        page.locator('[data-testid="event-detail-title"]')
-      ).toBeVisible();
-      await expect(
-        page.locator('[data-testid="event-detail-description"]')
-      ).toBeVisible();
-      await expect(
-        page.locator('[data-testid="event-detail-agenda"]')
-      ).toBeVisible();
-    });
-
-    test('should show register button for upcoming events', async ({
-      page,
-    }) => {
-      await loginAsUser(page);
-      await navigateToEvents(page);
-
-      await expect(
-        page.locator('[data-testid="event-card"]').first()
-      ).toBeVisible();
-      await page.click('[data-testid="event-card"]');
-
-      await expect(
-        page.locator('[data-testid="event-detail-modal"]')
-      ).toBeVisible();
-
-      // Check if registration button is available for upcoming events
-      const registerButton = page.locator('[data-testid="register-button"]');
-      const eventStatus = await page
-        .locator('[data-testid="event-status"]')
-        .textContent();
-
-      if (eventStatus?.includes('upcoming')) {
-        await expect(registerButton).toBeVisible();
-      }
-    });
-
-    test('should show login prompt for unauthenticated users', async ({
-      page,
-    }) => {
-      await navigateToEvents(page);
-
-      await expect(
-        page.locator('[data-testid="event-card"]').first()
-      ).toBeVisible();
-      await page.click('[data-testid="event-card"]');
-
-      await expect(
-        page.locator('[data-testid="event-detail-modal"]')
-      ).toBeVisible();
-      await expect(
-        page.locator('[data-testid="login-to-register"]')
-      ).toBeVisible();
-    });
-
-    test('should show event capacity and registration count', async ({
-      page,
-    }) => {
-      await navigateToEvents(page);
-
-      await expect(
-        page.locator('[data-testid="event-card"]').first()
-      ).toBeVisible();
-      await page.click('[data-testid="event-card"]');
-
-      await expect(
-        page.locator('[data-testid="event-detail-modal"]')
-      ).toBeVisible();
-      await expect(
-        page.locator('[data-testid="event-capacity"]')
-      ).toBeVisible();
-      await expect(
-        page.locator('[data-testid="registration-count"]')
-      ).toBeVisible();
-    });
+  test('a search with no match shows the empty state', async ({ page }) => {
+    await page
+      .getByRole('searchbox', { name: 'Buscar...' })
+      .fill('zzz-no-such-event');
+    await expect(
+      page.getByRole('heading', { name: 'No se encontraron eventos' })
+    ).toBeVisible({ timeout: 15000 });
+    await expect(
+      page.getByText('Intenta ajustar tus filtros o términos de búsqueda')
+    ).toBeVisible();
   });
 
-  test.describe('Event Registration', () => {
-    test('should complete event registration for free events', async ({
-      page,
-    }) => {
-      await loginAsUser(page);
-      await navigateToEvents(page);
+  test('type filter keeps only matching events', async ({ page }) => {
+    await page.getByRole('button', { name: 'Todos', exact: true }).click();
+    await expectEvents(page, ALL);
 
-      // Find a free event
-      const freeEventCard = page
-        .locator('[data-testid="event-card"]:has([data-testid="free-badge"])')
-        .first();
+    await typeFilter(page).selectOption({ label: 'Ferias de empleo' });
+    await expectEvents(page, [CAREER_FAIR]);
 
-      if (await freeEventCard.isVisible()) {
-        await freeEventCard.click();
+    await typeFilter(page).selectOption({ label: 'Webinars' });
+    await expectEvents(page, [UPCOMING]);
 
-        await expect(
-          page.locator('[data-testid="event-detail-modal"]')
-        ).toBeVisible();
-
-        const registerButton = page.locator('[data-testid="register-button"]');
-        if (await registerButton.isVisible()) {
-          await registerButton.click();
-
-          // Should show registration success message
-          await expect(
-            page.locator('[data-testid="registration-success"]')
-          ).toBeVisible();
-          await expect(
-            page.locator('[data-testid="registration-success"]')
-          ).toContainText(/successfully registered/i);
-        }
-      }
-    });
-
-    test('should handle event registration form for paid events', async ({
-      page,
-    }) => {
-      await loginAsUser(page);
-      await navigateToEvents(page);
-
-      // Find a paid event
-      const paidEventCard = page
-        .locator('[data-testid="event-card"]:has([data-testid="event-price"])')
-        .first();
-
-      if (await paidEventCard.isVisible()) {
-        await paidEventCard.click();
-
-        await expect(
-          page.locator('[data-testid="event-detail-modal"]')
-        ).toBeVisible();
-
-        const registerButton = page.locator('[data-testid="register-button"]');
-        if (await registerButton.isVisible()) {
-          await registerButton.click();
-
-          // Should show registration form
-          await expect(
-            page.locator('[data-testid="registration-form"]')
-          ).toBeVisible();
-
-          // Fill registration form
-          await page.fill('[data-testid="attendee-name-input"]', 'Test User');
-          await page.fill(
-            '[data-testid="attendee-email-input"]',
-            'test@example.com'
-          );
-
-          // Additional fields for paid events
-          await page.selectOption(
-            '[data-testid="payment-method-select"]',
-            'credit-card'
-          );
-
-          await page.click('[data-testid="proceed-payment-button"]');
-
-          // Should redirect to payment page
-          await expect(
-            page.locator('[data-testid="payment-form"]')
-          ).toBeVisible();
-        }
-      }
-    });
-
-    test('should prevent registration for full events', async ({ page }) => {
-      await loginAsUser(page);
-      await navigateToEvents(page);
-
-      // Find an event at capacity (if any)
-      const fullEventCard = page
-        .locator('[data-testid="event-card"][data-full="true"]')
-        .first();
-
-      if (await fullEventCard.isVisible()) {
-        await fullEventCard.click();
-
-        await expect(
-          page.locator('[data-testid="event-detail-modal"]')
-        ).toBeVisible();
-
-        // Should show event full message
-        await expect(
-          page.locator('[data-testid="event-full-message"]')
-        ).toBeVisible();
-        await expect(
-          page.locator('[data-testid="register-button"]')
-        ).not.toBeVisible();
-      }
-    });
-
-    test('should show waitlist option for full events', async ({ page }) => {
-      await loginAsUser(page);
-      await navigateToEvents(page);
-
-      const fullEventCard = page
-        .locator('[data-testid="event-card"][data-full="true"]')
-        .first();
-
-      if (await fullEventCard.isVisible()) {
-        await fullEventCard.click();
-
-        await expect(
-          page.locator('[data-testid="event-detail-modal"]')
-        ).toBeVisible();
-
-        // Should show waitlist option
-        const waitlistButton = page.locator(
-          '[data-testid="join-waitlist-button"]'
-        );
-        if (await waitlistButton.isVisible()) {
-          await waitlistButton.click();
-
-          await expect(
-            page.locator('[data-testid="waitlist-success"]')
-          ).toBeVisible();
-        }
-      }
-    });
+    await typeFilter(page).selectOption({ label: 'Todos los tipos' });
+    await expectEvents(page, ALL);
   });
 
-  test.describe('Event Calendar View', () => {
-    test('should switch to calendar view', async ({ page }) => {
-      await navigateToEvents(page);
+  test('calendar tab shows the placeholder and list view toggles', async ({
+    page,
+  }) => {
+    await page.getByRole('button', { name: 'Calendario' }).click();
+    await expect(
+      page.getByText('Vista de calendario próximamente')
+    ).toBeVisible();
+    await expect(eventCard(page, UPCOMING)).toHaveCount(0);
 
-      // Switch to calendar view
-      await page.click('[data-testid="calendar-view-toggle"]');
+    await page.getByRole('button', { name: 'Lista', exact: true }).click();
+    await expect(eventCard(page, UPCOMING)).toBeVisible();
 
-      await expect(
-        page.locator('[data-testid="events-calendar"]')
-      ).toBeVisible();
-      await expect(
-        page.locator('[data-testid="calendar-month-header"]')
-      ).toBeVisible();
-    });
-
-    test('should navigate calendar months', async ({ page }) => {
-      await navigateToEvents(page);
-
-      await page.click('[data-testid="calendar-view-toggle"]');
-      await expect(
-        page.locator('[data-testid="events-calendar"]')
-      ).toBeVisible();
-
-      // Navigate to next month
-      await page.click('[data-testid="calendar-next-month"]');
-
-      // Should update calendar
-      await page.waitForTimeout(500);
-
-      // Navigate to previous month
-      await page.click('[data-testid="calendar-prev-month"]');
-
-      await page.waitForTimeout(500);
-    });
-
-    test('should show event details on calendar date click', async ({
-      page,
-    }) => {
-      await navigateToEvents(page);
-
-      await page.click('[data-testid="calendar-view-toggle"]');
-      await expect(
-        page.locator('[data-testid="events-calendar"]')
-      ).toBeVisible();
-
-      // Click on a date with events
-      const dateWithEvents = page
-        .locator('[data-testid="calendar-date"][data-has-events="true"]')
-        .first();
-
-      if (await dateWithEvents.isVisible()) {
-        await dateWithEvents.click();
-
-        // Should show events for that date
-        await expect(
-          page.locator('[data-testid="date-events-popup"]')
-        ).toBeVisible();
-      }
-    });
+    const list = page.getByRole('radio', { name: 'Lista' });
+    await list.click();
+    await expect(list).toBeChecked();
+    await expect(eventCard(page, UPCOMING)).toBeVisible();
   });
 
-  test.describe('Past Events', () => {
-    test('should display past events in separate section', async ({ page }) => {
-      await navigateToEvents(page);
-
-      // Navigate to past events section
-      await page.click('[data-testid="past-events-tab"]');
-
-      await expect(
-        page.locator('[data-testid="past-events-section"]')
-      ).toBeVisible();
-
-      const pastEventCards = page.locator('[data-testid="past-event-card"]');
-      if ((await pastEventCards.count()) > 0) {
-        await expect(pastEventCards.first()).toBeVisible();
-      }
-    });
-
-    test('should show event recordings for past events', async ({ page }) => {
-      await navigateToEvents(page);
-
-      await page.click('[data-testid="past-events-tab"]');
-
-      const pastEventWithRecording = page
-        .locator(
-          '[data-testid="past-event-card"]:has([data-testid="recording-available"])'
-        )
-        .first();
-
-      if (await pastEventWithRecording.isVisible()) {
-        await pastEventWithRecording.click();
-
-        await expect(
-          page.locator('[data-testid="event-detail-modal"]')
-        ).toBeVisible();
-        await expect(
-          page.locator('[data-testid="watch-recording-button"]')
-        ).toBeVisible();
-      }
-    });
+  test('"Ver detalles" opens the event detail page', async ({ page }) => {
+    await page.getByRole('link', { name: 'Ver detalles' }).click();
+    await expect(page).toHaveURL(
+      /\/es\/dashboard\/events\/seed-event-upcoming-webinar/
+    );
+    await expect(
+      page.getByRole('heading', { level: 1, name: UPCOMING })
+    ).toBeVisible({ timeout: 20000 });
   });
+});
 
-  test.describe('Mobile Responsiveness', () => {
-    test('should display correctly on mobile devices', async ({ page }) => {
-      await page.setViewportSize({ width: 375, height: 667 });
-      await navigateToEvents(page);
-
-      // Events should be displayed in mobile layout
-      await expect(
-        page.locator('[data-testid="event-card"]').first()
-      ).toBeVisible();
-
-      // Mobile filter toggle should be visible
-      await expect(
-        page.locator('[data-testid="mobile-filters-toggle"]')
-      ).toBeVisible();
-
-      // Click to open mobile filters
-      await page.click('[data-testid="mobile-filters-toggle"]');
-      await expect(
-        page.locator('[data-testid="mobile-filters-panel"]')
-      ).toBeVisible();
-    });
-
-    test('should handle swipe gestures on mobile', async ({ page }) => {
-      await page.setViewportSize({ width: 375, height: 667 });
-      await navigateToEvents(page);
-
-      // Test swipe navigation if implemented
-      const eventContainer = page.locator('[data-testid="events-container"]');
-
-      if (await eventContainer.isVisible()) {
-        // Simulate swipe left
-        await eventContainer.hover();
-        await page.mouse.down();
-        await page.mouse.move(200, 0);
-        await page.mouse.up();
-
-        await page.waitForTimeout(500);
-      }
-    });
+test.describe('Events listing (public)', () => {
+  test('renders the hero and the proposal CTA for visitors', async ({
+    page,
+  }) => {
+    await page.goto('/es/events');
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Eventos SECiD' })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: '¿Quieres proponer un evento?' })
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Proponer Evento' })
+    ).toHaveAttribute('href', '/es/dashboard/events/new');
+    // The listing needs a signed-in member (firestore.rules): visitors get
+    // the empty state, not an error.
+    await expect(
+      page.getByRole('heading', { name: 'No se encontraron eventos' })
+    ).toBeVisible({ timeout: 20000 });
   });
 });

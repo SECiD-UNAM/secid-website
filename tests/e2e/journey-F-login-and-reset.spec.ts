@@ -13,6 +13,7 @@
  *     npx playwright test journey-F-login --headed
  */
 import { test, expect } from '@playwright/test';
+import { waitForIsland } from '../utils/session';
 
 const EMAIL = process.env.E2E_QA_EMAIL;
 const PASSWORD = process.env.E2E_QA_PASSWORD;
@@ -75,6 +76,7 @@ test.describe('Journey F — Login + password reset', () => {
 
   test('F4 password reset — request + email delivery', async ({ page }) => {
     await page.goto('/es/login');
+    await waitForIsland(page, 'LoginForm');
     // LoginForm renders "¿Olvidaste tu contraseña?" as a button that opens
     // the "Recuperar contraseña" dialog (its own email input + "Enviar").
     await page.click(

@@ -1,818 +1,153 @@
-import { test, expect, Page } from '@playwright/test';
-import { mockUsers } from '../fixtures/users';
+import { test, expect, type Page } from '@playwright/test';
+import { SEEDED, login } from '../utils/session';
 
-// Test data for networking features
-const testNetworkingData = {
-  searchQuery: 'Machine Learning',
-  filters: {
-    location: 'Mexico City',
-    graduationYear: '2020-2022',
-    skills: ['Python', 'Data Science'],
-    industry: 'Technology',
-    company: 'Google',
-  },
-  connectionMessage:
-    'Hi! I saw your profile and would love to connect. We have similar interests in machine learning and I think we could have great discussions about the field.',
-  groupMessage:
-    'Excited to be part of this group! Looking forward to learning from everyone.',
-  eventMessage:
-    'Great event! Thanks for organizing. Looking forward to the next one.',
-};
+/**
+ * Member directory: /es/dashboard/members mounts
+ * src/components/dashboard/members/MemberDashboard.tsx (Resumen / Miembros /
+ * Análisis tabs; MembersTab is a searchable table of the seeded alumni
+ * profiles). The public profile /es/members/{slug} is served by the Firebase
+ * Hosting rewrite to members/detail (firebase.json).
+ *
+ * Of the four seeded accounts only the two alumni (member1, member2) are
+ * listed; admin and company accounts are not alumni profiles.
+ */
+const MARIA = 'María García';
+const CARLOS = 'Carlos Rodríguez';
 
-class MemberNetworkingFlow {
-  constructor(private page: Page) {}
-
-  async navigateToMemberDirectory() {
-    await this.page.goto('/');
-    await this.page.click('a[href="/es/miembros"]');
-    await expect(this.page).toHaveURL('/es/miembros');
-  }
-
-  async searchMembers(query: string) {
-    const searchInput = this.page.locator(
-      'input[data-testid="member-search-input"]'
-    );
-    await searchInput.fill(query);
-    await this.page.click('button[data-testid="search-members"]');
-
-    // Wait for search results to load
-    await this.page.waitForSelector('[data-testid="member-card"]', {
-      timeout: 5000,
-    });
-  }
-
-  async applyMemberFilters() {
-    // Open filters panel
-    await this.page.click('button[data-testid="open-member-filters"]');
-
-    // Apply location filter
-    await this.page.fill(
-      'input[data-testid="location-filter"]',
-      testNetworkingData.filters.location
-    );
-
-    // Apply graduation year range
-    await this.page.selectOption(
-      'select[data-testid="graduation-year-start"]',
-      '2020'
-    );
-    await this.page.selectOption(
-      'select[data-testid="graduation-year-end"]',
-      '2022'
-    );
-
-    // Add skills filter
-    for (const skill of testNetworkingData.filters.skills) {
-      await this.page.fill('input[data-testid="skills-filter-input"]', skill);
-      await this.page.click('button[data-testid="add-skill-filter"]');
-    }
-
-    // Apply industry filter
-    await this.page.selectOption(
-      'select[data-testid="industry-filter"]',
-      testNetworkingData.filters.industry
-    );
-
-    // Apply filters
-    await this.page.click('button[data-testid="apply-member-filters"]');
-
-    // Wait for filtered results
-    await this.page.waitForResponse(
-      (response) =>
-        response.url().includes('/api/members') && response.status() === 200
-    );
-  }
-
-  async viewMemberProfile(memberIndex = 0) {
-    const memberCards = this.page.locator('[data-testid="member-card"]');
-    await memberCards.nth(memberIndex).click();
-
-    // Should navigate to member profile
-    await expect(this.page).toHaveURL(/\/es\/members\/[^/]+$/);
-
-    // Wait for profile to load
-    await this.page.waitForSelector('[data-testid="member-profile-name"]');
-  }
-
-  async sendConnectionRequest() {
-    // Click connect button
-    await this.page.click('button[data-testid="connect-member"]');
-
-    // Should open connection modal
-    await expect(
-      this.page.locator('h3:has-text("Enviar solicitud de conexión")')
-    ).toBeVisible();
-
-    // Fill connection message
-    await this.page.fill(
-      'textarea[name="connectionMessage"]',
-      testNetworkingData.connectionMessage
-    );
-
-    // Send request
-    await this.page.click('button[data-testid="send-connection-request"]');
-
-    // Should show success message
-    await expect(
-      this.page.locator('text=¡Solicitud de conexión enviada!')
-    ).toBeVisible();
-  }
-
-  async viewMyConnections() {
-    await this.page.goto('/es/dashboard/connections');
-
-    // Should show connections dashboard
-    await expect(
-      this.page.locator('h1:has-text("Mis Conexiones")')
-    ).toBeVisible();
-
-    // Should have tabs for different connection states
-    await expect(
-      this.page.locator('button[data-testid="connections-tab"]')
-    ).toBeVisible();
-    await expect(
-      this.page.locator('button[data-testid="pending-tab"]')
-    ).toBeVisible();
-    await expect(
-      this.page.locator('button[data-testid="requests-tab"]')
-    ).toBeVisible();
-  }
-
-  async acceptConnectionRequest() {
-    await this.viewMyConnections();
-
-    // Switch to requests tab
-    await this.page.click('button[data-testid="requests-tab"]');
-
-    // Should see pending requests
-    await expect(
-      this.page.locator('[data-testid="connection-request"]')
-    ).toBeVisible();
-
-    // Accept first request
-    await this.page.click('button[data-testid="accept-request"]');
-
-    // Should show success message
-    await expect(this.page.locator('text=Solicitud aceptada')).toBeVisible();
-  }
-
-  async startDirectMessage() {
-    // From member profile, start a conversation
-    await this.page.click('button[data-testid="message-member"]');
-
-    // Should open messaging interface
-    await expect(
-      this.page.locator('[data-testid="message-composer"]')
-    ).toBeVisible();
-
-    // Type and send message
-    await this.page.fill(
-      'textarea[data-testid="message-input"]',
-      'Hello! Nice to connect with you.'
-    );
-    await this.page.click('button[data-testid="send-message"]');
-
-    // Should show sent message
-    await expect(
-      this.page.locator('[data-testid="sent-message"]')
-    ).toContainText('Hello! Nice to connect with you.');
-  }
-
-  async joinMemberGroup() {
-    await this.page.goto('/es/groups');
-
-    // Should show available groups
-    await expect(this.page.locator('[data-testid="group-card"]')).toBeVisible();
-
-    // Join first group
-    await this.page.click('button[data-testid="join-group"]');
-
-    // Should show success message
-    await expect(this.page.locator('text=Te has unido al grupo')).toBeVisible();
-  }
-
-  async participateInGroupDiscussion() {
-    // View group details
-    await this.page.click('[data-testid="group-card"]');
-    await expect(this.page).toHaveURL(/\/es\/groups\/[^/]+$/);
-
-    // Should show group discussions
-    await expect(
-      this.page.locator('[data-testid="group-discussion"]')
-    ).toBeVisible();
-
-    // Post in group
-    await this.page.fill(
-      'textarea[data-testid="group-post-input"]',
-      testNetworkingData.groupMessage
-    );
-    await this.page.click('button[data-testid="post-message"]');
-
-    // Should show posted message
-    await expect(
-      this.page.locator('[data-testid="group-message"]')
-    ).toContainText(testNetworkingData.groupMessage);
-  }
-
-  async attendNetworkingEvent() {
-    await this.page.goto('/es/events');
-
-    // Filter for networking events
-    await this.page.selectOption(
-      'select[data-testid="event-type-filter"]',
-      'networking'
-    );
-
-    // Should show networking events
-    await expect(this.page.locator('[data-testid="event-card"]')).toBeVisible();
-
-    // Register for first event
-    await this.page.click('button[data-testid="register-event"]');
-
-    // Should show registration success
-    await expect(
-      this.page.locator('text=¡Registrado exitosamente!')
-    ).toBeVisible();
-  }
-
-  async createNetworkingPost() {
-    await this.page.goto('/es/dashboard');
-
-    // Create new post
-    await this.page.click('button[data-testid="create-post"]');
-
-    // Fill post content
-    await this.page.fill(
-      'textarea[name="postContent"]',
-      'Looking for advice on transitioning from academia to industry in data science. Anyone with experience?'
-    );
-
-    // Add tags
-    await this.page.fill(
-      'input[data-testid="post-tags"]',
-      'career-advice,data-science'
-    );
-
-    // Publish post
-    await this.page.click('button[data-testid="publish-post"]');
-
-    // Should show success message
-    await expect(this.page.locator('text=Publicación creada')).toBeVisible();
-  }
+function row(page: Page, name: string) {
+  return page.getByRole('row', { name: new RegExp(`^${name} `) });
 }
 
-// función no implementada: la UI real no expone estos flujos ni data-testid;
-// ver docs/ROADMAP.md A4
-test.describe.skip('Member Networking and Community Flow', () => {
-  let networkingFlow: MemberNetworkingFlow;
+function search(page: Page) {
+  return page.getByRole('textbox', { name: 'Buscar miembros' });
+}
 
+async function openMembersTab(page: Page) {
+  await page.goto('/es/dashboard/members');
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Directorio de Miembros' })
+  ).toBeVisible({ timeout: 20000 });
+  await page
+    .getByRole('button', { name: 'Miembros', exact: true })
+    .click({ timeout: 20000 });
+  await expect(search(page)).toBeVisible({ timeout: 20000 });
+  await expect(page.getByText(/^Mostrando \d+ de \d+ miembros/)).toBeVisible({
+    timeout: 20000,
+  });
+}
+
+test.describe('Member directory', () => {
   test.beforeEach(async ({ page }) => {
-    networkingFlow = new MemberNetworkingFlow(page);
+    await login(page, SEEDED.member);
+  });
 
-    // Mock authentication - logged in user
-    await page.addInitScript(() => {
-      window.localStorage.setItem(
-        'user',
-        JSON.stringify({
-          uid: 'test-user-id',
-          email: 'test@example.com',
-          displayName: 'Test User',
-          emailVerified: true,
-        })
-      );
+  test('overview tab shows the member totals', async ({ page }) => {
+    await page.goto('/es/dashboard/members');
+    await expect(page.getByText('Total de miembros')).toBeVisible({
+      timeout: 20000,
     });
+    await expect(page.getByText('Habilidad principal')).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Composicion por campus' })
+    ).toBeVisible();
+  });
 
-    // Mock API responses for members
-    await page.route('**/api/members**', async (route) => {
-      const url = route.request().url();
-      if (url.includes('search')) {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            members: [
-              {
-                id: 'member-1',
-                firstName: 'Ana',
-                lastName: 'García',
-                currentJob: 'Data Scientist',
-                company: 'Tech Corp',
-                location: 'Mexico City',
-                skills: ['Python', 'Machine Learning', 'Data Science'],
-                graduationYear: 2021,
-                profileImage: 'https://via.placeholder.com/150',
-                isConnected: false,
-                connectionStatus: null,
-              },
-              {
-                id: 'member-2',
-                firstName: 'Carlos',
-                lastName: 'López',
-                currentJob: 'ML Engineer',
-                company: 'AI Startup',
-                location: 'Guadalajara',
-                skills: ['TensorFlow', 'Python', 'Deep Learning'],
-                graduationYear: 2020,
-                profileImage: 'https://via.placeholder.com/150',
-                isConnected: true,
-                connectionStatus: 'connected',
-              },
-            ],
-            total: 2,
-            page: 1,
-          }),
-        });
-      } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify(mockUsers.regularUser),
-        });
-      }
+  test('lists the seeded alumni', async ({ page }) => {
+    await openMembersTab(page);
+    await expect(row(page, MARIA)).toBeVisible();
+    await expect(row(page, MARIA)).toContainText('Tech Corp');
+    await expect(row(page, CARLOS)).toBeVisible();
+    await expect(row(page, CARLOS)).toContainText('Data Solutions Inc');
+    await expect(page.getByRole('row', { name: /Admin User/ })).toHaveCount(0);
+    await expect(page.getByRole('row', { name: /HR TechCorp/ })).toHaveCount(0);
+  });
+
+  test('search filters by name or skill and clears back', async ({ page }) => {
+    await openMembersTab(page);
+
+    await search(page).fill('Carlos');
+    await expect(page.getByText(/^Mostrando 1 de \d+ miembros/)).toBeVisible();
+    await expect(row(page, CARLOS)).toBeVisible();
+    await expect(row(page, MARIA)).toHaveCount(0);
+
+    await search(page).fill('TensorFlow');
+    await expect(row(page, MARIA)).toBeVisible();
+    await expect(row(page, CARLOS)).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Limpiar búsqueda' }).click();
+    await expect(search(page)).toHaveValue('');
+    await expect(
+      page.getByText(/^Mostrando \d+ de \d+ miembros/)
+    ).toBeVisible();
+  });
+
+  test('a search with no match shows the empty message', async ({ page }) => {
+    await openMembersTab(page);
+    await search(page).fill('zzz-nobody');
+    await expect(
+      page.getByText('No hay miembros que coincidan con los filtros actuales')
+    ).toBeVisible();
+    await expect(page.getByText(/^Mostrando 0 de \d+ miembros/)).toBeVisible();
+  });
+
+  test('filters panel opens with its options', async ({ page }) => {
+    await openMembersTab(page);
+    await page.getByRole('button', { name: 'Filtros' }).click();
+    for (const name of [
+      'Incluir colaboradores',
+      'Solo en línea',
+      'Disponible para mentoría',
+    ]) {
+      await expect(page.getByRole('checkbox', { name })).toBeVisible();
+    }
+    await expect(page.getByRole('button', { name: 'Empresa' })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Habilidades' })
+    ).toBeVisible();
+  });
+
+  test('expanding a row shows the profile summary and links', async ({
+    page,
+  }) => {
+    await openMembersTab(page);
+    await row(page, CARLOS).click();
+
+    const details = page.getByRole('row', {
+      name: /^Nombre: Carlos Rodríguez/,
     });
+    await expect(details).toBeVisible();
+    await expect(details).toContainText('ML Engineer');
+    await expect(details).toContainText('Kubernetes');
+    await expect(
+      details.getByRole('link', { name: 'Ver perfil' })
+    ).toHaveAttribute('href', '/es/members/carlos-rodriguez');
+    await expect(details.getByRole('link', { name: 'Ver CV' })).toHaveAttribute(
+      'href',
+      '/es/members/carlos-rodriguez/cv'
+    );
 
-    // Mock connections API
-    await page.route('**/api/connections**', async (route) => {
-      if (route.request().method() === 'POST') {
-        await route.fulfill({
-          status: 201,
-          contentType: 'application/json',
-          body: JSON.stringify({ status: 'sent', id: 'conn-123' }),
-        });
-      } else {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            connections: [mockUsers.regularUser],
-            pending: [],
-            requests: [
-              {
-                id: 'req-1',
-                from: mockUsers.adminUser,
-                message: 'Hi! Would love to connect.',
-                createdAt: new Date().toISOString(),
-              },
-            ],
-          }),
-        });
-      }
-    });
-
-    // Mock groups API
-    await page.route('**/api/groups**', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          groups: [
-            {
-              id: 'group-1',
-              name: 'Machine Learning México',
-              description: 'Grupo para discutir ML y AI en México',
-              memberCount: 156,
-              isJoined: false,
-              category: 'Technical',
-            },
-            {
-              id: 'group-2',
-              name: 'Data Science Career Tips',
-              description:
-                'Consejos y experiencias sobre carreras en data science',
-              memberCount: 89,
-              isJoined: true,
-              category: 'Career',
-            },
-          ],
-        }),
-      });
-    });
-
-    // Mock messaging API
-    await page.route('**/api/messages**', async (route) => {
-      if (route.request().method() === 'POST') {
-        await route.fulfill({
-          status: 201,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            id: 'msg-123',
-            content: 'Hello! Nice to connect with you.',
-            sentAt: new Date().toISOString(),
-          }),
-        });
-      }
-    });
+    await row(page, CARLOS).click();
+    await expect(details).toHaveCount(0);
   });
 
-  test('complete member networking journey', async ({ page }) => {
-    // Step 1: Navigate to member directory
-    await networkingFlow.navigateToMemberDirectory();
+  test('"Ver perfil" opens the public member profile', async ({ page }) => {
+    await openMembersTab(page);
+    await row(page, CARLOS).click();
+    await page.getByRole('link', { name: 'Ver perfil' }).click();
 
-    // Verify member directory is loaded
+    await expect(page).toHaveURL(/\/es\/members\/carlos-rodriguez/);
+    const profile = page.getByRole('article', { name: `Perfil de ${CARLOS}` });
+    await expect(profile).toBeVisible({ timeout: 20000 });
     await expect(
-      page.locator('h1:has-text("Directorio de Miembros")')
+      profile.getByRole('heading', { level: 1, name: CARLOS })
     ).toBeVisible();
-
-    // Step 2: Search for members
-    await networkingFlow.searchMembers(testNetworkingData.searchQuery);
-
-    // Verify search results
-    await expect(page.locator('[data-testid="member-card"]')).toHaveCount(2);
-
-    // Step 3: Apply member filters
-    await networkingFlow.applyMemberFilters();
-
-    // Step 4: View member profile
-    await networkingFlow.viewMemberProfile(0);
-
-    // Verify profile details
+    await expect(profile.getByText('ML Engineer').first()).toBeVisible();
     await expect(
-      page.locator('[data-testid="member-profile-name"]')
-    ).toContainText('Ana García');
-    await expect(
-      page.locator('[data-testid="member-current-job"]')
-    ).toContainText('Data Scientist');
-
-    // Step 5: Send connection request
-    await networkingFlow.sendConnectionRequest();
-
-    // Step 6: View connections dashboard
-    await networkingFlow.viewMyConnections();
-
-    // Step 7: Accept a connection request
-    await networkingFlow.acceptConnectionRequest();
-
-    // Step 8: Start direct messaging
-    await networkingFlow.viewMemberProfile(1);
-    await networkingFlow.startDirectMessage();
-
-    // Step 9: Join member groups
-    await networkingFlow.joinMemberGroup();
-
-    // Step 10: Participate in group discussions
-    await networkingFlow.participateInGroupDiscussion();
-  });
-
-  test('member search and filtering', async ({ page }) => {
-    await networkingFlow.navigateToMemberDirectory();
-
-    // Test empty search shows all members
-    await networkingFlow.searchMembers('');
-    await expect(page.locator('[data-testid="member-card"]')).toHaveCount(2);
-
-    // Test specific skill search
-    await networkingFlow.searchMembers('Python');
-    await expect(
-      page.locator('[data-testid="search-results-count"]')
-    ).toContainText('2 miembros encontrados');
-
-    // Test location filter
-    await page.click('button[data-testid="open-member-filters"]');
-    await page.fill('input[data-testid="location-filter"]', 'Mexico City');
-    await page.click('button[data-testid="apply-member-filters"]');
-
-    // Should filter results
-    await expect(page.locator('[data-testid="member-card"]')).toHaveCount(1);
-
-    // Test clearing filters
-    await page.click('button[data-testid="clear-all-filters"]');
-    await expect(page.locator('[data-testid="member-card"]')).toHaveCount(2);
-  });
-
-  test('connection management', async ({ page }) => {
-    await networkingFlow.viewMyConnections();
-
-    // Test connection states
-    await expect(
-      page.locator('button[data-testid="connections-tab"]')
-    ).toBeVisible();
-    await expect(
-      page.locator('button[data-testid="pending-tab"]')
-    ).toBeVisible();
-    await expect(
-      page.locator('button[data-testid="requests-tab"]')
-    ).toBeVisible();
-
-    // View connection requests
-    await page.click('button[data-testid="requests-tab"]');
-    await expect(
-      page.locator('[data-testid="connection-request"]')
-    ).toBeVisible();
-
-    // Test declining request
-    await page.click('button[data-testid="decline-request"]');
-    await expect(page.locator('text=Solicitud rechazada')).toBeVisible();
-
-    // View active connections
-    await page.click('button[data-testid="connections-tab"]');
-    await expect(page.locator('[data-testid="connection-item"]')).toBeVisible();
-
-    // Test removing connection
-    await page.click('button[data-testid="connection-options"]');
-    await page.click('button[data-testid="remove-connection"]');
-    await page.click('button[data-testid="confirm-remove"]');
-    await expect(page.locator('text=Conexión eliminada')).toBeVisible();
-  });
-
-  test('direct messaging functionality', async ({ page }) => {
-    await page.goto('/es/dashboard/messages');
-
-    // Should show conversations list
-    await expect(
-      page.locator('[data-testid="conversations-list"]')
-    ).toBeVisible();
-
-    // Start new conversation
-    await page.click('button[data-testid="new-conversation"]');
-
-    // Search for member to message
-    await page.fill('input[data-testid="member-search"]', 'Ana García');
-    await page.click('[data-testid="member-result"]');
-
-    // Send message
-    await page.fill(
-      'textarea[data-testid="message-input"]',
-      'Hi Ana! Great to connect with you.'
-    );
-    await page.click('button[data-testid="send-message"]');
-
-    // Should show sent message
-    await expect(page.locator('[data-testid="sent-message"]')).toContainText(
-      'Hi Ana! Great to connect with you.'
-    );
-
-    // Test message reactions
-    await page.hover('[data-testid="sent-message"]');
-    await page.click('button[data-testid="react-message"]');
-    await page.click('[data-testid="thumbs-up-reaction"]');
-
-    // Should show reaction
-    await expect(
-      page.locator('[data-testid="message-reaction"]')
-    ).toBeVisible();
-  });
-
-  test('member groups functionality', async ({ page }) => {
-    await page.goto('/es/groups');
-
-    // Should show available groups
-    await expect(page.locator('[data-testid="group-card"]')).toHaveCount(2);
-
-    // Filter groups by category
-    await page.selectOption(
-      'select[data-testid="group-category-filter"]',
-      'Technical'
-    );
-    await expect(page.locator('[data-testid="group-card"]')).toHaveCount(1);
-
-    // Join group
-    await page.click('button[data-testid="join-group"]');
-    await expect(page.locator('text=Te has unido al grupo')).toBeVisible();
-
-    // View group details
-    await page.click('[data-testid="group-card"]');
-
-    // Should show group information
-    await expect(page.locator('[data-testid="group-name"]')).toContainText(
-      'Machine Learning México'
-    );
-    await expect(
-      page.locator('[data-testid="group-member-count"]')
-    ).toContainText('156 miembros');
-
-    // Test posting in group
-    await page.fill(
-      'textarea[data-testid="group-post-input"]',
-      'Excited to join this group!'
-    );
-    await page.click('button[data-testid="post-message"]');
-
-    // Should show posted message
-    await expect(page.locator('[data-testid="group-message"]')).toContainText(
-      'Excited to join this group!'
-    );
-
-    // Test leaving group
-    await page.click('button[data-testid="group-options"]');
-    await page.click('button[data-testid="leave-group"]');
-    await page.click('button[data-testid="confirm-leave"]');
-    await expect(page.locator('text=Has salido del grupo')).toBeVisible();
-  });
-
-  test('networking event participation', async ({ page }) => {
-    await networkingFlow.attendNetworkingEvent();
-
-    // View registered events
-    await page.goto('/es/dashboard/events');
-    await expect(
-      page.locator('[data-testid="registered-event"]')
-    ).toBeVisible();
-
-    // Check in to event (simulate QR code scan)
-    await page.click('button[data-testid="checkin-event"]');
-    await expect(page.locator('text=Check-in exitoso')).toBeVisible();
-
-    // View event attendees
-    await page.click('[data-testid="view-attendees"]');
-    await expect(page.locator('[data-testid="attendee-list"]')).toBeVisible();
-
-    // Connect with other attendees
-    await page.click('button[data-testid="connect-attendee"]');
-    await expect(page.locator('text=Solicitud enviada')).toBeVisible();
-  });
-
-  test('community posts and interactions', async ({ page }) => {
-    await networkingFlow.createNetworkingPost();
-
-    // View community feed
-    await page.goto('/es/community');
-
-    // Should show community posts
-    await expect(page.locator('[data-testid="community-post"]')).toBeVisible();
-
-    // Interact with posts
-    await page.click('button[data-testid="like-post"]');
-    await expect(page.locator('[data-testid="like-count"]')).toContainText('1');
-
-    // Comment on post
-    await page.fill(
-      'textarea[data-testid="comment-input"]',
-      'Great question! I can share my experience.'
-    );
-    await page.click('button[data-testid="post-comment"]');
-
-    // Should show comment
-    await expect(page.locator('[data-testid="post-comment"]')).toContainText(
-      'Great question! I can share my experience.'
-    );
-
-    // Share post
-    await page.click('button[data-testid="share-post"]');
-    await expect(page.locator('text=Publicación compartida')).toBeVisible();
-  });
-
-  test('profile visibility and privacy settings', async ({ page }) => {
-    await page.goto('/es/dashboard/profile/privacy');
-
-    // Test profile visibility settings
-    await page.check('input[name="publicProfile"]');
-    await expect(
-      page.locator('text=Perfil visible públicamente')
-    ).toBeVisible();
-
-    // Test connection privacy
-    await page.selectOption(
-      'select[name="connectionVisibility"]',
-      'connections-only'
-    );
-
-    // Test contact information privacy
-    await page.uncheck('input[name="showEmail"]');
-    await page.uncheck('input[name="showPhone"]');
-
-    // Save privacy settings
-    await page.click('button[data-testid="save-privacy-settings"]');
-    await expect(page.locator('text=Configuración guardada')).toBeVisible();
-
-    // Verify changes are reflected in profile
-    await page.goto('/es/miembros/test-user-id');
-    await expect(
-      page.locator('[data-testid="email-contact"]')
-    ).not.toBeVisible();
-  });
-});
-
-// Mobile networking tests
-// función no implementada: la UI real no expone estos flujos ni data-testid;
-// ver docs/ROADMAP.md A4
-test.describe.skip('Mobile Member Networking', () => {
-  test.use({ viewport: { width: 375, height: 667 } });
-
-  test('mobile member directory and search', async ({ page }) => {
-    const networkingFlow = new MemberNetworkingFlow(page);
-    await networkingFlow.navigateToMemberDirectory();
-
-    // Mobile member cards should be properly sized
-    const memberCard = page.locator('[data-testid="member-card"]').first();
-    await expect(memberCard).toBeVisible();
-
-    // Mobile search should work
-    await page.fill('input[data-testid="member-search-input"]', 'Python');
-    await page.click('button[data-testid="search-members"]');
-
-    // Mobile filters should be in a drawer
-    await page.click('button[data-testid="open-member-filters"]');
-    await expect(page.locator('[data-testid="filters-drawer"]')).toBeVisible();
-  });
-
-  test('mobile messaging interface', async ({ page }) => {
-    await page.goto('/es/dashboard/messages');
-
-    // Mobile messaging should be optimized
-    await expect(
-      page.locator('[data-testid="conversations-list"]')
-    ).toBeVisible();
-
-    // Touch interactions should work
-    await page.locator('[data-testid="conversation-item"]').first().tap();
-
-    // Mobile message composer
-    const messageInput = page.locator('textarea[data-testid="message-input"]');
-    await expect(messageInput).toHaveCSS('font-size', '16px'); // Prevents zoom
-
-    await messageInput.fill('Mobile message test');
-    await page.click('button[data-testid="send-message"]');
-
-    // Should show sent message
-    await expect(page.locator('[data-testid="sent-message"]')).toContainText(
-      'Mobile message test'
-    );
-  });
-});
-
-// Visual regression tests
-// función no implementada: la UI real no expone estos flujos ni data-testid;
-// ver docs/ROADMAP.md A4
-test.describe.skip('Networking Visual Tests', () => {
-  test('member directory layout consistency', async ({ page }) => {
-    const networkingFlow = new MemberNetworkingFlow(page);
-    await networkingFlow.navigateToMemberDirectory();
-
-    // Screenshot of member directory
-    await expect(page).toHaveScreenshot('member-directory-initial.png');
-
-    // Screenshot with search results
-    await networkingFlow.searchMembers('Data Science');
-    await expect(page).toHaveScreenshot('member-directory-search.png');
-
-    // Screenshot with filters applied
-    await page.click('button[data-testid="open-member-filters"]');
-    await expect(page).toHaveScreenshot('member-directory-filters.png');
-  });
-
-  test('member profile consistency', async ({ page }) => {
-    const networkingFlow = new MemberNetworkingFlow(page);
-    await networkingFlow.navigateToMemberDirectory();
-    await networkingFlow.searchMembers('Ana');
-    await networkingFlow.viewMemberProfile(0);
-
-    // Screenshot of member profile
-    await expect(page).toHaveScreenshot('member-profile-view.png');
-
-    // Screenshot of connection modal
-    await page.click('button[data-testid="connect-member"]');
-    await expect(page).toHaveScreenshot('connection-request-modal.png');
-  });
-});
-
-// Accessibility tests
-// función no implementada: la UI real no expone estos flujos ni data-testid;
-// ver docs/ROADMAP.md A4
-test.describe.skip('Networking Accessibility', () => {
-  test('member directory accessibility', async ({ page }) => {
-    const networkingFlow = new MemberNetworkingFlow(page);
-    await networkingFlow.navigateToMemberDirectory();
-
-    // Check keyboard navigation
-    await page.keyboard.press('Tab');
-    await expect(
-      page.locator('input[data-testid="member-search-input"]')
-    ).toBeFocused();
-
-    // Check ARIA labels
-    await expect(
-      page.locator('button[data-testid="search-members"]')
-    ).toHaveAttribute('aria-label', 'Search members');
-
-    // Check screen reader friendly elements
-    await expect(page.locator('[data-testid="member-card"]')).toHaveAttribute(
-      'role',
-      'article'
-    );
-
-    // Check color contrast and focus indicators
-    const searchButton = page.locator('button[data-testid="search-members"]');
-    await searchButton.focus();
-    await expect(searchButton).toHaveCSS('outline-width', '2px');
-  });
-
-  test('messaging accessibility', async ({ page }) => {
-    await page.goto('/es/dashboard/messages');
-
-    // Check message composer accessibility
-    const messageInput = page.locator('textarea[data-testid="message-input"]');
-    await expect(messageInput).toHaveAttribute(
-      'aria-label',
-      'Type your message'
-    );
-
-    // Check keyboard shortcuts work
-    await messageInput.fill('Test message');
-    await page.keyboard.press('Control+Enter'); // Send with keyboard shortcut
-
-    // Should send message
-    await expect(page.locator('[data-testid="sent-message"]')).toContainText(
-      'Test message'
+      profile.getByRole('list', { name: 'Habilidades' })
+    ).toContainText('Spark');
+    await expect(profile.getByRole('link', { name: 'Ver CV' })).toHaveAttribute(
+      'href',
+      '/es/members/carlos-rodriguez/cv'
     );
   });
 });

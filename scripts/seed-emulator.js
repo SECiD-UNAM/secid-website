@@ -232,6 +232,14 @@ const testJobs = [
   },
 ];
 
+/** A date `days` from now at `hour`:00 local time (seeded upcoming event). */
+function daysFromNow(days, hour) {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  date.setHours(hour, 0, 0, 0);
+  return date;
+}
+
 const testEvents = [
   {
     id: 'seed-event-career-fair',
@@ -255,6 +263,7 @@ const testEvents = [
     registrationFee: 0,
     status: 'published',
     tags: ['career', 'networking', 'professional-development'],
+    organizers: ['SECiD'],
     viewCount: 445,
     registrationCount: 45,
   },
@@ -280,8 +289,39 @@ const testEvents = [
     registrationFee: 0,
     status: 'published',
     tags: ['workshop', 'mlops', 'technical', 'online'],
+    organizers: ['SECiD'],
     viewCount: 234,
     registrationCount: 67,
+  },
+  {
+    // Dates relative to the seed run: the only event the default "Próximos"
+    // listing shows, and the one whose detail page offers registration
+    // (tests/e2e/events, tests/e2e/event-registration.spec.ts).
+    id: 'seed-event-upcoming-webinar',
+    title: 'Webinar: Carreras en Ciencia de Datos',
+    description:
+      'Panel con egresados sobre trayectorias profesionales en ciencia de datos.',
+    type: 'webinar',
+    startDate: daysFromNow(30, 18),
+    endDate: daysFromNow(30, 20),
+    timezone: 'America/Mexico_City',
+    duration: 120,
+    location: {
+      type: 'virtual',
+      virtualPlatform: 'zoom',
+      virtualLink: 'https://zoom.us/j/987654321',
+    },
+    registrationRequired: true,
+    registrationDeadline: daysFromNow(28, 23),
+    maxAttendees: 100,
+    currentAttendees: 12,
+    registrationFee: 0,
+    status: 'published',
+    tags: ['webinar', 'careers', 'online'],
+    organizers: ['SECiD'],
+    viewCount: 12,
+    registrationCount: 12,
+    featured: true,
   },
 ];
 
@@ -499,6 +539,8 @@ async function seedEmulator() {
   for (const { id, ...event } of testEvents) {
     await setDoc(`events/${id}`, {
       ...event,
+      // firestore.rules (events/*/registrations) and EventForm use createdBy.
+      createdBy: adminUid,
       organizedBy: adminUid,
       createdAt: now,
       updatedAt: now,

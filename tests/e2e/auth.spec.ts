@@ -24,6 +24,7 @@ test.describe('Authentication Flow', () => {
     page,
   }) => {
     await page.goto('/es/login');
+    await waitForIsland(page, 'LoginForm');
 
     await page.click('button[type="submit"]');
 
@@ -35,6 +36,7 @@ test.describe('Authentication Flow', () => {
 
   test('shows error for invalid credentials', async ({ page }) => {
     await page.goto('/es/login');
+    await waitForIsland(page, 'LoginForm');
 
     await page.fill('#email', `nadie-${Date.now()}@example.com`);
     await page.fill('#password', 'wrongpassword');
@@ -78,6 +80,7 @@ test.describe('Authentication Flow', () => {
 
   test('signup form validation works', async ({ page }) => {
     await page.goto('/es/signup');
+    await waitForIsland(page, 'SignUpForm');
 
     await page.fill('#firstName', 'J');
     await page.fill('#lastName', 'D');
@@ -101,6 +104,7 @@ test.describe('Authentication Flow', () => {
 
   test('password requirements are enforced', async ({ page }) => {
     await page.goto('/es/signup');
+    await waitForIsland(page, 'SignUpForm');
 
     await page.fill('#password', 'password');
     await page.click('button[type="submit"]');
@@ -153,6 +157,7 @@ test.describe('Authentication Flow', () => {
 
   test('terms acceptance is required for signup', async ({ page }) => {
     await page.goto('/es/signup');
+    await waitForIsland(page, 'SignUpForm');
 
     await page.fill('#firstName', 'John');
     await page.fill('#lastName', 'Doe');
