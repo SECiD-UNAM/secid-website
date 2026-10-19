@@ -28,7 +28,7 @@ function createMockSession(
  * TC-mentorship-shared-010
  * Verifies: SessionCard renders session info correctly
  */
-describe.sequential('SessionCard', () => {
+describe('SessionCard', { concurrent: false }, () => {
   describe('basic rendering', () => {
     it('renders session title and partner name', () => {
       const { container } = render(

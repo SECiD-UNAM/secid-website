@@ -24,7 +24,7 @@ const mockAdapter: DataAdapter<TestItem> = {
   }),
 };
 
-describe.sequential('UniversalListing', () => {
+describe('UniversalListing', { concurrent: false }, () => {
   it('renders items after loading', async () => {
     /**
      * TC-UNIVERSAL-001

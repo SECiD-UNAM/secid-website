@@ -73,7 +73,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe.sequential('SpotlightManageList', () => {
+describe('SpotlightManageList', { concurrent: false }, () => {
   it('TC-spotlight-list-001: displays all spotlights after loading', async () => {
     /** Verifies: AC-spotlight-manage-list-renders */
     render(<SpotlightManageList lang="es" />);

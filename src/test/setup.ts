@@ -43,6 +43,23 @@ afterEach(() => {
   cleanup();
 });
 
+// happy-dom does not implement the blocking dialogs (window.alert/confirm/
+// prompt). Vitest <5 left stubs on the global; Vitest 5 no longer does, and
+// `vi.spyOn(window, 'confirm')` needs an existing function to wrap. Tests
+// that care about the answer stub the spy themselves. Guarded because the
+// rules suites run with `@vitest-environment node` (no window at all).
+if (typeof window !== 'undefined') {
+  if (typeof window.alert !== 'function') {
+    window.alert = () => {};
+  }
+  if (typeof window.confirm !== 'function') {
+    window.confirm = () => false;
+  }
+  if (typeof window.prompt !== 'function') {
+    window.prompt = () => null;
+  }
+}
+
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
   constructor() {}

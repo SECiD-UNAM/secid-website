@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ListingSearch } from '@components/listing/ListingSearch';
 
-describe.sequential('ListingSearch', () => {
+describe('ListingSearch', { concurrent: false }, () => {
   it('renders search input with placeholder', () => {
     render(<ListingSearch query="" onQueryChange={vi.fn()} lang="en" />);
     expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
