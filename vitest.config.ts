@@ -109,13 +109,20 @@ export default defineConfig({
         '**/*.spec.*',
       ],
       include: ['src/**/*.{js,ts,jsx,tsx}'],
+      // Floor = measured values on 2026-10-18 (ROADMAP B6), rounded DOWN to
+      // the nearest whole percent so the suite stays green and coverage can
+      // never silently drop. Raise them as suites are un-skipped (PRs after
+      // this one) — never lower them without a note in docs/ROADMAP.md.
+      // Measured: lines 16.72, statements 16.72, functions 43.63, branches 71.78.
+      //
+      // NOTE: the keys must sit directly under `thresholds`. Vitest treats any
+      // other key (e.g. Jest's `global`) as a file glob, and `global` matches
+      // nothing — so the previous `thresholds.global` block was never enforced.
       thresholds: {
-        global: {
-          branches: 0,
-          functions: 0,
-          lines: 0,
-          statements: 0,
-        },
+        branches: 71,
+        functions: 43,
+        lines: 16,
+        statements: 16,
       },
       all: true,
       skipFull: false,
