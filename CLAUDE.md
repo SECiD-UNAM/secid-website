@@ -31,7 +31,7 @@ SECiD (Sociedad de Egresados en Ciencia de Datos) is UNAM's Data Science Alumni 
 
 ## Development Requirements
 
-**Node.js Version:** >=20.0.0 (see `.nvmrc`)
+**Node.js Version:** >=22.12.0 (see `.nvmrc`; Vitest 5 needs 22.12+)
 
 - Use `nvm use` for version consistency
 - Engine-strict mode enabled
@@ -130,7 +130,7 @@ Or use skills:
 - **Forms**: React Hook Form + Zod
 - **i18n**: i18next, react-i18next
 - **Infrastructure**: Firebase Hosting, GitHub Actions
-- **Node.js**: >=20.0.0
+- **Node.js**: >=22.12.0
 
 ## Project Conventions
 
