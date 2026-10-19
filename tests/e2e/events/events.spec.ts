@@ -46,7 +46,9 @@ test.describe('Events listing (member)', () => {
       .locator('article, div', { has: eventCard(page, UPCOMING) })
       .last();
     await expect(card).toContainText('Virtual');
-    await expect(card).toContainText('12/100 asistentes');
+    // Seeded at 12; tests/e2e/event-registration.spec.ts registers (and
+    // cancels) in parallel, so only the shape is asserted here.
+    await expect(card).toContainText(/\d+\/100 asistentes/);
     await expect(card).toContainText('Registro abierto');
     await expect(
       page.getByRole('link', { name: 'Ver detalles' })

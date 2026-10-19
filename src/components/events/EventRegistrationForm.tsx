@@ -10,6 +10,7 @@ import {
   increment,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { buildEventRegistrationDoc } from '@/lib/events/registrationPayload';
 import {
   XMarkIcon,
   CheckCircleIcon,
@@ -370,14 +371,16 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
       );
 
       // Add to event's registrations subcollection for easier queries
-      await addDoc(collection(db, 'events', eventId, 'registrations'), {
-        userId: user.uid,
-        registrationId: registrationRef['id'],
-        userName: `${registrationData.firstName} ${registrationData.lastName}`,
-        userEmail: registrationData['email'],
-        registeredAt: serverTimestamp(),
-        attendanceStatus: 'registered',
-      });
+      await addDoc(
+        collection(db, 'events', eventId, 'registrations'),
+        buildEventRegistrationDoc({
+          eventId,
+          userId: user.uid,
+          registrationId: registrationRef['id'],
+          userName: `${registrationData.firstName} ${registrationData.lastName}`,
+          userEmail: registrationData['email'],
+        })
+      );
 
       // Update event's current attendees count
       await updateDoc(doc(db, 'events', eventId), {

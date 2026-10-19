@@ -17,6 +17,12 @@ import {
 } from '@firebase/rules-unit-testing';
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
+import { DEFAULT_GROUPS } from '../../functions/src/rbac/defaultGroups';
+import {
+  buildClaimsPayload,
+  encodeClaimsPermissions,
+  resolveGroupPermissions,
+} from '../../functions/src/rbac/resolution-logic';
 
 export const RULES_PATH = resolve(process.cwd(), 'firestore.rules');
 export const PROJECT_ID = 'secid-rules-test';
@@ -57,6 +63,26 @@ export async function createTestEnv(
       port: Number(port),
     },
   });
+}
+
+/**
+ * Custom claims a real member carries (resolved from the `member` group by
+ * functions/src/rbac/resolvePermissions.ts and backfilled for every user).
+ * firestore.rules read request.auth.token.rbac in every hasRBACDeny()
+ * chain and a token without the key errors out (deny), so contexts that
+ * exercise those rules must pass this as the token:
+ *   testEnv.authenticatedContext(uid, memberToken())
+ * scripts/seed-emulator.js hardcodes the same payload for the e2e members.
+ */
+export function memberToken(): Record<string, unknown> {
+  const group = DEFAULT_GROUPS.find((g) => g.id === 'member');
+  if (!group) throw new Error('member group missing from DEFAULT_GROUPS');
+  const encoded = encodeClaimsPermissions(
+    resolveGroupPermissions([
+      { id: group.id, name: group.name, permissions: group.permissions },
+    ])
+  );
+  return buildClaimsPayload(['member'], encoded, 'member');
 }
 
 /** Minimal users/{uid} doc that satisfies isVerified() + isActive(). */
