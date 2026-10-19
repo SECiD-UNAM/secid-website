@@ -1,5 +1,6 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import * as admin from 'firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 import { createHash } from 'crypto';
 
 const db = admin.firestore();
@@ -121,7 +122,7 @@ function buildSanitizedDocument(
     contactEmail: sanitize(data.contactEmail, 254),
     contactName: sanitize(data.contactName, 200),
     status: 'pending_review',
-    submittedAt: admin.firestore.FieldValue.serverTimestamp(),
+    submittedAt: FieldValue.serverTimestamp(),
   };
 
   if (data.salaryMin !== undefined) {

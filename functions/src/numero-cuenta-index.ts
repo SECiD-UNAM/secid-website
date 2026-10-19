@@ -1,5 +1,6 @@
 import { onDocumentWritten } from 'firebase-functions/v2/firestore';
 import * as admin from 'firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 
 const db = admin.firestore();
 
@@ -52,7 +53,7 @@ export const onUserNumeroCuentaChange = onDocumentWritten(
               numeroCuentaConflict: {
                 existingUid,
                 numeroCuenta: newNumeroCuenta,
-                detectedAt: admin.firestore.FieldValue.serverTimestamp(),
+                detectedAt: FieldValue.serverTimestamp(),
               },
             });
           return;

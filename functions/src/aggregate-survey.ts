@@ -8,6 +8,7 @@
  * /es/members can read with a single get.
  */
 import * as admin from 'firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions/v2';
@@ -160,7 +161,7 @@ async function buildAggregates(): Promise<{
     byOpenToOpportunities: { ...byOpenToOpportunities },
     byReasonsForJoining: { ...byReasonsForJoining },
     byAcademicLevel: { ...byAcademicLevel },
-    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
     generatedFrom,
   };
 
@@ -182,7 +183,7 @@ async function buildAggregates(): Promise<{
     byOpenToOpportunities: applyKAnonymity(byOpenToOpportunities),
     byReasonsForJoining: applyKAnonymity(byReasonsForJoining),
     byAcademicLevel: applyKAnonymity(byAcademicLevel),
-    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
     generatedFrom,
   };
 

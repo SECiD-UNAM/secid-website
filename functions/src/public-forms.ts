@@ -1,6 +1,7 @@
 import { onRequest, Request } from 'firebase-functions/v2/https';
 import type { Response } from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 import * as crypto from 'crypto';
 import { isAllowedOrigin } from './env';
 import { verifyCaptcha } from './captcha';
@@ -131,7 +132,7 @@ export const subscribeNewsletter = onRequest(
       email,
       name,
       interests,
-      subscribedAt: admin.firestore.FieldValue.serverTimestamp(),
+      subscribedAt: FieldValue.serverTimestamp(),
       source: 'website',
       lang,
       ipHash: hashKey(['newsletter', ip]),
@@ -213,7 +214,7 @@ export const sendContactMessage = onRequest(
       email,
       subject,
       message,
-      sentAt: admin.firestore.FieldValue.serverTimestamp(),
+      sentAt: FieldValue.serverTimestamp(),
       source: 'website',
       lang,
       status: 'new',

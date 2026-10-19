@@ -1,5 +1,6 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import * as admin from 'firebase-admin';
+import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import * as crypto from 'crypto';
 import { sendEmail } from './email-service';
 import { getAppUrl, ALLOWED_CALLABLE_ORIGINS } from './env';
@@ -142,7 +143,7 @@ export const requestAlternateEmail = onCall(
         uid,
         email: emailLower,
         result: 'already_in_use',
-        at: admin.firestore.FieldValue.serverTimestamp(),
+        at: FieldValue.serverTimestamp(),
       });
       return { ok: true, alreadyLinked: true };
     }
@@ -157,8 +158,8 @@ export const requestAlternateEmail = onCall(
       .set({
         canonicalUid: uid,
         email: emailLower,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        expiresAt: admin.firestore.Timestamp.fromMillis(now + TOKEN_TTL_MS),
+        createdAt: FieldValue.serverTimestamp(),
+        expiresAt: Timestamp.fromMillis(now + TOKEN_TTL_MS),
         used: false,
       });
 
@@ -299,7 +300,7 @@ export const confirmAlternateEmail = onCall(
       if (conflictUid) {
         tx.update(tokenRef, {
           used: true,
-          usedAt: admin.firestore.FieldValue.serverTimestamp(),
+          usedAt: FieldValue.serverTimestamp(),
         });
         return { ok: true, email: emailLower, requiresAdminMerge: true };
       }
@@ -326,20 +327,20 @@ export const confirmAlternateEmail = onCall(
       // elements; use a real Timestamp so the array write succeeds.
       deduped.push({
         email: emailLower,
-        verifiedAt: admin.firestore.Timestamp.now(),
+        verifiedAt: Timestamp.now(),
       });
 
       tx.update(canonicalRef, {
         alternateEmails: deduped,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
       });
       tx.set(aliasIndexRef, {
         canonicalUid,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: FieldValue.serverTimestamp(),
       });
       tx.update(tokenRef, {
         used: true,
-        usedAt: admin.firestore.FieldValue.serverTimestamp(),
+        usedAt: FieldValue.serverTimestamp(),
       });
 
       return { ok: true, email: emailLower };
