@@ -974,6 +974,17 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Member announcements (F20): one record per sendAnnouncement run,
+    // written only by the callable. Readable by whoever can send
+    // (announcements:publish, `ac:p.a`) or review (`ac:v.a`); admin passes
+    // through the wildcard.
+    match /announcements/{announcementId} {
+      allow read: if isAuthenticated() &&
+        !hasRBACDeny('ac', 'v') && !hasRBACDeny('ac', 'p') &&
+        (hasRBACAllowAll('ac', 'v') || hasRBACAllowAll('ac', 'p'));
+      allow write: if false; // Only Cloud Functions can write
+    }
+
     // Member status change log (written by Cloud Functions, read by admins)
     match /member_status_log/{logId} {
       allow read: if isAuthenticated() && !hasRBACDeny('us', 'v') && hasRBACAllowAll('us', 'v');

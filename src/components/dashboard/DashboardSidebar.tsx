@@ -3,6 +3,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTranslations } from '@/hooks/useTranslations';
 import { useBeta } from '@/hooks/useBeta';
 import { isFeatureEnabled, type BetaFeatureId } from '@/lib/beta';
+import { usePermissions } from '@/lib/rbac/hooks';
+import type { Operation, Resource } from '@/lib/rbac/types';
 import {
   HomeIcon,
   UserCircleIcon,
@@ -24,6 +26,7 @@ import {
   StarIcon,
   RectangleGroupIcon,
   ClipboardDocumentListIcon,
+  MegaphoneIcon,
 } from '@heroicons/react/24/outline';
 
 interface DashboardSidebarProps {
@@ -48,6 +51,8 @@ interface MenuItem {
   // membership (users.isVerified). Omitted → always accessible.
   minTier?: 'basic' | 'full';
   requireBeta?: BetaFeatureId;
+  // RBAC claim the item needs (checked on top of requireRole/minTier).
+  requirePermission?: { resource: Resource; operation: Operation };
 }
 
 export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
@@ -68,6 +73,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   const tierRank = (t?: 'basic' | 'full') =>
     t === 'full' ? 2 : t === 'basic' ? 1 : 0;
   const _t = useTranslations(lang);
+  const { can } = usePermissions();
   const isBeta = useBeta();
 
   // Display-only toggle for hiding admin nav during demos. No security function.
@@ -231,6 +237,13 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       icon: StarIcon,
       requireRole: ['admin', 'moderator', 'collaborator'],
     },
+    // F20: content-editor / newsletter-editor / admin (announcements:publish).
+    {
+      name: lang === 'es' ? 'Comunicados' : 'Announcements',
+      href: `/${lang}/dashboard/admin/communications`,
+      icon: MegaphoneIcon,
+      requirePermission: { resource: 'announcements', operation: 'publish' },
+    },
   ];
 
   const adminItems: MenuItem[] = [
@@ -295,6 +308,8 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   const isItemAccessible = (item: MenuItem): boolean => {
     if (item.requireBeta && !isFeatureEnabled(item.requireBeta)) return false;
     if (tierRank(item.minTier) > userTierRank) return false;
+    const perm = item.requirePermission;
+    if (perm && !can(perm.resource, perm.operation)) return false;
     if (
       item.requireRole &&
       !item.requireRole.includes(userProfile?.role || 'member')

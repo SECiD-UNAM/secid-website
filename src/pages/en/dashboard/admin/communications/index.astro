@@ -1,0 +1,23 @@
+---
+import DashboardLayout from '@/layouts/DashboardLayout.astro';
+import AdminCommunicationsPage from '@/components/wrappers/AdminCommunicationsPage';
+// No requireRole: the island gates on the RBAC permission
+// announcements:publish (content-editor, newsletter-editor, admin).
+---
+
+<DashboardLayout
+  title="Announcements - SECiD"
+  description="Email announcements to SECiD members"
+  lang="en"
+>
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+      Announcements
+    </h1>
+    <p class="mt-2 text-gray-600 dark:text-gray-400">
+      Write an announcement, pick the audience and email it to members.
+    </p>
+  </div>
+
+  <AdminCommunicationsPage client:only="react" lang="en" />
+</DashboardLayout>

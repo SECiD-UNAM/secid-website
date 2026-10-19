@@ -306,14 +306,46 @@ describe('DEFAULT_GROUPS', () => {
     const superAdmin = DEFAULT_GROUPS.find((g) => g.id === 'super-admin');
     expect(superAdmin).toBeDefined();
 
-    // 19 resources x 8 operations = 152 grants
-    expect(superAdmin!.permissions).toHaveLength(19 * 8);
+    // 20 resources x 8 operations = 160 grants
+    expect(superAdmin!.permissions).toHaveLength(20 * 8);
 
     // All should be allow + scope all
     for (const perm of superAdmin!.permissions) {
       expect(perm.effect).toBe('allow');
       expect(perm.scope).toBe('all');
     }
+  });
+
+  it('content-editor and newsletter-editor can send announcements (F20)', () => {
+    for (const id of ['content-editor', 'newsletter-editor']) {
+      const group = DEFAULT_GROUPS.find((g) => g.id === id);
+      expect(group).toBeDefined();
+      const send = group!.permissions.find(
+        (p) => p.resource === 'announcements' && p.operation === 'publish'
+      );
+      expect(send, `${id} announcements:publish`).toEqual({
+        resource: 'announcements',
+        operation: 'publish',
+        scope: 'all',
+        effect: 'allow',
+      });
+      const encoded = encodeClaimsPermissions(
+        resolveGroupPermissions([
+          { id, name: id, permissions: group!.permissions },
+        ])
+      );
+      expect(encoded.split(',')).toContain('ac:p.a');
+    }
+  });
+
+  it('member group cannot send announcements', () => {
+    const member = DEFAULT_GROUPS.find((g) => g.id === 'member');
+    const encoded = encodeClaimsPermissions(
+      resolveGroupPermissions([
+        { id: 'member', name: 'Member', permissions: member!.permissions },
+      ])
+    );
+    expect(encoded).not.toContain('ac:');
   });
 
   it('member group has view.all on content resources', () => {
