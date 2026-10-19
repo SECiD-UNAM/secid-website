@@ -1,9 +1,10 @@
 import { test, expect, Page } from '@playwright/test';
+import { clearBrowserStorage } from '../../utils/browser-storage';
 
 // Test URLs
 const BASE_URL = process.env.BASE_URL || 'http://localhost:4321';
 const JOBS_URL = `${BASE_URL}/en/jobs`;
-const POST_JOB_URL = `${BASE_URL}/en/post-job`;
+const _POST_JOB_URL = `${BASE_URL}/en/post-job`;
 const DASHBOARD_URL = `${BASE_URL}/en/dashboard`;
 
 // Helper functions
@@ -12,7 +13,7 @@ async function navigateToJobs(page: Page) {
   await expect(page).toHaveTitle(/jobs/i);
 }
 
-async function loginAsCompany(page: Page) {
+async function _loginAsCompany(page: Page) {
   await page.goto(`${BASE_URL}/en/login`);
   await page.fill('[data-testid="email-input"]', 'company@example.com');
   await page.fill('[data-testid="password-input"]', 'password123');
@@ -30,10 +31,8 @@ async function loginAsUser(page: Page) {
 
 test.describe('Job Board', () => {
   test.beforeEach(async ({ page }) => {
-    // Clear any existing session
-    await page.context().clearCookies();
-    await page.evaluate(() => localStorage.clear());
-    await page.evaluate(() => sessionStorage.clear());
+    // Clear any existing session (safe before the first navigation).
+    await clearBrowserStorage(page);
   });
 
   test.describe('Job Listing Display', () => {
@@ -129,7 +128,7 @@ test.describe('Job Board', () => {
       await expect(
         page.locator('[data-testid="job-card"]').first()
       ).toBeVisible();
-      const initialJobCount = await page
+      const _initialJobCount = await page
         .locator('[data-testid="job-card"]')
         .count();
 
@@ -140,7 +139,7 @@ test.describe('Job Board', () => {
       await page.waitForTimeout(1000);
 
       // Check that results are filtered
-      const filteredJobCount = await page
+      const _filteredJobCount = await page
         .locator('[data-testid="job-card"]')
         .count();
 

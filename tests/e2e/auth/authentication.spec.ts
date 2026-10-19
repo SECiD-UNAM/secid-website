@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import { clearBrowserStorage } from '../../utils/browser-storage';
 import { mockUsers } from '../../fixtures';
 
 // Test URLs
@@ -42,10 +43,8 @@ async function fillSignupForm(page: Page, userData: any) {
 
 test.describe('Authentication Flow', () => {
   test.beforeEach(async ({ page }) => {
-    // Clear any existing session
-    await page.context().clearCookies();
-    await page.evaluate(() => localStorage.clear());
-    await page.evaluate(() => sessionStorage.clear());
+    // Clear any existing session (safe before the first navigation).
+    await clearBrowserStorage(page);
   });
 
   test.describe('Sign In', () => {
