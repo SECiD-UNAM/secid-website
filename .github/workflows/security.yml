@@ -206,12 +206,16 @@ jobs:
       - name: Fetch base branch
         run: git fetch origin main:refs/remotes/origin/main || true
 
+      # PRs: diff against the base branch. Pushes to main/develop: diff
+      # against the previous head (`origin/main` would equal HEAD and
+      # TruffleHog aborts with "BASE and HEAD commits are the same").
+      # Schedule/dispatch: no base or head → full-repository scan.
       - name: Run TruffleHog secret scan
         uses: trufflesecurity/trufflehog@v3.82.7
         with:
           path: ./
-          base: ${{ github.event.pull_request.base.sha || 'origin/main' }}
-          head: HEAD
+          base: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+          head: ${{ github.event.pull_request.head.sha || (github.event_name == 'push' && github.sha) || '' }}
           extra_args: --debug --only-verified
 
       - name: Scan for hardcoded secrets
