@@ -149,7 +149,7 @@ describe('CompanyAutocomplete - filters companies on type', () => {
       render(<CompanyAutocomplete value="" onChange={onChange} />);
     });
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
 
     await act(async () => {
       fireEvent.change(input, { target: { value: 'Go' } });
@@ -180,7 +180,7 @@ describe('CompanyAutocomplete - calls onChange on free text', () => {
       render(<CompanyAutocomplete value="" onChange={onChange} />);
     });
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     await act(async () => {
       fireEvent.change(input, { target: { value: 'NewCo' } });
     });
@@ -208,7 +208,7 @@ describe('CompanyAutocomplete - select calls onChange with companyId', () => {
       render(<CompanyAutocomplete value="" onChange={onChange} />);
     });
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
 
     await act(async () => {
       fireEvent.change(input, { target: { value: 'Meta' } });
@@ -245,7 +245,7 @@ describe('CompanyAutocomplete - create new company button', () => {
       render(<CompanyAutocomplete value="Go" onChange={onChange} />);
     });
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
 
     await act(async () => {
       fireEvent.focus(input);
