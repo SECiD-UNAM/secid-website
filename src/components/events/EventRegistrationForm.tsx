@@ -6,10 +6,10 @@ import {
   addDoc,
   getDoc,
   serverTimestamp,
-  updateDoc,
-  increment,
+  setDoc,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { buildEventRegistrationDoc } from '@/lib/events/registrationPayload';
 import {
   XMarkIcon,
   CheckCircleIcon,
@@ -369,32 +369,30 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
         }
       );
 
-      // Add to event's registrations subcollection for easier queries
-      await addDoc(collection(db, 'events', eventId, 'registrations'), {
-        userId: user.uid,
-        registrationId: registrationRef['id'],
-        userName: `${registrationData.firstName} ${registrationData.lastName}`,
-        userEmail: registrationData['email'],
-        registeredAt: serverTimestamp(),
-        attendanceStatus: 'registered',
-      });
-
-      // Update event's current attendees count
-      await updateDoc(doc(db, 'events', eventId), {
-        currentAttendees: increment(1),
-      });
-
-      // Add to user's registered events
-      if (userProfile) {
-        await addDoc(collection(db, 'users', user.uid, 'registeredEvents'), {
+      // Add to event's registrations subcollection, keyed by uid (what
+      // EventDetail reads and deletes). The attendee counter on the event
+      // is maintained by the Cloud Function trigger on this write.
+      await setDoc(
+        doc(db, 'events', eventId, 'registrations', user.uid),
+        buildEventRegistrationDoc({
           eventId,
-          eventTitle: eventDetails.title,
-          eventDate: eventDetails.startDate,
+          userId: user.uid,
           registrationId: registrationRef['id'],
-          registeredAt: serverTimestamp(),
-          status: 'registered',
-        });
-      }
+          userName: `${registrationData.firstName} ${registrationData.lastName}`,
+          userEmail: registrationData['email'],
+        })
+      );
+
+      // Add to user's registered events, keyed by event id (what
+      // EventDetail deletes on cancellation).
+      await setDoc(doc(db, 'users', user.uid, 'registeredEvents', eventId), {
+        eventId,
+        eventTitle: eventDetails.title,
+        eventDate: eventDetails.startDate,
+        registrationId: registrationRef['id'],
+        registeredAt: serverTimestamp(),
+        status: 'registered',
+      });
 
       setSuccess(true);
 
