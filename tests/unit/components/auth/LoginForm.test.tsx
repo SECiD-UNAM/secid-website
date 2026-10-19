@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ComponentProps, ReactNode } from 'react';
 import type { User } from 'firebase/auth';
@@ -704,6 +704,29 @@ describe('LoginForm', { concurrent: false }, () => {
       await waitFor(() => {
         expect(onSuccess).toHaveBeenCalledTimes(1);
       });
+    });
+  });
+
+  describe('Cleanup', () => {
+    it('clears the password-strength blur timer on unmount', () => {
+      // Blurring the password field hides the strength meter 200 ms later.
+      // If that timer outlives the component it calls setState on an
+      // unmounted tree; in the unit suite it fires after happy-dom is torn
+      // down ("ReferenceError: window is not defined", CI run 39341238531).
+      vi.useFakeTimers();
+      try {
+        const { unmount } = renderForm();
+        const passwordInput = screen.getByLabelText(/^password$/i);
+        fireEvent.focus(passwordInput);
+        fireEvent.blur(passwordInput);
+        expect(vi.getTimerCount()).toBeGreaterThan(0);
+
+        unmount();
+
+        expect(vi.getTimerCount()).toBe(0);
+      } finally {
+        vi.useRealTimers();
+      }
     });
   });
 
