@@ -262,7 +262,7 @@ describe('PermissionMatrixPicker: disables all dropdowns when disabled prop is t
     }
   });
 
-  it('TC-rbac-matrix-013: all 152 cells are disabled (19 resources x 8 operations)', () => {
+  it('TC-rbac-matrix-013: all 160 cells are disabled (20 resources x 8 operations)', () => {
     /** Verifies: AC-matrix-disabled-count */
     const onChange = vi.fn();
     const { container } = render(
@@ -276,12 +276,12 @@ describe('PermissionMatrixPicker: disables all dropdowns when disabled prop is t
     const view = within(container);
 
     const selects = view.getAllByRole('combobox');
-    // 19 resources x 8 operations = 152 cells
-    expect(selects).toHaveLength(152);
+    // 20 resources x 8 operations = 160 cells
+    expect(selects).toHaveLength(160);
     const disabledCount = selects.filter(
       (s) => (s as HTMLSelectElement).disabled
     ).length;
-    expect(disabledCount).toBe(152);
+    expect(disabledCount).toBe(160);
   });
 });
 

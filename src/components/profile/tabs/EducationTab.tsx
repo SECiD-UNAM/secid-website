@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { UNAM_CAMPUSES } from '@/lib/campuses';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import type { FormData } from '../profile-edit-types';
 import type { EducationEntry, Certification, Language } from '@/types/member';
@@ -19,16 +20,6 @@ const INPUT_CLASS =
   'w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 ' +
   'focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ' +
   'dark:border-gray-600 dark:bg-gray-700 dark:text-white';
-
-const UNAM_CAMPUSES = [
-  'IIMAS',
-  'FES Acatlan',
-  'Facultad de Ciencias',
-  'FI',
-  'FC',
-  'FES Aragon',
-  'Other',
-] as const;
 
 const COMMON_LANGUAGES = [
   'Espanol',

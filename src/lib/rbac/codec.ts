@@ -154,7 +154,7 @@ function tryResourceWildcards(
 }
 
 /**
- * Finds operations where all 19 resources are present with the same scope.
+ * Finds operations where all resources are present with the same scope.
  * Marks consumed indices and returns wildcard tokens.
  */
 function tryOperationWildcards(

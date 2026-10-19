@@ -17,7 +17,8 @@ export type Resource =
   | 'notifications'
   | 'assessments'
   | 'salary-insights'
-  | 'groups';
+  | 'groups'
+  | 'announcements';
 
 export type Operation =
   | 'view'
@@ -49,6 +50,7 @@ export const RESOURCES: readonly Resource[] = [
   'assessments',
   'salary-insights',
   'groups',
+  'announcements',
 ] as const;
 
 export const OPERATIONS: readonly Operation[] = [
@@ -82,6 +84,7 @@ export const RESOURCE_ABBREV: Record<Resource, string> = {
   assessments: 'as',
   'salary-insights': 'si',
   groups: 'gr',
+  announcements: 'ac',
 };
 
 export const OP_ABBREV: Record<Operation, string> = {
