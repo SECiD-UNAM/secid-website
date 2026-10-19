@@ -80,9 +80,9 @@ test.describe('Admin — comunicados', () => {
         { timeout: 15000 }
       )
       .toBe(1);
-    const [mail] = (await queryByField('mail', 'to', SEEDED.admin.email)).filter(
-      (m) => m.message?.subject === subject
-    );
+    const [mail] = (
+      await queryByField('mail', 'to', SEEDED.admin.email)
+    ).filter((m) => m.message?.subject === subject);
     expect(mail!.message.html).toContain('<strong>a todos</strong>');
     expect(mail!.message.html).toContain('&lt;b&gt;sin html&lt;/b&gt;');
 
@@ -99,10 +99,6 @@ test.describe('Admin — comunicados', () => {
   test('the confirm step shows the dry-run count of active members', async ({
     page,
   }) => {
-    const users = await listCollection('users');
-    const expected = users.filter(isEligible).length;
-    expect(expected).toBeGreaterThan(0);
-
     await login(page, SEEDED.admin);
     await expectMemberDashboard(page);
     await openComposer(page);
@@ -111,9 +107,20 @@ test.describe('Admin — comunicados', () => {
     await page.getByRole('button', { name: 'Enviar', exact: true }).click();
     const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible({ timeout: 20000 });
-    await expect(dialog).toContainText(
-      `Se enviará «Conteo e2e» a ${expected} destinatarios.`
+    await expect(dialog).toContainText('Se enviará «Conteo e2e» a');
+
+    // The count is what the callable resolved from users/ at that moment.
+    // admin-functionality.spec.ts flips member2's lifecycle status and back
+    // while this file runs in parallel, so member2 may or may not have been
+    // counted; every other seeded account is stable.
+    const shown = Number(
+      /a (\d+) destinatarios/.exec((await dialog.textContent()) ?? '')?.[1]
     );
+    const stable = (await listCollection('users'))
+      .filter(isEligible)
+      .filter((u) => u.email !== SEEDED.member2.email).length;
+    expect(stable).toBeGreaterThan(0);
+    expect([stable, stable + 1]).toContain(shown);
 
     // Cancel: nothing is queued for the whole audience.
     await dialog.getByRole('button', { name: 'Cancelar' }).click();
