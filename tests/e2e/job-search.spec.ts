@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { waitForIsland } from '../utils/session';
 
 /**
  * Public job board (/es/jobs, src/pages/es/jobs.astro). The static parts
@@ -68,6 +69,7 @@ test.describe('Job Search User Journey', () => {
   test.describe('with a signed-in member (seeded)', () => {
     test.beforeEach(async ({ page }) => {
       await page.goto('/es/login');
+      await waitForIsland(page, 'LoginForm');
       await page.fill('#email', MEMBER_EMAIL);
       await page.fill('#password', MEMBER_PASSWORD);
       await page.click('button[type="submit"]');

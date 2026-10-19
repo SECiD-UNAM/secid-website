@@ -35,13 +35,9 @@ tests/
 │   ├── language.spec.ts           # Internationalization tests
 │   ├── mobile.spec.ts             # Mobile-specific tests
 │   └── registration.spec.ts       # User registration tests
-├── page-objects/                  # Page Object Model implementations
-│   ├── base/                      # Base classes and components
-│   ├── auth/                      # Authentication pages
-│   ├── jobs/                      # Job-related pages
-│   ├── payments/                  # Payment flow pages
-│   ├── admin/                     # Admin dashboard pages
-│   └── shared/                    # Shared components
+├── page-objects/                  # Page objects (payments suites only)
+│   ├── base/                      # BasePage
+│   └── payments/                  # Payment flow pages
 ├── fixtures/                      # Test data and mock objects
 ├── data/                          # Static test data files
 ├── utils/                         # Helper functions and utilities
@@ -187,27 +183,9 @@ class BasePage {
 
 ### Specialized Page Objects
 
-#### **LoginPage.ts**
-
-```typescript
-class LoginPage extends BasePage {
-  async fillLoginForm(email: string, password: string);
-  async submitLogin();
-  async clickForgotPassword();
-  async validateErrorMessage(message: string);
-}
-```
-
-#### **JobBoardPage.ts**
-
-```typescript
-class JobBoardPage extends BasePage {
-  async searchJobs(keyword: string);
-  async applyFilters(filters: JobFilters);
-  async selectJob(jobTitle: string);
-  async applyToJob(applicationData: JobApplication);
-}
-```
+Only the payments suites (skipped until Stripe launches) still use page
+objects (`page-objects/payments/`). The rewritten suites use plain
+Playwright locators plus the helpers in `utils/session.ts`.
 
 ## Test Data Management
 

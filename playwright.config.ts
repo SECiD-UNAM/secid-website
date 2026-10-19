@@ -126,15 +126,20 @@ export default defineConfig({
   globalSetup: path.join(__dirname, 'tests/global-setup.ts'),
   globalTeardown: path.join(__dirname, 'tests/global-teardown.ts'),
 
-  // Web server configuration
-  webServer: {
-    command: process.env.CI ? 'npm run preview' : 'npm run dev',
-    url: process.env.BASE_URL || 'http://localhost:4321',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-    stdout: 'pipe',
-    stderr: 'pipe',
-  },
+  // Web server configuration. With BASE_URL set the server is already up
+  // (CI's chromium job serves dist/client through the Firebase Hosting
+  // emulator so the firebase.json rewrites apply; locally, any server you
+  // point it at) and nothing is started here.
+  webServer: process.env.BASE_URL
+    ? undefined
+    : {
+        command: process.env.CI ? 'npm run preview' : 'npm run dev',
+        url: 'http://localhost:4321',
+        reuseExistingServer: !process.env.CI,
+        timeout: 120 * 1000,
+        stdout: 'pipe',
+        stderr: 'pipe',
+      },
 
   // Test matching patterns
   testMatch: [
