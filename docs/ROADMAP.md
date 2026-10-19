@@ -16,9 +16,12 @@ Contexto: hasta el 2026-10-18 CI nunca ejecutó un test e2e (el `global-setup`
 fallaba y el paso tenía `continue-on-error`), y el proyecto `chromium` de
 Playwright solo incluía 7 archivos por su `testMatch`.
 
-- [ ] A1. Clasificar los 266 tests por causa de fallo: usuario sembrado,
-      emulador, Stripe, selector roto, bug real.
-- [ ] A2. PR del arnés: setup sin `dotenv`, `__dirname` ESM, imports JSON con
+- [x] A1. Corrida completa 2026-10-19 contra `astro preview`: 266/266 fallan.
+      Firmas: timeouts esperando UI autenticada (621), `localStorage` leído
+      antes de navegar (141), URL/selectores viejos (~60). Causa común:
+      suites heredadas que asumen usuarios sembrados, emulador y Stripe.
+      `homepage.spec.ts`: 5/7 fallan por selectores antiguos.
+- [ ] A2. PR #101 (auto-merge armado) del arnés: setup sin `dotenv`, `__dirname` ESM, imports JSON con
       atributos, `test.use` sin `defaultBrowserType`, `Test Summary` que falle
       de verdad, `testMatch` ampliado y dos proyectos: `smoke` (hidratación,
       home, login, signup, páginas públicas; bloqueante) y `full` (resto; no
