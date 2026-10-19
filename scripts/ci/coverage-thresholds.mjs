@@ -15,6 +15,6 @@
 export const coverageThresholds = {
   branches: 71,
   functions: 43,
-  lines: 16,
+  lines: 90,
   statements: 16,
 };
