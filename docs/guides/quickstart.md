@@ -78,9 +78,9 @@ make test-mock
 
 ## 🆘 Need Help?
 
-- **📖 Full Guide**: See [DEVELOPMENT.md](DEVELOPMENT.md)
-- **🔧 Troubleshooting**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-- **🐛 Issues**: [GitHub Issues](https://github.com/secid/secid-website/issues)
+- **📖 Full Guide**: See [development.md](development.md)
+- **🔧 Troubleshooting**: See [troubleshooting.md](troubleshooting.md)
+- **🐛 Issues**: [GitHub Issues](https://github.com/SECiD-UNAM/secid-website/issues)
 
 ## 💡 Pro Tips
 

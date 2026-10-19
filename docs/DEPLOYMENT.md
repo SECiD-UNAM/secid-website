@@ -2,26 +2,52 @@
 
 ## Environments
 
-| Environment | Branch        | URL                   | Host                                     | Workflow          |
-| ----------- | ------------- | --------------------- | ---------------------------------------- | ----------------- |
-| Beta        | `feature/hub` | https://beta.secid.mx | Firebase Hosting, default site           | `deploy-beta.yml` |
-| Production  | `main`        | https://secid.mx      | GitHub Pages today → Firebase Hosting ⚠️ | `cd.yml`          |
+| Environment | Branch        | URL                                    | Host                                                   | Workflow          |
+| ----------- | ------------- | -------------------------------------- | ------------------------------------------------------ | ----------------- |
+| Production  | `main`        | https://secid.mx, https://www.secid.mx | Firebase Hosting, site `secid-mx` (`secid-mx.web.app`) | `cd.yml`          |
+| Beta        | `feature/hub` | https://beta.secid.mx                  | Firebase Hosting, project default site                 | `deploy-beta.yml` |
 
-⚠️ As of 2026-09, `secid.mx` still serves the legacy pre-Astro site from
-`main` via GitHub Pages. The Astro app is only live on beta. See
-[Production cutover](#production-cutover) — GitHub Pages cannot serve this
-app, so promotion requires moving production to Firebase Hosting.
+Production has been on Firebase Hosting since **2026-10-18** (DNS cutover,
+[`LAUNCH-CHECKLIST.md`](./LAUNCH-CHECKLIST.md) Fase 4). GitHub Pages no
+longer serves the domain; disabling it in the repo settings and removing
+`public/CNAME` are the remaining cleanup items (Fase 5 of the checklist,
+runbook [prod-cutover §5](./runbooks/prod-cutover.md)). DNS for `secid.mx`
+lives in Cloudflare and is changed only by the project owner.
 
 Both environments use ONE Firebase project (`secid-org`): same Auth users,
 same Firestore data, same Cloud Functions. Only the static frontend differs.
 
+## Deploy flows
+
+| Workflow                                  | Trigger                                    | Hosting                                                          | Backend (rules → storage → functions)            | Afterwards                                                                                       |
+| ----------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `cd.yml` (Deploy to Production)           | push to `main`, `workflow_dispatch`        | `firebase deploy --only hosting` to `FIREBASE_PROD_HOSTING_SITE` | yes, when `BACKEND_DEPLOYED_FROM_MAIN == 'true'` | `validate` job: smoke test against `<site>.web.app`, then against `https://secid.mx` (both hard) |
+| `deploy-beta.yml` (Deploy Beta)           | push to `feature/hub`, `workflow_dispatch` | `action-hosting-deploy` to the default site, channel `live`      | only when `BACKEND_DEPLOYED_FROM_MAIN != 'true'` | none (run `scripts/ci/smoke-test.sh` by hand, see below)                                         |
+| `cutover.yml` (Production Cutover)        | `workflow_dispatch`                        | creates the prod site, requests domains                          | —                                                | one-off; runbook [prod-cutover](./runbooks/prod-cutover.md)                                      |
+| `firestore-backup.yml` (Firestore Backup) | weekly + `workflow_dispatch`               | —                                                                | export to GCS                                    | runbook [firestore-backup](./runbooks/firestore-backup.md)                                       |
+| `uptime.yml` (Uptime Monitor)             | every 15 min                               | probes prod, www, beta, one callable                             | —                                                | opens/closes an `incident` issue ([Monitoreo de uptime](#monitoreo-de-uptime))                   |
+
+Repo variables that steer these workflows (`gh variable list`):
+
+| Variable                     | Current value | Effect                                                                                                                                                  |
+| ---------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FIREBASE_PROD_HOSTING_SITE` | `secid-mx`    | Hosting site `cd.yml` deploys to (`hosting.site` is injected into `firebase.json` with `jq`); the job fails fast if unset.                              |
+| `BACKEND_DEPLOYED_FROM_MAIN` | `true`        | Which branch deploys functions/rules/indexes: `true` → `cd.yml` (`main`); unset → `deploy-beta.yml` (`feature/hub`). The other job is skipped.          |
+| `ALLOW_FUNCTION_DELETIONS`   | unset         | Comma-separated function names a single deploy may delete. Set for one run, then remove ([shared-backend-change](./runbooks/shared-backend-change.md)). |
+
+Both backend jobs share the concurrency group `firebase-backend`, so they
+never run at the same time. Rollback of hosting or backend: runbook
+[rollback](./runbooks/rollback.md).
+
 ## What Gets Deployed
 
 - **Hosting** — static site from `dist/client/`, per environment.
-- **Backend** — Cloud Functions (`functions/src/`), Firestore rules and
-  indexes, Storage rules. Shared by both environments, so exactly ONE
-  branch may deploy it (see cutover step 5). Whoever deploys it also writes
-  `APP_URL` into `functions/.env`, which ends up in user-facing email links.
+- **Backend** — Cloud Functions (`functions/src/`, compiled to
+  `functions/lib/` by the `predeploy` hook in `firebase.json`; the compiled
+  output is not tracked in git), Firestore rules and indexes, Storage
+  rules. Shared by both environments, so exactly ONE branch may deploy it.
+  Whoever deploys it also writes `APP_URL` into `functions/.env`, which
+  ends up in user-facing email links.
 
 ## Shared-backend rules
 
@@ -31,7 +57,9 @@ deploys the backend: unset → `feature/hub` (`deploy-beta.yml`), `true` →
 Both backend jobs share the concurrency group `firebase-backend`, so they
 never run at the same time.
 
-Once `main` owns the backend:
+`main` owns the backend since 2026-10-18 (`BACKEND_DEPLOYED_FROM_MAIN=true`).
+Operator steps for a backend change: runbook
+[shared-backend-change](./runbooks/shared-backend-change.md). The rules:
 
 1. **Backend changes go to `main` first**, in a small PR, then `main` is
    merged into `feature/hub`. Beta cannot test a function or rule that
@@ -52,61 +80,40 @@ Once `main` owns the backend:
    them, so testing on beta does not email real-looking welcome / job-match
    / status messages. Beta still writes real data: destructive tests belong
    in the emulators (`npm run dev`).
-6. **Post-deploy smoke test** (`scripts/ci/smoke-test.sh`) runs against the
-   site's `.web.app` URL and the shared functions after every prod deploy;
-   it is a hard failure. Run it by hand against any environment:
+6. **Post-deploy smoke test** (`scripts/ci/smoke-test.sh`) runs in
+   `cd.yml`'s `validate` job after every prod deploy, first against
+   `https://secid-mx.web.app` and then against `https://secid.mx`; both are
+   hard failures (locale pages, a dynamic rewrite, the security headers,
+   `/api/forms/*`, a callable). `deploy-beta.yml` has no smoke job; run it
+   by hand against any environment:
    `scripts/ci/smoke-test.sh https://beta.secid.mx https://us-central1-secid-org.cloudfunctions.net`.
+   Between deploys, [`uptime.yml`](#monitoreo-de-uptime) keeps probing
+   production.
 
 ## Production cutover
 
-GitHub Pages has no rewrites and no custom headers. On Pages, the 44
-dynamic-route rewrites in `firebase.json` (member, event, blog, company,
-forum and dashboard detail pages) return 404, `/api/forms/contact` and
-`/api/forms/newsletter` (Cloud Function rewrites) return 404, and none of
-the security headers are sent. Production must be a second Firebase
-Hosting site in `secid-org`.
+Done on 2026-10-18. Production is the second Firebase Hosting site
+`secid-mx` in `secid-org`; GitHub Pages could not serve this app (no
+rewrites for the dynamic detail routes and `/api/forms/*`, no security
+headers). The step-by-step track with evidence is in
+[`LAUNCH-CHECKLIST.md`](./LAUNCH-CHECKLIST.md) (Fases 2–4 done, Fase 5
+cleanup pending) and the operator procedure, including the DNS records and
+how to revert, in the runbook [prod-cutover](./runbooks/prod-cutover.md)
+(reversal: [rollback §C](./runbooks/rollback.md)).
 
-Tracked step by step in [`LAUNCH-CHECKLIST.md`](./LAUNCH-CHECKLIST.md);
-operator runbooks (commands, verification, rollback) live in
-[`runbooks/`](./runbooks/README.md).
-Steps 1, 2, 4, 6 and the domain request in 7 are done by the
-**`Production Cutover` workflow** (`.github/workflows/cutover.yml`,
-`workflow_dispatch`) with the deploy service account; each prints a manual
-fallback in the job summary if the account lacks a permission.
+What it set up, for reference:
 
-Do these in order. Steps 1–4 do not affect the live site.
+- Hosting site `secid-mx` with `secid.mx` and `www.secid.mx` connected
+  (created by the `Production Cutover` workflow, `.github/workflows/cutover.yml`).
+- Repo variables `FIREBASE_PROD_HOSTING_SITE=secid-mx` and
+  `BACKEND_DEPLOYED_FROM_MAIN=true` (see [Deploy flows](#deploy-flows)).
+- Auth authorized domains and reCAPTCHA Enterprise key domains include
+  `secid-mx.web.app`, `secid.mx` and `www.secid.mx`.
+- `cd.yml`'s `validate` job fails if `secid.mx` does not serve the build
+  (PR #76).
 
-1. **Create the prod Hosting site**: run `Production Cutover` with
-   `site_id` (default `secid-mx`), or by hand
-   `firebase hosting:sites:create <site-id> --project secid-org`.
-2. **Set repo variable** `FIREBASE_PROD_HOSTING_SITE=<site-id>` (the
-   workflow does it; fallback `gh variable set FIREBASE_PROD_HOSTING_SITE
---body <site-id>`).
-3. **`cd.yml` deploys to that site** (done): it sets
-   `hosting.site` from the variable with `jq` and runs
-   `firebase deploy --only hosting`, so both environments keep one
-   `firebase.json`. The job fails fast if the variable is unset.
-4. **Authorized domains**: `<site-id>.web.app`, `secid.mx` and
-   `www.secid.mx` must be in Firebase Console → Authentication → Settings →
-   Authorized domains, or sign-in fails on prod. The workflow adds them via
-   the Identity Toolkit API.
-5. **Hand the backend to `main` BEFORE merging**: run the workflow with
-   `backend_from_main=true` (or `gh variable set BACKEND_DEPLOYED_FROM_MAIN
---body true`). From then on `deploy-beta.yml` skips functions/rules and
-   `cd.yml` deploys them; there is never a window with two deployers.
-6. **Merge PR #1** to `main`. `cd.yml` builds, deploys to the new site and
-   runs `scripts/ci/smoke-test.sh` against `https://<site-id>.web.app`
-   (locale pages, a dynamic rewrite, security headers, `/api/forms/*`, a
-   callable). Check login + signup there by hand before touching DNS.
-7. **Connect the domain**: the workflow requests `secid.mx` and
-   `www.secid.mx` on the site and prints the DNS records in its summary
-   (console fallback: Hosting → `<site-id>` → Add custom domain). Put
-   them in Cloudflare as DNS-only / grey cloud until the certificate is
-   issued. **This is the moment the live site changes.** Keep the old
-   GitHub Pages records noted for rollback.
-8. **Retire GitHub Pages**: remove the `secid.mx` custom domain and disable
-   Pages (Settings → Pages), so Pages no longer claims the domain. Then
-   make the `secid.mx` check in `cd.yml`'s `validate` job a hard failure.
+Still open (Fase 5): disable GitHub Pages and remove its custom domain
+(Settings → Pages), then merge the PR that deletes `public/CNAME`.
 
 ## Prerequisites
 
@@ -200,7 +207,9 @@ npm run dev
 # Build for production
 npm run build
 
-# Deploy manually (requires firebase login)
+# Deploy manually (requires firebase login). Prefer the workflows: a manual
+# deploy skips the function-deletion guard and the smoke test, and without
+# `hosting.site` set it targets the DEFAULT site, i.e. beta.
 firebase deploy --only hosting
 firebase deploy --only functions
 firebase deploy --only firestore:rules
@@ -306,12 +315,16 @@ caída persiste en la siguiente corrida.
 ## Monitoring Deploys
 
 ```bash
-# Check latest deploy status
+# Latest production deploy (hosting + backend + smoke test)
+gh run list --branch main --workflow "Deploy to Production (Firebase Hosting)" --limit 1
+
+# Latest beta deploy
 gh run list --branch feature/hub --workflow "Deploy Beta" --limit 1
 
 # View deploy logs
 gh run view <RUN_ID> --log
 
-# Check all workflows
-gh run list --branch feature/hub --limit 5
+# Which build is live? Both sites print it in the HTML.
+curl -s https://secid.mx/es/ | grep -o 'build-sha=[0-9a-f]*'
+curl -s https://beta.secid.mx/es/ | grep -o 'build-sha=[0-9a-f]*'
 ```

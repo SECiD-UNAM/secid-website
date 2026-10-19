@@ -2,12 +2,13 @@
 
 <div align="center">
 
-![SECiD Logo](images/logo.png)
+![SECiD Logo](public/images/logo.png)
 
 **Sociedad de Egresados en Ciencia de Datos**  
 _UNAM's Data Science Alumni Society Platform_
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/secid/secid-website/deploy.yml?branch=main&logo=github&label=Build%20%26%20Deploy)](https://github.com/secid/secid-website/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/SECiD-UNAM/secid-website/ci.yml?branch=main&logo=github&label=CI)](https://github.com/SECiD-UNAM/secid-website/actions/workflows/ci.yml)
+[![Deploy](https://img.shields.io/github/actions/workflow/status/SECiD-UNAM/secid-website/cd.yml?branch=main&logo=firebase&label=Deploy%20secid.mx)](https://github.com/SECiD-UNAM/secid-website/actions/workflows/cd.yml)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fsecid.mx&logo=astro&logoColor=white)](https://secid.mx)
 [![Astro](https://img.shields.io/badge/Astro-5.x-BC52EE?logo=astro&logoColor=white)](https://astro.build)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
@@ -15,9 +16,9 @@ _UNAM's Data Science Alumni Society Platform_
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.x-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Firebase](https://img.shields.io/badge/Firebase-Auth%20%7C%20Firestore-DD2C00?logo=firebase&logoColor=white)](https://firebase.google.com)
 [![Node.js](https://img.shields.io/badge/Node.js-20.17%2B-5FA04E?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](#-license)
 
-[🌐 Visit Platform](https://secid.mx) • [📖 Quick Start](QUICKSTART.md) • [💻 Developer Guide](DEVELOPMENT.md) • [🤝 Contributing](#contributing)
+[🌐 Visit Platform](https://secid.mx) • [📖 Quick Start](docs/guides/quickstart.md) • [💻 Developer Guide](docs/guides/development.md) • [🤝 Contributing](CONTRIBUTING.md)
 
 </div>
 
@@ -72,7 +73,7 @@ Our platform serves as the central hub for:
 
 ```bash
 # Clone and start everything with a single command
-git clone https://github.com/secid/secid-website.git && \
+git clone https://github.com/SECiD-UNAM/secid-website.git && \
 cd secid-website && \
 make start
 ```
@@ -97,9 +98,10 @@ That's it! 🎉 Your browser will automatically open to http://localhost:4321
 2. **Clone & Install**
 
    ```bash
-   git clone https://github.com/secid/secid-website.git
+   git clone https://github.com/SECiD-UNAM/secid-website.git
    cd secid-website
-   npm install
+   npm ci
+   npm run functions:install
    ```
 
 3. **Configure Environment**
@@ -180,28 +182,32 @@ secid-website/
 │   ├── 🌍 i18n/              # Translations
 │   ├── 🎨 styles/            # Global styles
 │   └── 📝 types/             # TypeScript types
+├── ☁️ functions/            # Firebase Cloud Functions (TypeScript)
 ├── 🌐 public/               # Static assets
 ├── 🧪 tests/                # Test files
 ├── 📦 scripts/              # Build & utility scripts
+├── 🏗️ infra/                # Infrastructure as code (Terraform)
 ├── ⚙️ .github/workflows/    # GitHub Actions
 ├── 🔧 Makefile             # Developer commands
-└── 📝 docs/                 # Documentation
-└── 📚 raw_template/           # Original HTML5 UP template
+└── 📝 docs/                 # Documentation (guides, runbooks, specs)
 ```
 
 ## 🚀 Deployment
 
 Both environments run on **Firebase Hosting** in one Firebase project
 (`secid-org`), sharing Auth, Firestore, Storage and Cloud Functions. Only
-the static frontend differs per site. Details, runbook and rules for the
+the static frontend differs per site. Details, runbooks and rules for the
 shared backend: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md); launch
 tracking: [`docs/LAUNCH-CHECKLIST.md`](docs/LAUNCH-CHECKLIST.md).
 
-- `feature/hub` → **beta.secid.mx** (`deploy-beta.yml`)
-- `main` → **secid.mx** (`cd.yml`, production Hosting site; `main` only
-  changes via pull request)
-- Backend (functions, rules, indexes) is deployed by exactly one branch,
-  chosen by the repo variable `BACKEND_DEPLOYED_FROM_MAIN`.
+- `main` → **secid.mx** (`cd.yml`, Hosting site `secid-mx`; live since
+  2026-10-18). `main` only changes via pull request.
+- `feature/hub` → **beta.secid.mx** (`deploy-beta.yml`, the project's
+  default Hosting site).
+- Backend (functions, rules, indexes) is deployed **only from `main`**
+  (repo variable `BACKEND_DEPLOYED_FROM_MAIN=true`); `deploy-beta.yml`
+  skips it. Backend changes go to `main` first, then `main` is merged into
+  `feature/hub`.
 
 ## 🔄 CI/CD Pipeline
 
@@ -220,57 +226,77 @@ GitHub Actions, on push to `main` / `feature/*`, on pull requests into
 
 **🚀 Deployment:**
 
-- Hosting deploy per branch, then rules → storage → functions
+- Hosting deploy per branch; on `main` also rules → storage → functions
 - A guard refuses to delete functions another branch still exports
-- Post-deploy smoke test (locale pages, dynamic rewrites, security
-  headers, `/api/forms/*`, a callable)
+- Post-deploy smoke test against `secid-mx.web.app` and `secid.mx`
+  (locale pages, dynamic rewrites, security headers, `/api/forms/*`, a
+  callable); a failure fails the deploy
+- `Uptime Monitor` (`uptime.yml`) probes prod, www, beta and the backend
+  every 15 minutes and opens an `incident` issue when they are down
 - `Production Cutover` and `Firestore Backup` workflows for the one-off
   setup and restore points
 
 ## 🤝 Contributing
 
-We welcome contributions from the SECiD community! Here's how to get involved:
+We welcome contributions from the SECiD community! The full workflow
+(branches, local setup, tests, CI checks, auto-merge and what not to do)
+is in [CONTRIBUTING.md](CONTRIBUTING.md). The short version:
 
 ### **How to Contribute**
 
-1. **Fork & Clone**
+1. **Clone & Install**
 
    ```bash
-   git clone https://github.com/YOUR-USERNAME/secid-website.git
+   git clone https://github.com/SECiD-UNAM/secid-website.git
    cd secid-website
-   make setup
+   nvm use                    # Node version from .nvmrc
+   npm ci                     # root dependencies
+   npm run functions:install  # functions/ dependencies
+   cp .env.example .env       # local values; never committed
    ```
 
-2. **Create Feature Branch**
+2. **Create a Working Branch** from `origin/main`
 
    ```bash
-   git checkout -b feature/your-feature-name
+   git checkout -b feat/your-feature-name origin/main
    ```
+
+   Branch names follow `{type}/{short-description}` with `type` in
+   `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `ci`.
 
 3. **Make Changes**
    - Follow TypeScript best practices
-   - Add tests for new features
-   - Update documentation
+   - Add tests for new features (every change in `src/` or `functions/`
+     ships with tests)
+   - Update documentation and runbooks in the same PR
 
 4. **Test Your Changes**
-   ```bash
-   make test        # Run all tests
-   make health      # Check environment
-   ```
-5. **Commit Changes**
 
    ```bash
-   git add .
-   git commit -m "feat: add amazing feature"
+   npm run type-check    # tsc --noEmit
+   npm run lint          # ESLint
+   npm run format:check  # Prettier
+   npm test              # Vitest: unit + integration + build
+   npm run test:e2e      # Playwright (optional locally)
    ```
 
-6. **Push & Create PR**
+5. **Commit Changes** using Conventional Commits (the pre-commit hook runs
+   ESLint, Prettier and `type-check`; do not skip it with `--no-verify`)
 
    ```bash
-   git push origin feature/your-feature-name
+   git commit -m "feat(jobs): add amazing feature"
    ```
 
-7. **Submit Pull Request** with clear description
+6. **Push & Open a Pull Request** against `main`
+
+   ```bash
+   git push -u origin feat/your-feature-name
+   gh pr create --base main
+   ```
+
+7. **Wait for CI**: `main` is protected and only changes via PR with the
+   required checks green (`Build Validation`, `Code Quality & Linting`,
+   `Secret Scanning`, `CodeQL`, `Test Summary`, `Firestore Rules Tests`).
 
 ### **Code Standards**
 
@@ -330,27 +356,37 @@ We use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ### **Environments**
 
-| Environment | URL                                        | Branch        |
-| ----------- | ------------------------------------------ | ------------- |
-| Production  | https://secid.mx                           | `main`        |
-| Beta        | https://beta.secid.mx                      | `feature/hub` |
-| Development | http://localhost:4321 (Firebase emulators) | any           |
+| Environment | URL                                        | Branch        | Hosting site                       | Workflow          |
+| ----------- | ------------------------------------------ | ------------- | ---------------------------------- | ----------------- |
+| Production  | https://secid.mx (+ `www.secid.mx`)        | `main`        | `secid-mx` (`secid-mx.web.app`)    | `cd.yml`          |
+| Beta        | https://beta.secid.mx                      | `feature/hub` | project default (`secid-org`)      | `deploy-beta.yml` |
+| Development | http://localhost:4321 (Firebase emulators) | any           | — (`npm run dev` starts emulators) | —                 |
+
+Production moved from GitHub Pages to Firebase Hosting on 2026-10-18 (DNS
+cutover). GitHub Pages is no longer serving the domain; disabling it and
+removing `public/CNAME` are tracked in
+[`docs/LAUNCH-CHECKLIST.md`](docs/LAUNCH-CHECKLIST.md) (Fase 5). DNS for
+`secid.mx` lives in Cloudflare and is changed only by the project owner.
 
 ## 📚 Resources
 
 ### **Documentation**
 
-- 📖 [Quick Start Guide](QUICKSTART.md)
-- 🛠️ [Developer Guide](DEVELOPMENT.md)
-- 🔧 [Troubleshooting](TROUBLESHOOTING.md)
-- 🔥 [Firebase Setup](FIREBASE-MEMBERS-HUB-PLAN.md)
-- 📋 [Feature Roadmap](SECID-FUTURE-FEATURES.md)
-- 🗺️ [Implementation Plan](SECID-IMPLEMENTATION-TODO.md)
+- 🤝 [Contributing Guide](CONTRIBUTING.md)
+- 📖 [Quick Start Guide](docs/guides/quickstart.md)
+- 🛠️ [Developer Guide](docs/guides/development.md)
+- 🔧 [Troubleshooting](docs/guides/troubleshooting.md)
+- 🚀 [Deployment Guide](docs/DEPLOYMENT.md) and
+  [operation runbooks](docs/runbooks/README.md)
+- ✅ [Launch Checklist](docs/LAUNCH-CHECKLIST.md)
+- 🗺️ [Roadmap](docs/ROADMAP.md) and [feature backlog](docs/features/todo.md)
+- 🤖 [Assistant context](CLAUDE.md) (Claude Code) and [AGENTS.md](AGENTS.md)
+  (other coding assistants)
 
 ### **Support**
 
-- 🐛 [Report Issues](https://github.com/secid/secid-website/issues)
-- 💡 [Feature Requests](https://github.com/secid/secid-website/discussions)
+- 🐛 [Report Issues](https://github.com/SECiD-UNAM/secid-website/issues)
+- 💡 [Feature Requests](https://github.com/SECiD-UNAM/secid-website/discussions)
 - 📧 [Contact SECiD](mailto:contacto@secid.mx)
 - 💬 [LinkedIn Community](https://linkedin.com/company/secid-unam)
 
@@ -358,7 +394,8 @@ We use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ## 📜 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License** (`"license": "MIT"` in
+`package.json`).
 
 ### **Template Attribution**
 
@@ -371,7 +408,7 @@ Free for personal and commercial use under the CCA 3.0 license.
 
 **Made with ❤️ by the SECiD Community**
 
-[🌐 Website](https://secid.mx) • [📱 LinkedIn](https://linkedin.com/company/secid) • [🐙 GitHub](https://github.com/secid)
+[🌐 Website](https://secid.mx) • [📱 LinkedIn](https://linkedin.com/company/secid) • [🐙 GitHub](https://github.com/SECiD-UNAM)
 
 _Connecting Mexico's Data Science Talent_
 
