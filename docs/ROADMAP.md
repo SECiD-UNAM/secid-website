@@ -179,7 +179,7 @@ Estado real hoy:
       y enlace al evento) y `sendEventReminders` (diario 09:00 CDMX, ventana
       [+24 h, +48 h), marca `reminderSentAt`). Todo best-effort, respeta
       `notificationSettings.email` y el salto de cuentas QA.
-- [ ] F20. Comunicados a miembros (1–2 días): composer en admin
+- [x] F20. Comunicados a miembros (1–2 días): composer en admin
       (`/dashboard/admin/communications`) para rol `content-editor` /
       `newsletter-editor`: asunto, cuerpo (markdown), audiencia (todos los
       activos / por sede / por grupo RBAC), vista previa, "enviarme prueba"
@@ -189,6 +189,16 @@ Estado real hoy:
       Nota de volumen: el SMTP de Gmail limita ~500 destinatarios/día; con
       31 miembros alcanza, pero al pasar de ~300 conviene migrar a SendGrid
       o Resend (misma extensión, cambiar `SMTP_CONNECTION_URI`).
+      Hecho en PR #132: callable `sendAnnouncement`
+      (`functions/src/announcements.ts`, audiencias `all_active`,
+      `campus`, `rbac_group` y `test`, `dryRun` para el conteo, lotes de
+      400, registro en `announcements/{id}`), renderer de markdown sin HTML crudo
+      (`functions/src/markdown.ts`, compartido con la vista previa), nuevo
+      recurso RBAC `announcements` con `announcements:publish` (`ac:p.a`)
+      en `content-editor` y `newsletter-editor`, página
+      `/es|en/dashboard/admin/communications` y enlace "Comunicados" en el
+      panel. Pendiente al desplegar: añadir el permiso a los docs vivos de
+      `rbac_groups` (el seed no sobrescribe grupos existentes).
 - [ ] F21. Newsletter por correo (½ día, después de F20): botón "enviar a
       suscriptores" en `NewsletterFormPage` usando el mismo callable con la
       audiencia `newsletter` (suscriptores confirmados) y enlace de baja
