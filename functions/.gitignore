@@ -1,0 +1,9 @@
+# Compiled output of `npm run build` (tsc). The `predeploy` hook in
+# ../firebase.json rebuilds it on every deploy; never commit it.
+lib/
+
+# Runtime env written by the deploy workflows (see ../.gitignore)
+.env
+.env.local
+
+node_modules/
