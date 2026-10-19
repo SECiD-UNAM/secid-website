@@ -330,3 +330,153 @@ export function generateStatusChangeEmail(params: StatusChangeParams): {
     }),
   };
 }
+
+interface ContactMessageAdminParams {
+  name: string;
+  email: string;
+  subject?: string;
+  message: string;
+  adminPanelUrl: string;
+}
+
+/**
+ * F19 — Admin notification enviada por onContactMessageCreated por cada
+ * `contactMessages/{id}` nuevo. Va al ADMIN_EMAIL, default
+ * `contacto@secid.mx`, con el remitente como Reply-To.
+ */
+export function generateContactMessageAdminEmail(
+  params: ContactMessageAdminParams
+): { subject: string; html: string } {
+  // Subject is plain text; every HTML interpolation below is user input.
+  const subject = `Nuevo mensaje de contacto: ${params.subject || params.name}`;
+  const details = `
+    <ul style="line-height:1.8;">
+      <li><strong>Nombre</strong>: ${escapeHtml(params.name)}</li>
+      <li><strong>Email</strong>: ${escapeHtml(params.email)}</li>
+      ${params.subject ? `<li><strong>Asunto</strong>: ${escapeHtml(params.subject)}</li>` : ''}
+    </ul>
+    <blockquote style="margin:16px 0; padding:12px 16px; background:#f8f9fa; border-left:4px solid #C4A24C; white-space:pre-wrap;">${escapeHtml(params.message)}</blockquote>`;
+  return {
+    subject,
+    html: shell({
+      title: 'Nuevo mensaje de contacto',
+      bodyHtml: `<p>Alguien escribió desde el formulario de contacto del sitio. Responde a este correo para contestarle directamente.</p>${details}`,
+      ctaHref: params.adminPanelUrl,
+      ctaLabel: 'Abrir el panel de admin',
+      footnote:
+        'Este correo se envió automáticamente al recibir un mensaje de contacto.',
+    }),
+  };
+}
+
+export interface EventEmailParams {
+  recipientName: string;
+  eventTitle: string;
+  /** Already formatted in the recipient's locale and the event's timezone. */
+  dateText: string;
+  /** Venue + address, the virtual link, or a "to be confirmed" placeholder. */
+  locationText: string;
+  /** When the event is virtual/hybrid, the link to join. */
+  locationHref?: string;
+  eventUrl: string;
+  lang?: Lang;
+}
+
+/** Shared <ul> with the event's date and place; every value is user data. */
+function eventDetailsHtml(params: EventEmailParams, lang: Lang): string {
+  const place = params.locationHref
+    ? `<a href="${escapeHtml(params.locationHref)}">${escapeHtml(params.locationText)}</a>`
+    : escapeHtml(params.locationText);
+  return `
+    <ul style="line-height:1.8;">
+      <li><strong>${t({ es: 'Evento', en: 'Event' }, lang)}</strong>: ${escapeHtml(params.eventTitle)}</li>
+      <li><strong>${t({ es: 'Fecha', en: 'Date' }, lang)}</strong>: ${escapeHtml(params.dateText)}</li>
+      <li><strong>${t({ es: 'Lugar', en: 'Where' }, lang)}</strong>: ${place}</li>
+    </ul>`;
+}
+
+function eventGreeting(name: string, lang: Lang): string {
+  const who = name ? ` ${escapeHtml(name)}` : '';
+  return t({ es: `Hola${who},`, en: `Hi${who},` }, lang);
+}
+
+const EVENT_FOOTNOTE: Record<Lang, string> = {
+  es: 'Recibiste este correo porque te registraste a este evento. Puedes desactivar los avisos por correo en la configuración de tu perfil.',
+  en: 'You received this email because you registered for this event. You can turn off email notifications in your profile settings.',
+};
+
+/**
+ * F19 — Confirmación enviada por onEventRegistrationEmail al crearse
+ * `events/{id}/registrations/{uid}`.
+ */
+export function generateEventRegistrationEmail(params: EventEmailParams): {
+  subject: string;
+  html: string;
+} {
+  const lang = params.lang ?? 'es';
+  const subject = t(
+    {
+      es: `Confirmación de registro: ${params.eventTitle}`,
+      en: `Registration confirmed: ${params.eventTitle}`,
+    },
+    lang
+  );
+  const body = t(
+    {
+      es: 'Tu registro quedó confirmado. Aquí están los detalles:',
+      en: 'Your registration is confirmed. Here are the details:',
+    },
+    lang
+  );
+  return {
+    subject,
+    html: shell({
+      title: t(
+        { es: 'Registro confirmado', en: 'Registration confirmed' },
+        lang
+      ),
+      bodyHtml: `<p>${eventGreeting(params.recipientName, lang)}</p><p>${body}</p>${eventDetailsHtml(params, lang)}`,
+      ctaHref: params.eventUrl,
+      ctaLabel: t({ es: 'Ver el evento', en: 'View event' }, lang),
+      footnote: EVENT_FOOTNOTE[lang],
+    }),
+  };
+}
+
+/**
+ * F19 — Recordatorio enviado por sendEventReminders (diario, 09:00
+ * America/Mexico_City) a los registrados de eventos que empiezan en 24–48 h.
+ */
+export function generateEventReminderEmail(params: EventEmailParams): {
+  subject: string;
+  html: string;
+} {
+  const lang = params.lang ?? 'es';
+  const subject = t(
+    {
+      es: `Recordatorio: ${params.eventTitle} es mañana`,
+      en: `Reminder: ${params.eventTitle} is tomorrow`,
+    },
+    lang
+  );
+  const body = t(
+    {
+      es: 'Te recordamos que mañana es el evento al que te registraste. Estos son los detalles:',
+      en: 'Just a reminder that the event you registered for is tomorrow. Here are the details:',
+    },
+    lang
+  );
+  return {
+    subject,
+    html: shell({
+      title: t(
+        { es: 'Tu evento es mañana', en: 'Your event is tomorrow' },
+        lang
+      ),
+      bodyHtml: `<p>${eventGreeting(params.recipientName, lang)}</p><p>${body}</p>${eventDetailsHtml(params, lang)}`,
+      ctaHref: params.eventUrl,
+      ctaLabel: t({ es: 'Ver el evento', en: 'View event' }, lang),
+      footnote: EVENT_FOOTNOTE[lang],
+    }),
+  };
+}
