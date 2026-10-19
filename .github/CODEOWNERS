@@ -1,0 +1,17 @@
+# CODEOWNERS
+#
+# GitHub pide revisión automáticamente a los dueños de las rutas tocadas en
+# cada PR. Hoy no hay revisiones obligatorias en main (branch protection con
+# 0 aprobaciones requeridas y sin "require code owner reviews"), así que
+# este archivo sirve para avisar, no para bloquear. Cuando haya más
+# mantenedores, se reparten las rutas de abajo.
+
+# Dueño por defecto de todo el repo
+* @ArtemioPadilla
+
+# Rutas sensibles: CI/CD, backend compartido entre beta y prod, infraestructura
+/.github/workflows/ @ArtemioPadilla
+/functions/ @ArtemioPadilla
+/firestore.rules @ArtemioPadilla
+/storage.rules @ArtemioPadilla
+/infra/ @ArtemioPadilla
