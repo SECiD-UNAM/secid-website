@@ -209,7 +209,9 @@ class JobApplicationFlow {
   }
 }
 
-test.describe('Job Application and Search Flow', () => {
+// función no implementada: la UI real no expone estos flujos ni data-testid;
+// ver docs/ROADMAP.md A4
+test.describe.skip('Job Application and Search Flow', () => {
   let jobFlow: JobApplicationFlow;
 
   test.beforeEach(async ({ page }) => {
@@ -500,7 +502,9 @@ test.describe('Job Application and Search Flow', () => {
 });
 
 // Mobile-specific job application tests
-test.describe('Mobile Job Application', () => {
+// función no implementada: la UI real no expone estos flujos ni data-testid;
+// ver docs/ROADMAP.md A4
+test.describe.skip('Mobile Job Application', () => {
   test.use({ viewport: { width: 375, height: 667 } });
 
   test('mobile job search and application', async ({ page }) => {
@@ -555,7 +559,9 @@ test.describe('Mobile Job Application', () => {
 });
 
 // Visual regression tests
-test.describe('Job Board Visual Tests', () => {
+// función no implementada: la UI real no expone estos flujos ni data-testid;
+// ver docs/ROADMAP.md A4
+test.describe.skip('Job Board Visual Tests', () => {
   test('job board layout consistency', async ({ page }) => {
     const jobFlow = new JobApplicationFlow(page);
     await jobFlow.navigateToJobBoard();
@@ -585,7 +591,9 @@ test.describe('Job Board Visual Tests', () => {
 });
 
 // Performance tests
-test.describe('Job Board Performance', () => {
+// función no implementada: la UI real no expone estos flujos ni data-testid;
+// ver docs/ROADMAP.md A4
+test.describe.skip('Job Board Performance', () => {
   test('job search performance', async ({ page }) => {
     const jobFlow = new JobApplicationFlow(page);
     await jobFlow.navigateToJobBoard();

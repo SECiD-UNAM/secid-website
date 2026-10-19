@@ -1,113 +1,100 @@
 import { test, expect } from '@playwright/test';
 
+/**
+ * Entry points into registration from the public site. The hero and CTA
+ * buttons go to /es/join (src/pages/es/index.astro), the navbar buttons
+ * (src/components/auth/AuthNavButtons.tsx) to /es/signup, and the legacy
+ * /registro page redirects to /es/join (src/pages/registro.astro).
+ */
 test.describe('Member Registration Journey', () => {
   test('should navigate to registration from hero CTA', async ({ page }) => {
     await page.goto('/es/');
 
-    // Click hero CTA button
     const heroJoinButton = page
-      .locator('.secid-hero__actions')
-      .locator('text=Únete a SECiD');
+      .locator('.secid-hero__actions a')
+      .filter({ hasText: 'Únete a SECiD' });
     await expect(heroJoinButton).toBeVisible();
     await heroJoinButton.click();
 
-    // Should navigate to registro page
-    await expect(page).toHaveURL(/.*registro/);
+    await expect(page).toHaveURL(/\/es\/join/);
   });
 
   test('should navigate to registration from navbar', async ({ page }) => {
     await page.goto('/es/');
 
-    // Click navbar register button
-    const navRegisterButton = page
-      .locator('.secid-navbar')
-      .locator('text=Registrarse');
+    const navRegisterButton = page.locator(
+      '.secid-navbar__actions a[href="/es/signup"]'
+    );
     await expect(navRegisterButton).toBeVisible();
+    await expect(navRegisterButton).toContainText('Registrarse');
     await navRegisterButton.click();
 
-    // Should navigate to signup page
-    await expect(page).toHaveURL(/.*signup/);
+    await expect(page).toHaveURL(/\/es\/signup/);
   });
 
   test('should navigate to registration from CTA section', async ({ page }) => {
     await page.goto('/es/');
 
-    // Scroll to CTA section
     const ctaSection = page.locator('.secid-cta');
     await ctaSection.scrollIntoViewIfNeeded();
 
-    // Click register CTA
-    const ctaRegisterButton = ctaSection.locator('text=Registrarse');
+    const ctaRegisterButton = ctaSection.locator('a[href="/es/join"]');
     await expect(ctaRegisterButton).toBeVisible();
     await ctaRegisterButton.click();
 
-    // Should navigate to registro page
-    await expect(page).toHaveURL(/.*registro/);
+    await expect(page).toHaveURL(/\/es\/join/);
   });
 
   test('should navigate to login from navbar', async ({ page }) => {
     await page.goto('/es/');
 
-    // Click navbar login button
-    const navLoginButton = page
-      .locator('.secid-navbar')
-      .locator('text=Iniciar Sesión');
+    const navLoginButton = page.locator(
+      '.secid-navbar__actions a[href="/es/login"]'
+    );
     await expect(navLoginButton).toBeVisible();
+    await expect(navLoginButton).toContainText('Iniciar Sesión');
+    await navLoginButton.click();
 
-    // Note: In the current implementation, this might just be a placeholder
-    // In a real app, we would verify it opens a login modal or navigates to login page
-    await expect(navLoginButton).toHaveAttribute('href', '#');
+    await expect(page).toHaveURL(/\/es\/login/);
   });
 
   test('should access registration from jobs page member CTA', async ({
     page,
   }) => {
-    await page.goto('/es/empleos');
+    await page.goto('/es/jobs');
 
-    // Scroll to member CTA
     const memberCta = page.locator('.secid-member-cta');
     await memberCta.scrollIntoViewIfNeeded();
 
-    // Click register button
-    const registerButton = memberCta.locator('text=Registrarse');
+    const registerButton = memberCta.locator('a', { hasText: 'Registrarse' });
     await expect(registerButton).toBeVisible();
     await registerButton.click();
 
-    // Should navigate to registro page
-    await expect(page).toHaveURL(/.*registro/);
+    await expect(page).toHaveURL(/\/es\/join/);
   });
 
   test('should handle registro page redirect', async ({ page }) => {
-    // Directly visit registro page
     await page.goto('/registro');
 
-    // The page should load without errors
-    await expect(page).toHaveURL(/.*registro/);
-
-    // In the real implementation, this would redirect to Google Forms
-    // For testing, we just verify the page loads
+    // Legacy URL: meta refresh + script redirect to the native join page.
+    await expect(page).toHaveURL(/\/es\/join/);
   });
 
   test('should show registration options in multiple languages', async ({
     page,
   }) => {
-    // Start in Spanish
     await page.goto('/es/');
-    let registerButton = page
-      .locator('.secid-navbar')
-      .locator('text=Registrarse');
-    await expect(registerButton).toBeVisible();
+    await expect(
+      page.locator('.secid-navbar__actions a[href="/es/signup"]')
+    ).toContainText('Registrarse');
 
-    // Switch to English
-    const langButton = page.locator('.secid-navbar__lang-btn');
-    await langButton.click();
-    const enOption = page.locator('text=EN - English');
-    await enOption.click();
+    await page.locator('.secid-navbar__lang-btn').click();
+    await page.locator('.secid-navbar__lang-dropdown a[hreflang="en"]').click();
 
-    // Verify registration button is in English
-    await expect(page).toHaveURL(/.*\/en\//);
-    registerButton = page.locator('.secid-navbar').locator('text=Sign Up');
-    await expect(registerButton).toBeVisible();
+    await expect(page).toHaveURL(/\/en\//);
+    await expect(
+      page.locator('.secid-navbar__actions a[href="/en/signup"]')
+    ).toContainText('Register');
   });
 
   test('should maintain registration intent across navigation', async ({
@@ -115,19 +102,17 @@ test.describe('Member Registration Journey', () => {
   }) => {
     await page.goto('/es/');
 
-    // Click join button
-    const joinButton = page.locator('text=Únete a SECiD').first();
-    await joinButton.click();
-    await expect(page).toHaveURL(/.*registro/);
+    await page
+      .locator('.secid-hero__actions a')
+      .filter({ hasText: 'Únete a SECiD' })
+      .click();
+    await expect(page).toHaveURL(/\/es\/join/);
 
-    // Navigate back
     await page.goBack();
-    await expect(page).toHaveURL(/.*\/es\//);
+    await expect(page).toHaveURL(/\/es\/$/);
 
-    // Registration button should still be visible
-    const navRegisterButton = page
-      .locator('.secid-navbar')
-      .locator('text=Registrarse');
-    await expect(navRegisterButton).toBeVisible();
+    await expect(
+      page.locator('.secid-navbar__actions a[href="/es/signup"]')
+    ).toBeVisible();
   });
 });

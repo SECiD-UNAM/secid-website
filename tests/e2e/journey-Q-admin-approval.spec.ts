@@ -59,9 +59,10 @@ test.describe('Journey Q — Admin', () => {
 
     await page.goto('/es/dashboard/admin');
 
+    // AdminDashboard.tsx links to /dashboard/admin/members?status=pending
     await page.click('a[href*="status=pending"]');
-    await page.waitForURL(/users/);
-    await expect(page).toHaveURL(/users/);
+    await page.waitForURL(/\/admin\/members\?status=pending/);
+    await expect(page).toHaveURL(/status=pending/);
   });
 
   test('Q3 approve target user', async ({ page }) => {

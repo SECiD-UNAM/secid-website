@@ -1,4 +1,5 @@
 import { Page, expect } from '@playwright/test';
+import { clearBrowserStorage } from '../../utils/browser-storage';
 import { PERFORMANCE_BUDGETS } from '../../../playwright.config';
 
 export class BasePage {
@@ -199,10 +200,7 @@ export class BasePage {
    * Clear browser storage
    */
   async clearStorage() {
-    await this.page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
+    await clearBrowserStorage(this.page);
   }
 
   /**
