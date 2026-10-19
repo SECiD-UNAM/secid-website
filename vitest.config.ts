@@ -2,8 +2,13 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
+import { coverageThresholds } from './scripts/ci/coverage-thresholds.mjs';
 
 const isCI = !!process.env.CI;
+// A sharded CI run (`--shard=N/4 --coverage`) only covers part of the code:
+// emit the raw json report and skip thresholds; scripts/ci/check-coverage.mjs
+// merges the shards and enforces them once.
+const isPartialCoverage = !!process.env.COVERAGE_PARTIAL;
 
 export default defineConfig({
   plugins: [react()],
@@ -85,7 +90,9 @@ export default defineConfig({
     },
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html', 'lcov', 'json-summary'],
+      reporter: isPartialCoverage
+        ? ['json']
+        : ['text', 'json', 'html', 'lcov', 'json-summary'],
       reportsDirectory: './coverage',
       exclude: [
         'node_modules/',
@@ -109,21 +116,13 @@ export default defineConfig({
         '**/*.spec.*',
       ],
       include: ['src/**/*.{js,ts,jsx,tsx}'],
-      // Floor = measured values on 2026-10-18 (ROADMAP B6), rounded DOWN to
-      // the nearest whole percent so the suite stays green and coverage can
-      // never silently drop. Raise them as suites are un-skipped (PRs after
-      // this one) — never lower them without a note in docs/ROADMAP.md.
-      // Measured: lines 16.72, statements 16.72, functions 43.63, branches 71.78.
+      // Values live in scripts/ci/coverage-thresholds.mjs, shared with the CI
+      // merge step (ROADMAP B6/B8).
       //
       // NOTE: the keys must sit directly under `thresholds`. Vitest treats any
       // other key (e.g. Jest's `global`) as a file glob, and `global` matches
       // nothing — so the previous `thresholds.global` block was never enforced.
-      thresholds: {
-        branches: 71,
-        functions: 43,
-        lines: 16,
-        statements: 16,
-      },
+      thresholds: isPartialCoverage ? undefined : coverageThresholds,
       all: true,
       skipFull: false,
     },
