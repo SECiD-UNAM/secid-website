@@ -29,7 +29,9 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       dependa de Stripe queda `skip` con motivo hasta que haya pagos.
 - [ ] A5. Lo que A4 dejó en `skip`: (a) 13 suites heredadas marcadas
       "función no implementada" (~290 tests que buscan ~600 `data-testid`
-      que la app no tiene; reescribir contra la UI real o borrar); (b) 3
+      que la app no tiene; reescribir contra la UI real o borrar) — batch 1
+      (auth/admin/dashboard/journey-B) hecho en PR #117: 5 suites reescritas,
+      1 borrada (journey-B ya corre en CI contra el wizard real); (b) 3
       suites de pagos hasta que haya Stripe; (c) ✅ hecho (PRs #114 y el de
       `ci/e2e-functions-emulator`): los ~53 usos de
       `admin.firestore.FieldValue`/`Timestamp` en `functions/src` ahora
