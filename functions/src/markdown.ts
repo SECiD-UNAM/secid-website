@@ -147,18 +147,3 @@ export function renderMarkdown(markdown: string): string {
   const escaped = escapeHtml(markdown.replace(/\r\n?/g, '\n'));
   return parseBlocks(escaped).map(renderBlock).join('');
 }
-
-/** Plain-text version (excerpts, previews): tags stripped, entities kept. */
-export function markdownToText(markdown: string): string {
-  return renderMarkdown(markdown)
-    .replace(/<\/(p|h\d|li|blockquote)>/g, ' ')
-    .replace(/<br>/g, ' ')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/\s+/g, ' ')
-    .trim();
-}

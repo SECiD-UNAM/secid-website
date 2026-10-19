@@ -7,8 +7,4 @@
  * functions/src/rbac). The module is pure TypeScript with no Firebase
  * imports, so it bundles into the client untouched.
  */
-export {
-  renderMarkdown,
-  markdownToText,
-  escapeHtml,
-} from '../../functions/src/markdown';
+export { renderMarkdown, escapeHtml } from '../../functions/src/markdown';
