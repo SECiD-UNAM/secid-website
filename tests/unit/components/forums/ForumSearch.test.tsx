@@ -127,9 +127,7 @@ describe.sequential('ForumSearch', () => {
       posts: [],
     });
 
-    const { container } = render(
-      <ForumSearch language="en" initialQuery="Python" />
-    );
+    render(<ForumSearch language="en" initialQuery="Python" />);
 
     // The title may contain highlighting marks, use container query for flexibility
     await waitFor(() => {

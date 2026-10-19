@@ -381,6 +381,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
                     onSearch={handleSearch}
                     onSuggestionSelect={handleSuggestionSelect}
                     showVoiceSearch={true}
+                    // eslint-disable-next-line jsx-a11y/no-autofocus -- the modal just opened to search; moving focus into the field is the expected behaviour
                     autoFocus={true}
                     size="lg"
                   />

@@ -469,7 +469,6 @@ export class SubscriptionManagerPage extends BasePage {
     // Get plan change details
     const proratedText = await this.proratedAmount.textContent();
     const effectiveDateText = await this.effectiveDate.textContent();
-    const previewText = await this.changePreview.textContent();
 
     // Confirm the change
     await this.confirmPlanChangeButton.click();
@@ -481,7 +480,6 @@ export class SubscriptionManagerPage extends BasePage {
     const errorMessage = await this.getErrorMessage();
 
     if (successMessage) {
-      const currentSubscription = await this.getCurrentSubscription();
       return {
         success: true,
         message: successMessage,

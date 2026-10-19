@@ -743,7 +743,6 @@ export class SearchEngine {
   ): SearchFacets {
     const typeCounts: Record<string, number> = {};
     const categoryCounts: Record<string, number> = {};
-    const authorCounts: Record<string, number> = {};
     const tagCounts: Record<string, number> = {};
 
     for (const item of content) {

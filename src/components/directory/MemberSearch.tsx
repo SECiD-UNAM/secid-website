@@ -27,7 +27,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
   showAdvanced = false,
 }) => {
   const [filters, setFilters] = useState<MemberSearchFilters>(initialFilters);
-  const [isExpanded, setIsExpanded] = useState(showAdvanced);
+  const isExpanded = showAdvanced;
   const [searchInput, setSearchInput] = useState(initialFilters.query || '');
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
 
@@ -203,22 +203,6 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
       filters.isPremium ||
       filters.joinedAfter
     );
-  };
-
-  const getActiveFilterCount = (): number => {
-    let count = 0;
-    if (filters.query) count++;
-    if (filters?.skills?.length) count++;
-    if (filters?.companies?.length) count++;
-    if (filters?.locations?.length) count++;
-    if (filters?.experienceLevel?.length) count++;
-    if (filters?.industries?.length) count++;
-    if (filters?.availability?.length) count++;
-    if (filters.onlineStatus) count++;
-    if (filters.hasPortfolio) count++;
-    if (filters.isPremium) count++;
-    if (filters.joinedAfter) count++;
-    return count;
   };
 
   return (

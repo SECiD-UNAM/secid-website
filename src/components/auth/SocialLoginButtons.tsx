@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import type { SupportedProvider } from '@/types/user';
 import { signInWithProvider } from '@/lib/auth';
 import { signInWithLinkedIn } from '@/lib/auth/linkedin-auth';
-import { useTranslations } from '@/hooks/useTranslations';
 import toast from 'react-hot-toast';
 import { AccountMergePrompt } from './AccountMergePrompt';
 import {
@@ -37,7 +36,6 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
   disabled = false,
   className = '',
 }) => {
-  const t = useTranslations(lang);
   const [loading, setLoading] = useState<SupportedProvider | null>(null);
   const [pendingMerge, setPendingMerge] = useState<PendingMerge | null>(null);
   const [merging, setMerging] = useState(false);

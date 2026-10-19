@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Button from '@/components/ui/Button';
-import { useTranslations } from '@/hooks/useTranslations';
 import { getCurrentUser } from '@/lib/auth';
 import toast from 'react-hot-toast';
 import { Shield, Copy, Download, Key } from 'lucide-react';
@@ -35,7 +34,6 @@ export const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({
   onCancel,
   lang = 'es',
 }) => {
-  const t = useTranslations(lang);
   const [currentStep, setCurrentStep] = useState<
     'setup' | 'verify' | 'backup' | 'complete'
   >('setup');
@@ -49,7 +47,6 @@ export const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({
     handleSubmit,
     formState: { errors },
     watch,
-    reset,
   } = useForm<VerificationFormData>({
     resolver: zodResolver(verificationSchema),
   });

@@ -327,11 +327,14 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               {/* Export Options */}
               {showExportOptions && (
                 <div className="relative">
-                  <button className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                  <button
+                    onClick={() => handleExport('csv')}
+                    className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                  >
                     <ArrowDownTrayIcon className="mr-2 h-4 w-4" />
                     {t('analytics.export', 'Export')}
                   </button>
-                  {/* Export dropdown would be implemented here */}
+                  {/* Format picker (pdf/xlsx) still to be implemented */}
                 </div>
               )}
 
@@ -499,8 +502,6 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 const OverviewPanel: React.FC<{ data: AnalyticsDashboardData }> = ({
   data,
 }) => {
-  const { t } = useTranslation();
-
   return (
     <div className="space-y-6">
       {/* Key Metrics */}

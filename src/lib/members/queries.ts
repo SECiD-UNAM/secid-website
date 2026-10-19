@@ -61,7 +61,7 @@ export async function getMemberProfiles(
   }
 
   try {
-    const { filters = {}, limit: queryLimit = 20, lastDoc } = options;
+    const { filters = {}, limit: queryLimit = 20 } = options;
     let q = query(collection(db, COLLECTIONS.MEMBERS));
 
     if (filters?.experienceLevel?.length) {

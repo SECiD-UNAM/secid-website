@@ -55,7 +55,6 @@ try {
 const NOTIFICATIONS_COLLECTION = 'notifications';
 const NOTIFICATION_SETTINGS_COLLECTION = 'notificationSettings';
 const PUSH_SUBSCRIPTIONS_COLLECTION = 'pushSubscriptions';
-const NOTIFICATION_QUEUE_COLLECTION = 'notificationQueue';
 
 // Default notification settings
 const getDefaultNotificationSettings = (
@@ -348,7 +347,6 @@ export async function getNotificationHistory(
   try {
     const pageSize = options.limit || 50;
     const pageNumber = options.page || 1;
-    const offset = (pageNumber - 1) * pageSize;
 
     const q = query(
       collection(db, NOTIFICATIONS_COLLECTION),

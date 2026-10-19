@@ -42,7 +42,14 @@ jobs:
 
       - name: ESLint
         run: npm run lint
-        continue-on-error: true
+
+      # functions/ is a separate package (own root ESLint config and
+      # devDependencies), ignored by the root config; lint it with its deps.
+      - name: Install Cloud Functions dependencies
+        run: cd functions && npm ci
+
+      - name: ESLint (functions)
+        run: npm run lint --prefix functions
 
       - name: Prettier formatting check
         run: npm run format:check

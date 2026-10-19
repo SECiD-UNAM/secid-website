@@ -18,11 +18,7 @@ const log = logger.child('SearchIndexer');
  * Processes and indexes content from various sources for search functionality
  */
 
-import type {
-  IndexedContent,
-  SearchContentType,
-  SearchAnalyticsEvent,
-} from '@/types/search';
+import type { IndexedContent, SearchContentType } from '@/types/search';
 import type {
   Job,
   Event,
@@ -711,8 +707,6 @@ export class SearchIndexer {
           throw new Error(`Unknown content type: ${type}`);
       }
 
-      // Get existing index and update only the specific content type
-      const existingIndex = searchEngine.getIndexStatus();
       // This would require a method to update partial index
       // For now, we'll just log
       log.info('Updated items for type', { type, count: content.length });
@@ -736,15 +730,6 @@ export class SearchIndexer {
     contentTypes: Record<string, number>;
   }): Promise<void> {
     try {
-      // Track indexing performance
-      const event: SearchAnalyticsEvent = {
-        type: 'search', // Would need a new type for indexing
-        timestamp: new Date(),
-        sessionId: crypto.randomUUID(),
-        userAgent: 'Search Indexer',
-        language: 'es',
-      };
-
       // Store indexing metrics (would implement Firebase Analytics tracking)
       log.info('Indexing analytics', { data });
     } catch (error) {

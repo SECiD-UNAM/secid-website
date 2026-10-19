@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useId } from 'react';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { getCompanies } from '@/lib/companies';
 import { CompanyLogo } from '@/components/shared/CompanyLogo';
@@ -33,6 +33,7 @@ export const CompanyAutocomplete: React.FC<CompanyAutocompleteProps> = ({
   const [loading, setLoading] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const listboxId = useId();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
@@ -174,7 +175,10 @@ export const CompanyAutocomplete: React.FC<CompanyAutocompleteProps> = ({
         placeholder={lang === 'es' ? 'Buscar empresa...' : 'Search company...'}
         className={INPUT_CLASS}
         aria-label={lang === 'es' ? 'Empresa' : 'Company'}
+        role="combobox"
+        aria-autocomplete="list"
         aria-expanded={isOpen}
+        aria-controls={listboxId}
         aria-haspopup="listbox"
       />
 
@@ -192,7 +196,11 @@ export const CompanyAutocomplete: React.FC<CompanyAutocompleteProps> = ({
           }
         >
           {filtered.length > 0 && (
-            <ul className="max-h-48 overflow-auto py-1" role="listbox">
+            <ul
+              id={listboxId}
+              className="max-h-48 overflow-auto py-1"
+              role="listbox"
+            >
               {filtered.map((company) => (
                 <li
                   key={company.id}

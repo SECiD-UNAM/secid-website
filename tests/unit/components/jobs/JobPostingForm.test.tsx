@@ -771,9 +771,6 @@ describe('JobPostingForm', () => {
       expect(screen.getByText('#python')).toBeInTheDocument();
 
       // Should be able to remove with keyboard
-      const removeTagButton = within(
-        screen.getByText('#python').parentElement!
-      ).getByRole('button');
       await user.keyboard('{Tab}');
       await user.keyboard('{Enter}');
 

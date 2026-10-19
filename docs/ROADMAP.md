@@ -55,12 +55,30 @@ Playwright solo incluía 7 archivos por su `testMatch`.
 
 ## Bloque B — Calidad que hoy no se exige (dev, ~1 día)
 
-- [ ] B5. ESLint repo-wide: PR #104 (2026-10-19) bajó de 2919 errores a 193 y
-      arregló 2 `ReferenceError` reales en render. Quedan 193 que necesitan
-      criterio (97 variables sin uso, 43 a11y, 26 `require` en scripts, 23
-      `jsx-key` falsos positivos en `.astro`, 3 `var` del snippet de Amplitude,
-      1 `triple-slash` de Astro). Falta: resolverlos o acotarlos por override y
-      quitar el `continue-on-error` del lint en CI.
+- [x] B5. ESLint repo-wide (2026-10-19). PR #104 bajó de 2919 errores a 193 y
+      arregló 2 `ReferenceError` reales en render. PR #121 cerró los 173 que
+      quedaban (79 variables sin uso, 31 `label` a11y, 24 `require`, 23
+      `jsx-key`, 4 `autofocus`, 3 `var`, 3 `html-has-lang`, 2
+      `media-has-caption`, 2 `aria-role`, 1 `role-supports-aria-props`, 1
+      `triple-slash`): `npm run lint` sale en 0 errores (1624 warnings, sin
+      `--max-warnings`) y el paso de ESLint en CI ya es bloqueante
+      (`continue-on-error` quitado). Hallazgo: el paso llevaba meses
+      reventando con exit 2 (no fallando por errores) porque `eslint .`
+      entraba en `functions/`, cuyo `.eslintrc.js` propio necesita
+      `eslint-plugin-import` de `functions/node_modules`, que el job no
+      instala; el `continue-on-error` lo tapaba. Ahora la config raíz ignora
+      `functions/` y el job lo lintea aparte con sus deps
+      (`npm run lint --prefix functions`, limpio). Código muerto borrado en vez de
+      silenciado; a11y arreglada de verdad (11 `htmlFor`/`id`, combobox real
+      en CompanyAutocomplete, prop `role` → `profileRole`). Overrides añadidos
+      en `.eslintrc.cjs`: `*.astro` (`react/jsx-key` y
+      `label-has-associated-control` off: plantillas sin React, `for=` en vez
+      de `htmlFor`), snippet de Amplitude en `ModernLayout.astro` (`no-var`),
+      `src/env.d.ts` (`triple-slash-reference`, `no-unused-vars`), scripts CJS
+      (`scripts/**`, `build.js`, `run-tests.js`, `validate-schema.js`:
+      `no-require-imports`), `tests/**` (`no-autofocus`) y
+      `label-has-associated-control` con `depth: 3` global. 2 disables inline
+      justificados (`CourseDetail` video, `GlobalSearch` autofocus).
 - [x] B6. Cobertura y suites saltadas (2026-10-19). PR #105: umbrales en
       16/16/43/71 (líneas/sentencias/funciones/ramas, el piso medido) y bug de
       config corregido: `thresholds.global` es forma de Jest, Vitest la
@@ -185,8 +203,7 @@ Dev, en este orden y cada paso un PR con auto-merge:
 2. ~~A5(c)~~ hecho (PRs #114, #115).
 3. ~~A5(a)~~ hecho (PRs #117 y #119); `continue-on-error` quitado del job
    chromium en PR #119; falta (owner) hacerlo requerido en `main`.
-4. B5 (1 día): los 193 errores de ESLint restantes y quitar
-   `continue-on-error` del lint.
+4. ~~B5~~ hecho (PR #121); lint bloqueante en CI.
 5. F19 → F20 → F21 (3–4 días) cuando haya eventos, mensajes de contacto o
    un comunicado real que mandar; F22 solo si se decide conservar el centro
    de notificaciones.

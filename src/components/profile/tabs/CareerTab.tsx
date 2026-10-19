@@ -387,11 +387,15 @@ export const CareerTab: React.FC<CareerTabProps> = ({
         </h3>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="career-linkedin"
+            className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             <LinkIcon className="mr-1 inline h-4 w-4" />
             LinkedIn
           </label>
           <input
+            id="career-linkedin"
             type="url"
             value={formData.linkedinUrl}
             onChange={(e) =>
@@ -403,11 +407,15 @@ export const CareerTab: React.FC<CareerTabProps> = ({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="career-github"
+            className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             <LinkIcon className="mr-1 inline h-4 w-4" />
             GitHub
           </label>
           <input
+            id="career-github"
             type="url"
             value={formData.githubUrl}
             onChange={(e) =>
@@ -435,11 +443,15 @@ export const CareerTab: React.FC<CareerTabProps> = ({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="career-twitter"
+            className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             <LinkIcon className="mr-1 inline h-4 w-4" />
             Twitter
           </label>
           <input
+            id="career-twitter"
             type="url"
             value={formData.twitterUrl}
             onChange={(e) =>

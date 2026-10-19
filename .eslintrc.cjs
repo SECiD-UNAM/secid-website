@@ -55,6 +55,9 @@ module.exports = {
 
     // Accessibility rules
     'jsx-a11y/anchor-is-valid': 'off', // Astro handles this differently
+    // Labels that wrap a radio/checkbox put the text in an icon+text layout
+    // (`label > div > span`); the default depth (2) stops one level short.
+    'jsx-a11y/label-has-associated-control': ['error', { depth: 3 }],
     'jsx-a11y/click-events-have-key-events': 'warn',
     'jsx-a11y/no-static-element-interactions': 'warn',
 
@@ -87,6 +90,63 @@ module.exports = {
         // Its autofix would rewrite `class` to `className`, which Astro
         // does not render, so the rule must stay off for `.astro` files.
         'react/no-unknown-property': 'off',
+        // False positive: Astro template expressions (`{items.map(...)}`)
+        // render to static HTML, there is no React reconciler and no
+        // `key` prop. Keep it on for `.tsx` islands.
+        'react/jsx-key': 'off',
+        // False positive: the rule only recognises React's `htmlFor`;
+        // Astro templates use the HTML `for=` attribute, which it ignores.
+        'jsx-a11y/label-has-associated-control': 'off',
+      },
+    },
+    {
+      // Third-party Amplitude bootstrap snippet pasted verbatim (uses
+      // `var`); keep it byte-identical to the vendor version. The second
+      // pattern matches the client-script block that the astro processor
+      // splits out as a virtual `<file>.astro/<n>.js` file.
+      files: [
+        'src/layouts/ModernLayout.astro',
+        'src/layouts/ModernLayout.astro/*.{js,ts}',
+      ],
+      rules: {
+        'no-var': 'off',
+      },
+    },
+    {
+      // Ambient declarations: the `.astro/types.d.ts` triple-slash is what
+      // Astro generates and documents, and `interface ImportMeta` is a
+      // global augmentation (declaration merging), not an unused symbol.
+      files: ['src/env.d.ts'],
+      rules: {
+        '@typescript-eslint/triple-slash-reference': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
+      },
+    },
+    {
+      // Node CommonJS maintenance scripts (run with plain `node`, no
+      // bundler). They use `require()` by design.
+      files: [
+        'scripts/**/*.js',
+        'build.js',
+        'run-tests.js',
+        'validate-schema.js',
+      ],
+      env: {
+        node: true,
+      },
+      parserOptions: {
+        sourceType: 'script',
+      },
+      rules: {
+        '@typescript-eslint/no-require-imports': 'off',
+      },
+    },
+    {
+      // Test harness JSX passes props straight through to the component
+      // under test; `autoFocus` there is the thing being tested, not UI.
+      files: ['tests/**/*.{ts,tsx}'],
+      rules: {
+        'jsx-a11y/no-autofocus': 'off',
       },
     },
     {
@@ -118,9 +178,18 @@ module.exports = {
   ignorePatterns: [
     'dist/',
     'node_modules/',
+    // Separate package with its own root ESLint config and devDependencies
+    // (eslint-plugin-import lives in functions/node_modules, which the root
+    // install does not provide). Linted via `npm run lint --prefix functions`.
+    'functions/',
     '.astro/',
     'public/',
     '*.min.js',
     'raw_template/',
+    // Local tool output (untracked); vitest's HTML report ships minified JS.
+    'test-results/',
+    'coverage/',
+    'playwright-report/',
+    '.firebase/',
   ],
 };

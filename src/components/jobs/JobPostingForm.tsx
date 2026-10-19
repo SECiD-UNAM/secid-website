@@ -47,7 +47,6 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [jobId, setJobId] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<JobFormData>({
     title: '',
@@ -347,8 +346,7 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
         viewCount: 0,
       };
 
-      const docRef = await addDoc(collection(db, 'jobs'), jobData);
-      setJobId(docRef['id']);
+      await addDoc(collection(db, 'jobs'), jobData);
       setSuccess(true);
     } catch (error) {
       console.error('Error posting job:', error);
@@ -1109,10 +1107,14 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
 
             {formData.applicationMethod === 'external' && (
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="job-application-url"
+                  className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
                   URL de aplicación *
                 </label>
                 <input
+                  id="job-application-url"
                   type="url"
                   value={formData.applicationUrl}
                   onChange={(e) =>
@@ -1129,10 +1131,14 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
 
             {formData.applicationMethod === 'email' && (
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="job-application-email"
+                  className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
                   Email de aplicación *
                 </label>
                 <input
+                  id="job-application-email"
                   type="email"
                   value={formData.applicationEmail}
                   onChange={(e) =>

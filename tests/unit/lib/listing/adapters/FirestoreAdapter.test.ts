@@ -109,7 +109,7 @@ describe('FirestoreAdapter', () => {
   });
 
   it('applies filter constraints', async () => {
-    const result = await adapter.fetch({
+    await adapter.fetch({
       filters: { status: 'active' },
       pageSize: 10,
     });

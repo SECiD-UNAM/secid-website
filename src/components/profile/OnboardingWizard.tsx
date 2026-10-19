@@ -406,10 +406,14 @@ function CareerStep({ formData, setFormData, lang }: StepProps) {
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label
+          htmlFor="onboarding-linkedin"
+          className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+        >
           LinkedIn
         </label>
         <input
+          id="onboarding-linkedin"
           type="url"
           value={formData.linkedinUrl}
           onChange={(e) =>

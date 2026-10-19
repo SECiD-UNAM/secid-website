@@ -8,6 +8,8 @@ interface ListingTableProps<T> {
   sort?: SortConfig;
   onSortChange?: (sort: SortConfig) => void;
   className?: string;
+  /** Extra classes for a row (e.g. transient highlight after an edit). */
+  rowClassName?: (item: T) => string;
 }
 
 export function ListingTable<T>({
@@ -17,6 +19,7 @@ export function ListingTable<T>({
   sort,
   onSortChange,
   className = '',
+  rowClassName,
 }: ListingTableProps<T>) {
   const handleHeaderClick = (col: ColumnDefinition<T>) => {
     if (!col.sortable || !onSortChange) return;
@@ -59,7 +62,7 @@ export function ListingTable<T>({
           {items.map((item) => (
             <tr
               key={keyExtractor(item)}
-              className="border-b border-gray-100 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/50"
+              className={`border-b border-gray-100 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/50 ${rowClassName?.(item) ?? ''}`}
             >
               {columns.map((col) => (
                 <td

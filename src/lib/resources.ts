@@ -28,7 +28,6 @@ import {
   uploadBytes,
   getDownloadURL,
   deleteObject,
-  getMetadata,
 } from 'firebase/storage';
 import type {
   Resource,
@@ -47,7 +46,6 @@ const log = logger.child('Resources');
 const RESOURCES_COLLECTION = 'resources';
 const REVIEWS_COLLECTION = 'resource_reviews';
 const BOOKMARKS_COLLECTION = 'resource_bookmarks';
-const COLLECTIONS_COLLECTION = 'resource_collections';
 const DOWNLOADS_COLLECTION = 'resource_downloads';
 const ACTIVITIES_COLLECTION = 'resource_activities';
 
@@ -239,7 +237,6 @@ export async function uploadResource(
         contentType: request.file.type,
       });
       const fileUrl = await getDownloadURL(fileSnapshot.ref);
-      const fileMetadata = await getMetadata(fileSnapshot.ref);
 
       // Upload preview file if provided
       let previewUrl: string | undefined;

@@ -48,7 +48,6 @@ const PaymentGateway: React.FC<PaymentGatewayProps> = ({
   // Stripe Elements
   const [cardElement, setCardElement] = useState<any>(null);
   const [stripe, setStripe] = useState<any>(null);
-  const [elements, setElements] = useState<any>(null);
 
   useEffect(() => {
     loadData();
@@ -98,7 +97,6 @@ const PaymentGateway: React.FC<PaymentGatewayProps> = ({
         const elementsInstance = stripeInstance.elements();
 
         setStripe(stripeInstance);
-        setElements(elementsInstance);
 
         // Create card element
         const cardElementInstance = elementsInstance.create('card', {
@@ -201,7 +199,7 @@ const PaymentGateway: React.FC<PaymentGatewayProps> = ({
       }
 
       // Create Stripe checkout session
-      const { sessionId, subscriptionId } = await createStripeCheckoutSession({
+      const { sessionId } = await createStripeCheckoutSession({
         userId: currentUser.id,
         tierId: selectedTier.id,
         paymentMethodId: selectedPaymentMethodId,
@@ -281,7 +279,6 @@ const PaymentGateway: React.FC<PaymentGatewayProps> = ({
     const currency = tierForInterval.currency.toUpperCase();
 
     if (interval === 'year') {
-      const monthlyEquivalent = price / 12;
       return {
         price: `${currency} ${price}`,
         period: t('payments.yearly'),

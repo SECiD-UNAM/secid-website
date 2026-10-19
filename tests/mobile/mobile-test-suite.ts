@@ -162,9 +162,6 @@ test.describe('Mobile Responsiveness Suite', () => {
 
       const navigation = page.locator('nav, .navbar, header nav').first();
       if ((await navigation.count()) > 0) {
-        // Get initial position
-        const initialBox = await navigation.boundingBox();
-
         // Scroll down
         await page.evaluate(() => window.scrollTo(0, 500));
         await page.waitForTimeout(300);
