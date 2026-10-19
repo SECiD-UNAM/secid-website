@@ -16,45 +16,65 @@ Contexto: hasta el 2026-10-18 CI nunca ejecutó un test e2e (el `global-setup`
 fallaba y el paso tenía `continue-on-error`), y el proyecto `chromium` de
 Playwright solo incluía 7 archivos por su `testMatch`.
 
-- [ ] A1. Clasificar los 266 tests por causa de fallo: usuario sembrado,
-      emulador, Stripe, selector roto, bug real.
-- [ ] A2. PR del arnés: setup sin `dotenv`, `__dirname` ESM, imports JSON con
+- [x] A1. Corrida completa 2026-10-19 contra `astro preview`: 266/266 fallan.
+      Firmas: timeouts esperando UI autenticada (621), `localStorage` leído
+      antes de navegar (141), URL/selectores viejos (~60). Causa común:
+      suites heredadas que asumen usuarios sembrados, emulador y Stripe.
+      `homepage.spec.ts`: 5/7 fallan por selectores antiguos.
+- [x] A2. PR #101 mergeado 2026-10-19 (8eb267c), arnés: setup sin `dotenv`, `__dirname` ESM, imports JSON con
       atributos, `test.use` sin `defaultBrowserType`, `Test Summary` que falle
       de verdad, `testMatch` ampliado y dos proyectos: `smoke` (hidratación,
       home, login, signup, páginas públicas; bloqueante) y `full` (resto; no
       bloqueante hasta triarlo).
-- [ ] A3. Añadir "E2E Tests (smoke)" a los checks requeridos de `main`.
+- [x] A3. "E2E Tests (smoke)" añadido a los checks requeridos de `main` el 2026-10-19 (10 contextos, strict).
       Criterio: un PR que rompa el signup se pone rojo solo.
-- [ ] A4. Hacer pasar `full` contra emuladores en CI con `npm run seed`; lo que
-      dependa de Stripe queda `skip` con motivo hasta que haya pagos.
+- [x] A4. PR #111 (2026-10-19): el job `E2E Tests (chromium)` corre contra
+      emuladores (auth, firestore, storage) con `npm run seed` reescrito
+      (REST + `Bearer owner`, cuentas fijas admin/member1/member2/company) y
+      publica una tabla de pass-rate en el summary. Resultado: 479 tests →
+      53 pasan, 0 fallan, 426 `skip` con motivo (antes: 8/457/14). Sigue
+      `continue-on-error` hasta que A5 reduzca los skips.
 - [ ] A5. Lo que A4 dejó en `skip`: (a) 13 suites heredadas marcadas
       "función no implementada" (~290 tests que buscan ~600 `data-testid`
       que la app no tiene; reescribir contra la UI real o borrar) — batch 1
       (auth/admin/dashboard/journey-B) hecho en PR #117: 5 suites reescritas,
-      1 borrada (journey-B ya corre en CI contra el wizard real); (b) 3
-      suites de pagos hasta que haya Stripe; (c) ✅ hecho (PRs #114 y el de
-      `ci/e2e-functions-emulator`): los ~53 usos de
-      `admin.firestore.FieldValue`/`Timestamp` en `functions/src` ahora
-      vienen de `firebase-admin/firestore`, el emulador de functions corre en
-      el job e2e (`--only auth,firestore,storage,functions`) y `onUserCreate`
-      ya no da 500. journey-B sigue en `skip`: no era solo el emulador, el
-      spec está escrito contra una UI que no existe (ruta `/es/onboarding`,
-      encabezado "Registro") y hay que reescribirlo contra el wizard real de
-      `/es/signup` — eso cae en (a). Al cerrar (a): quitar
+      1 borrada; journey-B ya está reescrito contra el wizard real de
+      `/es/signup` y corre en CI; (b) 3 suites de pagos hasta que haya
+      Stripe; (c) ✅ hecho (PRs #114 y #115, 2026-10-19): los 53 usos de
+      `admin.firestore.FieldValue`/`Timestamp` en `functions/src` vienen de
+      `firebase-admin/firestore`, el emulador de functions corre en el job
+      e2e (`--only auth,firestore,storage,functions`) y `onUserCreate` ya
+      no da 500 (55 ejecuciones sin error en CI). Al cerrar (a): quitar
       `continue-on-error` y volver el job bloqueante.
 
 ## Bloque B — Calidad que hoy no se exige (dev, ~1 día)
 
-- [ ] B5. `eslint --fix` repo-wide (4306 errores autofixables, casi todo
-      formato) en un PR mecánico; después quitar el `continue-on-error` del
-      lint en CI.
-- [ ] B6. Umbrales de cobertura fijados al nivel actual (hoy están en 0);
-      quitar `skip` a SignUpForm (29 tests), TwoFactorVerification (49), auth
-      (13), jobs (20) y Button (10), una suite por PR (como LoginForm, PR #94).
-- [ ] B7. Docs desactualizados: README (enlaces a `QUICKSTART.md`,
-      `DEVELOPMENT.md`, `LICENSE` inexistentes; badge de `deploy.yml`),
-      `AGENTS.md` (describe el sitio estático antiguo) y la tabla de entornos
-      de `docs/DEPLOYMENT.md`. Sacar `functions/lib` compilado del repo.
+- [ ] B5. ESLint repo-wide: PR #104 (2026-10-19) bajó de 2919 errores a 193 y
+      arregló 2 `ReferenceError` reales en render. Quedan 193 que necesitan
+      criterio (97 variables sin uso, 43 a11y, 26 `require` en scripts, 23
+      `jsx-key` falsos positivos en `.astro`, 3 `var` del snippet de Amplitude,
+      1 `triple-slash` de Astro). Falta: resolverlos o acotarlos por override y
+      quitar el `continue-on-error` del lint en CI.
+- [x] B6. Cobertura y suites saltadas (2026-10-19). PR #105: umbrales en
+      16/16/43/71 (líneas/sentencias/funciones/ramas, el piso medido) y bug de
+      config corregido: `thresholds.global` es forma de Jest, Vitest la
+      ignoraba, así que nunca se aplicaron. PR #106 SignUpForm (29→44 tests;
+      arregló bug real: "año de graduación" vacío bloqueaba el formulario de
+      verificación UNAM sin mostrar error), #107 TwoFactorVerification
+      (49→54), #110 Button (10→13). #108 auth.test y #109 jobs.test borrados:
+      los 33 tests describían APIs inexistentes y ya tienen suites propias.
+- [x] B7. PR #103 (2026-10-19): README, `AGENTS.md` y `docs/DEPLOYMENT.md`
+      actualizados; `functions/lib` fuera del repo (el `predeploy` de
+      `firebase.json` lo recompila en cada deploy).
+- [x] B8. PR #113 (2026-10-19): umbrales de cobertura exigidos en CI. Los 4
+      shards corren con `--coverage`, el job `Coverage` fusiona sus reportes
+      (`scripts/ci/check-coverage.mjs`) y falla si bajan de
+      `scripts/ci/coverage-thresholds.mjs`, la única fuente que también lee
+      `vitest.config.ts`. Probado en rojo a propósito (run 39203140147).
+      Hoy mide 72.2 / 46.9 / 17.2 / 17.2 (ramas/funciones/líneas/sentencias).
+      Se quitó el paso de Codecov (sin token, nunca subió nada).
+      Falta (owner, 1 clic): añadir `Coverage` a los checks requeridos de
+      `main` ([runbooks/github-governance.md](./runbooks/github-governance.md)).
 
 ## Bloque C — Pasos del owner (~30 min en total)
 
@@ -67,34 +87,110 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       (Runbook prod-cutover §6)
 - [ ] C10. Billing → Account management: confirmar el correo de avisos de pago.
       El correo de prueba del presupuesto llega con el primer umbral.
+- [ ] C11. Añadir un archivo `LICENSE` (package.json dice MIT; GitHub no detecta
+      licencia). Decisión del owner sobre la licencia.
 
 ## Bloque D — Aplazado por decisión del owner
 
-- [ ] D11. Cloudflare: borrar los 4 NS residuales `ns-cloud-a*.googledomains.com`
+- [ ] D12. Cloudflare: borrar los 4 NS residuales `ns-cloud-a*.googledomains.com`
       (solo el owner toca Cloudflare).
-- [ ] D12. Duplicado de cuenta admin (`jalejandrobondi@gmail.com` vs
+- [ ] D13. Duplicado de cuenta admin (`jalejandrobondi@gmail.com` vs
       `alejandrobondi@me.com`): preguntar, luego borrar o fusionar con
       `merge_requests`.
-- [ ] D13. ~1 de noviembre de 2026: desactivar GitHub Pages y mergear PR #85.
-- [ ] D14. Opcional: quitar `secid-mx.web.app` de CORS si ya no se usa.
+- [ ] D14. ~1 de noviembre de 2026: desactivar GitHub Pages y mergear PR #85.
+- [ ] D15. Opcional: quitar `secid-mx.web.app` de CORS si ya no se usa.
 
 ## Bloque E — Deuda mayor (planear aparte)
 
-- [ ] E15. Majors de dependencias pendientes de PR #92
+- [ ] E16. Majors de dependencias pendientes de PR #92
       ([known-issues/npm-audit-2026-10-18.md](./known-issues/npm-audit-2026-10-18.md)):
       Vitest 5 primero (solo dev), Firebase Admin 14, Tailwind 4, y Astro 7
       cuando el e2e `smoke` sea bloqueante.
-- [ ] E16. MCP de SECiD según
+- [ ] E17. MCP de SECiD según
       [specs/secid-mcp-and-assistant-skill.md](./specs/secid-mcp-and-assistant-skill.md),
       solo si las operaciones de miembros se vuelven frecuentes. La skill
       `.claude/skills/secid-ops/` ya existe.
-- [ ] E17. Un segundo mantenedor con permisos para poder exigir una revisión
+- [ ] E18. Un segundo mantenedor con permisos para poder exigir una revisión
       en `main` sin bloquear al único admin.
 
-## Orden recomendado
+## Bloque F — Notificaciones y comunicados (dev, 2–4 días; diagnóstico 2026-10-19)
 
-A1–A3 primero (convierte CI en una red real), luego B5 y B6 en paralelo, C
-cuando el owner pueda, E15 después de A3.
+Estado real hoy:
+
+- Correo transaccional **sí funciona**: extensión `firestore-send-email`
+  activa (colección `mail`, SMTP Gmail de contacto@secid.mx), 15/15
+  entregas `SUCCESS`. Disparadores en `functions/src/index.ts`: bienvenida
+  (`onUserDocCreated`), "nueva solicitud pendiente" a admins, aprobado /
+  rechazado / cambio de estatus (`onMemberStatusChange`) y job-match
+  (`onNewJobPosted`, `matchJobsForUser`). Las cuentas QA por plus-tag no
+  reciben correo.
+- **No existe** correo para: confirmación de registro a eventos ni
+  recordatorios (`EventRegistrationForm` solo escribe en Firestore; hoy hay
+  0 eventos y 0 registros), aviso al admin de mensajes de contacto
+  (`contactMessages` se guarda y nadie se entera), envío del newsletter
+  (`newsletter_archive` solo publica en web; `newsletter` guarda
+  suscriptores, 5 hoy, sin ningún envío), ni comunicados/anuncios a
+  miembros (no hay composer; el canal real son los Google Groups
+  miembros@/colaboradores@/direccion@ que sincroniza #83).
+- Notificaciones in-app: `src/lib/notifications.ts` + `NotificationCenter`
+  son un cascarón: llaman a callables `sendNotification`,
+  `sendBulkNotifications` y `scheduleNotification` que no existen en
+  functions, escriben en una colección raíz `notifications` que las reglas
+  no permiten (solo `users/{uid}/notifications`), y el centro hace polling
+  cada 30 s. `NotificationSettings` guarda preferencias (digest por correo,
+  push) que nada lee. Push (FCM) sin `PUBLIC_FIREBASE_VAPID_KEY`.
+- Panel de community manager: no existe. Admin tiene usuarios, directorio,
+  moderación (cola + reportes), fusión, analytics y configuración. RBAC ya
+  define `content-editor` y `newsletter-editor` sin UI que los use.
+
+- [ ] F19. Avisos que faltan sobre la tubería que ya funciona (1 día):
+      correo al admin por cada `contactMessages` nuevo (trigger
+      `onDocumentCreated`), confirmación al registrarse a un evento y
+      recordatorio 24 h antes (`onSchedule` diario leyendo
+      `events/{id}/registrations`). Plantillas en `email-templates.ts`.
+      Respetar `notificationSettings.email`.
+- [ ] F20. Comunicados a miembros (1–2 días): composer en admin
+      (`/dashboard/admin/communications`) para rol `content-editor` /
+      `newsletter-editor`: asunto, cuerpo (markdown), audiencia (todos los
+      activos / por sede / por grupo RBAC), vista previa, "enviarme prueba"
+      y envío. Backend: callable `sendAnnouncement` que escribe lotes en
+      `mail` (`sendBatchEmails`) y guarda el registro en `announcements`
+      con conteo y estado. Reusar la plantilla base de `email-templates.ts`.
+      Nota de volumen: el SMTP de Gmail limita ~500 destinatarios/día; con
+      31 miembros alcanza, pero al pasar de ~300 conviene migrar a SendGrid
+      o Resend (misma extensión, cambiar `SMTP_CONNECTION_URI`).
+- [ ] F21. Newsletter por correo (½ día, después de F20): botón "enviar a
+      suscriptores" en `NewsletterFormPage` usando el mismo callable con la
+      audiencia `newsletter` (suscriptores confirmados) y enlace de baja
+      (`unsubscribe` firmado). Hoy el formulario público acepta altas sin
+      doble opt-in; añadir confirmación por correo antes de enviar nada.
+- [ ] F22. Notificaciones in-app (1 día, opcional): o se borran
+      `NotificationCenter`/`notifications.ts` y su página de settings, o se
+      conectan de verdad: escribir en `users/{uid}/notifications` desde los
+      mismos triggers de F19/F20, `onSnapshot` en el centro (quitar
+      polling), y `notificationSettings` dentro del doc del usuario. Push
+      FCM solo si alguien lo pide (VAPID + service worker).
+
+## Orden recomendado (actualizado 2026-10-19, tras A4/B6)
+
+Dev, en este orden y cada paso un PR con auto-merge:
+
+1. ~~B8~~ hecho (PR #113).
+2. ~~A5(c)~~ hecho (PRs #114, #115).
+3. A5(a) (2–3 días, por lotes): reescribir o borrar las 13 suites "función
+   no implementada"; al terminar, quitar `continue-on-error` del job
+   chromium y hacerlo requerido en `main`.
+4. B5 (1 día): los 193 errores de ESLint restantes y quitar
+   `continue-on-error` del lint.
+5. F19 → F20 → F21 (3–4 días) cuando haya eventos, mensajes de contacto o
+   un comunicado real que mandar; F22 solo si se decide conservar el centro
+   de notificaciones.
+6. E16 (Vitest 5, Firebase Admin 14, Tailwind 4, Astro 7) después del
+   paso 3, cuando el e2e completo sea bloqueante y pueda detectar
+   regresiones de los majors.
+
+Owner, cuando pueda (C8–C11, ~30 min) y en su fecha (D12–D15). E17/E18 sin
+fecha.
 
 ## Hecho (referencia)
 
