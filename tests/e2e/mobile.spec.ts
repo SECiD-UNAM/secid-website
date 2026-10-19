@@ -6,17 +6,11 @@ import { test, expect, devices } from '@playwright/test';
  * dropped so the file runs in whichever project selected it (CI installs
  * chromium only).
  *
- * Known gap (public/assets/css/secid-components.css): the hamburger is
- * displayed at every width <= 768px, but `.secid-navbar__mobile-menu--open`
- * is only styled inside `@media (min-width: 481px) and (max-width: 768px)`,
- * so on phones (<= 480px) the menu toggles its class and aria state but
- * never becomes visible. The phone test below is marked `test.fail` so it
- * flips red when the CSS is fixed; the menu interactions run at a small
- * tablet width where they work today.
+ * The hamburger menu must open at phone widths (<= 480px) as well as at
+ * tablet widths; public/assets/css/secid-components.css styles
+ * `.secid-navbar__mobile-menu--open` in both breakpoints.
  */
 const { defaultBrowserType: _browser, ...iPhone12 } = devices['iPhone 12'];
-const PHONE_MENU_BUG =
-  'hamburger menu never displays at <= 480px (secid-components.css --open rule is 481-768px only)';
 
 test.describe('Mobile Responsive Journey (iPhone 12)', () => {
   test.use(iPhone12);
@@ -39,8 +33,6 @@ test.describe('Mobile Responsive Journey (iPhone 12)', () => {
   });
 
   test('should open mobile menu when toggle clicked', async ({ page }) => {
-    test.fail(true, PHONE_MENU_BUG);
-
     const mobileToggle = page.locator('.secid-navbar__mobile-toggle');
     const mobileMenu = page.locator('.secid-navbar__mobile-menu');
 
