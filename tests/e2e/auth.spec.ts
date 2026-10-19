@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { waitForIsland } from '../utils/session';
 
 /**
  * Login / signup forms as rendered by src/components/auth/LoginForm.tsx and
@@ -124,6 +125,7 @@ test.describe('Authentication Flow', () => {
 
   test('remember me checkbox works', async ({ page }) => {
     await page.goto('/es/login');
+    await waitForIsland(page, 'LoginForm');
 
     const checkbox = page.locator('#remember-me');
     await expect(checkbox).not.toBeChecked();
@@ -134,6 +136,9 @@ test.describe('Authentication Flow', () => {
 
   test('forgot password opens the recovery dialog', async ({ page }) => {
     await page.goto('/es/login');
+    // The button is a React handler: clicking the SSR markup before
+    // hydration does nothing (flaked under 4 parallel workers).
+    await waitForIsland(page, 'LoginForm');
 
     const forgotButton = page.locator('button', {
       hasText: '¿Olvidaste tu contraseña?',
