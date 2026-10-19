@@ -13,6 +13,7 @@ CI y deja la consola solo como respaldo.
 | [Respaldo y restauración de Firestore](./firestore-backup.md)  | Antes de cambios de reglas o datos; restaurar tras un error   |
 | [Cambios en el backend compartido](./shared-backend-change.md) | Functions, reglas, índices o secretos: orden y guardias       |
 | [Reversa de un deploy](./rollback.md)                          | Hosting roto, function rota, o volver a GitHub Pages          |
+| [Gobernanza del repo](./github-governance.md)                  | Checks requeridos de `main`, auto-merge, PR bloqueado         |
 
 Prerrequisitos comunes:
 
