@@ -6,7 +6,6 @@
  */
 
 const fs = require('fs');
-const path = require('path');
 
 // Environment configuration
 const environments = {

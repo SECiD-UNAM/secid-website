@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Button from '@/components/ui/Button';
-import { useTranslations } from '@/hooks/useTranslations';
 import toast from 'react-hot-toast';
 import { Shield, Key, Clock, AlertTriangle } from 'lucide-react';
 import {
@@ -49,7 +48,6 @@ export const TwoFactorVerification: React.FC<TwoFactorVerificationProps> = ({
   lang = 'es',
   mode = 'login',
 }) => {
-  const t = useTranslations(lang);
   const [loading, setLoading] = useState(false);
   const [showBackupCode, setShowBackupCode] = useState(false);
   const [attemptsLeft, setAttemptsLeft] = useState(3);

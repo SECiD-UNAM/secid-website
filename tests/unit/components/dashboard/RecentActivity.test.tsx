@@ -402,10 +402,6 @@ describe('RecentActivity', () => {
         const activities = screen.getAllByRole('listitem');
         const lastActivity = activities[activities.length - 1];
 
-        const connector = within(lastActivity).queryByRole('generic', {
-          hidden: true, // connectors are typically hidden from screen readers
-        });
-
         // Last item should not have a visible connector
         expect(lastActivity).toBeInTheDocument();
       });

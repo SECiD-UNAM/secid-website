@@ -60,7 +60,6 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
 
   const [completedTours, setCompletedTours] = useState<Set<string>>(new Set());
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
 
   // Load completed tours from localStorage
   useEffect(() => {

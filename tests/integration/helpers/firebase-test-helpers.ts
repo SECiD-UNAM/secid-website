@@ -95,7 +95,7 @@ export async function cleanupTestData(firestore: any): Promise<void> {
  */
 export async function seedTestData(firestore: any): Promise<void> {
   // Create test users
-  for (const [key, user] of Object.entries(mockUsers)) {
+  for (const user of Object.values(mockUsers)) {
     if (user.uid && user.profile) {
       await createTestUser(firestore, user.uid, user.profile);
     }

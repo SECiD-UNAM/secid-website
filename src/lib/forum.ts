@@ -48,14 +48,6 @@ const reportsRef = collection(db, 'forum_reports');
 const notificationsRef = collection(db, 'forum_notifications');
 const moderationRef = collection(db, 'forum_moderation');
 
-// Utility function to convert Firestore timestamp to Date
-const timestampToDate = (timestamp: any): Date => {
-  if (timestamp && timestamp.toDate) {
-    return timestamp.toDate();
-  }
-  return timestamp instanceof Date ? timestamp : new Date(timestamp);
-};
-
 // Utility function to convert document data
 const convertDoc = <T>(
   doc: DocumentSnapshot | QueryDocumentSnapshot

@@ -668,10 +668,14 @@ const EducationEntryForm: React.FC<{
 
           {/* Campus */}
           <div className="mb-3">
-            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label
+              htmlFor={`education-campus-${entry.id}`}
+              className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Campus
             </label>
             <select
+              id={`education-campus-${entry.id}`}
               value={entry.campus ?? ''}
               onChange={(e) =>
                 onUpdate({ campus: e.target.value || undefined })

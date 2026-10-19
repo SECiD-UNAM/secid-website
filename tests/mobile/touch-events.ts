@@ -345,11 +345,6 @@ test.describe('Touch Events and Mobile Interactions', () => {
       );
       expect(touchEvents.length).toBeGreaterThan(0);
 
-      // Check if page implements pull-to-refresh
-      // (This would depend on the actual implementation)
-      const hasRefreshIndicator = await page
-        .locator('.refresh-indicator, .pull-to-refresh')
-        .count();
       // Just verify the gesture was registered, actual refresh behavior varies
       expect(
         touchEvents.filter((e: any) => e.type === 'touchmove').length

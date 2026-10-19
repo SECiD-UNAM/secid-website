@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Button from '@/components/ui/Button';
-import { useTranslations } from '@/hooks/useTranslations';
 import { AddAlternateEmail } from '@/components/profile/AddAlternateEmail';
 import {
   updatePassword,
@@ -18,7 +17,6 @@ import {
   unlinkProvider,
 } from '@/lib/auth';
 import {
-  getTwoFactorStatus,
   TWO_FACTOR_NOT_AVAILABLE_MESSAGE,
   TWO_FACTOR_NOT_AVAILABLE_MESSAGE_ES,
 } from '@/lib/auth/two-factor';
@@ -84,16 +82,10 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
   lang = 'es',
   onClose,
 }) => {
-  const t = useTranslations(lang);
   const [activeTab, setActiveTab] = useState<
     'password' | 'twofactor' | 'sessions' | 'providers' | 'history'
   >('password');
   const [loading, setLoading] = useState(false);
-  const [twoFactorStatus, setTwoFactorStatus] = useState({
-    isEnabled: false,
-    hasBackupCodes: false,
-    unusedBackupCodes: 0,
-  });
   const [linkedProviders, setLinkedProviders] = useState<LinkedAccount[]>([]);
   const [showPasswords, setShowPasswords] = useState({
     current: false,
@@ -124,10 +116,6 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
     try {
       const user = getCurrentUser();
       if (!user) return;
-
-      // Load 2FA status
-      const twoFactor = await getTwoFactorStatus(user.uid);
-      setTwoFactorStatus(twoFactor);
 
       // Load linked providers
       const providers = await getLinkedOAuthProviders(user.uid);

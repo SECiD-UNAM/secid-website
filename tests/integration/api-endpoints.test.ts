@@ -101,7 +101,7 @@ const createMockResponse = (): Response => {
 // Mock API handlers (these would be imported from your actual API files)
 const mockCreatePaymentIntent = async (req: Request, res: Response) => {
   try {
-    const { amount, currency, customerId } = req.body;
+    const { amount, currency } = req.body;
 
     if (!amount || amount < 50) {
       return res.status(400).json({ error: 'Invalid amount' });
@@ -123,7 +123,7 @@ const mockCreatePaymentIntent = async (req: Request, res: Response) => {
 
 const mockCreateSubscription = async (req: Request, res: Response) => {
   try {
-    const { customerId, priceId, paymentMethodId } = req.body;
+    const { customerId, priceId } = req.body;
 
     if (!customerId || !priceId) {
       return res.status(400).json({ error: 'Missing required fields' });

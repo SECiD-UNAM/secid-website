@@ -409,16 +409,6 @@ test.describe('Viewport Responsiveness Tests', () => {
         await page.goto('/');
         await page.waitForLoadState('networkidle');
 
-        const belowBreakpointLayout = await page.evaluate(() => {
-          const body = document.body;
-          const computedStyle = window.getComputedStyle(body);
-          return {
-            display: computedStyle.display,
-            flexDirection: computedStyle.flexDirection,
-            gridTemplateColumns: computedStyle.gridTemplateColumns,
-          };
-        });
-
         // Test at breakpoint
         await page.setViewportSize({ width, height: 800 });
         await page.waitForTimeout(100); // Allow for reflow

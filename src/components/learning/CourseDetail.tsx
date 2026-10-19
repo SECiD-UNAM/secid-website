@@ -31,8 +31,6 @@ const CourseDetail: React.FC<CourseDetailProps> = ({
   const [course, setCourse] = useState<Course | null>(null);
   const [enrollment, setEnrollment] = useState<CourseEnrollment | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
-  const [videoCurrentTime, setVideoCurrentTime] = useState(0);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [quizAnswers, setQuizAnswers] = useState<Record<string, any>>({});
   const [quizAttempt, setQuizAttempt] = useState<QuizAttempt | null>(null);
   const [loading, setLoading] = useState(true);
@@ -580,15 +578,11 @@ const CourseDetail: React.FC<CourseDetailProps> = ({
               {/* Video Content */}
               {selectedLesson.content.video && (
                 <div className="mb-6">
+                  {/* eslint-disable-next-line jsx-a11y/media-has-caption -- caption tracks are rendered from lesson subtitles below */}
                   <video
                     src={selectedLesson.content.video.url}
                     controls
                     className="h-64 w-full rounded-lg"
-                    onTimeUpdate={(e) =>
-                      setVideoCurrentTime(e.currentTarget.currentTime)
-                    }
-                    onPlay={() => setIsVideoPlaying(true)}
-                    onPause={() => setIsVideoPlaying(false)}
                   >
                     {selectedLesson.content.video.subtitles.map((subtitle) => (
                       <track

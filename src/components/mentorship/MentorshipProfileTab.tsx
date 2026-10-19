@@ -375,13 +375,13 @@ function WelcomeScreen({
 }
 
 function AddProfileCta({
-  role,
+  profileRole,
   onClick,
 }: {
-  role: 'mentor' | 'mentee';
+  profileRole: 'mentor' | 'mentee';
   onClick: () => void;
 }) {
-  const isMentor = role === 'mentor';
+  const isMentor = profileRole === 'mentor';
   return (
     <button
       onClick={onClick}
@@ -497,13 +497,13 @@ export default function MentorshipProfileTab({
       )}
       {mentorProfile && !menteeProfile && (
         <AddProfileCta
-          role="mentee"
+          profileRole="mentee"
           onClick={() => setCreatingRole('mentee')}
         />
       )}
       {menteeProfile && !mentorProfile && (
         <AddProfileCta
-          role="mentor"
+          profileRole="mentor"
           onClick={() => setCreatingRole('mentor')}
         />
       )}

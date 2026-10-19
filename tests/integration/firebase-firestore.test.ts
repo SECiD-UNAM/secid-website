@@ -202,24 +202,6 @@ const mockEvent = {
   updatedAt: new Date('2023-01-10'),
 };
 
-const mockForumPost = {
-  id: 'post-1',
-  title: 'Career transition advice needed',
-  content:
-    'I am looking for advice on transitioning from academia to industry...',
-  category: 'career',
-  tags: ['career', 'transition', 'advice'],
-  author: 'user-3',
-  upvotes: 15,
-  downvotes: 2,
-  repliesCount: 8,
-  views: 120,
-  status: 'published',
-  isPinned: false,
-  createdAt: new Date('2023-01-12'),
-  updatedAt: new Date('2023-01-14'),
-};
-
 describe('Firebase Firestore Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -637,9 +619,6 @@ describe('Firebase Firestore Integration', () => {
         const userDoc = await transaction.get(userRef);
 
         if (jobDoc.exists() && userDoc.exists()) {
-          const jobData = jobDoc.data();
-          const userData = userDoc.data();
-
           // Update application count
           transaction.update(jobRef, {
             applicationsCount: increment(1),
@@ -706,7 +685,6 @@ describe('Firebase Firestore Integration', () => {
       for (let i = 0; i < 3; i++) {
         try {
           result = await runTransaction(db, async (transaction) => {
-            const jobDoc = await transaction.get(jobRef);
             transaction.update(jobRef, { viewsCount: increment(1) });
             return { updated: true };
           });

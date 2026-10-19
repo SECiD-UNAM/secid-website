@@ -79,8 +79,14 @@ export const JobDetail: React.FC<JobDetailProps> = ({ jobId, lang = 'es' }) => {
   useEffect(() => {
     fetchJobDetails();
     trackView();
-    checkApplicationStatus();
   }, [jobId]);
+
+  // The session resolves after the first render (AuthProvider does not gate
+  // its children), so the "already applied" check must wait for the user —
+  // otherwise the page the modal reloads on success still offers "Aplicar".
+  useEffect(() => {
+    if (user) checkApplicationStatus();
+  }, [user?.uid, jobId]);
 
   const fetchJobDetails = async () => {
     try {

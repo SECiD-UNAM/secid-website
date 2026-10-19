@@ -64,12 +64,11 @@ interface CompanyDashboardProps {
 export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
   lang = 'es',
 }) => {
-  const { user, userProfile } = useAuth();
+  const { user } = useAuth();
   const [jobPosts, setJobPosts] = useState<JobPost[]>([]);
   const [selectedJob, setSelectedJob] = useState<JobPost | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
-  const [statsLoading, setStatsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<
     'overview' | 'jobs' | 'applications' | 'analytics'
   >('overview');
@@ -173,7 +172,6 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
       avgTimeToHire: 15, // Mock value
       topPerformingJob: topJob,
     });
-    setStatsLoading(false);
   };
 
   const handleStatusChange = async (jobId: string, newStatus: string) => {

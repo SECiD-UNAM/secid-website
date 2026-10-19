@@ -44,7 +44,6 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Default categories if none exist in database
   const defaultCategories = [
@@ -257,22 +256,6 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
               ></div>
             ))}
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <div className="mb-4 text-xl text-red-500">{error}</div>
-          <button
-            onClick={loadForumData}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
-          >
-            {t.common.retry}
-          </button>
         </div>
       </div>
     );

@@ -243,7 +243,6 @@ describe('SearchBar', () => {
     });
 
     it('does not search with empty query', async () => {
-      const user = userEvent.setup();
       render(<SearchBar {...defaultProps} />);
 
       const form = screen.getByRole('textbox').closest('form')!;

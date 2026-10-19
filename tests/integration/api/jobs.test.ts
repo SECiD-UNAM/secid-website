@@ -10,6 +10,7 @@ import {
   getJobApplications,
 } from '@/lib/jobs';
 import { firestore } from '@/lib/firebase';
+import { getCurrentUser } from '@/lib/auth';
 import { mockJobs, mockJobApplications, mockUsers } from '../../fixtures';
 
 // Mock Firebase Firestore
@@ -38,8 +39,7 @@ vi.mock('@/lib/auth', () => ({
 
 // Skipped: Tests assume incorrect Firebase SDK API shape (method-based vs module-level functions).
 // The real jobs.ts uses Firestore v9+ modular SDK (doc(), setDoc(), etc. as standalone functions),
-// but these tests mock firestore.setDoc as a method. Also uses require() for dynamic mock
-// which doesn't work with ESM. Needs rewrite. See TD-013.
+// but these tests mock firestore.setDoc as a method. Needs rewrite. See TD-013.
 describe.skip('Jobs API Integration Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -100,7 +100,7 @@ describe.skip('Jobs API Integration Tests', () => {
     });
 
     it('enforces company authentication', async () => {
-      vi.mocked(require('@/lib/auth').getCurrentUser).mockReturnValue(null);
+      vi.mocked(getCurrentUser).mockReturnValue(null);
 
       await expect(createJob(jobData)).rejects.toThrow(
         /authentication required/i
@@ -255,7 +255,7 @@ describe.skip('Jobs API Integration Tests', () => {
       const updates = { title: 'Updated Title' };
 
       // Mock different company user
-      vi.mocked(require('@/lib/auth').getCurrentUser).mockReturnValue({
+      vi.mocked(getCurrentUser).mockReturnValue({
         uid: 'different-company-uid',
         customClaims: { role: 'company' },
       });
@@ -293,7 +293,7 @@ describe.skip('Jobs API Integration Tests', () => {
       const jobId = mockJobs.dataScientistJob.id;
 
       // Mock different company user
-      vi.mocked(require('@/lib/auth').getCurrentUser).mockReturnValue({
+      vi.mocked(getCurrentUser).mockReturnValue({
         uid: 'different-company-uid',
         customClaims: { role: 'company' },
       });
@@ -343,9 +343,7 @@ describe.skip('Jobs API Integration Tests', () => {
       vi.mocked(firestore.doc).mockReturnValue({ id: 'app-1' } as any);
 
       // Mock user authentication
-      vi.mocked(require('@/lib/auth').getCurrentUser).mockReturnValue(
-        mockUsers.regularUser
-      );
+      vi.mocked(getCurrentUser).mockReturnValue(mockUsers.regularUser);
 
       const result = await applyToJob(applicationData);
 
@@ -451,7 +449,7 @@ describe.skip('Jobs API Integration Tests', () => {
         salaryMax: 100000,
       };
 
-      const result = await getJobs(filters);
+      await getJobs(filters);
 
       expect(firestore.where).toHaveBeenCalledWith('salary.min', '>=', 50000);
       expect(firestore.where).toHaveBeenCalledWith('salary.max', '<=', 100000);
@@ -462,7 +460,7 @@ describe.skip('Jobs API Integration Tests', () => {
         skills: ['Python', 'Machine Learning'],
       };
 
-      const result = await getJobs(filters);
+      await getJobs(filters);
 
       expect(firestore.where).toHaveBeenCalledWith(
         'skills',

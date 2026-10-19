@@ -45,13 +45,9 @@ export default function NotificationCenter({
     'date'
   );
   const [filterBy, setFilterBy] = useState<'all' | 'unread' | 'urgent'>('all');
-  const [groupedView, setGroupedView] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [lastSoundTime, setLastSoundTime] = useState(0);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
 
   // Load notifications when component mounts or user changes
   useEffect(() => {
@@ -138,23 +134,6 @@ export default function NotificationCenter({
     }, 30000); // Poll every 30 seconds
 
     return () => clearInterval(interval);
-  };
-
-  const playNotificationSound = () => {
-    if (!soundEnabled) return;
-
-    const now = Date.now();
-    // Throttle sound to prevent spam
-    if (now - lastSoundTime < 2000) return;
-
-    setLastSoundTime(now);
-
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(() => {
-        // Ignore autoplay restrictions
-      });
-    }
   };
 
   const handleNotificationClick = async (notification: Notification) => {
@@ -256,7 +235,6 @@ export default function NotificationCenter({
   return (
     <div className={`relative ${className}`}>
       {/* Notification Sound */}
-      <audio ref={audioRef} preload="auto" src="/sounds/notification.mp3" />
 
       {/* Notification Bell Button */}
       <button
@@ -537,36 +515,14 @@ export default function NotificationCenter({
 
             {activeTab === 'settings' && (
               <div className="h-full overflow-y-auto p-4">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-700">
-                      {t('notificationssettings.sound')}
-                    </label>
-                    <button
-                      onClick={() => setSoundEnabled(!soundEnabled)}
-                      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                        soundEnabled ? 'bg-blue-600' : 'bg-gray-200'
-                      }`}
-                    >
-                      <span
-                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                          soundEnabled ? 'translate-x-5' : 'translate-x-0'
-                        }`}
-                      />
-                    </button>
-                  </div>
-
-                  <div className="border-t border-gray-200 pt-4">
-                    <button
-                      onClick={() =>
-                        (window.location.href = '/settings/notifications')
-                      }
-                      className="w-full rounded-lg px-4 py-2 text-left text-sm text-blue-600 transition-colors hover:bg-blue-50 hover:text-blue-800"
-                    >
-                      {t('notificationssettings.advanced')}
-                    </button>
-                  </div>
-                </div>
+                <button
+                  onClick={() =>
+                    (window.location.href = '/settings/notifications')
+                  }
+                  className="w-full rounded-lg px-4 py-2 text-left text-sm text-blue-600 transition-colors hover:bg-blue-50 hover:text-blue-800"
+                >
+                  {t('notificationssettings.advanced')}
+                </button>
               </div>
             )}
           </div>
