@@ -161,11 +161,33 @@ Estado real hoy:
       polling), y `notificationSettings` dentro del doc del usuario. Push
       FCM solo si alguien lo pide (VAPID + service worker).
 
-## Orden recomendado
+## Orden recomendado (actualizado 2026-10-19, tras A4/B6)
 
-A1–A3 primero (convierte CI en una red real), luego B5 y B6 en paralelo, C
-cuando el owner pueda, E16 después de A3. F19 en cuanto haya eventos o
-mensajes de contacto reales; F20 antes del primer comunicado masivo.
+Dev, en este orden y cada paso un PR con auto-merge:
+
+1. B8 (nuevo, ½ día): evaluar la cobertura en CI. Hoy los 4 shards corren
+   sin `--coverage`, así que los umbrales de B6 no se aplican y codecov
+   sube un lcov inexistente. Opción simple: cada shard con
+   `--coverage --coverage.reporter=json` y un job que una los 4 con
+   `nyc merge` + `vitest --coverage.thresholds` sobre el merge; o un job
+   `coverage` sin shards si el tiempo lo permite.
+2. A5(c) (1 día): `FieldValue` importado de `firebase-admin/firestore` en
+   `functions/src` para que el emulador de functions arranque; añadirlo al
+   job e2e y desbloquear journey-B.
+3. A5(a) (2–3 días, por lotes): reescribir o borrar las 13 suites "función
+   no implementada"; al terminar, quitar `continue-on-error` del job
+   chromium y hacerlo requerido en `main`.
+4. B5 (1 día): los 193 errores de ESLint restantes y quitar
+   `continue-on-error` del lint.
+5. F19 → F20 → F21 (3–4 días) cuando haya eventos, mensajes de contacto o
+   un comunicado real que mandar; F22 solo si se decide conservar el centro
+   de notificaciones.
+6. E16 (Vitest 5, Firebase Admin 14, Tailwind 4, Astro 7) después del
+   paso 3, cuando el e2e completo sea bloqueante y pueda detectar
+   regresiones de los majors.
+
+Owner, cuando pueda (C8–C11, ~30 min) y en su fecha (D12–D15). E17/E18 sin
+fecha.
 
 ## Hecho (referencia)
 
