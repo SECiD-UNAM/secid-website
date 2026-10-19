@@ -116,6 +116,63 @@ test.describe('Job detail and application modal', () => {
     ).toBeVisible();
   });
 
+  // Full submit on a job no other test in this file opens (the tests run in
+  // parallel and the ML Engineer ones expect the "Aplicar ahora" button).
+  // The emulator data is fresh per `emulators:exec`, but the assertions never
+  // depend on this being the only application.
+  test('submits an application and lists it under Mis Aplicaciones', async ({
+    page,
+  }) => {
+    const title = 'Senior Data Scientist';
+    const coverLetter = `${COVER_LETTER} Ref e2e-${Date.now()}.`;
+
+    await openJob(page, 'seed-job-senior-data-scientist');
+    await page
+      .getByRole('button', { name: 'Aplicar ahora' })
+      .click({ timeout: 20000 });
+    await expect(modal(page)).toBeVisible();
+    const next = page.getByRole('button', { name: 'Siguiente' });
+
+    await page
+      .getByPlaceholder(
+        'Explica por qué eres el candidato ideal para este puesto...'
+      )
+      .fill(coverLetter);
+    await next.click();
+    await page.getByPlaceholder('+52 55 1234 5678').fill('+52 55 1234 5678');
+    await next.click();
+    const selects = page.locator('select');
+    await selects.nth(0).selectOption('1-3');
+    await selects.nth(1).selectOption('master');
+    await next.click();
+    await expect(
+      page.getByRole('heading', { name: 'Resumen de tu aplicación' })
+    ).toBeVisible();
+
+    await page.getByRole('button', { name: 'Enviar aplicación' }).click();
+    await expect(
+      page.getByRole('heading', {
+        name: '¡Aplicación enviada exitosamente!',
+      })
+    ).toBeVisible({ timeout: 15000 });
+
+    // The modal reloads the page, which now shows the applied state.
+    await expect(page.getByText('Ya aplicaste a este empleo')).toBeVisible({
+      timeout: 20000,
+    });
+
+    await page.goto('/es/dashboard/applications');
+    await expect(
+      page.getByRole('heading', { name: 'Mis Aplicaciones' })
+    ).toBeVisible({ timeout: 20000 });
+    const row = page
+      .locator('h3', { hasText: title })
+      .locator('xpath=ancestor::div[contains(@class, "shadow")][1]');
+    await expect(row.first()).toBeVisible({ timeout: 15000 });
+    await expect(row.first()).toContainText('TechCorp México');
+    await expect(row.first()).toContainText('Enviada');
+  });
+
   test('an unknown job id shows the not-found state', async ({ page }) => {
     await openJob(page, 'no-such-job');
     await expect(
