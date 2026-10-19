@@ -902,6 +902,10 @@ body {
     display: flex;
   }
 
+  .secid-navbar__mobile-menu--open {
+    display: block;
+  }
+
   /* Enhanced touch feedback on mobile */
   .secid-job-card,
   .secid-member-card {
