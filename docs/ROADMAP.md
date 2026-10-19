@@ -104,6 +104,7 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       commits are the same" (base `origin/main` == HEAD). Ahora en push usa
       `github.event.before`, en PR la base del PR y en schedule/dispatch
       escanea el repo completo.
+
 ## Bloque C — Pasos del owner (~30 min en total)
 
 - [ ] C8. Firebase → Authentication → Templates → "Customize action URL" →
