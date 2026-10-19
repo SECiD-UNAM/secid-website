@@ -40,6 +40,11 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       `DEVELOPMENT.md`, `LICENSE` inexistentes; badge de `deploy.yml`),
       `AGENTS.md` (describe el sitio estático antiguo) y la tabla de entornos
       de `docs/DEPLOYMENT.md`. Sacar `functions/lib` compilado del repo.
+- [x] B8. Umbrales de cobertura exigidos en CI: los 4 shards corren con
+      `--coverage`, el job `Coverage` fusiona sus reportes
+      (`scripts/ci/check-coverage.mjs`) y falla si bajan de
+      `scripts/ci/coverage-thresholds.mjs`, la única fuente que también lee
+      `vitest.config.ts`. Se quitó el paso de Codecov (sin token, nunca subió).
 
 ## Bloque C — Pasos del owner (~30 min en total)
 
