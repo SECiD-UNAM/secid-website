@@ -14,9 +14,9 @@
  */
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import type { CallableRequest } from 'firebase-functions/v2/https';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import type { DocumentData, Firestore } from 'firebase-admin/firestore';
-import { admin } from './init';
+import './init';
 import { sendBatchEmails, isQaRecipient } from './email-service';
 import type { EmailData } from './email-service';
 import { generateAnnouncementEmail } from './email-templates';
@@ -270,7 +270,7 @@ export const sendAnnouncement = onCall(
   async (request) => {
     assertCanSendAnnouncements(request.auth);
     const input = parseInput(request.data);
-    const db = admin.firestore();
+    const db = getFirestore();
     const recipients = await resolveRecipients(
       db,
       input.audience,

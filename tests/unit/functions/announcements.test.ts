@@ -128,7 +128,7 @@ const H = vi.hoisted(() => {
   };
 });
 
-vi.mock(PATHS.init, () => ({ admin: { firestore: () => H.db } }));
+vi.mock(PATHS.init, () => ({}));
 vi.mock(PATHS.env, () => ({
   getAppUrl: () => 'https://secid.test',
   ALLOWED_CALLABLE_ORIGINS: [],
@@ -137,7 +137,10 @@ vi.mock(PATHS.emailService, () => ({
   sendBatchEmails: H.sendBatchEmails,
   isQaRecipient: H.isQaRecipient,
 }));
-vi.mock(PATHS.firebaseAdminFirestore, () => ({ FieldValue: H.FieldValue }));
+vi.mock(PATHS.firebaseAdminFirestore, () => ({
+  getFirestore: () => H.db,
+  FieldValue: H.FieldValue,
+}));
 vi.mock(PATHS.firebaseFunctionsHttps, () => ({
   onCall: (optsOrHandler: unknown, handler?: unknown) =>
     handler ?? optsOrHandler,
@@ -189,7 +192,7 @@ function mailDocs() {
   );
 }
 
-// describe.sequential: vitest.config.ts sets sequence.concurrent=true, but
+// { concurrent: false }: vitest.config.ts runs files sequentially now, but
 // every test here shares the in-memory Firestore and the sendBatchEmails spy.
 beforeEach(() => {
   H.state.docs.clear();
@@ -201,7 +204,7 @@ beforeEach(() => {
   seedUser('member-uid');
 });
 
-describe.sequential('sendAnnouncement — authorization', () => {
+describe('sendAnnouncement — authorization', { concurrent: false }, () => {
   it('rejects unauthenticated calls', async () => {
     await expect(send({ data: INPUT })).rejects.toMatchObject({
       code: 'unauthenticated',
@@ -229,7 +232,7 @@ describe.sequential('sendAnnouncement — authorization', () => {
   });
 });
 
-describe.sequential('sendAnnouncement — input validation', () => {
+describe('sendAnnouncement — input validation', { concurrent: false }, () => {
   it.each([
     ['empty subject', { ...INPUT, subject: '  ' }],
     ['missing body', { ...INPUT, bodyMarkdown: '' }],
@@ -244,71 +247,77 @@ describe.sequential('sendAnnouncement — input validation', () => {
   });
 });
 
-describe.sequential('sendAnnouncement — recipient resolution', () => {
-  it('all_active: active users with an email who have not opted out', async () => {
-    seedUser('inactive', { lifecycle: { status: 'inactive' } });
-    seedUser('no-email', { email: '' });
-    seedUser('opted-out', { notificationSettings: { email: false } });
-    seedUser('company', { role: 'company' });
-    seedUser('qa', { email: 'ana+qa@example.com' });
-    seedUser('no-settings', { notificationSettings: undefined });
+describe(
+  'sendAnnouncement — recipient resolution',
+  { concurrent: false },
+  () => {
+    it('all_active: active users with an email who have not opted out', async () => {
+      seedUser('inactive', { lifecycle: { status: 'inactive' } });
+      seedUser('no-email', { email: '' });
+      seedUser('opted-out', { notificationSettings: { email: false } });
+      seedUser('company', { role: 'company' });
+      seedUser('qa', { email: 'ana+qa@example.com' });
+      seedUser('no-settings', { notificationSettings: undefined });
 
-    const result = await send({
-      auth: ADMIN,
-      data: { ...INPUT, dryRun: true },
+      const result = await send({
+        auth: ADMIN,
+        data: { ...INPUT, dryRun: true },
+      });
+
+      // admin, editor, member + no-settings (absent settings = opted in)
+      expect(result.recipientCount).toBe(4);
     });
 
-    // admin, editor, member + no-settings (absent settings = opted in)
-    expect(result.recipientCount).toBe(4);
-  });
-
-  it('campus: only users whose campus matches', async () => {
-    seedUser('acatlan-2', { campus: 'FES Acatlan' });
-    const result = await send({
-      auth: ADMIN,
-      data: {
-        ...INPUT,
-        dryRun: true,
-        audience: { kind: 'campus', campus: 'FES Acatlan' },
-      },
+    it('campus: only users whose campus matches', async () => {
+      seedUser('acatlan-2', { campus: 'FES Acatlan' });
+      const result = await send({
+        auth: ADMIN,
+        data: {
+          ...INPUT,
+          dryRun: true,
+          audience: { kind: 'campus', campus: 'FES Acatlan' },
+        },
+      });
+      expect(result.recipientCount).toBe(2);
     });
-    expect(result.recipientCount).toBe(2);
-  });
 
-  it('rbac_group: members of the group via rbac_user_groups', async () => {
-    H.state.docs.set('rbac_user_groups/editor-uid', {
-      groups: ['content-editor'],
+    it('rbac_group: members of the group via rbac_user_groups', async () => {
+      H.state.docs.set('rbac_user_groups/editor-uid', {
+        groups: ['content-editor'],
+      });
+      H.state.docs.set('rbac_user_groups/member-uid', { groups: ['member'] });
+      H.state.docs.set('rbac_user_groups/ghost', {
+        groups: ['content-editor'],
+      });
+      const result = await send({
+        auth: ADMIN,
+        data: {
+          ...INPUT,
+          dryRun: true,
+          audience: { kind: 'rbac_group', groupId: 'content-editor' },
+        },
+      });
+      // editor-uid only: ghost has no users doc
+      expect(result.recipientCount).toBe(1);
     });
-    H.state.docs.set('rbac_user_groups/member-uid', { groups: ['member'] });
-    H.state.docs.set('rbac_user_groups/ghost', { groups: ['content-editor'] });
-    const result = await send({
-      auth: ADMIN,
-      data: {
-        ...INPUT,
-        dryRun: true,
-        audience: { kind: 'rbac_group', groupId: 'content-editor' },
-      },
-    });
-    // editor-uid only: ghost has no users doc
-    expect(result.recipientCount).toBe(1);
-  });
 
-  it('test: only the caller, even when the caller is opted out', async () => {
-    seedUser('editor-uid', { notificationSettings: { email: false } });
-    const result = await send({
-      auth: EDITOR,
-      data: { ...INPUT, audience: { kind: 'test' } },
+    it('test: only the caller, even when the caller is opted out', async () => {
+      seedUser('editor-uid', { notificationSettings: { email: false } });
+      const result = await send({
+        auth: EDITOR,
+        data: { ...INPUT, audience: { kind: 'test' } },
+      });
+      expect(result.recipientCount).toBe(1);
+      const [batch] = H.sendBatchEmails.mock.calls[0] as unknown as [
+        Array<{ to: string; subject: string; html: string }>,
+      ];
+      expect(batch).toHaveLength(1);
+      expect(batch[0]!.to).toBe('editor-uid@example.com');
     });
-    expect(result.recipientCount).toBe(1);
-    const [batch] = H.sendBatchEmails.mock.calls[0] as unknown as [
-      Array<{ to: string; subject: string; html: string }>,
-    ];
-    expect(batch).toHaveLength(1);
-    expect(batch[0]!.to).toBe('editor-uid@example.com');
-  });
-});
+  }
+);
 
-describe.sequential('sendAnnouncement — dry run', () => {
+describe('sendAnnouncement — dry run', { concurrent: false }, () => {
   it('returns the count without queueing mail or recording a run', async () => {
     const result = await send({
       auth: ADMIN,
@@ -320,7 +329,7 @@ describe.sequential('sendAnnouncement — dry run', () => {
   });
 });
 
-describe.sequential('sendAnnouncement — sending', () => {
+describe('sendAnnouncement — sending', { concurrent: false }, () => {
   it('renders the markdown body inside the SECiD email shell', async () => {
     await send({ auth: ADMIN, data: INPUT });
     const [batch] = H.sendBatchEmails.mock.calls[0] as unknown as [
