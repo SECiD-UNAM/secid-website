@@ -280,8 +280,12 @@ jobs:
           NODE_ENV: production
           PUBLIC_USE_EMULATORS: 'true'
 
-      # Informational until the remaining suites are rewritten against the
-      # real UI (see test.describe.skip reasons under tests/e2e). The
+      # Blocking: every suite under tests/e2e runs against the real UI (the
+      # three payments suites stay skipped until Stripe launches, ROADMAP
+      # A5(b)). The hosting emulator serves dist/client with the rewrites
+      # from firebase.json, so /es/dashboard/jobs/{id}, /es/members/{slug},
+      # etc. resolve exactly as on Firebase Hosting (astro preview cannot);
+      # BASE_URL points Playwright at it and disables its own webServer. The
       # functions emulator runs too, so the blocking `onUserCreate` trigger
       # and callables such as `completeRegistration` are live (PR #114 moved
       # the FieldValue/Timestamp statics to `firebase-admin/firestore`, which
@@ -290,20 +294,20 @@ jobs:
       # E2E_QA_* vars unlock the journey-* specs with the seeded accounts;
       # E2E_QA_NUMERO_CUENTA is the número de cuenta the seed reserves for
       # the fresh sign-up in journey-B (never indexed by the seed).
-      - name: Run full E2E suite against the emulators (informational)
+      - name: Run full E2E suite against the emulators
         run: |
-          npx firebase-tools emulators:exec --only auth,firestore,storage,functions \
+          npx firebase-tools emulators:exec --only auth,firestore,storage,functions,hosting \
             --project demo-secid-alumni \
             "npm run seed && npx playwright test --project=${{ matrix.browser }} --reporter=line,json"
         env:
           CI: true
+          BASE_URL: http://localhost:5050
           PLAYWRIGHT_JSON_OUTPUT_NAME: test-results/report.json
           E2E_QA_EMAIL: member1@alumno.unam.mx
           E2E_QA_PASSWORD: member123456
           E2E_QA_ADMIN_EMAIL: admin@secid.mx
           E2E_QA_ADMIN_PASSWORD: admin123456
           E2E_QA_NUMERO_CUENTA: '300000001'
-        continue-on-error: true
 
       - name: Summarize pass rate
         if: always()
