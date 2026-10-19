@@ -34,18 +34,24 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       publica una tabla de pass-rate en el summary. Resultado: 479 tests →
       53 pasan, 0 fallan, 426 `skip` con motivo (antes: 8/457/14). Sigue
       `continue-on-error` hasta que A5 reduzca los skips.
-- [ ] A5. Lo que A4 dejó en `skip`: (a) 13 suites heredadas marcadas
+- [x] A5. Lo que A4 dejó en `skip`: (a) 13 suites heredadas marcadas
       "función no implementada" (~290 tests que buscan ~600 `data-testid`
       que la app no tiene; reescribir contra la UI real o borrar) — batch 1
       (auth/admin/dashboard/journey-B) hecho en PR #117: 5 suites reescritas,
       1 borrada; journey-B ya está reescrito contra el wizard real de
-      `/es/signup` y corre en CI; (b) 3 suites de pagos hasta que haya
-      Stripe; (c) ✅ hecho (PRs #114 y #115, 2026-10-19): los 53 usos de
+      `/es/signup` y corre en CI; batch 2 (eventos/jobs/comunidad/mobile)
+      hecho en PR #119: 7 reescritas (44 tests), 1 borrada
+      (learning-platform, la función no existe). El job sirve el build con
+      el emulador de hosting (rewrites de `firebase.json`, puerto 5050) para
+      que las rutas de detalle existan; job chromium bloqueante desde PR
+      #119; falta (owner) añadirlo a los checks requeridos —
+      runbooks/github-governance.md; (b) 3 suites de pagos siguen en `skip`
+      hasta que haya Stripe; (c) ✅ hecho (PRs #114 y #115, 2026-10-19): los 53 usos de
       `admin.firestore.FieldValue`/`Timestamp` en `functions/src` vienen de
       `firebase-admin/firestore`, el emulador de functions corre en el job
       e2e (`--only auth,firestore,storage,functions`) y `onUserCreate` ya
-      no da 500 (55 ejecuciones sin error en CI). Al cerrar (a): quitar
-      `continue-on-error` y volver el job bloqueante.
+      no da 500 (55 ejecuciones sin error en CI). Cerrado (a): `continue-on-error`
+      quitado en PR #119.
 
 ## Bloque B — Calidad que hoy no se exige (dev, ~1 día)
 
@@ -177,9 +183,8 @@ Dev, en este orden y cada paso un PR con auto-merge:
 
 1. ~~B8~~ hecho (PR #113).
 2. ~~A5(c)~~ hecho (PRs #114, #115).
-3. A5(a) (2–3 días, por lotes): reescribir o borrar las 13 suites "función
-   no implementada"; al terminar, quitar `continue-on-error` del job
-   chromium y hacerlo requerido en `main`.
+3. ~~A5(a)~~ hecho (PRs #117 y #119); `continue-on-error` quitado del job
+   chromium en PR #119; falta (owner) hacerlo requerido en `main`.
 4. B5 (1 día): los 193 errores de ESLint restantes y quitar
    `continue-on-error` del lint.
 5. F19 → F20 → F21 (3–4 días) cuando haya eventos, mensajes de contacto o
