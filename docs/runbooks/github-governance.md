@@ -16,9 +16,10 @@ el prefijo `!` desde la sesión o en una terminal.
 - Auto-merge activo y borrado de ramas al mergear.
 - Checks requeridos (nombres exactos de los jobs): Build Validation, Code
   Quality & Linting, Secret Scanning, CodeQL, Firestore Rules Tests, Unit &
-  Integration Tests (shard 1/4 … 4/4), E2E Tests (smoke).
-- Informativos (no bloquean): E2E Tests (chromium), Coverage, Lighthouse,
-  SAST, Dependency scan, claude-review.
+  Integration Tests (shard 1/4 … 4/4), E2E Tests (smoke), Coverage (desde
+  el 2026-10-19).
+- Informativos (no bloquean): E2E Tests (chromium), Lighthouse, SAST,
+  Dependency scan, claude-review.
 
 ## Pasos
 

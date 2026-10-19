@@ -79,8 +79,8 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       `vitest.config.ts`. Probado en rojo a propósito (run 39203140147).
       Hoy mide 72.2 / 46.9 / 17.2 / 17.2 (ramas/funciones/líneas/sentencias).
       Se quitó el paso de Codecov (sin token, nunca subió nada).
-      Falta (owner, 1 clic): añadir `Coverage` a los checks requeridos de
-      `main` ([runbooks/github-governance.md](./runbooks/github-governance.md)).
+      `Coverage` es check requerido de `main` desde el 2026-10-19 (11
+      contextos; [runbooks/github-governance.md](./runbooks/github-governance.md)).
 
 ## Bloque C — Pasos del owner (~30 min en total)
 
