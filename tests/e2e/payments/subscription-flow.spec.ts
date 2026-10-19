@@ -5,7 +5,7 @@ import { BillingPage } from '../../page-objects/payments/BillingPage';
 import { SubscriptionManagerPage } from '../../page-objects/payments/SubscriptionManagerPage';
 
 // Load test data
-import paymentMethods from '../../data/payments/payment-methods.json';
+import paymentMethods from '../../data/payments/payment-methods.json' with { type: 'json' };
 
 test.describe('Subscription Flow Tests', () => {
   let pricingPage: PricingPage;
