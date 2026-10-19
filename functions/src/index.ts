@@ -845,6 +845,9 @@ export {
 // Salary stats: aggregated compensation analytics with tiered privacy enforcement
 export { getSalaryStats } from './get-salary-stats';
 
+// F20 — member announcements (RBAC announcements:publish)
+export { sendAnnouncement } from './announcements';
+
 // Member inscription survey: scheduled aggregation + admin-triggered refresh
 export {
   aggregateSurveyResponses,

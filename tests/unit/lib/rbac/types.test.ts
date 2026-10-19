@@ -17,8 +17,9 @@ import type {
 } from '@/lib/rbac/types';
 
 describe('RBAC Types', () => {
-  it('TC-rbac-types-001: defines 19 resources', () => {
-    expect(RESOURCES).toHaveLength(19);
+  it('TC-rbac-types-001: defines 20 resources', () => {
+    expect(RESOURCES).toHaveLength(20);
+    expect(RESOURCES).toContain('announcements');
     expect(RESOURCES).toContain('events');
     expect(RESOURCES).toContain('journal-club');
     expect(RESOURCES).toContain('groups');

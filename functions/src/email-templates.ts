@@ -480,3 +480,41 @@ export function generateEventReminderEmail(params: EventEmailParams): {
     }),
   };
 }
+
+// ---------------------------------------------------------------------------
+// F20 — member announcements (functions/src/announcements.ts)
+// ---------------------------------------------------------------------------
+
+interface AnnouncementParams {
+  subject: string;
+  /** Already-rendered, escaped fragment from functions/src/markdown.ts. */
+  bodyHtml: string;
+  settingsUrl: string;
+  lang?: Lang;
+}
+
+const ANNOUNCEMENT_FOOTNOTE: Record<Lang, string> = {
+  es: 'Recibes este comunicado por ser parte de SECiD. Puedes desactivar los correos en',
+  en: 'You receive this announcement as a SECiD member. You can turn off emails in',
+};
+
+/**
+ * The composer's markdown body inside the shared shell. The subject doubles
+ * as the in-body title; the footnote links to the notification settings so
+ * every broadcast carries an opt-out path.
+ */
+export function generateAnnouncementEmail(params: AnnouncementParams): {
+  subject: string;
+  html: string;
+} {
+  const lang = params.lang ?? 'es';
+  const settings = t({ es: 'Configuración', en: 'Settings' }, lang);
+  return {
+    subject: params.subject,
+    html: shell({
+      title: escapeHtml(params.subject),
+      bodyHtml: params.bodyHtml,
+      footnote: `${t(ANNOUNCEMENT_FOOTNOTE, lang)} <a href="${params.settingsUrl}" style="color:#003B5C;">${settings}</a>.`,
+    }),
+  };
+}
