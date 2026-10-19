@@ -98,7 +98,7 @@ function createMockFirestore() {
     id: id || 'mock-doc',
   });
 
-  const mockCollectionRef = (name: string) => {
+  const mockCollectionRef = (_name: string) => {
     const colRef = {
       doc: vi.fn((id?: string) => mockDocRef(id)),
       add: vi.fn((data: any) => Promise.resolve({ id: data?.id || 'auto-id' })),
@@ -127,14 +127,14 @@ function createMockFirestore() {
   };
 }
 
-function initializeTestApp(opts: { projectId: string; auth?: any }) {
+function initializeTestApp(_opts: { projectId: string; auth?: any }) {
   return {
     delete: vi.fn(() => Promise.resolve()),
     _firestore: createMockFirestore(),
   };
 }
 
-function initializeAdminApp(opts: { projectId: string }) {
+function initializeAdminApp(_opts: { projectId: string }) {
   return {
     delete: vi.fn(() => Promise.resolve()),
     _firestore: createMockFirestore(),

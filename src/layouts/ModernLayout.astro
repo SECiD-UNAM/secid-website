@@ -66,7 +66,7 @@ const schemaOrgJson = JSON.stringify({
     <!-- Beta environment detection (synchronous, before any rendering) -->
     <script is:inline>
       (function () {
-        var h = window.location.hostname;
+        const h = window.location.hostname;
         if (h === 'beta.secid.mx' || h === 'beta.localhost') {
           document.documentElement.dataset.beta = 'true';
         }
@@ -131,14 +131,14 @@ const schemaOrgJson = JSON.stringify({
         !(function () {
           'use strict';
           !(function (e, t) {
-            var r = e.amplitude || { _q: [], _iq: [] };
+            const r = e.amplitude || { _q: [], _iq: [] };
             if (r.invoked)
               e.console &&
                 console.error &&
                 console.error('Amplitude snippet has been loaded.');
             else {
               r.invoked = !0;
-              var n = function (e, t) {
+              const n = function (e, t) {
                   e.prototype[t] = function () {
                     return (
                       this._q.push({
@@ -169,11 +169,11 @@ const schemaOrgJson = JSON.stringify({
                   };
                 },
                 i = function (e) {
-                  for (var t = 0; t < y.length; t++) o(e, y[t], !1);
-                  for (var r = 0; r < g.length; r++) o(e, g[r], !0);
+                  for (let t = 0; t < y.length; t++) o(e, y[t], !1);
+                  for (let r = 0; r < g.length; r++) o(e, g[r], !0);
                 };
               r.invoked = !0;
-              var a = t.createElement('script');
+              const a = t.createElement('script');
               ((a.type = 'text/javascript'),
                 (a.crossOrigin = 'anonymous'),
                 (a.async = !0),
@@ -184,7 +184,7 @@ const schemaOrgJson = JSON.stringify({
                     console.log('[Amplitude] Error: could not load SDK'),
                     e.amplitude.trackSessionEvents && e.amplitude.run());
                 }));
-              var u = t.getElementsByTagName('script')[0];
+              const u = t.getElementsByTagName('script')[0];
               u.parentNode.insertBefore(a, u);
               for (
                 var l = function () {
@@ -261,23 +261,23 @@ const schemaOrgJson = JSON.stringify({
                       e.amplitude.runQueuedFunctions ||
                         console.log('[Amplitude] Error: could not load SDK');
                     }));
-                  var r = document.getElementsByTagName('script')[0];
+                  const r = document.getElementsByTagName('script')[0];
                   for (
                     r.parentNode.insertBefore(t, r);
                     0 < e.amplitude._q.length;
 
                   ) {
-                    var n = e.amplitude._q.shift(),
+                    const n = e.amplitude._q.shift(),
                       s = e.amplitude[n.name].apply(e.amplitude, n.args);
                     n.resolve && n.resolve(s);
                   }
                 }),
                 (r.runQueuedFunctions = function () {
                   i(r);
-                  for (var e = 0; e < r._q.length; e++) {
-                    var t = r[r._q[e].name];
+                  for (let e = 0; e < r._q.length; e++) {
+                    const t = r[r._q[e].name];
                     if ('function' == typeof t) {
-                      var n = r._q[e].args;
+                      const n = r._q[e].args;
                       t.apply(r, n);
                     }
                   }

@@ -11,15 +11,11 @@ import {
   where,
   orderBy,
   limit,
-  startAfter,
   onSnapshot,
   serverTimestamp,
   arrayUnion,
-  arrayRemove,
   increment,
   Timestamp,
-  DocumentSnapshot,
-  QuerySnapshot,
 } from 'firebase/firestore';
 import {
   ref,
@@ -265,7 +261,7 @@ export const deleteMessage = async (messageId: string): Promise<void> => {
 
 export const markMessageAsRead = async (
   messageId: string,
-  userId: string
+  _userId: string
 ): Promise<void> => {
   try {
     const messageDocRef = doc(messagesRef, messageId);
@@ -467,7 +463,7 @@ export const archiveConversation = async (
 
 export const deleteConversation = async (
   conversationId: string,
-  userId: string
+  _userId: string
 ): Promise<void> => {
   try {
     // Get all messages in the conversation

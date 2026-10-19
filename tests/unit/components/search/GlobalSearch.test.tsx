@@ -12,21 +12,11 @@
  */
 
 import React from 'react';
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  within,
-} from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import GlobalSearch from '@/components/search/GlobalSearch';
-import type {
-  SearchResultItem,
-  SearchFilters,
-  SearchSuggestion,
-} from '@/types/search';
+import type { SearchResultItem, SearchSuggestion } from '@/types/search';
 
 // Mock heroicons with Proxy-based auto-mock (component imports 10+ icons)
 vi.mock('@heroicons/react/24/outline', async () => {
@@ -60,17 +50,21 @@ vi.mock('@headlessui/react', () => {
       {children}
     </div>
   );
-  Dialog.Panel = ({ children, className }: any) => (
-    <div data-testid="dialog-panel" className={className}>
-      {children}
-    </div>
-  );
-  Dialog.Title = ({ children }: any) => (
-    <h2 data-testid="dialog-title">{children}</h2>
-  );
+  Dialog.Panel = function DialogPanel({ children, className }: any) {
+    return (
+      <div data-testid="dialog-panel" className={className}>
+        {children}
+      </div>
+    );
+  };
+  Dialog.Title = function DialogTitle({ children }: any) {
+    return <h2 data-testid="dialog-title">{children}</h2>;
+  };
   const Transition: any = ({ children, show }: any) =>
     show ? <div>{children}</div> : null;
-  Transition.Child = ({ children }: any) => <div>{children}</div>;
+  Transition.Child = function TransitionChild({ children }: any) {
+    return <div>{children}</div>;
+  };
   return { Dialog, Transition };
 });
 

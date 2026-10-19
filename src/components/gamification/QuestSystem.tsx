@@ -228,7 +228,7 @@ export const QuestSystem: React.FC<QuestSystemProps> = ({
         {quest.steps && quest.steps.length > 0 && (
           <div className="space-y-2">
             <h4 className="text-sm font-semibold text-gray-900">Steps:</h4>
-            {quest.steps.map((step, index) => {
+            {quest.steps.map((step, _index) => {
               const stepCompleted =
                 progress?.completedSteps?.includes(step.id) || false;
               return (

@@ -1,4 +1,4 @@
-import { test, expect, Page, Locator } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 /**
  * Touch Events and Mobile Interaction Testing Suite

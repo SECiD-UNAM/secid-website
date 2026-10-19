@@ -13,7 +13,6 @@ import {
   getDocs,
   setDoc,
   updateDoc,
-  deleteDoc,
   query,
   where,
   orderBy,
@@ -21,8 +20,6 @@ import {
   startAfter,
   increment,
   arrayUnion,
-  arrayRemove,
-  Timestamp,
   writeBatch,
   runTransaction,
 } from 'firebase/firestore';
@@ -35,20 +32,13 @@ import {
 } from 'firebase/storage';
 import type {
   Resource,
-  ResourceCategory,
-  ResourceType,
   ResourceSearchFilters,
   ResourceSearchSort,
   ResourceSearchResult,
   ResourceUploadRequest,
   ResourceReview,
-  ResourceBookmark,
-  ResourceCollection,
   ResourceStats,
   ResourceActivity,
-  ResourceContributorProfile,
-  ResourceAnalytics,
-  AccessLevel,
 } from '@/types/resource';
 import { logger } from '@/lib/logger';
 
@@ -767,7 +757,7 @@ async function logActivity(
  * Helper function to calculate search facets
  */
 async function calculateSearchFacets(
-  filters: ResourceSearchFilters
+  _filters: ResourceSearchFilters
 ): Promise<any> {
   // This is a simplified implementation
   // In production, you'd use more sophisticated aggregation
@@ -803,53 +793,53 @@ function mockSearchResources(
   });
 }
 
-function mockGetResource(id: string): Promise<Resource | null> {
+function mockGetResource(_id: string): Promise<Resource | null> {
   return Promise.resolve(null);
 }
 
-function mockUploadResource(request: ResourceUploadRequest): Promise<string> {
+function mockUploadResource(_request: ResourceUploadRequest): Promise<string> {
   return Promise.resolve('mock-resource-id');
 }
 
 function mockUpdateResource(
-  id: string,
-  updates: Partial<Resource>
+  _id: string,
+  _updates: Partial<Resource>
 ): Promise<void> {
   return Promise.resolve();
 }
 
-function mockDeleteResource(id: string): Promise<void> {
+function mockDeleteResource(_id: string): Promise<void> {
   return Promise.resolve();
 }
 
-function mockTrackDownload(resourceId: string): Promise<void> {
+function mockTrackDownload(_resourceId: string): Promise<void> {
   return Promise.resolve();
 }
 
-function mockTrackView(resourceId: string): Promise<void> {
+function mockTrackView(_resourceId: string): Promise<void> {
   return Promise.resolve();
 }
 
 function mockAddReview(
-  resourceId: string,
-  rating: number,
-  comment: string
+  _resourceId: string,
+  _rating: number,
+  _comment: string
 ): Promise<void> {
   return Promise.resolve();
 }
 
 function mockBookmarkResource(
-  resourceId: string,
-  notes?: string
+  _resourceId: string,
+  _notes?: string
 ): Promise<void> {
   return Promise.resolve();
 }
 
-function mockRemoveBookmark(resourceId: string): Promise<void> {
+function mockRemoveBookmark(_resourceId: string): Promise<void> {
   return Promise.resolve();
 }
 
-function mockGetUserBookmarks(userId: string): Promise<Resource[]> {
+function mockGetUserBookmarks(_userId: string): Promise<Resource[]> {
   return Promise.resolve([]);
 }
 

@@ -2,9 +2,6 @@
 import ModernLayout from '../../layouts/ModernLayout.astro';
 import Navigation from '../../components/Navigation.astro';
 import Footer from '../../components/Footer.astro';
-import { getTranslations } from '../../i18n/translations';
-
-const t = getTranslations('en');
 
 // FAQ Categories with questions and answers
 const faqCategories = [
@@ -172,7 +169,7 @@ const faqCategories = [
                 </h2>
 
                 <div class="secid-faq__questions">
-                  {category.questions.map((item, index) => (
+                  {category.questions.map((item) => (
                     <details class="secid-faq__item">
                       <summary class="secid-faq__question">
                         {item.question}

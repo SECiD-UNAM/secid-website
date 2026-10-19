@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getBadges, getUserGameData } from '../../lib/gamification';
 
-import type {
-  Badge,
-  Achievement,
-  UserGameData,
-} from '../../types/gamification';
+import type { Badge, Achievement } from '../../types/gamification';
 
 interface BadgeSystemProps {
   userId: string;

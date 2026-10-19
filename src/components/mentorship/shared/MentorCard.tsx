@@ -42,7 +42,7 @@ function MentorCard({
   status,
   sessionCount,
   matchScore,
-  compact = false,
+  compact: _compact = false,
   onClick,
 }: MentorCardProps) {
   const initials = getInitials(displayName);

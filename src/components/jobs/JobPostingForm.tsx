@@ -4,12 +4,6 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { db, functions } from '@/lib/firebase';
 import {
-  BriefcaseIcon,
-  BuildingOfficeIcon,
-  MapPinIcon,
-  CurrencyDollarIcon,
-  CalendarIcon,
-  DocumentTextIcon,
   CheckCircleIcon,
   ExclamationCircleIcon,
   PlusIcon,
@@ -139,7 +133,7 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
           return false;
         }
         break;
-      case 3:
+      case 3: {
         const validRequirements = formData.requirements.filter(
           (r) => r.trim() !== ''
         );
@@ -152,6 +146,7 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
           return false;
         }
         break;
+      }
       case 4:
         if (
           formData.applicationMethod === 'external' &&

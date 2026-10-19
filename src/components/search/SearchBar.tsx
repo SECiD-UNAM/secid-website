@@ -91,7 +91,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   defaultQuery = '',
   onSearch,
   onSuggestionSelect,
-  showFilters = false,
+  showFilters: _showFilters = false,
   showVoiceSearch = true,
   autoFocus = false,
   className,

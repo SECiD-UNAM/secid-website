@@ -1,5 +1,4 @@
 import { test, expect, Page } from '@playwright/test';
-import { mockUsers } from '../fixtures/users';
 
 // Test data for dashboard navigation
 const dashboardTestData = {
@@ -214,7 +213,7 @@ class DashboardNavigationFlow {
     const eventItems = this.page.locator('[data-testid="event-item"]');
     if ((await eventItems.count()) > 0) {
       await eventItems.first().click();
-      await expect(this.page).toHaveURL(/\/es\/events\/[^\/]+$/);
+      await expect(this.page).toHaveURL(/\/es\/events\/[^/]+$/);
       await this.page.goBack();
     }
   }
@@ -231,7 +230,7 @@ class DashboardNavigationFlow {
     const jobItems = this.page.locator('[data-testid="job-match-item"]');
     if ((await jobItems.count()) > 0) {
       await jobItems.first().click();
-      await expect(this.page).toHaveURL(/\/es\/jobs\/[^\/]+$/);
+      await expect(this.page).toHaveURL(/\/es\/jobs\/[^/]+$/);
       await this.page.goBack();
     }
 
@@ -419,7 +418,7 @@ test.describe('Dashboard Navigation and Functionality', () => {
     });
   });
 
-  test('complete dashboard navigation flow', async ({ page }) => {
+  test('complete dashboard navigation flow', async ({ page: _page }) => {
     // Step 1: Navigate to dashboard and verify layout
     await dashboardFlow.navigateToDashboard();
     await dashboardFlow.verifyDashboardLayout();

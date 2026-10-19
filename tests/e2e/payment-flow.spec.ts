@@ -1,5 +1,4 @@
 import { test, expect, Page } from '@playwright/test';
-import { mockUsers } from '../fixtures/users';
 
 // Test data for payment flows
 const paymentTestData = {
@@ -604,7 +603,7 @@ test.describe('Payment and Subscription Flow', () => {
     });
   });
 
-  test('complete subscription purchase flow', async ({ page }) => {
+  test('complete subscription purchase flow', async ({ page: _page }) => {
     // Step 1: Navigate to pricing and select plan
     await paymentFlow.navigateToPricing();
     await paymentFlow.selectSubscriptionPlan();
@@ -736,7 +735,7 @@ test.describe('Payment and Subscription Flow', () => {
     ).toBeVisible();
   });
 
-  test('subscription management features', async ({ page }) => {
+  test('subscription management features', async ({ page: _page }) => {
     // First create an active subscription
     await paymentFlow.navigateToPricing();
     await paymentFlow.selectSubscriptionPlan();

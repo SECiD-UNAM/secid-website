@@ -104,7 +104,7 @@ test.describe('Journey F — Login + password reset', () => {
     test.skip(true, 'Requires a suspended test account — set up via admin');
   });
 
-  test('F9 "recordarme" persiste sesión', async ({ browser }) => {
+  test('F9 "recordarme" persiste sesión', async ({ browser: _browser }) => {
     test.skip(
       true,
       'Requires closing/reopening browser context — not reliable in headless CI'

@@ -108,7 +108,7 @@ const commands = {
         } else {
           log.success('No TODOs found!');
         }
-      } catch (error) {
+      } catch {
         log.error('Error searching for TODOs');
       }
     },
@@ -122,7 +122,7 @@ const commands = {
 
       try {
         execSync('npx depcheck', { stdio: 'inherit' });
-      } catch (error) {
+      } catch {
         log.error('Error checking dependencies');
       }
     },
@@ -136,7 +136,7 @@ const commands = {
 
       try {
         execSync('npx type-coverage --detail', { stdio: 'inherit' });
-      } catch (error) {
+      } catch {
         log.error('Error generating coverage report');
       }
     },
@@ -196,7 +196,7 @@ const commands = {
 
       try {
         execSync('npm audit', { stdio: 'inherit' });
-      } catch (error) {
+      } catch {
         log.warn(
           'Security vulnerabilities found. Run "npm audit fix" to resolve.'
         );
@@ -327,7 +327,7 @@ const commands = {
           execSync(`lsof -ti:${port} | xargs kill -9`, { stdio: 'inherit' });
         }
         log.success(`Port ${port} is now free!`);
-      } catch (error) {
+      } catch {
         log.warn(`No process found on port ${port}`);
       }
     },

@@ -27,7 +27,6 @@ import {
   GoogleAuthProvider,
   GithubAuthProvider,
   User,
-  Auth,
 } from 'firebase/auth';
 import {
   doc,

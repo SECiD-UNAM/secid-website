@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { auth, firestore } from '@/lib/firebase';
 import { signIn, signUp, signOut, resetPassword } from '@/lib/auth';
-import { mockUsers, mockApiResponses } from '../../fixtures';
+import { mockUsers } from '../../fixtures';
 
 // Mock Firebase services
 vi.mock('@/lib/firebase', () => ({

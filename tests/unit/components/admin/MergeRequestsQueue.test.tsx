@@ -90,8 +90,8 @@ function makeRequest(overrides: Partial<any> = {}): any {
 }
 
 function emitSnapshot(docs: any[]) {
-  const cb: Function | undefined = (globalThis as any).__mqCallbacks
-    ?.onSnapshot;
+  const cb: ((snapshot: any) => void) | undefined = (globalThis as any)
+    .__mqCallbacks?.onSnapshot;
   if (cb) {
     cb({ docs: docs.map((d: any) => ({ data: () => d })) });
   }

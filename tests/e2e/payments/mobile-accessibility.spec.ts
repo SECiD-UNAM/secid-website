@@ -211,7 +211,7 @@ test.describe('Mobile Payment Experience Tests', () => {
       expect(await submitButton.isVisible()).toBe(true);
     });
 
-    test('should handle mobile form validation', async ({ page }) => {
+    test('should handle mobile form validation', async ({ page: _page }) => {
       await checkoutPage.goto('premium-monthly');
       await checkoutPage.selectPaymentMethod('credit-card');
 
@@ -252,7 +252,7 @@ test.describe('Mobile Payment Experience Tests', () => {
       checkoutPage = new CheckoutPage(page);
     });
 
-    test('should load quickly on mobile', async ({ page }) => {
+    test('should load quickly on mobile', async ({ page: _page }) => {
       const startTime = Date.now();
       await pricingPage.goto();
       const loadTime = Date.now() - startTime;
@@ -261,7 +261,10 @@ test.describe('Mobile Payment Experience Tests', () => {
       expect(loadTime).toBeLessThan(3000);
     });
 
-    test('should handle slow network conditions', async ({ page, context }) => {
+    test('should handle slow network conditions', async ({
+      page: _page,
+      context,
+    }) => {
       // Simulate slow 3G connection
       await context.route('**/*', async (route) => {
         await new Promise((resolve) => setTimeout(resolve, 100)); // Add 100ms delay
@@ -673,7 +676,7 @@ test.describe('Accessibility Tests for Payment Flows', () => {
       expect(inputs.length).toBeGreaterThan(0);
     });
 
-    test('should provide clear error descriptions', async ({ page }) => {
+    test('should provide clear error descriptions', async ({ page: _page }) => {
       await checkoutPage.goto('premium-monthly');
 
       const cardData = paymentMethods.testScenarios.declined;

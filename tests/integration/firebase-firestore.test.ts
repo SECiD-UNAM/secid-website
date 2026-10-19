@@ -35,9 +35,6 @@ import {
   increment,
   arrayUnion,
   arrayRemove,
-  Timestamp,
-  QuerySnapshot,
-  DocumentSnapshot,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
@@ -1059,12 +1056,12 @@ describe('Firebase Firestore Integration', () => {
           {
             id: 'job-1',
             data: () => mockJob,
-            get: (field: string) => mockJob.createdAt,
+            get: (_field: string) => mockJob.createdAt,
           },
           {
             id: 'job-2',
             data: () => mockJob,
-            get: (field: string) => mockJob.createdAt,
+            get: (_field: string) => mockJob.createdAt,
           },
         ],
       };

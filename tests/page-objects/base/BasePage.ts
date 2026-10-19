@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, expect } from '@playwright/test';
 import { PERFORMANCE_BUDGETS } from '../../../playwright.config';
 
 export class BasePage {
@@ -88,7 +88,7 @@ export class BasePage {
   /**
    * Check page accessibility
    */
-  async checkAccessibility(options?: any) {
+  async checkAccessibility(_options?: any) {
     // This will be implemented with axe-playwright
     // Placeholder for now
     return true;

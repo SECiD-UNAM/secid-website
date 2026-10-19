@@ -4,7 +4,6 @@
 import React from 'react';
 import type { CVData } from '@/types/cv';
 import type { Labels } from '@/lib/cv/labels';
-import { formatDateForDisplay } from '@/lib/cv/formatters';
 import { SectionHeading } from './_primitives';
 
 export function CvEducationSection({

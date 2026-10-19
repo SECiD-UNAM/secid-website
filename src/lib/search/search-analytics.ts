@@ -18,7 +18,6 @@ import {
   query,
   where,
   orderBy,
-  limit,
   updateDoc,
   increment,
   serverTimestamp,

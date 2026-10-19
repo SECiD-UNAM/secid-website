@@ -1,6 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from '../base/BasePage';
-import { TestJobData } from '../../utils/test-data-generator';
 
 export interface JobFilterOptions {
   location?: string;
@@ -431,7 +430,7 @@ export class JobBoardPage extends BasePage {
       has: this.page.locator(`[data-job-id="${jobId}"]`),
     });
     await jobCard.click();
-    await this.waitForNavigation(/\/jobs\/[^\/]+/);
+    await this.waitForNavigation(/\/jobs\/[^/]+/);
   }
 
   /**
@@ -463,7 +462,7 @@ export class JobBoardPage extends BasePage {
       // Wait for quick apply modal or redirect
       await Promise.race([
         this.page.waitForSelector('[data-testid="quick-apply-modal"]'),
-        this.page.waitForURL(/\/jobs\/[^\/]+\/apply/),
+        this.page.waitForURL(/\/jobs\/[^/]+\/apply/),
       ]);
     }
   }
@@ -477,7 +476,7 @@ export class JobBoardPage extends BasePage {
     });
     const viewDetailsBtn = jobCard.locator('[data-testid="view-job-details"]');
     await viewDetailsBtn.click();
-    await this.waitForNavigation(/\/jobs\/[^\/]+/);
+    await this.waitForNavigation(/\/jobs\/[^/]+/);
   }
 
   /**

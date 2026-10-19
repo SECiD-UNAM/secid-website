@@ -17,7 +17,6 @@ import type {
   AssessmentAttempt,
   Question,
   UserAnswer,
-  QuestionType,
   AssessmentResult,
 } from '../../types/assessment';
 
@@ -1010,7 +1009,7 @@ interface PracticalScenarioQuestionProps {
 }
 
 function PracticalScenarioQuestion({
-  question,
+  question: _question,
   textAnswer,
   onAnswerChange,
 }: PracticalScenarioQuestionProps) {

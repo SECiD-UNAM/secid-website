@@ -4,7 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { SignUpForm } from '@/components/auth/SignUpForm';
 import { AuthGuard } from '@/components/auth/AuthGuard';
-import { mockUsers, mockAuthStates } from '../../fixtures';
+import { mockUsers } from '../../fixtures';
 
 // Mock Firebase Auth
 vi.mock('@/lib/firebase', () => ({

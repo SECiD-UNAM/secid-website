@@ -3,7 +3,6 @@ import {
   doc,
   addDoc,
   updateDoc,
-  deleteDoc,
   getDoc,
   getDocs,
   query,
@@ -19,9 +18,6 @@ import {
   onSnapshot,
   DocumentSnapshot,
   QueryDocumentSnapshot,
-  Timestamp,
-  or,
-  and,
 } from 'firebase/firestore';
 import {
   ref,
@@ -36,14 +32,9 @@ import type {
   ForumPost,
   ForumVote,
   ForumReaction,
-  UserReputation,
-  ForumReport,
   ForumNotification,
   ForumSearchFilters,
   ForumSearchResult,
-  ForumStats,
-  ForumModerationAction,
-  User,
 } from '../types';
 
 // Collection references

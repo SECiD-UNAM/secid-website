@@ -17,7 +17,6 @@ vi.mock('lucide-react', () => ({
 }));
 
 import { MergeRequestStatusBadge } from '@/components/merge/MergeRequestStatus';
-import type { MergeRequestStatus } from '@/types/merge';
 
 describe('MergeRequestStatusBadge — pending', () => {
   /**
