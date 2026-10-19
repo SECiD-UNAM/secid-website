@@ -14,6 +14,7 @@ CI y deja la consola solo como respaldo.
 | [Cambios en el backend compartido](./shared-backend-change.md) | Functions, reglas, índices o secretos: orden y guardias       |
 | [Reversa de un deploy](./rollback.md)                          | Hosting roto, function rota, o volver a GitHub Pages          |
 | [Gobernanza del repo](./github-governance.md)                  | Checks requeridos de `main`, auto-merge, PR bloqueado         |
+| [Comunicados y newsletter](./communications.md)                | Mandar un comunicado o una edición; límite SMTP; opt-in/baja  |
 
 Prerrequisitos comunes:
 

@@ -13,6 +13,7 @@ import { describe, it, expect } from 'vitest';
 import {
   renderMarkdown,
   markdownToText,
+  sanitizeHtml,
 } from '../../../functions/src/markdown';
 
 describe('renderMarkdown — blocks', () => {
@@ -96,6 +97,40 @@ describe('renderMarkdown — escaping', () => {
   it('escapes HTML inside headings and list items', () => {
     expect(renderMarkdown('# <b>x</b>\n- <i>y</i>')).toBe(
       '<h2>&lt;b&gt;x&lt;/b&gt;</h2><ul><li>&lt;i&gt;y&lt;/i&gt;</li></ul>'
+    );
+  });
+});
+
+describe('sanitizeHtml (newsletter issue bodies, F21)', () => {
+  it('keeps the allowlisted tags and http(s)/mailto hrefs', () => {
+    expect(
+      sanitizeHtml(
+        '<h2>T</h2><p>a <b>b</b> <strong>c</strong> <em>d</em></p><ul><li>x</li></ul><a href="https://secid.mx">l</a><a href="mailto:a@b.mx">m</a><img src="https://secid.mx/i.png" alt="i"><br><hr>'
+      )
+    ).toBe(
+      '<h2>T</h2><p>a <b>b</b> <strong>c</strong> <em>d</em></p><ul><li>x</li></ul><a href="https://secid.mx">l</a><a href="mailto:a@b.mx">m</a><img src="https://secid.mx/i.png" alt="i"><br><hr>'
+    );
+  });
+
+  it('drops script/style/iframe with their content and unknown tags without it', () => {
+    expect(
+      sanitizeHtml(
+        '<p>a</p><script>alert(1)</script><style>p{}</style><iframe src="x"></iframe><div class="c">b</div><span>c</span>'
+      )
+    ).toBe('<p>a</p>bc');
+  });
+
+  it('strips event handlers, style attributes and unsafe URLs', () => {
+    expect(
+      sanitizeHtml(
+        '<p onclick="x()" style="color:red">a</p><a href="javascript:alert(1)" target="_blank">b</a><img src="data:image/png;base64,AAAA" onerror="x()">'
+      )
+    ).toBe('<p>a</p><a>b</a><img>');
+  });
+
+  it('escapes stray angle brackets and keeps text', () => {
+    expect(sanitizeHtml('1 < 2 and <notatag>x</notatag>')).toBe(
+      '1 &lt; 2 and x'
     );
   });
 });

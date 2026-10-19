@@ -189,7 +189,7 @@ function mailDocs() {
   );
 }
 
-// describe.sequential: vitest.config.ts sets sequence.concurrent=true, but
+// { concurrent: false }: vitest.config.ts sets sequence.concurrent=true, but
 // every test here shares the in-memory Firestore and the sendBatchEmails spy.
 beforeEach(() => {
   H.state.docs.clear();
@@ -201,7 +201,7 @@ beforeEach(() => {
   seedUser('member-uid');
 });
 
-describe.sequential('sendAnnouncement — authorization', () => {
+describe('sendAnnouncement — authorization', { concurrent: false }, () => {
   it('rejects unauthenticated calls', async () => {
     await expect(send({ data: INPUT })).rejects.toMatchObject({
       code: 'unauthenticated',
@@ -229,7 +229,7 @@ describe.sequential('sendAnnouncement — authorization', () => {
   });
 });
 
-describe.sequential('sendAnnouncement — input validation', () => {
+describe('sendAnnouncement — input validation', { concurrent: false }, () => {
   it.each([
     ['empty subject', { ...INPUT, subject: '  ' }],
     ['missing body', { ...INPUT, bodyMarkdown: '' }],
@@ -244,7 +244,7 @@ describe.sequential('sendAnnouncement — input validation', () => {
   });
 });
 
-describe.sequential('sendAnnouncement — recipient resolution', () => {
+describe('sendAnnouncement — recipient resolution', { concurrent: false }, () => {
   it('all_active: active users with an email who have not opted out', async () => {
     seedUser('inactive', { lifecycle: { status: 'inactive' } });
     seedUser('no-email', { email: '' });
@@ -308,7 +308,7 @@ describe.sequential('sendAnnouncement — recipient resolution', () => {
   });
 });
 
-describe.sequential('sendAnnouncement — dry run', () => {
+describe('sendAnnouncement — dry run', { concurrent: false }, () => {
   it('returns the count without queueing mail or recording a run', async () => {
     const result = await send({
       auth: ADMIN,
@@ -320,7 +320,7 @@ describe.sequential('sendAnnouncement — dry run', () => {
   });
 });
 
-describe.sequential('sendAnnouncement — sending', () => {
+describe('sendAnnouncement — sending', { concurrent: false }, () => {
   it('renders the markdown body inside the SECiD email shell', async () => {
     await send({ auth: ADMIN, data: INPUT });
     const [batch] = H.sendBatchEmails.mock.calls[0] as unknown as [

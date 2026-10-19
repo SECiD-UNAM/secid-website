@@ -162,3 +162,92 @@ export function markdownToText(markdown: string): string {
     .replace(/\s+/g, ' ')
     .trim();
 }
+
+// ---------------------------------------------------------------------------
+// HTML sanitizer for newsletter issue bodies (F21)
+// ---------------------------------------------------------------------------
+
+/**
+ * Newsletter issues are authored as HTML (NewsletterForm → `content`) and
+ * shown on the site through DOMPurify; the email path has no DOM, so this
+ * allowlist does the same job. Tags outside the list are dropped (their
+ * text is kept, except script/style/iframe whose content goes too), every
+ * attribute is dropped except `href`/`src` (http(s) or mailto only) and
+ * `alt`, and stray `<` / `>` are escaped.
+ */
+const ALLOWED_TAGS = new Set([
+  'p',
+  'br',
+  'hr',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'strong',
+  'b',
+  'em',
+  'i',
+  'u',
+  'a',
+  'ul',
+  'ol',
+  'li',
+  'blockquote',
+  'code',
+  'pre',
+  'img',
+  'table',
+  'thead',
+  'tbody',
+  'tr',
+  'th',
+  'td',
+]);
+const VOID_TAGS = new Set(['br', 'hr', 'img']);
+const DROP_WITH_CONTENT =
+  /<(script|style|iframe|object|embed)\b[^>]*>[\s\S]*?<\/\1\s*>/gi;
+const TAG_RE = /<\/?([a-zA-Z][a-zA-Z0-9]*)\b([^>]*)>/g;
+const ATTR_RE = /([a-zA-Z-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+))/g;
+
+function safeAttrs(tag: string, raw: string): string {
+  let out = '';
+  let m: RegExpExecArray | null;
+  while ((m = ATTR_RE.exec(raw)) !== null) {
+    const name = (m[1] ?? '').toLowerCase();
+    const value = m[2] ?? m[3] ?? m[4] ?? '';
+    if ((name === 'href' && tag === 'a') || (name === 'src' && tag === 'img')) {
+      if (SAFE_HREF.test(value)) out += ` ${name}="${escapeHtml(value)}"`;
+    } else if (name === 'alt' && tag === 'img') {
+      out += ` alt="${escapeHtml(value)}"`;
+    }
+  }
+  return out;
+}
+
+function sanitizeTag(whole: string, rawName: string, rawAttrs: string): string {
+  const tag = rawName.toLowerCase();
+  if (!ALLOWED_TAGS.has(tag)) return '';
+  if (whole.startsWith('</')) return VOID_TAGS.has(tag) ? '' : `</${tag}>`;
+  return `<${tag}${safeAttrs(tag, rawAttrs)}>`;
+}
+
+/** HTML → HTML restricted to the allowlist above. */
+export function sanitizeHtml(html: string): string {
+  const withoutBlocks = html.replace(DROP_WITH_CONTENT, '');
+  const parts: string[] = [];
+  let last = 0;
+  let m: RegExpExecArray | null;
+  TAG_RE.lastIndex = 0;
+  while ((m = TAG_RE.exec(withoutBlocks)) !== null) {
+    parts.push(escapeText(withoutBlocks.slice(last, m.index)));
+    parts.push(sanitizeTag(m[0], m[1] ?? '', m[2] ?? ''));
+    last = m.index + m[0].length;
+  }
+  parts.push(escapeText(withoutBlocks.slice(last)));
+  return parts.join('');
+}
+
+/** Escapes bare angle brackets in text while keeping existing entities. */
+function escapeText(text: string): string {
+  return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
