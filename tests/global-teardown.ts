@@ -6,14 +6,14 @@ import { fileURLToPath } from 'url';
 // ESM: __dirname does not exist; derive it from import.meta.url.
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-async function globalTeardown(config: FullConfig) {
+async function globalTeardown(_config: FullConfig) {
   console.log('🏁 Global teardown: Cleaning up after tests');
 
   // Clean up test artifacts
   try {
     const authDir = path.join(__dirname, '..', 'test-results', '.auth');
     await fs.rm(authDir, { recursive: true, force: true });
-  } catch (error) {
+  } catch {
     // Directory might not exist
   }
 
