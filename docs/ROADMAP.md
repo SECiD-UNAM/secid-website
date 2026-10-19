@@ -36,10 +36,10 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       `continue-on-error` hasta que A5 reduzca los skips.
 - [ ] A5. Lo que A4 dejó en `skip`: (a) 13 suites heredadas marcadas
       "función no implementada" (~290 tests que buscan ~600 `data-testid`
-      que la app no tiene; reescribir contra la UI real o borrar), más
-      journey-B, que está escrito contra una UI que no existe (ruta
-      `/es/onboarding`, encabezado "Registro") y hay que reescribir contra
-      el wizard real de `/es/signup`; (b) 3 suites de pagos hasta que haya
+      que la app no tiene; reescribir contra la UI real o borrar) — batch 1
+      (auth/admin/dashboard/journey-B) hecho en PR #117: 5 suites reescritas,
+      1 borrada; journey-B ya está reescrito contra el wizard real de
+      `/es/signup` y corre en CI; (b) 3 suites de pagos hasta que haya
       Stripe; (c) ✅ hecho (PRs #114 y #115, 2026-10-19): los 53 usos de
       `admin.firestore.FieldValue`/`Timestamp` en `functions/src` vienen de
       `firebase-admin/firestore`, el emulador de functions corre en el job
