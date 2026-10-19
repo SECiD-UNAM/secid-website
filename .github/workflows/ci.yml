@@ -42,7 +42,6 @@ jobs:
 
       - name: ESLint
         run: npm run lint
-        continue-on-error: true
 
       - name: Prettier formatting check
         run: npm run format:check
