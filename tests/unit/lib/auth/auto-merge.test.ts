@@ -39,7 +39,7 @@ import { getDocs } from 'firebase/firestore';
 import { getProvider } from '@/lib/auth/oauth-providers';
 import { handleAccountExistsError, completeMerge } from '@/lib/auth/auto-merge';
 
-describe.sequential('handleAccountExistsError', () => {
+describe('handleAccountExistsError', { concurrent: false }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -170,7 +170,7 @@ describe.sequential('handleAccountExistsError', () => {
   });
 });
 
-describe.sequential('completeMerge', () => {
+describe('completeMerge', { concurrent: false }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

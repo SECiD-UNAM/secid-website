@@ -28,10 +28,15 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 const PATHS = vi.hoisted(() => {
   // vi.hoisted runs before any import, so build the absolute paths from
   // process.cwd() (vitest runs from the repo root) instead of node:path.
-  const root = process.cwd();
+  // functions/node_modules may be a symlink in a worktree; vite resolves the
+  // SUT's import to the real path, so the mock spec must match it.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const fs = require('fs');
+  const modules = fs.realpathSync(`${process.cwd()}/functions/node_modules`);
   return {
-    firebaseAdmin: `${root}/functions/node_modules/firebase-admin/lib/index.js`,
-    googleapis: `${root}/functions/node_modules/googleapis/build/src/index.js`,
+    // Modular entry (vite picks the "import" export condition, hence lib/esm).
+    firebaseAdminApp: `${modules}/firebase-admin/lib/esm/app/index.js`,
+    googleapis: `${modules}/googleapis/build/src/index.js`,
   };
 });
 
@@ -71,9 +76,8 @@ const H = vi.hoisted(() => {
   };
 });
 
-vi.mock(PATHS.firebaseAdmin, () => ({
-  app: () => ({ options: {} }),
-  default: { app: () => ({ options: {} }) },
+vi.mock(PATHS.firebaseAdminApp, () => ({
+  getApp: () => ({ options: {} }),
 }));
 
 vi.mock(PATHS.googleapis, () => ({
@@ -159,165 +163,175 @@ afterEach(() => {
 // Tests
 // ---------------------------------------------------------------------------
 
-// describe.sequential: vitest.config.ts sets sequence.concurrent=true, but
+// { concurrent: false }: vitest.config.ts sets sequence.concurrent=true, but
 // every test here shares the same mock spies and the SUT's token cache, so
 // they must run one at a time (same approach as alternate-email.test.ts).
-describe.sequential('google-admin keyless domain-wide delegation', () => {
-  it('signs the delegation JWT via IAM Credentials as the runtime SA', async () => {
-    const sut = await loadSut();
-    const before = Math.floor(Date.now() / 1000);
+describe(
+  'google-admin keyless domain-wide delegation',
+  { concurrent: false },
+  () => {
+    it('signs the delegation JWT via IAM Credentials as the runtime SA', async () => {
+      const sut = await loadSut();
+      const before = Math.floor(Date.now() / 1000);
 
-    await sut.addMemberToGroup('miembros@secid.mx', 'alumni@example.com');
+      await sut.addMemberToGroup('miembros@secid.mx', 'alumni@example.com');
 
-    expect(H.signJwt).toHaveBeenCalledTimes(1);
-    expect(H.signJwt.mock.calls[0][0].name).toBe(
-      `projects/-/serviceAccounts/${SA_EMAIL}`
-    );
-    const payload = signedPayload();
-    expect(payload.iss).toBe(SA_EMAIL);
-    expect(payload.sub).toBe(ADMIN_EMAIL);
-    expect(payload.scope).toBe(DIRECTORY_SCOPE);
-    expect(payload.aud).toBe(TOKEN_URL);
-    expect(payload.iat).toBeGreaterThanOrEqual(before);
-    expect((payload.exp as number) - (payload.iat as number)).toBe(3600);
-  });
-
-  it('never asks the ADC client itself to impersonate (no subject)', async () => {
-    const sut = await loadSut();
-
-    await sut.addMemberToGroup('miembros@secid.mx', 'alumni@example.com');
-
-    for (const [opts] of H.googleAuthCtor.mock.calls) {
-      expect(opts?.clientOptions?.subject).toBeUndefined();
-    }
-  });
-
-  it('exchanges the signed JWT with the jwt-bearer grant', async () => {
-    const sut = await loadSut();
-
-    await sut.addMemberToGroup('miembros@secid.mx', 'alumni@example.com');
-
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    const [url, init] = fetchMock.mock.calls[0];
-    expect(url).toBe(TOKEN_URL);
-    expect(init.method).toBe('POST');
-    expect(init.headers['Content-Type']).toBe(
-      'application/x-www-form-urlencoded'
-    );
-    const body = exchangeBody();
-    expect(body.get('grant_type')).toBe(
-      'urn:ietf:params:oauth:grant-type:jwt-bearer'
-    );
-    expect(body.get('assertion')).toBe(SIGNED_JWT);
-  });
-
-  it('builds the Directory client with the exchanged access token', async () => {
-    const sut = await loadSut();
-
-    await sut.addMemberToGroup('miembros@secid.mx', 'alumni@example.com');
-
-    expect(H.adminFactory).toHaveBeenCalledTimes(1);
-    const { version, auth } = H.adminFactory.mock.calls[0][0];
-    expect(version).toBe('directory_v1');
-    expect(auth).toBeInstanceOf(H.FakeOAuth2);
-    expect(auth.credentials).toEqual({ access_token: 'access-token-1' });
-    expect(H.membersInsert).toHaveBeenCalledWith({
-      groupKey: 'miembros@secid.mx',
-      requestBody: { email: 'alumni@example.com', role: 'MEMBER' },
+      expect(H.signJwt).toHaveBeenCalledTimes(1);
+      expect(H.signJwt.mock.calls[0][0].name).toBe(
+        `projects/-/serviceAccounts/${SA_EMAIL}`
+      );
+      const payload = signedPayload();
+      expect(payload.iss).toBe(SA_EMAIL);
+      expect(payload.sub).toBe(ADMIN_EMAIL);
+      expect(payload.scope).toBe(DIRECTORY_SCOPE);
+      expect(payload.aud).toBe(TOKEN_URL);
+      expect(payload.iat).toBeGreaterThanOrEqual(before);
+      expect((payload.exp as number) - (payload.iat as number)).toBe(3600);
     });
-  });
 
-  it('prefers GOOGLE_GROUPS_SA_EMAIL over the ADC service account', async () => {
-    process.env.GOOGLE_GROUPS_SA_EMAIL =
-      'groups-bot@secid-org.iam.gserviceaccount.com';
-    const sut = await loadSut();
+    it('never asks the ADC client itself to impersonate (no subject)', async () => {
+      const sut = await loadSut();
 
-    await sut.addMemberToGroup('miembros@secid.mx', 'alumni@example.com');
+      await sut.addMemberToGroup('miembros@secid.mx', 'alumni@example.com');
 
-    expect(H.getCredentials).not.toHaveBeenCalled();
-    expect(H.signJwt.mock.calls[0][0].name).toBe(
-      'projects/-/serviceAccounts/groups-bot@secid-org.iam.gserviceaccount.com'
-    );
-    expect(signedPayload().iss).toBe(
-      'groups-bot@secid-org.iam.gserviceaccount.com'
-    );
-  });
-
-  it('reuses the cached token across calls until near expiry', async () => {
-    const sut = await loadSut();
-
-    await sut.addMemberToGroup('miembros@secid.mx', 'a@example.com');
-    await sut.removeMemberFromGroup('colaboradores@secid.mx', 'a@example.com');
-
-    expect(H.signJwt).toHaveBeenCalledTimes(1);
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(H.membersInsert).toHaveBeenCalledTimes(1);
-    expect(H.membersDelete).toHaveBeenCalledTimes(1);
-  });
-
-  it('re-mints the token when it is within 5 minutes of expiry', async () => {
-    vi.useFakeTimers({ now: new Date('2026-10-18T22:00:00Z') });
-    fetchMock
-      .mockResolvedValueOnce(tokenResponse('access-token-1', 3600))
-      .mockResolvedValueOnce(tokenResponse('access-token-2', 3600));
-    const sut = await loadSut();
-
-    await sut.addMemberToGroup('miembros@secid.mx', 'a@example.com');
-    vi.setSystemTime(new Date('2026-10-18T22:56:00Z')); // 4 min left
-    await sut.addMemberToGroup('miembros@secid.mx', 'b@example.com');
-
-    expect(H.signJwt).toHaveBeenCalledTimes(2);
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-    const auths = H.adminFactory.mock.calls.map((c) => c[0].auth.credentials);
-    expect(auths).toEqual([
-      { access_token: 'access-token-1' },
-      { access_token: 'access-token-2' },
-    ]);
-  });
-
-  it('returns false (does not throw) when the token exchange is rejected', async () => {
-    fetchMock.mockResolvedValue({
-      ok: false,
-      status: 401,
-      json: async () => ({}),
-      text: async () => '{"error":"unauthorized_client"}',
+      for (const [opts] of H.googleAuthCtor.mock.calls) {
+        expect(opts?.clientOptions?.subject).toBeUndefined();
+      }
     });
-    const sut = await loadSut();
 
-    const result = await sut.addMemberToGroup(
-      'miembros@secid.mx',
-      'a@example.com'
-    );
+    it('exchanges the signed JWT with the jwt-bearer grant', async () => {
+      const sut = await loadSut();
 
-    expect(result).toBe(false);
-    expect(H.membersInsert).not.toHaveBeenCalled();
-    expect(errorSpy).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'Error adding a@example.com to miembros@secid.mx'
-      ),
-      expect.stringContaining('unauthorized_client')
-    );
-  });
+      await sut.addMemberToGroup('miembros@secid.mx', 'alumni@example.com');
 
-  it('returns false when the runtime service account email cannot be resolved', async () => {
-    H.getCredentials.mockResolvedValue({});
-    const sut = await loadSut();
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      const [url, init] = fetchMock.mock.calls[0];
+      expect(url).toBe(TOKEN_URL);
+      expect(init.method).toBe('POST');
+      expect(init.headers['Content-Type']).toBe(
+        'application/x-www-form-urlencoded'
+      );
+      const body = exchangeBody();
+      expect(body.get('grant_type')).toBe(
+        'urn:ietf:params:oauth:grant-type:jwt-bearer'
+      );
+      expect(body.get('assertion')).toBe(SIGNED_JWT);
+    });
 
-    const result = await sut.addMemberToGroup(
-      'miembros@secid.mx',
-      'a@example.com'
-    );
+    it('builds the Directory client with the exchanged access token', async () => {
+      const sut = await loadSut();
 
-    expect(result).toBe(false);
-    expect(H.signJwt).not.toHaveBeenCalled();
-  });
+      await sut.addMemberToGroup('miembros@secid.mx', 'alumni@example.com');
 
-  it('keeps treating 409 on insert as success', async () => {
-    H.membersInsert.mockRejectedValue({ code: 409, message: 'Member exists' });
-    const sut = await loadSut();
+      expect(H.adminFactory).toHaveBeenCalledTimes(1);
+      const { version, auth } = H.adminFactory.mock.calls[0][0];
+      expect(version).toBe('directory_v1');
+      expect(auth).toBeInstanceOf(H.FakeOAuth2);
+      expect(auth.credentials).toEqual({ access_token: 'access-token-1' });
+      expect(H.membersInsert).toHaveBeenCalledWith({
+        groupKey: 'miembros@secid.mx',
+        requestBody: { email: 'alumni@example.com', role: 'MEMBER' },
+      });
+    });
 
-    await expect(
-      sut.addMemberToGroup('miembros@secid.mx', 'a@example.com')
-    ).resolves.toBe(true);
-  });
-});
+    it('prefers GOOGLE_GROUPS_SA_EMAIL over the ADC service account', async () => {
+      process.env.GOOGLE_GROUPS_SA_EMAIL =
+        'groups-bot@secid-org.iam.gserviceaccount.com';
+      const sut = await loadSut();
+
+      await sut.addMemberToGroup('miembros@secid.mx', 'alumni@example.com');
+
+      expect(H.getCredentials).not.toHaveBeenCalled();
+      expect(H.signJwt.mock.calls[0][0].name).toBe(
+        'projects/-/serviceAccounts/groups-bot@secid-org.iam.gserviceaccount.com'
+      );
+      expect(signedPayload().iss).toBe(
+        'groups-bot@secid-org.iam.gserviceaccount.com'
+      );
+    });
+
+    it('reuses the cached token across calls until near expiry', async () => {
+      const sut = await loadSut();
+
+      await sut.addMemberToGroup('miembros@secid.mx', 'a@example.com');
+      await sut.removeMemberFromGroup(
+        'colaboradores@secid.mx',
+        'a@example.com'
+      );
+
+      expect(H.signJwt).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(H.membersInsert).toHaveBeenCalledTimes(1);
+      expect(H.membersDelete).toHaveBeenCalledTimes(1);
+    });
+
+    it('re-mints the token when it is within 5 minutes of expiry', async () => {
+      vi.useFakeTimers({ now: new Date('2026-10-18T22:00:00Z') });
+      fetchMock
+        .mockResolvedValueOnce(tokenResponse('access-token-1', 3600))
+        .mockResolvedValueOnce(tokenResponse('access-token-2', 3600));
+      const sut = await loadSut();
+
+      await sut.addMemberToGroup('miembros@secid.mx', 'a@example.com');
+      vi.setSystemTime(new Date('2026-10-18T22:56:00Z')); // 4 min left
+      await sut.addMemberToGroup('miembros@secid.mx', 'b@example.com');
+
+      expect(H.signJwt).toHaveBeenCalledTimes(2);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      const auths = H.adminFactory.mock.calls.map((c) => c[0].auth.credentials);
+      expect(auths).toEqual([
+        { access_token: 'access-token-1' },
+        { access_token: 'access-token-2' },
+      ]);
+    });
+
+    it('returns false (does not throw) when the token exchange is rejected', async () => {
+      fetchMock.mockResolvedValue({
+        ok: false,
+        status: 401,
+        json: async () => ({}),
+        text: async () => '{"error":"unauthorized_client"}',
+      });
+      const sut = await loadSut();
+
+      const result = await sut.addMemberToGroup(
+        'miembros@secid.mx',
+        'a@example.com'
+      );
+
+      expect(result).toBe(false);
+      expect(H.membersInsert).not.toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Error adding a@example.com to miembros@secid.mx'
+        ),
+        expect.stringContaining('unauthorized_client')
+      );
+    });
+
+    it('returns false when the runtime service account email cannot be resolved', async () => {
+      H.getCredentials.mockResolvedValue({});
+      const sut = await loadSut();
+
+      const result = await sut.addMemberToGroup(
+        'miembros@secid.mx',
+        'a@example.com'
+      );
+
+      expect(result).toBe(false);
+      expect(H.signJwt).not.toHaveBeenCalled();
+    });
+
+    it('keeps treating 409 on insert as success', async () => {
+      H.membersInsert.mockRejectedValue({
+        code: 409,
+        message: 'Member exists',
+      });
+      const sut = await loadSut();
+
+      await expect(
+        sut.addMemberToGroup('miembros@secid.mx', 'a@example.com')
+      ).resolves.toBe(true);
+    });
+  }
+);

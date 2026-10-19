@@ -1,10 +1,9 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
-import * as admin from 'firebase-admin';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { createHash } from 'crypto';
 import { ALLOWED_CALLABLE_ORIGINS } from './env';
 
-const db = admin.firestore();
+const db = getFirestore();
 
 interface CompleteRegistrationData {
   registrationType: 'member' | 'collaborator' | 'recruiter';

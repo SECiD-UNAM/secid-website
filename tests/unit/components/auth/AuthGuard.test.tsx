@@ -26,7 +26,7 @@ vi.mock('@/hooks/useTranslations', () => ({
 // Tests in this file mutate shared state (mockAuthContext, sessionStore and a
 // window.location stub), which is incompatible with the suite's per-file
 // concurrent execution (vitest sequence.concurrent) — run sequentially.
-describe.sequential('AuthGuard', () => {
+describe('AuthGuard', { concurrent: false }, () => {
   const mockUser = {
     uid: 'user123',
     email: 'test@example.com',

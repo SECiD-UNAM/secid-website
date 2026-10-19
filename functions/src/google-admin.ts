@@ -25,9 +25,9 @@
  *    GOOGLE_GROUPS_SA_EMAIL to sign as a different SA than the runtime one.
  */
 
+import { getApp } from 'firebase-admin/app';
 import { google } from 'googleapis';
 import type { GoogleAuth } from 'google-auth-library';
-import * as admin from 'firebase-admin';
 
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const JWT_BEARER_GRANT = 'urn:ietf:params:oauth:grant-type:jwt-bearer';
@@ -50,7 +50,7 @@ const tokenCache = new Map<string, DelegatedToken>();
 
 // The admin email to impersonate for API calls
 function getAdminEmail(): string {
-  const config = admin.app().options;
+  const config = getApp().options;
   // Try environment variable first, then fall back
   return (
     process.env.ADMIN_EMAIL ||

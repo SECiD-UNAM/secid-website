@@ -27,17 +27,27 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const PATHS = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const path = require('path');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const fs = require('fs');
+  // functions/node_modules may be a symlink in a worktree; vite resolves
+  // the SUT's import to the real path, so the mock spec must match it.
+  const functionsModules = fs.realpathSync(
+    path.resolve('functions/node_modules')
+  );
   return {
-    firebaseAdmin: path.resolve(
-      'functions/node_modules/firebase-admin/lib/index.js'
+    // Modular entries the SUT imports from (vite picks the "import" export
+    // condition, hence lib/esm). firebase-admin 14 has no namespaced API.
+    firebaseAdminAuth: path.join(
+      functionsModules,
+      'firebase-admin/lib/esm/auth/index.js'
     ),
-    // Modular entry the SUT imports FieldValue/Timestamp from (vite picks the
-    // "import" export condition, hence lib/esm).
-    firebaseAdminFirestore: path.resolve(
-      'functions/node_modules/firebase-admin/lib/esm/firestore/index.js'
+    firebaseAdminFirestore: path.join(
+      functionsModules,
+      'firebase-admin/lib/esm/firestore/index.js'
     ),
-    firebaseFunctionsFirestore: path.resolve(
-      'functions/node_modules/firebase-functions/lib/esm/v2/providers/firestore.mjs'
+    firebaseFunctionsFirestore: path.join(
+      functionsModules,
+      'firebase-functions/lib/esm/v2/providers/firestore.mjs'
     ),
   };
 });
@@ -188,19 +198,14 @@ const H = vi.hoisted(() => {
   };
 });
 
-vi.mock(PATHS.firebaseAdmin, () => ({
-  firestore: H.adminFirestoreFn,
-  auth: () => H.authMock,
-  default: {
-    firestore: H.adminFirestoreFn,
-    auth: () => H.authMock,
-  },
+vi.mock(PATHS.firebaseAdminAuth, () => ({
+  getAuth: () => H.authMock,
 }));
 
-// The SUT imports FieldValue/Timestamp from the modular entry (the emulator's
-// firebase-admin stub has no statics on `admin.firestore`), so mock it with
-// the same sentinels the namespaced mock above exposes.
+// The SUT imports getFirestore/FieldValue/Timestamp from the modular entry,
+// so expose the in-memory firestore stub and its sentinels there.
 vi.mock(PATHS.firebaseAdminFirestore, () => ({
+  getFirestore: H.adminFirestoreFn,
   FieldValue: H.adminFirestoreFn.FieldValue,
   Timestamp: H.adminFirestoreFn.Timestamp,
 }));
@@ -283,7 +288,7 @@ beforeEach(() => {
 
 // ===========================================================================
 
-describe.sequential('onMergeRequestApproved — S2 audit log', () => {
+describe('onMergeRequestApproved — S2 audit log', { concurrent: false }, () => {
   it('writes a merge_audit_log row keyed by requestId with the expected shape', async () => {
     await onMergeRequestApproved(makeApprovalEvent());
 

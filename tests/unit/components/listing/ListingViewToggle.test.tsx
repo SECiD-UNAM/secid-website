@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ListingViewToggle } from '@components/listing/ListingViewToggle';
 
-describe.sequential('ListingViewToggle', () => {
+describe('ListingViewToggle', { concurrent: false }, () => {
   it('renders buttons for available modes', () => {
     render(
       <ListingViewToggle

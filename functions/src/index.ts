@@ -8,8 +8,8 @@ import {
   AuthBlockingEvent,
 } from 'firebase-functions/v2/identity';
 import * as functionsV1 from 'firebase-functions/v1';
-import { admin } from './init'; // Must be first — initializes Firebase before other imports
-import { FieldValue } from 'firebase-admin/firestore';
+import './init'; // Must be first — initializes Firebase before other imports
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { sendEmail, generateJobMatchEmail } from './email-service';
 import {
   generateWelcomeEmail,
@@ -61,8 +61,7 @@ export const onUserCreate = beforeUserCreated(
 
     // Create user profile document — default to collaborator role
     // Users start as collaborators; membership requires admin approval
-    await admin
-      .firestore()
+    await getFirestore()
       .collection('users')
       .doc(uid)
       .set({
@@ -171,8 +170,7 @@ export const matchJobsForUser = onDocumentUpdated(
     }
 
     // Find matching jobs
-    const jobsSnapshot = await admin
-      .firestore()
+    const jobsSnapshot = await getFirestore()
       .collection('jobs')
       .where('status', '==', 'active')
       .limit(500)
@@ -214,8 +212,7 @@ export const matchJobsForUser = onDocumentUpdated(
 
     // Store top matches
     if (matches.length > 0) {
-      await admin
-        .firestore()
+      await getFirestore()
         .collection('users')
         .doc(userId)
         .collection('jobMatches')
@@ -235,16 +232,15 @@ export const onUserDelete = functionsV1.auth.user().onDelete(async (user) => {
   const { uid } = user;
 
   // Delete user profile
-  await admin.firestore().collection('users').doc(uid).delete();
+  await getFirestore().collection('users').doc(uid).delete();
 
   // Clean up user's job applications
-  const applicationsSnapshot = await admin
-    .firestore()
+  const applicationsSnapshot = await getFirestore()
     .collectionGroup('applications')
     .where('applicantId', '==', uid)
     .get();
 
-  const batch = admin.firestore().batch();
+  const batch = getFirestore().batch();
   applicationsSnapshot.forEach((doc) => {
     batch.delete(doc.ref);
   });
@@ -268,8 +264,7 @@ export const onNewJobPosted = onDocumentCreated(
     if (jobData.status === 'draft') {
       const posterUid = jobData.postedBy;
       if (posterUid) {
-        const posterDoc = await admin
-          .firestore()
+        const posterDoc = await getFirestore()
           .collection('users')
           .doc(posterUid)
           .get();
@@ -291,8 +286,7 @@ export const onNewJobPosted = onDocumentCreated(
 
     try {
       // Find users with job match notifications enabled
-      const usersSnapshot = await admin
-        .firestore()
+      const usersSnapshot = await getFirestore()
         .collection('users')
         .where('notificationSettings.jobMatches', '==', true)
         .where('privacySettings.jobSearching', '==', true)
@@ -511,8 +505,7 @@ export const onMemberStatusChange = onDocumentUpdated(
     // scenarios still work.
     const resolveAdminRecipients = async (): Promise<string[]> => {
       try {
-        const snap = await admin
-          .firestore()
+        const snap = await getFirestore()
           .collection('users')
           .where('role', '==', 'admin')
           .get();
@@ -657,8 +650,7 @@ export const syncGroupMembership = onCall(async (request) => {
   }
 
   // Verify admin role
-  const userDoc = await admin
-    .firestore()
+  const userDoc = await getFirestore()
     .collection('users')
     .doc(request.auth.uid)
     .get();
@@ -714,8 +706,7 @@ export const updateMemberGroups = onCall(async (request) => {
   }
 
   // Verify admin role
-  const userDoc = await admin
-    .firestore()
+  const userDoc = await getFirestore()
     .collection('users')
     .doc(request.auth.uid)
     .get();
@@ -785,8 +776,7 @@ export const getMemberGroupList = onCall(async (request) => {
   }
 
   // Verify admin role
-  const userDoc = await admin
-    .firestore()
+  const userDoc = await getFirestore()
     .collection('users')
     .doc(request.auth.uid)
     .get();

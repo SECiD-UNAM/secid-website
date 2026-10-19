@@ -12,8 +12,8 @@ import {
   onDocumentCreated,
   onDocumentDeleted,
 } from 'firebase-functions/v2/firestore';
-import type { Firestore } from 'firebase-admin/firestore';
-import { admin } from './init';
+import { getFirestore, type Firestore } from 'firebase-admin/firestore';
+import './init';
 
 const REGISTRATION_PATH = 'events/{eventId}/registrations/{registrationId}';
 
@@ -43,13 +43,13 @@ export async function adjustAttendeeCount(
 export const onEventRegistrationCreated = onDocumentCreated(
   REGISTRATION_PATH,
   async (event) => {
-    await adjustAttendeeCount(admin.firestore(), event.params.eventId, 1);
+    await adjustAttendeeCount(getFirestore(), event.params.eventId, 1);
   }
 );
 
 export const onEventRegistrationDeleted = onDocumentDeleted(
   REGISTRATION_PATH,
   async (event) => {
-    await adjustAttendeeCount(admin.firestore(), event.params.eventId, -1);
+    await adjustAttendeeCount(getFirestore(), event.params.eventId, -1);
   }
 );

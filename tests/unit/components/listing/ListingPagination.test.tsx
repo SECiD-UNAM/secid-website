@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ListingPagination } from '@components/listing/ListingPagination';
 
-describe.sequential('ListingPagination', () => {
+describe('ListingPagination', { concurrent: false }, () => {
   describe('offset mode', () => {
     it('renders page buttons', () => {
       render(

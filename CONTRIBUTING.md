@@ -28,7 +28,7 @@ los entornos y el deploy en [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md).
 
 ## Entorno local
 
-Node `>=20` (el repo fija `22.12.0` en `.nvmrc`). Los emuladores de
+Node `>=22.12` (el repo fija `22.12.0` en `.nvmrc`; Vitest 5 no corre en Node 20). Los emuladores de
 Firebase necesitan Java 21.
 
 ```bash

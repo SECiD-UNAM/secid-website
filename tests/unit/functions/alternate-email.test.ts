@@ -17,7 +17,7 @@
  * Mocking strategy:
  *   - `firebase-functions/v2/https` is mocked so onCall(opts, handler)
  *     returns the handler directly.
- *   - `firebase-admin` and `firebase-admin/firestore` are mocked at module
+ *   - `firebase-admin/auth` and `firebase-admin/firestore` are mocked at module
  *     scope; per-test the in-memory firestore/auth stubs are reconfigured.
  *     All mutable state shared with the mock factories lives inside a
  *     vi.hoisted() block so that the hoisting of vi.mock() does not strand
@@ -40,17 +40,27 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const PATHS = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const path = require('path');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const fs = require('fs');
+  // functions/node_modules may be a symlink in a worktree; vite resolves
+  // the SUT's import to the real path, so the mock spec must match it.
+  const functionsModules = fs.realpathSync(
+    path.resolve('functions/node_modules')
+  );
   return {
-    firebaseAdmin: path.resolve(
-      'functions/node_modules/firebase-admin/lib/index.js'
+    // Modular entries the SUT imports from (vite picks the "import" export
+    // condition, hence lib/esm). firebase-admin 14 has no namespaced API.
+    firebaseAdminAuth: path.join(
+      functionsModules,
+      'firebase-admin/lib/esm/auth/index.js'
     ),
-    // Modular entry the SUT imports FieldValue/Timestamp from (vite picks the
-    // "import" export condition, hence lib/esm).
-    firebaseAdminFirestore: path.resolve(
-      'functions/node_modules/firebase-admin/lib/esm/firestore/index.js'
+    firebaseAdminFirestore: path.join(
+      functionsModules,
+      'firebase-admin/lib/esm/firestore/index.js'
     ),
-    firebaseFunctionsHttps: path.resolve(
-      'functions/node_modules/firebase-functions/lib/esm/v2/providers/https.mjs'
+    firebaseFunctionsHttps: path.join(
+      functionsModules,
+      'firebase-functions/lib/esm/v2/providers/https.mjs'
     ),
     emailService: path.resolve('functions/src/email-service.ts'),
     env: path.resolve('functions/src/env.ts'),
@@ -253,19 +263,14 @@ vi.mock(PATHS.firebaseFunctionsHttps, () => ({
   HttpsError: H.FakeHttpsError,
 }));
 
-vi.mock(PATHS.firebaseAdmin, () => ({
-  firestore: H.adminFirestoreFn,
-  auth: () => H.authMock,
-  default: {
-    firestore: H.adminFirestoreFn,
-    auth: () => H.authMock,
-  },
+vi.mock(PATHS.firebaseAdminAuth, () => ({
+  getAuth: () => H.authMock,
 }));
 
-// The SUT imports FieldValue/Timestamp from the modular entry (the emulator's
-// firebase-admin stub has no statics on `admin.firestore`), so mock it with
-// the same sentinels the namespaced mock above exposes.
+// The SUT imports getFirestore/FieldValue/Timestamp from the modular entry,
+// so expose the in-memory firestore stub and its sentinels there.
 vi.mock(PATHS.firebaseAdminFirestore, () => ({
+  getFirestore: H.adminFirestoreFn,
   FieldValue: H.adminFirestoreFn.FieldValue,
   Timestamp: H.adminFirestoreFn.Timestamp,
 }));
@@ -331,9 +336,9 @@ beforeEach(() => {
 // requestAlternateEmail
 // ===========================================================================
 
-// describe.sequential: vitest.config.ts sets sequence.concurrent=true, but
+// { concurrent: false }: vitest.config.ts sets sequence.concurrent=true, but
 // these tests share module-scope mock state (H.state) and must run serially.
-describe.sequential('requestAlternateEmail', () => {
+describe('requestAlternateEmail', { concurrent: false }, () => {
   it('throws unauthenticated when no auth context', async () => {
     await expect(
       requestAlternateEmail({ auth: null, data: { email: NEW_EMAIL } })
@@ -459,7 +464,7 @@ describe.sequential('requestAlternateEmail', () => {
 // confirmAlternateEmail
 // ===========================================================================
 
-describe.sequential('confirmAlternateEmail', () => {
+describe('confirmAlternateEmail', { concurrent: false }, () => {
   const TOKEN = 'tok-123';
 
   function setValidToken(

@@ -127,9 +127,16 @@ Playwright solo incluía 7 archivos por su `testMatch`.
 ## Bloque E — Deuda mayor (planear aparte)
 
 - [ ] E16. Majors de dependencias pendientes de PR #92
-      ([known-issues/npm-audit-2026-10-18.md](./known-issues/npm-audit-2026-10-18.md)):
-      Vitest 5 primero (solo dev), Firebase Admin 14, Tailwind 4, y Astro 7
-      cuando el e2e `smoke` sea bloqueante.
+      ([known-issues/npm-audit-2026-10-18.md](./known-issues/npm-audit-2026-10-18.md)).
+      Fase 1 hecha (PR #133, 2026-10-19): Vitest 1 → 5 (solo dev; un solo
+      `vite` 7 en el árbol, `sequence.concurrent` apagado, umbrales de
+      cobertura re-medidos en `scripts/ci/coverage-thresholds.mjs` porque
+      el remapeo AST de coverage-v8 cuenta las funciones y ramas reales de
+      los archivos sin pruebas) y Firebase Admin 13 → 14 (API modular en
+      todas las functions). `npm audit`: raíz 22 → 16, functions 10 → 4.
+      Fase 2 pendiente: Astro 7 + `@astrojs/node` 11 (las únicas
+      advertencias del runtime de producción) y Tailwind 4, cuando el e2e
+      `smoke` sea bloqueante.
 - [ ] E17. MCP de SECiD según
       [specs/secid-mcp-and-assistant-skill.md](./specs/secid-mcp-and-assistant-skill.md),
       solo si las operaciones de miembros se vuelven frecuentes. La skill
@@ -279,9 +286,9 @@ Dev, en este orden y cada paso un PR con auto-merge:
 6. F19 → F20 → F21 (3–4 días) cuando haya eventos, mensajes de contacto o
    un comunicado real que mandar; F22 solo si se decide conservar el centro
    de notificaciones.
-7. E16 (Vitest 5, Firebase Admin 14, Tailwind 4, Astro 7) después del
-   paso 3, cuando el e2e completo sea bloqueante y pueda detectar
-   regresiones de los majors.
+7. E16 fase 2 (Tailwind 4, Astro 7; la fase 1 — Vitest 5 y Firebase Admin
+   14 — ya está en PR #133) después del paso 3, cuando el e2e completo sea
+   bloqueante y pueda detectar regresiones de los majors.
 
 Owner, cuando pueda (C8–C11, ~30 min) y en su fecha (D12–D15). E17/E18 sin
 fecha.

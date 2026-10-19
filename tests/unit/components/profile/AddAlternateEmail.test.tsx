@@ -129,7 +129,7 @@ afterEach(() => cleanup());
 
 // ===========================================================================
 
-describe.sequential('AddAlternateEmail', () => {
+describe('AddAlternateEmail', { concurrent: false }, () => {
   it('renders nothing for non-verified members', () => {
     H.authState.isVerified = false;
     const { container } = render(<AddAlternateEmail lang="es" />);

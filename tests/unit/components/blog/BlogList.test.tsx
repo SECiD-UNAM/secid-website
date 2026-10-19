@@ -81,7 +81,7 @@ beforeEach(() => {
   mockFilterByLocale.mockImplementation((posts: BlogPost[]) => posts);
 });
 
-describe.sequential('BlogList — rendering', () => {
+describe('BlogList — rendering', { concurrent: false }, () => {
   describe('TC-BLOG-001: renders category tabs', () => {
     /**
      * TC-BLOG-001
@@ -187,7 +187,7 @@ describe.sequential('BlogList — rendering', () => {
   });
 });
 
-describe.sequential('BlogList — featured post', () => {
+describe('BlogList — featured post', { concurrent: false }, () => {
   describe('TC-BLOG-007: featured post shown on all-category view', () => {
     /**
      * TC-BLOG-007
@@ -241,7 +241,7 @@ describe.sequential('BlogList — featured post', () => {
   });
 });
 
-describe.sequential('BlogList — category filtering', () => {
+describe('BlogList — category filtering', { concurrent: false }, () => {
   describe('TC-BLOG-009: "All" tab is active by default', () => {
     /**
      * TC-BLOG-009
@@ -287,7 +287,7 @@ describe.sequential('BlogList — category filtering', () => {
   });
 });
 
-describe.sequential('BlogList — Spanish translations', () => {
+describe('BlogList — Spanish translations', { concurrent: false }, () => {
   describe('TC-BLOG-011: Spanish category labels', () => {
     /**
      * TC-BLOG-011
@@ -326,7 +326,7 @@ describe.sequential('BlogList — Spanish translations', () => {
   });
 });
 
-describe.sequential('BlogList — graceful degradation', () => {
+describe('BlogList — graceful degradation', { concurrent: false }, () => {
   describe('TC-BLOG-013: fallback to initialPosts on fetch error', () => {
     /**
      * TC-BLOG-013
