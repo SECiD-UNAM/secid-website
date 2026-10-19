@@ -222,6 +222,12 @@ llegar con su e2e contra emuladores (ya hay arnés, seed y job bloqueante).
       denegado. Pendiente aparte: la lectura de registrations honra
       `ev:v.a` (cualquier miembro ve nombre y correo de otros inscritos) y
       `users/{uid}/savedEvents` sigue sin regla.
+- [ ] G27. Seguimiento de seguridad de G24 (½ día): la regla de lectura de
+      `events/{id}/registrations` honra `ev:v.a`, que todo miembro tiene, así
+      que cualquier miembro puede listar nombre y correo de los inscritos a
+      un evento; limitar a dueño del registro + editores de eventos. Y
+      `users/{uid}/savedEvents` ("Guardar evento") no tiene regla → el botón
+      falla en silencio; añadir regla owner-only y su test.
 - [ ] G25. Foros: `forum_categories`, `forum_topics` y `forum_posts` no
       tienen reglas, así que solo se ven las 6 categorías integradas y
       `/es/forum/category/{slug}` muestra "Error al cargar los datos".
