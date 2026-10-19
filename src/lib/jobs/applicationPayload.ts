@@ -4,7 +4,18 @@ import { serverTimestamp, type DocumentData } from 'firebase/firestore';
  * Builds the Firestore documents JobApplicationModal writes when a member
  * applies to a job. Kept out of the component so tests/rules can assert
  * that exactly what the client sends is what firestore.rules accept.
+ *
+ * firestore.rules (`jobs/{jobId}/applications`) require on create:
+ *   applicantId == request.auth.uid, jobId == {jobId},
+ *   createdAt == request.time, status == 'submitted'.
+ * The mirror under `users/{uid}/applications` (what /dashboard/applications
+ * lists) is owner-only and carries the same status.
  */
+export const APPLICATION_STATUS = {
+  SUBMITTED: 'submitted',
+  WITHDRAWN: 'withdrawn',
+} as const;
+
 export interface JobApplicationInput {
   jobId: string;
   applicantId: string;
@@ -48,11 +59,11 @@ function withoutUndefined(data: DocumentData): DocumentData {
 export function buildJobApplicationDoc(
   input: JobApplicationInput
 ): DocumentData {
-  const { jobId: _jobId, ...rest } = input;
   return withoutUndefined({
-    ...rest,
+    ...input,
+    createdAt: serverTimestamp(),
     appliedAt: serverTimestamp(),
-    status: 'pending',
+    status: APPLICATION_STATUS.SUBMITTED,
     viewed: false,
     shortlisted: false,
     rejected: false,
@@ -65,7 +76,8 @@ export function buildApplicationMirrorDoc(
 ): DocumentData {
   return withoutUndefined({
     ...input,
+    createdAt: serverTimestamp(),
     appliedAt: serverTimestamp(),
-    status: 'pending',
+    status: APPLICATION_STATUS.SUBMITTED,
   });
 }

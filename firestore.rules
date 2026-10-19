@@ -201,6 +201,31 @@ service cloud.firestore {
         allow delete: if isAuthenticated() && isOwner(userId);
       }
 
+      // Job applications mirror (what /dashboard/applications lists; the
+      // canonical doc lives in jobs/{jobId}/applications and is written in
+      // the same client flow — src/lib/jobs/applicationPayload.ts).
+      // Owner-only. The member may withdraw (status 'withdrawn') but never
+      // set any other status: review states come from the employer/admin
+      // on the canonical doc.
+      match /applications/{applicationId} {
+        allow read: if isAuthenticated() &&
+                      (isOwner(userId) ||
+                       (!hasRBACDeny('jo', 'v') && hasRBACAllowAll('jo', 'v')));
+        allow create: if isAuthenticated() &&
+                        isOwner(userId) &&
+                        isVerified() &&
+                        isActive() &&
+                        request.resource.data.jobId is string &&
+                        request.resource.data.createdAt == request.time &&
+                        request.resource.data.status == 'submitted';
+        allow update: if isAuthenticated() &&
+                        isOwner(userId) &&
+                        request.resource.data.diff(resource.data).affectedKeys()
+                          .hasOnly(['status', 'withdrawnAt', 'lastUpdated']) &&
+                        request.resource.data.status == 'withdrawn';
+        allow delete: if false;
+      }
+
       // Compensation sub-collection: owner + RBAC admin read
       match /compensation/{entryId} {
         allow read, write: if isAuthenticated() && isOwner(userId);

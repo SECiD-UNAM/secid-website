@@ -13,7 +13,12 @@
  *     the dashboard lists; the owner may only withdraw (status
  *     'withdrawn'), never promote the status; nobody else reads it.
  */
-import { describe, it, beforeAll, afterAll, afterEach } from 'vitest';
+// vitest.config.ts runs tests concurrently, so the suite is written to be
+// order-independent: the fixtures are seeded idempotently (same ids, same
+// data), each test that needs a fixed document id uses its own, and the
+// emulator project (its own, see createTestEnv) is cleared once up front —
+// a per-test clearFirestore() races the other tests' seeded docs.
+import { describe, it, beforeAll, afterAll } from 'vitest';
 import {
   assertSucceeds,
   assertFails,
@@ -47,15 +52,12 @@ let testEnv: RulesTestEnvironment | undefined;
 
 beforeAll(async () => {
   if (!emulatorRunning) return;
-  testEnv = await createTestEnv();
+  testEnv = await createTestEnv('jobs');
+  await testEnv.clearFirestore();
 });
 
 afterAll(async () => {
   await testEnv?.cleanup();
-});
-
-afterEach(async () => {
-  await testEnv?.clearFirestore();
 });
 
 function env(): RulesTestEnvironment {
@@ -99,7 +101,7 @@ function applicationInput() {
   };
 }
 
-describe.skipIf(!emulatorRunning)(
+describe.sequential.skipIf(!emulatorRunning)(
   'firestore.rules — jobs/{jobId}/applications',
   () => {
     it('verified member can create the application the modal builds', async () => {
@@ -160,7 +162,7 @@ describe.skipIf(!emulatorRunning)(
   }
 );
 
-describe.skipIf(!emulatorRunning)(
+describe.sequential.skipIf(!emulatorRunning)(
   'firestore.rules — users/{uid}/applications (dashboard mirror)',
   () => {
     const mirror = () =>
@@ -197,12 +199,12 @@ describe.skipIf(!emulatorRunning)(
       await seedMemberAndJob();
       await env().withSecurityRulesDisabled(async (ctx) => {
         await setDoc(
-          doc(ctx.firestore(), 'users', MEMBER, 'applications', 'app-1'),
+          doc(ctx.firestore(), 'users', MEMBER, 'applications', 'app-withdraw'),
           { ...mirror(), appliedAt: new Date(), createdAt: new Date() }
         );
       });
       const db = env().authenticatedContext(MEMBER).firestore();
-      const ref = doc(db, 'users', MEMBER, 'applications', 'app-1');
+      const ref = doc(db, 'users', MEMBER, 'applications', 'app-withdraw');
       await assertFails(updateDoc(ref, { status: 'hired' }));
       await assertFails(updateDoc(ref, { jobTitle: 'CTO' }));
       await assertSucceeds(

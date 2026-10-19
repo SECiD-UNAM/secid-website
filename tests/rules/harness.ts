@@ -36,13 +36,21 @@ export async function emulatorReachable(): Promise<boolean> {
   }
 }
 
-export async function createTestEnv(): Promise<RulesTestEnvironment> {
+/**
+ * Each suite file should pass its own `projectId` suffix: vitest runs files
+ * in parallel threads against the same emulator, and `clearFirestore()`
+ * only clears the calling environment's project, so distinct ids keep one
+ * file's afterEach from wiping another file's seeded data mid-test.
+ */
+export async function createTestEnv(
+  suffix = ''
+): Promise<RulesTestEnvironment> {
   if (!existsSync(RULES_PATH)) {
     throw new Error(`firestore.rules not found at ${RULES_PATH}`);
   }
   const [host, port] = EMULATOR_HOST.split(':');
   return initializeTestEnvironment({
-    projectId: PROJECT_ID,
+    projectId: suffix ? `${PROJECT_ID}-${suffix}` : PROJECT_ID,
     firestore: {
       rules: readFileSync(RULES_PATH, 'utf8'),
       host,
