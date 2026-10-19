@@ -1,5 +1,6 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import * as admin from 'firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 import { createHash } from 'crypto';
 import { ALLOWED_CALLABLE_ORIGINS } from './env';
 
@@ -58,7 +59,7 @@ export const completeRegistration = onCall(
         }
         transaction.update(userRef, {
           registrationType: 'collaborator',
-          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp(),
         });
         return { success: true, registrationType: 'collaborator' };
       });
@@ -139,8 +140,8 @@ async function handleMemberRegistration(
       campus: data.campus || null,
       generation: data.generation || null,
       'lifecycle.status': 'pending',
-      'lifecycle.statusChangedAt': admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      'lifecycle.statusChangedAt': FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     };
 
     if (data.graduationYear) {
@@ -237,8 +238,8 @@ async function handleRecruiterRegistration(
       companyId = existingCompanyRef.id;
       transaction.update(existingCompanyRef, {
         ...(backfillNameLower ? { nameLower } : {}),
-        memberCount: admin.firestore.FieldValue.increment(1),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        memberCount: FieldValue.increment(1),
+        updatedAt: FieldValue.serverTimestamp(),
       });
     } else {
       // Create new company at the deterministic slug ID
@@ -248,8 +249,8 @@ async function handleRecruiterRegistration(
         nameLower,
         website: data.companyWebsite || '',
         createdBy: uid,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
         memberCount: 1,
         status: 'active',
       });
@@ -277,10 +278,10 @@ async function handleRecruiterRegistration(
       'profile.companyId': companyId,
       'profile.position': data.companyPosition,
       'lifecycle.status': 'active',
-      'lifecycle.statusChangedAt': admin.firestore.FieldValue.serverTimestamp(),
+      'lifecycle.statusChangedAt': FieldValue.serverTimestamp(),
       profileCompleteness: completeness,
       _skipGroupSync: true,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
 
     return { success: true, alreadyCompleted: false, companyId };
@@ -298,7 +299,7 @@ async function handleRecruiterRegistration(
       userId: uid,
       companyName: data.companyName,
       companyPosition: data.companyPosition,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
       read: false,
     });
   } catch (alertErr) {

@@ -1,4 +1,5 @@
 import * as admin from 'firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 
 interface EmailData {
   to: string;
@@ -41,7 +42,7 @@ export async function sendEmail({
       subject,
       html,
     },
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    createdAt: FieldValue.serverTimestamp(),
   });
   return docRef.id;
 }
@@ -62,7 +63,7 @@ export async function sendBatchEmails(emails: EmailData[]): Promise<void> {
         subject: email.subject,
         html: email.html,
       },
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
     });
   }
 
