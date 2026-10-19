@@ -1,3 +1,5 @@
+> Plataforma, CI/CD y deuda técnica: ver [docs/ROADMAP.md](../ROADMAP.md). Este archivo es la lista de producto.
+
 - [ ] tipos de usuario (admin, miembro, aliado, externo, empleador, etc)
 - [ ] admin panel
 - [ ] pagina de blog
