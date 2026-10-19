@@ -75,14 +75,27 @@ export async function createTestEnv(
  * scripts/seed-emulator.js hardcodes the same payload for the e2e members.
  */
 export function memberToken(): Record<string, unknown> {
-  const group = DEFAULT_GROUPS.find((g) => g.id === 'member');
-  if (!group) throw new Error('member group missing from DEFAULT_GROUPS');
+  return groupToken('member');
+}
+
+/**
+ * Custom claims resolved from any default RBAC group (e.g. 'event-manager'
+ * carries ev:e.a, the permission the event edit rules honour).
+ */
+export function groupToken(groupId: string): Record<string, unknown> {
+  const group = DEFAULT_GROUPS.find((g) => g.id === groupId);
+  if (!group) throw new Error(`${groupId} group missing from DEFAULT_GROUPS`);
   const encoded = encodeClaimsPermissions(
     resolveGroupPermissions([
       { id: group.id, name: group.name, permissions: group.permissions },
     ])
   );
-  return buildClaimsPayload(['member'], encoded, 'member');
+  return buildClaimsPayload([groupId], encoded, groupId);
+}
+
+/** Custom claims scripts/seed-emulator.js gives admin@secid.mx. */
+export function adminToken(): Record<string, unknown> {
+  return { rbac: { g: ['super-admin'], p: '*:*.a' }, role: 'admin' };
 }
 
 /** Minimal users/{uid} doc that satisfies isVerified() + isActive(). */
