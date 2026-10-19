@@ -18,9 +18,8 @@ const PATHS = vi.hoisted(() => {
     path.resolve('functions/node_modules')
   );
   return {
-    firebaseAdmin: path.join(functionsModules, 'firebase-admin/lib/index.js'),
-    // Modular entry the SUT imports FieldValue/Timestamp from (vite picks the
-    // "import" export condition, hence lib/esm).
+    // Modular entry the SUT imports getFirestore/FieldValue from (vite picks
+    // the "import" export condition, hence lib/esm).
     firebaseAdminFirestore: path.join(
       functionsModules,
       'firebase-admin/lib/esm/firestore/index.js'
@@ -42,13 +41,9 @@ const H = vi.hoisted(() => {
   return { add, batchSet, batchCommit, firestore };
 });
 
-vi.mock(PATHS.firebaseAdmin, () => ({
-  firestore: H.firestore,
-  default: { firestore: H.firestore },
-}));
-
-// The SUT imports FieldValue from the modular entry.
+// The SUT imports getFirestore/FieldValue from the modular entry.
 vi.mock(PATHS.firebaseAdminFirestore, () => ({
+  getFirestore: H.firestore,
   FieldValue: (H.firestore as unknown as { FieldValue: unknown }).FieldValue,
 }));
 

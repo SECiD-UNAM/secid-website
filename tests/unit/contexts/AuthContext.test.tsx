@@ -108,7 +108,7 @@ async function setup() {
 
 // Sequential wrapper — these tests share mutable mock callbacks and
 // must not run concurrently (vitest config has sequence.concurrent: true)
-describe.sequential('AuthContext session resilience', () => {
+describe('AuthContext session resilience', { concurrent: false }, () => {
   describe('profile retained on transient error', () => {
     beforeEach(() => {
       vi.clearAllMocks();

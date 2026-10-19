@@ -6,7 +6,7 @@ import MentorCard from '@/components/mentorship/shared/MentorCard';
  * TC-mentorship-shared-020
  * Verifies: MentorCard renders name and title
  */
-describe.sequential('MentorCard', () => {
+describe('MentorCard', { concurrent: false }, () => {
   describe('basic rendering', () => {
     it('renders display name', () => {
       const { container } = render(<MentorCard displayName="Maria Lopez" />);

@@ -248,10 +248,10 @@ const carol = createMember({
 const members = [alice, bob, carol];
 
 // ---------------------------------------------------------------------------
-// Tests -- using describe.sequential to avoid shared mock contamination
+// Tests -- using describe(..., { concurrent: false }) to avoid shared mock contamination
 // ---------------------------------------------------------------------------
 
-describe.sequential('MemberDirectoryAdapter', () => {
+describe('MemberDirectoryAdapter', { concurrent: false }, () => {
   let adapter: InstanceType<typeof MemberDirectoryAdapter>;
 
   beforeEach(() => {
@@ -263,7 +263,7 @@ describe.sequential('MemberDirectoryAdapter', () => {
   // --------------------------------------------------
   // TC-dir-001..006: Text search across nested fields
   // --------------------------------------------------
-  describe.sequential('applySearch', () => {
+  describe('applySearch', { concurrent: false }, () => {
     it('TC-dir-001: finds members by displayName', () => {
       /** Verifies: text search matches displayName */
       const result = adapter.applySearch(members, 'alice');
@@ -309,7 +309,7 @@ describe.sequential('MemberDirectoryAdapter', () => {
   // --------------------------------------------------
   // TC-dir-010..022: Filter tests for each filter type
   // --------------------------------------------------
-  describe.sequential('applyFilters', () => {
+  describe('applyFilters', { concurrent: false }, () => {
     it('TC-dir-010: filters by skills', () => {
       /** Verifies: skills filter matches featuredSkills + profile.skills */
       const result = adapter.applyFilters(members, {
@@ -438,7 +438,7 @@ describe.sequential('MemberDirectoryAdapter', () => {
   // --------------------------------------------------
   // TC-dir-030..034: Sort tests
   // --------------------------------------------------
-  describe.sequential('applySort', () => {
+  describe('applySort', { concurrent: false }, () => {
     it('TC-dir-030: sorts by name ascending', () => {
       /** Verifies: name sort uses displayName.localeCompare */
       const result = adapter.applySort(members, {
@@ -502,7 +502,7 @@ describe.sequential('MemberDirectoryAdapter', () => {
   // --------------------------------------------------
   // TC-dir-040..044: fetch integration (pagination, cache, params)
   // --------------------------------------------------
-  describe.sequential('fetch', () => {
+  describe('fetch', { concurrent: false }, () => {
     it('TC-dir-040: paginates results correctly', async () => {
       /** Verifies: offset pagination with page/pageSize */
       const result = await adapter.fetch({

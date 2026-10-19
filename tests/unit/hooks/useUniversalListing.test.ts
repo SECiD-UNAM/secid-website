@@ -27,7 +27,7 @@ function createMockAdapter(): DataAdapter<TestItem> {
   };
 }
 
-describe.sequential('useUniversalListing', () => {
+describe('useUniversalListing', { concurrent: false }, () => {
   let adapter: DataAdapter<TestItem>;
 
   beforeEach(() => {
