@@ -13,7 +13,7 @@
  *     npx playwright test journey-F-login --headed
  */
 import { test, expect } from '@playwright/test';
-import { waitForIsland } from '../utils/session';
+import { login, waitForIsland } from '../utils/session';
 
 const EMAIL = process.env.E2E_QA_EMAIL;
 const PASSWORD = process.env.E2E_QA_PASSWORD;
@@ -23,11 +23,9 @@ test.describe('Journey F — Login + password reset', () => {
   test.skip(!EMAIL || !PASSWORD, 'Set E2E_QA_EMAIL + E2E_QA_PASSWORD to run');
 
   test('F1 login OK with valid credentials', async ({ page }) => {
-    await page.goto('/es/login');
-    await page.fill('input[type="email"]', EMAIL!);
-    await page.fill('input[type="password"]', PASSWORD!);
-    await page.click('button[type="submit"]');
-    await page.waitForURL(/\/dashboard/, { timeout: 10000 });
+    // login() waits for the LoginForm island: typing into the static markup
+    // submits the plain <form> and reloads /es/login instead of signing in.
+    await login(page, { email: EMAIL!, password: PASSWORD! });
     await expect(page).toHaveURL(/\/dashboard/);
   });
 
@@ -35,6 +33,7 @@ test.describe('Journey F — Login + password reset', () => {
     page,
   }) => {
     await page.goto('/es/login');
+    await waitForIsland(page, 'LoginForm');
     await page.fill('input[type="email"]', EMAIL!);
     await page.fill('input[type="password"]', WRONG_PASSWORD);
     await page.click('button[type="submit"]');
@@ -61,6 +60,7 @@ test.describe('Journey F — Login + password reset', () => {
       'el emulador de Auth no emula la protección contra enumeración'
     );
     await page.goto('/es/login');
+    await waitForIsland(page, 'LoginForm');
     await page.fill(
       'input[type="email"]',
       `nonexistent-${Date.now()}@nowhere.test`

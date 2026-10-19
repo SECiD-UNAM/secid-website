@@ -17,6 +17,7 @@
  *     npx playwright test journey-Q-admin
  */
 import { test, expect } from '@playwright/test';
+import { login } from '../utils/session';
 
 const ADMIN_EMAIL = process.env.E2E_QA_ADMIN_EMAIL;
 const ADMIN_PASSWORD = process.env.E2E_QA_ADMIN_PASSWORD;
@@ -29,11 +30,7 @@ test.describe('Journey Q — Admin', () => {
   );
 
   test('Q1 admin landing carga + pending badge visible', async ({ page }) => {
-    await page.goto('/es/login');
-    await page.fill('input[type="email"]', ADMIN_EMAIL!);
-    await page.fill('input[type="password"]', ADMIN_PASSWORD!);
-    await page.click('button[type="submit"]');
-    await page.waitForURL(/\/dashboard/);
+    await login(page, { email: ADMIN_EMAIL!, password: ADMIN_PASSWORD! });
 
     await page.goto('/es/dashboard/admin');
 
@@ -51,11 +48,7 @@ test.describe('Journey Q — Admin', () => {
   });
 
   test('Q2 click pending badge → lista filtrada', async ({ page }) => {
-    await page.goto('/es/login');
-    await page.fill('input[type="email"]', ADMIN_EMAIL!);
-    await page.fill('input[type="password"]', ADMIN_PASSWORD!);
-    await page.click('button[type="submit"]');
-    await page.waitForURL(/\/dashboard/);
+    await login(page, { email: ADMIN_EMAIL!, password: ADMIN_PASSWORD! });
 
     await page.goto('/es/dashboard/admin');
 
@@ -68,11 +61,7 @@ test.describe('Journey Q — Admin', () => {
   test('Q3 approve target user', async ({ page }) => {
     test.skip(!TARGET_EMAIL, 'Set E2E_QA_TARGET_EMAIL to a pending user');
 
-    await page.goto('/es/login');
-    await page.fill('input[type="email"]', ADMIN_EMAIL!);
-    await page.fill('input[type="password"]', ADMIN_PASSWORD!);
-    await page.click('button[type="submit"]');
-    await page.waitForURL(/\/dashboard/);
+    await login(page, { email: ADMIN_EMAIL!, password: ADMIN_PASSWORD! });
 
     await page.goto('/es/dashboard/admin?tab=users&status=pending');
     const row = page.locator(`text=${TARGET_EMAIL!}`).first();
