@@ -239,8 +239,8 @@ jobs:
       # the emulator's firebase-admin stub does expose). The demo project
       # needs no credentials; Google Groups sync only logs an error. The
       # E2E_QA_* vars unlock the journey-* specs with the seeded accounts;
-      # E2E_QA_NUMERO_CUENTA stays unset until journey-B is rewritten
-      # against the real signup wizard (see its header).
+      # E2E_QA_NUMERO_CUENTA is the número de cuenta the seed reserves for
+      # the fresh sign-up in journey-B (never indexed by the seed).
       - name: Run full E2E suite against the emulators (informational)
         run: |
           npx firebase-tools emulators:exec --only auth,firestore,storage,functions \
@@ -253,6 +253,7 @@ jobs:
           E2E_QA_PASSWORD: member123456
           E2E_QA_ADMIN_EMAIL: admin@secid.mx
           E2E_QA_ADMIN_PASSWORD: admin123456
+          E2E_QA_NUMERO_CUENTA: '300000001'
         continue-on-error: true
 
       - name: Summarize pass rate
