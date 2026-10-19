@@ -63,11 +63,18 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       verificación UNAM sin mostrar error), #107 TwoFactorVerification
       (49→54), #110 Button (10→13). #108 auth.test y #109 jobs.test borrados:
       los 33 tests describían APIs inexistentes y ya tienen suites propias.
-      Pendiente (follow-up): CI corre vitest por shards sin `--coverage`, así
-      que el umbral no se evalúa en CI y codecov sube un lcov que no existe.
 - [x] B7. PR #103 (2026-10-19): README, `AGENTS.md` y `docs/DEPLOYMENT.md`
       actualizados; `functions/lib` fuera del repo (el `predeploy` de
       `firebase.json` lo recompila en cada deploy).
+- [x] B8. PR #113 (2026-10-19): umbrales de cobertura exigidos en CI. Los 4
+      shards corren con `--coverage`, el job `Coverage` fusiona sus reportes
+      (`scripts/ci/check-coverage.mjs`) y falla si bajan de
+      `scripts/ci/coverage-thresholds.mjs`, la única fuente que también lee
+      `vitest.config.ts`. Probado en rojo a propósito (run 39203140147).
+      Hoy mide 72.2 / 46.9 / 17.2 / 17.2 (ramas/funciones/líneas/sentencias).
+      Se quitó el paso de Codecov (sin token, nunca subió nada).
+      Falta (owner, 1 clic): añadir `Coverage` a los checks requeridos de
+      `main`; el runbook de gobernanza tiene el comando.
 
 ## Bloque C — Pasos del owner (~30 min en total)
 
@@ -168,15 +175,8 @@ Estado real hoy:
 
 Dev, en este orden y cada paso un PR con auto-merge:
 
-1. B8 (nuevo, ½ día): evaluar la cobertura en CI. Hoy los 4 shards corren
-   sin `--coverage`, así que los umbrales de B6 no se aplican y codecov
-   sube un lcov inexistente. Opción simple: cada shard con
-   `--coverage --coverage.reporter=json` y un job que una los 4 con
-   `nyc merge` + `vitest --coverage.thresholds` sobre el merge; o un job
-   `coverage` sin shards si el tiempo lo permite.
-2. A5(c) (1 día): `FieldValue` importado de `firebase-admin/firestore` en
-   `functions/src` para que el emulador de functions arranque; añadirlo al
-   job e2e y desbloquear journey-B.
+1. ~~B8~~ hecho (PR #113).
+2. ~~A5(c)~~ hecho (PRs #114, #115).
 3. A5(a) (2–3 días, por lotes): reescribir o borrar las 13 suites "función
    no implementada"; al terminar, quitar `continue-on-error` del job
    chromium y hacerlo requerido en `main`.
