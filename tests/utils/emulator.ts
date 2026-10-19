@@ -4,7 +4,8 @@
  * spec assert on documents the UI never shows, such as the `mail/` queue
  * the firestore-send-email extension would deliver in production.
  */
-const PROJECT_ID = process.env.PUBLIC_FIREBASE_PROJECT_ID || 'demo-secid-alumni';
+const PROJECT_ID =
+  process.env.PUBLIC_FIREBASE_PROJECT_ID || 'demo-secid-alumni';
 const FIRESTORE_HOST = process.env.FIRESTORE_EMULATOR_HOST || '127.0.0.1:8088';
 const BASE = `http://${FIRESTORE_HOST}/v1/projects/${PROJECT_ID}/databases/(default)`;
 const HEADERS = {
@@ -44,7 +45,10 @@ function decodeFields(fields: Record<string, RestValue>) {
 }
 
 function toDoc(d: RestDocument) {
-  return { id: d.name.split('/').pop() as string, ...decodeFields(d.fields ?? {}) };
+  return {
+    id: d.name.split('/').pop() as string,
+    ...decodeFields(d.fields ?? {}),
+  };
 }
 
 /** Every document of a top-level collection (one page, up to 300). */
