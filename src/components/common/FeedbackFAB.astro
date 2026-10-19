@@ -382,20 +382,20 @@ const tr = {
 <script is:inline>
   (function () {
     // ── Telemetry capture (runs once at parse time) ──────────────────────
-    var W = window;
+    const W = window;
     if (!W.__secid_diag) {
-      var MAX = 30;
-      var diag = { console: [], network: [], errors: [] };
+      const MAX = 30;
+      const diag = { console: [], network: [], errors: [] };
       W.__secid_diag = diag;
 
       // Intercept console.error / console.warn
-      var origError = console.error.bind(console);
-      var origWarn = console.warn.bind(console);
+      const origError = console.error.bind(console);
+      const origWarn = console.warn.bind(console);
       function captureLog(level, args) {
-        var msg = Array.prototype.map
+        const msg = Array.prototype.map
           .call(args, function (a) {
             if (a == null) return String(a);
-            if (a instanceof Error) return a.message + '\n' + (a.stack || '');
+            if (a instanceof Error) return `${a.message}\n${a.stack || ''}`;
             if (typeof a === 'object') {
               try {
                 return JSON.stringify(a);
@@ -408,7 +408,7 @@ const tr = {
           .join(' ');
         diag.console.push({
           ts: new Date().toISOString(),
-          level: level,
+          level,
           msg: msg.slice(0, 500),
         });
         if (diag.console.length > MAX) diag.console.shift();
@@ -428,16 +428,16 @@ const tr = {
         diag.errors.push({
           ts: new Date().toISOString(),
           msg: (ev.message || 'Unknown').slice(0, 300),
-          src: ev.filename ? ev.filename + ':' + ev.lineno : '',
+          src: ev.filename ? `${ev.filename}:${ev.lineno}` : '',
         });
         if (diag.errors.length > MAX) diag.errors.shift();
         W.__secid_updateBadge && W.__secid_updateBadge();
       });
       W.addEventListener('unhandledrejection', function (ev) {
-        var r = ev.reason;
-        var msg =
+        const r = ev.reason;
+        const msg =
           r instanceof Error
-            ? r.message + '\n' + (r.stack || '')
+            ? `${r.message}\n${r.stack || ''}`
             : String(r || 'Unhandled rejection');
         diag.errors.push({
           ts: new Date().toISOString(),
@@ -449,17 +449,17 @@ const tr = {
       });
 
       // Fetch network error capture
-      var origFetch = W.fetch;
+      const origFetch = W.fetch;
       if (origFetch) {
         W.fetch = function () {
-          var url = arguments[0];
-          var urlStr =
+          const url = arguments[0];
+          const urlStr =
             typeof url === 'string'
               ? url
               : url && url.url
                 ? url.url
                 : String(url);
-          var method =
+          const method =
             (arguments[1] && arguments[1].method) ||
             (typeof url === 'object' && url.method) ||
             'GET';
@@ -503,16 +503,16 @@ const tr = {
     // These two sources don't overlap: window 'error' events push to diag.errors,
     // console.error calls push to diag.console. unhandledrejection also goes to diag.errors only.
     W.__secid_updateBadge = function () {
-      var badge = document.getElementById('secid-report-badge');
+      const badge = document.getElementById('secid-report-badge');
       if (!badge) return;
-      var diag = W.__secid_diag;
-      var windowErrors = diag.errors ? diag.errors.length : 0;
-      var consoleErrors = diag.console
+      const diag = W.__secid_diag;
+      const windowErrors = diag.errors ? diag.errors.length : 0;
+      const consoleErrors = diag.console
         ? diag.console.filter(function (c) {
             return c.level === 'error';
           }).length
         : 0;
-      var count = windowErrors + consoleErrors;
+      const count = windowErrors + consoleErrors;
       if (count > 0) {
         badge.textContent = count > 99 ? '99+' : String(count);
         badge.classList.remove('hidden');
@@ -528,33 +528,33 @@ const tr = {
     // so DOMContentLoaded fires on every full page load. If ViewTransitions are
     // ever added, replace with: document.addEventListener('astro:page-load', ...)
     document.addEventListener('DOMContentLoaded', function () {
-      var btn = document.getElementById('secid-report-btn');
-      var modal = document.getElementById('secid-report-modal');
+      const btn = document.getElementById('secid-report-btn');
+      const modal = document.getElementById('secid-report-modal');
       if (!btn || !modal) return;
 
-      var repo = modal.dataset.repo || '';
-      var lang = modal.dataset.lang || 'es';
-      var buildSha = modal.dataset.buildSha || 'dev';
-      var appVersion = modal.dataset.appVersion || 'dev';
-      var noneLabel = modal.dataset.lDiagnosticsNone || 'None captured';
-      var copyLabel = modal.dataset.lCopy || 'Copiar diagnósticos';
-      var copiedLabel = modal.dataset.lCopied || '¡Copiado!';
+      const repo = modal.dataset.repo || '';
+      const lang = modal.dataset.lang || 'es';
+      const buildSha = modal.dataset.buildSha || 'dev';
+      const appVersion = modal.dataset.appVersion || 'dev';
+      const noneLabel = modal.dataset.lDiagnosticsNone || 'None captured';
+      const copyLabel = modal.dataset.lCopy || 'Copiar diagnósticos';
+      const copiedLabel = modal.dataset.lCopied || '¡Copiado!';
 
-      var typeEl = document.getElementById('secid-report-type');
-      var titleEl = document.getElementById('secid-report-title');
-      var descEl = document.getElementById('secid-report-description');
-      var stepsEl = document.getElementById('secid-report-steps');
-      var expectedEl = document.getElementById('secid-report-expected');
-      var bugFields = document.getElementById('secid-report-bug-fields');
-      var envBlock = document.getElementById('secid-report-env');
-      var consBlock = document.getElementById('secid-report-console');
-      var netBlock = document.getElementById('secid-report-network');
-      var diagCount = document.getElementById('secid-report-diag-count');
-      var copyBtn = document.getElementById('secid-report-copy');
-      var copyLabel2 = document.getElementById('secid-report-copy-label');
-      var submitBtn = document.getElementById('secid-report-submit');
-      var cancelBtn = document.getElementById('secid-report-cancel');
-      var closeBtn = document.getElementById('secid-report-close');
+      const typeEl = document.getElementById('secid-report-type');
+      const titleEl = document.getElementById('secid-report-title');
+      const descEl = document.getElementById('secid-report-description');
+      const stepsEl = document.getElementById('secid-report-steps');
+      const expectedEl = document.getElementById('secid-report-expected');
+      const bugFields = document.getElementById('secid-report-bug-fields');
+      const envBlock = document.getElementById('secid-report-env');
+      const consBlock = document.getElementById('secid-report-console');
+      const netBlock = document.getElementById('secid-report-network');
+      const diagCount = document.getElementById('secid-report-diag-count');
+      const copyBtn = document.getElementById('secid-report-copy');
+      const copyLabel2 = document.getElementById('secid-report-copy-label');
+      const submitBtn = document.getElementById('secid-report-submit');
+      const cancelBtn = document.getElementById('secid-report-cancel');
+      const closeBtn = document.getElementById('secid-report-close');
 
       // Toggle bug-only fields
       if (typeEl && bugFields) {
@@ -581,7 +581,7 @@ const tr = {
 
       // Populate diagnostics
       function populateDiagnostics() {
-        var diag = W.__secid_diag || { console: [], network: [], errors: [] };
+        const diag = W.__secid_diag || { console: [], network: [], errors: [] };
 
         // Env block
         if (envBlock) {
@@ -589,9 +589,9 @@ const tr = {
             {
               url: location.href,
               userAgent: navigator.userAgent,
-              viewport: window.innerWidth + 'x' + window.innerHeight,
-              lang: lang,
-              buildSha: buildSha,
+              viewport: `${window.innerWidth}x${window.innerHeight}`,
+              lang,
+              buildSha,
               version: appVersion,
               timestamp: new Date().toISOString(),
             },
@@ -601,12 +601,12 @@ const tr = {
         }
 
         // Console block
-        var consEntries = (diag.console || []).concat(
+        const consEntries = (diag.console || []).concat(
           (diag.errors || []).map(function (e) {
             return {
               level: 'error',
               ts: e.ts,
-              msg: e.msg + (e.src ? ' @ ' + e.src : ''),
+              msg: e.msg + (e.src ? ` @ ${e.src}` : ''),
             };
           })
         );
@@ -614,9 +614,7 @@ const tr = {
           consBlock.textContent = consEntries.length
             ? consEntries
                 .map(function (c) {
-                  return (
-                    '[' + c.level.toUpperCase() + '] ' + c.ts + '\n' + c.msg
-                  );
+                  return `[${c.level.toUpperCase()}] ${c.ts}\n${c.msg}`;
                 })
                 .join('\n\n')
             : noneLabel;
@@ -626,13 +624,13 @@ const tr = {
           netBlock.textContent = (diag.network || []).length
             ? diag.network
                 .map(function (n) {
-                  return n.method + ' ' + n.status + ' ' + n.url + '\n' + n.ts;
+                  return `${n.method} ${n.status} ${n.url}\n${n.ts}`;
                 })
                 .join('\n\n')
             : noneLabel;
 
         // Count badge in accordion
-        var errorCount =
+        const errorCount =
           consEntries.filter(function (c) {
             return c.level === 'error';
           }).length + (diag.network || []).length;
@@ -649,7 +647,7 @@ const tr = {
       // Copy diagnostics — with fallback for non-HTTPS contexts
       if (copyBtn && copyLabel2) {
         copyBtn.addEventListener('click', function () {
-          var text = [envBlock, consBlock, netBlock]
+          const text = [envBlock, consBlock, netBlock]
             .map(function (el) {
               return el ? el.textContent : '';
             })
@@ -664,7 +662,7 @@ const tr = {
             navigator.clipboard.writeText(text).then(onCopied);
           } else {
             // Fallback for HTTP / older browsers
-            var ta = document.createElement('textarea');
+            const ta = document.createElement('textarea');
             ta.value = text;
             ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
             document.body.appendChild(ta);
@@ -682,11 +680,11 @@ const tr = {
       // Submit → open GitHub Issue
       if (submitBtn) {
         submitBtn.addEventListener('click', function () {
-          var type = typeEl ? typeEl.value : 'bug';
-          var title = titleEl ? titleEl.value.trim() : '';
-          var desc = descEl ? descEl.value.trim() : '';
-          var steps = stepsEl ? stepsEl.value.trim() : '';
-          var expected = expectedEl ? expectedEl.value.trim() : '';
+          const type = typeEl ? typeEl.value : 'bug';
+          const title = titleEl ? titleEl.value.trim() : '';
+          const desc = descEl ? descEl.value.trim() : '';
+          const steps = stepsEl ? stepsEl.value.trim() : '';
+          const expected = expectedEl ? expectedEl.value.trim() : '';
 
           if (!title) {
             if (titleEl) {
@@ -695,72 +693,64 @@ const tr = {
             return;
           }
 
-          var diag = W.__secid_diag || { console: [], network: [], errors: [] };
-          var consEntries = (diag.console || []).concat(
+          const diag = W.__secid_diag || {
+            console: [],
+            network: [],
+            errors: [],
+          };
+          const consEntries = (diag.console || []).concat(
             (diag.errors || []).map(function (e) {
               return {
                 level: 'error',
                 ts: e.ts,
-                msg: e.msg + (e.src ? ' @ ' + e.src : ''),
+                msg: e.msg + (e.src ? ` @ ${e.src}` : ''),
               };
             })
           );
-          var diagText =
-            '**Entorno / Environment**\n```json\n' +
-            JSON.stringify(
-              {
-                url: location.href,
-                userAgent: navigator.userAgent,
-                viewport: window.innerWidth + 'x' + window.innerHeight,
-                lang: lang,
-                buildSha: buildSha,
-                version: appVersion,
-                timestamp: new Date().toISOString(),
-              },
-              null,
-              2
-            ) +
-            '\n```';
+          let diagText = `**Entorno / Environment**\n\`\`\`json\n${JSON.stringify(
+            {
+              url: location.href,
+              userAgent: navigator.userAgent,
+              viewport: `${window.innerWidth}x${window.innerHeight}`,
+              lang,
+              buildSha,
+              version: appVersion,
+              timestamp: new Date().toISOString(),
+            },
+            null,
+            2
+          )}\n\`\`\``;
 
           if (consEntries.length) {
-            diagText +=
-              '\n\n**Console errors**\n```\n' +
-              consEntries
-                .map(function (c) {
-                  return (
-                    '[' + c.level.toUpperCase() + '] ' + c.ts + '\n' + c.msg
-                  );
-                })
-                .join('\n\n')
-                .slice(0, 1500) +
-              '\n```';
+            diagText += `\n\n**Console errors**\n\`\`\`\n${consEntries
+              .map(function (c) {
+                return `[${c.level.toUpperCase()}] ${c.ts}\n${c.msg}`;
+              })
+              .join('\n\n')
+              .slice(0, 1500)}\n\`\`\``;
           }
           if ((diag.network || []).length) {
-            diagText +=
-              '\n\n**Failed requests**\n```\n' +
-              diag.network
-                .map(function (n) {
-                  return n.method + ' ' + n.status + ' ' + n.url;
-                })
-                .join('\n')
-                .slice(0, 800) +
-              '\n```';
+            diagText += `\n\n**Failed requests**\n\`\`\`\n${diag.network
+              .map(function (n) {
+                return `${n.method} ${n.status} ${n.url}`;
+              })
+              .join('\n')
+              .slice(0, 800)}\n\`\`\``;
           }
 
-          var body = desc;
+          let body = desc;
           if (type === 'bug') {
-            if (steps) body += '\n\n**Pasos / Steps to reproduce**\n' + steps;
+            if (steps) body += `\n\n**Pasos / Steps to reproduce**\n${steps}`;
             if (expected)
-              body +=
-                '\n\n**Comportamiento esperado / Expected behavior**\n' +
-                expected;
+              body += `\n\n**Comportamiento esperado / Expected behavior**\n${
+                expected
+              }`;
           }
-          body +=
-            '\n\n<details>\n<summary>Diagnostics</summary>\n\n' +
-            diagText +
-            '\n</details>';
+          body += `\n\n<details>\n<summary>Diagnostics</summary>\n\n${
+            diagText
+          }\n</details>`;
 
-          var labelMap = {
+          const labelMap = {
             bug: 'bug',
             feature: 'enhancement',
             question: 'question',
@@ -768,13 +758,13 @@ const tr = {
           };
           // Truncate to ~6500 chars — conservative limit for GitHub URL params.
           // GitHub supports ~8192 chars but proxies/browsers may cut earlier.
-          var params = new URLSearchParams({
-            title: title,
+          const params = new URLSearchParams({
+            title,
             body: body.slice(0, 6500),
             labels: labelMap[type] || 'bug',
           });
           window.open(
-            'https://github.com/' + repo + '/issues/new?' + params.toString(),
+            `https://github.com/${repo}/issues/new?${params.toString()}`,
             '_blank',
             'noopener,noreferrer'
           );

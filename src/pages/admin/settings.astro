@@ -244,7 +244,7 @@ const description =
                 }
               } catch (error) {
                 alert(
-                  'Error al leer el archivo de configuración: ' + error.message
+                  `Error al leer el archivo de configuración: ${error.message}`
                 );
               }
             };
@@ -296,10 +296,10 @@ const description =
           if (result.success) {
             showNotification('Email de prueba enviado exitosamente', 'success');
           } else {
-            showNotification('Error al enviar email: ' + result.error, 'error');
+            showNotification(`Error al enviar email: ${result.error}`, 'error');
           }
         } catch (error) {
-          showNotification('Error de conexión: ' + error.message, 'error');
+          showNotification(`Error de conexión: ${error.message}`, 'error');
         }
       };
 
@@ -312,10 +312,10 @@ const description =
           if (result.success) {
             showNotification('Conexión a base de datos exitosa', 'success');
           } else {
-            showNotification('Error de conexión: ' + result.error, 'error');
+            showNotification(`Error de conexión: ${result.error}`, 'error');
           }
         } catch (error) {
-          showNotification('Error de conexión: ' + error.message, 'error');
+          showNotification(`Error de conexión: ${error.message}`, 'error');
         }
       };
     };

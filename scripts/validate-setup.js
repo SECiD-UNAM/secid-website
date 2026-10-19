@@ -250,7 +250,7 @@ ${colors.blue}╔═════════════════════
 
     // Final summary
     setTimeout(() => {
-      console.log('\n' + '='.repeat(40));
+      console.log(`\n${'='.repeat(40)}`);
 
       if (hasErrors) {
         console.log(`\n${colors.red}✗ Setup validation failed${colors.reset}`);

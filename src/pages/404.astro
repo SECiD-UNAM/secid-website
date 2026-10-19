@@ -78,12 +78,12 @@ import Footer from '../components/Footer.astro';
 <script is:inline>
   // Show English copy when the missing URL is under the /en/ locale
   (function () {
-    var path = window.location.pathname;
+    const path = window.location.pathname;
     if (path === '/en' || path.indexOf('/en/') === 0) {
       document.documentElement.lang = 'en';
       document.title = 'Page Not Found - SECiD';
-      var es = document.querySelector('[data-locale="es"]');
-      var en = document.querySelector('[data-locale="en"]');
+      const es = document.querySelector('[data-locale="es"]');
+      const en = document.querySelector('[data-locale="en"]');
       if (es) es.hidden = true;
       if (en) en.hidden = false;
     }

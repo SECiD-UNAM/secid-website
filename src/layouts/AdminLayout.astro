@@ -180,9 +180,9 @@ const {
             null
           );
           setTimeout(() => {
-            window.location.href =
-              '/login?returnUrl=' +
-              encodeURIComponent(window.location.pathname);
+            window.location.href = `/login?returnUrl=${encodeURIComponent(
+              window.location.pathname
+            )}`;
           }, 5000);
         }, SESSION_TIMEOUT);
 

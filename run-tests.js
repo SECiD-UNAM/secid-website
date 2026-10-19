@@ -35,7 +35,7 @@ const testCategories = [
 function runTestCategory(category) {
   console.log(`\n📁 ${category.name}`);
   console.log(`   ${category.description}`);
-  console.log('   ' + '─'.repeat(50));
+  console.log(`   ${'─'.repeat(50)}`);
 
   try {
     const result = execSync(
@@ -66,7 +66,7 @@ function runTestCategory(category) {
 // Function to check test coverage
 function checkTestCoverage() {
   console.log('\n📊 Test Coverage Analysis');
-  console.log('   ' + '─'.repeat(50));
+  console.log(`   ${'─'.repeat(50)}`);
 
   try {
     execSync('npx vitest run --coverage --silent', {
@@ -110,7 +110,7 @@ async function main() {
   checkTestCoverage();
 
   // Summary
-  console.log('\n' + '='.repeat(60));
+  console.log(`\n${'='.repeat(60)}`);
   console.log('📋 Test Summary');
   console.log('='.repeat(60));
   console.log(`Total Tests Passed: ${totalPassed}`);

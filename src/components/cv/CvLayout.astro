@@ -152,7 +152,7 @@ const currentYear = new Date().getFullYear();
         });
 
         // Restore saved preference
-        var saved = localStorage.getItem('theme');
+        const saved = localStorage.getItem('theme');
         if (saved === 'light') {
           html.classList.remove('dark');
           update();
