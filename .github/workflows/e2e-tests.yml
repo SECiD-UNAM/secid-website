@@ -1,8 +1,10 @@
 name: E2E Tests
 
+# Manual only. Every PR already runs the blocking e2e smoke and the
+# informational full chromium suite in ci.yml; this 3-browser matrix of the
+# full suite (~30 min per browser, legacy suites failing until triaged, see
+# docs/ROADMAP.md A4) is for on-demand runs.
 on:
-  pull_request:
-    branches: [main, develop]
   workflow_dispatch:
     inputs:
       test-suite:
