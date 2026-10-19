@@ -2,6 +2,8 @@
  * Default RBAC system groups.
  *
  * These are the 9 built-in groups seeded into Firestore on first deployment.
+ * seedRbacGroups skips groups that already exist, so a grant added here
+ * must also be applied to the live `rbac_groups` docs (admin → Grupos).
  * All marked isSystem: true to prevent accidental deletion.
  *
  * The permission grant types mirror src/lib/rbac/types.ts but are defined
@@ -31,7 +33,8 @@ type Resource =
   | 'notifications'
   | 'assessments'
   | 'salary-insights'
-  | 'groups';
+  | 'groups'
+  | 'announcements';
 
 type Operation =
   | 'view'
@@ -85,6 +88,7 @@ const ALL_RESOURCES: readonly Resource[] = [
   'assessments',
   'salary-insights',
   'groups',
+  'announcements',
 ] as const;
 
 const ALL_OPERATIONS: readonly Operation[] = [
@@ -127,6 +131,17 @@ function allOpsOnResource(resource: Resource, scope: Scope): PermissionGrant[] {
 
 function viewAllOnResources(resources: readonly Resource[]): PermissionGrant[] {
   return resources.map((r) => grant(r, 'view', 'all'));
+}
+
+/**
+ * F20 — member announcements (functions/src/announcements.ts). `publish`
+ * is the right to send (`ac:p.a` in claims); `view` reads the history.
+ */
+function announcementGrants(): PermissionGrant[] {
+  return [
+    grant('announcements', 'publish', 'all'),
+    grant('announcements', 'view', 'all'),
+  ];
 }
 
 function ownCrudOnResource(resource: Resource): PermissionGrant[] {
@@ -176,6 +191,7 @@ const contentEditor: DefaultGroup = {
     ...CONTENT_RESOURCES.map((r) => grant(r, 'delete', 'own')),
     ...CONTENT_RESOURCES.map((r) => grant(r, 'publish', 'all')),
     ...CONTENT_RESOURCES.map((r) => grant(r, 'view', 'all')),
+    ...announcementGrants(),
   ],
 };
 
@@ -198,6 +214,7 @@ const newsletterEditor: DefaultGroup = {
   permissions: [
     ...allOpsOnResource('newsletter', 'all'),
     ...viewAllOnResources(CONTENT_RESOURCES.filter((r) => r !== 'newsletter')),
+    ...announcementGrants(),
   ],
 };
 

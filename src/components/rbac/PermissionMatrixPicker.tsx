@@ -26,6 +26,7 @@ const RESOURCE_LABELS: Record<Resource, Record<'es' | 'en', string>> = {
   assessments: { en: 'Assessments', es: 'Evaluaciones' },
   'salary-insights': { en: 'Salary Insights', es: 'Perspectivas Salariales' },
   groups: { en: 'Groups', es: 'Grupos' },
+  announcements: { en: 'Announcements', es: 'Comunicados' },
 };
 
 const OPERATION_LABELS: Record<Operation, Record<'es' | 'en', string>> = {
@@ -75,6 +76,7 @@ const RESOURCE_CATEGORIES: ResourceCategory[] = [
       'notifications',
       'assessments',
       'salary-insights',
+      'announcements',
     ],
   },
   {

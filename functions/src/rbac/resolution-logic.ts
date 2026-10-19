@@ -31,6 +31,7 @@ const RESOURCE_ABBREV: Record<string, string> = {
   assessments: 'as',
   'salary-insights': 'si',
   groups: 'gr',
+  announcements: 'ac',
 };
 
 const OP_ABBREV: Record<string, string> = {

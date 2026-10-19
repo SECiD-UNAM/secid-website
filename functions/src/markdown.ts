@@ -1,0 +1,149 @@
+/**
+ * Minimal, dependency-free markdown renderer for member announcements (F20).
+ *
+ * Shared by the sendAnnouncement callable (email body) and the composer's
+ * live preview (src/lib/markdown.ts re-exports this file), so what the
+ * editor sees is what the member receives.
+ *
+ * Security model: the source is HTML-escaped BEFORE any inline rule runs,
+ * so raw HTML never reaches the output, and link targets are limited to
+ * http(s)/mailto. Supported syntax: `#`/`##`/`###` headings (rendered as
+ * h2–h4 — h1 is the email title), paragraphs separated by blank lines
+ * (single newlines become <br>), `-`/`*` and `1.` lists, `>` quotes,
+ * `---` rules, **bold**, *italic*, `code`, [text](url) and bare URLs.
+ *
+ * Kept to ES2017 syntax: functions/tsconfig.json targets es2017.
+ */
+
+export function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+const SAFE_HREF = /^(https?:\/\/|mailto:)/i;
+// The text was escaped first, so `"` and `'` can no longer appear raw. The
+// target allows one level of balanced parens (`javascript:alert(1)`) so an
+// unsafe link is swallowed whole instead of leaving a stray `)`.
+const LINK_RE = /\[([^\]]+)\]\(((?:[^\s()]|\([^\s()]*\))+)\)/g;
+const BARE_URL_RE = /(^|[\s(])(https?:\/\/[^\s<]+[^\s<.,;:!?)])/g;
+
+function renderLink(text: string, href: string): string {
+  return SAFE_HREF.test(href) ? `<a href="${href}">${text}</a>` : text;
+}
+
+/** Inline rules over an already-escaped line. */
+export function renderInline(escaped: string): string {
+  return escaped
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(LINK_RE, (_m, text: string, href: string) =>
+      renderLink(text, href)
+    )
+    .replace(
+      BARE_URL_RE,
+      (_m, lead: string, url: string) => `${lead}<a href="${url}">${url}</a>`
+    )
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|[^*\w])\*([^*\n]+)\*(?!\w)/g, '$1<em>$2</em>')
+    .replace(/(^|[^_\w])_([^_\n]+)_(?!\w)/g, '$1<em>$2</em>');
+}
+
+type Block =
+  | { kind: 'p' | 'quote'; lines: string[] }
+  | { kind: 'ul' | 'ol'; items: string[] }
+  | { kind: 'h'; level: number; text: string }
+  | { kind: 'hr' };
+
+const HEADING_RE = /^(#{1,3})\s+(.*)$/;
+const UL_RE = /^[-*]\s+(.*)$/;
+const OL_RE = /^\d+[.)]\s+(.*)$/;
+// Lines are escaped before parsing, hence `&gt;` rather than `>`.
+const QUOTE_RE = /^&gt;\s?(.*)$/;
+const HR_RE = /^(-{3,}|\*{3,})\s*$/;
+
+function pushLine(
+  blocks: Block[],
+  last: Block | undefined,
+  line: string
+): void {
+  // `?? ''` keeps the file valid under the root tsconfig's
+  // noUncheckedIndexedAccess as well as the functions one.
+  const heading = HEADING_RE.exec(line);
+  const ul = UL_RE.exec(line);
+  const ol = OL_RE.exec(line);
+  const quote = QUOTE_RE.exec(line);
+  if (HR_RE.test(line)) blocks.push({ kind: 'hr' });
+  else if (heading) {
+    const level = (heading[1] ?? '').length + 1;
+    blocks.push({ kind: 'h', level, text: heading[2] ?? '' });
+  } else if (ul) appendItem(blocks, last, 'ul', ul[1] ?? '');
+  else if (ol) appendItem(blocks, last, 'ol', ol[1] ?? '');
+  else if (quote) appendLine(blocks, last, 'quote', quote[1] ?? '');
+  else appendLine(blocks, last, 'p', line);
+}
+
+function appendItem(
+  blocks: Block[],
+  last: Block | undefined,
+  kind: 'ul' | 'ol',
+  item: string
+): void {
+  if (last && last.kind === kind) last.items.push(item);
+  else blocks.push({ kind, items: [item] });
+}
+
+function appendLine(
+  blocks: Block[],
+  last: Block | undefined,
+  kind: 'p' | 'quote',
+  line: string
+): void {
+  if (last && last.kind === kind) last.lines.push(line);
+  else blocks.push({ kind, lines: [line] });
+}
+
+/**
+ * Groups non-blank lines into blocks. A blank line always closes the open
+ * block, so `last` is only offered for continuation while one is open.
+ */
+export function parseBlocks(escaped: string): Block[] {
+  const blocks: Block[] = [];
+  let open = false;
+  for (const raw of escaped.split('\n')) {
+    const line = raw.replace(/\s+$/, '');
+    if (line.trim() === '') {
+      open = false;
+      continue;
+    }
+    pushLine(blocks, open ? blocks[blocks.length - 1] : undefined, line);
+    open = true;
+  }
+  return blocks;
+}
+
+function renderBlock(block: Block): string {
+  switch (block.kind) {
+    case 'hr':
+      return '<hr>';
+    case 'h':
+      return `<h${block.level}>${renderInline(block.text)}</h${block.level}>`;
+    case 'ul':
+    case 'ol':
+      return `<${block.kind}>${block.items
+        .map((i) => `<li>${renderInline(i)}</li>`)
+        .join('')}</${block.kind}>`;
+    case 'quote':
+      return `<blockquote><p>${block.lines.map(renderInline).join('<br>')}</p></blockquote>`;
+    default:
+      return `<p>${block.lines.map(renderInline).join('<br>')}</p>`;
+  }
+}
+
+/** Markdown → HTML fragment (no wrapper), with every source char escaped. */
+export function renderMarkdown(markdown: string): string {
+  const escaped = escapeHtml(markdown.replace(/\r\n?/g, '\n'));
+  return parseBlocks(escaped).map(renderBlock).join('');
+}
