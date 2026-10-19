@@ -9,6 +9,7 @@ import {
 } from 'firebase-functions/v2/identity';
 import * as functionsV1 from 'firebase-functions/v1';
 import { admin } from './init'; // Must be first — initializes Firebase before other imports
+import { FieldValue } from 'firebase-admin/firestore';
 import { sendEmail, generateJobMatchEmail } from './email-service';
 import {
   generateWelcomeEmail,
@@ -75,9 +76,9 @@ export const onUserCreate = beforeUserCreated(
         skills: [],
         lifecycle: {
           status: 'collaborator',
-          statusChangedAt: admin.firestore.FieldValue.serverTimestamp(),
+          statusChangedAt: FieldValue.serverTimestamp(),
           statusHistory: [],
-          lastActiveDate: admin.firestore.FieldValue.serverTimestamp(),
+          lastActiveDate: FieldValue.serverTimestamp(),
         },
         privacySettings: {
           profileVisible: true,
@@ -92,8 +93,8 @@ export const onUserCreate = beforeUserCreated(
           events: true,
           forums: true,
         },
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
         profileCompleteness: 20,
       });
 
@@ -217,7 +218,7 @@ export const matchJobsForUser = onDocumentUpdated(
         .doc('latest')
         .set({
           matches: matches.slice(0, 10),
-          generatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          generatedAt: FieldValue.serverTimestamp(),
         });
     }
 
@@ -271,7 +272,7 @@ export const onNewJobPosted = onDocumentCreated(
         if (posterDoc.data()?.role === 'company') {
           await event.data?.ref.update({
             status: 'active',
-            approvedAt: admin.firestore.FieldValue.serverTimestamp(),
+            approvedAt: FieldValue.serverTimestamp(),
           });
           // Continue to send notifications since job is now active
         } else {
@@ -354,7 +355,7 @@ export const onNewJobPosted = onDocumentCreated(
               html: recipient.html,
             });
             await markerRef.set({
-              sentAt: admin.firestore.FieldValue.serverTimestamp(),
+              sentAt: FieldValue.serverTimestamp(),
             });
           })
         );
@@ -458,7 +459,7 @@ export const onMemberStatusChange = onDocumentUpdated(
     // Skip during registration to prevent unintended group changes for recruiters
     if (afterData._skipGroupSync) {
       await event.data?.after.ref.update({
-        _skipGroupSync: admin.firestore.FieldValue.delete(),
+        _skipGroupSync: FieldValue.delete(),
       });
       return;
     }

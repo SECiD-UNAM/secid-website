@@ -9,6 +9,7 @@
  */
 import { onDocumentWritten } from 'firebase-functions/v2/firestore';
 import { admin } from '../init';
+import { FieldValue } from 'firebase-admin/firestore';
 import type { PermissionGrant } from './defaultGroups';
 import {
   resolveGroupPermissions,
@@ -239,7 +240,7 @@ async function writeAuditLog(
       actorId,
       targetId,
       changes,
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      timestamp: FieldValue.serverTimestamp(),
     });
   } catch (error) {
     console.error('Failed to write audit log:', error);

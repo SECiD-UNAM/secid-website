@@ -14,6 +14,11 @@ const PATHS = vi.hoisted(() => {
     firebaseAdmin: path.resolve(
       'functions/node_modules/firebase-admin/lib/index.js'
     ),
+    // Modular entry the SUT imports FieldValue/Timestamp from (vite picks the
+    // "import" export condition, hence lib/esm).
+    firebaseAdminFirestore: path.resolve(
+      'functions/node_modules/firebase-admin/lib/esm/firestore/index.js'
+    ),
   };
 });
 
@@ -34,6 +39,11 @@ const H = vi.hoisted(() => {
 vi.mock(PATHS.firebaseAdmin, () => ({
   firestore: H.firestore,
   default: { firestore: H.firestore },
+}));
+
+// The SUT imports FieldValue from the modular entry.
+vi.mock(PATHS.firebaseAdminFirestore, () => ({
+  FieldValue: (H.firestore as unknown as { FieldValue: unknown }).FieldValue,
 }));
 
 const { add, batchSet, batchCommit } = H;

@@ -1,5 +1,6 @@
 import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
 import * as admin from 'firebase-admin';
+import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 
 const db = admin.firestore();
 
@@ -168,7 +169,7 @@ export const onMergeRequestApproved = onDocumentUpdated(
 
       // Write a merge-in-progress flag to prevent onMemberStatusChange from firing
       updates['_mergeInProgress'] = true;
-      updates['updatedAt'] = admin.firestore.FieldValue.serverTimestamp();
+      updates['updatedAt'] = FieldValue.serverTimestamp();
 
       if (Object.keys(updates).length > 1) {
         await db.collection('users').doc(targetUid).update(updates);
@@ -224,7 +225,7 @@ export const onMergeRequestApproved = onDocumentUpdated(
         await db.collection('users').doc(sourceUid).update({
           merged: true,
           mergedInto: targetUid,
-          mergedAt: admin.firestore.FieldValue.serverTimestamp(),
+          mergedAt: FieldValue.serverTimestamp(),
         });
       } else if (action === 'archive') {
         await db.collection('archived_users').doc(sourceUid).set(sourceDoc);
@@ -239,7 +240,7 @@ export const onMergeRequestApproved = onDocumentUpdated(
         // the canonical doc.
         await db.collection('users').doc(sourceUid).set({
           aliasOf: targetUid,
-          mergedAt: admin.firestore.FieldValue.serverTimestamp(),
+          mergedAt: FieldValue.serverTimestamp(),
         });
 
         // Append the source user's email to the target's alternateEmails
@@ -272,13 +273,13 @@ export const onMergeRequestApproved = onDocumentUpdated(
           // elements; use a real Timestamp so the array write succeeds.
           dedupedAlts.push({
             email: sourceEmailLower,
-            verifiedAt: admin.firestore.Timestamp.now(),
+            verifiedAt: Timestamp.now(),
           });
           await targetRef.update({ alternateEmails: dedupedAlts });
 
           await db.collection('email_alias').doc(sourceEmailLower).set({
             canonicalUid: targetUid,
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            createdAt: FieldValue.serverTimestamp(),
           });
         }
       }
@@ -305,9 +306,9 @@ export const onMergeRequestApproved = onDocumentUpdated(
 
       // Step 7: Clean up target doc
       await db.collection('users').doc(targetUid).update({
-        potentialMergeMatch: admin.firestore.FieldValue.delete(),
-        _mergeInProgress: admin.firestore.FieldValue.delete(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        potentialMergeMatch: FieldValue.delete(),
+        _mergeInProgress: FieldValue.delete(),
+        updatedAt: FieldValue.serverTimestamp(),
       });
 
       // Step 8: Clean up old index entry.
@@ -332,9 +333,9 @@ export const onMergeRequestApproved = onDocumentUpdated(
       // surfaced status matches reality on retry.
       await requestRef.update({
         status: 'completed',
-        completedAt: admin.firestore.FieldValue.serverTimestamp(),
+        completedAt: FieldValue.serverTimestamp(),
         migratedCollections: migrated,
-        error: admin.firestore.FieldValue.delete(),
+        error: FieldValue.delete(),
       });
 
       // Step 10: Audit log.
@@ -358,7 +359,7 @@ export const onMergeRequestApproved = onDocumentUpdated(
             initiatedBy: afterData.initiatedBy || 'unknown',
             matchedBy: afterData.matchedBy || null,
             numeroCuenta: afterData.numeroCuenta || null,
-            completedAt: admin.firestore.FieldValue.serverTimestamp(),
+            completedAt: FieldValue.serverTimestamp(),
           });
       } catch (auditErr: unknown) {
         // Audit failure must not roll back the merge — but it must be
@@ -516,7 +517,7 @@ async function migrateNetworkingArrays(
     let count = 0;
     for (const docSnap of snap.docs) {
       batch.update(docSnap.ref, {
-        [fieldPath]: admin.firestore.FieldValue.arrayRemove(sourceUid),
+        [fieldPath]: FieldValue.arrayRemove(sourceUid),
       });
       count++;
       if (count >= 500) {
@@ -531,7 +532,7 @@ async function migrateNetworkingArrays(
     count = 0;
     for (const docSnap of snap.docs) {
       batch.update(docSnap.ref, {
-        [fieldPath]: admin.firestore.FieldValue.arrayUnion(targetUid),
+        [fieldPath]: FieldValue.arrayUnion(targetUid),
       });
       count++;
       if (count >= 500) {
