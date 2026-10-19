@@ -7,6 +7,9 @@ node_modules
 coverage/
 .nyc_output/
 test-results/
+# Vitest HTML reporter output (Vitest 5 writes .vitest/, older builds html/)
+.vitest/
+html/
 playwright-report/
 playwright/.cache/
 lighthouse-reports/

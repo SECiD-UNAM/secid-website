@@ -177,6 +177,9 @@ module.exports = {
   ],
   ignorePatterns: [
     'dist/',
+    '.vitest/',
+    'html/',
+    'test-results/',
     'node_modules/',
     // Separate package with its own root ESLint config and devDependencies
     // (eslint-plugin-import lives in functions/node_modules, which the root
