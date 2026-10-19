@@ -11,6 +11,7 @@ import {
   type QueryConstraint,
 } from 'firebase/firestore';
 import { db } from '@lib/firebase';
+import { matchesLocation } from '@lib/jobs/location';
 import type { DataAdapter } from './types';
 import type { FetchParams, FetchResult } from '../types';
 
@@ -177,9 +178,8 @@ export class JobFirestoreAdapter implements DataAdapter<Job> {
 
     if (!filters) return constraints;
 
-    if (filters.location) {
-      constraints.push(where('location', '==', filters.location));
-    }
+    // `location` is matched client-side (passesLocationFilter): the filter
+    // value is a city slug while jobs store free text.
     if (filters.employmentType?.length === 1) {
       constraints.push(
         where('employmentType', '==', filters.employmentType[0])
@@ -241,6 +241,7 @@ export class JobFirestoreAdapter implements DataAdapter<Job> {
 
   private applyClientFilters(jobs: Job[], filters: JobFilters): Job[] {
     return jobs.filter((job) => {
+      if (!matchesLocation(job, filters.location ?? '')) return false;
       if (!this.passesLocationTypeFilter(job, filters)) return false;
       if (!this.passesEmploymentTypeFilter(job, filters)) return false;
       if (!this.passesExperienceLevelFilter(job, filters)) return false;
