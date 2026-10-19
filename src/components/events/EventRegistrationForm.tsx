@@ -6,8 +6,7 @@ import {
   addDoc,
   getDoc,
   serverTimestamp,
-  updateDoc,
-  increment,
+  setDoc,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { buildEventRegistrationDoc } from '@/lib/events/registrationPayload';
@@ -370,9 +369,11 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
         }
       );
 
-      // Add to event's registrations subcollection for easier queries
-      await addDoc(
-        collection(db, 'events', eventId, 'registrations'),
+      // Add to event's registrations subcollection, keyed by uid (what
+      // EventDetail reads and deletes). The attendee counter on the event
+      // is maintained by the Cloud Function trigger on this write.
+      await setDoc(
+        doc(db, 'events', eventId, 'registrations', user.uid),
         buildEventRegistrationDoc({
           eventId,
           userId: user.uid,
@@ -382,22 +383,16 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
         })
       );
 
-      // Update event's current attendees count
-      await updateDoc(doc(db, 'events', eventId), {
-        currentAttendees: increment(1),
+      // Add to user's registered events, keyed by event id (what
+      // EventDetail deletes on cancellation).
+      await setDoc(doc(db, 'users', user.uid, 'registeredEvents', eventId), {
+        eventId,
+        eventTitle: eventDetails.title,
+        eventDate: eventDetails.startDate,
+        registrationId: registrationRef['id'],
+        registeredAt: serverTimestamp(),
+        status: 'registered',
       });
-
-      // Add to user's registered events
-      if (userProfile) {
-        await addDoc(collection(db, 'users', user.uid, 'registeredEvents'), {
-          eventId,
-          eventTitle: eventDetails.title,
-          eventDate: eventDetails.startDate,
-          registrationId: registrationRef['id'],
-          registeredAt: serverTimestamp(),
-          status: 'registered',
-        });
-      }
 
       setSuccess(true);
 
