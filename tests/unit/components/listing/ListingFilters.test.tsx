@@ -12,7 +12,7 @@ const definitions = [
   { key: 'active', label: 'Active Only', type: 'toggle' as const },
 ];
 
-describe.sequential('ListingFilters', () => {
+describe('ListingFilters', { concurrent: false }, () => {
   it('renders collapsible by default (toggle button visible)', () => {
     render(
       <ListingFilters

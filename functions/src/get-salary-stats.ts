@@ -1,5 +1,6 @@
 import { onRequest } from 'firebase-functions/v2/https';
-import * as admin from 'firebase-admin';
+import { getAuth, type DecodedIdToken } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 import {
   decodeClaimsPermissions,
   checkPermission,
@@ -7,7 +8,7 @@ import {
 import { isAllowedOrigin } from './env';
 
 function getDb() {
-  return admin.firestore();
+  return getFirestore();
 }
 
 // Privacy: minimum data points per group
@@ -106,11 +107,11 @@ export const getSalaryStats = onRequest(
       return;
     }
 
-    let decodedToken: admin.auth.DecodedIdToken;
+    let decodedToken: DecodedIdToken;
     try {
-      decodedToken = await admin
-        .auth()
-        .verifyIdToken(authHeader.split('Bearer ')[1]!);
+      decodedToken = await getAuth().verifyIdToken(
+        authHeader.split('Bearer ')[1]!
+      );
     } catch {
       res.status(401).json({
         error: { message: 'Invalid token', status: 'UNAUTHENTICATED' },

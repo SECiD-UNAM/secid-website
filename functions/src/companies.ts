@@ -1,8 +1,7 @@
 import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
-import { FieldValue } from 'firebase-admin/firestore';
-import * as admin from 'firebase-admin';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 
-const db = admin.firestore();
+const db = getFirestore();
 
 export const onMemberCompanyChange = onDocumentUpdated(
   'users/{userId}',

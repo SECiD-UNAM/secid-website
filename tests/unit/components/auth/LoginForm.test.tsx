@@ -130,7 +130,7 @@ const renderForm = (props: Partial<LoginFormProps> = {}) =>
 // Every test renders into the shared document and reads the shared
 // localStorage/mock state, which is incompatible with the suite's per-file
 // concurrent execution (vitest sequence.concurrent) — run sequentially.
-describe.sequential('LoginForm', () => {
+describe('LoginForm', { concurrent: false }, () => {
   const mockUser = {
     uid: 'user123',
     email: 'test@example.com',

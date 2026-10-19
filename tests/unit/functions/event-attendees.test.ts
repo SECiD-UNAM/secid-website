@@ -30,6 +30,12 @@ const PATHS = vi.hoisted(() => {
   );
   return {
     init: path.resolve('functions/src/init.ts'),
+    // Modular entry the SUT imports getFirestore from (vite picks the
+    // "import" export condition, hence lib/esm).
+    firebaseAdminFirestore: path.join(
+      functionsModules,
+      'firebase-admin/lib/esm/firestore/index.js'
+    ),
     firebaseFunctionsFirestore: path.join(
       functionsModules,
       'firebase-functions/lib/esm/v2/providers/firestore.mjs'
@@ -77,8 +83,10 @@ const H = vi.hoisted(() => {
   return { state, db };
 });
 
-vi.mock(PATHS.init, () => ({
-  admin: { firestore: () => H.db },
+vi.mock(PATHS.init, () => ({}));
+
+vi.mock(PATHS.firebaseAdminFirestore, () => ({
+  getFirestore: () => H.db,
 }));
 
 vi.mock(PATHS.firebaseFunctionsFirestore, () => ({

@@ -88,7 +88,7 @@ const makePost = (
   ...overrides,
 });
 
-describe.sequential('ForumSearch', () => {
+describe('ForumSearch', { concurrent: false }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetAllCategories.mockResolvedValue([

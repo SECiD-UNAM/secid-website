@@ -1,8 +1,8 @@
 // @ts-nocheck
 import { onRequest, onCall, HttpsError } from 'firebase-functions/v2/https';
 import { defineSecret } from 'firebase-functions/params';
-import { FieldValue } from 'firebase-admin/firestore';
-import * as admin from 'firebase-admin';
+import { getAuth, type UserRecord } from 'firebase-admin/auth';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import * as crypto from 'crypto';
 
 const linkedinClientId = defineSecret('LINKEDIN_CLIENT_ID');
@@ -93,8 +93,8 @@ export const linkedinAuthCallback = onRequest(
       }
     }
 
-    const db = admin.firestore();
-    const auth = admin.auth();
+    const db = getFirestore();
+    const auth = getAuth();
 
     try {
       // --- Exchange code for access token ---
@@ -154,7 +154,7 @@ export const linkedinAuthCallback = onRequest(
       }
 
       // --- Find or create Firebase user (auto-merge by email) ---
-      let firebaseUser: admin.auth.UserRecord;
+      let firebaseUser: UserRecord;
       try {
         firebaseUser = await auth.getUserByEmail(email);
         await auth.updateUser(firebaseUser.uid, {
@@ -216,7 +216,7 @@ export const linkedinAuthCallback = onRequest(
       // --- Generate custom token and store via short-lived code ---
       const customToken = await auth.createCustomToken(firebaseUser.uid);
       const code = crypto.randomBytes(32).toString('hex');
-      const db = admin.firestore();
+      const db = getFirestore();
 
       await db
         .collection('linkedin_auth_codes')
@@ -249,7 +249,7 @@ export const exchangeLinkedInCode = onCall<{ code: string }>(
       throw new HttpsError('invalid-argument', 'Code is required');
     }
 
-    const firestore = admin.firestore();
+    const firestore = getFirestore();
     const codeRef = firestore.collection('linkedin_auth_codes').doc(code);
 
     // Atomic read-check-update to prevent race conditions

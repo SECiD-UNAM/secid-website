@@ -1,7 +1,7 @@
-import * as admin from 'firebase-admin';
+import { initializeApp } from 'firebase-admin/app';
 import { setGlobalOptions } from 'firebase-functions/v2';
 
-admin.initializeApp();
+initializeApp();
 
 // Size every gen2 function to fit the project's Cloud Run CPU quota
 // (us-central1: 20 vCPU). At the default of 1 vCPU per instance, a deploy
@@ -14,5 +14,3 @@ admin.initializeApp();
 // 1 request per instance, hence the higher maxInstances. Must run before
 // any function is defined, which is why it lives in this first import.
 setGlobalOptions({ cpu: 'gcf_gen1', maxInstances: 10 });
-
-export { admin };

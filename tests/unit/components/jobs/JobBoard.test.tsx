@@ -17,9 +17,10 @@ vi.mock('@lib/listing/adapters/JobFirestoreAdapter', async (importOriginal) => {
   const actual = await importOriginal<typeof JobFirestoreAdapterModule>();
   return {
     ...actual,
-    JobFirestoreAdapter: vi.fn().mockImplementation(() => ({
-      fetch: vi.fn(),
-    })),
+    // Called with `new`, so the implementation must be a `function` (Vitest 4+).
+    JobFirestoreAdapter: vi.fn().mockImplementation(function () {
+      return { fetch: vi.fn() };
+    }),
   };
 });
 
@@ -110,7 +111,7 @@ const mockUserProfile = {
   location: 'Ciudad de México',
 };
 
-describe.sequential('JobBoard', () => {
+describe('JobBoard', { concurrent: false }, () => {
   const MockedJobFirestoreAdapter = vi.mocked(
     JobFirestoreAdapterModule.JobFirestoreAdapter
   );
@@ -128,9 +129,9 @@ describe.sequential('JobBoard', () => {
       nextCursor: 'cursor-token',
     });
 
-    MockedJobFirestoreAdapter.mockImplementation(() => ({
-      fetch: mockFetch,
-    }));
+    MockedJobFirestoreAdapter.mockImplementation(function () {
+      return { fetch: mockFetch };
+    });
 
     mockUseAuth.mockReturnValue({
       user: mockUser,

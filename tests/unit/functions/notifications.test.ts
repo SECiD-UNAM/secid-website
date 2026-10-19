@@ -136,13 +136,14 @@ const H = vi.hoisted(() => {
   };
 });
 
-vi.mock(PATHS.init, () => ({ admin: { firestore: () => H.db } }));
+vi.mock(PATHS.init, () => ({}));
 vi.mock(PATHS.env, () => ({ getAppUrl: () => 'https://secid.test' }));
 vi.mock(PATHS.emailService, () => ({
   sendEmail: H.sendEmail,
   sendBatchEmails: H.sendBatchEmails,
 }));
 vi.mock(PATHS.firebaseAdminFirestore, () => ({
+  getFirestore: () => H.db,
   FieldValue: H.FieldValue,
   Timestamp: H.Timestamp,
 }));
@@ -221,7 +222,7 @@ async function firestoreEvent(path: string, params: Record<string, string>) {
 // vitest.config.ts runs a file's tests (and sibling describes) concurrently;
 // these share the in-memory Firestore, the mail spies and
 // process.env.ADMIN_EMAIL, so the whole file is one sequential suite.
-describe.sequential('F19 notifications', () => {
+describe('F19 notifications', { concurrent: false }, () => {
   beforeEach(() => {
     H.state.docs.clear();
     H.state.updates.length = 0;
