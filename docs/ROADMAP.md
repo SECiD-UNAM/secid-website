@@ -202,25 +202,39 @@ que en prod un miembro no puede completarlos. Ninguno tiene test porque el
 submit se dejó sin ejercitar a propósito hasta arreglarlo; cada fix debe
 llegar con su e2e contra emuladores (ya hay arnés, seed y job bloqueante).
 
-- [ ] G23. Postularse a una vacante: el modal escribe `status:'pending'` sin
-      `jobId` ni `createdAt`; las reglas exigen `status=='submitted'`,
-      `jobId` y `createdAt==request.time`, y `users/{uid}/applications` no
-      tiene regla → denegado. `/es/dashboard/applications` sale vacío por lo
-      mismo. Fix: alinear el payload con las reglas (o las reglas con el
-      payload) y añadir la regla de la subcolección.
-- [ ] G24. Registrarse a un evento: escribe `events/{id}/registrations` sin
-      `eventId` (obligatorio) e incrementa `events/{id}.currentAttendees`,
-      que solo pueden tocar editores RBAC → denegado. Fix: incluir `eventId`
-      y mover el contador a una function (`onDocumentCreated` de la
-      subcolección) o permitir el `increment` acotado en reglas.
+- [x] G23. PR #122 (2026-10-19): el payload del modal ya cumple las reglas
+      (`status:'submitted'`, `jobId`, `createdAt==request.time`, en
+      `src/lib/jobs/applicationPayload.ts`), nueva regla owner-only para
+      `users/{uid}/applications` (solo puede retirar, nunca cambiar el
+      estado) y el tracker de `/es/dashboard/applications` entiende
+      `submitted`/`withdrawn`. Test de reglas + e2e con submit completo.
+      Antes: el modal escribía `status:'pending'` sin `jobId` ni
+      `createdAt` y la subcolección no tenía regla → denegado.
+- [x] G24. PR #125 (2026-10-19): el registro incluye `eventId` y se guarda
+      en `events/{id}/registrations/{uid}` (lo que `EventDetail` lee y
+      borra); el contador `currentAttendees` lo mantienen las functions
+      `onEventRegistrationCreated`/`Deleted` (`functions/src/event-attendees.ts`,
+      transacción, nunca < 0); regla owner-only para
+      `users/{uid}/registeredEvents`; el seed da a los miembros los claims
+      RBAC reales (sin `rbac` en el token, toda regla con `hasRBACDeny`
+      deniega). Tests de reglas, unit del trigger y e2e registro + cancelación.
+      Antes: sin `eventId` e incrementando el evento desde el cliente →
+      denegado. Pendiente aparte: la lectura de registrations honra
+      `ev:v.a` (cualquier miembro ve nombre y correo de otros inscritos) y
+      `users/{uid}/savedEvents` sigue sin regla.
 - [ ] G25. Foros: `forum_categories`, `forum_topics` y `forum_posts` no
       tienen reglas, así que solo se ven las 6 categorías integradas y
       `/es/forum/category/{slug}` muestra "Error al cargar los datos".
       Decidir si los foros se lanzan (reglas + seed + e2e) o se ocultan del
       menú hasta entonces.
-- [ ] G26. Filtro de ubicación del job board: `where('location','==',
-'Guadalajara')` contra datos "Guadalajara, Jalisco" → nunca coincide.
-      Fix: campo normalizado (`locationCity`) al guardar + filtro sobre él.
+- [x] G26. PR #126 (2026-10-19): el filtro de ubicación se aplica en el
+      cliente (`src/lib/jobs/location.ts`, coincidencia normalizada por
+      palabra: "Guadalajara, Jalisco" ⇐ `guadalajara`, "Ciudad de México,
+      CDMX" ⇐ `cdmx`, `remote` también por `locationType`), como el resto
+      de facetas de `JobFirestoreAdapter`. Sin campo nuevo ni backfill: el
+      `where('location','==', slug)` nunca coincidía con el texto libre y
+      además habría necesitado un índice compuesto inexistente. Unit del
+      matcher + e2e por ciudad.
 
 ## Orden recomendado (actualizado 2026-10-19, tras A4/B6)
 
@@ -231,8 +245,8 @@ Dev, en este orden y cada paso un PR con auto-merge:
 3. ~~A5(a)~~ hecho (PRs #117 y #119); `continue-on-error` quitado del job
    chromium en PR #119; falta (owner) hacerlo requerido en `main`.
 4. ~~B5~~ hecho (PR #121); lint bloqueante en CI.
-5. G23 → G24 → G26 (1–2 días): son flujos rotos en prod para cualquier
-   miembro; G25 es decisión de producto (lanzar foros u ocultarlos).
+5. ~~G23 → G24 → G26~~ hecho (PRs #122, #125, #126); G25 es decisión de
+   producto (lanzar foros u ocultarlos).
 6. F19 → F20 → F21 (3–4 días) cuando haya eventos, mensajes de contacto o
    un comunicado real que mandar; F22 solo si se decide conservar el centro
    de notificaciones.

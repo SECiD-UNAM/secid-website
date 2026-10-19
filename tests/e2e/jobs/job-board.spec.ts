@@ -8,10 +8,9 @@ import { SEEDED, login } from '../../utils/session';
  * publishes three active jobs. The public /es/jobs page (hero, CTAs,
  * search) is covered by tests/e2e/job-search.spec.ts.
  *
- * Note: the "Ubicación" select filters with `where('location', '==', …)`
- * against values such as "Guadalajara" while seeded jobs store
- * "Guadalajara, Jalisco", so it never matches seeded data and is not
- * asserted here.
+ * The "Ubicación" select offers fixed city slugs (cdmx, guadalajara, …)
+ * while jobs store free text ("Guadalajara, Jalisco"); the adapter matches
+ * them client-side via src/lib/jobs/location.ts.
  */
 const SENIOR = 'Senior Data Scientist';
 const JUNIOR = 'Data Analyst Junior';
@@ -89,6 +88,23 @@ test.describe('Job board (member)', () => {
 
     await page.getByRole('button', { name: 'Limpiar filtros' }).click();
     await expect(remote).not.toBeChecked();
+    await expectJobs(page, [SENIOR, ML, JUNIOR]);
+  });
+
+  test('location filter matches the seeded free-text locations', async ({
+    page,
+  }) => {
+    const location = page.locator('select:has(option[value="guadalajara"])');
+    await location.selectOption('guadalajara');
+    await expectJobs(page, [JUNIOR]);
+
+    await location.selectOption('cdmx');
+    await expectJobs(page, [SENIOR]);
+
+    await location.selectOption('remote');
+    await expectJobs(page, [ML]);
+
+    await location.selectOption('');
     await expectJobs(page, [SENIOR, ML, JUNIOR]);
   });
 
