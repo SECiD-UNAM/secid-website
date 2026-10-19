@@ -111,8 +111,8 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       (Runbook prod-cutover §6)
 - [ ] C10. Billing → Account management: confirmar el correo de avisos de pago.
       El correo de prueba del presupuesto llega con el primer umbral.
-- [ ] C11. Añadir un archivo `LICENSE` (package.json dice MIT; GitHub no detecta
-      licencia). Decisión del owner sobre la licencia.
+- [x] C11. Archivo `LICENSE` (MIT, titular SECiD — Sociedad de Egresados en
+      Ciencia de Datos, UNAM) añadido por PR; coincide con `package.json`.
 
 ## Bloque D — Aplazado por decisión del owner
 
