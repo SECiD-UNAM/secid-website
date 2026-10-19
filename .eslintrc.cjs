@@ -55,6 +55,9 @@ module.exports = {
 
     // Accessibility rules
     'jsx-a11y/anchor-is-valid': 'off', // Astro handles this differently
+    // Labels that wrap a radio/checkbox put the text in an icon+text layout
+    // (`label > div > span`); the default depth (2) stops one level short.
+    'jsx-a11y/label-has-associated-control': ['error', { depth: 3 }],
     'jsx-a11y/click-events-have-key-events': 'warn',
     'jsx-a11y/no-static-element-interactions': 'warn',
 
@@ -122,7 +125,12 @@ module.exports = {
     {
       // Node CommonJS maintenance scripts (run with plain `node`, no
       // bundler). They use `require()` by design.
-      files: ['scripts/**/*.js', 'build.js', 'run-tests.js', 'validate-schema.js'],
+      files: [
+        'scripts/**/*.js',
+        'build.js',
+        'run-tests.js',
+        'validate-schema.js',
+      ],
       env: {
         node: true,
       },

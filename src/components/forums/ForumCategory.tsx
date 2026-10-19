@@ -356,10 +356,14 @@ const ForumCategory: React.FC<ForumCategoryProps> = ({
             <div className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label
+                    htmlFor="forum-filter-solved"
+                    className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
                     Status:
                   </label>
                   <select
+                    id="forum-filter-solved"
                     value={filterSolved}
                     onChange={(e) =>
                       setFilterSolved(

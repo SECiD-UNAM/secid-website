@@ -512,11 +512,15 @@ export const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
                     </div>
 
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <label
+                        htmlFor="application-linkedin"
+                        className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                      >
                         <LinkIcon className="mr-1 inline h-4 w-4" />
                         LinkedIn
                       </label>
                       <input
+                        id="application-linkedin"
                         type="url"
                         value={applicationData.linkedinUrl}
                         onChange={(e) =>
@@ -531,11 +535,15 @@ export const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
                     </div>
 
                     <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <label
+                        htmlFor="application-github"
+                        className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                      >
                         <LinkIcon className="mr-1 inline h-4 w-4" />
                         GitHub
                       </label>
                       <input
+                        id="application-github"
                         type="url"
                         value={applicationData.githubUrl}
                         onChange={(e) =>

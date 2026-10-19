@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../../contexts/AuthContext';
-import { useTranslations } from '../../hooks/useTranslations';
 import type { MenteeProfile } from '@/types/mentorship';
 import {
   getMenteeProfile,
@@ -141,7 +140,6 @@ export default function MenteeProfileForm({
   onCancel,
 }: MenteeProfileFormProps) {
   const { user } = useAuthContext();
-  const t = useTranslations();
 
   const [formData, setFormData] = useState<MenteeFormData>(INITIAL_FORM_DATA);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -544,10 +542,17 @@ export default function MenteeProfileForm({
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span
+              id="mentee-preferred-days-label"
+              className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Preferred Days
-            </label>
-            <div className="flex flex-wrap gap-2">
+            </span>
+            <div
+              role="group"
+              aria-labelledby="mentee-preferred-days-label"
+              className="flex flex-wrap gap-2"
+            >
               {DAYS_OF_WEEK.map((day) => (
                 <button
                   key={day.full}
@@ -570,10 +575,17 @@ export default function MenteeProfileForm({
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span
+              id="mentee-meeting-preference-label"
+              className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Meeting Preference
-            </label>
-            <div className="grid grid-cols-3 gap-3">
+            </span>
+            <div
+              role="group"
+              aria-labelledby="mentee-meeting-preference-label"
+              className="grid grid-cols-3 gap-3"
+            >
               {(
                 [
                   { value: 'video', label: 'Video' },

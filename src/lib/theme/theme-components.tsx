@@ -43,8 +43,13 @@ export const ThemeToggle: React.FC<{
   if (variant === 'select') {
     return (
       <div className={`flex items-center space-x-2 ${className}`}>
-        {showLabel && <label className="text-sm font-medium">Theme:</label>}
+        {showLabel && (
+          <label htmlFor="theme-select" className="text-sm font-medium">
+            Theme:
+          </label>
+        )}
         <select
+          id="theme-select"
           value={theme}
           onChange={(e) => setTheme(e.target.value as Theme)}
           className="rounded-md border border-gray-300 px-3 py-1 text-sm"
