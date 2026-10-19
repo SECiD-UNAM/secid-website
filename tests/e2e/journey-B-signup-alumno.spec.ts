@@ -10,13 +10,25 @@
  *
  *   E2E_QA_EMAIL=qa-secid-<YYYYMMDD>@mailinator.com \
  *   E2E_QA_PASSWORD='<strong-password>' \
- *   E2E_QA_NUMERO_CUENTA='<8 dígitos no-usado>' \
+ *   E2E_QA_NUMERO_CUENTA='<9 dígitos no-usado>' \
  *   E2E_QA_ADMIN_EMAIL='<admin de prueba>' \
  *   E2E_QA_ADMIN_PASSWORD='<password admin>' \
  *   BASE_URL=https://beta.secid.mx \
  *     npx playwright test journey-B-signup-alumno --headed
  *
  * El test usa skip() si las env vars no están, para no romper CI.
+ *
+ * Estado contra los emuladores (ROADMAP A5(c), 2026-10-19): el bloqueo del
+ * emulador de functions ya no existe — CI lo arranca junto a auth/firestore
+ * y el callable `completeRegistration` responde; `scripts/seed-emulator.js`
+ * reserva el número de cuenta 300000001 (libre en `numero_cuenta_index`).
+ * Lo que sigue faltando es reescribir el spec contra la UI real: la
+ * página /es/signup es un wizard en una sola URL (h2 "Crear Cuenta" →
+ * tipo de cuenta → datos UNAM → encuesta) con confirmPassword y
+ * acceptTerms obligatorios, no existe la ruta /es/onboarding con botones
+ * "Continuar", y los pasos admin (B19-B25) dependen de que ese signup haya
+ * ocurrido. Corrido tal cual contra los emuladores fallan los 3 tests en su
+ * primera aserción, por eso CI deja E2E_QA_NUMERO_CUENTA sin definir.
  */
 import { test, expect } from '@playwright/test';
 
@@ -29,7 +41,8 @@ const ADMIN_PASSWORD = process.env.E2E_QA_ADMIN_PASSWORD;
 test.describe('Journey B — Signup nuevo alumno end-to-end', () => {
   test.skip(
     !EMAIL || !PASSWORD || !NUMERO_CUENTA,
-    'Set E2E_QA_EMAIL + E2E_QA_PASSWORD + E2E_QA_NUMERO_CUENTA to run'
+    'Set E2E_QA_EMAIL + E2E_QA_PASSWORD + E2E_QA_NUMERO_CUENTA to run — ' +
+      'pending rewrite against the real signup wizard (see header)'
   );
 
   test('B1-B6 signup + email verify + dashboard BASIC tier', async ({

@@ -208,6 +208,12 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
+      # The functions emulator loads functions/lib (tsc output) and resolves
+      # firebase-admin/firebase-functions from functions/node_modules, which
+      # the root `npm ci` does not populate.
+      - name: Install and build Cloud Functions
+        run: cd functions && npm ci && npm run build
+
       - name: Cache Firebase emulators
         uses: actions/cache@v4
         with:
@@ -227,13 +233,17 @@ jobs:
 
       # Informational until the remaining suites are rewritten against the
       # real UI (see test.describe.skip reasons under tests/e2e). The
-      # functions emulator is left out on purpose: its firebase-admin stub
-      # drops `admin.firestore.FieldValue`, so the blocking `onUserCreate`
-      # trigger 500s and no Auth user can be created. The E2E_QA_* vars
-      # unlock the journey-* specs with the seeded accounts.
+      # functions emulator runs too, so the blocking `onUserCreate` trigger
+      # and callables such as `completeRegistration` are live (PR #114 moved
+      # the FieldValue/Timestamp statics to `firebase-admin/firestore`, which
+      # the emulator's firebase-admin stub does expose). The demo project
+      # needs no credentials; Google Groups sync only logs an error. The
+      # E2E_QA_* vars unlock the journey-* specs with the seeded accounts;
+      # E2E_QA_NUMERO_CUENTA stays unset until journey-B is rewritten
+      # against the real signup wizard (see its header).
       - name: Run full E2E suite against the emulators (informational)
         run: |
-          npx firebase-tools emulators:exec --only auth,firestore,storage \
+          npx firebase-tools emulators:exec --only auth,firestore,storage,functions \
             --project demo-secid-alumni \
             "npm run seed && npx playwright test --project=${{ matrix.browser }} --reporter=line,json"
         env:
