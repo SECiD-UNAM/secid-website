@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import {
-  doc,
-  collection,
-  addDoc,
-  getDoc,
-  serverTimestamp,
-} from 'firebase/firestore';
+import { doc, collection, addDoc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '@/lib/firebase';
+import {
+  buildApplicationMirrorDoc,
+  buildJobApplicationDoc,
+} from '@/lib/jobs/applicationPayload';
 import {
   XMarkIcon,
   DocumentIcon,
@@ -184,10 +182,11 @@ export const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
       // Create application document
       const applicationRef = await addDoc(
         collection(db, 'jobs', jobId, 'applications'),
-        {
+        buildJobApplicationDoc({
+          jobId,
           applicantId: user.uid,
-          applicantName: userProfile.displayName || user['email'],
-          applicantEmail: user['email'],
+          applicantName: userProfile.displayName || user['email'] || '',
+          applicantEmail: user['email'] || '',
           applicantProfile: {
             skills: userProfile.skills || [],
             experience: userProfile.experience || [],
@@ -205,23 +204,20 @@ export const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
           educationLevel: applicationData.educationLevel,
           additionalInfo: applicationData.additionalInfo,
           questionsForEmployer: applicationData.questionsForEmployer,
-          appliedAt: serverTimestamp(),
-          status: 'pending',
-          viewed: false,
-          shortlisted: false,
-          rejected: false,
-        }
+        })
       );
 
       // Also add to user's applications collection
-      await addDoc(collection(db, 'users', user.uid, 'applications'), {
-        jobId,
-        jobTitle: jobDetails?.title,
-        company: jobDetails?.company,
-        applicationId: applicationRef['id'],
-        appliedAt: serverTimestamp(),
-        status: 'pending',
-      });
+      await addDoc(
+        collection(db, 'users', user.uid, 'applications'),
+        buildApplicationMirrorDoc({
+          jobId,
+          jobTitle: jobDetails?.title,
+          company: jobDetails?.company,
+          location: jobDetails?.location,
+          applicationId: applicationRef['id'],
+        })
+      );
 
       setSuccess(true);
       setTimeout(() => {
@@ -513,14 +509,14 @@ export const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
 
                     <div>
                       <label
-                        htmlFor="application-linkedin"
+                        htmlFor="application-linkedin-url"
                         className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                       >
                         <LinkIcon className="mr-1 inline h-4 w-4" />
                         LinkedIn
                       </label>
                       <input
-                        id="application-linkedin"
+                        id="application-linkedin-url"
                         type="url"
                         value={applicationData.linkedinUrl}
                         onChange={(e) =>
@@ -536,14 +532,14 @@ export const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
 
                     <div>
                       <label
-                        htmlFor="application-github"
+                        htmlFor="application-github-url"
                         className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                       >
                         <LinkIcon className="mr-1 inline h-4 w-4" />
                         GitHub
                       </label>
                       <input
-                        id="application-github"
+                        id="application-github-url"
                         type="url"
                         value={applicationData.githubUrl}
                         onChange={(e) =>

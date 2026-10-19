@@ -7,6 +7,7 @@ import {
   onSnapshot,
   doc,
   updateDoc,
+  serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import {
@@ -32,7 +33,15 @@ interface Application {
   companyLogo?: string;
   location: string;
   appliedAt: Date;
-  status: 'pending' | 'reviewed' | 'shortlisted' | 'rejected' | 'hired';
+  status:
+    | 'submitted'
+    | 'pending'
+    | 'reviewed'
+    | 'shortlisted'
+    | 'rejected'
+    | 'hired'
+    | 'withdrawn';
+  applicationId?: string;
   viewed: boolean;
   lastUpdated?: Date;
   notes?: string;
@@ -51,7 +60,7 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<
-    'all' | 'pending' | 'reviewed' | 'shortlisted' | 'rejected' | 'hired'
+    'all' | 'submitted' | 'reviewed' | 'shortlisted' | 'rejected' | 'hired'
   >('all');
   const [sortBy, setSortBy] = useState<'date' | 'status' | 'company'>('date');
 
@@ -84,8 +93,12 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
+      submitted:
+        'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400',
       pending:
         'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400',
+      withdrawn:
+        'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300',
       reviewed:
         'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400',
       shortlisted:
@@ -99,7 +112,9 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
 
   const getStatusLabel = (status: string) => {
     const labels: Record<string, Record<string, string>> = {
+      submitted: { es: 'Enviada', en: 'Submitted' },
       pending: { es: 'Pendiente', en: 'Pending' },
+      withdrawn: { es: 'Retirada', en: 'Withdrawn' },
       reviewed: { es: 'Revisada', en: 'Reviewed' },
       shortlisted: { es: 'Preseleccionado', en: 'Shortlisted' },
       rejected: { es: 'Rechazada', en: 'Rejected' },
@@ -110,8 +125,11 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
 
   const getStatusIcon = (status: string) => {
     switch (status) {
+      case 'submitted':
       case 'pending':
         return <ClockIcon className="h-4 w-4" />;
+      case 'withdrawn':
+        return <XCircleIcon className="h-4 w-4" />;
       case 'reviewed':
         return <EyeIcon className="h-4 w-4" />;
       case 'shortlisted':
@@ -146,7 +164,7 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
     }
   };
 
-  const handleWithdraw = async (applicationId: string) => {
+  const handleWithdraw = async (application: Application) => {
     if (!user) return;
 
     const confirmMessage =
@@ -156,12 +174,25 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
 
     if (confirm(confirmMessage)) {
       try {
+        // Canonical doc first (what the employer sees), then the mirror.
+        if (application.applicationId) {
+          await updateDoc(
+            doc(
+              db,
+              'jobs',
+              application.jobId,
+              'applications',
+              application.applicationId
+            ),
+            { status: 'withdrawn', updatedAt: serverTimestamp() }
+          );
+        }
         await updateDoc(
-          doc(db, 'users', user.uid, 'applications', applicationId),
+          doc(db, 'users', user.uid, 'applications', application['id']),
           {
             status: 'withdrawn',
-            withdrawnAt: new Date(),
-            lastUpdated: new Date(),
+            withdrawnAt: serverTimestamp(),
+            lastUpdated: serverTimestamp(),
           }
         );
       } catch (error) {
@@ -188,7 +219,9 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
   // Statistics
   const stats = {
     total: applications.length,
-    pending: applications.filter((a) => a['status'] === 'pending').length,
+    submitted: applications.filter(
+      (a) => a['status'] === 'submitted' || a['status'] === 'pending'
+    ).length,
     reviewed: applications.filter((a) => a['status'] === 'reviewed').length,
     shortlisted: applications.filter((a) => a['status'] === 'shortlisted')
       .length,
@@ -239,10 +272,10 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
 
         <div className="rounded-lg bg-yellow-50 p-4 shadow dark:bg-yellow-900/20">
           <div className="text-2xl font-bold text-yellow-700 dark:text-yellow-400">
-            {stats.pending}
+            {stats.submitted}
           </div>
           <div className="text-sm text-yellow-600 dark:text-yellow-500">
-            {lang === 'es' ? 'Pendientes' : 'Pending'}
+            {lang === 'es' ? 'Enviadas' : 'Submitted'}
           </div>
         </div>
 
@@ -296,8 +329,8 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
             className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           >
             <option value="all">{lang === 'es' ? 'Todas' : 'All'}</option>
-            <option value="pending">
-              {lang === 'es' ? 'Pendientes' : 'Pending'}
+            <option value="submitted">
+              {lang === 'es' ? 'Enviadas' : 'Submitted'}
             </option>
             <option value="reviewed">
               {lang === 'es' ? 'Revisadas' : 'Reviewed'}
@@ -470,9 +503,9 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
                   {lang === 'es' ? 'Ver empleo' : 'View job'}
                 </a>
 
-                {application['status'] === 'pending' && (
+                {application['status'] === 'submitted' && (
                   <button
-                    onClick={() => handleWithdraw(application['id'])}
+                    onClick={() => handleWithdraw(application)}
                     className="text-sm font-medium text-red-600 hover:underline dark:text-red-400"
                   >
                     {lang === 'es'
