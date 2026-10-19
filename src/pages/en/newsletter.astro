@@ -127,14 +127,6 @@ import Footer from '../../components/Footer.astro';
               </button>
 
               <div
-                id="newsletter-success"
-                class="secid-form__message secid-form__message--success"
-                style="display:none;"
-              >
-                <i class="fas fa-check-circle"></i>
-                Thank you for subscribing! Check your email to confirm.
-              </div>
-              <div
                 id="newsletter-error"
                 class="secid-form__message secid-form__message--error"
                 style="display:none;"
@@ -145,6 +137,16 @@ import Footer from '../../components/Footer.astro';
                 >
               </div>
             </form>
+
+            <!-- Outside the form: the submit handler hides the form on success (F21). -->
+            <div
+              id="newsletter-success"
+              class="secid-form__message secid-form__message--success"
+              style="display:none;"
+            >
+              <i class="fas fa-check-circle"></i>
+              Thank you for subscribing! Check your email to confirm.
+            </div>
 
             <p class="secid-newsletter__privacy">
               <i class="fas fa-lock"></i>

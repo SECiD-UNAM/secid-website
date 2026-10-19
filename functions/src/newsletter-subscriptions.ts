@@ -23,14 +23,14 @@
  * The functions take the Firestore handle so unit tests can pass a stub.
  */
 import { onRequest } from 'firebase-functions/v2/https';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import type {
   DocumentData,
   DocumentReference,
   Firestore,
 } from 'firebase-admin/firestore';
 import * as crypto from 'crypto';
-import { admin } from './init';
+import './init';
 import { sendEmail } from './email-service';
 import { generateNewsletterConfirmEmail } from './email-templates';
 import { getAppUrl } from './env';
@@ -236,7 +236,7 @@ export const confirmNewsletter = onRequest(
   { cors: false, maxInstances: 10 },
   async (req, res) => {
     const token = String(req.query.token || '');
-    const result = await confirmSubscription(admin.firestore(), token);
+    const result = await confirmSubscription(getFirestore(), token);
     const lang = result.ok ? result.lang : langFromQuery(req.query.lang);
     res
       .status(result.ok ? 200 : 400)
@@ -249,7 +249,7 @@ export const unsubscribeNewsletter = onRequest(
   { cors: false, maxInstances: 10 },
   async (req, res) => {
     const token = String(req.query.token || '');
-    const result = await unsubscribeByToken(admin.firestore(), token);
+    const result = await unsubscribeByToken(getFirestore(), token);
     const lang = result.ok ? result.lang : langFromQuery(req.query.lang);
     res
       .status(result.ok ? 200 : 400)

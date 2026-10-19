@@ -116,10 +116,13 @@ const H = vi.hoisted(() => {
   return { state, db, FieldValue, SERVER_TIMESTAMP, sendEmail };
 });
 
-vi.mock(PATHS.init, () => ({ admin: { firestore: () => H.db } }));
+vi.mock(PATHS.init, () => ({}));
 vi.mock(PATHS.env, () => ({ getAppUrl: () => 'https://secid.test' }));
 vi.mock(PATHS.emailService, () => ({ sendEmail: H.sendEmail }));
-vi.mock(PATHS.firebaseAdminFirestore, () => ({ FieldValue: H.FieldValue }));
+vi.mock(PATHS.firebaseAdminFirestore, () => ({
+  getFirestore: () => H.db,
+  FieldValue: H.FieldValue,
+}));
 vi.mock(PATHS.firebaseFunctionsHttps, () => ({
   onRequest: (_opts: unknown, handler: unknown) => handler,
 }));

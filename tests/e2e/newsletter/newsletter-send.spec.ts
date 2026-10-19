@@ -74,7 +74,8 @@ test('public subscribe is pending until the confirmation link is used', async ({
 
   await expect
     .poll(
-      async () => (await queryByField('newsletter', 'email', SUBSCRIBER))[0]?.status,
+      async () =>
+        (await queryByField('newsletter', 'email', SUBSCRIBER))[0]?.status,
       { timeout: 15000 }
     )
     .toBe('pending');
@@ -146,10 +147,9 @@ test('admin sends an issue: dry-run count, delivery with unsubscribe link', asyn
 
   // The receipt is on the issue, the mail is queued and sanitized.
   await expect
-    .poll(
-      async () => (await mailTo(SUBSCRIBER, new RegExp(ISSUE_TITLE)))?.id,
-      { timeout: 15000 }
-    )
+    .poll(async () => (await mailTo(SUBSCRIBER, new RegExp(ISSUE_TITLE)))?.id, {
+      timeout: 15000,
+    })
     .toBeTruthy();
   const [issue] = (await listCollection('newsletter_archive')).filter(
     (d) => d.id === ISSUE_ID

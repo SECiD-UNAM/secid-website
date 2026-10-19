@@ -123,7 +123,7 @@ const H = vi.hoisted(() => {
   };
 });
 
-vi.mock(PATHS.init, () => ({ admin: { firestore: () => H.db } }));
+vi.mock(PATHS.init, () => ({}));
 vi.mock(PATHS.env, () => ({
   getAppUrl: () => 'https://secid.test',
   ALLOWED_CALLABLE_ORIGINS: [],
@@ -132,7 +132,10 @@ vi.mock(PATHS.emailService, () => ({
   sendBatchEmails: H.sendBatchEmails,
   isQaRecipient: H.isQaRecipient,
 }));
-vi.mock(PATHS.firebaseAdminFirestore, () => ({ FieldValue: H.FieldValue }));
+vi.mock(PATHS.firebaseAdminFirestore, () => ({
+  getFirestore: () => H.db,
+  FieldValue: H.FieldValue,
+}));
 vi.mock(PATHS.firebaseFunctionsHttps, () => ({
   onCall: (optsOrHandler: unknown, handler?: unknown) =>
     handler ?? optsOrHandler,
@@ -199,25 +202,29 @@ beforeEach(() => {
   seedSub('luis');
 });
 
-describe('sendNewsletterIssue — authorization and input', { concurrent: false }, () => {
-  it('rejects unauthenticated calls and tokens without newsletter:publish', async () => {
-    await expect(send({ data: { issueId: ISSUE } })).rejects.toMatchObject({
-      code: 'unauthenticated',
+describe(
+  'sendNewsletterIssue — authorization and input',
+  { concurrent: false },
+  () => {
+    it('rejects unauthenticated calls and tokens without newsletter:publish', async () => {
+      await expect(send({ data: { issueId: ISSUE } })).rejects.toMatchObject({
+        code: 'unauthenticated',
+      });
+      await expect(
+        send({ auth: MEMBER, data: { issueId: ISSUE } })
+      ).rejects.toMatchObject({ code: 'permission-denied' });
     });
-    await expect(
-      send({ auth: MEMBER, data: { issueId: ISSUE } })
-    ).rejects.toMatchObject({ code: 'permission-denied' });
-  });
 
-  it('rejects a missing issueId and an unknown issue', async () => {
-    await expect(send({ auth: ADMIN, data: {} })).rejects.toMatchObject({
-      code: 'invalid-argument',
+    it('rejects a missing issueId and an unknown issue', async () => {
+      await expect(send({ auth: ADMIN, data: {} })).rejects.toMatchObject({
+        code: 'invalid-argument',
+      });
+      await expect(
+        send({ auth: ADMIN, data: { issueId: 'ghost' } })
+      ).rejects.toMatchObject({ code: 'not-found' });
     });
-    await expect(
-      send({ auth: ADMIN, data: { issueId: 'ghost' } })
-    ).rejects.toMatchObject({ code: 'not-found' });
-  });
-});
+  }
+);
 
 describe('sendNewsletterIssue — recipients', { concurrent: false }, () => {
   it('mails confirmed and legacy subscribers only, once per email', async () => {

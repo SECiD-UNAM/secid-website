@@ -13,13 +13,13 @@
  */
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import type { CallableRequest } from 'firebase-functions/v2/https';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import type {
   DocumentData,
   DocumentReference,
   Firestore,
 } from 'firebase-admin/firestore';
-import { admin } from './init';
+import './init';
 import { sendBatchEmails, isQaRecipient } from './email-service';
 import type { EmailData } from './email-service';
 import { generateNewsletterIssueEmail } from './email-templates';
@@ -164,7 +164,7 @@ export const sendNewsletterIssue = onCall(
   async (request) => {
     assertCanSendNewsletter(request.auth);
     const input = parseInput(request.data);
-    const db = admin.firestore();
+    const db = getFirestore();
     const issue = await loadIssue(db, input.issueId);
     const subscribers = await loadSubscribers(db);
     if (input.dryRun) return { recipientCount: subscribers.length };
