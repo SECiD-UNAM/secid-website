@@ -77,7 +77,7 @@ const backupSubmitButton = () =>
 // Every test renders into the shared document and shares the toast/service
 // mocks, which is incompatible with the suite's per-file concurrent
 // execution (vitest sequence.concurrent) — run sequentially.
-describe.sequential('TwoFactorVerification', () => {
+describe('TwoFactorVerification', { concurrent: false }, () => {
   const mockVerifyLogin = vi.mocked(verifyTwoFactorLogin);
   const mockUseBackupCode = vi.mocked(useBackupCode);
   const mockVerifySession = vi.mocked(verifyTwoFactorSession);

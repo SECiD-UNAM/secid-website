@@ -122,7 +122,7 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe.sequential('EventList — rendering', () => {
+describe('EventList — rendering', { concurrent: false }, () => {
   describe('TC-EVT-001: renders listing/calendar tab bar', () => {
     /**
      * TC-EVT-001
@@ -235,7 +235,7 @@ describe.sequential('EventList — rendering', () => {
   });
 });
 
-describe.sequential('EventList — time filter', () => {
+describe('EventList — time filter', { concurrent: false }, () => {
   describe('TC-EVT-007: upcoming events shown by default', () => {
     /**
      * TC-EVT-007
@@ -319,7 +319,7 @@ describe.sequential('EventList — time filter', () => {
   });
 });
 
-describe.sequential('EventList — calendar view', () => {
+describe('EventList — calendar view', { concurrent: false }, () => {
   describe('TC-EVT-010: calendar tab switches to calendar view', () => {
     /**
      * TC-EVT-010
@@ -371,7 +371,7 @@ describe.sequential('EventList — calendar view', () => {
   });
 });
 
-describe.sequential('EventList — Spanish translations', () => {
+describe('EventList — Spanish translations', { concurrent: false }, () => {
   describe('TC-EVT-012: Spanish time filter labels', () => {
     /**
      * TC-EVT-012
@@ -397,7 +397,7 @@ describe.sequential('EventList — Spanish translations', () => {
   });
 });
 
-describe.sequential('EventList — graceful degradation', () => {
+describe('EventList — graceful degradation', { concurrent: false }, () => {
   describe('TC-EVT-013: empty state on Firestore fetch error', () => {
     /**
      * TC-EVT-013

@@ -5,8 +5,8 @@
  * the `rbac_groups` collection. Skips groups that already exist.
  */
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
-import { admin } from '../init';
-import { FieldValue } from 'firebase-admin/firestore';
+import '../init';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { DEFAULT_GROUPS } from './defaultGroups';
 
 export const seedRbacGroups = onCall(async (request) => {
@@ -15,8 +15,7 @@ export const seedRbacGroups = onCall(async (request) => {
   }
 
   // Verify admin role
-  const userDoc = await admin
-    .firestore()
+  const userDoc = await getFirestore()
     .collection('users')
     .doc(request.auth.uid)
     .get();
@@ -33,7 +32,7 @@ export const seedRbacGroups = onCall(async (request) => {
   let skipped = 0;
 
   for (const group of DEFAULT_GROUPS) {
-    const docRef = admin.firestore().collection('rbac_groups').doc(group.id);
+    const docRef = getFirestore().collection('rbac_groups').doc(group.id);
     const existing = await docRef.get();
 
     if (existing.exists) {
@@ -55,8 +54,7 @@ export const seedRbacGroups = onCall(async (request) => {
   }
 
   // Audit log
-  await admin
-    .firestore()
+  await getFirestore()
     .collection('rbac_audit_log')
     .add({
       action: 'groups_seeded',

@@ -25,7 +25,7 @@ vi.mock('@xyflow/react', () => ({
 
 import CommissionsChartView from '@/components/commissions/CommissionsChartView';
 
-describe.sequential('CommissionsChartView', () => {
+describe('CommissionsChartView', { concurrent: false }, () => {
   it('renders ReactFlow with correct node count (12)', () => {
     render(<CommissionsChartView lang="es" />);
     const rf = screen.getByTestId('reactflow');

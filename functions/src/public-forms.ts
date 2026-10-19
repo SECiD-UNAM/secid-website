@@ -1,12 +1,11 @@
 import { onRequest, Request } from 'firebase-functions/v2/https';
 import type { Response } from 'firebase-functions/v1';
-import * as admin from 'firebase-admin';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import * as crypto from 'crypto';
 import { isAllowedOrigin } from './env';
 import { verifyCaptcha } from './captcha';
 
-const db = admin.firestore();
+const db = getFirestore();
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

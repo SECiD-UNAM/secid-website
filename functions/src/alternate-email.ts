@@ -1,11 +1,11 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
-import * as admin from 'firebase-admin';
-import { FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { getAuth } from 'firebase-admin/auth';
+import { FieldValue, Timestamp, getFirestore } from 'firebase-admin/firestore';
 import * as crypto from 'crypto';
 import { sendEmail } from './email-service';
 import { getAppUrl, ALLOWED_CALLABLE_ORIGINS } from './env';
 
-const db = admin.firestore();
+const db = getFirestore();
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const TOKEN_TTL_MS = 24 * 60 * 60 * 1000; // 24h
@@ -218,7 +218,7 @@ export const confirmAlternateEmail = onCall(
     const tokenRef = db.collection('alternate_email_tokens').doc(token);
 
     // Pre-read token (outside the transaction) only to extract email +
-    // canonicalUid so we can do the admin.auth() conflict check (which
+    // canonicalUid so we can do the getAuth() conflict check (which
     // can't participate in a Firestore transaction). The atomic check-
     // and-consume happens inside the transaction below.
     const preReadSnap = await tokenRef.get();
@@ -245,7 +245,7 @@ export const confirmAlternateEmail = onCall(
     // Firestore; the transaction guarantees token single-use).
     let conflictUid: string | null = null;
     try {
-      const authUser = await admin.auth().getUserByEmail(emailLower);
+      const authUser = await getAuth().getUserByEmail(emailLower);
       if (authUser && authUser.uid !== canonicalUid) {
         conflictUid = authUser.uid;
       }

@@ -45,7 +45,10 @@ const mockJsPDFInstance = {
 };
 
 vi.mock('jspdf', () => ({
-  jsPDF: vi.fn(() => mockJsPDFInstance),
+  // Called with `new`, so the implementation must be a `function` (Vitest 4+).
+  jsPDF: vi.fn(function () {
+    return mockJsPDFInstance;
+  }),
 }));
 
 import { generateCvPdf } from '@/lib/cv/pdf-generator';

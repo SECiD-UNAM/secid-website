@@ -5,7 +5,7 @@ import Button from './Button';
 // Every test renders into the shared document and queries by role, which is
 // incompatible with the suite's per-file concurrent execution (vitest
 // sequence.concurrent) — run sequentially.
-describe.sequential('Button Component', () => {
+describe('Button Component', { concurrent: false }, () => {
   it('renders with children text', () => {
     render(<Button>Click me</Button>);
 

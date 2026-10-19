@@ -29,7 +29,7 @@ const columns = [
   },
 ];
 
-describe.sequential('ListingTable', () => {
+describe('ListingTable', { concurrent: false }, () => {
   it('renders headers and rows', () => {
     render(
       <ListingTable

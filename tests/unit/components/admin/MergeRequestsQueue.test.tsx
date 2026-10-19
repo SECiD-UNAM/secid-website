@@ -97,7 +97,7 @@ function emitSnapshot(docs: any[]) {
   }
 }
 
-describe.sequential('MergeRequestsQueue — loading state', () => {
+describe('MergeRequestsQueue — loading state', { concurrent: false }, () => {
   /**
    * TC-MERGE-QUEUE-001
    * Verifies: component shows loading indicator before snapshot arrives
@@ -113,7 +113,7 @@ describe.sequential('MergeRequestsQueue — loading state', () => {
   });
 });
 
-describe.sequential('MergeRequestsQueue — empty state', () => {
+describe('MergeRequestsQueue — empty state', { concurrent: false }, () => {
   /**
    * TC-MERGE-QUEUE-002
    * Verifies: empty message shown when snapshot returns no docs
@@ -129,7 +129,7 @@ describe.sequential('MergeRequestsQueue — empty state', () => {
   });
 });
 
-describe.sequential('MergeRequestsQueue — list rendering', () => {
+describe('MergeRequestsQueue — list rendering', { concurrent: false }, () => {
   /**
    * TC-MERGE-QUEUE-003
    * Verifies: numeroCuenta is rendered for each request
@@ -145,62 +145,76 @@ describe.sequential('MergeRequestsQueue — list rendering', () => {
   });
 });
 
-describe.sequential('MergeRequestsQueue — pending review button', () => {
-  /**
-   * TC-MERGE-QUEUE-004
-   * Verifies: Review button is shown for pending requests
-   */
-  it('TC-MERGE-QUEUE-004: shows Review button for pending request', () => {
-    (globalThis as any).__mqCallbacks = {
-      onSnapshot: undefined,
-      unsubscribe: vi.fn(),
-    };
-    render(<MergeRequestsQueue lang="en" />);
-    act(() => emitSnapshot([makeRequest({ status: 'pending' })]));
-    expect(screen.getByText('Review')).toBeTruthy();
-  });
-});
+describe(
+  'MergeRequestsQueue — pending review button',
+  { concurrent: false },
+  () => {
+    /**
+     * TC-MERGE-QUEUE-004
+     * Verifies: Review button is shown for pending requests
+     */
+    it('TC-MERGE-QUEUE-004: shows Review button for pending request', () => {
+      (globalThis as any).__mqCallbacks = {
+        onSnapshot: undefined,
+        unsubscribe: vi.fn(),
+      };
+      render(<MergeRequestsQueue lang="en" />);
+      act(() => emitSnapshot([makeRequest({ status: 'pending' })]));
+      expect(screen.getByText('Review')).toBeTruthy();
+    });
+  }
+);
 
-describe.sequential('MergeRequestsQueue — failed retry button', () => {
-  /**
-   * TC-MERGE-QUEUE-005
-   * Verifies: Retry button is shown for failed requests, not Review
-   */
-  it('TC-MERGE-QUEUE-005: shows Retry button for failed request and no Review button', () => {
-    (globalThis as any).__mqCallbacks = {
-      onSnapshot: undefined,
-      unsubscribe: vi.fn(),
-    };
-    render(<MergeRequestsQueue lang="en" />);
-    act(() =>
-      emitSnapshot([makeRequest({ status: 'failed', error: 'Engine timeout' })])
-    );
-    expect(screen.getByText('Retry')).toBeTruthy();
-    expect(screen.queryByText('Review')).toBeNull();
-  });
-});
+describe(
+  'MergeRequestsQueue — failed retry button',
+  { concurrent: false },
+  () => {
+    /**
+     * TC-MERGE-QUEUE-005
+     * Verifies: Retry button is shown for failed requests, not Review
+     */
+    it('TC-MERGE-QUEUE-005: shows Retry button for failed request and no Review button', () => {
+      (globalThis as any).__mqCallbacks = {
+        onSnapshot: undefined,
+        unsubscribe: vi.fn(),
+      };
+      render(<MergeRequestsQueue lang="en" />);
+      act(() =>
+        emitSnapshot([
+          makeRequest({ status: 'failed', error: 'Engine timeout' }),
+        ])
+      );
+      expect(screen.getByText('Retry')).toBeTruthy();
+      expect(screen.queryByText('Review')).toBeNull();
+    });
+  }
+);
 
-describe.sequential('MergeRequestsQueue — error message in list', () => {
-  /**
-   * TC-MERGE-QUEUE-006
-   * Verifies: error field from request is displayed in the list
-   */
-  it('TC-MERGE-QUEUE-006: displays error message for failed request', () => {
-    (globalThis as any).__mqCallbacks = {
-      onSnapshot: undefined,
-      unsubscribe: vi.fn(),
-    };
-    render(<MergeRequestsQueue lang="en" />);
-    act(() =>
-      emitSnapshot([
-        makeRequest({ status: 'failed', error: 'Cloud function crashed' }),
-      ])
-    );
-    expect(screen.getByText('Cloud function crashed')).toBeTruthy();
-  });
-});
+describe(
+  'MergeRequestsQueue — error message in list',
+  { concurrent: false },
+  () => {
+    /**
+     * TC-MERGE-QUEUE-006
+     * Verifies: error field from request is displayed in the list
+     */
+    it('TC-MERGE-QUEUE-006: displays error message for failed request', () => {
+      (globalThis as any).__mqCallbacks = {
+        onSnapshot: undefined,
+        unsubscribe: vi.fn(),
+      };
+      render(<MergeRequestsQueue lang="en" />);
+      act(() =>
+        emitSnapshot([
+          makeRequest({ status: 'failed', error: 'Cloud function crashed' }),
+        ])
+      );
+      expect(screen.getByText('Cloud function crashed')).toBeTruthy();
+    });
+  }
+);
 
-describe.sequential('MergeRequestsQueue — Spanish labels', () => {
+describe('MergeRequestsQueue — Spanish labels', { concurrent: false }, () => {
   /**
    * TC-MERGE-QUEUE-007
    * Verifies: Spanish labels render when lang="es"
@@ -216,8 +230,9 @@ describe.sequential('MergeRequestsQueue — Spanish labels', () => {
   });
 });
 
-describe.sequential(
+describe(
   'MergeRequestsQueue — completed request no action buttons',
+  { concurrent: false },
   () => {
     /**
      * TC-MERGE-QUEUE-008
