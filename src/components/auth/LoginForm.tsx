@@ -68,9 +68,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   const [showPasswordStrength, setShowPasswordStrength] = useState(false);
   // The blur handler hides the strength meter after a short delay; keep the
   // timer so it never outlives the component (setState after unmount).
-  const hideStrengthTimer = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
+  const hideStrengthTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     return () => {
       if (hideStrengthTimer.current) clearTimeout(hideStrengthTimer.current);
