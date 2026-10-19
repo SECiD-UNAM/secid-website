@@ -8,11 +8,9 @@ import { SEEDED, login } from '../utils/session';
  * src/components/events/EventDetail.tsx with the four-step
  * EventRegistrationForm modal.
  *
- * Submitting a registration is NOT exercised: EventRegistrationForm writes
- * `events/{id}/registrations` without the `eventId` field that
- * firestore.rules require and then increments `events/{id}.currentAttendees`,
- * which only RBAC event editors may update, so the submit is denied by the
- * rules the emulator enforces.
+ * The last test submits a real registration (events/{id}/registrations/{uid}
+ * + the Cloud Function that maintains `currentAttendees`) and cancels it;
+ * "saves and unsaves" exercises users/{uid}/savedEvents.
  */
 const UPCOMING_ID = 'seed-event-upcoming-webinar';
 const UPCOMING = 'Webinar: Carreras en Ciencia de Datos';
@@ -25,6 +23,11 @@ function registerButton(page: Page) {
 
 function formHeading(page: Page) {
   return page.getByRole('heading', { name: 'Registro al evento' });
+}
+
+/** The bookmark icon button; its title is the only accessible name. */
+function saveButton(page: Page, title: 'Guardar' | 'Guardado') {
+  return page.getByRole('button', { name: title, exact: true });
 }
 
 async function openEvent(page: Page, id: string, title: string) {
@@ -123,6 +126,22 @@ test.describe('Event detail and registration', () => {
     await expect(
       page.getByRole('link', { name: 'Volver a eventos' })
     ).toHaveAttribute('href', '/es/dashboard/events');
+  });
+
+  // "Guardar" bookmarks the event under users/{uid}/savedEvents/{eventId}
+  // (owner-only rule, G27b); the state must survive a reload, and the
+  // round trip leaves the seed as found.
+  test('saves and unsaves the webinar', async ({ page }) => {
+    await openEvent(page, UPCOMING_ID, UPCOMING);
+    await saveButton(page, 'Guardar').click({ timeout: 20000 });
+    await expect(saveButton(page, 'Guardado')).toBeVisible();
+    await page.reload();
+    await expect(saveButton(page, 'Guardado')).toBeVisible({ timeout: 20000 });
+
+    await saveButton(page, 'Guardado').click();
+    await expect(saveButton(page, 'Guardar')).toBeVisible();
+    await page.reload();
+    await expect(saveButton(page, 'Guardar')).toBeVisible({ timeout: 20000 });
   });
 
   // Last on purpose (serial mode): it registers for the only upcoming event
