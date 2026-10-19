@@ -100,6 +100,14 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       `Coverage` es check requerido de `main` desde el 2026-10-19 (11
       contextos; [runbooks/github-governance.md](./runbooks/github-governance.md)).
 
+- [ ] B9. Workflow `Security Scanning` en `main` (½ h): el paso de TruffleHog
+      falla en cada push a `main` con "BASE and HEAD commits are the same"
+      (runs 39337950067 y anteriores, 2026-10-19). En PRs pasa, así que el
+      check requerido no se ve afectado, pero deja rojo el historial de
+      `main`. Fix: en eventos `push` usar `base: ${{ github.event.before }}`
+      solo si difiere de `github.sha`, o `extra_args: --since-commit` con
+      el commit anterior; alternativa, limitar ese job a `pull_request`.
+
 ## Bloque C — Pasos del owner (~30 min en total)
 
 - [ ] C8. Firebase → Authentication → Templates → "Customize action URL" →
