@@ -6,7 +6,6 @@
  */
 
 const fs = require('fs');
-const path = require('path');
 
 // Simple JSON-LD validation
 function validateJSONLD(content, filePath) {
