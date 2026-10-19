@@ -10,11 +10,7 @@
  * targets are limited to http(s)/mailto.
  */
 import { describe, it, expect } from 'vitest';
-import {
-  renderMarkdown,
-  markdownToText,
-  sanitizeHtml,
-} from '../../../functions/src/markdown';
+import { renderMarkdown, sanitizeHtml } from '../../../functions/src/markdown';
 
 describe('renderMarkdown — blocks', () => {
   it('wraps plain text in a paragraph', () => {
@@ -94,6 +90,33 @@ describe('renderMarkdown — escaping', () => {
     );
   });
 
+  it('never reassembles a tag from nested or split markup (CodeQL regression)', () => {
+    // Escaping happens once on the raw source; nothing is deleted or
+    // unescaped afterwards, so split tags cannot recombine.
+    expect(renderMarkdown('<scr<script>ipt>alert(1)</script>')).toBe(
+      '<p>&lt;scr&lt;script&gt;ipt&gt;alert(1)&lt;/script&gt;</p>'
+    );
+    expect(renderMarkdown('<script>')).not.toContain('<script');
+  });
+
+  it('escapes already-escaped sequences once more instead of unescaping them', () => {
+    expect(renderMarkdown('&amp;lt;script&amp;gt;')).toBe(
+      '<p>&amp;amp;lt;script&amp;amp;gt;</p>'
+    );
+    expect(renderMarkdown('a &lt; b')).toBe('<p>a &amp;lt; b</p>');
+  });
+
+  it('allowlists link schemes case-insensitively instead of stripping bad ones', () => {
+    expect(renderMarkdown('[x](JAVASCRIPT:alert(1))')).toBe('<p>x</p>');
+    expect(renderMarkdown('[x](vbscript:msgbox(1))')).toBe('<p>x</p>');
+    expect(renderMarkdown('[x](  javascript:alert(1))')).toBe(
+      '<p>[x](  javascript:alert(1))</p>'
+    );
+    expect(renderMarkdown('[x](HTTPS://secid.mx)')).toBe(
+      '<p><a href="HTTPS://secid.mx">x</a></p>'
+    );
+  });
+
   it('escapes HTML inside headings and list items', () => {
     expect(renderMarkdown('# <b>x</b>\n- <i>y</i>')).toBe(
       '<h2>&lt;b&gt;x&lt;/b&gt;</h2><ul><li>&lt;i&gt;y&lt;/i&gt;</li></ul>'
@@ -128,17 +151,27 @@ describe('sanitizeHtml (newsletter issue bodies, F21)', () => {
     ).toBe('<p>a</p><a>b</a><img>');
   });
 
+  it('never reassembles a tag from split or nested markup (CodeQL regression)', () => {
+    // `<scr<script>` tokenizes as one unknown tag (dropped); the rest is text.
+    const split = sanitizeHtml('<scr<script>ipt>alert(1)</script>');
+    expect(split).toBe('ipt&gt;alert(1)');
+    expect(split).not.toContain('<');
+    expect(sanitizeHtml('<p>a<script>b<b>c</b>d</script>e</p>')).toBe(
+      '<p>ae</p>'
+    );
+    expect(sanitizeHtml('<p>unterminated<script>x')).toBe('<p>unterminated');
+    expect(sanitizeHtml('<SCRIPT>x</SCRIPT><P>ok</P>')).toBe('<p>ok</p>');
+  });
+
+  it('keeps entities as written and never unescapes them', () => {
+    expect(sanitizeHtml('&amp;lt;script&amp;gt; &lt;b&gt;')).toBe(
+      '&amp;lt;script&amp;gt; &lt;b&gt;'
+    );
+  });
+
   it('escapes stray angle brackets and keeps text', () => {
     expect(sanitizeHtml('1 < 2 and <notatag>x</notatag>')).toBe(
       '1 &lt; 2 and x'
-    );
-  });
-});
-
-describe('markdownToText', () => {
-  it('strips markdown syntax for a plain-text excerpt', () => {
-    expect(markdownToText('# Hola\n\n**mundo** [liga](https://x.mx)')).toBe(
-      'Hola mundo liga'
     );
   });
 });
