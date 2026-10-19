@@ -5,7 +5,13 @@ import { BillingPage } from '../../page-objects/payments/BillingPage';
 import { SubscriptionManagerPage } from '../../page-objects/payments/SubscriptionManagerPage';
 
 // Load test data
-import paymentMethods from '../../data/payments/payment-methods.json';
+import paymentMethods from '../../data/payments/payment-methods.json' with { type: 'json' };
+
+// Device presets carry `defaultBrowserType`, which Playwright rejects inside
+// a describe (it forces a new worker); the project already picks the browser.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { defaultBrowserType: _iphoneBrowser, ...iPhone12 } =
+  devices['iPhone 12'];
 
 test.describe('Mobile Payment Experience Tests', () => {
   let pricingPage: PricingPage;
@@ -23,7 +29,11 @@ test.describe('Mobile Payment Experience Tests', () => {
 
   for (const device of mobileDevices) {
     test.describe(`${device.name} Tests`, () => {
-      test.use({ ...device });
+      // `defaultBrowserType` forces a new worker and is not allowed inside a
+      // describe; the project already picks the browser.
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { defaultBrowserType: _browser, ...deviceOptions } = device;
+      test.use(deviceOptions);
 
       test.beforeEach(async ({ page }) => {
         pricingPage = new PricingPage(page);
@@ -107,7 +117,7 @@ test.describe('Mobile Payment Experience Tests', () => {
   }
 
   test.describe('Touch Interaction Tests', () => {
-    test.use(devices['iPhone 12']);
+    test.use(iPhone12);
 
     test.beforeEach(async ({ page }) => {
       pricingPage = new PricingPage(page);
@@ -179,7 +189,7 @@ test.describe('Mobile Payment Experience Tests', () => {
   });
 
   test.describe('Mobile Form Usability Tests', () => {
-    test.use(devices['iPhone 12']);
+    test.use(iPhone12);
 
     test.beforeEach(async ({ page }) => {
       checkoutPage = new CheckoutPage(page);
@@ -235,7 +245,7 @@ test.describe('Mobile Payment Experience Tests', () => {
   });
 
   test.describe('Mobile Performance Tests', () => {
-    test.use(devices['iPhone 12']);
+    test.use(iPhone12);
 
     test.beforeEach(async ({ page }) => {
       pricingPage = new PricingPage(page);
