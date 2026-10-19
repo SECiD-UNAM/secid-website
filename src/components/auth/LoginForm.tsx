@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -66,6 +66,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordStrength, setShowPasswordStrength] = useState(false);
+  // The blur handler hides the strength meter after a short delay; keep the
+  // timer so it never outlives the component (setState after unmount).
+  const hideStrengthTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    return () => {
+      if (hideStrengthTimer.current) clearTimeout(hideStrengthTimer.current);
+    };
+  }, []);
   const [passwordStrength, setPasswordStrength] =
     useState<PasswordStrength | null>(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -534,10 +542,17 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="current-password"
                 {...register('password')}
-                onFocus={() => setShowPasswordStrength(true)}
-                onBlur={() =>
-                  setTimeout(() => setShowPasswordStrength(false), 200)
-                }
+                onFocus={() => {
+                  if (hideStrengthTimer.current)
+                    clearTimeout(hideStrengthTimer.current);
+                  setShowPasswordStrength(true);
+                }}
+                onBlur={() => {
+                  hideStrengthTimer.current = setTimeout(
+                    () => setShowPasswordStrength(false),
+                    200
+                  );
+                }}
                 className="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white sm:text-sm"
               />
               <button
