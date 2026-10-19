@@ -25,7 +25,7 @@ interface PaymentGatewayProps {
 const PaymentGateway: React.FC<PaymentGatewayProps> = ({
   currentUser,
   selectedTier,
-  onPaymentSuccess,
+  onPaymentSuccess: _onPaymentSuccess,
   onPaymentError,
 }) => {
   const { t } = useTranslations();

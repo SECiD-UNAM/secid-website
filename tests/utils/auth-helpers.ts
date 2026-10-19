@@ -86,7 +86,7 @@ export class AuthHelpers {
       }
 
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -263,7 +263,7 @@ export class AuthHelpers {
   /**
    * Generate TOTP code for 2FA (mock implementation)
    */
-  static generateTOTP(secret: string): string {
+  static generateTOTP(_secret: string): string {
     // In real implementation, use a TOTP library
     // For testing, return a mock code
     return '123456';
@@ -335,7 +335,7 @@ export class AuthHelpers {
   static async clearAuthStates(): Promise<void> {
     try {
       await fs.rmdir(this.AUTH_STATE_DIR, { recursive: true });
-    } catch (error) {
+    } catch {
       // Directory might not exist
     }
   }

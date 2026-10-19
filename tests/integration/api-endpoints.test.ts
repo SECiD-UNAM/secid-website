@@ -116,7 +116,7 @@ const mockCreatePaymentIntent = async (req: Request, res: Response) => {
     };
 
     res.status(200).json(paymentIntent);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -141,7 +141,7 @@ const mockCreateSubscription = async (req: Request, res: Response) => {
     };
 
     res.status(200).json(subscription);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -184,7 +184,7 @@ const mockStripeWebhook = async (req: Request, res: Response) => {
     }
 
     res.status(200).json({ received: true });
-  } catch (error) {
+  } catch {
     res.status(400).json({ error: 'Webhook error' });
   }
 };
@@ -214,7 +214,7 @@ const mockAuthMiddleware = async (
     };
 
     next();
-  } catch (error) {
+  } catch {
     res.status(401).json({ error: 'Token verification failed' });
   }
 };

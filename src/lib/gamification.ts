@@ -8,7 +8,6 @@ import type {
   LeaderboardType,
   Quest,
   QuestProgress,
-  QuestType,
 } from '../types/gamification';
 import { logger } from '@/lib/logger';
 
@@ -414,7 +413,9 @@ async function updateUserGameData(
   log.info('Updating user game data', { userId, pointsToAdd });
 }
 
-async function fetchUserGameData(userId: string): Promise<UserGameData | null> {
+async function fetchUserGameData(
+  _userId: string
+): Promise<UserGameData | null> {
   // Implementation depends on your database
   // Return user's game data or null if not found
   return null;
@@ -422,7 +423,7 @@ async function fetchUserGameData(userId: string): Promise<UserGameData | null> {
 
 async function fetchPointsHistory(
   userId: string,
-  limit = 50
+  _limit = 50
 ): Promise<PointsActivity[]> {
   // Implementation depends on your database
   // Return user's points history, sorted by timestamp desc
@@ -434,16 +435,16 @@ async function saveBadgeAchievement(achievement: Achievement): Promise<void> {
   log.info('Saving badge achievement', { achievement });
 }
 
-async function getUserStats(userId: string): Promise<any> {
+async function getUserStats(_userId: string): Promise<any> {
   // Implementation depends on your database
   // Return aggregated user statistics for badge checking
   return {};
 }
 
 async function fetchLeaderboard(
-  type: LeaderboardType,
-  period: 'all' | 'month' | 'week',
-  limit: number
+  _type: LeaderboardType,
+  _period: 'all' | 'month' | 'week',
+  _limit: number
 ): Promise<LeaderboardEntry[]> {
   // Implementation depends on your database
   // Return leaderboard data based on type and period
@@ -451,23 +452,23 @@ async function fetchLeaderboard(
 }
 
 async function fetchUserRank(
-  userId: string,
-  type: LeaderboardType,
-  period: 'all' | 'month' | 'week'
+  _userId: string,
+  _type: LeaderboardType,
+  _period: 'all' | 'month' | 'week'
 ): Promise<LeaderboardEntry | null> {
   // Implementation depends on your database
   // Return user's rank for the specified leaderboard
   return null;
 }
 
-async function fetchActiveQuests(currentTime: string): Promise<Quest[]> {
+async function fetchActiveQuests(_currentTime: string): Promise<Quest[]> {
   // Implementation depends on your database
   // Return quests that are currently active (not expired)
   return [];
 }
 
 async function fetchUserQuestProgress(
-  userId: string
+  _userId: string
 ): Promise<Record<string, QuestProgress>> {
   // Implementation depends on your database
   // Return user's progress for all quests
@@ -484,15 +485,15 @@ async function updateQuestProgress(
   log.info('Updating quest progress', { userId, questId, actionType });
 }
 
-async function getQuestById(questId: string): Promise<Quest | null> {
+async function getQuestById(_questId: string): Promise<Quest | null> {
   // Implementation depends on your database
   // Return quest by ID
   return null;
 }
 
 async function getQuestProgress(
-  userId: string,
-  questId: string
+  _userId: string,
+  _questId: string
 ): Promise<QuestProgress | null> {
   // Implementation depends on your database
   // Return user's progress for a specific quest

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslations } from '../../hooks/useTranslations';
 
-import type { Course, CourseEnrollment, LessonProgress } from '../../types';
+import type { Course, CourseEnrollment } from '../../types';
 
 interface CourseProgressProps {
   enrollment: CourseEnrollment;

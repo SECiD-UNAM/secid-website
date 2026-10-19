@@ -421,7 +421,7 @@ interface OverviewTabProps {
   assessment: Assessment | null;
 }
 
-function OverviewTab({ result, assessment }: OverviewTabProps) {
+function OverviewTab({ result, assessment: _assessment }: OverviewTabProps) {
   const { t } = useTranslations();
 
   return (

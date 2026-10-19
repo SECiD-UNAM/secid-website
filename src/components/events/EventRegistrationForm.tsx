@@ -494,7 +494,7 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
           </div>
         );
 
-      case 'checkbox':
+      case 'checkbox': {
         const checkboxValues = Array.isArray(value) ? value : [];
         return (
           <div className="space-y-2">
@@ -519,6 +519,7 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
             ))}
           </div>
         );
+      }
 
       default:
         return null;

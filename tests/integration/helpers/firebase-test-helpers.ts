@@ -4,14 +4,12 @@
  */
 
 import {
-  getFirestore,
   collection,
   doc,
   setDoc,
   deleteDoc,
   getDocs,
 } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
 import { mockUsers, mockJobs, mockEvents } from '../../fixtures';
 
 // Test project configuration
@@ -134,7 +132,7 @@ export async function waitForEmulators(timeout: number = 30000): Promise<void> {
         console.log('Firebase emulators are ready');
         return;
       }
-    } catch (error) {
+    } catch {
       // Emulators not ready yet
     }
 

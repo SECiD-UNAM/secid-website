@@ -7,8 +7,6 @@ import {
   Volume2,
   VolumeX,
   Moon,
-  Sun,
-  Clock,
   Save,
   RotateCcw,
   CheckCircle,

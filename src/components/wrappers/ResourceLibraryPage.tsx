@@ -6,7 +6,7 @@ interface Props {
   lang?: 'es' | 'en';
 }
 
-export default function ResourceLibraryPage({ lang = 'es' }: Props) {
+export default function ResourceLibraryPage({ lang: _lang = 'es' }: Props) {
   return (
     <AuthProvider>
       <ResourceLibrary />

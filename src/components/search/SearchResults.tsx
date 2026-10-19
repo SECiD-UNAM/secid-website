@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
-  AdjustmentsHorizontalIcon,
   FunnelIcon,
   ArrowsUpDownIcon,
   ArrowDownTrayIcon,
@@ -265,7 +264,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
   };
 
   // Render result item
-  const renderResultItem = (result: SearchResultItem, index: number) => {
+  const renderResultItem = (result: SearchResultItem, _index: number) => {
     const isSelected = selectedResults.has(result.id);
     const config = CONTENT_TYPE_CONFIG[result.type];
 

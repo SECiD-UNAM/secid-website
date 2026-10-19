@@ -82,6 +82,11 @@ module.exports = {
         // Astro-specific rules
         'astro/no-conflict-set-directives': 'error',
         'astro/no-unused-define-vars-in-style': 'error',
+        // False positive: Astro templates use plain HTML attributes
+        // (`class=`, `for=`, `tabindex=`, …), not React's camelCased props.
+        // Its autofix would rewrite `class` to `className`, which Astro
+        // does not render, so the rule must stay off for `.astro` files.
+        'react/no-unknown-property': 'off',
       },
     },
     {

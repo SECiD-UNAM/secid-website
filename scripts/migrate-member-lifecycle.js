@@ -40,7 +40,7 @@ async function migrate() {
 
   let updated = 0;
   let skipped = 0;
-  let errors = 0;
+  const errors = 0;
 
   const batch = db.batch();
   let batchCount = 0;

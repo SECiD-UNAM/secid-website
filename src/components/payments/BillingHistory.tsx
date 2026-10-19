@@ -140,25 +140,28 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
   const getDateFilterFunction = () => {
     const now = new Date();
     switch (dateFilter) {
-      case '30days':
+      case '30days': {
         const thirtyDaysAgo = new Date(
           now.getTime() - 30 * 24 * 60 * 60 * 1000
         );
         return (date: Date) => date >= thirtyDaysAgo;
-      case '6months':
+      }
+      case '6months': {
         const sixMonthsAgo = new Date(
           now.getFullYear(),
           now.getMonth() - 6,
           now.getDate()
         );
         return (date: Date) => date >= sixMonthsAgo;
-      case '1year':
+      }
+      case '1year': {
         const oneYearAgo = new Date(
           now.getFullYear() - 1,
           now.getMonth(),
           now.getDate()
         );
         return (date: Date) => date >= oneYearAgo;
+      }
       default:
         return () => true;
     }

@@ -134,7 +134,7 @@ test.describe('Multi-language Journey', () => {
 
   test('should handle language switch on mobile', async ({
     page,
-    isMobile,
+    isMobile: _isMobile,
   }) => {
     // Use mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });

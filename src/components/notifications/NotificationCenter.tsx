@@ -19,11 +19,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import NotificationItem from './NotificationItem';
 
-import type {
-  Notification,
-  NotificationGroup,
-  NotificationHistory,
-} from '../../types';
+import type { Notification, NotificationHistory } from '../../types';
 
 interface NotificationCenterProps {
   className?: string;
@@ -222,9 +218,10 @@ export default function NotificationCenter({
 
   const sortedNotifications = [...filteredNotifications].sort((a, b) => {
     switch (sortBy) {
-      case 'priority':
+      case 'priority': {
         const priorityOrder = { urgent: 4, high: 3, normal: 2, low: 1 };
         return priorityOrder[b.priority] - priorityOrder[a.priority];
+      }
       case 'category':
         return a.category.localeCompare(b.category);
       case 'date':

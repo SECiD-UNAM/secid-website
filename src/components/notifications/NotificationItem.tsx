@@ -316,7 +316,9 @@ export default function NotificationItem({
                     className="inline-flex items-center rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
                   >
                     {method === 'email' && <Mail className="mr-1 h-3 w-3" />}
-                    {method === 'push' && <Settings className="mr-1 h-3 w-3" />}
+                    {method === 'push' && (
+                      <SettingsIcon className="mr-1 h-3 w-3" />
+                    )}
                     {method === 'app' && (
                       <CheckCircle className="mr-1 h-3 w-3" />
                     )}

@@ -16,11 +16,9 @@ import {
   getLinkedOAuthProviders,
   linkProvider,
   unlinkProvider,
-  updateLastLogin,
 } from '@/lib/auth';
 import {
   getTwoFactorStatus,
-  TWO_FACTOR_AVAILABLE,
   TWO_FACTOR_NOT_AVAILABLE_MESSAGE,
   TWO_FACTOR_NOT_AVAILABLE_MESSAGE_ES,
 } from '@/lib/auth/two-factor';
@@ -240,7 +238,7 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
       // In production, implement session revocation
       setActiveSessions((prev) => prev.filter((s) => s.id !== sessionId));
       toast.success(lang === 'es' ? 'Sesión revocada' : 'Session revoked');
-    } catch (error) {
+    } catch {
       toast['error'](
         lang === 'es' ? 'Error al revocar sesión' : 'Error revoking session'
       );

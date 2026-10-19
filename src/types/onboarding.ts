@@ -4,7 +4,6 @@
  */
 
 import type { MemberProfile } from './member';
-import type { UserProfile } from './user';
 
 // Onboarding step definitions
 export type OnboardingStep =

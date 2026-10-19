@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import type { Resource, Operation, PermissionGrant } from '@/lib/rbac/types';
-import { RESOURCES, OPERATIONS } from '@/lib/rbac/types';
+import { OPERATIONS } from '@/lib/rbac/types';
 
 // ---------------------------------------------------------------------------
 // i18n label maps

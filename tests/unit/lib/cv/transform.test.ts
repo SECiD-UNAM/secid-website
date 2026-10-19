@@ -5,9 +5,8 @@
  * for the CVData transformation layer.
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import type { MemberProfile } from '@/types/member';
-import type { CVData } from '@/types/cv';
 import { transformProfileToCV, formatDate } from '@/lib/cv/transform';
 
 /**

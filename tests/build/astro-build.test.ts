@@ -3,7 +3,7 @@
  * These tests ensure that Astro pages and components compile without errors
  */
 
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { exec, execSync } from 'child_process';
 import { promisify } from 'util';
 import { existsSync, readFileSync } from 'fs';
@@ -200,7 +200,7 @@ describe('Astro Build Tests', () => {
             expect(line).toMatch(/is:inline/);
           }
         }
-      } catch (error) {
+      } catch {
         // If grep finds no matches, that's actually good - no problematic script tags
         // But if there's a syntax error, we should catch it
         console.log('Grep command executed successfully - no problematic script tags found');

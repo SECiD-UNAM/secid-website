@@ -12,8 +12,6 @@ import {
   Plus,
   Search,
   Filter,
-  SortAsc,
-  SortDesc,
 } from 'lucide-react';
 import { useTranslations } from '../../hooks/useTranslations';
 import { forumCategories, forumTopics } from '../../lib/forum';

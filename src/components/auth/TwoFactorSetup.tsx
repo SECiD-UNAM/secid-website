@@ -119,7 +119,7 @@ export const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({
       toast.success(
         lang === 'es' ? 'Copiado al portapapeles' : 'Copied to clipboard'
       );
-    } catch (error) {
+    } catch {
       // Fallback for older browsers
       const textArea = document['createElement']('textarea');
       textArea.value = text;
@@ -183,7 +183,7 @@ export const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({
         {/* Step indicator */}
         <div className="mb-6 flex justify-center">
           <div className="flex space-x-2">
-            {['verify', 'backup', 'complete'].map((step, index) => (
+            {['verify', 'backup', 'complete'].map((step, _index) => (
               <div
                 key={step}
                 className={`h-2 w-8 rounded-full ${

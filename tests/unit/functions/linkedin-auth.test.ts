@@ -8,7 +8,7 @@
  * These tests extract the pure business logic into testable functions
  * rather than fighting firebase-functions' onRequest wrapper.
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 // ---------------------------------------------------------------------------
 // We cannot easily import from functions/src/ because the firebase-functions

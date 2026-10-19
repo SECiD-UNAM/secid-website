@@ -180,9 +180,9 @@ const {
             null
           );
           setTimeout(() => {
-            window.location.href =
-              '/login?returnUrl=' +
-              encodeURIComponent(window.location.pathname);
+            window.location.href = `/login?returnUrl=${encodeURIComponent(
+              window.location.pathname
+            )}`;
           }, 5000);
         }, SESSION_TIMEOUT);
 
@@ -226,6 +226,7 @@ const {
     <!-- Admin Analytics (separate from main site) -->
     <script>
       // @ts-nocheck
+      /* global amplitude */
       // Admin-specific analytics tracking
       if (typeof amplitude !== 'undefined') {
         amplitude
@@ -252,6 +253,7 @@ const {
     <!-- Error Boundary for Admin -->
     <script>
       // @ts-nocheck
+      /* global amplitude */
       window.addEventListener('error', function (e) {
         console.error('Admin Panel Error:', e.error);
 

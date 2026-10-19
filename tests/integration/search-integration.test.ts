@@ -21,7 +21,6 @@ import type {
   SearchQuery,
   SearchResponse,
   SearchResultItem,
-  SearchFilters,
   IndexedContent,
   SearchAnalyticsEvent,
   SearchFacets,

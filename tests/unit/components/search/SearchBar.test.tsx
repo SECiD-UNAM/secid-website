@@ -23,7 +23,7 @@ import {
 import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import SearchBar from '@/components/search/SearchBar';
-import type { SearchSuggestion, SearchFilters } from '@/types/search';
+import type { SearchSuggestion } from '@/types/search';
 
 // Mock heroicons with Proxy-based auto-mock (component imports MagnifyingGlassIcon, XMarkIcon, MicrophoneIcon)
 vi.mock('@heroicons/react/24/outline', async () => {

@@ -9,7 +9,6 @@ import {
   sendPasswordResetEmail,
   updateProfile,
   type User,
-  type UserCredential,
 } from 'firebase/auth';
 
 /**

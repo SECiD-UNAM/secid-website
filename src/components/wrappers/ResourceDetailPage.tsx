@@ -8,7 +8,10 @@ interface Props {
   lang?: 'es' | 'en';
 }
 
-export default function ResourceDetailPage({ resourceId, lang = 'es' }: Props) {
+export default function ResourceDetailPage({
+  resourceId,
+  lang: _lang = 'es',
+}: Props) {
   const routeId = useRouteIdBySegment('resources');
   const effectiveId = resourceId || routeId || '';
   return (

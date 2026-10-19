@@ -121,7 +121,7 @@ class HealthChecker {
       } else {
         this.addCheck('Git', 'success', 'Working directory clean');
       }
-    } catch (error) {
+    } catch {
       this.addCheck('Git', 'error', 'Git not available');
     }
   }
@@ -232,7 +232,7 @@ class HealthChecker {
       } else {
         this.addCheck('Disk Space', 'success', `${usage}% used`);
       }
-    } catch (error) {
+    } catch {
       // Skip on Windows or if df is not available
     }
   }

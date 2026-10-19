@@ -19,6 +19,7 @@ const description =
 </AdminLayout>
 
 <script>
+  /* global amplitude */
   // @ts-nocheck
   // Settings page specific functionality
   document.addEventListener('DOMContentLoaded', () => {
@@ -140,7 +141,7 @@ const description =
       // Real-time validation for email settings
       document.addEventListener('input', (e) => {
         if (e.target.name === 'smtpHost') {
-          const isValid = /^[a-zA-Z0-9][a-zA-Z0-9\-\.]*\.[a-zA-Z]{2,}$/.test(
+          const isValid = /^[a-zA-Z0-9][a-zA-Z0-9\-.]*\.[a-zA-Z]{2,}$/.test(
             e.target.value
           );
           toggleFieldValidation(
@@ -244,7 +245,7 @@ const description =
                 }
               } catch (error) {
                 alert(
-                  'Error al leer el archivo de configuración: ' + error.message
+                  `Error al leer el archivo de configuración: ${error.message}`
                 );
               }
             };
@@ -296,10 +297,10 @@ const description =
           if (result.success) {
             showNotification('Email de prueba enviado exitosamente', 'success');
           } else {
-            showNotification('Error al enviar email: ' + result.error, 'error');
+            showNotification(`Error al enviar email: ${result.error}`, 'error');
           }
         } catch (error) {
-          showNotification('Error de conexión: ' + error.message, 'error');
+          showNotification(`Error de conexión: ${error.message}`, 'error');
         }
       };
 
@@ -312,10 +313,10 @@ const description =
           if (result.success) {
             showNotification('Conexión a base de datos exitosa', 'success');
           } else {
-            showNotification('Error de conexión: ' + result.error, 'error');
+            showNotification(`Error de conexión: ${result.error}`, 'error');
           }
         } catch (error) {
-          showNotification('Error de conexión: ' + error.message, 'error');
+          showNotification(`Error de conexión: ${error.message}`, 'error');
         }
       };
     };

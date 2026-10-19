@@ -19,7 +19,6 @@ import {
   doc,
   setDoc,
   getDoc,
-  updateDoc,
   deleteDoc,
   collection,
   query,
@@ -34,11 +33,9 @@ import {
 import type {
   OnboardingFirebaseData,
   OnboardingState,
-  OnboardingStep,
   OnboardingEvent,
   OnboardingAnalytics,
   OnboardingEmailTrigger,
-  OnboardingABTest,
   OnboardingRecommendation,
   OnboardingPersonalization,
   OnboardingTour,
@@ -46,7 +43,6 @@ import type {
   OnboardingAchievement,
   OnboardingData,
 } from '../types/onboarding';
-import type { MemberProfile } from '../types/member';
 
 // Firestore collections
 const ONBOARDING_COLLECTION = 'onboarding';
@@ -420,7 +416,7 @@ export async function generateOnboardingRecommendations(
  */
 export async function createQuickStartGuide(
   userId: string,
-  onboardingData: OnboardingData
+  _onboardingData: OnboardingData
 ): Promise<QuickStartGuide> {
   try {
     const guide: QuickStartGuide = {

@@ -88,7 +88,7 @@ class MemberNetworkingFlow {
     await memberCards.nth(memberIndex).click();
 
     // Should navigate to member profile
-    await expect(this.page).toHaveURL(/\/es\/members\/[^\/]+$/);
+    await expect(this.page).toHaveURL(/\/es\/members\/[^/]+$/);
 
     // Wait for profile to load
     await this.page.waitForSelector('[data-testid="member-profile-name"]');
@@ -194,7 +194,7 @@ class MemberNetworkingFlow {
   async participateInGroupDiscussion() {
     // View group details
     await this.page.click('[data-testid="group-card"]');
-    await expect(this.page).toHaveURL(/\/es\/groups\/[^\/]+$/);
+    await expect(this.page).toHaveURL(/\/es\/groups\/[^/]+$/);
 
     // Should show group discussions
     await expect(

@@ -601,7 +601,7 @@ class KeyboardShortcutManager {
     }
   }
 
-  private hasPermission(permission: string): boolean {
+  private hasPermission(_permission: string): boolean {
     // This would typically check user permissions
     // For now, return true for demonstration
     return true;

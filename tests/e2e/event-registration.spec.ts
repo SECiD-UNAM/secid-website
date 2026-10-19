@@ -1,5 +1,4 @@
 import { test, expect, Page } from '@playwright/test';
-import { mockUsers } from '../fixtures/users';
 import { mockEvents } from '../fixtures/events';
 
 // Test data for event registration
@@ -75,7 +74,7 @@ class EventRegistrationFlow {
     await eventCards.nth(eventIndex).click();
 
     // Should navigate to event details
-    await expect(this.page).toHaveURL(/\/es\/events\/[^\/]+$/);
+    await expect(this.page).toHaveURL(/\/es\/events\/[^/]+$/);
 
     // Verify event details are loaded
     await expect(
@@ -176,7 +175,7 @@ class EventRegistrationFlow {
     await this.page.click('button[data-testid="proceed-to-payment"]');
 
     // Should navigate to payment page
-    await expect(this.page).toHaveURL(/\/es\/events\/[^\/]+\/payment$/);
+    await expect(this.page).toHaveURL(/\/es\/events\/[^/]+\/payment$/);
   }
 
   async manageEventRegistration() {

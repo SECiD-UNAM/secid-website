@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   MessageCircle,
-  Users,
   TrendingUp,
   Search,
   Plus,

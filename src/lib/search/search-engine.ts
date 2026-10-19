@@ -16,7 +16,6 @@ import type {
   SearchContentType,
   SearchHighlight,
   SearchFacets,
-  SearchAnalyticsEvent,
 } from '@/types/search';
 
 // Levenshtein distance for fuzzy matching
@@ -312,7 +311,7 @@ function parseSearchSyntax(query: string): SearchSyntax {
   }
 
   // Extract proximity searches ("term1 term2"~5)
-  const proximityRegex = /"([^"]*)"\~(\d+)/g;
+  const proximityRegex = /"([^"]*)"~(\d+)/g;
   while ((match = proximityRegex.exec(query)) !== null) {
     syntax.proximity.push({
       terms: match?.[1].split(' '),
@@ -508,7 +507,7 @@ export class SearchEngine {
     // Remove syntax elements
     cleanQuery = cleanQuery.replace(/"[^"]*"/g, ''); // Remove phrases
     cleanQuery = cleanQuery.replace(/\w+:\w+/g, ''); // Remove field queries
-    cleanQuery = cleanQuery.replace(/[+\-]/g, ''); // Remove operators
+    cleanQuery = cleanQuery.replace(/[+-]/g, ''); // Remove operators
     cleanQuery = cleanQuery.replace(/\*/g, ''); // Remove wildcards
 
     const terms = tokenize(cleanQuery);
@@ -740,7 +739,7 @@ export class SearchEngine {
 
   private generateFacets(
     content: IndexedContent[],
-    queryTerms: string[]
+    _queryTerms: string[]
   ): SearchFacets {
     const typeCounts: Record<string, number> = {};
     const categoryCounts: Record<string, number> = {};
@@ -803,7 +802,7 @@ export class SearchEngine {
 
   private async generateSuggestions(
     query: string,
-    queryTerms: string[]
+    _queryTerms: string[]
   ): Promise<SearchSuggestion[]> {
     const suggestions: SearchSuggestion[] = [];
 

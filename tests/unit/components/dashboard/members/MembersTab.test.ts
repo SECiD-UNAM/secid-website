@@ -8,8 +8,6 @@ import { describe, it, expect } from 'vitest';
 import {
   searchMembers,
   sortMembers,
-  type SortColumn,
-  type SortDirection,
 } from '@/components/dashboard/members/MembersTab';
 import type { MemberProfile } from '@/types/member';
 

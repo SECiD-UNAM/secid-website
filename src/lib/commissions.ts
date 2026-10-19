@@ -424,7 +424,7 @@ export const mockCommissionProjects = (
 };
 
 export const mockCommissionMetrics = (
-  commissionId: string
+  _commissionId: string
 ): CommissionMetrics => {
   const baseMetrics = {
     memberCount: Math.floor(Math.random() * 50) + 20,
