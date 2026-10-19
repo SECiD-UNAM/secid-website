@@ -21,12 +21,12 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       antes de navegar (141), URL/selectores viejos (~60). Causa común:
       suites heredadas que asumen usuarios sembrados, emulador y Stripe.
       `homepage.spec.ts`: 5/7 fallan por selectores antiguos.
-- [ ] A2. PR #101 (auto-merge armado) del arnés: setup sin `dotenv`, `__dirname` ESM, imports JSON con
+- [x] A2. PR #101 mergeado 2026-10-19 (8eb267c), arnés: setup sin `dotenv`, `__dirname` ESM, imports JSON con
       atributos, `test.use` sin `defaultBrowserType`, `Test Summary` que falle
       de verdad, `testMatch` ampliado y dos proyectos: `smoke` (hidratación,
       home, login, signup, páginas públicas; bloqueante) y `full` (resto; no
       bloqueante hasta triarlo).
-- [ ] A3. Añadir "E2E Tests (smoke)" a los checks requeridos de `main`.
+- [x] A3. "E2E Tests (smoke)" añadido a los checks requeridos de `main` el 2026-10-19 (10 contextos, strict).
       Criterio: un PR que rompa el signup se pone rojo solo.
 - [ ] A4. Hacer pasar `full` contra emuladores en CI con `npm run seed`; lo que
       dependa de Stripe queda `skip` con motivo hasta que haya pagos.
