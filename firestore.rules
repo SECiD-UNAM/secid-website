@@ -233,6 +233,19 @@ service cloud.firestore {
         allow read, write: if isAuthenticated() && isOwner(userId);
       }
 
+      // Events the member bookmarked ("Guardar evento" in EventDetail):
+      // owner-only, and the entry must describe the event it is filed under.
+      match /savedEvents/{eventId} {
+        allow read, delete: if isAuthenticated() && isOwner(userId);
+        allow create: if isAuthenticated() &&
+                        isOwner(userId) &&
+                        request.resource.data.keys().hasOnly([
+                          'eventId', 'eventTitle', 'eventDate', 'savedAt'
+                        ]) &&
+                        request.resource.data.eventId == eventId &&
+                        request.resource.data.savedAt == request.time;
+      }
+
       // Compensation sub-collection: owner + RBAC admin read
       match /compensation/{entryId} {
         allow read, write: if isAuthenticated() && isOwner(userId);
@@ -365,12 +378,16 @@ service cloud.firestore {
         (hasRBACAllow('ev', 'd') && resource.data.createdBy == request.auth.uid)
       );
       
-      // Event registrations subcollection — RBAC-migrated (Batch 4, ev)
+      // Event registrations subcollection — RBAC-migrated (Batch 4, ev).
+      // A registration carries the attendee's name and email, so reads are
+      // limited to its owner (doc id = uid), the event creator and event
+      // editors (ev:e.a, the same permission the event update rule honours).
+      // ev:v.a is NOT enough: every default member carries it (G27a).
       match /registrations/{registrationId} {
         allow read: if isAuthenticated() &&
                       (isOwner(resource.data.userId) ||
                        isOwner(get(/databases/$(database)/documents/events/$(eventId)).data.createdBy) ||
-                       (!hasRBACDeny('ev', 'v') && hasRBACAllowAll('ev', 'v')));
+                       (!hasRBACDeny('ev', 'e') && hasRBACAllowAll('ev', 'e')));
 
         allow create: if isAuthenticated() &&
                         isVerified() &&

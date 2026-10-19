@@ -228,12 +228,19 @@ llegar con su e2e contra emuladores (ya hay arnés, seed y job bloqueante).
       denegado. Pendiente aparte: la lectura de registrations honra
       `ev:v.a` (cualquier miembro ve nombre y correo de otros inscritos) y
       `users/{uid}/savedEvents` sigue sin regla.
-- [ ] G27. Seguimiento de seguridad de G24 (½ día): la regla de lectura de
-      `events/{id}/registrations` honra `ev:v.a`, que todo miembro tiene, así
-      que cualquier miembro puede listar nombre y correo de los inscritos a
-      un evento; limitar a dueño del registro + editores de eventos. Y
-      `users/{uid}/savedEvents` ("Guardar evento") no tiene regla → el botón
-      falla en silencio; añadir regla owner-only y su test.
+- [x] G27. PR #129 (2026-10-19): la lectura de `events/{id}/registrations`
+      ya no honra `ev:v.a` (lo tiene todo miembro) sino `ev:e.a`, el mismo
+      permiso que la edición del evento: solo el dueño del registro, el
+      creador del evento, editores de eventos y admin leen nombre y correo
+      de los inscritos; un miembro solo puede consultar sus propios
+      registros (`where userId == uid`).
+      `users/{uid}/savedEvents/{eventId}` tiene regla owner-only
+      (read/create/delete con la forma que escribe `EventDetail`, `eventId`
+      igual al path, `savedAt == request.time`), así que "Guardar evento"
+      funciona. Tests de reglas RED-first (`groupToken()`/`adminToken()` en
+      el harness) y e2e guardar/quitar del webinar sembrado.
+      Antes: cualquier miembro listaba todos los inscritos de cualquier
+      evento, y guardar un evento fallaba en silencio.
 - [ ] G25. Foros: `forum_categories`, `forum_topics` y `forum_posts` no
       tienen reglas, así que solo se ven las 6 categorías integradas y
       `/es/forum/category/{slug}` muestra "Error al cargar los datos".
