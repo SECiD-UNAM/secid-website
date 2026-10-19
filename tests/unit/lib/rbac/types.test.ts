@@ -8,8 +8,6 @@ import {
   OP_FROM_ABBREV,
 } from '@/lib/rbac/types';
 import type {
-  Resource,
-  Operation,
   Scope,
   Effect,
   PermissionGrant,

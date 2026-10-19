@@ -6,7 +6,6 @@ import ChartWidget, { ChartTemplates } from './ChartWidget';
 import { analyticsService } from '../../lib/analytics';
 import { useTranslation } from 'react-i18next';
 import {
-  CalendarDaysIcon,
   ChartBarIcon,
   UserGroupIcon,
   CurrencyDollarIcon,
@@ -18,13 +17,11 @@ import {
   MagnifyingGlassIcon,
   DevicePhoneMobileIcon,
   ArrowDownTrayIcon,
-  Cog6ToothIcon,
   ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 import type {
   AnalyticsDashboardData,
   AnalyticsFilter,
-  AnalyticsDateRange,
   ReportConfig,
 } from '../../types/analytics';
 

@@ -334,7 +334,7 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
           </ResponsiveContainer>
         );
 
-      case 'gauge':
+      case 'gauge': {
         // Custom gauge implementation using pie chart
         const gaugeData = [
           { name: 'Value', value: data[0]?.value || 0 },
@@ -367,6 +367,7 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
             </PieChart>
           </ResponsiveContainer>
         );
+      }
 
       default:
         return (

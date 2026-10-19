@@ -9,8 +9,7 @@ import toast from 'react-hot-toast';
 import { Shield, Key, Clock, AlertTriangle } from 'lucide-react';
 import {
   verifyTwoFactorLogin,
-  useBackupCode,
-  createTwoFactorSession,
+  useBackupCode as consumeBackupCode,
   verifyTwoFactorSession,
 } from '@/lib/auth/two-factor';
 
@@ -162,7 +161,7 @@ export const TwoFactorVerification: React.FC<TwoFactorVerificationProps> = ({
 
     setLoading(true);
     try {
-      const isValid = await useBackupCode(uid, data['backupCode']);
+      const isValid = await consumeBackupCode(uid, data['backupCode']);
 
       if (isValid) {
         toast.success(

@@ -2,9 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import type { MemberSearchFilters } from '@/types/member';
 import {
   MagnifyingGlassIcon,
-  FunnelIcon,
   XMarkIcon,
-  ChevronDownIcon,
   MapPinIcon,
   BuildingOfficeIcon,
   AcademicCapIcon,

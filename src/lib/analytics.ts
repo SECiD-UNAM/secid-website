@@ -4,16 +4,9 @@ import {
   query,
   where,
   orderBy,
-  limit,
   getDocs,
-  doc,
-  getDoc,
   addDoc,
-  updateDoc,
   Timestamp,
-  startAfter,
-  type QueryDocumentSnapshot,
-  type DocumentData,
 } from 'firebase/firestore';
 import {
   getAnalytics,
@@ -521,7 +514,7 @@ export class AnalyticsService {
    * Geographic Analytics
    */
   private async getGeographicAnalytics(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<GeographicAnalytics> {
     // Implementation for geographic analytics
     return {
@@ -537,7 +530,7 @@ export class AnalyticsService {
    * Performance Analytics
    */
   private async getPerformanceAnalytics(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<PerformanceAnalytics> {
     // Implementation for performance analytics
     return {
@@ -578,7 +571,7 @@ export class AnalyticsService {
    * Error Analytics
    */
   private async getErrorAnalytics(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<ErrorAnalytics> {
     // Implementation for error analytics
     return {
@@ -623,7 +616,7 @@ export class AnalyticsService {
    * A/B Testing Analytics
    */
   private async getABTestAnalytics(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<ABTestAnalytics> {
     // Implementation for A/B testing analytics
     return {
@@ -642,7 +635,7 @@ export class AnalyticsService {
    * Funnel Analytics
    */
   private async getFunnelAnalytics(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<FunnelAnalytics> {
     // Implementation for funnel analytics
     return {
@@ -656,7 +649,7 @@ export class AnalyticsService {
    * Search Analytics
    */
   private async getSearchAnalytics(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<SearchAnalytics> {
     // Implementation for search analytics
     return {
@@ -675,7 +668,7 @@ export class AnalyticsService {
    * Technology Analytics
    */
   private async getTechnologyAnalytics(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<TechnologyAnalytics> {
     // Implementation for technology analytics
     return {
@@ -731,7 +724,7 @@ export class AnalyticsService {
       // In a real implementation, you would use a geolocation API
       // For now, return undefined
       return undefined;
-    } catch (error) {
+    } catch {
       return undefined;
     }
   }
@@ -791,8 +784,8 @@ export class AnalyticsService {
 
   // Export helper methods
   private async exportCSV(
-    data: AnalyticsDashboardData,
-    sections: string[]
+    _data: AnalyticsDashboardData,
+    _sections: string[]
   ): Promise<Blob> {
     // Implementation for CSV export
     const csv = 'CSV export not implemented yet';
@@ -800,8 +793,8 @@ export class AnalyticsService {
   }
 
   private async exportExcel(
-    data: AnalyticsDashboardData,
-    sections: string[]
+    _data: AnalyticsDashboardData,
+    _sections: string[]
   ): Promise<Blob> {
     // Implementation for Excel export
     const excel = 'Excel export not implemented yet';
@@ -811,8 +804,8 @@ export class AnalyticsService {
   }
 
   private async exportPDF(
-    data: AnalyticsDashboardData,
-    sections: string[]
+    _data: AnalyticsDashboardData,
+    _sections: string[]
   ): Promise<Blob> {
     // Implementation for PDF export
     const pdf = 'PDF export not implemented yet';
@@ -820,137 +813,145 @@ export class AnalyticsService {
   }
 
   // Placeholder implementations for complex calculations
-  private async calculateUserRetention(filters: AnalyticsFilter): Promise<any> {
+  private async calculateUserRetention(
+    _filters: AnalyticsFilter
+  ): Promise<any> {
     return { day1: 0, day7: 0, day30: 0, day90: 0 };
   }
 
-  private async getUserSegments(filters: AnalyticsFilter): Promise<any[]> {
+  private async getUserSegments(_filters: AnalyticsFilter): Promise<any[]> {
     return [];
   }
 
-  private async getDemographicData(filters: AnalyticsFilter): Promise<any> {
+  private async getDemographicData(_filters: AnalyticsFilter): Promise<any> {
     return { age: [], gender: [], education: [], experience: [] };
   }
 
   // Additional placeholder methods...
-  private async getMostViewedJobs(jobViews: any[]): Promise<any[]> {
+  private async getMostViewedJobs(_jobViews: any[]): Promise<any[]> {
     return [];
   }
-  private async getJobsByCategory(jobViews: any[]): Promise<any[]> {
+  private async getJobsByCategory(_jobViews: any[]): Promise<any[]> {
     return [];
   }
-  private async calculateAttendanceRate(registrations: any[]): Promise<number> {
+  private async calculateAttendanceRate(
+    _registrations: any[]
+  ): Promise<number> {
     return 0;
   }
-  private async calculateNoShowRate(registrations: any[]): Promise<number> {
+  private async calculateNoShowRate(_registrations: any[]): Promise<number> {
     return 0;
   }
-  private async getPopularEvents(registrations: any[]): Promise<any[]> {
+  private async getPopularEvents(_registrations: any[]): Promise<any[]> {
     return [];
   }
-  private async getEventsByType(registrations: any[]): Promise<any[]> {
+  private async getEventsByType(_registrations: any[]): Promise<any[]> {
     return [];
   }
-  private async calculateBounceRate(pageViews: any[]): Promise<number> {
+  private async calculateBounceRate(_pageViews: any[]): Promise<number> {
     return 0;
   }
-  private async calculateAvgTimeOnPage(pageViews: any[]): Promise<number> {
+  private async calculateAvgTimeOnPage(_pageViews: any[]): Promise<number> {
     return 0;
   }
-  private async calculateExitRate(pageViews: any[]): Promise<number> {
+  private async calculateExitRate(_pageViews: any[]): Promise<number> {
     return 0;
   }
-  private async getTopPages(pageViews: any[]): Promise<any[]> {
+  private async getTopPages(_pageViews: any[]): Promise<any[]> {
     return [];
   }
-  private async calculateForumResponseRate(posts: any[]): Promise<number> {
+  private async calculateForumResponseRate(_posts: any[]): Promise<number> {
     return 0;
   }
-  private async calculateAvgResponseTime(posts: any[]): Promise<number> {
+  private async calculateAvgResponseTime(_posts: any[]): Promise<number> {
     return 0;
   }
-  private async getTopForumContributors(posts: any[]): Promise<any[]> {
+  private async getTopForumContributors(_posts: any[]): Promise<any[]> {
     return [];
   }
-  private async getCategoryEngagement(posts: any[]): Promise<any[]> {
+  private async getCategoryEngagement(_posts: any[]): Promise<any[]> {
     return [];
   }
   private async getTotalMentorshipMatches(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<number> {
     return 0;
   }
   private async getActiveMentorshipMatches(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<number> {
     return 0;
   }
-  private async getAvgSessionRating(sessions: any[]): Promise<number> {
+  private async getAvgSessionRating(_sessions: any[]): Promise<number> {
     return 0;
   }
   private async getMentorshipMatchSuccessRate(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<number> {
     return 0;
   }
-  private async getAvgMatchDuration(filters: AnalyticsFilter): Promise<number> {
+  private async getAvgMatchDuration(
+    _filters: AnalyticsFilter
+  ): Promise<number> {
     return 0;
   }
-  private async getTopMentors(sessions: any[]): Promise<any[]> {
+  private async getTopMentors(_sessions: any[]): Promise<any[]> {
     return [];
   }
-  private async getTotalConnections(filters: AnalyticsFilter): Promise<number> {
+  private async getTotalConnections(
+    _filters: AnalyticsFilter
+  ): Promise<number> {
     return 0;
   }
-  private async getNewConnections(filters: AnalyticsFilter): Promise<number> {
+  private async getNewConnections(_filters: AnalyticsFilter): Promise<number> {
     return 0;
   }
   private async getActiveConversations(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<number> {
     return 0;
   }
   private async getAvgConnectionsPerUser(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<number> {
     return 0;
   }
   private async getConnectionGrowth(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<TimeSeriesData[]> {
     return [];
   }
-  private async getNetworkDensity(filters: AnalyticsFilter): Promise<number> {
+  private async getNetworkDensity(_filters: AnalyticsFilter): Promise<number> {
     return 0;
   }
-  private async getInfluencers(filters: AnalyticsFilter): Promise<any[]> {
+  private async getInfluencers(_filters: AnalyticsFilter): Promise<any[]> {
     return [];
   }
-  private async calculateMRR(filters: AnalyticsFilter): Promise<number> {
+  private async calculateMRR(_filters: AnalyticsFilter): Promise<number> {
     return 0;
   }
-  private async calculateARR(filters: AnalyticsFilter): Promise<number> {
+  private async calculateARR(_filters: AnalyticsFilter): Promise<number> {
     return 0;
   }
-  private async calculateARPU(filters: AnalyticsFilter): Promise<number> {
+  private async calculateARPU(_filters: AnalyticsFilter): Promise<number> {
     return 0;
   }
-  private async calculateCLV(filters: AnalyticsFilter): Promise<number> {
+  private async calculateCLV(_filters: AnalyticsFilter): Promise<number> {
     return 0;
   }
-  private async calculateChurnRate(filters: AnalyticsFilter): Promise<number> {
+  private async calculateChurnRate(_filters: AnalyticsFilter): Promise<number> {
     return 0;
   }
   private async calculateRevenueGrowth(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<number> {
     return 0;
   }
-  private async getRevenueBySource(payments: any[]): Promise<any[]> {
+  private async getRevenueBySource(_payments: any[]): Promise<any[]> {
     return [];
   }
   private async getSubscriptionAnalytics(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<any> {
     return {
       totalSubscriptions: 0,
@@ -963,15 +964,15 @@ export class AnalyticsService {
       subscriptionTrends: [],
     };
   }
-  private async getFailedPayments(filters: AnalyticsFilter): Promise<number> {
+  private async getFailedPayments(_filters: AnalyticsFilter): Promise<number> {
     return 0;
   }
   private async getPaymentFailureRate(
-    filters: AnalyticsFilter
+    _filters: AnalyticsFilter
   ): Promise<number> {
     return 0;
   }
-  private async getPaymentMethods(payments: any[]): Promise<any[]> {
+  private async getPaymentMethods(_payments: any[]): Promise<any[]> {
     return [];
   }
 }

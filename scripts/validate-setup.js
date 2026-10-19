@@ -49,7 +49,7 @@ function checkNodeVersion() {
     } else {
       log.success('Node.js version meets requirements');
     }
-  } catch (error) {
+  } catch {
     log.error('Failed to check Node.js version');
     hasErrors = true;
   }
@@ -70,7 +70,7 @@ function checkNpmVersion() {
     } else {
       log.success('npm version meets requirements');
     }
-  } catch (error) {
+  } catch {
     log.error('npm is not installed or not in PATH');
     hasErrors = true;
   }
@@ -184,7 +184,7 @@ function checkGitConfig() {
     } else {
       log.success('Working directory clean');
     }
-  } catch (error) {
+  } catch {
     log.error('Not a git repository or git not installed');
     hasErrors = true;
   }

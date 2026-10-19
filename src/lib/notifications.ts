@@ -25,13 +25,10 @@ import type {
   Notification,
   NotificationSettings,
   NotificationHistory,
-  NotificationGroup,
   NotificationType,
   NotificationPriority,
   NotificationCategory,
-  NotificationDeliveryMethod,
   PushSubscription,
-  NotificationQueue,
 } from '../types';
 import { logger } from '@/lib/logger';
 

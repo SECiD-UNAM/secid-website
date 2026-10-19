@@ -35,7 +35,7 @@ class PWAManager {
   private registration: ServiceWorkerRegistration | null = null;
   private deferredPrompt: InstallPromptEvent | null = null;
   private updateCheckInterval: number | null = null;
-  private listeners: Map<string, Set<Function>> = new Map();
+  private listeners: Map<string, Set<(...args: any[]) => void>> = new Map();
 
   constructor() {
     this.init();
@@ -451,7 +451,7 @@ class PWAManager {
   /**
    * Add event listener
    */
-  on(event: string, callback: Function): void {
+  on(event: string, callback: (...args: any[]) => void): void {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set());
     }
@@ -461,7 +461,7 @@ class PWAManager {
   /**
    * Remove event listener
    */
-  off(event: string, callback: Function): void {
+  off(event: string, callback: (...args: any[]) => void): void {
     const callbacks = this.listeners.get(event);
     if (callbacks) {
       callbacks.delete(callback);

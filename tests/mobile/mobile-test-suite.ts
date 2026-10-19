@@ -1,4 +1,4 @@
-import { test, expect, Page, BrowserContext } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 /**
  * Comprehensive Mobile Responsiveness Test Suite
@@ -501,7 +501,7 @@ test.describe('Mobile Responsiveness Suite', () => {
         await page.reload({ timeout: 5000 });
         // If page loads offline, it has some caching strategy
         await expect(page.locator('body')).toBeVisible();
-      } catch (error) {
+      } catch {
         // It's okay if offline doesn't work, just log it
         console.log('Offline functionality not implemented');
       } finally {

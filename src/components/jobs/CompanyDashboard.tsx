@@ -9,7 +9,6 @@ import {
   doc,
   updateDoc,
   deleteDoc,
-  getDoc,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import {
@@ -20,17 +19,12 @@ import {
   TrashIcon,
   UsersIcon,
   ChartBarIcon,
-  ClockIcon,
   CheckCircleIcon,
-  XCircleIcon,
   DocumentTextIcon,
-  CalendarIcon,
   MapPinIcon,
-  CurrencyDollarIcon,
   SparklesIcon,
   ExclamationTriangleIcon,
   ArrowTrendingUpIcon,
-  FunnelIcon,
 } from '@heroicons/react/24/outline';
 
 interface JobPost {

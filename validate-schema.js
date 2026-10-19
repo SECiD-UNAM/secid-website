@@ -15,7 +15,7 @@ function validateJSONLD(content, filePath) {
 
   // Extract JSON-LD scripts
   const jsonLdRegex =
-    /<script[^>]*type=["\']application\/ld\+json["\'][^>]*>([\s\S]*?)<\/script>/gi;
+    /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
   let match;
   let hasJsonLd = false;
 

@@ -1,5 +1,4 @@
 import { test, expect, Page } from '@playwright/test';
-import { mockUsers } from '../fixtures/users';
 import { mockJobs } from '../fixtures/jobs';
 
 // Test data for job applications
@@ -101,7 +100,7 @@ class JobApplicationFlow {
     await jobCards.nth(jobIndex).click();
 
     // Should navigate to job detail page
-    await expect(this.page).toHaveURL(/\/es\/jobs\/[^\/]+$/);
+    await expect(this.page).toHaveURL(/\/es\/jobs\/[^/]+$/);
 
     // Wait for job details to load
     await this.page.waitForSelector('[data-testid="job-title"]');
@@ -454,7 +453,7 @@ test.describe('Job Application and Search Flow', () => {
     await page.click('[data-testid="company-name"]');
 
     // Should navigate to company profile
-    await expect(page).toHaveURL(/\/es\/companies\/[^\/]+$/);
+    await expect(page).toHaveURL(/\/es\/companies\/[^/]+$/);
 
     // Should show company information
     await expect(
@@ -491,7 +490,7 @@ test.describe('Job Application and Search Flow', () => {
     await page.click('[data-testid="recommended-job"]');
 
     // Should navigate to job details
-    await expect(page).toHaveURL(/\/es\/jobs\/[^\/]+$/);
+    await expect(page).toHaveURL(/\/es\/jobs\/[^/]+$/);
 
     // Test dismissing recommendations
     await page.goBack();

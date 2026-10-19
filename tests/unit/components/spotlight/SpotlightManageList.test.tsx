@@ -6,7 +6,6 @@ import {
   cleanup,
   waitFor,
   fireEvent,
-  act,
 } from '@testing-library/react';
 
 const mockSpotlights = [

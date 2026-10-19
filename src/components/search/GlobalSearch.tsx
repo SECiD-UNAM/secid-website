@@ -12,6 +12,7 @@ import {
   ChatBubbleLeftRightIcon,
   AcademicCapIcon,
   NewspaperIcon,
+  MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import SearchBar from './SearchBar';

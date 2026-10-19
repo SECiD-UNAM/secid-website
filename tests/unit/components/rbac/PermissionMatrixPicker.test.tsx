@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, cleanup, within, fireEvent } from '@testing-library/react';
 import PermissionMatrixPicker from '@/components/rbac/PermissionMatrixPicker';
-import { RESOURCES, OPERATIONS } from '@/lib/rbac/types';
+import { RESOURCES } from '@/lib/rbac/types';
 import type { PermissionGrant } from '@/lib/rbac/types';
 
 function setup() {

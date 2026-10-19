@@ -1,5 +1,4 @@
 import { test, expect, Page } from '@playwright/test';
-import { mockUsers } from '../fixtures/users';
 
 // Mobile device configurations for comprehensive testing
 const mobileDevices = [
@@ -212,7 +211,7 @@ class MobileExperienceFlow {
       await card.tap();
 
       // Should navigate to job details
-      await expect(this.page).toHaveURL(/\/es\/jobs\/[^\/]+$/);
+      await expect(this.page).toHaveURL(/\/es\/jobs\/[^/]+$/);
       await this.page.goBack();
     }
   }

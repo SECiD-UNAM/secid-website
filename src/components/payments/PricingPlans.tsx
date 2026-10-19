@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   SUBSCRIPTION_PLANS,
   COMMISSION_TYPES,
@@ -153,7 +153,7 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
   currentPlan,
   onPlanSelect,
   showCommissionOptions = false,
-  userId,
+  userId: _userId,
   customerId,
 }) => {
   const { t } = useTranslations();

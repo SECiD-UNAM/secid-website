@@ -9,7 +9,7 @@
  * Mock fn references are captured via globalThis to avoid hoisting errors.
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 vi.mock('lucide-react', () => {

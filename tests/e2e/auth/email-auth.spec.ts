@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../page-objects/auth/LoginPage';
 import { NavigationComponent } from '../../page-objects/base/NavigationComponent';
-import { AuthHelpers } from '../../utils/auth-helpers';
 import { TestDataGenerator } from '../../utils/test-data-generator';
 import validUsers from '../../data/users/valid-users.json' with { type: 'json' };
 import invalidUsers from '../../data/users/invalid-users.json' with { type: 'json' };
@@ -287,7 +286,7 @@ test.describe('Email Authentication', () => {
     });
 
     test('should handle concurrent login attempts', async ({
-      page,
+      page: _page,
       context,
     }) => {
       // Open second tab

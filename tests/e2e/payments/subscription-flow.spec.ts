@@ -489,7 +489,7 @@ test.describe('Subscription Flow Tests', () => {
       expect(isSelected).toBe(true);
     });
 
-    test('should complete mobile checkout flow', async ({ page }) => {
+    test('should complete mobile checkout flow', async ({ page: _page }) => {
       await checkoutPage.goto('premium-monthly');
       await checkoutPage.switchToMobileView();
 
@@ -741,7 +741,7 @@ test.describe('Subscription Flow Tests', () => {
   });
 
   test.describe('Performance Tests', () => {
-    test('should load pricing page quickly', async ({ page }) => {
+    test('should load pricing page quickly', async ({ page: _page }) => {
       const startTime = Date.now();
       await pricingPage.goto();
       const loadTime = Date.now() - startTime;

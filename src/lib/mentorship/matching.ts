@@ -3,14 +3,7 @@
  */
 
 import { db } from '../firebase';
-import {
-  collection,
-  doc,
-  getDocs,
-  addDoc,
-  query,
-  where,
-} from 'firebase/firestore';
+import { collection, getDocs, addDoc, query, where } from 'firebase/firestore';
 import type {
   MentorProfile,
   MenteeProfile,

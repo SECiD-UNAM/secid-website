@@ -6,7 +6,7 @@ interface Props {
   lang?: 'es' | 'en';
 }
 
-export default function MentorBrowsePage({ lang = 'es' }: Props) {
+export default function MentorBrowsePage({ lang: _lang = 'es' }: Props) {
   return (
     <AuthProvider>
       <MentorshipMatcher />

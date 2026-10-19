@@ -89,7 +89,7 @@ function checkTestCoverage() {
       console.log(`   📈 Branches: ${total.branches.pct}%`);
       console.log(`   📈 Statements: ${total.statements.pct}%`);
     }
-  } catch (error) {
+  } catch {
     console.log(`   ⚠️  Coverage analysis not available`);
   }
 }

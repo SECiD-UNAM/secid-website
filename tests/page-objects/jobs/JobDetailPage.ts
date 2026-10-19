@@ -468,7 +468,7 @@ export class JobDetailPage extends BasePage {
   async clickSimilarJob(index: number) {
     const similarJob = this.similarJobCards.nth(index);
     await similarJob.click();
-    await this.waitForNavigation(/\/jobs\/[^\/]+/);
+    await this.waitForNavigation(/\/jobs\/[^/]+/);
   }
 
   /**
@@ -592,7 +592,7 @@ export class JobDetailPage extends BasePage {
 
   private async getCurrentJobId(): Promise<string> {
     const currentUrl = await this.getCurrentURL();
-    const match = currentUrl.match(/\/jobs\/([^\/]+)/);
+    const match = currentUrl.match(/\/jobs\/([^/]+)/);
     return match ? match[1] : '';
   }
 

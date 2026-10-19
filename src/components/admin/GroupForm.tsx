@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { usePermissions } from '@/lib/rbac/hooks';
 import RequirePermission from '@/components/rbac/RequirePermission';
 import PermissionMatrixPicker from '@/components/rbac/PermissionMatrixPicker';
 import type { PermissionGrant, RBACGroup } from '@/lib/rbac/types';

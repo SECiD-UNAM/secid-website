@@ -1,7 +1,5 @@
 // Forum types for SECiD community forums
 
-import type { Language } from './index';
-
 export interface ForumCategory {
   id: string;
   name: string;

@@ -333,14 +333,14 @@ export function validateOAuthConfig(): {
 
   try {
     createGoogleProvider();
-  } catch (error) {
+  } catch {
     missingProviders.push('google');
     errors.push('Google OAuth configuration is missing or invalid');
   }
 
   try {
     createGitHubProvider();
-  } catch (error) {
+  } catch {
     missingProviders.push('github');
     errors.push('GitHub OAuth configuration is missing or invalid');
   }

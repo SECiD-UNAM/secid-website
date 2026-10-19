@@ -93,7 +93,7 @@ function CustomTooltip({
   active,
   payload,
   total,
-  lang,
+  lang: _lang,
 }: {
   active?: boolean;
   payload?: TooltipPayload[];

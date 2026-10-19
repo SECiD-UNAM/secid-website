@@ -37,7 +37,9 @@ function getProjectId() {
     });
     const match = result.match(/Active Project:\s+(\S+)/);
     if (match) return match[1];
-  } catch {}
+  } catch {
+    // ignore and fall through
+  }
 
   // Fallback: read .firebaserc
   try {
@@ -46,7 +48,9 @@ function getProjectId() {
       fs.readFileSync(new URL('../.firebaserc', import.meta.url), 'utf8')
     );
     return rc.projects?.default;
-  } catch {}
+  } catch {
+    // ignore and fall through
+  }
 
   return null;
 }

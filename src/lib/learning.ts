@@ -1,10 +1,9 @@
-import { db, storage } from './firebase';
+import { db } from './firebase';
 import {
   collection,
   doc,
   addDoc,
   updateDoc,
-  deleteDoc,
   getDoc,
   getDocs,
   query,
@@ -13,10 +12,8 @@ import {
   limit,
   serverTimestamp,
   increment,
-  arrayUnion,
   Timestamp,
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import type {
   Course,
   LearningPath,

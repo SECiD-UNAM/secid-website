@@ -458,7 +458,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
         'profile.position':
           currentWork?.position || formData.currentPosition || '',
         'experience.previousRoles': workHistory.map(
-          ({ compensation, ...rest }: any) => rest
+          ({ compensation: _compensation, ...rest }: any) => rest
         ),
         'experience.currentRole':
           currentWork?.position || formData.currentPosition || '',
@@ -510,7 +510,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
       }
 
       // Deep-clean undefined values — Firestore rejects them anywhere in the tree
-      function removeUndefined(obj: any): any {
+      const removeUndefined = (obj: any): any => {
         if (Array.isArray(obj)) {
           return obj.map(removeUndefined);
         }
@@ -529,7 +529,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
           return cleaned;
         }
         return obj;
-      }
+      };
 
       const cleanedUpdates = removeUndefined(updates);
 
