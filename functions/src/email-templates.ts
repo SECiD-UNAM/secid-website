@@ -330,3 +330,41 @@ export function generateStatusChangeEmail(params: StatusChangeParams): {
     }),
   };
 }
+
+interface ContactMessageAdminParams {
+  name: string;
+  email: string;
+  subject?: string;
+  message: string;
+  adminPanelUrl: string;
+}
+
+/**
+ * F19 — Admin notification enviada por onContactMessageCreated por cada
+ * `contactMessages/{id}` nuevo. Va al ADMIN_EMAIL, default
+ * `contacto@secid.mx`, con el remitente como Reply-To.
+ */
+export function generateContactMessageAdminEmail(
+  params: ContactMessageAdminParams
+): { subject: string; html: string } {
+  // Subject is plain text; every HTML interpolation below is user input.
+  const subject = `Nuevo mensaje de contacto: ${params.subject || params.name}`;
+  const details = `
+    <ul style="line-height:1.8;">
+      <li><strong>Nombre</strong>: ${escapeHtml(params.name)}</li>
+      <li><strong>Email</strong>: ${escapeHtml(params.email)}</li>
+      ${params.subject ? `<li><strong>Asunto</strong>: ${escapeHtml(params.subject)}</li>` : ''}
+    </ul>
+    <blockquote style="margin:16px 0; padding:12px 16px; background:#f8f9fa; border-left:4px solid #C4A24C; white-space:pre-wrap;">${escapeHtml(params.message)}</blockquote>`;
+  return {
+    subject,
+    html: shell({
+      title: 'Nuevo mensaje de contacto',
+      bodyHtml: `<p>Alguien escribió desde el formulario de contacto del sitio. Responde a este correo para contestarle directamente.</p>${details}`,
+      ctaHref: params.adminPanelUrl,
+      ctaLabel: 'Abrir el panel de admin',
+      footnote:
+        'Este correo se envió automáticamente al recibir un mensaje de contacto.',
+    }),
+  };
+}
