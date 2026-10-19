@@ -110,6 +110,8 @@ Si se usa otro, reemplazarlo en todo el documento.
 
 ## Seguimiento post-lanzamiento (no bloquea el lanzamiento; hallazgos del 2026-10-18)
 
+> El plan ordenado de siguientes pasos (bloques A–E, dueños, orden) está en [docs/ROADMAP.md](./ROADMAP.md); esta sección es el registro ítem por ítem.
+
 - [x] Solicitud real pendiente desde el 22-sep-2026: Luis Enrique Morales Flores (`fmJmXgOQGETpkZQEUCs4JXJxys42`) — APROBADA 2026-10-18 21:55 UTC por decisión del owner, ejecutada por Claude desde el panel (Estado → Activo = `updateMemberStatus`: `lifecycle.status=active`, `role=member`, `verificationStatus=approved`, `isVerified=true`)
 - [x] (dev) BUG hallado al aprobar — PR #88 mergeado 2026-10-18 (735619c), deploy cd.yml 39172339590 en verde; verificado en `secid.mx`: `?status=pending` → 0 miembros, filtro Activo → 31 con verificación "Aprobado", título corregido. Era: la tabla de admin mostraba a TODOS como "Pendiente" / "Sin verificar" (36 filas con `?status=pending`) porque `src/lib/members/mapper.ts` no copia `lifecycle` ni `verificationStatus`/`isVerified` al `MemberProfile`; además `admin/members/index.astro` tiene `Gesti\u00f3n` escapado literal en título y h1 → PR en curso
 - [ ] (owner) Fase 0 §B y correo de prueba del presupuesto (arriba) — siguen abiertos
