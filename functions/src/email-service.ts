@@ -1,10 +1,22 @@
 import * as admin from 'firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
 
-interface EmailData {
+export interface EmailData {
   to: string;
   subject: string;
   html: string;
+  /** Optional Reply-To; the extension reads it from the top-level field. */
+  replyTo?: string;
+}
+
+/** Shape of a `mail/{id}` doc as the firestore-send-email extension expects it. */
+function toMailDoc({ to, subject, html, replyTo }: EmailData) {
+  return {
+    to,
+    ...(replyTo ? { replyTo } : {}),
+    message: { subject, html },
+    createdAt: FieldValue.serverTimestamp(),
+  };
 }
 
 /**
@@ -27,23 +39,15 @@ export function isQaRecipient(email: string | undefined | null): boolean {
  * Firebase Trigger Email extension picks these up and sends via configured SMTP/SendGrid.
  * Resolves to '' (nothing queued) for QA recipients.
  */
-export async function sendEmail({
-  to,
-  subject,
-  html,
-}: EmailData): Promise<string> {
-  if (isQaRecipient(to)) {
-    console.log(`[email] skipped for QA account ${to}: ${subject}`);
+export async function sendEmail(email: EmailData): Promise<string> {
+  if (isQaRecipient(email.to)) {
+    console.log(`[email] skipped for QA account ${email.to}: ${email.subject}`);
     return '';
   }
-  const docRef = await admin.firestore().collection('mail').add({
-    to,
-    message: {
-      subject,
-      html,
-    },
-    createdAt: FieldValue.serverTimestamp(),
-  });
+  const docRef = await admin
+    .firestore()
+    .collection('mail')
+    .add(toMailDoc(email));
   return docRef.id;
 }
 
@@ -56,15 +60,7 @@ export async function sendBatchEmails(emails: EmailData[]): Promise<void> {
 
   for (const email of emails) {
     if (isQaRecipient(email.to)) continue;
-    const docRef = mailCollection.doc();
-    batch.set(docRef, {
-      to: email.to,
-      message: {
-        subject: email.subject,
-        html: email.html,
-      },
-      createdAt: FieldValue.serverTimestamp(),
-    });
+    batch.set(mailCollection.doc(), toMailDoc(email));
   }
 
   await batch.commit();

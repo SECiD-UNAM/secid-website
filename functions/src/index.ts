@@ -827,6 +827,14 @@ export { submitPublicJob };
 
 export { subscribeNewsletter, sendContactMessage };
 
+// F19: email notifications (contact messages → admin, event registration
+// confirmation, 24 h event reminders)
+export {
+  onContactMessageCreated,
+  onEventRegistrationEmail,
+  sendEventReminders,
+} from './notifications';
+
 // LinkedIn OAuth: disabled — requires LINKEDIN_CLIENT_ID secret in Secret Manager
 // export { linkedinAuthRedirect, linkedinAuthCallback, exchangeLinkedInCode } from "./linkedin-auth";
 

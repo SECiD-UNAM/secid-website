@@ -47,7 +47,10 @@ never run at the same time. Rollback of hosting or backend: runbook
   output is not tracked in git), Firestore rules and indexes, Storage
   rules. Shared by both environments, so exactly ONE branch may deploy it.
   Whoever deploys it also writes `APP_URL` into `functions/.env`, which
-  ends up in user-facing email links.
+  ends up in user-facing email links. `ADMIN_EMAIL` in the same functions
+  env decides who receives the admin notifications (new contact messages
+  from `onContactMessageCreated`, pending-membership fallback); unset, they
+  go to `contacto@secid.mx`.
 
 ## Shared-backend rules
 

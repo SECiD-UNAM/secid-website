@@ -10,14 +10,20 @@ import { describe, it, expect, vi } from 'vitest';
 const PATHS = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const path = require('path');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const fs = require('fs');
+  // functions/node_modules may be a symlink in a worktree; vite resolves
+  // the SUT's import to the real path, so the mock spec must match it.
+  const functionsModules = fs.realpathSync(
+    path.resolve('functions/node_modules')
+  );
   return {
-    firebaseAdmin: path.resolve(
-      'functions/node_modules/firebase-admin/lib/index.js'
-    ),
+    firebaseAdmin: path.join(functionsModules, 'firebase-admin/lib/index.js'),
     // Modular entry the SUT imports FieldValue/Timestamp from (vite picks the
     // "import" export condition, hence lib/esm).
-    firebaseAdminFirestore: path.resolve(
-      'functions/node_modules/firebase-admin/lib/esm/firestore/index.js'
+    firebaseAdminFirestore: path.join(
+      functionsModules,
+      'firebase-admin/lib/esm/firestore/index.js'
     ),
   };
 });
@@ -109,6 +115,29 @@ describe('sendEmail', () => {
     });
     expect(id).toBe('');
     expect(queuedTo('tester+qa@gmail.com')).toBe(false);
+  });
+
+  it('writes replyTo at the top level of the mail doc only when given', async () => {
+    await sendEmail({
+      to: 'admin-replyto@secid.mx',
+      subject: 's',
+      html: 'h',
+      replyTo: 'sender@example.com',
+    });
+    const withReply = add.mock.calls.find(
+      ([doc]) => (doc as { to: string })?.to === 'admin-replyto@secid.mx'
+    )?.[0] as Record<string, unknown>;
+    expect(withReply).toMatchObject({
+      to: 'admin-replyto@secid.mx',
+      replyTo: 'sender@example.com',
+      message: { subject: 's', html: 'h' },
+    });
+
+    await sendEmail({ to: 'admin-noreply@secid.mx', subject: 's', html: 'h' });
+    const without = add.mock.calls.find(
+      ([doc]) => (doc as { to: string })?.to === 'admin-noreply@secid.mx'
+    )?.[0] as Record<string, unknown>;
+    expect(without).not.toHaveProperty('replyTo');
   });
 
   it('drops QA recipients from batches', async () => {
