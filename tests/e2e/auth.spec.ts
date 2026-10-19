@@ -111,6 +111,10 @@ test.describe('Authentication Flow', () => {
     await expect(
       page.locator('text=Password must contain at least one uppercase letter')
     ).toBeVisible();
+    // react-hook-form focuses the first invalid field (#firstName) once the
+    // async zod validation resolves; filling #password before that lands the
+    // text in #firstName instead (CI run 39210689845).
+    await expect(page.locator('#firstName')).toBeFocused();
 
     await page.fill('#password', 'Password');
     await page.click('button[type="submit"]');
