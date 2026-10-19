@@ -167,12 +167,18 @@ Estado real hoy:
   moderación (cola + reportes), fusión, analytics y configuración. RBAC ya
   define `content-editor` y `newsletter-editor` sin UI que los use.
 
-- [ ] F19. Avisos que faltan sobre la tubería que ya funciona (1 día):
+- [x] F19. Avisos que faltan sobre la tubería que ya funciona (1 día):
       correo al admin por cada `contactMessages` nuevo (trigger
       `onDocumentCreated`), confirmación al registrarse a un evento y
       recordatorio 24 h antes (`onSchedule` diario leyendo
       `events/{id}/registrations`). Plantillas en `email-templates.ts`.
       Respetar `notificationSettings.email`.
+      Hecho en PR #130: `functions/src/notifications.ts` con
+      `onContactMessageCreated` (al `ADMIN_EMAIL`, remitente como Reply-To),
+      `onEventRegistrationEmail` (confirmación es/en con fecha, lugar o liga
+      y enlace al evento) y `sendEventReminders` (diario 09:00 CDMX, ventana
+      [+24 h, +48 h), marca `reminderSentAt`). Todo best-effort, respeta
+      `notificationSettings.email` y el salto de cuentas QA.
 - [ ] F20. Comunicados a miembros (1–2 días): composer en admin
       (`/dashboard/admin/communications`) para rol `content-editor` /
       `newsletter-editor`: asunto, cuerpo (markdown), audiencia (todos los
