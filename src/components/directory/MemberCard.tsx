@@ -34,7 +34,6 @@ interface MemberCardProps {
   currentUser?: UserBasicInfo | null;
   showMatchScore?: boolean;
   matchScore?: number;
-  onViewProfile?: (memberId: string) => void;
 }
 
 export const MemberCard: React.FC<MemberCardProps> = ({
@@ -44,7 +43,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   currentUser,
   showMatchScore = false,
   matchScore,
-  onViewProfile,
 }) => {
   const [showFullBio, setShowFullBio] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -131,15 +129,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     if (score >= 60)
       return 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400';
     return 'bg-gray-100 dark:bg-gray-900/20 text-gray-700 dark:text-gray-400';
-  };
-
-  const handleViewProfile = () => {
-    if (onViewProfile) {
-      onViewProfile(member.uid);
-    } else {
-      // Default navigation
-      window.location.href = `/${lang}/members/${member.slug || member.uid}`;
-    }
   };
 
   const handleShare = async () => {

@@ -200,7 +200,7 @@ interface Props {
 /* ------------------------------------------------------------------ */
 
 export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
-  const { user, isAdmin } = useAuth();
+  const { user } = useAuth();
 
   /* ---- RBAC group assignments per user ---- */
   const [userGroups, setUserGroups] = useState<Map<string, string[]>>(
@@ -264,17 +264,6 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
       toSearchable: (m) => `${m.displayName} ${m.email}`,
     })
   );
-
-  /* ---- Derive extra filters to apply after listing search ---- */
-  const extraFilters = useMemo<Record<string, unknown>>(() => {
-    const result: Record<string, unknown> = {};
-    if (roleFilter.size > 0) result['role'] = Array.from(roleFilter);
-    if (statusFilter.size > 0)
-      result['_lifecycleStatus'] = Array.from(statusFilter);
-    if (verificationFilter.size > 0)
-      result['_verificationStatus'] = Array.from(verificationFilter);
-    return result;
-  }, [roleFilter, statusFilter, verificationFilter]);
 
   const {
     items: rawItems,
@@ -1021,6 +1010,11 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
               </label>
             </div>
             <ListingTable<MemberProfile>
+              rowClassName={(m) =>
+                highlightedRows.has(m.uid)
+                  ? 'bg-green-50 transition-colors dark:bg-green-900/20'
+                  : ''
+              }
               items={filteredMembers}
               columns={columns}
               keyExtractor={(m) => m.uid}

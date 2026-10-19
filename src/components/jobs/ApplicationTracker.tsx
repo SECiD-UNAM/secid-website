@@ -54,8 +54,6 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
     'all' | 'pending' | 'reviewed' | 'shortlisted' | 'rejected' | 'hired'
   >('all');
   const [sortBy, setSortBy] = useState<'date' | 'status' | 'company'>('date');
-  const [selectedApplication, setSelectedApplication] =
-    useState<Application | null>(null);
 
   useEffect(() => {
     if (!user) return;

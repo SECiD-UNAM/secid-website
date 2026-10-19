@@ -46,8 +46,6 @@ const ATTEMPTS_COLLECTION = 'assessment_attempts';
 const RESULTS_COLLECTION = 'assessment_results';
 const CERTIFICATES_COLLECTION = 'certificates';
 const LEADERBOARDS_COLLECTION = 'leaderboards';
-const QUESTION_BANKS_COLLECTION = 'question_banks';
-const PEER_REVIEWS_COLLECTION = 'peer_reviews';
 
 // Assessment Management
 export async function createAssessment(
@@ -570,7 +568,7 @@ export async function submitAssessment(
     });
 
     // Save result
-    const resultRef = await addDoc(collection(db, RESULTS_COLLECTION), {
+    await addDoc(collection(db, RESULTS_COLLECTION), {
       ...result,
       attemptId,
       createdAt: serverTimestamp(),

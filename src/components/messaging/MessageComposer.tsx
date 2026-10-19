@@ -228,12 +228,15 @@ const MessageComposer: React.FC<MessageComposerProps> = ({
     }
 
     try {
+      setUploading(true);
       await onSendMessage(messageContent, messageAttachments);
     } catch (error) {
       console.error('Error sending message:', error);
       // Restore content on error
       setContent(messageContent);
       setAttachments(messageAttachments);
+    } finally {
+      setUploading(false);
     }
   };
 

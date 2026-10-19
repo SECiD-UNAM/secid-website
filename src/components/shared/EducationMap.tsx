@@ -4,7 +4,6 @@ import type {
   InstitutionAggregate,
 } from '@/lib/members/queries';
 import type { InstitutionCategory } from '@/lib/members/institution-normalization';
-import { getCompanyTranslations } from '@/i18n/company-translations';
 
 interface EducationMapProps {
   data: EducationEcosystemData;
@@ -46,16 +45,10 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
-function hashColor(name: string, base: string): string {
-  // Use the category color with slight variation per institution
-  return base;
-}
-
 export const EducationMap: React.FC<EducationMapProps> = ({
   data,
   lang = 'es',
 }) => {
-  const t = getCompanyTranslations(lang);
   const categoryLabels =
     lang === 'es' ? CATEGORY_LABELS_ES : CATEGORY_LABELS_EN;
   const containerRef = useRef<HTMLDivElement>(null);
@@ -65,7 +58,7 @@ export const EducationMap: React.FC<EducationMapProps> = ({
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
-  const { institutions, totalEntries, categories } = data;
+  const { institutions, totalEntries } = data;
 
   // Group by category
   const groups = new Map<InstitutionCategory, InstitutionAggregate[]>();

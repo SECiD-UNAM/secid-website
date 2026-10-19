@@ -3,7 +3,6 @@ import { useAuthContext } from '../../contexts/AuthContext';
 import { useTranslations } from '../../hooks/useTranslations';
 import type {
   MentorshipSession,
-  MentorshipMatch,
   MentorProfile,
   MenteeProfile,
   FormState,
@@ -11,9 +10,9 @@ import type {
 } from '../../types';
 import {
   getMentorshipSessions,
+  getUserMatches,
   createMentorshipSession,
   updateMentorshipSession,
-  getUserMatches,
   getMentorProfile,
   getMenteeProfile,
 } from '../../lib/mentorship';
@@ -589,7 +588,6 @@ export default function MentorshipSessions({
   const [sessions, setSessions] = useState<MentorshipSession[]>([]);
   const [currentSession, setCurrentSession] =
     useState<MentorshipSession | null>(null);
-  const [matches, setMatches] = useState<MentorshipMatch[]>([]);
   const [mentorProfiles, setMentorProfiles] = useState<
     Map<string, MentorProfile>
   >(new Map());
@@ -628,12 +626,6 @@ export default function MentorshipSessions({
     url: '',
     type: 'link' as const,
   });
-  const [newHomework, setNewHomework] = useState({
-    title: '',
-    description: '',
-    dueDate: '',
-    completed: false,
-  });
 
   useEffect(() => {
     if (!user) return;
@@ -648,7 +640,6 @@ export default function MentorshipSessions({
       setLoading(true);
 
       const userMatches = await getUserMatches(user.uid);
-      setMatches(userMatches.filter((m) => m.status === 'active'));
 
       let sessionsData: MentorshipSession[] = [];
       if (matchId) {
@@ -908,28 +899,6 @@ export default function MentorshipSessions({
     setFormData((prev) => ({
       ...prev,
       resources: prev.resources.filter((_, i) => i !== index),
-    }));
-  };
-
-  const addHomework = () => {
-    if (newHomework.title.trim() && newHomework.description.trim()) {
-      setFormData((prev) => ({
-        ...prev,
-        homework: [...prev.homework, { ...newHomework }],
-      }));
-      setNewHomework({
-        title: '',
-        description: '',
-        dueDate: '',
-        completed: false,
-      });
-    }
-  };
-
-  const removeHomework = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      homework: prev.homework.filter((_, i) => i !== index),
     }));
   };
 

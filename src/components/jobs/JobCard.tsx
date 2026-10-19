@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
 import VerifiedBadge from './VerifiedBadge';
 import {
   MapPinIcon,
@@ -44,7 +43,6 @@ interface JobCardProps {
 }
 
 export const JobCard: React.FC<JobCardProps> = ({ job, lang = 'es' }) => {
-  const { user } = useAuth();
   const [isSaved, setIsSaved] = useState(false);
 
   const formatSalary = (salaryRange?: Job['salaryRange']): string => {

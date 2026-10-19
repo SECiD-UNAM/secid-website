@@ -283,7 +283,6 @@ export class RateLimiter {
     captchaToken?: string
   ): Promise<RateLimitResult> {
     const now = Date.now();
-    const windowStart = now - config.windowMs;
 
     // Get current rate limit data
     let data = await this.store.get(key);
