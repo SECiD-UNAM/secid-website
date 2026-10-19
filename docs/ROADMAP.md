@@ -74,7 +74,7 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       Hoy mide 72.2 / 46.9 / 17.2 / 17.2 (ramas/funciones/líneas/sentencias).
       Se quitó el paso de Codecov (sin token, nunca subió nada).
       Falta (owner, 1 clic): añadir `Coverage` a los checks requeridos de
-      `main`; el runbook de gobernanza tiene el comando.
+      `main` ([runbooks/github-governance.md](./runbooks/github-governance.md)).
 
 ## Bloque C — Pasos del owner (~30 min en total)
 
