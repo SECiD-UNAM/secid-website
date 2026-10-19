@@ -226,6 +226,13 @@ service cloud.firestore {
         allow delete: if false;
       }
 
+      // Events the member registered for (EventRegistrationForm writes
+      // registeredEvents/{eventId}; EventDetail deletes it on cancellation).
+      // The canonical registration is events/{eventId}/registrations/{uid}.
+      match /registeredEvents/{eventId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+
       // Compensation sub-collection: owner + RBAC admin read
       match /compensation/{entryId} {
         allow read, write: if isAuthenticated() && isOwner(userId);

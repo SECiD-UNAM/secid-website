@@ -41,6 +41,10 @@ import {
   confirmAlternateEmail,
 } from './alternate-email';
 import { submitPublicJob } from './public-job-submit';
+export {
+  onEventRegistrationCreated,
+  onEventRegistrationDeleted,
+} from './event-attendees';
 import { subscribeNewsletter, sendContactMessage } from './public-forms';
 
 // Firebase Admin initialized in ./init.ts (imported above)

@@ -55,6 +55,23 @@ const QA_NUMERO_CUENTA = process.env.E2E_QA_NUMERO_CUENTA || '300000001';
 // Test data
 // ---------------------------------------------------------------------------
 
+// Custom claims a real member carries: functions/src/rbac/resolvePermissions.ts
+// resolves the `member` group (functions/src/rbac/defaultGroups.ts) into this
+// payload when rbac_user_groups/{uid} is written (backfilled for every user).
+// firestore.rules read request.auth.token.rbac in every hasRBACDeny() chain,
+// and a token WITHOUT the key makes those rules error out (deny), so seeded
+// members must carry it to behave like production ones. tests/rules/harness.ts
+// derives the same value from the source modules.
+const MEMBER_RBAC_CLAIMS = {
+  rbac: {
+    g: ['member'],
+    p:
+      'ev:v.a,sp:v.a,nl:v.a,jc:v.a,bl:v.a,rs:v.a,fo:v.a,fo:c.o,fo:e.o,fo:d.o,' +
+      'fo:p.o,jo:c.o,jo:e.o,jo:d.o,jo:p.o,jo:v.a,mn:c.o,mn:e.o',
+  },
+  role: 'member',
+};
+
 const testUsers = [
   {
     email: 'admin@secid.mx',
@@ -78,6 +95,7 @@ const testUsers = [
   {
     email: 'member1@alumno.unam.mx',
     password: 'member123456',
+    claims: MEMBER_RBAC_CLAIMS,
     profile: {
       displayName: 'María García',
       firstName: 'María',
@@ -102,6 +120,7 @@ const testUsers = [
   {
     email: 'member2@alumno.unam.mx',
     password: 'member123456',
+    claims: MEMBER_RBAC_CLAIMS,
     profile: {
       displayName: 'Carlos Rodríguez',
       firstName: 'Carlos',

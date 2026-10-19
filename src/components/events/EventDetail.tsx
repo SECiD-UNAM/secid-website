@@ -5,7 +5,6 @@ import {
   getDoc,
   setDoc,
   deleteDoc,
-  updateDoc,
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -223,15 +222,9 @@ export const EventDetail: React.FC<EventDetailProps> = ({
       const registrationSnap = await getDoc(registrationRef);
 
       if (registrationSnap.exists()) {
+        // The attendee counter on the event is decremented by the Cloud
+        // Function trigger on this delete (members may not update events).
         await deleteDoc(registrationRef);
-
-        // Update attendee count, never going below 0
-        const eventRef = doc(db, 'events', eventId);
-        const eventSnap = await getDoc(eventRef);
-        const currentAttendees = eventSnap.data()?.currentAttendees ?? 0;
-        await updateDoc(eventRef, {
-          currentAttendees: Math.max(0, currentAttendees - 1),
-        });
       }
 
       // Remove from user's registered events
