@@ -145,7 +145,7 @@ test.describe('Journey B — Signup nuevo alumno end-to-end', () => {
     await expect(pendingTile.getByText('requiere acción')).toBeVisible();
     await pendingTile.click();
     await expect(page).toHaveURL(
-      /\/es\/dashboard\/admin\/members\?status=pending/
+      /\/es\/dashboard\/admin\/members\/?\?status=pending/
     );
 
     // B21: the applicant is listed as pending with its UNAM data submitted.

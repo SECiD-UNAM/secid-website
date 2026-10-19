@@ -1,589 +1,138 @@
-import { test, expect, Page } from '@playwright/test';
-import { clearBrowserStorage } from '../../utils/browser-storage';
+import { test, expect, type Page } from '@playwright/test';
+import { SEEDED, login } from '../../utils/session';
 
-// Test URLs
-const BASE_URL = process.env.BASE_URL || 'http://localhost:4321';
-const JOBS_URL = `${BASE_URL}/en/jobs`;
-const _POST_JOB_URL = `${BASE_URL}/en/post-job`;
-const DASHBOARD_URL = `${BASE_URL}/en/dashboard`;
+/**
+ * Member job board: /es/dashboard/jobs mounts
+ * src/components/jobs/JobSearchDemo.tsx (JobFilters sidebar + JobBoard over
+ * useUniversalListing / JobFirestoreAdapter). scripts/seed-emulator.js
+ * publishes three active jobs. The public /es/jobs page (hero, CTAs,
+ * search) is covered by tests/e2e/job-search.spec.ts.
+ *
+ * Note: the "Ubicación" select filters with `where('location', '==', …)`
+ * against values such as "Guadalajara" while seeded jobs store
+ * "Guadalajara, Jalisco", so it never matches seeded data and is not
+ * asserted here.
+ */
+const SENIOR = 'Senior Data Scientist';
+const JUNIOR = 'Data Analyst Junior';
+const ML = 'Machine Learning Engineer';
 
-// Helper functions
-async function navigateToJobs(page: Page) {
-  await page.goto(JOBS_URL);
-  await expect(page).toHaveTitle(/jobs/i);
+function jobTitles(page: Page) {
+  return page.locator('h3 a[href*="/es/dashboard/jobs/"]');
 }
 
-async function _loginAsCompany(page: Page) {
-  await page.goto(`${BASE_URL}/en/login`);
-  await page.fill('[data-testid="email-input"]', 'company@example.com');
-  await page.fill('[data-testid="password-input"]', 'password123');
-  await page.click('[data-testid="login-button"]');
-  await expect(page).toHaveURL(DASHBOARD_URL);
+function job(page: Page, title: string) {
+  return jobTitles(page).filter({ hasText: title });
 }
 
-async function loginAsUser(page: Page) {
-  await page.goto(`${BASE_URL}/en/login`);
-  await page.fill('[data-testid="email-input"]', 'user@example.com');
-  await page.fill('[data-testid="password-input"]', 'password123');
-  await page.click('[data-testid="login-button"]');
-  await expect(page).toHaveURL(DASHBOARD_URL);
+async function expectJobs(page: Page, titles: string[]) {
+  await expect(jobTitles(page)).toHaveCount(titles.length, { timeout: 15000 });
+  for (const title of titles) {
+    await expect(job(page, title)).toBeVisible();
+  }
 }
 
-// función no implementada: la UI real no expone estos flujos ni data-testid;
-// ver docs/ROADMAP.md A4
-test.describe.skip('Job Board', () => {
+test.describe('Job board (member)', () => {
   test.beforeEach(async ({ page }) => {
-    // Clear any existing session (safe before the first navigation).
-    await clearBrowserStorage(page);
+    await login(page, SEEDED.member);
+    await page.goto('/es/dashboard/jobs');
+    await expect(jobTitles(page).first()).toBeVisible({ timeout: 20000 });
   });
 
-  test.describe('Job Listing Display', () => {
-    test('should display job listings correctly', async ({ page }) => {
-      await navigateToJobs(page);
+  test('lists the seeded jobs with company, modality and salary', async ({
+    page,
+  }) => {
+    await expectJobs(page, [SENIOR, ML, JUNIOR]);
+    await expect(page.getByText('Mostrando 1–3 de 3')).toBeVisible();
 
-      // Wait for jobs to load
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
+    const senior = page.getByRole('listitem').filter({ hasText: SENIOR });
+    await expect(senior).toContainText('TechCorp México');
+    await expect(senior).toContainText('Híbrido');
+    await expect(senior).toContainText('MXN 60,000-90,000/mes');
+    await expect(senior.getByText('Destacado')).toBeVisible();
 
-      // Check job card elements
-      const firstJobCard = page.locator('[data-testid="job-card"]').first();
-      await expect(
-        firstJobCard.locator('[data-testid="job-title"]')
-      ).toBeVisible();
-      await expect(
-        firstJobCard.locator('[data-testid="job-company"]')
-      ).toBeVisible();
-      await expect(
-        firstJobCard.locator('[data-testid="job-location"]')
-      ).toBeVisible();
-      await expect(
-        firstJobCard.locator('[data-testid="job-type"]')
-      ).toBeVisible();
-      await expect(
-        firstJobCard.locator('[data-testid="job-level"]')
-      ).toBeVisible();
-    });
-
-    test('should show featured job badges', async ({ page }) => {
-      await navigateToJobs(page);
-
-      // Look for featured jobs
-      const featuredJobs = page.locator(
-        '[data-testid="job-card"][data-featured="true"]'
-      );
-      await expect(featuredJobs.first()).toBeVisible();
-      await expect(
-        featuredJobs.first().locator('[data-testid="featured-badge"]')
-      ).toBeVisible();
-    });
-
-    test('should show urgent job badges', async ({ page }) => {
-      await navigateToJobs(page);
-
-      // Look for urgent jobs
-      const urgentJobs = page.locator(
-        '[data-testid="job-card"][data-urgent="true"]'
-      );
-      if ((await urgentJobs.count()) > 0) {
-        await expect(
-          urgentJobs.first().locator('[data-testid="urgent-badge"]')
-        ).toBeVisible();
-      }
-    });
-
-    test('should show remote work badges', async ({ page }) => {
-      await navigateToJobs(page);
-
-      // Look for remote jobs
-      const remoteJobs = page.locator(
-        '[data-testid="job-card"][data-remote="true"]'
-      );
-      if ((await remoteJobs.count()) > 0) {
-        await expect(
-          remoteJobs.first().locator('[data-testid="remote-badge"]')
-        ).toBeVisible();
-      }
-    });
-
-    test('should display salary information when available', async ({
-      page,
-    }) => {
-      await navigateToJobs(page);
-
-      const jobsWithSalary = page.locator(
-        '[data-testid="job-card"]:has([data-testid="salary-info"])'
-      );
-      if ((await jobsWithSalary.count()) > 0) {
-        await expect(
-          jobsWithSalary.first().locator('[data-testid="salary-info"]')
-        ).toBeVisible();
-      }
-    });
+    const junior = page.getByRole('listitem').filter({ hasText: JUNIOR });
+    await expect(junior).toContainText('Presencial');
+    await expect(junior.getByText('Destacado')).toHaveCount(0);
   });
 
-  test.describe('Job Filtering', () => {
-    test('should filter jobs by location', async ({ page }) => {
-      await navigateToJobs(page);
+  test('search narrows the listing and clears back', async ({ page }) => {
+    const search = page.getByRole('searchbox', { name: 'Buscar...' });
+    await search.fill('Analyst');
+    await expectJobs(page, [JUNIOR]);
 
-      // Wait for jobs to load
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
-      const _initialJobCount = await page
-        .locator('[data-testid="job-card"]')
-        .count();
-
-      // Apply location filter
-      await page.selectOption('[data-testid="location-filter"]', 'Mexico City');
-
-      // Wait for filtered results
-      await page.waitForTimeout(1000);
-
-      // Check that results are filtered
-      const _filteredJobCount = await page
-        .locator('[data-testid="job-card"]')
-        .count();
-
-      // Verify all visible jobs match the filter
-      const jobCards = page.locator('[data-testid="job-card"]');
-      const count = await jobCards.count();
-
-      for (let i = 0; i < count; i++) {
-        const location = await jobCards
-          .nth(i)
-          .locator('[data-testid="job-location"]')
-          .textContent();
-        expect(location).toContain('Mexico City');
-      }
-    });
-
-    test('should filter jobs by type', async ({ page }) => {
-      await navigateToJobs(page);
-
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
-
-      // Apply job type filter
-      await page.selectOption('[data-testid="type-filter"]', 'full-time');
-
-      await page.waitForTimeout(1000);
-
-      // Verify all visible jobs are full-time
-      const jobCards = page.locator('[data-testid="job-card"]');
-      const count = await jobCards.count();
-
-      for (let i = 0; i < count; i++) {
-        const type = await jobCards
-          .nth(i)
-          .locator('[data-testid="job-type"]')
-          .textContent();
-        expect(type?.toLowerCase()).toContain('full-time');
-      }
-    });
-
-    test('should filter jobs by experience level', async ({ page }) => {
-      await navigateToJobs(page);
-
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
-
-      // Apply experience level filter
-      await page.selectOption('[data-testid="level-filter"]', 'senior');
-
-      await page.waitForTimeout(1000);
-
-      // Verify all visible jobs are senior level
-      const jobCards = page.locator('[data-testid="job-card"]');
-      const count = await jobCards.count();
-
-      for (let i = 0; i < count; i++) {
-        const level = await jobCards
-          .nth(i)
-          .locator('[data-testid="job-level"]')
-          .textContent();
-        expect(level?.toLowerCase()).toContain('senior');
-      }
-    });
-
-    test('should filter jobs by remote work option', async ({ page }) => {
-      await navigateToJobs(page);
-
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
-
-      // Apply remote work filter
-      await page.check('[data-testid="remote-filter"]');
-
-      await page.waitForTimeout(1000);
-
-      // Verify all visible jobs are remote
-      const jobCards = page.locator('[data-testid="job-card"]');
-      const count = await jobCards.count();
-
-      for (let i = 0; i < count; i++) {
-        await expect(
-          jobCards.nth(i).locator('[data-testid="remote-badge"]')
-        ).toBeVisible();
-      }
-    });
-
-    test('should filter jobs by salary range', async ({ page }) => {
-      await navigateToJobs(page);
-
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
-
-      // Set salary range filter
-      await page.fill('[data-testid="salary-min-input"]', '50000');
-      await page.fill('[data-testid="salary-max-input"]', '100000');
-
-      await page.waitForTimeout(1000);
-
-      // Verify salary filtering (if jobs have salary info)
-      const jobsWithSalary = page.locator(
-        '[data-testid="job-card"]:has([data-testid="salary-info"])'
-      );
-      const count = await jobsWithSalary.count();
-
-      if (count > 0) {
-        // Check that displayed salaries are within range
-        expect(count).toBeGreaterThan(0);
-      }
-    });
-
-    test('should clear all filters', async ({ page }) => {
-      await navigateToJobs(page);
-
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
-      const initialJobCount = await page
-        .locator('[data-testid="job-card"]')
-        .count();
-
-      // Apply multiple filters
-      await page.selectOption('[data-testid="location-filter"]', 'Mexico City');
-      await page.selectOption('[data-testid="type-filter"]', 'full-time');
-      await page.check('[data-testid="remote-filter"]');
-
-      await page.waitForTimeout(1000);
-
-      // Clear all filters
-      await page.click('[data-testid="clear-filters-button"]');
-
-      await page.waitForTimeout(1000);
-
-      // Should show all jobs again
-      const clearedJobCount = await page
-        .locator('[data-testid="job-card"]')
-        .count();
-      expect(clearedJobCount).toBe(initialJobCount);
-    });
+    await page.getByRole('button', { name: 'Limpiar búsqueda' }).click();
+    await expect(search).toHaveValue('');
+    await expectJobs(page, [SENIOR, ML, JUNIOR]);
   });
 
-  test.describe('Job Search', () => {
-    test('should search jobs by title', async ({ page }) => {
-      await navigateToJobs(page);
-
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
-
-      // Search for specific job title
-      await page.fill('[data-testid="search-input"]', 'Data Scientist');
-      await page.press('[data-testid="search-input"]', 'Enter');
-
-      await page.waitForTimeout(1000);
-
-      // Verify search results
-      const jobCards = page.locator('[data-testid="job-card"]');
-      const count = await jobCards.count();
-
-      if (count > 0) {
-        for (let i = 0; i < count; i++) {
-          const title = await jobCards
-            .nth(i)
-            .locator('[data-testid="job-title"]')
-            .textContent();
-          expect(title?.toLowerCase()).toContain('data scientist');
-        }
-      }
-    });
-
-    test('should search jobs by company', async ({ page }) => {
-      await navigateToJobs(page);
-
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
-
-      // Search for specific company
-      await page.fill('[data-testid="search-input"]', 'Tech Company');
-      await page.press('[data-testid="search-input"]', 'Enter');
-
-      await page.waitForTimeout(1000);
-
-      // Verify search results
-      const jobCards = page.locator('[data-testid="job-card"]');
-      const count = await jobCards.count();
-
-      if (count > 0) {
-        for (let i = 0; i < count; i++) {
-          const company = await jobCards
-            .nth(i)
-            .locator('[data-testid="job-company"]')
-            .textContent();
-          expect(company?.toLowerCase()).toContain('tech company');
-        }
-      }
-    });
-
-    test('should show no results message for invalid search', async ({
-      page,
-    }) => {
-      await navigateToJobs(page);
-
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
-
-      // Search for non-existent job
-      await page.fill('[data-testid="search-input"]', 'NonExistentJob12345');
-      await page.press('[data-testid="search-input"]', 'Enter');
-
-      await page.waitForTimeout(1000);
-
-      // Should show no results message
-      await expect(
-        page.locator('[data-testid="no-jobs-message"]')
-      ).toBeVisible();
-      await expect(
-        page.locator('[data-testid="no-jobs-message"]')
-      ).toContainText(/no jobs found/i);
-    });
+  test('a search with no match shows the empty state', async ({ page }) => {
+    await page
+      .getByRole('searchbox', { name: 'Buscar...' })
+      .fill('zzz-no-such-job');
+    await expect(
+      page.getByRole('heading', { name: 'No se encontraron empleos' })
+    ).toBeVisible({ timeout: 15000 });
+    await expect(
+      page.getByText('Intenta ajustar tus filtros o términos de búsqueda')
+    ).toBeVisible();
+    await expect(jobTitles(page)).toHaveCount(0);
   });
 
-  test.describe('Job Detail View', () => {
-    test('should open job detail modal when job card is clicked', async ({
-      page,
-    }) => {
-      await navigateToJobs(page);
+  test('work-mode filter keeps only matching jobs', async ({ page }) => {
+    const remote = page.getByRole('checkbox', { name: 'Remoto', exact: true });
+    await remote.check();
+    await expectJobs(page, [ML]);
 
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
+    await page.getByRole('checkbox', { name: 'Híbrido' }).check();
+    await expectJobs(page, [SENIOR, ML]);
 
-      // Click on first job card
-      await page.click('[data-testid="job-card"]');
-
-      // Should open job detail modal
-      await expect(
-        page.locator('[data-testid="job-detail-modal"]')
-      ).toBeVisible();
-      await expect(
-        page.locator('[data-testid="job-detail-title"]')
-      ).toBeVisible();
-      await expect(
-        page.locator('[data-testid="job-detail-description"]')
-      ).toBeVisible();
-      await expect(
-        page.locator('[data-testid="job-requirements"]')
-      ).toBeVisible();
-    });
-
-    test('should show apply button for authenticated users', async ({
-      page,
-    }) => {
-      await loginAsUser(page);
-      await navigateToJobs(page);
-
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
-      await page.click('[data-testid="job-card"]');
-
-      await expect(
-        page.locator('[data-testid="job-detail-modal"]')
-      ).toBeVisible();
-      await expect(page.locator('[data-testid="apply-button"]')).toBeVisible();
-    });
-
-    test('should show login prompt for unauthenticated users', async ({
-      page,
-    }) => {
-      await navigateToJobs(page);
-
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
-      await page.click('[data-testid="job-card"]');
-
-      await expect(
-        page.locator('[data-testid="job-detail-modal"]')
-      ).toBeVisible();
-      await expect(
-        page.locator('[data-testid="login-to-apply"]')
-      ).toBeVisible();
-    });
-
-    test('should close job detail modal', async ({ page }) => {
-      await navigateToJobs(page);
-
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
-      await page.click('[data-testid="job-card"]');
-
-      await expect(
-        page.locator('[data-testid="job-detail-modal"]')
-      ).toBeVisible();
-
-      // Close modal
-      await page.click('[data-testid="close-modal-button"]');
-
-      await expect(
-        page.locator('[data-testid="job-detail-modal"]')
-      ).not.toBeVisible();
-    });
+    await page.getByRole('button', { name: 'Limpiar filtros' }).click();
+    await expect(remote).not.toBeChecked();
+    await expectJobs(page, [SENIOR, ML, JUNIOR]);
   });
 
-  test.describe('Pagination', () => {
-    test('should load more jobs when pagination is available', async ({
-      page,
-    }) => {
-      await navigateToJobs(page);
-
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
-      const initialJobCount = await page
-        .locator('[data-testid="job-card"]')
-        .count();
-
-      // Check if load more button exists
-      const loadMoreButton = page.locator('[data-testid="load-more-button"]');
-
-      if (await loadMoreButton.isVisible()) {
-        await loadMoreButton.click();
-
-        await page.waitForTimeout(1000);
-
-        // Should have more jobs loaded
-        const newJobCount = await page
-          .locator('[data-testid="job-card"]')
-          .count();
-        expect(newJobCount).toBeGreaterThan(initialJobCount);
-      }
-    });
-
-    test('should hide load more button when no more jobs available', async ({
-      page,
-    }) => {
-      await navigateToJobs(page);
-
-      // Keep clicking load more until it's gone
-      let loadMoreVisible = true;
-      let clickCount = 0;
-      const maxClicks = 5; // Prevent infinite loop
-
-      while (loadMoreVisible && clickCount < maxClicks) {
-        const loadMoreButton = page.locator('[data-testid="load-more-button"]');
-
-        if (await loadMoreButton.isVisible()) {
-          await loadMoreButton.click();
-          await page.waitForTimeout(1000);
-          clickCount++;
-        } else {
-          loadMoreVisible = false;
-        }
-      }
-
-      // Load more button should not be visible
-      await expect(
-        page.locator('[data-testid="load-more-button"]')
-      ).not.toBeVisible();
-    });
+  test('employment-type filter with no seeded match shows the empty state', async ({
+    page,
+  }) => {
+    await page.getByRole('checkbox', { name: 'Medio tiempo' }).check();
+    await expect(
+      page.getByRole('heading', { name: 'No se encontraron empleos' })
+    ).toBeVisible({ timeout: 15000 });
+    await page.getByRole('checkbox', { name: 'Medio tiempo' }).uncheck();
+    await expectJobs(page, [SENIOR, ML, JUNIOR]);
   });
 
-  test.describe('Responsive Design', () => {
-    test('should display correctly on mobile devices', async ({ page }) => {
-      await page.setViewportSize({ width: 375, height: 667 });
-      await navigateToJobs(page);
-
-      // Jobs should be displayed in mobile layout
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
-
-      // Mobile filter toggle should be visible
-      await expect(
-        page.locator('[data-testid="mobile-filters-toggle"]')
-      ).toBeVisible();
-
-      // Click to open mobile filters
-      await page.click('[data-testid="mobile-filters-toggle"]');
-      await expect(
-        page.locator('[data-testid="mobile-filters-panel"]')
-      ).toBeVisible();
+  test('sorting by salary puts the best paid job first', async ({ page }) => {
+    await page
+      .getByRole('combobox', { name: 'Ordenar por' })
+      .selectOption('salaryRange.max');
+    await expect(jobTitles(page).first()).toHaveText(SENIOR, {
+      timeout: 15000,
     });
-
-    test('should display correctly on tablet devices', async ({ page }) => {
-      await page.setViewportSize({ width: 768, height: 1024 });
-      await navigateToJobs(page);
-
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
-
-      // Should show grid layout on tablet
-      const jobGrid = page.locator('[data-testid="jobs-grid"]');
-      await expect(jobGrid).toBeVisible();
-    });
+    await expect(jobTitles(page).last()).toHaveText(JUNIOR);
   });
 
-  test.describe('Performance', () => {
-    test('should load initial jobs quickly', async ({ page }) => {
-      const startTime = Date.now();
+  test('switches between list and grid views', async ({ page }) => {
+    const grid = page.getByRole('radio', { name: 'Cuadrícula' });
+    await grid.click();
+    await expect(grid).toBeChecked();
+    await expectJobs(page, [SENIOR, ML, JUNIOR]);
 
-      await navigateToJobs(page);
-      await expect(
-        page.locator('[data-testid="job-card"]').first()
-      ).toBeVisible();
+    const list = page.getByRole('radio', { name: 'Lista' });
+    await list.click();
+    await expect(list).toBeChecked();
+  });
 
-      const loadTime = Date.now() - startTime;
-
-      // Should load within 3 seconds
-      expect(loadTime).toBeLessThan(3000);
-    });
-
-    test('should handle large job listings efficiently', async ({ page }) => {
-      await navigateToJobs(page);
-
-      // Load multiple pages of jobs
-      for (let i = 0; i < 3; i++) {
-        const loadMoreButton = page.locator('[data-testid="load-more-button"]');
-
-        if (await loadMoreButton.isVisible()) {
-          await loadMoreButton.click();
-          await page.waitForTimeout(500);
-        }
-      }
-
-      // Page should remain responsive
-      const finalJobCount = await page
-        .locator('[data-testid="job-card"]')
-        .count();
-      expect(finalJobCount).toBeGreaterThan(0);
-
-      // Test scrolling performance
-      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-      await page.waitForTimeout(100);
-      await page.evaluate(() => window.scrollTo(0, 0));
-    });
+  test('"Ver detalles" opens the job detail page', async ({ page }) => {
+    await page
+      .getByRole('listitem')
+      .filter({ hasText: ML })
+      .getByRole('link', { name: 'Ver detalles' })
+      .click();
+    await expect(page).toHaveURL(/\/es\/dashboard\/jobs\/seed-job-ml-engineer/);
+    await expect(page.getByRole('heading', { level: 1, name: ML })).toBeVisible(
+      { timeout: 20000 }
+    );
   });
 });

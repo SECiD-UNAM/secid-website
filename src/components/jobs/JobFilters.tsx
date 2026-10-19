@@ -651,9 +651,11 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
         )}
       </button>
 
-      {/* Mobile Filters Drawer */}
+      {/* Mobile Filters Drawer. Above the fixed site navbar (--z-fixed:
+          1030 in secid-components.css), which otherwise covers the drawer
+          header and its close button; 1050 mirrors --z-modal. */}
       {showMobileFilters && (
-        <div className="fixed inset-0 z-50 overflow-hidden lg:hidden">
+        <div className="fixed inset-0 z-[1050] overflow-hidden lg:hidden">
           <div
             className="absolute inset-0 bg-black bg-opacity-50"
             onClick={() => setShowMobileFilters(false)}
@@ -666,6 +668,9 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
                 </h2>
                 <button
                   onClick={() => setShowMobileFilters(false)}
+                  aria-label={
+                    lang === 'es' ? 'Cerrar filtros' : 'Close filters'
+                  }
                   className="rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
                 >
                   <XMarkIcon className="h-5 w-5" />
