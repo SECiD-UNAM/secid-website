@@ -347,7 +347,9 @@ class MobileExperienceFlow {
   }
 }
 
-test.describe('Mobile Experience Tests', () => {
+// función no implementada: la UI real no expone estos flujos ni data-testid;
+// ver docs/ROADMAP.md A4
+test.describe.skip('Mobile Experience Tests', () => {
   let mobileFlow: MobileExperienceFlow;
 
   test.beforeEach(async ({ page }) => {
@@ -586,7 +588,9 @@ test.describe('Mobile Experience Tests', () => {
 });
 
 // Cross-device mobile testing
-test.describe('Cross-Device Mobile Tests', () => {
+// función no implementada: la UI real no expone estos flujos ni data-testid;
+// ver docs/ROADMAP.md A4
+test.describe.skip('Cross-Device Mobile Tests', () => {
   mobileDevices.forEach((device) => {
     test(`mobile experience on ${device.name}`, async ({ page }) => {
       await page.setViewportSize({
@@ -627,7 +631,9 @@ test.describe('Cross-Device Mobile Tests', () => {
 });
 
 // Network conditions testing
-test.describe('Mobile Network Performance', () => {
+// función no implementada: la UI real no expone estos flujos ni data-testid;
+// ver docs/ROADMAP.md A4
+test.describe.skip('Mobile Network Performance', () => {
   test('mobile experience on slow 3G', async ({ page }) => {
     // Simulate slow 3G connection
     await page.route('**/*', async (route) => {
@@ -636,7 +642,7 @@ test.describe('Mobile Network Performance', () => {
       await route.continue();
     });
 
-    const mobileFlow = new MobileExperienceFlow(page);
+    const _mobileFlow = new MobileExperienceFlow(page);
 
     await page.setViewportSize({ width: 375, height: 667 });
 
@@ -682,7 +688,9 @@ test.describe('Mobile Network Performance', () => {
 });
 
 // Mobile PWA features
-test.describe('Mobile PWA Features', () => {
+// función no implementada: la UI real no expone estos flujos ni data-testid;
+// ver docs/ROADMAP.md A4
+test.describe.skip('Mobile PWA Features', () => {
   test('install prompt and PWA behavior', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/es/');
@@ -728,7 +736,9 @@ test.describe('Mobile PWA Features', () => {
 });
 
 // Visual regression for mobile
-test.describe('Mobile Visual Regression', () => {
+// función no implementada: la UI real no expone estos flujos ni data-testid;
+// ver docs/ROADMAP.md A4
+test.describe.skip('Mobile Visual Regression', () => {
   test('mobile homepage visual consistency', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/es/');

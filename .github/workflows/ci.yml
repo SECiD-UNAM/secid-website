@@ -173,7 +173,9 @@ jobs:
           cd functions && npm ci && npm run build
         continue-on-error: true
 
-  # End-to-End Tests (only on PRs and main)
+  # End-to-End Tests (only on PRs and main): the full suite against the
+  # Firebase emulators with seeded users (docs/ROADMAP.md A4). The blocking
+  # gate is still the e2e-smoke job below.
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
@@ -193,24 +195,74 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
+      # The Firestore emulator is a Java program.
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
       - name: Install dependencies
         run: npm ci
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
-      - name: Build application
+      - name: Cache Firebase emulators
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      # The build is static, so PUBLIC_* vars are baked in here.
+      # src/lib/firebase.ts connects to the emulators (ports from
+      # firebase.json: auth 9099, firestore 8088, storage 9199) only when
+      # PUBLIC_USE_EMULATORS=true; the project id defaults to the demo
+      # project scripts/seed-emulator.js seeds.
+      - name: Build application (emulator mode)
         run: npx astro build
         env:
           NODE_ENV: production
+          PUBLIC_USE_EMULATORS: 'true'
 
-      # Informational until the legacy suites are triaged (they assume seeded
-      # users, emulators and Stripe). The blocking gate is the e2e-smoke job.
-      - name: Run full E2E suite (informational)
-        run: npx playwright test --project=${{ matrix.browser }}
+      # Informational until the remaining suites are rewritten against the
+      # real UI (see test.describe.skip reasons under tests/e2e). The
+      # functions emulator is left out on purpose: its firebase-admin stub
+      # drops `admin.firestore.FieldValue`, so the blocking `onUserCreate`
+      # trigger 500s and no Auth user can be created. The E2E_QA_* vars
+      # unlock the journey-* specs with the seeded accounts.
+      - name: Run full E2E suite against the emulators (informational)
+        run: |
+          npx firebase-tools emulators:exec --only auth,firestore,storage \
+            --project demo-secid-alumni \
+            "npm run seed && npx playwright test --project=${{ matrix.browser }} --reporter=line,json"
         env:
           CI: true
+          PLAYWRIGHT_JSON_OUTPUT_NAME: test-results/report.json
+          E2E_QA_EMAIL: member1@alumno.unam.mx
+          E2E_QA_PASSWORD: member123456
+          E2E_QA_ADMIN_EMAIL: admin@secid.mx
+          E2E_QA_ADMIN_PASSWORD: admin123456
         continue-on-error: true
+
+      - name: Summarize pass rate
+        if: always()
+        run: |
+          node -e '
+            const fs = require("fs");
+            const file = "test-results/report.json";
+            if (!fs.existsSync(file)) {
+              console.log("## E2E (${{ matrix.browser }})\n\nNo report.json produced.");
+              process.exit(0);
+            }
+            const { stats } = JSON.parse(fs.readFileSync(file, "utf8"));
+            const ran = stats.expected + stats.unexpected + stats.flaky;
+            const rate = ran ? Math.round((100 * (stats.expected + stats.flaky)) / ran) : 0;
+            console.log(`## E2E (${{ matrix.browser }}) against emulators\n`);
+            console.log(`| passed | failed | flaky | skipped | pass rate |`);
+            console.log(`|---:|---:|---:|---:|---:|`);
+            console.log(`| ${stats.expected} | ${stats.unexpected} | ${stats.flaky} | ${stats.skipped} | ${rate}% of ${ran} run |`);
+          ' | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Upload E2E test results
         uses: actions/upload-artifact@v4

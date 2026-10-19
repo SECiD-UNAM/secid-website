@@ -367,7 +367,9 @@ class CommunityFeaturesFlow {
   }
 }
 
-test.describe('Community Features', () => {
+// función no implementada: la UI real no expone estos flujos ni data-testid;
+// ver docs/ROADMAP.md A4
+test.describe.skip('Community Features', () => {
   let page: Page;
   let communityFlow: CommunityFeaturesFlow;
 

@@ -7,7 +7,8 @@ import { SubscriptionManagerPage } from '../../page-objects/payments/Subscriptio
 // Load test data
 import paymentMethods from '../../data/payments/payment-methods.json' with { type: 'json' };
 
-test.describe('Subscription Flow Tests', () => {
+// pagos no lanzados; ver docs/ROADMAP.md A4
+test.describe.skip('Subscription Flow Tests', () => {
   let pricingPage: PricingPage;
   let checkoutPage: CheckoutPage;
   let billingPage: BillingPage;
@@ -632,8 +633,8 @@ test.describe('Subscription Flow Tests', () => {
     test('should handle USD payments', async () => {
       await checkoutPage.goto('premium-monthly');
 
-      const cardData = paymentMethods.validCards.visa;
-      const billingAddress = paymentMethods.testBillingAddresses.us;
+      const _cardData = paymentMethods.validCards.visa;
+      const _billingAddress = paymentMethods.testBillingAddresses.us;
 
       const orderSummary = await checkoutPage.getOrderSummary();
       expect(['USD', 'MXN']).toContain(orderSummary.currency);
@@ -642,8 +643,8 @@ test.describe('Subscription Flow Tests', () => {
     test('should handle MXN payments with IVA', async () => {
       await checkoutPage.goto('premium-monthly');
 
-      const cardData = paymentMethods.mexicanCards.banamex;
-      const billingAddress = paymentMethods.testBillingAddresses.mexican;
+      const _cardData = paymentMethods.mexicanCards.banamex;
+      const _billingAddress = paymentMethods.testBillingAddresses.mexican;
 
       const orderSummary = await checkoutPage.getOrderSummary();
       if (orderSummary.currency === 'MXN') {
@@ -772,7 +773,7 @@ test.describe('Subscription Flow Tests', () => {
       await billingPage.goto();
 
       const startTime = Date.now();
-      const invoices = await billingPage.getInvoices(1, 50);
+      const _invoices = await billingPage.getInvoices(1, 50);
       const loadTime = Date.now() - startTime;
 
       expect(loadTime).toBeLessThan(10000); // 10 seconds
@@ -780,7 +781,8 @@ test.describe('Subscription Flow Tests', () => {
   });
 });
 
-test.describe('Advanced Payment Scenarios', () => {
+// pagos no lanzados; ver docs/ROADMAP.md A4
+test.describe.skip('Advanced Payment Scenarios', () => {
   let checkoutPage: CheckoutPage;
   let subscriptionPage: SubscriptionManagerPage;
 

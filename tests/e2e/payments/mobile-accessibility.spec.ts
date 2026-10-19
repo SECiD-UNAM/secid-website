@@ -13,7 +13,8 @@ import paymentMethods from '../../data/payments/payment-methods.json' with { typ
 const { defaultBrowserType: _iphoneBrowser, ...iPhone12 } =
   devices['iPhone 12'];
 
-test.describe('Mobile Payment Experience Tests', () => {
+// pagos no lanzados; ver docs/ROADMAP.md A4
+test.describe.skip('Mobile Payment Experience Tests', () => {
   let pricingPage: PricingPage;
   let checkoutPage: CheckoutPage;
   let billingPage: BillingPage;
@@ -301,7 +302,8 @@ test.describe('Mobile Payment Experience Tests', () => {
   });
 });
 
-test.describe('Accessibility Tests for Payment Flows', () => {
+// pagos no lanzados; ver docs/ROADMAP.md A4
+test.describe.skip('Accessibility Tests for Payment Flows', () => {
   let pricingPage: PricingPage;
   let checkoutPage: CheckoutPage;
   let billingPage: BillingPage;
