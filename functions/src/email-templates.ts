@@ -442,3 +442,41 @@ export function generateEventRegistrationEmail(params: EventEmailParams): {
     }),
   };
 }
+
+/**
+ * F19 — Recordatorio enviado por sendEventReminders (diario, 09:00
+ * America/Mexico_City) a los registrados de eventos que empiezan en 24–48 h.
+ */
+export function generateEventReminderEmail(params: EventEmailParams): {
+  subject: string;
+  html: string;
+} {
+  const lang = params.lang ?? 'es';
+  const subject = t(
+    {
+      es: `Recordatorio: ${params.eventTitle} es mañana`,
+      en: `Reminder: ${params.eventTitle} is tomorrow`,
+    },
+    lang
+  );
+  const body = t(
+    {
+      es: 'Te recordamos que mañana es el evento al que te registraste. Estos son los detalles:',
+      en: 'Just a reminder that the event you registered for is tomorrow. Here are the details:',
+    },
+    lang
+  );
+  return {
+    subject,
+    html: shell({
+      title: t(
+        { es: 'Tu evento es mañana', en: 'Your event is tomorrow' },
+        lang
+      ),
+      bodyHtml: `<p>${eventGreeting(params.recipientName, lang)}</p><p>${body}</p>${eventDetailsHtml(params, lang)}`,
+      ctaHref: params.eventUrl,
+      ctaLabel: t({ es: 'Ver el evento', en: 'View event' }, lang),
+      footnote: EVENT_FOOTNOTE[lang],
+    }),
+  };
+}

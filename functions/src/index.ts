@@ -832,6 +832,7 @@ export { subscribeNewsletter, sendContactMessage };
 export {
   onContactMessageCreated,
   onEventRegistrationEmail,
+  sendEventReminders,
 } from './notifications';
 
 // LinkedIn OAuth: disabled — requires LINKEDIN_CLIENT_ID secret in Secret Manager

@@ -15,7 +15,7 @@
  * keyed by document path, and `./email-service` is a spy so each test can
  * assert the exact mail payload the trigger asked for.
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 const PATHS = vi.hoisted(() => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -156,11 +156,14 @@ vi.mock(PATHS.firebaseFunctionsScheduler, () => ({
 import {
   onContactMessageCreated,
   onEventRegistrationEmail,
+  sendEventReminders,
+  remindEvent,
 } from '../../../functions/src/notifications';
 
 // The mocked trigger factories return the raw handlers.
 const contactCreated = onContactMessageCreated as any;
 const registrationCreated = onEventRegistrationEmail as any;
+const runReminders = sendEventReminders as any;
 
 // 2026-11-05 18:00 America/Mexico_City (UTC-6).
 const WEBINAR_START = Date.UTC(2026, 10, 6, 0, 0, 0);
@@ -391,6 +394,153 @@ describe.sequential('F19 notifications', () => {
       await expect(
         registrationCreated(await registrationEvent('ev-8', 'uid-8'))
       ).resolves.toBeUndefined();
+    });
+  });
+
+  describe('sendEventReminders', () => {
+    // The schedule fires at 09:00 America/Mexico_City = 15:00Z. The window
+    // is [now+24h, now+48h), so for this "now" it covers
+    // 2026-11-05 15:00Z .. 2026-11-06 15:00Z; WEBINAR_START (11-06 00:00Z)
+    // is inside it.
+    const NOW = Date.UTC(2026, 10, 4, 15, 0, 0);
+    const HOUR = 3600_000;
+
+    beforeEach(() => {
+      vi.useFakeTimers({ now: NOW });
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    const batchedEmails = () =>
+      H.sendBatchEmails.mock.calls.flatMap(([emails]) => emails as any[]);
+    const reminderMarks = () =>
+      H.state.updates.filter((u) => 'reminderSentAt' in u.payload);
+
+    it('reminds every registrant of an event starting in 24–48 h and marks the event', async () => {
+      seedWebinar('ev-r1');
+      seedUser('uid-a');
+      seedUser('uid-b', { lang: 'en', firstName: 'Bob' });
+      seedRegistration('ev-r1', 'uid-a');
+      seedRegistration('ev-r1', 'uid-b');
+
+      await runReminders();
+
+      const emails = batchedEmails();
+      expect(emails.map((e) => e.to).sort()).toEqual([
+        'uid-a@example.com',
+        'uid-b@example.com',
+      ]);
+      const es = emails.find((e) => e.to === 'uid-a@example.com');
+      const en = emails.find((e) => e.to === 'uid-b@example.com');
+      expect(es.subject).toBe(
+        'Recordatorio: Webinar: Carreras en Ciencia de Datos es mañana'
+      );
+      expect(es.html).toContain('5 de noviembre de 2026');
+      expect(es.html).toContain('https://zoom.us/j/987654321');
+      expect(es.html).toContain('https://secid.test/es/dashboard/events/ev-r1');
+      expect(en.subject).toBe(
+        'Reminder: Webinar: Carreras en Ciencia de Datos is tomorrow'
+      );
+      expect(en.html).toContain('November 5, 2026');
+
+      expect(reminderMarks()).toEqual([
+        {
+          path: 'events/ev-r1',
+          payload: { reminderSentAt: H.SERVER_TIMESTAMP },
+        },
+      ]);
+    });
+
+    it('ignores events outside the window (too soon, too late, already reminded, cancelled)', async () => {
+      seedWebinar('ev-soon', {
+        startDate: H.Timestamp.fromMillis(NOW + 23 * HOUR),
+      });
+      seedWebinar('ev-late', {
+        startDate: H.Timestamp.fromMillis(NOW + 48 * HOUR),
+      });
+      seedWebinar('ev-done', { reminderSentAt: H.Timestamp.fromMillis(NOW) });
+      seedWebinar('ev-cancelled', { status: 'cancelled' });
+      seedUser('uid-c');
+      for (const id of ['ev-soon', 'ev-late', 'ev-done', 'ev-cancelled']) {
+        seedRegistration(id, 'uid-c');
+      }
+
+      await runReminders();
+
+      expect(H.sendBatchEmails).not.toHaveBeenCalled();
+      expect(reminderMarks()).toEqual([]);
+    });
+
+    it('treats the window edges as [now+24h, now+48h)', async () => {
+      seedWebinar('ev-edge-in', {
+        startDate: H.Timestamp.fromMillis(NOW + 24 * HOUR),
+      });
+      seedWebinar('ev-edge-out', {
+        startDate: H.Timestamp.fromMillis(NOW + 48 * HOUR),
+      });
+      seedUser('uid-d');
+      seedRegistration('ev-edge-in', 'uid-d');
+      seedRegistration('ev-edge-out', 'uid-d');
+
+      await runReminders();
+
+      expect(reminderMarks().map((u) => u.path)).toEqual(['events/ev-edge-in']);
+    });
+
+    it('skips opted-out and unknown members but still marks the event', async () => {
+      seedWebinar('ev-r2');
+      seedUser('uid-opt', { notificationSettings: { email: false } });
+      seedRegistration('ev-r2', 'uid-opt');
+      seedRegistration('ev-r2', 'uid-ghost');
+
+      await runReminders();
+
+      expect(H.sendBatchEmails).not.toHaveBeenCalled();
+      expect(reminderMarks().map((u) => u.path)).toEqual(['events/ev-r2']);
+    });
+
+    it('splits large audiences into batches under the 500-write limit', async () => {
+      seedWebinar('ev-big');
+      for (let i = 0; i < 401; i++) {
+        seedUser(`uid-big-${i}`);
+        seedRegistration('ev-big', `uid-big-${i}`);
+      }
+
+      await runReminders();
+
+      expect(H.sendBatchEmails).toHaveBeenCalledTimes(2);
+      expect(batchedEmails()).toHaveLength(401);
+      expect(reminderMarks().map((u) => u.path)).toEqual(['events/ev-big']);
+    });
+
+    it('keeps going when one event fails and leaves it unmarked for the next run', async () => {
+      H.sendBatchEmails.mockRejectedValueOnce(new Error('mail down'));
+      seedWebinar('ev-fail');
+      seedWebinar('ev-ok');
+      seedUser('uid-e');
+      seedRegistration('ev-fail', 'uid-e');
+      seedRegistration('ev-ok', 'uid-e');
+
+      await expect(runReminders()).resolves.toBeUndefined();
+
+      expect(H.sendBatchEmails).toHaveBeenCalledTimes(2);
+      expect(reminderMarks()).toHaveLength(1);
+    });
+
+    it('remindEvent skips and logs an event without a startDate timestamp', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      seedWebinar('ev-nodate', { startDate: '2026-11-05' });
+      seedUser('uid-f');
+      seedRegistration('ev-nodate', 'uid-f');
+      const snap = await H.docRef('events/ev-nodate').get();
+
+      await expect(remindEvent(H.db as never, snap)).resolves.toBe(0);
+
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('ev-nodate'));
+      expect(H.sendBatchEmails).not.toHaveBeenCalled();
+      expect(reminderMarks()).toEqual([]);
+      warn.mockRestore();
     });
   });
 }); // F19 notifications

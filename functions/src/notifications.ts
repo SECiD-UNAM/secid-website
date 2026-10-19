@@ -7,12 +7,19 @@
  * firestore-send-email extension reading `mail/` (see email-service.ts).
  */
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
-import type { DocumentData, Firestore } from 'firebase-admin/firestore';
+import { onSchedule } from 'firebase-functions/v2/scheduler';
+import { FieldValue, Timestamp } from 'firebase-admin/firestore';
+import type {
+  DocumentData,
+  DocumentSnapshot,
+  Firestore,
+} from 'firebase-admin/firestore';
 import { admin } from './init';
-import { sendEmail } from './email-service';
+import { sendEmail, sendBatchEmails, EmailData } from './email-service';
 import {
   generateContactMessageAdminEmail,
   generateEventRegistrationEmail,
+  generateEventReminderEmail,
   EventEmailParams,
 } from './email-templates';
 import { getAppUrl } from './env';
@@ -20,6 +27,9 @@ import { getAppUrl } from './env';
 type Lang = 'es' | 'en';
 
 const DEFAULT_TIMEZONE = 'America/Mexico_City';
+const HOUR_MS = 60 * 60 * 1000;
+// A Firestore batch holds 500 writes; keep headroom.
+const MAIL_BATCH_SIZE = 400;
 
 function adminEmail(): string {
   return process.env.ADMIN_EMAIL || 'contacto@secid.mx';
@@ -198,5 +208,108 @@ export const onEventRegistrationEmail = onDocumentCreated(
         err
       );
     }
+  }
+);
+
+// ---------------------------------------------------------------------------
+// 24 h reminders
+// ---------------------------------------------------------------------------
+
+/**
+ * Events starting in [now+24h, now+48h). The job runs once a day, so
+ * consecutive windows tile the timeline without overlap and every event is
+ * reminded exactly once, 24–48 h before it starts; `reminderSentAt` on the
+ * event doc guards against a re-run inside the same day. Both filters are
+ * on `startDate`, so no composite index is needed; the status and
+ * already-sent checks happen in memory.
+ */
+async function eventsNeedingReminder(
+  db: Firestore
+): Promise<DocumentSnapshot[]> {
+  const nowMs = Date.now();
+  const snap = await db
+    .collection('events')
+    .where('startDate', '>=', Timestamp.fromMillis(nowMs + 24 * HOUR_MS))
+    .where('startDate', '<', Timestamp.fromMillis(nowMs + 48 * HOUR_MS))
+    .get();
+  return snap.docs.filter((doc) => {
+    const data = doc.data();
+    return !data.reminderSentAt && data.status !== 'cancelled';
+  });
+}
+
+/** One reminder per registrant who still has email notifications on. */
+async function reminderEmails(
+  db: Firestore,
+  eventId: string,
+  data: DocumentData
+): Promise<EmailData[]> {
+  const registrations = await db
+    .collection('events')
+    .doc(eventId)
+    .collection('registrations')
+    .get();
+  const recipients = await Promise.all(
+    registrations.docs.map((reg) =>
+      readRecipient(db, String(reg.data().userId || reg.id))
+    )
+  );
+  return recipients
+    .filter((r): r is Recipient => r !== null)
+    .map((recipient) => {
+      const { subject, html } = generateEventReminderEmail(
+        summarizeEvent(eventId, data, recipient)
+      );
+      return { to: recipient.email, subject, html };
+    });
+}
+
+/**
+ * Queues the reminders for one event and marks it. Returns how many were
+ * queued; 0 (and a warning) when the event has no startDate timestamp.
+ */
+export async function remindEvent(
+  db: Firestore,
+  snap: DocumentSnapshot
+): Promise<number> {
+  const data = snap.data() || {};
+  if (!toDate(data.startDate)) {
+    console.warn(
+      `sendEventReminders: events/${snap.id} has no startDate timestamp, skipping`
+    );
+    return 0;
+  }
+  const emails = await reminderEmails(db, snap.id, data);
+  for (let i = 0; i < emails.length; i += MAIL_BATCH_SIZE) {
+    await sendBatchEmails(emails.slice(i, i + MAIL_BATCH_SIZE));
+  }
+  await snap.ref.update({ reminderSentAt: FieldValue.serverTimestamp() });
+  return emails.length;
+}
+
+export const sendEventReminders = onSchedule(
+  {
+    schedule: '0 9 * * *',
+    timeZone: DEFAULT_TIMEZONE,
+    region: 'us-central1',
+  },
+  async () => {
+    const db = admin.firestore();
+    const events = await eventsNeedingReminder(db);
+    const results = await Promise.allSettled(
+      events.map((snap) => remindEvent(db, snap))
+    );
+    results.forEach((result, i) => {
+      if (result.status === 'rejected') {
+        console.error(
+          `Reminder failed for events/${events[i].id}:`,
+          result.reason
+        );
+      } else {
+        console.log(
+          `Reminders queued for events/${events[i].id}: ${result.value}`
+        );
+      }
+    });
   }
 );
