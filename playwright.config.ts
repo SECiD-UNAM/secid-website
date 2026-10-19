@@ -53,10 +53,23 @@ export default defineConfig({
   },
 
   projects: [
-    // Desktop browsers
+    // Blocking in CI: fast checks against the production preview that need
+    // no seeded users, emulators or Stripe (see ci.yml "E2E Tests (smoke)").
+    {
+      name: 'smoke',
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: ['**/hydration.spec.ts', '**/smoke/**/*.spec.ts'],
+      retries: 1,
+    },
+    // Desktop browsers (full suite; informational in CI until triaged).
+    // Root-level specs were never matched by the global testMatch; include
+    // them here so the report is honest. No retries: this run is not a gate.
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testMatch: ['**/*.spec.ts'],
+      testIgnore: ['**/hydration.spec.ts', '**/smoke/**'],
+      retries: 0,
     },
     {
       name: 'firefox',
