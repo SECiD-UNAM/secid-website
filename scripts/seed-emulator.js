@@ -20,9 +20,19 @@
  *
  * Test credentials (also used by CI, see .github/workflows/ci.yml "e2e"):
  *   Admin:   admin@secid.mx            / admin123456
- *   Member:  member1@alumno.unam.mx    / member123456
- *   Member:  member2@alumno.unam.mx    / member123456
+ *   Member:  member1@alumno.unam.mx    / member123456  (numeroCuenta 318000001)
+ *   Member:  member2@alumno.unam.mx    / member123456  (numeroCuenta 318000002)
  *   Company: company@example.com       / company123456
+ *
+ * Números de cuenta: the members above are indexed in
+ * numero_cuenta_index/{numeroCuenta} = { uid, displayName } (what
+ * functions/src/numero-cuenta-index.ts writes), so the uniqueness check
+ * behaves as in production. QA_NUMERO_CUENTA below is reserved for a fresh
+ * sign-up (E2E_QA_NUMERO_CUENTA in journey-B) and is never indexed here.
+ *
+ * When the functions emulator runs alongside (CI does), every sign-up below
+ * goes through the blocking onUserCreate trigger, which writes a default
+ * users/{uid}; the profile written here then overwrites it.
  */
 
 const PROJECT_ID =
@@ -36,6 +46,10 @@ const OWNER_HEADERS = {
   'Content-Type': 'application/json',
   Authorization: 'Bearer owner',
 };
+
+// 9 digits (completeRegistration validates /^\d{9}$/), reserved for a fresh
+// sign-up: nothing seeded below claims it in numero_cuenta_index.
+const QA_NUMERO_CUENTA = process.env.E2E_QA_NUMERO_CUENTA || '300000001';
 
 // ---------------------------------------------------------------------------
 // Test data
@@ -71,6 +85,7 @@ const testUsers = [
       role: 'member',
       isVerified: true,
       unamEmail: 'maria.garcia@alumno.unam.mx',
+      numeroCuenta: '318000001',
       graduationYear: 2022,
       program: 'Data Science',
       skills: ['Python', 'R', 'TensorFlow', 'AWS'],
@@ -94,6 +109,7 @@ const testUsers = [
       role: 'member',
       isVerified: true,
       unamEmail: 'carlos.rodriguez@alumno.unam.mx',
+      numeroCuenta: '318000002',
       graduationYear: 2021,
       program: 'Data Science',
       skills: ['Python', 'Spark', 'Docker', 'Kubernetes'],
@@ -448,6 +464,23 @@ async function seedEmulator() {
     console.log(`✅ User ready: ${user.email} (${uid})`);
   }
   const adminUid = uids['admin@secid.mx'];
+
+  console.log('\n🔢 Indexing números de cuenta...');
+  for (const user of testUsers) {
+    const numero = user.profile.numeroCuenta;
+    if (!numero) continue;
+    if (numero === QA_NUMERO_CUENTA) {
+      throw new Error(
+        `${user.email} uses the reserved QA numeroCuenta ${QA_NUMERO_CUENTA}`
+      );
+    }
+    await setDoc(`numero_cuenta_index/${numero}`, {
+      uid: uids[user.email],
+      displayName: user.profile.displayName,
+    });
+    console.log(`✅ Indexed numeroCuenta ${numero} → ${user.email}`);
+  }
+  console.log(`ℹ️  Reserved for a fresh sign-up: ${QA_NUMERO_CUENTA}`);
 
   console.log('\n💼 Creating test jobs...');
   for (const { id, ...job } of testJobs) {

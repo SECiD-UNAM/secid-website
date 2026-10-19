@@ -12,7 +12,8 @@
  * Mocking strategy mirrors alternate-email.test.ts:
  *   - `firebase-functions/v2/firestore` is intercepted so onDocumentUpdated
  *     returns the handler directly; tests invoke it with a synthetic event.
- *   - `firebase-admin` firestore is an in-memory stub recording all reads,
+ *   - `firebase-admin` firestore (and the modular `firebase-admin/firestore`
+ *     FieldValue/Timestamp statics) is an in-memory stub recording all reads,
  *     writes, batch operations, and `db.collection('merge_audit_log').doc().set`
  *     calls so the test can assert exactly one audit row is written.
  */
@@ -24,11 +25,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // ---------------------------------------------------------------------------
 
 const PATHS = vi.hoisted(() => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const path = require('path');
   return {
     firebaseAdmin: path.resolve(
       'functions/node_modules/firebase-admin/lib/index.js'
+    ),
+    // Modular entry the SUT imports FieldValue/Timestamp from (vite picks the
+    // "import" export condition, hence lib/esm).
+    firebaseAdminFirestore: path.resolve(
+      'functions/node_modules/firebase-admin/lib/esm/firestore/index.js'
     ),
     firebaseFunctionsFirestore: path.resolve(
       'functions/node_modules/firebase-functions/lib/esm/v2/providers/firestore.mjs'
@@ -189,6 +195,14 @@ vi.mock(PATHS.firebaseAdmin, () => ({
     firestore: H.adminFirestoreFn,
     auth: () => H.authMock,
   },
+}));
+
+// The SUT imports FieldValue/Timestamp from the modular entry (the emulator's
+// firebase-admin stub has no statics on `admin.firestore`), so mock it with
+// the same sentinels the namespaced mock above exposes.
+vi.mock(PATHS.firebaseAdminFirestore, () => ({
+  FieldValue: H.adminFirestoreFn.FieldValue,
+  Timestamp: H.adminFirestoreFn.Timestamp,
 }));
 
 // onDocumentUpdated(opts, handler) returns the handler directly.

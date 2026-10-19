@@ -8,6 +8,7 @@
  */
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { admin } from '../init';
+import { FieldValue } from 'firebase-admin/firestore';
 import { mapRoleToGroups } from './role-mapping';
 
 // Re-export for consumers that import from this module
@@ -99,7 +100,7 @@ export const backfillRbacUsers = onCall(
             userId: uid,
             groups,
             assignedBy: 'system:backfill',
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: FieldValue.serverTimestamp(),
           });
 
           assigned++;
@@ -118,7 +119,7 @@ export const backfillRbacUsers = onCall(
       actorId: request.auth.uid,
       targetId: 'system',
       changes: { processed, assigned, skipped, errors },
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      timestamp: FieldValue.serverTimestamp(),
     });
 
     console.log(

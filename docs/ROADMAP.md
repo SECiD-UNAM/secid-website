@@ -27,6 +27,19 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       Criterio: un PR que rompa el signup se pone rojo solo.
 - [ ] A4. Hacer pasar `full` contra emuladores en CI con `npm run seed`; lo que
       dependa de Stripe queda `skip` con motivo hasta que haya pagos.
+- [ ] A5. Lo que A4 dejó en `skip`: (a) 13 suites heredadas marcadas
+      "función no implementada" (~290 tests que buscan ~600 `data-testid`
+      que la app no tiene; reescribir contra la UI real o borrar); (b) 3
+      suites de pagos hasta que haya Stripe; (c) ✅ hecho (PRs #114 y el de
+      `ci/e2e-functions-emulator`): los ~53 usos de
+      `admin.firestore.FieldValue`/`Timestamp` en `functions/src` ahora
+      vienen de `firebase-admin/firestore`, el emulador de functions corre en
+      el job e2e (`--only auth,firestore,storage,functions`) y `onUserCreate`
+      ya no da 500. journey-B sigue en `skip`: no era solo el emulador, el
+      spec está escrito contra una UI que no existe (ruta `/es/onboarding`,
+      encabezado "Registro") y hay que reescribirlo contra el wizard real de
+      `/es/signup` — eso cae en (a). Al cerrar (a): quitar
+      `continue-on-error` y volver el job bloqueante.
 
 ## Bloque B — Calidad que hoy no se exige (dev, ~1 día)
 

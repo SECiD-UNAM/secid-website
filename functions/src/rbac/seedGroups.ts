@@ -6,6 +6,7 @@
  */
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { admin } from '../init';
+import { FieldValue } from 'firebase-admin/firestore';
 import { DEFAULT_GROUPS } from './defaultGroups';
 
 export const seedRbacGroups = onCall(async (request) => {
@@ -46,8 +47,8 @@ export const seedRbacGroups = onCall(async (request) => {
       permissions: group.permissions,
       isSystem: true,
       createdBy: 'system',
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
 
     created++;
@@ -62,7 +63,7 @@ export const seedRbacGroups = onCall(async (request) => {
       actorId: request.auth.uid,
       targetId: 'system',
       changes: { created, skipped, total: DEFAULT_GROUPS.length },
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      timestamp: FieldValue.serverTimestamp(),
     });
 
   console.log(`RBAC seed: ${created} created, ${skipped} skipped`);

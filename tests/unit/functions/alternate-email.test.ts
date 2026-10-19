@@ -17,10 +17,11 @@
  * Mocking strategy:
  *   - `firebase-functions/v2/https` is mocked so onCall(opts, handler)
  *     returns the handler directly.
- *   - `firebase-admin` is mocked at module scope; per-test the in-memory
- *     firestore/auth stubs are reconfigured. All mutable state shared with
- *     the mock factories lives inside a vi.hoisted() block so that the
- *     hoisting of vi.mock() does not strand the references.
+ *   - `firebase-admin` and `firebase-admin/firestore` are mocked at module
+ *     scope; per-test the in-memory firestore/auth stubs are reconfigured.
+ *     All mutable state shared with the mock factories lives inside a
+ *     vi.hoisted() block so that the hoisting of vi.mock() does not strand
+ *     the references.
  *   - `./email-service` and `./env` are mocked because the real modules
  *     would otherwise touch real config / network at import.
  */
@@ -37,11 +38,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // relative paths like `./email-service` from the SUT do NOT resolve. We
 // resolve them once here via vi.hoisted (runs before vi.mock).
 const PATHS = vi.hoisted(() => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const path = require('path');
   return {
     firebaseAdmin: path.resolve(
       'functions/node_modules/firebase-admin/lib/index.js'
+    ),
+    // Modular entry the SUT imports FieldValue/Timestamp from (vite picks the
+    // "import" export condition, hence lib/esm).
+    firebaseAdminFirestore: path.resolve(
+      'functions/node_modules/firebase-admin/lib/esm/firestore/index.js'
     ),
     firebaseFunctionsHttps: path.resolve(
       'functions/node_modules/firebase-functions/lib/esm/v2/providers/https.mjs'
@@ -254,6 +260,14 @@ vi.mock(PATHS.firebaseAdmin, () => ({
     firestore: H.adminFirestoreFn,
     auth: () => H.authMock,
   },
+}));
+
+// The SUT imports FieldValue/Timestamp from the modular entry (the emulator's
+// firebase-admin stub has no statics on `admin.firestore`), so mock it with
+// the same sentinels the namespaced mock above exposes.
+vi.mock(PATHS.firebaseAdminFirestore, () => ({
+  FieldValue: H.adminFirestoreFn.FieldValue,
+  Timestamp: H.adminFirestoreFn.Timestamp,
 }));
 
 vi.mock(PATHS.emailService, () => ({
