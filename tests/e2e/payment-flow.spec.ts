@@ -480,7 +480,8 @@ class PaymentFlow {
   }
 }
 
-test.describe('Payment and Subscription Flow', () => {
+// pagos no lanzados; ver docs/ROADMAP.md A4
+test.describe.skip('Payment and Subscription Flow', () => {
   let paymentFlow: PaymentFlow;
 
   test.beforeEach(async ({ page }) => {
@@ -881,7 +882,8 @@ test.describe('Payment and Subscription Flow', () => {
 });
 
 // Mobile payment tests
-test.describe('Mobile Payment Experience', () => {
+// pagos no lanzados; ver docs/ROADMAP.md A4
+test.describe.skip('Mobile Payment Experience', () => {
   test.use({ viewport: { width: 375, height: 667 } });
 
   test('mobile checkout experience', async ({ page }) => {
@@ -943,7 +945,8 @@ test.describe('Mobile Payment Experience', () => {
 });
 
 // Visual regression tests
-test.describe('Payment Visual Tests', () => {
+// pagos no lanzados; ver docs/ROADMAP.md A4
+test.describe.skip('Payment Visual Tests', () => {
   test('pricing page layout consistency', async ({ page }) => {
     const paymentFlow = new PaymentFlow(page);
     await paymentFlow.navigateToPricing();
@@ -978,7 +981,8 @@ test.describe('Payment Visual Tests', () => {
 });
 
 // Performance tests
-test.describe('Payment Performance Tests', () => {
+// pagos no lanzados; ver docs/ROADMAP.md A4
+test.describe.skip('Payment Performance Tests', () => {
   test('pricing page load performance', async ({ page }) => {
     const startTime = Date.now();
 
@@ -1014,7 +1018,8 @@ test.describe('Payment Performance Tests', () => {
 });
 
 // Accessibility tests
-test.describe('Payment Accessibility', () => {
+// pagos no lanzados; ver docs/ROADMAP.md A4
+test.describe.skip('Payment Accessibility', () => {
   test('pricing page accessibility', async ({ page }) => {
     const paymentFlow = new PaymentFlow(page);
     await paymentFlow.navigateToPricing();

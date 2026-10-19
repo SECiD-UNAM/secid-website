@@ -1,205 +1,167 @@
 import { test, expect } from '@playwright/test';
 
+/**
+ * Route-based i18n (/es/ vs /en/) on public pages. Selectors follow
+ * src/components/Navigation.astro; the language dropdown is toggled by
+ * src/layouts/ModernLayout.astro.
+ */
 test.describe('Multi-language Journey', () => {
   test('should switch from Spanish to English', async ({ page }) => {
     await page.goto('/es/');
 
-    // Verify Spanish content
     await expect(page.locator('.secid-hero__title')).toContainText(
-      'Conectando el futuro de los datos'
+      'Bienvenidos a SECiD'
     );
-    await expect(page.locator('text=Únete a SECiD').first()).toBeVisible();
+    await expect(
+      page.locator('.secid-hero__actions a', { hasText: 'Únete a SECiD' })
+    ).toBeVisible();
 
-    // Open language dropdown
     const langButton = page.locator('.secid-navbar__lang-btn');
     await expect(langButton).toContainText('ES');
     await langButton.click();
 
-    // Click English option
-    const enOption = page
-      .locator('.secid-navbar__lang-dropdown')
-      .locator('text=EN - English');
-    await enOption.click();
+    await page.locator('.secid-navbar__lang-dropdown a[hreflang="en"]').click();
 
-    // Verify URL changed
-    await expect(page).toHaveURL(/.*\/en\//);
-
-    // Verify English content
+    await expect(page).toHaveURL(/\/en\//);
     await expect(page.locator('.secid-hero__title')).toContainText(
-      'Connecting the future of data'
+      'Welcome to SECiD'
     );
-    await expect(page.locator('text=Join SECiD').first()).toBeVisible();
+    await expect(
+      page.locator('.secid-hero__actions a', { hasText: 'Join SECiD' })
+    ).toBeVisible();
     await expect(langButton).toContainText('EN');
   });
 
   test('should switch from English to Spanish', async ({ page }) => {
     await page.goto('/en/');
 
-    // Verify English content
     await expect(page.locator('.secid-hero__title')).toContainText(
-      'Connecting the future of data'
+      'Welcome to SECiD'
     );
 
-    // Open language dropdown
     const langButton = page.locator('.secid-navbar__lang-btn');
     await expect(langButton).toContainText('EN');
     await langButton.click();
 
-    // Click Spanish option
-    const esOption = page
-      .locator('.secid-navbar__lang-dropdown')
-      .locator('text=ES - Español');
-    await esOption.click();
+    await page.locator('.secid-navbar__lang-dropdown a[hreflang="es"]').click();
 
-    // Verify URL changed
-    await expect(page).toHaveURL(/.*\/es\//);
-
-    // Verify Spanish content
+    await expect(page).toHaveURL(/\/es\//);
     await expect(page.locator('.secid-hero__title')).toContainText(
-      'Conectando el futuro de los datos'
+      'Bienvenidos a SECiD'
     );
   });
 
   test('should maintain language preference during navigation', async ({
     page,
   }) => {
-    // Start in English
     await page.goto('/en/');
 
-    // Navigate to jobs page
-    const jobsLink = page.locator('.secid-navbar').locator('text=Jobs');
-    await jobsLink.click();
+    const desktopNav = page.locator('.secid-navbar__nav');
+    await desktopNav.locator('a[href="/en/jobs"]').click();
 
-    // Should stay in English
-    await expect(page).toHaveURL(/.*\/en\/jobs/);
+    await expect(page).toHaveURL(/\/en\/jobs/);
     await expect(page.locator('.secid-hero__title')).toContainText('Job Board');
 
-    // Navigate to about page
-    const aboutLink = page.locator('.secid-navbar').locator('text=About');
-    await aboutLink.click();
-
-    // Should still be in English
-    await expect(page).toHaveURL(/.*\/en\/about-us/);
+    await desktopNav.locator('a[href="/en/about-us"]').click();
+    await expect(page).toHaveURL(/\/en\/about-us/);
   });
 
   test('should translate all UI elements', async ({ page }) => {
     await page.goto('/es/');
 
-    const spanishElements = {
-      nav: ['Inicio', 'Empleos', 'Miembros', 'Nosotros'],
-      buttons: [
-        'Únete a SECiD',
-        'Ver Empleos',
-        'Iniciar Sesión',
-        'Registrarse',
-      ],
-      features: [
-        'Networking Profesional',
-        'Oportunidades Laborales',
-        'Crecimiento Profesional',
-        'Comunidad Sólida',
-      ],
-    };
-
-    // Check Spanish elements
-    for (const element of spanishElements.nav) {
+    const desktopNav = page.locator('.secid-navbar__nav');
+    for (const label of ['Inicio', 'Empleos', 'Comunidad', 'Nosotros']) {
+      await expect(desktopNav.getByText(label, { exact: true })).toBeVisible();
+    }
+    for (const title of [
+      'Networking Profesional',
+      'Oportunidades Laborales',
+      'Crecimiento Profesional',
+      'Comunidad Sólida',
+    ]) {
       await expect(
-        page.locator('.secid-navbar').locator(`text=${element}`)
+        page.locator('.secid-feature-card__title', { hasText: title })
       ).toBeVisible();
     }
 
-    // Switch to English
-    const langButton = page.locator('.secid-navbar__lang-btn');
-    await langButton.click();
-    await page.locator('text=EN - English').click();
+    await page.locator('.secid-navbar__lang-btn').click();
+    await page.locator('.secid-navbar__lang-dropdown a[hreflang="en"]').click();
+    await expect(page).toHaveURL(/\/en\//);
 
-    const englishElements = {
-      nav: ['Home', 'Jobs', 'Members', 'About'],
-      buttons: ['Join SECiD', 'View Jobs', 'Sign In', 'Sign Up'],
-      features: [
-        'Professional Networking',
-        'Job Opportunities',
-        'Professional Growth',
-        'Strong Community',
-      ],
-    };
-
-    // Check English elements
-    for (const element of englishElements.nav) {
+    for (const label of ['Home', 'Jobs', 'Community', 'About Us']) {
+      await expect(desktopNav.getByText(label, { exact: true })).toBeVisible();
+    }
+    for (const title of [
+      'Professional Networking',
+      'Job Opportunities',
+      'Professional Growth',
+      'Strong Community',
+    ]) {
       await expect(
-        page.locator('.secid-navbar').locator(`text=${element}`)
+        page.locator('.secid-feature-card__title', { hasText: title })
       ).toBeVisible();
     }
   });
 
-  test('should handle language switch on mobile', async ({
-    page,
-    isMobile: _isMobile,
-  }) => {
-    // Use mobile viewport
-    await page.setViewportSize({ width: 375, height: 667 });
+  test('should handle language switch on mobile', async ({ page }) => {
+    // 481-768px: the only range where the hamburger menu opens today
+    // (see tests/e2e/mobile.spec.ts for the <= 480px gap).
+    await page.setViewportSize({ width: 600, height: 900 });
     await page.goto('/es/');
 
-    // Open mobile menu
-    const mobileToggle = page.locator('.secid-navbar__mobile-toggle');
-    await mobileToggle.click();
+    await page.locator('.secid-navbar__mobile-toggle').click();
 
-    // Check mobile language selector
     const mobileLangControls = page.locator('.secid-navbar__mobile-controls');
     await expect(mobileLangControls).toBeVisible();
 
-    // Click EN option
-    const enLink = mobileLangControls.locator('text=EN');
-    await enLink.click();
+    // The open menu is position:absolute and not scrollable, so the
+    // language controls at its bottom sit outside a tablet viewport;
+    // activate the link directly instead of a pointer click.
+    const enLink = mobileLangControls.locator('a[hreflang="en"]');
+    await expect(enLink).toHaveAttribute('href', '/en/');
+    await enLink.dispatchEvent('click');
 
-    // Verify language changed
-    await expect(page).toHaveURL(/.*\/en\//);
+    await expect(page).toHaveURL(/\/en\//);
     await expect(page.locator('.secid-hero__title')).toContainText(
-      'Connecting the future of data'
+      'Welcome to SECiD'
     );
   });
 
   test('should show correct language in page metadata', async ({ page }) => {
-    // Check Spanish page
     await page.goto('/es/');
-    const htmlLangEs = await page.locator('html').getAttribute('lang');
-    expect(htmlLangEs).toBe('es');
+    expect(await page.locator('html').getAttribute('lang')).toBe('es');
 
-    // Check English page
     await page.goto('/en/');
-    const htmlLangEn = await page.locator('html').getAttribute('lang');
-    expect(htmlLangEn).toBe('en');
+    expect(await page.locator('html').getAttribute('lang')).toBe('en');
   });
 
   test('should handle direct URL navigation in different languages', async ({
     page,
   }) => {
-    // Direct navigation to Spanish pages
     const spanishPages = [
-      { url: '/es/', title: 'Conectando el futuro' },
-      { url: '/es/empleos', title: 'Bolsa de Trabajo' },
-      { url: '/es/sobre-nosotros', title: 'Sobre Nosotros' },
+      { url: '/es/', title: 'Bienvenidos a SECiD' },
+      { url: '/es/jobs', title: 'Bolsa de Trabajo' },
+      { url: '/es/about-us', title: 'Nosotros' },
     ];
 
     for (const pageInfo of spanishPages) {
       await page.goto(pageInfo.url);
-      await expect(
-        page.locator('h1, .secid-hero__title').first()
-      ).toContainText(pageInfo.title);
+      await expect(page.locator('.secid-hero__title').first()).toContainText(
+        pageInfo.title
+      );
     }
 
-    // Direct navigation to English pages
     const englishPages = [
-      { url: '/en/', title: 'Connecting the future' },
+      { url: '/en/', title: 'Welcome to SECiD' },
       { url: '/en/jobs', title: 'Job Board' },
       { url: '/en/about-us', title: 'About Us' },
     ];
 
     for (const pageInfo of englishPages) {
       await page.goto(pageInfo.url);
-      await expect(
-        page.locator('h1, .secid-hero__title').first()
-      ).toContainText(pageInfo.title);
+      await expect(page.locator('.secid-hero__title').first()).toContainText(
+        pageInfo.title
+      );
     }
   });
 });

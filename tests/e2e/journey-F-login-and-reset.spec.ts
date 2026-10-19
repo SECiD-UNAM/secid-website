@@ -39,10 +39,10 @@ test.describe('Journey F — Login + password reset', () => {
     await page.click('button[type="submit"]');
     // Should stay on login + show error
     await expect(page).toHaveURL(/\/login/);
-    const errorText = page.locator(
-      '[role="alert"], .error, text=/incorrect|inválido|invalid/i'
-    );
-    await expect(errorText.first()).toBeVisible({ timeout: 5000 });
+    // LoginForm renders the mapped Firebase error as plain text (no
+    // role="alert"); the emulator round-trip can take a few seconds.
+    const errorText = page.locator('text=/incorrect|inválido|invalid/i');
+    await expect(errorText.first()).toBeVisible({ timeout: 15000 });
     // The error should be GENERIC — not "email exists, password wrong"
     // (anti-enumeration). Assert that the text doesn't differentiate.
     const txt = await errorText.first().textContent();
@@ -52,6 +52,13 @@ test.describe('Journey F — Login + password reset', () => {
   });
 
   test('F3 nonexistent email same generic error', async ({ page }) => {
+    // The Auth emulator does not emulate email-enumeration protection: it
+    // answers EMAIL_NOT_FOUND, which LoginForm maps to "No existe una
+    // cuenta...". Only production Firebase returns the generic error.
+    test.skip(
+      !!process.env.FIREBASE_AUTH_EMULATOR_HOST,
+      'el emulador de Auth no emula la protección contra enumeración'
+    );
     await page.goto('/es/login');
     await page.fill(
       'input[type="email"]',
@@ -60,20 +67,27 @@ test.describe('Journey F — Login + password reset', () => {
     await page.fill('input[type="password"]', 'anything-1234');
     await page.click('button[type="submit"]');
     await expect(page).toHaveURL(/\/login/);
-    const errorText = page.locator(
-      '[role="alert"], .error, text=/incorrect|inválido|invalid/i'
-    );
-    await expect(errorText.first()).toBeVisible({ timeout: 5000 });
+    // LoginForm renders the mapped Firebase error as plain text (no
+    // role="alert"); the emulator round-trip can take a few seconds.
+    const errorText = page.locator('text=/incorrect|inválido|invalid/i');
+    await expect(errorText.first()).toBeVisible({ timeout: 15000 });
   });
 
   test('F4 password reset — request + email delivery', async ({ page }) => {
     await page.goto('/es/login');
+    // LoginForm renders "¿Olvidaste tu contraseña?" as a button that opens
+    // the "Recuperar contraseña" dialog (its own email input + "Enviar").
     await page.click(
-      'a:has-text("Olvidé"), a:has-text("Forgot"), button:has-text("Olvidé")'
+      'button:has-text("Olvidaste"), button:has-text("Forgot"), a:has-text("Olvid")'
     );
 
-    await page.fill('input[type="email"]', EMAIL!);
-    await page.click('button[type="submit"]');
+    const dialog = page.locator(
+      'div:has(> h3:has-text("Recuperar contraseña")), div:has(> h3:has-text("Recover password"))'
+    );
+    await dialog.locator('input[type="email"]').fill(EMAIL!);
+    await dialog
+      .locator('button:has-text("Enviar"), button:has-text("Send")')
+      .click();
 
     // UI debe confirmar el envío (sin filtrar si el email existe)
     await expect(

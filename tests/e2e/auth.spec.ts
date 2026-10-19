@@ -1,22 +1,22 @@
 import { test, expect } from '@playwright/test';
 
+/**
+ * Login / signup forms as rendered by src/components/auth/LoginForm.tsx and
+ * src/components/auth/SignUpForm.tsx (react-hook-form + zod; the validation
+ * messages are the English zod messages). The "invalid credentials" test
+ * needs the Auth emulator (PUBLIC_USE_EMULATORS=true build); everything
+ * else is client-side validation.
+ */
 test.describe('Authentication Flow', () => {
-  test.beforeEach(async ({ page }) => {
-    // Start from the homepage
-    await page.goto('/');
-  });
-
   test('user can navigate to login page', async ({ page }) => {
-    // Click login button in navigation
-    await page.click('a[href="/es/login"]');
+    await page.goto('/es/');
 
-    // Should be on login page
-    await expect(page).toHaveURL('/es/login');
+    await page.locator('.secid-navbar__actions a[href="/es/login"]').click();
 
-    // Should see login form
-    await expect(page.locator('h2')).toContainText('Iniciar sesión');
-    await expect(page.locator('input[name="email"]')).toBeVisible();
-    await expect(page.locator('input[name="password"]')).toBeVisible();
+    await expect(page).toHaveURL(/\/es\/login/);
+    await expect(page.locator('h2').first()).toContainText(/Iniciar sesión/i);
+    await expect(page.locator('#email')).toBeVisible();
+    await expect(page.locator('#password')).toBeVisible();
   });
 
   test('shows validation errors for empty form submission', async ({
@@ -24,10 +24,8 @@ test.describe('Authentication Flow', () => {
   }) => {
     await page.goto('/es/login');
 
-    // Try to submit empty form
     await page.click('button[type="submit"]');
 
-    // Should show validation errors
     await expect(page.locator('text=Invalid email address')).toBeVisible();
     await expect(
       page.locator('text=Password must be at least 6 characters')
@@ -37,67 +35,57 @@ test.describe('Authentication Flow', () => {
   test('shows error for invalid credentials', async ({ page }) => {
     await page.goto('/es/login');
 
-    // Fill in invalid credentials
-    await page.fill('input[name="email"]', 'test@example.com');
-    await page.fill('input[name="password"]', 'wrongpassword');
-
-    // Submit form
+    await page.fill('#email', `nadie-${Date.now()}@example.com`);
+    await page.fill('#password', 'wrongpassword');
     await page.click('button[type="submit"]');
 
-    // Should show error message
+    // Firebase returns user-not-found or invalid-credential depending on
+    // enumeration protection; LoginForm maps both to a Spanish message.
     await expect(
-      page.locator('text=No existe una cuenta con este correo')
-    ).toBeVisible();
+      page.locator(
+        'text=/No existe una cuenta con este correo|Correo o contraseña incorrectos/'
+      )
+    ).toBeVisible({ timeout: 15000 });
+    await expect(page).toHaveURL(/\/es\/login/);
   });
 
   test('can switch between login and signup', async ({ page }) => {
     await page.goto('/es/login');
 
-    // Should be on login page
-    await expect(page.locator('h2')).toContainText('Iniciar sesión');
+    await expect(page.locator('h2').first()).toContainText(/Iniciar sesión/i);
 
-    // Click signup link
-    await page.click('a[href="/es/signup"]');
+    await page.locator('.secid-navbar__actions a[href="/es/signup"]').click();
 
-    // Should be on signup page
-    await expect(page).toHaveURL('/es/signup');
-    await expect(page.locator('h2')).toContainText('Crear cuenta');
+    await expect(page).toHaveURL(/\/es\/signup/);
+    await expect(page.locator('h2').first()).toContainText(/Crear cuenta/i);
 
-    // Should have additional fields
-    await expect(page.locator('input[name="firstName"]')).toBeVisible();
-    await expect(page.locator('input[name="lastName"]')).toBeVisible();
-    await expect(page.locator('input[name="confirmPassword"]')).toBeVisible();
+    await expect(page.locator('#firstName')).toBeVisible();
+    await expect(page.locator('#lastName')).toBeVisible();
+    await expect(page.locator('#confirmPassword')).toBeVisible();
   });
 
   test('language switcher works correctly', async ({ page }) => {
     await page.goto('/es/login');
+    await expect(page.locator('h2').first()).toContainText(/Iniciar sesión/i);
 
-    // Should be in Spanish
-    await expect(page.locator('h2')).toContainText('Iniciar sesión');
+    await page.locator('.secid-navbar__lang-btn').click();
+    await page.locator('.secid-navbar__lang-dropdown a[hreflang="en"]').click();
 
-    // Switch to English
-    await page.click('a[href="/en/"]');
-    await page.click('a[href="/en/login"]');
-
-    // Should be in English
-    await expect(page).toHaveURL('/en/login');
-    await expect(page.locator('h2')).toContainText('Sign In');
+    await expect(page).toHaveURL(/\/en\/login/);
+    await expect(page.locator('h2').first()).toContainText(/Sign in/i);
   });
 
   test('signup form validation works', async ({ page }) => {
     await page.goto('/es/signup');
 
-    // Fill partial form
-    await page.fill('input[name="firstName"]', 'J');
-    await page.fill('input[name="lastName"]', 'D');
-    await page.fill('input[name="email"]', 'invalid-email');
-    await page.fill('input[name="password"]', 'weak');
-    await page.fill('input[name="confirmPassword"]', 'different');
+    await page.fill('#firstName', 'J');
+    await page.fill('#lastName', 'D');
+    await page.fill('#email', 'invalid@email'); // passes native type=email, fails zod
+    await page.fill('#password', 'weak');
+    await page.fill('#confirmPassword', 'different');
 
-    // Try to submit
     await page.click('button[type="submit"]');
 
-    // Should show multiple validation errors
     await expect(
       page.locator('text=First name must be at least 2 characters')
     ).toBeVisible();
@@ -113,20 +101,14 @@ test.describe('Authentication Flow', () => {
   test('password requirements are enforced', async ({ page }) => {
     await page.goto('/es/signup');
 
-    // Try weak password
-    await page.fill('input[name="password"]', 'password');
+    await page.fill('#password', 'password');
     await page.click('button[type="submit"]');
-
-    // Should show password requirements
     await expect(
       page.locator('text=Password must contain at least one uppercase letter')
     ).toBeVisible();
 
-    // Try password without number
-    await page.fill('input[name="password"]', 'Password');
+    await page.fill('#password', 'Password');
     await page.click('button[type="submit"]');
-
-    // Should show number requirement
     await expect(
       page.locator('text=Password must contain at least one number')
     ).toBeVisible();
@@ -135,57 +117,51 @@ test.describe('Authentication Flow', () => {
   test('Google OAuth button is present', async ({ page }) => {
     await page.goto('/es/login');
 
-    // Should have Google sign-in button
-    const googleButton = page.locator(
-      'button:has-text("Continuar con Google")'
-    );
+    const googleButton = page.locator('button', { hasText: 'Google' });
     await expect(googleButton).toBeVisible();
-
-    // Should have Google icon
     await expect(googleButton.locator('svg')).toBeVisible();
   });
 
   test('remember me checkbox works', async ({ page }) => {
     await page.goto('/es/login');
 
-    // Check remember me
-    const checkbox = page.locator('input[name="remember-me"]');
+    const checkbox = page.locator('#remember-me');
     await expect(checkbox).not.toBeChecked();
 
     await checkbox.check();
     await expect(checkbox).toBeChecked();
   });
 
-  test('forgot password link is present', async ({ page }) => {
+  test('forgot password opens the recovery dialog', async ({ page }) => {
     await page.goto('/es/login');
 
-    // Should have forgot password link
-    const forgotLink = page.locator('a:has-text("¿Olvidaste tu contraseña?")');
-    await expect(forgotLink).toBeVisible();
-    await expect(forgotLink).toHaveAttribute('href', '/es/forgot-password');
+    const forgotButton = page.locator('button', {
+      hasText: '¿Olvidaste tu contraseña?',
+    });
+    await expect(forgotButton).toBeVisible();
+    await forgotButton.click();
+
+    await expect(
+      page.locator('h3', { hasText: 'Recuperar contraseña' })
+    ).toBeVisible();
   });
 
   test('terms acceptance is required for signup', async ({ page }) => {
     await page.goto('/es/signup');
 
-    // Fill valid form data
-    await page.fill('input[name="firstName"]', 'John');
-    await page.fill('input[name="lastName"]', 'Doe');
-    await page.fill('input[name="email"]', 'john@example.com');
-    await page.fill('input[name="password"]', 'Password123');
-    await page.fill('input[name="confirmPassword"]', 'Password123');
+    await page.fill('#firstName', 'John');
+    await page.fill('#lastName', 'Doe');
+    await page.fill('#email', 'john@example.com');
+    await page.fill('#password', 'Password123');
+    await page.fill('#confirmPassword', 'Password123');
 
-    // Try to submit without accepting terms
     await page.click('button[type="submit"]');
 
-    // Should show terms error
     await expect(
       page.locator('text=You must accept the terms and conditions')
     ).toBeVisible();
 
-    // Accept terms
-    await page.check('input[name="acceptTerms"]');
-
-    // Now form should be submittable (would succeed with real Firebase)
+    await page.check('#acceptTerms');
+    await expect(page.locator('#acceptTerms')).toBeChecked();
   });
 });

@@ -1,51 +1,52 @@
 #!/usr/bin/env node
 
 /**
- * Seed script for Firebase Emulator
- * Populates the emulator with test data for development
+ * Seed script for the Firebase emulators (Auth + Firestore).
+ *
+ * Talks to the emulators over their REST APIs with the `Bearer owner`
+ * token, which the emulators accept as an admin bypass of the security
+ * rules. The production rules (firestore.rules) forbid a user from
+ * self-granting `role: 'admin'` or `isVerified: true`, so the client SDK
+ * cannot seed the accounts the e2e suite needs. No firebase-admin
+ * dependency is required at the repo root.
+ *
+ * Project id and ports mirror src/lib/firebase.ts and firebase.json:
+ *   - PUBLIC_FIREBASE_PROJECT_ID   (default demo-secid-alumni)
+ *   - FIREBASE_AUTH_EMULATOR_HOST  (default 127.0.0.1:9099)
+ *   - FIRESTORE_EMULATOR_HOST      (default 127.0.0.1:8088)
+ *
+ * Idempotent: documents use fixed ids and are overwritten; existing Auth
+ * users are looked up instead of re-created.
+ *
+ * Test credentials (also used by CI, see .github/workflows/ci.yml "e2e"):
+ *   Admin:   admin@secid.mx            / admin123456
+ *   Member:  member1@alumno.unam.mx    / member123456
+ *   Member:  member2@alumno.unam.mx    / member123456
+ *   Company: company@example.com       / company123456
  */
 
-import { initializeApp } from 'firebase/app';
-import {
-  getAuth,
-  connectAuthEmulator,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from 'firebase/auth';
-import {
-  getFirestore,
-  connectFirestoreEmulator,
-  collection,
-  doc,
-  setDoc,
-  addDoc,
-  serverTimestamp,
-} from 'firebase/firestore';
+const PROJECT_ID =
+  process.env.PUBLIC_FIREBASE_PROJECT_ID || 'demo-secid-alumni';
+const AUTH_HOST = process.env.FIREBASE_AUTH_EMULATOR_HOST || '127.0.0.1:9099';
+const FIRESTORE_HOST = process.env.FIRESTORE_EMULATOR_HOST || '127.0.0.1:8088';
 
-// Emulator configuration
-const firebaseConfig = {
-  apiKey: 'demo-api-key',
-  authDomain: 'demo-secid-alumni.firebaseapp.com',
-  projectId: 'demo-secid-alumni',
-  storageBucket: 'demo-secid-alumni.appspot.com',
-  messagingSenderId: '123456789',
-  appId: '1:123456789:web:abcdef123456',
+const AUTH_BASE = `http://${AUTH_HOST}/identitytoolkit.googleapis.com/v1`;
+const FIRESTORE_BASE = `http://${FIRESTORE_HOST}/v1/projects/${PROJECT_ID}/databases/(default)/documents`;
+const OWNER_HEADERS = {
+  'Content-Type': 'application/json',
+  Authorization: 'Bearer owner',
 };
 
-// Initialize Firebase for emulator
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// Connect to emulators
-connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
-connectFirestoreEmulator(db, 'localhost', 8080);
-
+// ---------------------------------------------------------------------------
 // Test data
+// ---------------------------------------------------------------------------
+
 const testUsers = [
   {
     email: 'admin@secid.mx',
     password: 'admin123456',
+    // Custom claims: full RBAC allow (firestore.rules hasRBACAllow*).
+    claims: { rbac: { p: '*:*.a' } },
     profile: {
       displayName: 'Admin User',
       firstName: 'Admin',
@@ -123,6 +124,7 @@ const testUsers = [
 
 const testJobs = [
   {
+    id: 'seed-job-senior-data-scientist',
     title: 'Senior Data Scientist',
     company: 'TechCorp México',
     description:
@@ -137,12 +139,7 @@ const testJobs = [
     location: 'Ciudad de México, CDMX',
     locationType: 'hybrid',
     employmentType: 'full-time',
-    salaryRange: {
-      min: 60000,
-      max: 90000,
-      currency: 'MXN',
-      period: 'monthly',
-    },
+    salaryRange: { min: 60000, max: 90000, currency: 'MXN', period: 'monthly' },
     benefits: [
       'Seguro de gastos médicos mayores',
       'Vales de despensa',
@@ -158,6 +155,7 @@ const testJobs = [
     featured: true,
   },
   {
+    id: 'seed-job-data-analyst-junior',
     title: 'Data Analyst Junior',
     company: 'Startup Fintech',
     description:
@@ -172,12 +170,7 @@ const testJobs = [
     location: 'Guadalajara, Jalisco',
     locationType: 'onsite',
     employmentType: 'full-time',
-    salaryRange: {
-      min: 20000,
-      max: 30000,
-      currency: 'MXN',
-      period: 'monthly',
-    },
+    salaryRange: { min: 20000, max: 30000, currency: 'MXN', period: 'monthly' },
     benefits: [
       'Seguro de gastos médicos',
       'Vacaciones superiores a la ley',
@@ -192,6 +185,7 @@ const testJobs = [
     featured: false,
   },
   {
+    id: 'seed-job-ml-engineer',
     title: 'Machine Learning Engineer',
     company: 'AI Solutions México',
     description: 'Build and deploy ML models at scale for enterprise clients.',
@@ -205,12 +199,7 @@ const testJobs = [
     location: 'Remote',
     locationType: 'remote',
     employmentType: 'full-time',
-    salaryRange: {
-      min: 50000,
-      max: 70000,
-      currency: 'MXN',
-      period: 'monthly',
-    },
+    salaryRange: { min: 50000, max: 70000, currency: 'MXN', period: 'monthly' },
     benefits: [
       '100% remote',
       'Equipment provided',
@@ -229,6 +218,7 @@ const testJobs = [
 
 const testEvents = [
   {
+    id: 'seed-event-career-fair',
     title: 'Data Science Career Fair 2024',
     description:
       'Annual career fair connecting UNAM data science alumni with top companies in Mexico.',
@@ -253,6 +243,7 @@ const testEvents = [
     registrationCount: 45,
   },
   {
+    id: 'seed-event-mlops-workshop',
     title: 'Introduction to MLOps Workshop',
     description:
       'Learn the fundamentals of MLOps and how to deploy ML models in production.',
@@ -280,6 +271,7 @@ const testEvents = [
 
 const testForums = [
   {
+    id: 'seed-forum-career',
     title: 'Career Advice',
     description: 'Share and discuss career-related questions and experiences',
     category: 'career',
@@ -295,6 +287,7 @@ const testForums = [
     subscriberCount: 89,
   },
   {
+    id: 'seed-forum-technical',
     title: 'Technical Discussions',
     description:
       'Deep dive into technical topics, algorithms, and best practices',
@@ -312,130 +305,215 @@ const testForums = [
   },
 ];
 
-// Seed function
-async function seedEmulator() {
-  console.log('🌱 Starting emulator seed process...');
+// ---------------------------------------------------------------------------
+// Emulator REST helpers
+// ---------------------------------------------------------------------------
 
-  try {
-    // Create test users
-    console.log('\n👥 Creating test users...');
-    for (const userData of testUsers) {
-      try {
-        // Create auth user
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          userData.email,
-          userData.password
-        );
-
-        // Create user profile in Firestore
-        await setDoc(doc(db, 'users', userCredential.user.uid), {
-          ...userData.profile,
-          email: userData.email,
-          isActive: true,
-          membershipTier: 'free',
-          notificationSettings: {
-            email: true,
-            push: false,
-            jobMatches: true,
-            events: true,
-            forums: true,
-          },
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-          profileCompleteness: 80,
-        });
-
-        console.log(`✅ Created user: ${userData.email}`);
-      } catch (error) {
-        if (error.code === 'auth/email-already-in-use') {
-          console.log(`⚠️  User already exists: ${userData.email}`);
-        } else {
-          console.error(`❌ Error creating user ${userData.email}:`, error);
-        }
-      }
-    }
-
-    // Sign in as admin for creating other data
-    console.log('\n🔐 Signing in as admin...');
-    await signInWithEmailAndPassword(auth, 'admin@secid.mx', 'admin123456');
-
-    // Create test jobs
-    console.log('\n💼 Creating test jobs...');
-    for (const job of testJobs) {
-      const jobRef = await addDoc(collection(db, 'jobs'), {
-        ...job,
-        postedBy: auth.currentUser?.uid,
-        postedAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-      });
-      console.log(`✅ Created job: ${job.title} (${jobRef.id})`);
-    }
-
-    // Create test events
-    console.log('\n📅 Creating test events...');
-    for (const event of testEvents) {
-      const eventRef = await addDoc(collection(db, 'events'), {
-        ...event,
-        organizedBy: auth.currentUser?.uid,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
-      console.log(`✅ Created event: ${event.title} (${eventRef.id})`);
-    }
-
-    // Create test forums
-    console.log('\n💬 Creating test forums...');
-    for (const forum of testForums) {
-      const forumRef = await addDoc(collection(db, 'forums'), {
-        ...forum,
-        createdBy: auth.currentUser?.uid,
-        moderators: [auth.currentUser?.uid],
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-        lastPostAt: serverTimestamp(),
-      });
-      console.log(`✅ Created forum: ${forum.title} (${forumRef.id})`);
-
-      // Add a sample post to each forum
-      await addDoc(collection(db, 'forums', forumRef.id, 'posts'), {
-        title: `Welcome to ${forum.title}!`,
-        content: `This is the first post in the ${forum.title} forum. Feel free to start discussions and share your thoughts.`,
-        authorId: auth.currentUser?.uid,
-        authorName: 'Admin User',
-        authorRole: 'admin',
-        viewCount: 0,
-        likeCount: 0,
-        replyCount: 0,
-        status: 'published',
-        isPinned: true,
-        tags: ['welcome', 'introduction'],
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
-    }
-
-    console.log('\n✨ Emulator seeding completed successfully!');
-    console.log('\n📊 Summary:');
-    console.log(`  - ${testUsers.length} users created`);
-    console.log(`  - ${testJobs.length} jobs created`);
-    console.log(`  - ${testEvents.length} events created`);
-    console.log(`  - ${testForums.length} forums created`);
-    console.log(
-      '\n🎉 You can now access the emulator UI at http://localhost:4000'
-    );
-    console.log('📧 Test credentials:');
-    console.log('  Admin: admin@secid.mx / admin123456');
-    console.log('  Member: member1@alumno.unam.mx / member123456');
-    console.log('  Company: company@example.com / company123456');
-  } catch (error) {
-    console.error('❌ Error during seeding:', error);
-    process.exit(1);
+async function request(url, { method = 'POST', body, headers } = {}) {
+  const response = await fetch(url, {
+    method,
+    headers: headers || OWNER_HEADERS,
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  const text = await response.text();
+  const json = text ? JSON.parse(text) : {};
+  if (!response.ok) {
+    const message =
+      json.error?.message || `${response.status} ${response.statusText}`;
+    throw new Error(`${method} ${url} → ${message}`);
   }
-
-  process.exit(0);
+  return json;
 }
 
-// Run the seed function
-seedEmulator();
+/** Encode a JS value as a Firestore REST `Value`. */
+function encodeValue(value) {
+  if (value === null || value === undefined) return { nullValue: null };
+  if (value instanceof Date) return { timestampValue: value.toISOString() };
+  if (typeof value === 'boolean') return { booleanValue: value };
+  if (typeof value === 'number') {
+    return Number.isInteger(value)
+      ? { integerValue: String(value) }
+      : { doubleValue: value };
+  }
+  if (typeof value === 'string') return { stringValue: value };
+  if (Array.isArray(value)) {
+    return { arrayValue: { values: value.map(encodeValue) } };
+  }
+  if (typeof value === 'object') {
+    return { mapValue: { fields: encodeFields(value) } };
+  }
+  throw new Error(`Unsupported Firestore value: ${typeof value}`);
+}
+
+function encodeFields(data) {
+  const fields = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (value !== undefined) fields[key] = encodeValue(value);
+  }
+  return fields;
+}
+
+/** setDoc semantics: create or fully overwrite `collection/id`. */
+async function setDoc(path, data) {
+  await request(`${FIRESTORE_BASE}/${path}`, {
+    method: 'PATCH',
+    body: { fields: encodeFields(data) },
+  });
+}
+
+/** Create the Auth user (or look it up), mark it verified, set claims. */
+async function ensureAuthUser({ email, password, profile, claims }) {
+  let localId;
+  try {
+    const created = await request(`${AUTH_BASE}/accounts:signUp?key=seed`, {
+      headers: { 'Content-Type': 'application/json' },
+      body: { email, password, returnSecureToken: true },
+    });
+    localId = created.localId;
+  } catch (error) {
+    if (!String(error.message).includes('EMAIL_EXISTS')) throw error;
+    const found = await request(`${AUTH_BASE}/accounts:lookup`, {
+      body: { email: [email] },
+    });
+    localId = found.users?.[0]?.localId;
+    if (!localId) throw new Error(`Could not look up ${email}`);
+    console.log(`⚠️  User already exists: ${email}`);
+  }
+
+  await request(`${AUTH_BASE}/accounts:update`, {
+    body: {
+      localId,
+      emailVerified: true,
+      displayName: profile.displayName,
+      ...(claims ? { customAttributes: JSON.stringify(claims) } : {}),
+    },
+  });
+
+  return localId;
+}
+
+/** users/{uid} document, mirroring what functions/src/index.ts onUserCreate writes. */
+function buildUserDoc(email, profile, now) {
+  return {
+    email,
+    photoURL: '',
+    registrationType: profile.role === 'company' ? 'recruiter' : 'alumni',
+    verificationStatus: profile.isVerified ? 'approved' : 'none',
+    isActive: true,
+    membershipTier: 'free',
+    skills: [],
+    lifecycle: {
+      status: profile.isVerified ? 'active' : 'collaborator',
+      statusChangedAt: now,
+      statusHistory: [],
+      lastActiveDate: now,
+    },
+    privacySettings: {
+      profileVisible: true,
+      contactVisible: false,
+      jobSearching: false,
+      mentorshipAvailable: false,
+    },
+    notificationSettings: {
+      email: true,
+      push: false,
+      jobMatches: true,
+      events: true,
+      forums: true,
+    },
+    createdAt: now,
+    updatedAt: now,
+    profileCompleteness: 80,
+    ...profile,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Seed
+// ---------------------------------------------------------------------------
+
+async function seedEmulator() {
+  console.log('🌱 Starting emulator seed process...');
+  console.log(
+    `   project=${PROJECT_ID} auth=${AUTH_HOST} firestore=${FIRESTORE_HOST}`
+  );
+  const now = new Date();
+  const uids = {};
+
+  console.log('\n👥 Creating test users...');
+  for (const user of testUsers) {
+    const uid = await ensureAuthUser(user);
+    uids[user.email] = uid;
+    await setDoc(`users/${uid}`, buildUserDoc(user.email, user.profile, now));
+    console.log(`✅ User ready: ${user.email} (${uid})`);
+  }
+  const adminUid = uids['admin@secid.mx'];
+
+  console.log('\n💼 Creating test jobs...');
+  for (const { id, ...job } of testJobs) {
+    await setDoc(`jobs/${id}`, {
+      ...job,
+      postedBy: adminUid,
+      postedAt: now,
+      createdAt: now,
+      updatedAt: now,
+      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    });
+    console.log(`✅ Created job: ${job.title} (${id})`);
+  }
+
+  console.log('\n📅 Creating test events...');
+  for (const { id, ...event } of testEvents) {
+    await setDoc(`events/${id}`, {
+      ...event,
+      organizedBy: adminUid,
+      createdAt: now,
+      updatedAt: now,
+    });
+    console.log(`✅ Created event: ${event.title} (${id})`);
+  }
+
+  console.log('\n💬 Creating test forums...');
+  for (const { id, ...forum } of testForums) {
+    await setDoc(`forums/${id}`, {
+      ...forum,
+      createdBy: adminUid,
+      moderators: [adminUid],
+      createdAt: now,
+      updatedAt: now,
+      lastPostAt: now,
+    });
+    await setDoc(`forums/${id}/posts/welcome`, {
+      title: `Welcome to ${forum.title}!`,
+      content: `This is the first post in the ${forum.title} forum. Feel free to start discussions and share your thoughts.`,
+      authorId: adminUid,
+      authorName: 'Admin User',
+      authorRole: 'admin',
+      viewCount: 0,
+      likeCount: 0,
+      replyCount: 0,
+      status: 'published',
+      isPinned: true,
+      tags: ['welcome', 'introduction'],
+      createdAt: now,
+      updatedAt: now,
+    });
+    console.log(`✅ Created forum: ${forum.title} (${id})`);
+  }
+
+  console.log('\n✨ Emulator seeding completed successfully!');
+  console.log('\n📊 Summary:');
+  console.log(`  - ${testUsers.length} users`);
+  console.log(`  - ${testJobs.length} jobs`);
+  console.log(`  - ${testEvents.length} events`);
+  console.log(`  - ${testForums.length} forums`);
+  console.log('\n📧 Test credentials:');
+  console.log('  Admin:   admin@secid.mx / admin123456');
+  console.log('  Member:  member1@alumno.unam.mx / member123456');
+  console.log('  Company: company@example.com / company123456');
+}
+
+seedEmulator().catch((error) => {
+  console.error('❌ Error during seeding:', error.message || error);
+  process.exit(1);
+});

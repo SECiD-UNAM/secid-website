@@ -1,4 +1,5 @@
 import { Page, BrowserContext } from '@playwright/test';
+import { clearBrowserStorage } from './browser-storage';
 import path from 'path';
 import fs from 'fs/promises';
 
@@ -96,9 +97,9 @@ export class AuthHelpers {
    */
   static async loginAsUser(page: Page): Promise<void> {
     const user: TestUser = {
-      email: process.env.TEST_USER_EMAIL || 'test@secid.mx',
-      password: process.env.TEST_USER_PASSWORD || 'TestPassword123!',
-      name: process.env.TEST_USER_NAME || 'Test User',
+      email: process.env.TEST_USER_EMAIL || 'member1@alumno.unam.mx',
+      password: process.env.TEST_USER_PASSWORD || 'member123456',
+      name: process.env.TEST_USER_NAME || 'María García',
       role: 'user',
     };
 
@@ -111,7 +112,7 @@ export class AuthHelpers {
   static async loginAsAdmin(page: Page): Promise<void> {
     const admin: TestUser = {
       email: process.env.ADMIN_EMAIL || 'admin@secid.mx',
-      password: process.env.ADMIN_PASSWORD || 'AdminPassword123!',
+      password: process.env.ADMIN_PASSWORD || 'admin123456',
       name: process.env.ADMIN_NAME || 'Admin User',
       role: 'admin',
     };
@@ -124,8 +125,8 @@ export class AuthHelpers {
    */
   static async loginAsPremium(page: Page): Promise<void> {
     const premium: TestUser = {
-      email: process.env.PREMIUM_USER_EMAIL || 'premium@secid.mx',
-      password: process.env.PREMIUM_USER_PASSWORD || 'PremiumPassword123!',
+      email: process.env.PREMIUM_USER_EMAIL || 'member2@alumno.unam.mx',
+      password: process.env.PREMIUM_USER_PASSWORD || 'member123456',
       role: 'premium',
     };
 
@@ -137,9 +138,9 @@ export class AuthHelpers {
    */
   static async loginAsCompany(page: Page): Promise<void> {
     const company: TestUser = {
-      email: process.env.COMPANY_EMAIL || 'company@techcorp.mx',
-      password: process.env.COMPANY_PASSWORD || 'CompanyPassword123!',
-      name: process.env.COMPANY_NAME || 'TechCorp',
+      email: process.env.COMPANY_EMAIL || 'company@example.com',
+      password: process.env.COMPANY_PASSWORD || 'company123456',
+      name: process.env.COMPANY_NAME || 'TechCorp México',
       role: 'company',
     };
 
@@ -204,10 +205,7 @@ export class AuthHelpers {
     await page.waitForURL(/\/(home|login|\/$)/);
 
     // Clear storage
-    await page.evaluate(() => {
-      localStorage.clear();
-      sessionStorage.clear();
-    });
+    await clearBrowserStorage(page);
   }
 
   /**
