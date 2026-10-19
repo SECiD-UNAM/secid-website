@@ -33,16 +33,18 @@ Playwright solo incluía 7 archivos por su `testMatch`.
 
 ## Bloque B — Calidad que hoy no se exige (dev, ~1 día)
 
-- [ ] B5. `eslint --fix` repo-wide (4306 errores autofixables, casi todo
-      formato) en un PR mecánico; después quitar el `continue-on-error` del
-      lint en CI.
+- [ ] B5. ESLint repo-wide: PR #104 (2026-10-19) bajó de 2919 errores a 193 y
+      arregló 2 `ReferenceError` reales en render. Quedan 193 que necesitan
+      criterio (97 variables sin uso, 43 a11y, 26 `require` en scripts, 23
+      `jsx-key` falsos positivos en `.astro`, 3 `var` del snippet de Amplitude,
+      1 `triple-slash` de Astro). Falta: resolverlos o acotarlos por override y
+      quitar el `continue-on-error` del lint en CI.
 - [ ] B6. Umbrales de cobertura fijados al nivel actual (hoy están en 0);
       quitar `skip` a SignUpForm (29 tests), TwoFactorVerification (49), auth
       (13), jobs (20) y Button (10), una suite por PR (como LoginForm, PR #94).
-- [ ] B7. Docs desactualizados: README (enlaces a `QUICKSTART.md`,
-      `DEVELOPMENT.md`, `LICENSE` inexistentes; badge de `deploy.yml`),
-      `AGENTS.md` (describe el sitio estático antiguo) y la tabla de entornos
-      de `docs/DEPLOYMENT.md`. Sacar `functions/lib` compilado del repo.
+- [x] B7. PR #103 (2026-10-19): README, `AGENTS.md` y `docs/DEPLOYMENT.md`
+      actualizados; `functions/lib` fuera del repo (el `predeploy` de
+      `firebase.json` lo recompila en cada deploy).
 
 ## Bloque C — Pasos del owner (~30 min en total)
 
@@ -55,34 +57,36 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       (Runbook prod-cutover §6)
 - [ ] C10. Billing → Account management: confirmar el correo de avisos de pago.
       El correo de prueba del presupuesto llega con el primer umbral.
+- [ ] C11. Añadir un archivo `LICENSE` (package.json dice MIT; GitHub no detecta
+      licencia). Decisión del owner sobre la licencia.
 
 ## Bloque D — Aplazado por decisión del owner
 
-- [ ] D11. Cloudflare: borrar los 4 NS residuales `ns-cloud-a*.googledomains.com`
+- [ ] D12. Cloudflare: borrar los 4 NS residuales `ns-cloud-a*.googledomains.com`
       (solo el owner toca Cloudflare).
-- [ ] D12. Duplicado de cuenta admin (`jalejandrobondi@gmail.com` vs
+- [ ] D13. Duplicado de cuenta admin (`jalejandrobondi@gmail.com` vs
       `alejandrobondi@me.com`): preguntar, luego borrar o fusionar con
       `merge_requests`.
-- [ ] D13. ~1 de noviembre de 2026: desactivar GitHub Pages y mergear PR #85.
-- [ ] D14. Opcional: quitar `secid-mx.web.app` de CORS si ya no se usa.
+- [ ] D14. ~1 de noviembre de 2026: desactivar GitHub Pages y mergear PR #85.
+- [ ] D15. Opcional: quitar `secid-mx.web.app` de CORS si ya no se usa.
 
 ## Bloque E — Deuda mayor (planear aparte)
 
-- [ ] E15. Majors de dependencias pendientes de PR #92
+- [ ] E16. Majors de dependencias pendientes de PR #92
       ([known-issues/npm-audit-2026-10-18.md](./known-issues/npm-audit-2026-10-18.md)):
       Vitest 5 primero (solo dev), Firebase Admin 14, Tailwind 4, y Astro 7
       cuando el e2e `smoke` sea bloqueante.
-- [ ] E16. MCP de SECiD según
+- [ ] E17. MCP de SECiD según
       [specs/secid-mcp-and-assistant-skill.md](./specs/secid-mcp-and-assistant-skill.md),
       solo si las operaciones de miembros se vuelven frecuentes. La skill
       `.claude/skills/secid-ops/` ya existe.
-- [ ] E17. Un segundo mantenedor con permisos para poder exigir una revisión
+- [ ] E18. Un segundo mantenedor con permisos para poder exigir una revisión
       en `main` sin bloquear al único admin.
 
 ## Orden recomendado
 
 A1–A3 primero (convierte CI en una red real), luego B5 y B6 en paralelo, C
-cuando el owner pueda, E15 después de A3.
+cuando el owner pueda, E16 después de A3.
 
 ## Hecho (referencia)
 
