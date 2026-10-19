@@ -103,10 +103,69 @@ Playwright solo incluía 7 archivos por su `testMatch`.
 - [ ] E18. Un segundo mantenedor con permisos para poder exigir una revisión
       en `main` sin bloquear al único admin.
 
+## Bloque F — Notificaciones y comunicados (dev, 2–4 días; diagnóstico 2026-10-19)
+
+Estado real hoy:
+
+- Correo transaccional **sí funciona**: extensión `firestore-send-email`
+  activa (colección `mail`, SMTP Gmail de contacto@secid.mx), 15/15
+  entregas `SUCCESS`. Disparadores en `functions/src/index.ts`: bienvenida
+  (`onUserDocCreated`), "nueva solicitud pendiente" a admins, aprobado /
+  rechazado / cambio de estatus (`onMemberStatusChange`) y job-match
+  (`onNewJobPosted`, `matchJobsForUser`). Las cuentas QA por plus-tag no
+  reciben correo.
+- **No existe** correo para: confirmación de registro a eventos ni
+  recordatorios (`EventRegistrationForm` solo escribe en Firestore; hoy hay
+  0 eventos y 0 registros), aviso al admin de mensajes de contacto
+  (`contactMessages` se guarda y nadie se entera), envío del newsletter
+  (`newsletter_archive` solo publica en web; `newsletter` guarda
+  suscriptores, 5 hoy, sin ningún envío), ni comunicados/anuncios a
+  miembros (no hay composer; el canal real son los Google Groups
+  miembros@/colaboradores@/direccion@ que sincroniza #83).
+- Notificaciones in-app: `src/lib/notifications.ts` + `NotificationCenter`
+  son un cascarón: llaman a callables `sendNotification`,
+  `sendBulkNotifications` y `scheduleNotification` que no existen en
+  functions, escriben en una colección raíz `notifications` que las reglas
+  no permiten (solo `users/{uid}/notifications`), y el centro hace polling
+  cada 30 s. `NotificationSettings` guarda preferencias (digest por correo,
+  push) que nada lee. Push (FCM) sin `PUBLIC_FIREBASE_VAPID_KEY`.
+- Panel de community manager: no existe. Admin tiene usuarios, directorio,
+  moderación (cola + reportes), fusión, analytics y configuración. RBAC ya
+  define `content-editor` y `newsletter-editor` sin UI que los use.
+
+- [ ] F19. Avisos que faltan sobre la tubería que ya funciona (1 día):
+      correo al admin por cada `contactMessages` nuevo (trigger
+      `onDocumentCreated`), confirmación al registrarse a un evento y
+      recordatorio 24 h antes (`onSchedule` diario leyendo
+      `events/{id}/registrations`). Plantillas en `email-templates.ts`.
+      Respetar `notificationSettings.email`.
+- [ ] F20. Comunicados a miembros (1–2 días): composer en admin
+      (`/dashboard/admin/communications`) para rol `content-editor` /
+      `newsletter-editor`: asunto, cuerpo (markdown), audiencia (todos los
+      activos / por sede / por grupo RBAC), vista previa, "enviarme prueba"
+      y envío. Backend: callable `sendAnnouncement` que escribe lotes en
+      `mail` (`sendBatchEmails`) y guarda el registro en `announcements`
+      con conteo y estado. Reusar la plantilla base de `email-templates.ts`.
+      Nota de volumen: el SMTP de Gmail limita ~500 destinatarios/día; con
+      31 miembros alcanza, pero al pasar de ~300 conviene migrar a SendGrid
+      o Resend (misma extensión, cambiar `SMTP_CONNECTION_URI`).
+- [ ] F21. Newsletter por correo (½ día, después de F20): botón "enviar a
+      suscriptores" en `NewsletterFormPage` usando el mismo callable con la
+      audiencia `newsletter` (suscriptores confirmados) y enlace de baja
+      (`unsubscribe` firmado). Hoy el formulario público acepta altas sin
+      doble opt-in; añadir confirmación por correo antes de enviar nada.
+- [ ] F22. Notificaciones in-app (1 día, opcional): o se borran
+      `NotificationCenter`/`notifications.ts` y su página de settings, o se
+      conectan de verdad: escribir en `users/{uid}/notifications` desde los
+      mismos triggers de F19/F20, `onSnapshot` en el centro (quitar
+      polling), y `notificationSettings` dentro del doc del usuario. Push
+      FCM solo si alguien lo pide (VAPID + service worker).
+
 ## Orden recomendado
 
 A1–A3 primero (convierte CI en una red real), luego B5 y B6 en paralelo, C
-cuando el owner pueda, E16 después de A3.
+cuando el owner pueda, E16 después de A3. F19 en cuanto haya eventos o
+mensajes de contacto reales; F20 antes del primer comunicado masivo.
 
 ## Hecho (referencia)
 
