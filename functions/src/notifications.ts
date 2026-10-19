@@ -8,13 +8,13 @@
  */
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
-import { FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { FieldValue, Timestamp, getFirestore } from 'firebase-admin/firestore';
 import type {
   DocumentData,
   DocumentSnapshot,
   Firestore,
 } from 'firebase-admin/firestore';
-import { admin } from './init';
+import './init';
 import { sendEmail, sendBatchEmails, EmailData } from './email-service';
 import {
   generateContactMessageAdminEmail,
@@ -187,7 +187,7 @@ export const onEventRegistrationEmail = onDocumentCreated(
     const { eventId, registrationId } = event.params;
     const uid = String(event.data?.data()?.userId || registrationId);
     try {
-      const db = admin.firestore();
+      const db = getFirestore();
       const [eventSnap, recipient] = await Promise.all([
         db.collection('events').doc(eventId).get(),
         readRecipient(db, uid),
@@ -294,7 +294,7 @@ export const sendEventReminders = onSchedule(
     region: 'us-central1',
   },
   async () => {
-    const db = admin.firestore();
+    const db = getFirestore();
     const events = await eventsNeedingReminder(db);
     const results = await Promise.allSettled(
       events.map((snap) => remindEvent(db, snap))

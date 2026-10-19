@@ -121,7 +121,7 @@ const VALID = {
 // Every test renders into the shared document and mutates the shared auth
 // stub, which is incompatible with the suite's per-file concurrent execution
 // (vitest sequence.concurrent) — run sequentially.
-describe.sequential('SignUpForm', () => {
+describe('SignUpForm', { concurrent: false }, () => {
   const mockCreateUser = vi.mocked(createUserWithEmailAndPassword);
   const mockUpdateProfile = vi.mocked(updateProfile);
   const mockSignInWithPopup = vi.mocked(signInWithPopup);

@@ -96,7 +96,7 @@ async function mountAndAuth() {
   return utils;
 }
 
-describe.sequential('AuthContext alias resolution', () => {
+describe('AuthContext alias resolution', { concurrent: false }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     capturedAuthCallback = null;

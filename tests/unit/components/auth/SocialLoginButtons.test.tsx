@@ -38,7 +38,7 @@ vi.mock('@/hooks/useTranslations', () => ({
   })),
 }));
 
-describe.sequential('SocialLoginButtons', () => {
+describe('SocialLoginButtons', { concurrent: false }, () => {
   const mockSignInWithProvider = vi.mocked(signInWithProvider);
   const mockSignInWithLinkedIn = vi.mocked(signInWithLinkedIn);
   const mockHandleAccountExistsError = vi.mocked(handleAccountExistsError);
@@ -70,6 +70,10 @@ describe.sequential('SocialLoginButtons', () => {
   });
 
   afterEach(() => {
+    // Vitest 4+ restoreAllMocks() only restores vi.spyOn spies; it no longer
+    // resets the state of vi.fn() mocks, so per-test mockResolvedValue()
+    // overrides (e.g. handleAccountExistsError) would leak into later tests.
+    vi.resetAllMocks();
     vi.restoreAllMocks();
   });
 

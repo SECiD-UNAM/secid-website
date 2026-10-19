@@ -225,7 +225,7 @@ function setupDefaultMocks(mentorOverrides: Partial<MentorProfile> = {}) {
 // Tests
 // ---------------------------------------------------------------------------
 
-describe.sequential('MentorshipMatcher', () => {
+describe('MentorshipMatcher', { concurrent: false }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseAuthContext.mockReturnValue({ user: { uid: 'user-1' } });

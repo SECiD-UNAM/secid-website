@@ -12,7 +12,7 @@ local setup, tests, CI checks, auto-merge, what not to do) first.
 - Astro 4 (static output, React 18 islands, Tailwind) + Firebase (Auth,
   Firestore, Storage, Cloud Functions in `functions/`) + Stripe.
 - Spanish is the default locale, English second (`/es/`, `/en/`).
-- Node `>=20` (`.nvmrc` pins it), Java 21 for the emulators; tests with
+- Node `>=22.12` (`.nvmrc` pins 22.12.0; Vitest 5 needs it), Java 21 for the emulators; tests with
   Vitest (`tests/unit`, `integration`, `rules`) and Playwright (`tests/e2e`).
 
 ## Scripts that exist (see `package.json`)

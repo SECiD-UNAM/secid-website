@@ -91,7 +91,7 @@ That's it! 🎉 Your browser will automatically open to http://localhost:4321
 ### Manual Setup
 
 1. **Prerequisites**
-   - Node.js 20.17.0+ ([Download](https://nodejs.org/))
+   - Node.js 22.12.0+ ([Download](https://nodejs.org/))
    - Git ([Download](https://git-scm.com/))
    - Make (usually pre-installed)
 

@@ -47,7 +47,7 @@ afterEach(() => {
   cleanup();
 });
 
-describe.sequential('SpotlightEditor', () => {
+describe('SpotlightEditor', { concurrent: false }, () => {
   it('TC-spotlight-editor-001: renders create form by default', () => {
     /** Verifies: AC-spotlight-editor-create-mode */
     render(<SpotlightEditor lang="en" />);

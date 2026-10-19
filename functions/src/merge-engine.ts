@@ -1,8 +1,8 @@
 import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
-import * as admin from 'firebase-admin';
-import { FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { getAuth } from 'firebase-admin/auth';
+import { FieldValue, Timestamp, getFirestore } from 'firebase-admin/firestore';
 
-const db = admin.firestore();
+const db = getFirestore();
 
 // Field group -> Firestore paths mapping (must match src/lib/merge/field-groups.ts)
 const FIELD_GROUPS: Record<string, string[]> = {
@@ -253,7 +253,7 @@ export const onMergeRequestApproved = onDocumentUpdated(
           .toLowerCase();
         if (!sourceEmailLower) {
           try {
-            const authUser = await admin.auth().getUser(sourceUid);
+            const authUser = await getAuth().getUser(sourceUid);
             sourceEmailLower = String(authUser.email || '')
               .trim()
               .toLowerCase();
@@ -293,8 +293,8 @@ export const onMergeRequestApproved = onDocumentUpdated(
       // session can't keep operating against the now-merged identity.
       if (action !== 'alias') {
         try {
-          await admin.auth().updateUser(sourceUid, { disabled: true });
-          await admin.auth().revokeRefreshTokens(sourceUid);
+          await getAuth().updateUser(sourceUid, { disabled: true });
+          await getAuth().revokeRefreshTokens(sourceUid);
         } catch (authErr: unknown) {
           const msg =
             authErr instanceof Error ? authErr.message : String(authErr);

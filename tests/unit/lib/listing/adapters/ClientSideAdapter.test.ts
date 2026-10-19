@@ -17,7 +17,7 @@ const testData: TestItem[] = [
 ];
 
 describe('ClientSideAdapter', () => {
-  describe.sequential('with fetchAll', () => {
+  describe('with fetchAll', { concurrent: false }, () => {
     let adapter: ClientSideAdapter<TestItem>;
     const fetchAll = vi.fn().mockResolvedValue(testData);
 

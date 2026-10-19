@@ -7,8 +7,7 @@
  * and writes the result to /survey_aggregates/global so charts on
  * /es/members can read with a single get.
  */
-import * as admin from 'firebase-admin';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions/v2';
@@ -54,7 +53,7 @@ async function buildAggregates(): Promise<{
   publicPayload: Record<string, unknown>;
   adminPayload: Record<string, unknown>;
 }> {
-  const db = admin.firestore();
+  const db = getFirestore();
   const surveysSnap = await db.collection('member_surveys').get();
   const usersSnap = await db.collection('users').get();
 
@@ -199,7 +198,7 @@ export const aggregateSurveyResponses = onSchedule(
   async () => {
     try {
       const { publicPayload, adminPayload } = await buildAggregates();
-      const db = admin.firestore();
+      const db = getFirestore();
       await Promise.all([
         db.doc(AGGREGATES_PATH_PUBLIC).set(publicPayload),
         db.doc(AGGREGATES_PATH_ADMIN).set(adminPayload),
@@ -221,8 +220,7 @@ export const refreshSurveyAggregates = onCall(
     if (!request.auth) {
       throw new HttpsError('unauthenticated', 'Sign in required');
     }
-    const adminDoc = await admin
-      .firestore()
+    const adminDoc = await getFirestore()
       .doc(`users/${request.auth.uid}`)
       .get();
     const role = adminDoc.data()?.role;
@@ -230,7 +228,7 @@ export const refreshSurveyAggregates = onCall(
       throw new HttpsError('permission-denied', 'Admin only');
     }
     const { publicPayload, adminPayload } = await buildAggregates();
-    const db = admin.firestore();
+    const db = getFirestore();
     await Promise.all([
       db.doc(AGGREGATES_PATH_PUBLIC).set(publicPayload),
       db.doc(AGGREGATES_PATH_ADMIN).set(adminPayload),

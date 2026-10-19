@@ -32,7 +32,7 @@ function setSearch(search: string) {
 
 // Tests share window.location, so they must not run concurrently
 // (vitest.config.ts enables sequence.concurrent + shuffle).
-describe.sequential('AuthActionHandler', () => {
+describe('AuthActionHandler', { concurrent: false }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     setSearch('');

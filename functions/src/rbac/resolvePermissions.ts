@@ -8,8 +8,9 @@
  * Pure resolution logic lives in ./resolution-logic.ts for testability.
  */
 import { onDocumentWritten } from 'firebase-functions/v2/firestore';
-import { admin } from '../init';
-import { FieldValue } from 'firebase-admin/firestore';
+import '../init';
+import { getAuth } from 'firebase-admin/auth';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import type { PermissionGrant } from './defaultGroups';
 import {
   resolveGroupPermissions,
@@ -44,10 +45,10 @@ export const onUserGroupWrite = onDocumentWritten(
     // Document deleted — clear RBAC claims
     if (!afterData) {
       try {
-        const currentUser = await admin.auth().getUser(userId);
+        const currentUser = await getAuth().getUser(userId);
         const newClaims = { ...(currentUser.customClaims ?? {}) };
         delete newClaims.rbac;
-        await admin.auth().setCustomUserClaims(userId, newClaims);
+        await getAuth().setCustomUserClaims(userId, newClaims);
         await writeAuditLog('permissions_resolved', 'system', userId, {
           action: 'cleared',
           reason: 'user_groups_deleted',
@@ -71,22 +72,21 @@ export const onUserGroupWrite = onDocumentWritten(
       const encoded = encodeClaimsPermissions(resolved);
 
       // Get existing role from Firestore user doc
-      const userDoc = await admin
-        .firestore()
+      const userDoc = await getFirestore()
         .collection('users')
         .doc(userId)
         .get();
       const existingRole = userDoc.data()?.role as string | undefined;
 
       // Build and set custom claims
-      const currentUser = await admin.auth().getUser(userId);
+      const currentUser = await getAuth().getUser(userId);
       const existingClaims = currentUser.customClaims ?? {};
       const newClaims = {
         ...existingClaims,
         ...buildClaimsPayload(groupIds, encoded, existingRole),
       };
 
-      await admin.auth().setCustomUserClaims(userId, newClaims);
+      await getAuth().setCustomUserClaims(userId, newClaims);
 
       // Audit log
       await writeAuditLog('permissions_resolved', 'system', userId, {
@@ -118,8 +118,7 @@ export const onGroupWrite = onDocumentWritten(
 
     try {
       // Find all users assigned to this group
-      const userGroupsSnapshot = await admin
-        .firestore()
+      const userGroupsSnapshot = await getFirestore()
         .collection('rbac_user_groups')
         .where('groups', 'array-contains', groupId)
         .get();
@@ -168,9 +167,7 @@ async function fetchGroupDocs(groupIds: string[]): Promise<GroupDoc[]> {
   if (groupIds.length === 0) return [];
 
   const docs = await Promise.all(
-    groupIds.map((id) =>
-      admin.firestore().collection('rbac_groups').doc(id).get()
-    )
+    groupIds.map((id) => getFirestore().collection('rbac_groups').doc(id).get())
   );
 
   return docs
@@ -183,8 +180,7 @@ async function fetchGroupDocs(groupIds: string[]): Promise<GroupDoc[]> {
 }
 
 async function resolveUserPermissions(userId: string): Promise<void> {
-  const userGroupDoc = await admin
-    .firestore()
+  const userGroupDoc = await getFirestore()
     .collection('rbac_user_groups')
     .doc(userId)
     .get();
@@ -194,13 +190,13 @@ async function resolveUserPermissions(userId: string): Promise<void> {
   const resolved = resolveGroupPermissions(groupDocs);
   const encoded = encodeClaimsPermissions(resolved);
 
-  const userDoc = await admin.firestore().collection('users').doc(userId).get();
+  const userDoc = await getFirestore().collection('users').doc(userId).get();
   const existingRole = userDoc.data()?.role as string | undefined;
 
-  const currentUser = await admin.auth().getUser(userId);
+  const currentUser = await getAuth().getUser(userId);
   const existingClaims = currentUser.customClaims ?? {};
 
-  await admin.auth().setCustomUserClaims(userId, {
+  await getAuth().setCustomUserClaims(userId, {
     ...existingClaims,
     ...buildClaimsPayload(groupIds, encoded, existingRole),
   });
@@ -235,7 +231,7 @@ async function writeAuditLog(
   changes: Record<string, unknown>
 ): Promise<void> {
   try {
-    await admin.firestore().collection('rbac_audit_log').add({
+    await getFirestore().collection('rbac_audit_log').add({
       action,
       actorId,
       targetId,

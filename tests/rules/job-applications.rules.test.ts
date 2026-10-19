@@ -101,8 +101,9 @@ function applicationInput() {
   };
 }
 
-describe.sequential.skipIf(!emulatorRunning)(
+describe.skipIf(!emulatorRunning)(
   'firestore.rules — jobs/{jobId}/applications',
+  { concurrent: false },
   () => {
     it('verified member can create the application the modal builds', async () => {
       await seedMemberAndJob();
@@ -162,8 +163,9 @@ describe.sequential.skipIf(!emulatorRunning)(
   }
 );
 
-describe.sequential.skipIf(!emulatorRunning)(
+describe.skipIf(!emulatorRunning)(
   'firestore.rules — users/{uid}/applications (dashboard mirror)',
+  { concurrent: false },
   () => {
     const mirror = () =>
       buildApplicationMirrorDoc({

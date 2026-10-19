@@ -6,7 +6,7 @@ import StatsCard from '@/components/mentorship/shared/StatsCard';
  * TC-mentorship-shared-001
  * Verifies: StatsCard renders label and value correctly
  */
-describe.sequential('StatsCard', () => {
+describe('StatsCard', { concurrent: false }, () => {
   describe('basic rendering', () => {
     it('renders label and numeric value', () => {
       const { container } = render(

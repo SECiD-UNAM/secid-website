@@ -7,8 +7,9 @@
  * which resolves permissions and sets custom claims.
  */
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
-import { admin } from '../init';
-import { FieldValue } from 'firebase-admin/firestore';
+import '../init';
+import { getAuth } from 'firebase-admin/auth';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { mapRoleToGroups } from './role-mapping';
 
 // Re-export for consumers that import from this module
@@ -27,7 +28,7 @@ async function batchGetByUid(
   collection: string,
   uids: string[]
 ): Promise<Map<string, FirebaseFirestore.DocumentSnapshot>> {
-  const db = admin.firestore();
+  const db = getFirestore();
   const snapshots = new Map<string, FirebaseFirestore.DocumentSnapshot>();
   for (let i = 0; i < uids.length; i += 10) {
     const batch = uids.slice(i, i + 10);
@@ -50,8 +51,7 @@ export const backfillRbacUsers = onCall(
     }
 
     // Verify admin role
-    const callerDoc = await admin
-      .firestore()
+    const callerDoc = await getFirestore()
       .collection('users')
       .doc(request.auth.uid)
       .get();
@@ -72,7 +72,7 @@ export const backfillRbacUsers = onCall(
     // Paginate through all users
     let pageToken: string | undefined;
     do {
-      const listResult = await admin.auth().listUsers(1000, pageToken);
+      const listResult = await getAuth().listUsers(1000, pageToken);
       const uids = listResult.users.map((userRecord) => userRecord.uid);
 
       // Batch-read existing assignments + user docs for the whole page
@@ -96,7 +96,7 @@ export const backfillRbacUsers = onCall(
           const groups = mapRoleToGroups(role);
 
           // Write assignment (triggers onUserGroupWrite)
-          await admin.firestore().collection('rbac_user_groups').doc(uid).set({
+          await getFirestore().collection('rbac_user_groups').doc(uid).set({
             userId: uid,
             groups,
             assignedBy: 'system:backfill',
@@ -114,7 +114,7 @@ export const backfillRbacUsers = onCall(
     } while (pageToken);
 
     // Audit log
-    await admin.firestore().collection('rbac_audit_log').add({
+    await getFirestore().collection('rbac_audit_log').add({
       action: 'users_backfilled',
       actorId: request.auth.uid,
       targetId: 'system',

@@ -1,5 +1,4 @@
-/// <reference types="vitest" />
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 import { coverageThresholds } from './scripts/ci/coverage-thresholds.mjs';
@@ -14,6 +13,10 @@ export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
+    // Vitest 5 defaults clearMocks to true (vi.clearAllMocks() before every
+    // test). Keep the pre-5 behaviour: suites that record calls in
+    // beforeAll/module scope rely on that history surviving into the test.
+    clearMocks: false,
     // happy-dom is ~2-3x faster than jsdom for the RTL component suite.
     environment: 'happy-dom',
     setupFiles: ['./src/test/setup.ts'],
@@ -81,13 +84,8 @@ export default defineConfig({
     teardownTimeout: 5000,
     isolate: true,
     pool: 'threads',
-    poolOptions: {
-      threads: {
-        singleThread: false,
-        minThreads: 1,
-        maxThreads: 4,
-      },
-    },
+    // Vitest 4 replaced poolOptions.threads.{min,max}Threads with maxWorkers.
+    maxWorkers: 4,
     coverage: {
       provider: 'v8',
       reporter: isPartialCoverage
@@ -123,7 +121,8 @@ export default defineConfig({
       // other key (e.g. Jest's `global`) as a file glob, and `global` matches
       // nothing — so the previous `thresholds.global` block was never enforced.
       thresholds: isPartialCoverage ? undefined : coverageThresholds,
-      all: true,
+      // `coverage.include` above is what makes untested files count (Vitest 4
+      // removed `coverage.all`; without `include` only loaded files report).
       skipFull: false,
     },
     // In CI the heavy 'json'/'html' reporters serialize the whole run tree
@@ -133,45 +132,47 @@ export default defineConfig({
       ? ['dot', ['junit', { outputFile: './test-results/junit.xml' }]]
       : [
           'default',
-          'json',
-          'html',
+          ['json', { outputFile: './test-results/test-results.json' }],
+          ['html', { outputDir: './test-results' }],
           ['junit', { outputFile: './test-results/junit.xml' }],
         ],
-    outputFile: {
-      json: './test-results/test-results.json',
-      html: './test-results/index.html',
-    },
-    cache: {
-      dir: 'node_modules/.vitest',
-    },
     logHeapUsage: false,
     sequence: {
       shuffle: true,
-      concurrent: true,
+      // Since Vitest 2 `concurrent: true` interleaves EVERY test of a file
+      // (no longer one describe block at a time). The RTL suites share a
+      // single happy-dom document, so concurrent renders collide ("Found
+      // multiple elements ..."); running a file's tests one at a time is
+      // also measurably faster here (environment setup dominates, not the
+      // tests). Files are still run in parallel across workers.
+      concurrent: false,
     },
     benchmark: {
       include: ['**/*.{bench,benchmark}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
       exclude: ['node_modules', 'dist', '.astro'],
-      reporters: ['default'],
     },
     typecheck: {
       enabled: false,
     },
-    watchExclude: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/.git/**',
-      '**/coverage/**',
-      '**/test-results/**',
-    ],
-    deps: {
-      external: [
-        'firebase',
-        'firebase/auth',
-        'firebase/firestore',
-        'firebase/storage',
-        '@firebase/rules-unit-testing',
-      ],
+    server: {
+      watch: {
+        ignored: [
+          '**/node_modules/**',
+          '**/dist/**',
+          '**/.git/**',
+          '**/coverage/**',
+          '**/test-results/**',
+        ],
+      },
+      deps: {
+        external: [
+          'firebase',
+          'firebase/auth',
+          'firebase/firestore',
+          'firebase/storage',
+          '@firebase/rules-unit-testing',
+        ],
+      },
     },
   },
   resolve: {

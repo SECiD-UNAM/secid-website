@@ -1,5 +1,4 @@
-import * as admin from 'firebase-admin';
-import { FieldValue } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 
 export interface EmailData {
   to: string;
@@ -44,10 +43,7 @@ export async function sendEmail(email: EmailData): Promise<string> {
     console.log(`[email] skipped for QA account ${email.to}: ${email.subject}`);
     return '';
   }
-  const docRef = await admin
-    .firestore()
-    .collection('mail')
-    .add(toMailDoc(email));
+  const docRef = await getFirestore().collection('mail').add(toMailDoc(email));
   return docRef.id;
 }
 
@@ -55,8 +51,8 @@ export async function sendEmail(email: EmailData): Promise<string> {
  * Send email to multiple recipients (batch)
  */
 export async function sendBatchEmails(emails: EmailData[]): Promise<void> {
-  const batch = admin.firestore().batch();
-  const mailCollection = admin.firestore().collection('mail');
+  const batch = getFirestore().batch();
+  const mailCollection = getFirestore().collection('mail');
 
   for (const email of emails) {
     if (isQaRecipient(email.to)) continue;

@@ -230,7 +230,7 @@ function makeSearchResult(resources: Resource[] = []) {
 
 // Outer sequential wrapper: vitest config has sequence.concurrent=true which causes
 // concurrent top-level describe blocks to clobber each other's module-scope mocks.
-describe.sequential('ResourceLibrary', () => {
+describe('ResourceLibrary', { concurrent: false }, () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetCurrentUser.mockReturnValue(null);
@@ -241,7 +241,7 @@ describe.sequential('ResourceLibrary', () => {
 
   // ─── Rendering ─────────────────────────────────────────────────────────────
 
-  describe.sequential('ResourceLibrary — rendering', () => {
+  describe('ResourceLibrary — rendering', { concurrent: false }, () => {
     describe('TC-RL-001: shows loading skeleton on mount', () => {
       /**
        * TC-RL-001
@@ -313,7 +313,7 @@ describe.sequential('ResourceLibrary', () => {
 
   // ─── Stats bar ─────────────────────────────────────────────────────────────
 
-  describe.sequential('ResourceLibrary — stats bar', () => {
+  describe('ResourceLibrary — stats bar', { concurrent: false }, () => {
     describe('TC-RL-005: stats bar shown in full view', () => {
       /**
        * TC-RL-005
@@ -346,7 +346,7 @@ describe.sequential('ResourceLibrary', () => {
 
   // ─── Resource cards ─────────────────────────────────────────────────────────
 
-  describe.sequential('ResourceLibrary — resource cards', () => {
+  describe('ResourceLibrary — resource cards', { concurrent: false }, () => {
     describe('TC-RL-007: renders resource cards when data loads', () => {
       /**
        * TC-RL-007
@@ -450,7 +450,7 @@ describe.sequential('ResourceLibrary', () => {
 
   // ─── Upload ─────────────────────────────────────────────────────────────────
 
-  describe.sequential('ResourceLibrary — upload flow', () => {
+  describe('ResourceLibrary — upload flow', { concurrent: false }, () => {
     describe('TC-RL-011: upload button visible for authenticated users', () => {
       /**
        * TC-RL-011
@@ -549,7 +549,7 @@ describe.sequential('ResourceLibrary', () => {
 
   // ─── Bookmarks tab ──────────────────────────────────────────────────────────
 
-  describe.sequential('ResourceLibrary — bookmarks tab', () => {
+  describe('ResourceLibrary — bookmarks tab', { concurrent: false }, () => {
     describe('TC-RL-015: bookmarks tab requires login', () => {
       /**
        * TC-RL-015
@@ -662,7 +662,7 @@ describe.sequential('ResourceLibrary', () => {
 
   // ─── Category grid ──────────────────────────────────────────────────────────
 
-  describe.sequential('ResourceLibrary — category grid', () => {
+  describe('ResourceLibrary — category grid', { concurrent: false }, () => {
     describe('TC-RL-018: category grid shown in full view with no active filters', () => {
       /**
        * TC-RL-018
@@ -702,5 +702,5 @@ describe.sequential('ResourceLibrary', () => {
         });
       });
     });
-  }); // end describe.sequential('ResourceLibrary — category grid')
-}); // end describe.sequential('ResourceLibrary')
+  }); // end describe('ResourceLibrary — category grid')
+}); // end describe('ResourceLibrary')
