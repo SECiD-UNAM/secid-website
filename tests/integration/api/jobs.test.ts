@@ -343,9 +343,7 @@ describe.skip('Jobs API Integration Tests', () => {
       vi.mocked(firestore.doc).mockReturnValue({ id: 'app-1' } as any);
 
       // Mock user authentication
-      vi.mocked(getCurrentUser).mockReturnValue(
-        mockUsers.regularUser
-      );
+      vi.mocked(getCurrentUser).mockReturnValue(mockUsers.regularUser);
 
       const result = await applyToJob(applicationData);
 
@@ -451,7 +449,7 @@ describe.skip('Jobs API Integration Tests', () => {
         salaryMax: 100000,
       };
 
-      const result = await getJobs(filters);
+      await getJobs(filters);
 
       expect(firestore.where).toHaveBeenCalledWith('salary.min', '>=', 50000);
       expect(firestore.where).toHaveBeenCalledWith('salary.max', '<=', 100000);
@@ -462,7 +460,7 @@ describe.skip('Jobs API Integration Tests', () => {
         skills: ['Python', 'Machine Learning'],
       };
 
-      const result = await getJobs(filters);
+      await getJobs(filters);
 
       expect(firestore.where).toHaveBeenCalledWith(
         'skills',

@@ -215,7 +215,7 @@ describe('Firestore Integration Tests', () => {
         );
 
         const userDoc = firestore.collection('users').doc(TEST_UID);
-        const snapshot = await userDoc.get();
+        await userDoc.get();
 
         // In the mocked environment the doc always returns exists: false,
         // but we verify the calls were made correctly.

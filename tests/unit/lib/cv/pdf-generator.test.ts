@@ -282,11 +282,6 @@ describe('generateCvPdf', () => {
       );
       expect(seniorCalls.length).toBe(1);
 
-      const dataSciCalls = mockText.mock.calls.filter(
-        (call) => call[0] === 'Data Scientist'
-      );
-      // 'Data Scientist' appears as personal.title in header, but not as a job title in summary
-      // In summary, only 1 experience entry is shown (Senior Data Scientist)
       const internCalls = mockText.mock.calls.filter(
         (call) => call[0] === 'Intern'
       );
