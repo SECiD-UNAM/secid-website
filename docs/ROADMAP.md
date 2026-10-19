@@ -60,9 +60,15 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       quedaban (79 variables sin uso, 31 `label` a11y, 24 `require`, 23
       `jsx-key`, 4 `autofocus`, 3 `var`, 3 `html-has-lang`, 2
       `media-has-caption`, 2 `aria-role`, 1 `role-supports-aria-props`, 1
-      `triple-slash`): `npm run lint` sale en 0 errores (1701 warnings, sin
+      `triple-slash`): `npm run lint` sale en 0 errores (1624 warnings, sin
       `--max-warnings`) y el paso de ESLint en CI ya es bloqueante
-      (`continue-on-error` quitado). Código muerto borrado en vez de
+      (`continue-on-error` quitado). Hallazgo: el paso llevaba meses
+      reventando con exit 2 (no fallando por errores) porque `eslint .`
+      entraba en `functions/`, cuyo `.eslintrc.js` propio necesita
+      `eslint-plugin-import` de `functions/node_modules`, que el job no
+      instala; el `continue-on-error` lo tapaba. Ahora la config raíz ignora
+      `functions/` y el job lo lintea aparte con sus deps
+      (`npm run lint --prefix functions`, limpio). Código muerto borrado en vez de
       silenciado; a11y arreglada de verdad (11 `htmlFor`/`id`, combobox real
       en CompanyAutocomplete, prop `role` → `profileRole`). Overrides añadidos
       en `.eslintrc.cjs`: `*.astro` (`react/jsx-key` y
