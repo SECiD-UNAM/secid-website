@@ -28,8 +28,21 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       bloqueante hasta triarlo).
 - [x] A3. "E2E Tests (smoke)" añadido a los checks requeridos de `main` el 2026-10-19 (10 contextos, strict).
       Criterio: un PR que rompa el signup se pone rojo solo.
-- [ ] A4. Hacer pasar `full` contra emuladores en CI con `npm run seed`; lo que
-      dependa de Stripe queda `skip` con motivo hasta que haya pagos.
+- [x] A4. PR #111 (2026-10-19): el job `E2E Tests (chromium)` corre contra
+      emuladores (auth, firestore, storage) con `npm run seed` reescrito
+      (REST + `Bearer owner`, cuentas fijas admin/member1/member2/company) y
+      publica una tabla de pass-rate en el summary. Resultado: 479 tests →
+      53 pasan, 0 fallan, 426 `skip` con motivo (antes: 8/457/14). Sigue
+      `continue-on-error` hasta que A5 reduzca los skips.
+- [ ] A5. Lo que A4 dejó en `skip`: (a) 13 suites heredadas marcadas
+      "función no implementada" (~290 tests que buscan ~600 `data-testid`
+      que la app no tiene; reescribir contra la UI real o borrar); (b) 3
+      suites de pagos hasta que haya Stripe; (c) journey-B necesita el
+      emulador de functions, bloqueado porque el stub de firebase-admin del
+      emulador no expone `admin.firestore.FieldValue` y `onUserCreate` da
+      500 → cambiar los ~53 usos en `functions/src` a
+      `import { FieldValue } from 'firebase-admin/firestore'`. Al cerrar (a)
+      y (c): quitar `continue-on-error` y volver el job bloqueante.
 
 ## Bloque B — Calidad que hoy no se exige (dev, ~1 día)
 
