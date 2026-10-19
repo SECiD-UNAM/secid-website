@@ -177,6 +177,33 @@ Estado real hoy:
       polling), y `notificationSettings` dentro del doc del usuario. Push
       FCM solo si alguien lo pide (VAPID + service worker).
 
+## Bloque G — Bugs funcionales que destapó el e2e (dev, 1–2 días; hallados 2026-10-19 en PR #119)
+
+Los flujos existen en la UI pero fallan contra las reglas de Firestore, así
+que en prod un miembro no puede completarlos. Ninguno tiene test porque el
+submit se dejó sin ejercitar a propósito hasta arreglarlo; cada fix debe
+llegar con su e2e contra emuladores (ya hay arnés, seed y job bloqueante).
+
+- [ ] G23. Postularse a una vacante: el modal escribe `status:'pending'` sin
+      `jobId` ni `createdAt`; las reglas exigen `status=='submitted'`,
+      `jobId` y `createdAt==request.time`, y `users/{uid}/applications` no
+      tiene regla → denegado. `/es/dashboard/applications` sale vacío por lo
+      mismo. Fix: alinear el payload con las reglas (o las reglas con el
+      payload) y añadir la regla de la subcolección.
+- [ ] G24. Registrarse a un evento: escribe `events/{id}/registrations` sin
+      `eventId` (obligatorio) e incrementa `events/{id}.currentAttendees`,
+      que solo pueden tocar editores RBAC → denegado. Fix: incluir `eventId`
+      y mover el contador a una function (`onDocumentCreated` de la
+      subcolección) o permitir el `increment` acotado en reglas.
+- [ ] G25. Foros: `forum_categories`, `forum_topics` y `forum_posts` no
+      tienen reglas, así que solo se ven las 6 categorías integradas y
+      `/es/forum/category/{slug}` muestra "Error al cargar los datos".
+      Decidir si los foros se lanzan (reglas + seed + e2e) o se ocultan del
+      menú hasta entonces.
+- [ ] G26. Filtro de ubicación del job board: `where('location','==',
+    'Guadalajara')` contra datos "Guadalajara, Jalisco" → nunca coincide.
+      Fix: campo normalizado (`locationCity`) al guardar + filtro sobre él.
+
 ## Orden recomendado (actualizado 2026-10-19, tras A4/B6)
 
 Dev, en este orden y cada paso un PR con auto-merge:
@@ -187,10 +214,12 @@ Dev, en este orden y cada paso un PR con auto-merge:
    chromium en PR #119; falta (owner) hacerlo requerido en `main`.
 4. B5 (1 día): los 193 errores de ESLint restantes y quitar
    `continue-on-error` del lint.
-5. F19 → F20 → F21 (3–4 días) cuando haya eventos, mensajes de contacto o
+5. G23 → G24 → G26 (1–2 días): son flujos rotos en prod para cualquier
+   miembro; G25 es decisión de producto (lanzar foros u ocultarlos).
+6. F19 → F20 → F21 (3–4 días) cuando haya eventos, mensajes de contacto o
    un comunicado real que mandar; F22 solo si se decide conservar el centro
    de notificaciones.
-6. E16 (Vitest 5, Firebase Admin 14, Tailwind 4, Astro 7) después del
+7. E16 (Vitest 5, Firebase Admin 14, Tailwind 4, Astro 7) después del
    paso 3, cuando el e2e completo sea bloqueante y pueda detectar
    regresiones de los majors.
 
