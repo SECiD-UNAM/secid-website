@@ -608,7 +608,7 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
             type="checkbox"
             checked={selectedIds.has(member.uid)}
             onChange={() => toggleSelectRow(member.uid)}
-            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+            className="h-4 w-4 rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
             aria-label={`${tr(lang, 'Seleccionar', 'Select')} ${member.displayName}`}
           />
         ),
@@ -619,7 +619,7 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
         sortable: true,
         accessor: (member) => (
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
               {(member as unknown as { initials?: string }).initials ||
                 getInitials(member.displayName)}
             </div>
@@ -660,7 +660,7 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
                 handleRoleChange(member.uid, e.target.value as MemberRole)
               }
               disabled={isSaving}
-              className="rounded border-0 bg-transparent py-0.5 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:text-white"
+              className="rounded-sm border-0 bg-transparent py-0.5 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:text-white"
             >
               {ROLE_OPTIONS.map((r) => (
                 <option key={r} value={r}>
@@ -707,7 +707,7 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
                 handleStatusChange(member.uid, e.target.value as MemberStatus)
               }
               disabled={isSaving}
-              className="rounded border-0 bg-transparent py-0.5 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:text-white"
+              className="rounded-sm border-0 bg-transparent py-0.5 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:text-white"
             >
               {STATUS_OPTIONS.map((s) => (
                 <option key={s} value={s}>
@@ -930,7 +930,7 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
             <select
               value={bulkRole}
               onChange={(e) => setBulkRole(e.target.value as MemberRole)}
-              className="rounded border border-blue-400 bg-blue-700 px-2 py-1 text-xs text-white focus:outline-none focus:ring-1 focus:ring-white"
+              className="rounded-sm border border-blue-400 bg-blue-700 px-2 py-1 text-xs text-white focus:ring-1 focus:ring-white focus:outline-hidden"
             >
               {ROLE_OPTIONS.map((r) => (
                 <option key={r} value={r}>
@@ -940,7 +940,7 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
             </select>
             <button
               onClick={handleBulkRoleChange}
-              className="rounded bg-white px-3 py-1 text-xs font-medium text-blue-700 hover:bg-blue-50"
+              className="rounded-sm bg-white px-3 py-1 text-xs font-medium text-blue-700 hover:bg-blue-50"
             >
               {tr(lang, 'Cambiar Rol', 'Change Role')}
             </button>
@@ -952,7 +952,7 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
             <select
               value={bulkStatus}
               onChange={(e) => setBulkStatus(e.target.value as MemberStatus)}
-              className="rounded border border-blue-400 bg-blue-700 px-2 py-1 text-xs text-white focus:outline-none focus:ring-1 focus:ring-white"
+              className="rounded-sm border border-blue-400 bg-blue-700 px-2 py-1 text-xs text-white focus:ring-1 focus:ring-white focus:outline-hidden"
             >
               {STATUS_OPTIONS.map((s) => (
                 <option key={s} value={s}>
@@ -962,7 +962,7 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
             </select>
             <button
               onClick={handleBulkStatusChange}
-              className="rounded bg-white px-3 py-1 text-xs font-medium text-blue-700 hover:bg-blue-50"
+              className="rounded-sm bg-white px-3 py-1 text-xs font-medium text-blue-700 hover:bg-blue-50"
             >
               {tr(lang, 'Cambiar Estado', 'Change Status')}
             </button>
@@ -972,14 +972,14 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
 
           <button
             onClick={handleBulkApprove}
-            className="rounded bg-green-500 px-3 py-1 text-xs font-medium text-white hover:bg-green-600"
+            className="rounded-sm bg-green-500 px-3 py-1 text-xs font-medium text-white hover:bg-green-600"
           >
             {tr(lang, 'Aprobar', 'Approve')}
           </button>
 
           <button
             onClick={() => setSelectedIds(new Set())}
-            className="ml-auto rounded border border-blue-400 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
+            className="ml-auto rounded-sm border border-blue-400 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
           >
             {tr(lang, 'Limpiar Selección', 'Clear Selection')}
           </button>
@@ -1001,7 +1001,7 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
                   type="checkbox"
                   checked={allVisibleSelected}
                   onChange={toggleSelectAll}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
+                  className="h-4 w-4 rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
                   aria-label={tr(lang, 'Seleccionar todos', 'Select all')}
                 />
                 <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -1038,7 +1038,7 @@ export const AdminMembersTable: React.FC<Props> = ({ lang }) => {
 
       {/* Row error toasts */}
       {rowErrors.size > 0 && (
-        <div className="fixed bottom-4 right-4 z-50 space-y-2">
+        <div className="fixed right-4 bottom-4 z-50 space-y-2">
           {Array.from(rowErrors.entries()).map(([uid, message]) => (
             <div
               key={uid}

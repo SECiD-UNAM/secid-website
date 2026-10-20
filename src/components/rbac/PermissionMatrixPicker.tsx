@@ -174,7 +174,7 @@ const MatrixCell = React.memo(function MatrixCell({
         value={value}
         onChange={handleChange}
         disabled={disabled}
-        className={`w-full rounded border border-gray-300 px-1 py-0.5 text-xs focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400 disabled:cursor-not-allowed disabled:opacity-50 ${colorClass}`}
+        className={`w-full rounded-sm border border-gray-300 px-1 py-0.5 text-xs focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 ${colorClass}`}
       >
         <option value="">&mdash;</option>
         <option value="own">own</option>
@@ -247,7 +247,7 @@ export default function PermissionMatrixPicker({
               <tr>
                 <td
                   colSpan={OPERATIONS.length + 1}
-                  className="bg-gray-100 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-gray-500"
+                  className="bg-gray-100 px-3 py-1.5 text-xs font-bold tracking-wider text-gray-500 uppercase"
                 >
                   {category.label[lang]}
                 </td>

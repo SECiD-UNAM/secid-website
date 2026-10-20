@@ -162,9 +162,9 @@ function AssessmentHistoryContent({
       {/* Quick Stats */}
       {progress && (
         <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
-          <div className="rounded-lg bg-white p-6 shadow">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
                   <svg
                     className="h-5 w-5 text-blue-600"
@@ -190,9 +190,9 @@ function AssessmentHistoryContent({
             </div>
           </div>
 
-          <div className="rounded-lg bg-white p-6 shadow">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
                   <svg
                     className="h-5 w-5 text-green-600"
@@ -218,9 +218,9 @@ function AssessmentHistoryContent({
             </div>
           </div>
 
-          <div className="rounded-lg bg-white p-6 shadow">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100">
                   <svg
                     className="h-5 w-5 text-yellow-600"
@@ -246,9 +246,9 @@ function AssessmentHistoryContent({
             </div>
           </div>
 
-          <div className="rounded-lg bg-white p-6 shadow">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100">
                   <svg
                     className="h-5 w-5 text-purple-600"
@@ -387,7 +387,7 @@ function AttemptsTab({
   return (
     <div className="space-y-6">
       {/* Filters and Sorting */}
-      <div className="rounded-lg bg-white p-6 shadow">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -398,7 +398,7 @@ function AttemptsTab({
               onChange={(e) =>
                 setFilterStatus(e.target.value as typeof filterStatus)
               }
-              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-blue-500 focus:outline-hidden"
             >
               <option value="all">{t('history.filters.all', 'Todos')}</option>
               <option value="completed">
@@ -422,7 +422,7 @@ function AttemptsTab({
               onChange={(e) =>
                 setFilterCategory(e.target.value as typeof filterCategory)
               }
-              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-blue-500 focus:outline-hidden"
             >
               <option value="all">
                 {t('history.filters.allCategories', 'Todas las categorías')}
@@ -443,7 +443,7 @@ function AttemptsTab({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-blue-500 focus:outline-hidden"
             >
               <option value="date">{t('history.sort.date', 'Fecha')}</option>
               <option value="score">
@@ -462,7 +462,7 @@ function AttemptsTab({
             <select
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value as typeof sortOrder)}
-              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+              className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-blue-500 focus:outline-hidden"
             >
               <option value="desc">
                 {t('history.sort.desc', 'Descendente')}
@@ -490,7 +490,7 @@ function AttemptsTab({
           })}
         </div>
       ) : (
-        <div className="rounded-lg bg-white p-12 text-center shadow">
+        <div className="rounded-lg bg-white p-12 text-center shadow-sm">
           <svg
             className="mx-auto mb-4 h-12 w-12 text-gray-400"
             stroke="currentColor"
@@ -550,7 +550,7 @@ function AttemptCard({
   };
 
   return (
-    <div className="rounded-lg bg-white shadow transition-shadow duration-200 hover:shadow-md">
+    <div className="rounded-lg bg-white shadow-sm transition-shadow duration-200 hover:shadow-md">
       <div className="p-6">
         <div className="mb-4 flex items-center justify-between">
           <div>
@@ -578,7 +578,7 @@ function AttemptCard({
             </span>
 
             {assessment && (
-              <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium capitalize text-gray-800">
+              <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 capitalize">
                 {assessment.category.replace('_', ' ')}
               </span>
             )}
@@ -662,7 +662,7 @@ function AttemptCard({
             {!attempt.passed && onRetakeAssessment && (
               <button
                 onClick={() => onRetakeAssessment(attempt.assessmentId)}
-                className="rounded bg-blue-600 px-3 py-1 text-sm font-medium text-white hover:bg-blue-700"
+                className="rounded-sm bg-blue-600 px-3 py-1 text-sm font-medium text-white hover:bg-blue-700"
               >
                 {t('history.retake', 'Reintentar')}
               </button>
@@ -699,7 +699,7 @@ function CertificatesTab({
           ))}
         </div>
       ) : (
-        <div className="rounded-lg bg-white p-12 text-center shadow">
+        <div className="rounded-lg bg-white p-12 text-center shadow-sm">
           <svg
             className="mx-auto mb-4 h-12 w-12 text-gray-400"
             fill="currentColor"
@@ -739,8 +739,8 @@ function CertificateCard({
   const { t } = useTranslations();
 
   return (
-    <div className="overflow-hidden rounded-lg bg-white shadow transition-shadow duration-200 hover:shadow-md">
-      <div className="bg-gradient-to-r from-yellow-400 to-yellow-600 p-4">
+    <div className="overflow-hidden rounded-lg bg-white shadow-sm transition-shadow duration-200 hover:shadow-md">
+      <div className="bg-linear-to-r from-yellow-400 to-yellow-600 p-4">
         <div className="flex items-center justify-center">
           <svg
             className="h-12 w-12 text-white"
@@ -786,7 +786,7 @@ function CertificateCard({
           {certificate.skills.map((skill, index) => (
             <span
               key={index}
-              className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium capitalize text-blue-800"
+              className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 capitalize"
             >
               {skill.replace('_', ' ')}
             </span>
@@ -797,7 +797,7 @@ function CertificateCard({
           {onViewCertificate && (
             <button
               onClick={() => onViewCertificate(certificate.id)}
-              className="flex-1 rounded bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              className="flex-1 rounded-sm bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
             >
               {t('certificate.view', 'Ver certificado')}
             </button>
@@ -806,7 +806,7 @@ function CertificateCard({
           {certificate.shareableUrl && (
             <button
               onClick={() => window.open(certificate.shareableUrl, '_blank')}
-              className="flex-1 rounded bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700"
+              className="flex-1 rounded-sm bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700"
             >
               {t('certificate.share', 'Compartir')}
             </button>
@@ -842,7 +842,7 @@ function ProgressTab({ progress }: ProgressTabProps) {
   return (
     <div className="space-y-6">
       {/* Overall Progress */}
-      <div className="rounded-lg bg-white p-6 shadow">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
         <h3 className="mb-4 text-lg font-medium text-gray-900">
           {t('history.progress.overall', 'Progreso General')}
         </h3>
@@ -887,7 +887,7 @@ function ProgressTab({ progress }: ProgressTabProps) {
       </div>
 
       {/* Skill Levels */}
-      <div className="rounded-lg bg-white p-6 shadow">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
         <h3 className="mb-4 text-lg font-medium text-gray-900">
           {t('history.progress.skillLevels', 'Niveles de Habilidad')}
         </h3>
@@ -895,7 +895,7 @@ function ProgressTab({ progress }: ProgressTabProps) {
         <div className="space-y-4">
           {Object.entries(progress.skillLevels).map(([skill, level]) => (
             <div key={skill} className="flex items-center space-x-4">
-              <div className="w-32 text-sm font-medium capitalize text-gray-900">
+              <div className="w-32 text-sm font-medium text-gray-900 capitalize">
                 {skill.replace('_', ' ')}
               </div>
 
@@ -919,7 +919,7 @@ function ProgressTab({ progress }: ProgressTabProps) {
               </div>
 
               {progress.verifiedSkills.includes(skill as SkillCategory) && (
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <svg
                     className="h-5 w-5 text-green-600"
                     fill="currentColor"
@@ -939,7 +939,7 @@ function ProgressTab({ progress }: ProgressTabProps) {
       </div>
 
       {/* Achievement Summary */}
-      <div className="rounded-lg bg-white p-6 shadow">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
         <h3 className="mb-4 text-lg font-medium text-gray-900">
           {t('history.progress.achievements', 'Logros')}
         </h3>

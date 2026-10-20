@@ -47,7 +47,7 @@ function SessionCard({
 
   return (
     <div className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-700/40 dark:hover:bg-gray-700/60">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-amber-400 text-xs font-semibold text-white">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-primary-500 to-amber-400 text-xs font-semibold text-white">
         {partnerInitials}
       </div>
 

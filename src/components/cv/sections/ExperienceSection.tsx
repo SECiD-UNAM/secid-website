@@ -47,9 +47,9 @@ export function CvExperienceSection({
                     {exp.company}
                   </p>
                 </div>
-                <div className="flex flex-shrink-0 items-center gap-2">
+                <div className="flex shrink-0 items-center gap-2">
                   <span
-                    className="whitespace-nowrap text-sm"
+                    className="text-sm whitespace-nowrap"
                     style={{ color: 'var(--color-text-muted)' }}
                   >
                     {formatDateForDisplay(exp.startDate, labels._lang)} &ndash;{' '}
@@ -79,7 +79,7 @@ export function CvExperienceSection({
                     style={{ color: 'var(--color-text-muted)' }}
                   >
                     <span
-                      className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full"
+                      className="mt-1.5 h-1 w-1 shrink-0 rounded-full"
                       style={{ background: 'var(--color-border)' }}
                     />
                     <span>{exp.description}</span>

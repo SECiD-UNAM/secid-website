@@ -183,11 +183,11 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         <div className="flex flex-col items-center space-y-2 text-center">
           {/* Avatar with status */}
           <div className="relative">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-sm font-semibold text-white">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br from-primary-500 to-secondary-500 text-sm font-semibold text-white">
               {member.initials}
             </div>
             {member.isPremium && (
-              <div className="absolute -right-1 -top-1">
+              <div className="absolute -top-1 -right-1">
                 <StarIcon className="h-4 w-4 fill-current text-yellow-500" />
               </div>
             )}
@@ -211,7 +211,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           {/* Quick action */}
           <a
             href={`/${lang}/members/${member.slug || member.uid}`}
-            className="w-full rounded bg-primary-100 px-2 py-1 text-center text-xs text-primary-700 transition-colors hover:bg-primary-200 dark:bg-primary-900/20 dark:text-primary-400 dark:hover:bg-primary-900/40"
+            className="w-full rounded-sm bg-primary-100 px-2 py-1 text-center text-xs text-primary-700 transition-colors hover:bg-primary-200 dark:bg-primary-900/20 dark:text-primary-400 dark:hover:bg-primary-900/40"
           >
             {lang === 'es' ? 'Ver perfil' : 'View profile'}
           </a>
@@ -223,13 +223,13 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   // List view
   if (viewMode === 'list') {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white p-3 transition-all hover:shadow-md dark:border-gray-700 dark:bg-gray-800 sm:p-4">
+      <div className="rounded-lg border border-gray-200 bg-white p-3 transition-all hover:shadow-md sm:p-4 dark:border-gray-700 dark:bg-gray-800">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
           {/* Avatar + info row */}
           <div className="flex min-w-0 flex-1 items-start space-x-3 sm:space-x-4">
             {/* Avatar with status */}
-            <div className="relative flex-shrink-0">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-base font-semibold text-white sm:h-16 sm:w-16 sm:text-lg">
+            <div className="relative shrink-0">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br from-primary-500 to-secondary-500 text-base font-semibold text-white sm:h-16 sm:w-16 sm:text-lg">
                 {member.initials}
               </div>
             </div>
@@ -239,7 +239,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
                   <div className="flex items-center space-x-2">
-                    <h3 className="truncate text-base font-semibold text-gray-900 dark:text-white sm:text-lg">
+                    <h3 className="truncate text-base font-semibold text-gray-900 sm:text-lg dark:text-white">
                       <a
                         href={`/${lang}/members/${member.slug || member.uid}`}
                         className="transition-colors hover:text-primary-600 dark:hover:text-primary-400"
@@ -248,12 +248,12 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                       </a>
                     </h3>
                     {member.isPremium && (
-                      <StarIcon className="h-4 w-4 flex-shrink-0 fill-current text-yellow-500" />
+                      <StarIcon className="h-4 w-4 shrink-0 fill-current text-yellow-500" />
                     )}
                     {member?.portfolio?.certifications.some(
                       (c) => c.verified
                     ) && (
-                      <CheckBadgeIcon className="h-4 w-4 flex-shrink-0 text-blue-500" />
+                      <CheckBadgeIcon className="h-4 w-4 shrink-0 text-blue-500" />
                     )}
                   </div>
                   <p className="truncate text-sm text-gray-600 dark:text-gray-400">
@@ -285,7 +285,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                 {/* Match score */}
                 {showMatchScore && matchScore && (
                   <span
-                    className={`self-start whitespace-nowrap rounded-full px-2 py-1 text-xs font-semibold ${getMatchScoreColor(matchScore)}`}
+                    className={`self-start rounded-full px-2 py-1 text-xs font-semibold whitespace-nowrap ${getMatchScoreColor(matchScore)}`}
                   >
                     {matchScore}% {lang === 'es' ? 'compatible' : 'match'}
                   </span>
@@ -294,7 +294,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
               {/* Bio — hidden on very small screens */}
               {member.profile.bio && (
-                <p className="mt-2 line-clamp-2 hidden text-sm text-gray-700 dark:text-gray-300 sm:block">
+                <p className="mt-2 line-clamp-2 hidden text-sm text-gray-700 sm:block dark:text-gray-300">
                   {member.profile.bio}
                 </p>
               )}
@@ -304,7 +304,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                 {member.featuredSkills.slice(0, 3).map((skill) => (
                   <span
                     key={skill}
-                    className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+                    className="rounded-sm bg-gray-100 px-2 py-0.5 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300"
                   >
                     {skill}
                   </span>
@@ -319,7 +319,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           </div>
 
           {/* Actions — full-width row on mobile, side column on larger screens */}
-          <div className="flex items-center space-x-2 sm:ml-auto sm:flex-shrink-0">
+          <div className="flex items-center space-x-2 sm:ml-auto sm:shrink-0">
             {!isOwnProfile && currentUser && (
               <>
                 {visibility.allowConnectionRequests &&
@@ -362,7 +362,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
             <a
               href={`/${lang}/members/${member.slug || member.uid}`}
-              className="flex-1 whitespace-nowrap rounded-lg bg-primary-600 px-3 py-2 text-center text-sm text-white transition-colors hover:bg-primary-700 sm:flex-initial"
+              className="flex-1 rounded-lg bg-primary-600 px-3 py-2 text-center text-sm whitespace-nowrap text-white transition-colors hover:bg-primary-700 sm:flex-initial"
             >
               {lang === 'es' ? 'Ver perfil' : 'View profile'}
             </a>
@@ -374,7 +374,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
   // Grid view (default)
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 transition-all hover:shadow-lg dark:border-gray-700 dark:bg-gray-800 sm:p-6">
+    <div className="rounded-lg border border-gray-200 bg-white p-4 transition-all hover:shadow-lg sm:p-6 dark:border-gray-700 dark:bg-gray-800">
       {/* Header with match score and premium badge */}
       <div className="mb-4 flex items-start justify-between">
         {showMatchScore && matchScore && (
@@ -429,12 +429,12 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       {/* Avatar and basic info */}
       <div className="mb-4 flex flex-col items-center text-center">
         <div className="relative mb-3">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-lg font-semibold text-white sm:h-20 sm:w-20 sm:text-xl">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-primary-500 to-secondary-500 text-lg font-semibold text-white sm:h-20 sm:w-20 sm:text-xl">
             {member.initials}
           </div>
         </div>
 
-        <h3 className="mb-1 text-base font-semibold text-gray-900 dark:text-white sm:text-lg">
+        <h3 className="mb-1 text-base font-semibold text-gray-900 sm:text-lg dark:text-white">
           <a
             href={`/${lang}/members/${member.slug || member.uid}`}
             className="transition-colors hover:text-primary-600 dark:hover:text-primary-400"
@@ -508,7 +508,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
           {member.featuredSkills.slice(0, 5).map((skill) => (
             <span
               key={skill}
-              className="rounded bg-primary-100 px-2 py-1 text-xs text-primary-700 dark:bg-primary-900/20 dark:text-primary-400"
+              className="rounded-sm bg-primary-100 px-2 py-1 text-xs text-primary-700 dark:bg-primary-900/20 dark:text-primary-400"
             >
               {skill}
             </span>
@@ -525,28 +525,28 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       {(member.activity.totalConnections > 0 ||
         member.activity.profileViews > 0 ||
         member.activity.reputation > 0) && (
-        <div className="mb-3 flex justify-around border-t border-gray-200 py-2 text-center dark:border-gray-700 sm:mb-4 sm:py-3">
+        <div className="mb-3 flex justify-around border-t border-gray-200 py-2 text-center sm:mb-4 sm:py-3 dark:border-gray-700">
           <div>
-            <div className="text-base font-semibold text-gray-900 dark:text-white sm:text-lg">
+            <div className="text-base font-semibold text-gray-900 sm:text-lg dark:text-white">
               {member.activity.totalConnections}
             </div>
-            <div className="text-[10px] text-gray-500 dark:text-gray-400 sm:text-xs">
+            <div className="text-[10px] text-gray-500 sm:text-xs dark:text-gray-400">
               {lang === 'es' ? 'Conexiones' : 'Connections'}
             </div>
           </div>
           <div>
-            <div className="text-base font-semibold text-gray-900 dark:text-white sm:text-lg">
+            <div className="text-base font-semibold text-gray-900 sm:text-lg dark:text-white">
               {member.activity.profileViews}
             </div>
-            <div className="text-[10px] text-gray-500 dark:text-gray-400 sm:text-xs">
+            <div className="text-[10px] text-gray-500 sm:text-xs dark:text-gray-400">
               {lang === 'es' ? 'Vistas' : 'Views'}
             </div>
           </div>
           <div>
-            <div className="text-base font-semibold text-gray-900 dark:text-white sm:text-lg">
+            <div className="text-base font-semibold text-gray-900 sm:text-lg dark:text-white">
               {member.activity.reputation}
             </div>
-            <div className="text-[10px] text-gray-500 dark:text-gray-400 sm:text-xs">
+            <div className="text-[10px] text-gray-500 sm:text-xs dark:text-gray-400">
               {lang === 'es' ? 'Reputacion' : 'Reputation'}
             </div>
           </div>

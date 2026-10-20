@@ -164,7 +164,7 @@ export function SalaryByExperience({ byExperience, lang = 'es' }: Props) {
 
             {/* Box (p25 to p75) */}
             <div
-              className="absolute top-1/2 -translate-y-1/2 rounded"
+              className="absolute top-1/2 -translate-y-1/2 rounded-sm"
               style={{
                 left: `${((d.p25 - d.p10) / (d.p90 - d.p10)) * 100}%`,
                 width: `${((d.p75 - d.p25) / (d.p90 - d.p10)) * 100}%`,
@@ -205,13 +205,13 @@ export function SalaryByExperience({ byExperience, lang = 'es' }: Props) {
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-4 border-t border-gray-200 pt-3 text-[10px] text-gray-400 dark:border-gray-700 dark:text-gray-500">
         <span className="flex items-center gap-1">
-          <div className="h-3 w-3 rounded border-2 border-gray-400 bg-gray-400/25" />
+          <div className="h-3 w-3 rounded-sm border-2 border-gray-400 bg-gray-400/25" />
           {lang === 'es'
             ? 'P25–P75 (rango intercuartil)'
             : 'P25–P75 (interquartile range)'}
         </span>
         <span className="flex items-center gap-1">
-          <div className="h-3 w-1 rounded bg-gray-400" />
+          <div className="h-3 w-1 rounded-sm bg-gray-400" />
           {lang === 'es' ? 'Mediana' : 'Median'}
         </span>
         <span className="flex items-center gap-1">

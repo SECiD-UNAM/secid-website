@@ -99,7 +99,7 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 transform text-gray-500 dark:text-gray-400"
+                className="absolute top-1/2 right-2 -translate-y-1/2 transform text-gray-500 dark:text-gray-400"
               >
                 {showPassword ? (
                   <EyeSlashIcon className="h-5 w-5" />

@@ -47,7 +47,7 @@ function StatusPill({
 export default function AnnouncementHistory({ lang, items, loading }: Props) {
   return (
     <section
-      className="rounded-lg bg-white p-6 shadow dark:bg-gray-800"
+      className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800"
       data-testid="announcement-history"
     >
       <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
@@ -61,7 +61,7 @@ export default function AnnouncementHistory({ lang, items, loading }: Props) {
       {items.length > 0 && (
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
-            <thead className="text-left text-xs uppercase text-gray-500 dark:text-gray-400">
+            <thead className="text-left text-xs text-gray-500 uppercase dark:text-gray-400">
               <tr>
                 <th className="py-2 pr-4">{t('colSubject', lang)}</th>
                 <th className="py-2 pr-4">{t('colDate', lang)}</th>

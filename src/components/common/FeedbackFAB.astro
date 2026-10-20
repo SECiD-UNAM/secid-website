@@ -84,20 +84,14 @@ const tr = {
 
 <!-- FAB button -->
 <div
-  class="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-5 z-50 h-12 w-12 sm:bottom-6"
+  class="fixed right-5 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-50 h-12 w-12 sm:bottom-6"
 >
   <button
     id="secid-report-btn"
     type="button"
     aria-label={tr.button_label}
     title={tr.button_label}
-    class="relative flex h-12 w-12 items-center justify-center rounded-full bg-white
-           text-primary-600 shadow-lg ring-1 ring-primary-500/20
-           transition-all hover:scale-105
-           hover:bg-primary-50 hover:shadow-xl hover:ring-primary-500/40
-           focus:outline-none focus:ring-2
-           focus:ring-primary-500 dark:bg-gray-800 dark:text-primary-400
-           dark:ring-primary-500/30 dark:hover:bg-gray-700 dark:hover:ring-primary-500/50"
+    class="relative flex h-12 w-12 items-center justify-center rounded-full bg-white text-primary-600 shadow-lg ring-1 ring-primary-500/20 transition-all hover:scale-105 hover:bg-primary-50 hover:shadow-xl hover:ring-primary-500/40 focus:ring-2 focus:ring-primary-500 focus:outline-hidden dark:bg-gray-800 dark:text-primary-400 dark:ring-primary-500/30 dark:hover:bg-gray-700 dark:hover:ring-primary-500/50"
   >
     <svg
       class="h-5 w-5"
@@ -118,10 +112,7 @@ const tr = {
     <span
       id="secid-report-badge"
       aria-label={tr.badge_errors_label}
-      class="pointer-events-none absolute -right-1 -top-1 flex hidden h-[18px] min-w-[18px]
-             items-center justify-center rounded-full bg-red-600
-             px-1 text-[10px] font-bold
-             text-white ring-2 ring-white dark:ring-gray-800"
+      class="pointer-events-none absolute -top-1 -right-1 flex hidden h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white ring-2 ring-white dark:ring-gray-800"
     ></span>
   </button>
 </div>
@@ -144,9 +135,7 @@ const tr = {
   data-l-diagnostics-none={tr.diagnostics_none}
   data-l-copy={tr.copy_diagnostics}
   data-l-copied={tr.copied}
-  class="max-h-[88vh] w-[min(92vw,540px)] overflow-hidden rounded-xl border border-gray-200
-         bg-white p-0 text-gray-900 shadow-2xl
-         backdrop:bg-black/60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+  class="max-h-[88vh] w-[min(92vw,540px)] overflow-hidden rounded-xl border border-gray-200 bg-white p-0 text-gray-900 shadow-2xl backdrop:bg-black/60 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
 >
   <form method="dialog" class="flex max-h-[88vh] flex-col">
     <!-- Header -->
@@ -158,7 +147,7 @@ const tr = {
         type="button"
         id="secid-report-close"
         aria-label={tr.cancel}
-        class="flex min-h-[44px] min-w-[44px] items-center justify-center rounded p-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+        class="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm p-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
       >
         <svg
           class="h-5 w-5"
@@ -184,9 +173,7 @@ const tr = {
         >
         <select
           id="secid-report-type"
-          class="w-full rounded-lg border border-gray-300 bg-white
-                 px-3 py-2 text-sm focus:outline-none focus:ring-2
-                 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+          class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700"
         >
           <option value="bug">{tr.type_bug}</option>
           <option value="feature">{tr.type_feature}</option>
@@ -205,9 +192,7 @@ const tr = {
           id="secid-report-title"
           maxlength="120"
           placeholder={tr.title_placeholder}
-          class="w-full rounded-lg border border-gray-300 bg-white
-                 px-3 py-2 text-sm focus:outline-none focus:ring-2
-                 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+          class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700"
         />
       </div>
 
@@ -221,9 +206,7 @@ const tr = {
           id="secid-report-description"
           rows="4"
           placeholder={tr.description_placeholder}
-          class="w-full resize-y rounded-lg border border-gray-300
-                 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2
-                 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+          class="w-full resize-y rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700"
         ></textarea>
       </div>
 
@@ -237,9 +220,7 @@ const tr = {
             id="secid-report-steps"
             rows="3"
             placeholder={tr.steps_placeholder}
-            class="w-full resize-y rounded-lg border border-gray-300
-                   bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2
-                   focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+            class="w-full resize-y rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700"
           ></textarea>
         </div>
         <div>
@@ -251,9 +232,7 @@ const tr = {
             id="secid-report-expected"
             rows="2"
             placeholder={tr.expected_placeholder}
-            class="w-full resize-y rounded-lg border border-gray-300
-                   bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2
-                   focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+            class="w-full resize-y rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700"
           ></textarea>
         </div>
       </div>
@@ -261,7 +240,7 @@ const tr = {
       <!-- Diagnostics accordion -->
       <details id="secid-report-diagnostics" class="group">
         <summary
-          class="flex cursor-pointer select-none items-center gap-2 py-1 text-xs font-medium text-gray-500 dark:text-gray-400"
+          class="flex cursor-pointer items-center gap-2 py-1 text-xs font-medium text-gray-500 select-none dark:text-gray-400"
         >
           <svg
             class="h-3.5 w-3.5 transition-transform group-open:rotate-90"
@@ -279,47 +258,42 @@ const tr = {
           {tr.diagnostics_toggle}
           <span
             id="secid-report-diag-count"
-            class="inline-flex hidden h-[18px] min-w-[18px] items-center
-                   justify-center rounded-full bg-red-100 px-1
-                   text-[10px] font-bold text-red-700 dark:bg-red-900/30 dark:text-red-300"
+            class="hidden inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-100 px-1 text-[10px] font-bold text-red-700 dark:bg-red-900/30 dark:text-red-300"
             >0</span
           >
         </summary>
         <div class="mt-2 space-y-3">
           <div>
             <p
-              class="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400"
+              class="mb-1 text-[11px] font-semibold tracking-wide text-gray-400 uppercase"
             >
               {tr.diagnostics_env}
             </p>
             <pre
               id="secid-report-env"
-              class="max-h-28 overflow-auto whitespace-pre-wrap break-all rounded-lg border
-                     border-gray-200 bg-gray-50 p-2 text-xs dark:border-gray-700 dark:bg-gray-900/50">
+              class="max-h-28 overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-2 text-xs break-all whitespace-pre-wrap dark:border-gray-700 dark:bg-gray-900/50">
             </pre>
           </div>
           <div>
             <p
-              class="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400"
+              class="mb-1 text-[11px] font-semibold tracking-wide text-gray-400 uppercase"
             >
               {tr.diagnostics_console}
             </p>
             <pre
               id="secid-report-console"
-              class="max-h-32 overflow-auto whitespace-pre-wrap break-all rounded-lg border
-                     border-gray-200 bg-gray-50 p-2 text-xs dark:border-gray-700 dark:bg-gray-900/50">
+              class="max-h-32 overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-2 text-xs break-all whitespace-pre-wrap dark:border-gray-700 dark:bg-gray-900/50">
             </pre>
           </div>
           <div>
             <p
-              class="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400"
+              class="mb-1 text-[11px] font-semibold tracking-wide text-gray-400 uppercase"
             >
               {tr.diagnostics_network}
             </p>
             <pre
               id="secid-report-network"
-              class="max-h-32 overflow-auto whitespace-pre-wrap break-all rounded-lg border
-                     border-gray-200 bg-gray-50 p-2 text-xs dark:border-gray-700 dark:bg-gray-900/50">
+              class="max-h-32 overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-2 text-xs break-all whitespace-pre-wrap dark:border-gray-700 dark:bg-gray-900/50">
             </pre>
           </div>
         </div>
@@ -328,18 +302,13 @@ const tr = {
 
     <!-- Footer -->
     <footer
-      class="sticky bottom-0 z-10 flex items-center justify-between gap-2 border-t
-                   border-gray-200 bg-white px-5
-                   py-3 dark:border-gray-700 dark:bg-gray-800"
+      class="sticky bottom-0 z-10 flex items-center justify-between gap-2 border-t border-gray-200 bg-white px-5 py-3 dark:border-gray-700 dark:bg-gray-800"
     >
       <button
         type="button"
         id="secid-report-copy"
         title={tr.copy_diagnostics}
-        class="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-3
-               py-2 text-sm
-               font-medium text-gray-600
-               transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+        class="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
       >
         <svg
           class="h-4 w-4"
@@ -359,18 +328,14 @@ const tr = {
         <button
           type="button"
           id="secid-report-cancel"
-          class="min-h-[44px] rounded-lg border border-gray-300 px-4 py-2
-                 text-sm font-medium transition-colors
-                 hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700"
+          class="min-h-[44px] rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700"
         >
           {tr.cancel}
         </button>
         <button
           type="button"
           id="secid-report-submit"
-          class="min-h-[44px] rounded-lg bg-primary-600 px-4 py-2 text-sm
-                 font-semibold text-white transition-colors
-                 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          class="min-h-[44px] rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-700 focus:ring-2 focus:ring-primary-500 focus:outline-hidden"
         >
           {tr.open_on_github}
         </button>

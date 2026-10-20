@@ -159,7 +159,7 @@ export default function ResourceSearch({
   });
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-xs dark:border-gray-700 dark:bg-gray-800">
       {/* Main Search Bar */}
       <div className="mb-4 flex gap-4">
         <div className="relative flex-1">
@@ -170,9 +170,9 @@ export default function ResourceSearch({
             }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-gray-900 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+            className="w-full rounded-lg border border-gray-300 bg-white py-2 pr-4 pl-10 text-gray-900 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
           />
-          <div className="absolute left-3 top-2.5">
+          <div className="absolute top-2.5 left-3">
             <svg
               className="h-5 w-5 text-gray-400"
               fill="none"
@@ -188,7 +188,7 @@ export default function ResourceSearch({
             </svg>
           </div>
           {loading && (
-            <div className="absolute right-3 top-2.5">
+            <div className="absolute top-2.5 right-3">
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
             </div>
           )}
@@ -221,7 +221,7 @@ export default function ResourceSearch({
                 direction: direction as 'asc' | 'desc',
               });
             }}
-            className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+            className="rounded-sm border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
           >
             <option value="relevance-desc">
               {t?.resources?.sortOptions?.relevance || 'Relevance'}
@@ -368,7 +368,7 @@ export default function ResourceSearch({
                     e.target.value ? [e.target.value] : undefined
                   )
                 }
-                className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
               >
                 <option value="">{t?.common?.all || 'All'}</option>
                 <option value="es">{t?.languages?.spanish || 'Spanish'}</option>
@@ -392,7 +392,7 @@ export default function ResourceSearch({
                     e.target.value ? Number(e.target.value) : undefined
                   )
                 }
-                className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
               >
                 <option value="">{t?.common?.any || 'Any'}</option>
                 <option value="4">4+ ⭐⭐⭐⭐</option>
@@ -417,7 +417,7 @@ export default function ResourceSearch({
                       : e.target.value === 'true'
                   )
                 }
-                className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
               >
                 <option value="">{t?.common?.all || 'All'}</option>
                 <option value="true">
@@ -461,7 +461,7 @@ export default function ResourceSearch({
                         : undefined
                     );
                   }}
-                  className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                  className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                 />
               </div>
               <div>
@@ -489,7 +489,7 @@ export default function ResourceSearch({
                         : undefined
                     );
                   }}
-                  className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                  className="w-full rounded-sm border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                 />
               </div>
             </div>

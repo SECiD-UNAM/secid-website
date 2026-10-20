@@ -203,8 +203,8 @@ const ForumCategory: React.FC<ForumCategoryProps> = ({
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse">
-            <div className="mb-4 h-8 w-1/4 rounded bg-gray-300 dark:bg-gray-700"></div>
-            <div className="mb-8 h-4 w-1/2 rounded bg-gray-300 dark:bg-gray-700"></div>
+            <div className="mb-4 h-8 w-1/4 rounded-sm bg-gray-300 dark:bg-gray-700"></div>
+            <div className="mb-8 h-4 w-1/2 rounded-sm bg-gray-300 dark:bg-gray-700"></div>
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
@@ -310,13 +310,13 @@ const ForumCategory: React.FC<ForumCategoryProps> = ({
             {/* Search */}
             <form onSubmit={handleSearch} className="max-w-md flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+                <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t.forum.searchPlaceholder}
-                  className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-gray-900 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full rounded-lg border border-gray-300 bg-white py-2 pr-4 pl-10 text-gray-900 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                 />
               </div>
             </form>
@@ -370,7 +370,7 @@ const ForumCategory: React.FC<ForumCategoryProps> = ({
                         e.target.value as 'all' | 'solved' | 'unsolved'
                       )
                     }
-                    className="rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    className="rounded-sm border border-gray-300 bg-white px-2 py-1 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                   >
                     <option value="all">All</option>
                     <option value="solved">{t.forum.topic.solved}</option>
@@ -383,7 +383,7 @@ const ForumCategory: React.FC<ForumCategoryProps> = ({
                     type="checkbox"
                     checked={filterPinned}
                     onChange={(e) => setFilterPinned(e.target.checked)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
+                    className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
                   />
                   <span className="text-gray-700 dark:text-gray-300">
                     {t.forum.topic.pinned} only
@@ -413,7 +413,7 @@ const ForumCategory: React.FC<ForumCategoryProps> = ({
                 {[...Array(5)].map((_, i) => (
                   <div
                     key={i}
-                    className="h-16 rounded bg-gray-300 dark:bg-gray-700"
+                    className="h-16 rounded-sm bg-gray-300 dark:bg-gray-700"
                   ></div>
                 ))}
               </div>
@@ -448,7 +448,7 @@ const ForumCategory: React.FC<ForumCategoryProps> = ({
                 >
                   <div className="flex items-start gap-4">
                     {/* Avatar */}
-                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 dark:bg-gray-600">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-300 dark:bg-gray-600">
                       {topic.authorAvatar ? (
                         <img
                           src={topic.authorAvatar}
@@ -467,13 +467,13 @@ const ForumCategory: React.FC<ForumCategoryProps> = ({
                           {/* Title and Status Icons */}
                           <div className="mb-1 flex items-center gap-2">
                             {topic.isPinned && (
-                              <Pin className="h-4 w-4 flex-shrink-0 text-yellow-500" />
+                              <Pin className="h-4 w-4 shrink-0 text-yellow-500" />
                             )}
                             {topic.isLocked && (
-                              <Lock className="h-4 w-4 flex-shrink-0 text-red-500" />
+                              <Lock className="h-4 w-4 shrink-0 text-red-500" />
                             )}
                             {topic.isSolved && (
-                              <CheckCircle className="h-4 w-4 flex-shrink-0 text-green-500" />
+                              <CheckCircle className="h-4 w-4 shrink-0 text-green-500" />
                             )}
 
                             <a
@@ -496,7 +496,7 @@ const ForumCategory: React.FC<ForumCategoryProps> = ({
                                   {topic.tags.slice(0, 3).map((tag) => (
                                     <span
                                       key={tag}
-                                      className="rounded bg-gray-100 px-2 py-1 text-xs dark:bg-gray-600"
+                                      className="rounded-sm bg-gray-100 px-2 py-1 text-xs dark:bg-gray-600"
                                     >
                                       {tag}
                                     </span>
@@ -529,7 +529,7 @@ const ForumCategory: React.FC<ForumCategoryProps> = ({
                         </div>
 
                         {/* Last Activity */}
-                        <div className="ml-4 flex-shrink-0 text-right text-sm text-gray-500 dark:text-gray-400">
+                        <div className="ml-4 shrink-0 text-right text-sm text-gray-500 dark:text-gray-400">
                           <div className="mb-1 flex items-center gap-1">
                             <Clock className="h-3 w-3" />
                             {formatDate(topic.lastActivity.timestamp)}

@@ -316,7 +316,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       <form onSubmit={handleSubmit} className="relative">
         <div
           className={clsx(
-            'relative flex w-full items-center rounded-lg border border-gray-300 bg-white shadow-sm transition-all duration-200',
+            'relative flex w-full items-center rounded-lg border border-gray-300 bg-white shadow-xs transition-all duration-200',
             'focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20',
             'hover:border-gray-400',
             sizeClasses[size]
@@ -342,7 +342,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
               t('search.placeholder', 'Search jobs, events, forums...')
             }
             className={clsx(
-              'flex-1 border-0 bg-transparent px-3 py-0 placeholder-gray-500 focus:outline-none focus:ring-0',
+              'flex-1 border-0 bg-transparent px-3 py-0 placeholder-gray-500 focus:ring-0 focus:outline-hidden',
               sizeClasses[size]
             )}
             autoComplete="off"
@@ -399,7 +399,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             disabled={!query.trim()}
             className={clsx(
               'flex items-center justify-center rounded-r-lg bg-blue-600 px-4 py-0 text-white transition-all duration-200',
-              'hover:bg-blue-700 focus:bg-blue-700 focus:outline-none',
+              'hover:bg-blue-700 focus:bg-blue-700 focus:outline-hidden',
               'disabled:cursor-not-allowed disabled:bg-gray-300',
               sizeClasses[size]
             )}
@@ -413,7 +413,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         {showSuggestions && suggestions.length > 0 && (
           <div
             ref={suggestionsRef}
-            className="absolute left-0 right-0 top-full z-50 mt-1 max-h-80 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg"
+            className="absolute top-full right-0 left-0 z-50 mt-1 max-h-80 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg"
           >
             <div className="py-2">
               {suggestions.map((suggestion, index) => (
@@ -423,7 +423,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                   onClick={() => handleSuggestionClick(suggestion)}
                   className={clsx(
                     'flex w-full items-center space-x-3 px-4 py-3 text-left transition-colors',
-                    'hover:bg-gray-50 focus:bg-gray-50 focus:outline-none',
+                    'hover:bg-gray-50 focus:bg-gray-50 focus:outline-hidden',
                     selectedSuggestion === index &&
                       'border-r-2 border-blue-500 bg-blue-50'
                   )}
@@ -440,7 +440,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                       {suggestion.text}
                     </div>
                     {suggestion.category && (
-                      <div className="text-xs capitalize text-gray-500">
+                      <div className="text-xs text-gray-500 capitalize">
                         {suggestion.category}
                       </div>
                     )}

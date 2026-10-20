@@ -88,7 +88,7 @@ export const PersonalTab: React.FC<PersonalTabProps> = ({
                 <UserCircleIcon className="h-16 w-16 text-gray-400" />
               </div>
             )}
-            <label className="absolute bottom-0 right-0 cursor-pointer rounded-full bg-primary-600 p-1 hover:bg-primary-700">
+            <label className="absolute right-0 bottom-0 cursor-pointer rounded-full bg-primary-600 p-1 hover:bg-primary-700">
               <CameraIcon className="h-5 w-5 text-white" />
               <input
                 type="file"

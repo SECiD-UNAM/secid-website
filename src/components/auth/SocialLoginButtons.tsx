@@ -217,22 +217,13 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
         <button
           key={provider.id}
           type="button"
-          className={`
-            inline-flex w-full items-center justify-center
-            rounded-lg px-6 py-3 text-lg font-medium
-            ${provider.bgColor}
-            ${provider.textColor}
-            shadow-sm transition-all
-            duration-200 hover:shadow-md
-            focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2
-            disabled:cursor-not-allowed disabled:opacity-50
-          `}
+          className={`inline-flex w-full items-center justify-center rounded-lg px-6 py-3 text-lg font-medium ${provider.bgColor} ${provider.textColor} shadow-xs transition-all duration-200 hover:shadow-md focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50`}
           onClick={() => handleProviderSignIn(provider.id)}
           disabled={disabled || loading !== null}
         >
           {loading === provider.id ? (
             <svg
-              className="-ml-1 mr-2 h-5 w-5 animate-spin text-current"
+              className="mr-2 -ml-1 h-5 w-5 animate-spin text-current"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -252,7 +243,7 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
               />
             </svg>
           ) : (
-            <span className="mr-3 flex-shrink-0">{provider.icon}</span>
+            <span className="mr-3 shrink-0">{provider.icon}</span>
           )}
           <span>{getButtonText(provider.name)}</span>
         </button>

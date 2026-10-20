@@ -196,12 +196,12 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="animate-pulse rounded-xl bg-white shadow dark:border dark:border-gray-700/30 dark:bg-gray-800"
+            className="animate-pulse rounded-xl bg-white shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800"
           >
             <div className="h-48 rounded-t-xl bg-gray-200 dark:bg-gray-700"></div>
             <div className="p-6">
-              <div className="mb-2 h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
-              <div className="h-3 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
+              <div className="mb-2 h-4 w-3/4 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
+              <div className="h-3 w-1/2 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
             </div>
           </div>
         ))}
@@ -211,7 +211,7 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
 
   if (events.length === 0) {
     return (
-      <div className="rounded-xl bg-white p-6 text-center shadow dark:border dark:border-gray-700/30 dark:bg-gray-800">
+      <div className="rounded-xl bg-white p-6 text-center shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
         <CalendarIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
         <p className="text-gray-500 dark:text-gray-400">
           {lang === 'es' ? 'No hay eventos próximos' : 'No upcoming events'}
@@ -231,14 +231,14 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
       {events.map((event) => (
         <div
           key={event['id']}
-          className="rounded-xl bg-white shadow transition-all hover:-translate-y-1 hover:shadow-lg dark:border dark:border-gray-700/30 dark:bg-gray-800"
+          className="rounded-xl bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg dark:border dark:border-gray-700/30 dark:bg-gray-800"
         >
           {/* Event Image or Placeholder */}
-          <div className="relative h-48 rounded-t-lg bg-gradient-to-br from-primary-500 to-primary-700">
+          <div className="relative h-48 rounded-t-lg bg-linear-to-br from-primary-500 to-primary-700">
             <div className="absolute inset-0 flex items-center justify-center">
               <CalendarIcon className="h-20 w-20 text-white/20" />
             </div>
-            <div className="absolute left-4 top-4">
+            <div className="absolute top-4 left-4">
               <span
                 className={`rounded-full px-3 py-1 text-xs font-semibold ${getEventTypeColor(event['type'])}`}
               >
@@ -246,7 +246,7 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
               </span>
             </div>
             {event.isRegistered && (
-              <div className="absolute right-4 top-4">
+              <div className="absolute top-4 right-4">
                 <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700 dark:bg-green-900/20 dark:text-green-400">
                   {lang === 'es' ? 'Registrado' : 'Registered'}
                 </span>
@@ -303,7 +303,7 @@ export const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
               ) : (
                 <a
                   href={`/${lang}/dashboard/events/${event['id']}`}
-                  className="block w-full rounded-lg bg-gradient-to-r from-primary-500 to-primary-600 px-4 py-2 text-center text-white transition-all hover:from-primary-600 hover:to-primary-700 hover:shadow-glow-sm"
+                  className="block w-full rounded-lg bg-linear-to-r from-primary-500 to-primary-600 px-4 py-2 text-center text-white transition-all hover:from-primary-600 hover:to-primary-700 hover:shadow-glow-sm"
                 >
                   {lang === 'es' ? 'Registrarse' : 'Register'}
                 </a>

@@ -159,7 +159,7 @@ export const EcosystemMap: React.FC<EcosystemMapProps> = ({
               <div className="text-xl font-bold text-primary-600 dark:text-primary-400">
                 {value}
               </div>
-              <div className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+              <div className="text-[10px] font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
                 {label}
               </div>
             </div>
@@ -212,7 +212,7 @@ export const EcosystemMap: React.FC<EcosystemMapProps> = ({
                 }}
               >
                 <span
-                  className="text-[11px] font-bold uppercase tracking-wider"
+                  className="text-[11px] font-bold tracking-wider uppercase"
                   style={{ color }}
                 >
                   {industry}
@@ -293,7 +293,7 @@ export const EcosystemMap: React.FC<EcosystemMapProps> = ({
       {/* Hover tooltip */}
       {hoveredCompany && (
         <div
-          className="pointer-events-none absolute z-50 min-w-[180px] max-w-[260px] rounded-xl border border-gray-200 bg-white p-3 shadow-xl dark:border-gray-600 dark:bg-slate-800"
+          className="pointer-events-none absolute z-50 max-w-[260px] min-w-[180px] rounded-xl border border-gray-200 bg-white p-3 shadow-xl dark:border-gray-600 dark:bg-slate-800"
           style={{
             left: tooltipPos.x,
             top: tooltipPos.y,

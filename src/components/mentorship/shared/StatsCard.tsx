@@ -28,10 +28,10 @@ function StatsCard({
   const accentClass = ACCENT_CLASSES[accent];
 
   return (
-    <div className="rounded-xl bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border dark:border-gray-700/30 dark:bg-gray-800">
+    <div className="rounded-xl bg-white p-5 shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md dark:border dark:border-gray-700/30 dark:bg-gray-800">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <p className="text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
             {label}
           </p>
           <p className={`mt-1 text-2xl font-bold ${accentClass}`}>{value}</p>

@@ -68,7 +68,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
 
 function CardWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-xl bg-white p-6 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+    <div className="rounded-xl bg-white p-6 shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
       {children}
     </div>
   );
@@ -76,7 +76,7 @@ function CardWrapper({ children }: { children: React.ReactNode }) {
 
 function EmptyState() {
   return (
-    <div className="rounded-xl bg-white py-12 text-center shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+    <div className="rounded-xl bg-white py-12 text-center shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
       <svg
         className="mx-auto mb-3 h-10 w-10 text-gray-300 dark:text-gray-600"
         fill="none"
@@ -124,7 +124,7 @@ function MatchSelector({
             className="flex w-full items-center justify-between rounded-lg bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100 dark:bg-gray-700/40 dark:hover:bg-gray-700/60"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-amber-400 text-xs font-bold text-white">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-primary-500 to-amber-400 text-xs font-bold text-white">
                 {match.id.slice(0, 2).toUpperCase()}
               </div>
               <div>
@@ -307,7 +307,7 @@ function MentorshipSessionsTab({
           {/* Upcoming */}
           {upcoming.length > 0 && (
             <div>
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <h3 className="mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                 Upcoming
               </h3>
               <div className="space-y-2">
@@ -321,7 +321,7 @@ function MentorshipSessionsTab({
           {/* Past */}
           {past.length > 0 && (
             <div>
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <h3 className="mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                 Past
               </h3>
               <div className="space-y-2">

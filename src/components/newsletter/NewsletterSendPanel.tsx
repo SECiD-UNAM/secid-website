@@ -130,7 +130,7 @@ export default function NewsletterSendPanel({ lang, issue, onSent }: Props) {
 
   return (
     <section
-      className="mb-6 rounded-lg bg-white p-6 shadow dark:bg-gray-800"
+      className="mb-6 rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800"
       data-testid="newsletter-send-panel"
     >
       <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">

@@ -350,14 +350,14 @@ export const EventDetail: React.FC<EventDetailProps> = ({
   if (loading) {
     return (
       <div className="animate-pulse">
-        <div className="mb-8 h-8 w-1/4 rounded bg-gray-200 dark:bg-gray-700"></div>
+        <div className="mb-8 h-8 w-1/4 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
         <div className="rounded-lg bg-white p-8 shadow-lg dark:bg-gray-800">
-          <div className="mb-4 h-10 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
-          <div className="mb-8 h-6 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
+          <div className="mb-4 h-10 w-3/4 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
+          <div className="mb-8 h-6 w-1/2 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
           <div className="space-y-4">
-            <div className="h-4 w-full rounded bg-gray-200 dark:bg-gray-700"></div>
-            <div className="h-4 w-5/6 rounded bg-gray-200 dark:bg-gray-700"></div>
-            <div className="h-4 w-4/6 rounded bg-gray-200 dark:bg-gray-700"></div>
+            <div className="h-4 w-full rounded-sm bg-gray-200 dark:bg-gray-700"></div>
+            <div className="h-4 w-5/6 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
+            <div className="h-4 w-4/6 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
           </div>
         </div>
       </div>
@@ -402,7 +402,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({
             className="h-64 w-full object-cover"
           />
         ) : (
-          <div className="flex h-64 w-full items-center justify-center bg-gradient-to-br from-primary-400 to-primary-600">
+          <div className="flex h-64 w-full items-center justify-center bg-linear-to-br from-primary-400 to-primary-600">
             <CalendarIcon className="h-24 w-24 text-white opacity-50" />
           </div>
         )}
@@ -634,7 +634,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({
                     <span className="mr-2">
                       {lang === 'es' ? 'Contraseña:' : 'Password:'}
                     </span>
-                    <code className="rounded bg-blue-100 px-2 py-1 dark:bg-blue-800">
+                    <code className="rounded-sm bg-blue-100 px-2 py-1 dark:bg-blue-800">
                       {event.location.virtualPassword}
                     </code>
                   </div>
@@ -649,7 +649,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({
         {/* Main Content */}
         <div className="space-y-6 lg:col-span-2">
           {/* Description */}
-          <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+          <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
             <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
               {lang === 'es' ? 'Acerca del evento' : 'About this event'}
             </h2>
@@ -662,7 +662,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({
 
           {/* Agenda */}
           {event.agenda && event.agenda.length > 0 && (
-            <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+            <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
               <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
                 {lang === 'es' ? 'Agenda' : 'Agenda'}
               </h2>
@@ -693,7 +693,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({
 
           {/* Speakers */}
           {event.speakers && event.speakers.length > 0 && (
-            <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+            <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
               <h2 className="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
                 {lang === 'es' ? 'Ponentes' : 'Speakers'}
               </h2>
@@ -730,7 +730,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({
 
           {/* Requirements & What to Bring */}
           {(event.requirements || event.whatToBring) && (
-            <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+            <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
               {event.requirements && event.requirements.length > 0 && (
                 <div className="mb-6">
                   <h3 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">
@@ -763,7 +763,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Location Details */}
-          <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+          <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
             <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
               {lang === 'es' ? 'Ubicación' : 'Location'}
             </h3>
@@ -782,7 +782,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({
             ) : (
               <div>
                 <div className="mb-4 flex items-start">
-                  <MapPinIcon className="mr-2 mt-0.5 h-5 w-5 text-gray-500" />
+                  <MapPinIcon className="mt-0.5 mr-2 h-5 w-5 text-gray-500" />
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">
                       {event.location.venue}
@@ -808,7 +808,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({
 
           {/* Organizer Contact */}
           {event.organizerDetails && (
-            <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+            <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
               <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                 {lang === 'es' ? 'Contacto' : 'Contact'}
               </h3>
@@ -839,7 +839,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({
 
           {/* Tags */}
           {event.tags.length > 0 && (
-            <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+            <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
               <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                 {lang === 'es' ? 'Etiquetas' : 'Tags'}
               </h3>
@@ -858,7 +858,7 @@ export const EventDetail: React.FC<EventDetailProps> = ({
 
           {/* Cancellation Policy */}
           {event.cancellationPolicy && (
-            <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+            <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
               <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                 {lang === 'es'
                   ? 'Política de cancelación'

@@ -576,7 +576,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
   const currentStepIndex = steps.findIndex((s) => s.key === step);
 
   const inputClass =
-    'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white sm:text-sm';
+    'mt-1 block w-full rounded-md border-gray-300 shadow-xs focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white sm:text-sm';
   const labelClass =
     'block text-sm font-medium text-gray-700 dark:text-gray-300';
 
@@ -732,7 +732,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
                     id="acceptTerms"
                     type="checkbox"
                     {...accountForm.register('acceptTerms')}
-                    className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
+                    className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
                   />
                 </div>
                 <div className="ml-3 text-sm">
@@ -845,7 +845,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
               className="w-full rounded-lg border-2 border-gray-200 p-6 text-left transition-all hover:border-primary-500 hover:shadow-md dark:border-gray-700 dark:hover:border-primary-400"
             >
               <div className="flex items-start space-x-4">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30">
                   <svg
                     className="h-6 w-6 text-primary-600 dark:text-primary-400"
                     fill="none"
@@ -885,7 +885,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
               className="w-full rounded-lg border-2 border-gray-200 p-6 text-left transition-all hover:border-primary-500 hover:shadow-md dark:border-gray-700 dark:hover:border-primary-400"
             >
               <div className="flex items-start space-x-4">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
                   <svg
                     className="h-6 w-6 text-green-600 dark:text-green-400"
                     fill="none"
@@ -919,7 +919,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
               className="w-full rounded-lg border-2 border-gray-200 p-6 text-left transition-all hover:border-amber-500 hover:shadow-md dark:border-gray-700 dark:hover:border-amber-400"
             >
               <div className="flex items-start space-x-4">
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
                   <Building2 className="h-6 w-6 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div>

@@ -22,7 +22,7 @@ const Button: React.FC<ButtonProps> = ({
     'border',
     'transition-all',
     'duration-200',
-    'focus:outline-none',
+    'focus:outline-hidden',
     'focus:ring-2',
     'focus:ring-offset-2',
     'disabled:opacity-50',
@@ -45,7 +45,7 @@ const Button: React.FC<ButtonProps> = ({
       'hover:bg-purple-700',
       'hover:border-purple-700',
       'focus:ring-purple-500',
-      'shadow-sm',
+      'shadow-xs',
       'hover:shadow-md',
     ],
     secondary: [
@@ -79,7 +79,7 @@ const Button: React.FC<ButtonProps> = ({
       'hover:bg-red-700',
       'hover:border-red-700',
       'focus:ring-red-500',
-      'shadow-sm',
+      'shadow-xs',
       'hover:shadow-md',
     ],
   };
@@ -95,7 +95,7 @@ const Button: React.FC<ButtonProps> = ({
   // Loading spinner component
   const LoadingSpinner = () => (
     <svg
-      className="-ml-1 mr-2 h-4 w-4 animate-spin text-current"
+      className="mr-2 -ml-1 h-4 w-4 animate-spin text-current"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"

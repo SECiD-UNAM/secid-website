@@ -1,7 +1,7 @@
+// Tailwind CSS 4 is wired as a Vite plugin in astro.config.mjs
+// (@tailwindcss/vite), so PostCSS only runs cssnano here.
 module.exports = {
   plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
     // Add CSS optimization for production
     ...(process.env.NODE_ENV === 'production' && {
       cssnano: {

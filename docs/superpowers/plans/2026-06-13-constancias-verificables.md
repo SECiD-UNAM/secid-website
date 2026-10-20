@@ -947,7 +947,7 @@ export default function ConstanciaCard({
       <div className="flex justify-center">
         <Seal monogram="S" />
       </div>
-      <h1 className="mt-6 font-heading text-3xl font-bold uppercase tracking-wide text-secondary-800">
+      <h1 className="mt-6 font-heading text-3xl font-bold tracking-wide text-secondary-800 uppercase">
         {t.types[constancia.type]}
       </h1>
       <div className="mx-auto mt-3 h-0.5 w-24 rounded bg-accent-400" />

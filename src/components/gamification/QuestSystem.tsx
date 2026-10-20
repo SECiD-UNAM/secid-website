@@ -134,14 +134,11 @@ export const QuestSystem: React.FC<QuestSystemProps> = ({
     return (
       <div
         key={quest.id}
-        className={`
-          relative rounded-lg border-2 p-6 transition-all duration-300
-          ${
-            completed
-              ? 'border-green-200 bg-green-50 opacity-75'
-              : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
-          }
-        `}
+        className={`relative rounded-lg border-2 p-6 transition-all duration-300 ${
+          completed
+            ? 'border-green-200 bg-green-50 opacity-75'
+            : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+        } `}
       >
         {/* Quest Header */}
         <div className="mb-4 flex items-start justify-between">
@@ -155,10 +152,7 @@ export const QuestSystem: React.FC<QuestSystemProps> = ({
               </h3>
               <div className="mt-1 flex items-center space-x-2">
                 <span
-                  className={`
-                  rounded-md border px-2 py-1 text-xs font-medium
-                  ${getQuestTypeColor(quest['type'])}
-                `}
+                  className={`rounded-md border px-2 py-1 text-xs font-medium ${getQuestTypeColor(quest['type'])} `}
                 >
                   {quest['type']}
                 </span>
@@ -234,10 +228,7 @@ export const QuestSystem: React.FC<QuestSystemProps> = ({
               return (
                 <div
                   key={step.id}
-                  className={`
-                    flex items-center justify-between rounded-md border p-3
-                    ${stepCompleted ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'}
-                  `}
+                  className={`flex items-center justify-between rounded-md border p-3 ${stepCompleted ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'} `}
                 >
                   <div className="flex items-center space-x-3">
                     <span
@@ -341,14 +332,11 @@ export const QuestSystem: React.FC<QuestSystemProps> = ({
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setActiveFilter('all')}
-            className={`
-              rounded-md px-4 py-2 font-medium transition-colors
-              ${
-                activeFilter === 'all'
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }
-            `}
+            className={`rounded-md px-4 py-2 font-medium transition-colors ${
+              activeFilter === 'all'
+                ? 'bg-gray-900 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            } `}
           >
             All Quests
           </button>
@@ -364,14 +352,11 @@ export const QuestSystem: React.FC<QuestSystemProps> = ({
             <button
               key={type}
               onClick={() => setActiveFilter(type)}
-              className={`
-                flex items-center space-x-2 rounded-md px-4 py-2 font-medium capitalize transition-colors
-                ${
-                  activeFilter === type
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }
-              `}
+              className={`flex items-center space-x-2 rounded-md px-4 py-2 font-medium capitalize transition-colors ${
+                activeFilter === type
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              } `}
             >
               <span>{getQuestTypeIcon(type)}</span>
               <span>{type}</span>

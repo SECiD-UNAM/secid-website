@@ -74,7 +74,7 @@ function MentorCard({
           className="h-10 w-10 shrink-0 rounded-full object-cover"
         />
       ) : (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-secondary-500 to-blue-400 text-sm font-semibold text-white">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-secondary-500 to-blue-400 text-sm font-semibold text-white">
           {initials}
         </div>
       )}

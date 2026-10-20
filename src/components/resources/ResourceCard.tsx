@@ -240,7 +240,7 @@ export default function ResourceCard({
             {resource.tags.slice(0, 3).map((tag, index) => (
               <span
                 key={index}
-                className="rounded bg-blue-50 px-2 py-1 text-xs text-blue-600"
+                className="rounded-sm bg-blue-50 px-2 py-1 text-xs text-blue-600"
               >
                 #{tag}
               </span>

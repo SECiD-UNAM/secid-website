@@ -114,16 +114,16 @@ export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
 
   if (loading) {
     return (
-      <div className="rounded-xl bg-white p-6 shadow dark:border dark:border-gray-700/30 dark:bg-gray-800">
+      <div className="rounded-xl bg-white p-6 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
         <div className="animate-pulse space-y-4">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
               className="border-b border-gray-200 pb-4 last:border-0 dark:border-gray-700"
             >
-              <div className="mb-2 h-5 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
-              <div className="mb-2 h-4 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
-              <div className="h-3 w-1/3 rounded bg-gray-200 dark:bg-gray-700"></div>
+              <div className="mb-2 h-5 w-3/4 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
+              <div className="mb-2 h-4 w-1/2 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
+              <div className="h-3 w-1/3 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
             </div>
           ))}
         </div>
@@ -133,7 +133,7 @@ export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
 
   if (jobs.length === 0) {
     return (
-      <div className="rounded-xl bg-white p-6 shadow dark:border dark:border-gray-700/30 dark:bg-gray-800">
+      <div className="rounded-xl bg-white p-6 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
         <p className="text-center text-gray-500 dark:text-gray-400">
           {lang === 'es'
             ? 'No hay trabajos recomendados'
@@ -150,7 +150,7 @@ export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
   }
 
   return (
-    <div className="rounded-xl bg-white shadow dark:border dark:border-gray-700/30 dark:bg-gray-800">
+    <div className="rounded-xl bg-white shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
       <div className="p-6">
         <div className="space-y-4">
           {jobs.map((job) => (
@@ -196,7 +196,7 @@ export const JobMatches: React.FC<JobMatchesProps> = ({ lang = 'es' }) => {
                   {job.tags.slice(0, 3).map((tag) => (
                     <span
                       key={tag}
-                      className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+                      className="rounded-sm bg-gray-100 px-2 py-0.5 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300"
                     >
                       {tag}
                     </span>

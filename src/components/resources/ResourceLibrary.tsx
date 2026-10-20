@@ -415,7 +415,7 @@ export default function ResourceLibrary({
               onClick={() => handleTabChange(tab.key)}
               className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                 activeTab === tab.key
-                  ? 'bg-white text-blue-600 shadow-sm dark:bg-gray-800'
+                  ? 'bg-white text-blue-600 shadow-xs dark:bg-gray-800'
                   : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
               }`}
             >

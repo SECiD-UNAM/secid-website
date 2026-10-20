@@ -25,9 +25,9 @@ export function ListingLoading({
               key={i}
               className="animate-pulse rounded-lg border border-gray-200 p-4 dark:border-gray-700"
             >
-              <div className="mb-3 h-32 rounded bg-gray-200 dark:bg-gray-700" />
-              <div className="mb-2 h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700" />
-              <div className="h-3 w-1/2 rounded bg-gray-200 dark:bg-gray-700" />
+              <div className="mb-3 h-32 rounded-sm bg-gray-200 dark:bg-gray-700" />
+              <div className="mb-2 h-4 w-3/4 rounded-sm bg-gray-200 dark:bg-gray-700" />
+              <div className="h-3 w-1/2 rounded-sm bg-gray-200 dark:bg-gray-700" />
             </div>
           ))}
         </div>
@@ -41,10 +41,10 @@ export function ListingLoading({
               key={i}
               className="flex animate-pulse items-center gap-4 rounded-lg border border-gray-200 p-4 dark:border-gray-700"
             >
-              <div className="h-10 w-10 flex-shrink-0 rounded-full bg-gray-200 dark:bg-gray-700" />
+              <div className="h-10 w-10 shrink-0 rounded-full bg-gray-200 dark:bg-gray-700" />
               <div className="flex-1">
-                <div className="mb-2 h-4 w-1/3 rounded bg-gray-200 dark:bg-gray-700" />
-                <div className="h-3 w-1/4 rounded bg-gray-200 dark:bg-gray-700" />
+                <div className="mb-2 h-4 w-1/3 rounded-sm bg-gray-200 dark:bg-gray-700" />
+                <div className="h-3 w-1/4 rounded-sm bg-gray-200 dark:bg-gray-700" />
               </div>
             </div>
           ))}
@@ -57,11 +57,11 @@ export function ListingLoading({
           {skeletons.map((i) => (
             <div
               key={i}
-              className="flex animate-pulse items-center gap-3 rounded border border-gray-200 px-3 py-2 dark:border-gray-700"
+              className="flex animate-pulse items-center gap-3 rounded-sm border border-gray-200 px-3 py-2 dark:border-gray-700"
             >
-              <div className="h-6 w-6 flex-shrink-0 rounded-full bg-gray-200 dark:bg-gray-700" />
-              <div className="h-3 w-24 rounded bg-gray-200 dark:bg-gray-700" />
-              <div className="h-3 w-16 rounded bg-gray-200 dark:bg-gray-700" />
+              <div className="h-6 w-6 shrink-0 rounded-full bg-gray-200 dark:bg-gray-700" />
+              <div className="h-3 w-24 rounded-sm bg-gray-200 dark:bg-gray-700" />
+              <div className="h-3 w-16 rounded-sm bg-gray-200 dark:bg-gray-700" />
             </div>
           ))}
         </div>
@@ -75,7 +75,7 @@ export function ListingLoading({
               <tr className="border-b-2 border-gray-200 dark:border-gray-700">
                 {[1, 2, 3, 4].map((i) => (
                   <th key={i} className="px-4 py-3">
-                    <div className="h-3 w-16 rounded bg-gray-200 dark:bg-gray-700" />
+                    <div className="h-3 w-16 rounded-sm bg-gray-200 dark:bg-gray-700" />
                   </th>
                 ))}
               </tr>
@@ -88,7 +88,7 @@ export function ListingLoading({
                 >
                   {[1, 2, 3, 4].map((j) => (
                     <td key={j} className="px-4 py-3">
-                      <div className="h-3 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                      <div className="h-3 w-20 animate-pulse rounded-sm bg-gray-200 dark:bg-gray-700" />
                     </td>
                   ))}
                 </tr>

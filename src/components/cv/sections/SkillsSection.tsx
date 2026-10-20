@@ -42,7 +42,7 @@ export function CvSkillsSection({
             }}
           >
             <h3
-              className="mb-3 text-xs font-semibold uppercase tracking-wider"
+              className="mb-3 text-xs font-semibold tracking-wider uppercase"
               style={{ color: 'var(--color-primary)' }}
             >
               {group.label}

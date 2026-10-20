@@ -209,7 +209,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
     <div className="space-y-4">
       {/* Main search bar */}
       <div className="relative">
-        <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+        <MagnifyingGlassIcon className="pointer-events-none absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
         <input
           type="text"
           value={searchInput}
@@ -219,12 +219,12 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
               ? 'Buscar por nombre, empresa, habilidad...'
               : 'Search by name, company, skill...'
           }
-          className="w-full rounded-lg border border-gray-300 bg-white py-3 pl-10 pr-10 text-sm text-gray-900 placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 sm:text-base"
+          className="w-full rounded-lg border border-gray-300 bg-white py-3 pr-10 pl-10 text-sm text-gray-900 placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-primary-500 sm:text-base dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
         />
         {searchInput && (
           <button
             onClick={() => setSearchInput('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           >
             <XMarkIcon className="h-5 w-5" />
           </button>
@@ -269,7 +269,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
                           e.target.checked
                         )
                       }
-                      className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500"
                     />
                     <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                       {skill}
@@ -298,7 +298,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
                           e.target.checked
                         )
                       }
-                      className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500"
                     />
                     <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                       {company}
@@ -327,7 +327,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
                           e.target.checked
                         )
                       }
-                      className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500"
                     />
                     <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                       {location}
@@ -358,7 +358,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
                           e.target.checked
                         )
                       }
-                      className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500"
                     />
                     <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                       {level.label}
@@ -390,7 +390,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
                           e.target.checked
                         )
                       }
-                      className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500"
                     />
                     <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                       {option.label}
@@ -417,7 +417,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
                         e.target.checked ? true : undefined
                       )
                     }
-                    className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                     {lang === 'es' ? 'Solo en línea' : 'Online only'}
@@ -434,7 +434,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
                         e.target.checked ? true : undefined
                       )
                     }
-                    className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                     {lang === 'es' ? 'Con portafolio' : 'Has portfolio'}
@@ -451,7 +451,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
                         e.target.checked ? true : undefined
                       )
                     }
-                    className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                     <StarIcon className="mr-1 inline h-3 w-3 text-yellow-500" />
@@ -543,7 +543,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
             <div className="border-t border-gray-200 pt-4 dark:border-gray-700">
               <div className="flex flex-wrap gap-2">
                 {filters.query && (
-                  <span className="inline-flex items-center rounded bg-primary-100 px-2 py-1 text-xs text-primary-700 dark:bg-primary-900/20 dark:text-primary-400">
+                  <span className="inline-flex items-center rounded-sm bg-primary-100 px-2 py-1 text-xs text-primary-700 dark:bg-primary-900/20 dark:text-primary-400">
                     "{filters.query}"
                     <button
                       onClick={() => {
@@ -560,7 +560,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
                 {filters?.skills?.map((skill) => (
                   <span
                     key={skill}
-                    className="inline-flex items-center rounded bg-blue-100 px-2 py-1 text-xs text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
+                    className="inline-flex items-center rounded-sm bg-blue-100 px-2 py-1 text-xs text-blue-700 dark:bg-blue-900/20 dark:text-blue-400"
                   >
                     {skill}
                     <button
@@ -577,7 +577,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
                 {filters?.companies?.map((company) => (
                   <span
                     key={company}
-                    className="inline-flex items-center rounded bg-green-100 px-2 py-1 text-xs text-green-700 dark:bg-green-900/20 dark:text-green-400"
+                    className="inline-flex items-center rounded-sm bg-green-100 px-2 py-1 text-xs text-green-700 dark:bg-green-900/20 dark:text-green-400"
                   >
                     {company}
                     <button
@@ -594,7 +594,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({
                 {filters?.locations?.map((location) => (
                   <span
                     key={location}
-                    className="inline-flex items-center rounded bg-purple-100 px-2 py-1 text-xs text-purple-700 dark:bg-purple-900/20 dark:text-purple-400"
+                    className="inline-flex items-center rounded-sm bg-purple-100 px-2 py-1 text-xs text-purple-700 dark:bg-purple-900/20 dark:text-purple-400"
                   >
                     {location}
                     <button

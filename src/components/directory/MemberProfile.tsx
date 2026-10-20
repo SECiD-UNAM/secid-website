@@ -217,7 +217,7 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
       >
         <div className="overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
           {/* Muted cover */}
-          <div className="h-40 bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 dark:from-gray-700 dark:via-gray-800 dark:to-gray-900" />
+          <div className="h-40 bg-linear-to-br from-gray-300 via-gray-400 to-gray-500 dark:from-gray-700 dark:via-gray-800 dark:to-gray-900" />
 
           <div className="relative z-10 -mt-14 flex flex-col items-center px-6 pb-8 text-center">
             {/* Greyed-out avatar with initials */}
@@ -229,7 +229,7 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
             </div>
 
             {/* Masked name */}
-            <h1 className="mt-4 text-xl font-bold text-gray-900 dark:text-white md:text-2xl">
+            <h1 className="mt-4 text-xl font-bold text-gray-900 md:text-2xl dark:text-white">
               {maskDisplayName(member.displayName)}
             </h1>
 
@@ -320,11 +320,11 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
       {/* Header Section */}
       <div className="overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
         {/* Cover */}
-        <div className="relative h-40 bg-gradient-to-br from-primary-600 via-primary-500 to-secondary-500 md:h-48">
+        <div className="relative h-40 bg-linear-to-br from-primary-600 via-primary-500 to-secondary-500 md:h-48">
           {isOwnProfile && (
             <button
               type="button"
-              className="absolute bottom-3 right-3 rounded-lg bg-black/20 p-2 text-white transition-colors hover:bg-black/30"
+              className="absolute right-3 bottom-3 rounded-lg bg-black/20 p-2 text-white transition-colors hover:bg-black/30"
               aria-label={
                 lang === 'es' ? 'Cambiar foto de portada' : 'Change cover photo'
               }
@@ -344,11 +344,11 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                   src={(member as any).photoURL}
                   alt=""
                   loading="lazy"
-                  className="h-28 w-28 rounded-full border-4 border-white object-cover shadow-lg ring-4 ring-primary-500/20 dark:border-gray-800 md:h-36 md:w-36"
+                  className="h-28 w-28 rounded-full border-4 border-white object-cover shadow-lg ring-4 ring-primary-500/20 md:h-36 md:w-36 dark:border-gray-800"
                 />
               ) : (
                 <div
-                  className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-white bg-gradient-to-br from-primary-500 to-secondary-500 text-3xl font-bold text-white shadow-lg ring-4 ring-primary-500/20 dark:border-gray-800 md:h-36 md:w-36 md:text-4xl"
+                  className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-white bg-linear-to-br from-primary-500 to-secondary-500 text-3xl font-bold text-white shadow-lg ring-4 ring-primary-500/20 md:h-36 md:w-36 md:text-4xl dark:border-gray-800"
                   aria-hidden="true"
                 >
                   {member.initials}
@@ -357,7 +357,7 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
               {isOwnProfile && (
                 <button
                   type="button"
-                  className="absolute bottom-0 right-0 rounded-full bg-primary-600 p-1.5 text-white shadow transition-colors hover:bg-primary-700"
+                  className="absolute right-0 bottom-0 rounded-full bg-primary-600 p-1.5 text-white shadow-sm transition-colors hover:bg-primary-700"
                   aria-label={
                     lang === 'es'
                       ? 'Cambiar foto de perfil'
@@ -374,7 +374,7 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 text-center lg:text-left">
               <div className="mb-2 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white md:text-3xl">
+                <h1 className="text-2xl font-bold text-gray-900 md:text-3xl dark:text-white">
                   {member.displayName}
                 </h1>
                 {member.role === 'collaborator' && (
@@ -409,7 +409,7 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                 </p>
               )}
 
-              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400 lg:justify-start">
+              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-gray-500 lg:justify-start dark:text-gray-400">
                 {visibility.showLocation && (
                   <span className="flex items-center">
                     <MapPinIcon
@@ -604,7 +604,7 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                       aria-hidden="true"
                     />
                     <div>
-                      <div className="text-lg font-bold leading-tight text-gray-900 dark:text-white">
+                      <div className="text-lg leading-tight font-bold text-gray-900 dark:text-white">
                         {stat.value}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -639,7 +639,7 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center rounded-lg px-4 py-2 transition-colors ${
                   isActive
-                    ? 'bg-primary-600 text-white shadow-sm'
+                    ? 'bg-primary-600 text-white shadow-xs'
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200'
                 }`}
               >
@@ -754,7 +754,7 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                 <div className="relative pl-6">
                   {/* Timeline line */}
                   <div
-                    className="absolute bottom-2 left-[7px] top-2 w-0.5 rounded-full bg-gradient-to-b from-primary-500 to-secondary-500"
+                    className="absolute top-2 bottom-2 left-[7px] w-0.5 rounded-full bg-linear-to-b from-primary-500 to-secondary-500"
                     aria-hidden="true"
                   />
 
@@ -763,7 +763,7 @@ export const MemberProfile: React.FC<MemberProfileProps> = ({
                       <li key={role.id} className="relative">
                         {/* Timeline dot */}
                         <div
-                          className="absolute -left-6 top-1.5 h-3.5 w-3.5 rounded-full border-[3px] border-primary-500 bg-white dark:bg-gray-800"
+                          className="absolute top-1.5 -left-6 h-3.5 w-3.5 rounded-full border-[3px] border-primary-500 bg-white dark:bg-gray-800"
                           aria-hidden="true"
                         />
 

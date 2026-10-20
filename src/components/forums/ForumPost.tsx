@@ -479,7 +479,7 @@ const ForumPost: React.FC<ForumPostProps> = ({
                   <button
                     type="button"
                     onClick={() => formatText('bold')}
-                    className="rounded p-2 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                    className="rounded-sm p-2 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                     title={t.forum.post.bold}
                   >
                     <Bold className="h-4 w-4" />
@@ -487,7 +487,7 @@ const ForumPost: React.FC<ForumPostProps> = ({
                   <button
                     type="button"
                     onClick={() => formatText('italic')}
-                    className="rounded p-2 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                    className="rounded-sm p-2 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                     title={t.forum.post.italic}
                   >
                     <Italic className="h-4 w-4" />
@@ -495,7 +495,7 @@ const ForumPost: React.FC<ForumPostProps> = ({
                   <button
                     type="button"
                     onClick={() => formatText('code')}
-                    className="rounded p-2 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                    className="rounded-sm p-2 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                     title={t.forum.post.codeBlock}
                   >
                     <Code className="h-4 w-4" />
@@ -503,7 +503,7 @@ const ForumPost: React.FC<ForumPostProps> = ({
                   <button
                     type="button"
                     onClick={() => formatText('link')}
-                    className="rounded p-2 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                    className="rounded-sm p-2 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                     title={t.forum.post.link}
                   >
                     <Link className="h-4 w-4" />
@@ -511,7 +511,7 @@ const ForumPost: React.FC<ForumPostProps> = ({
                   <button
                     type="button"
                     onClick={() => formatText('quote')}
-                    className="rounded p-2 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                    className="rounded-sm p-2 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                     title={t.forum.post.quote}
                   >
                     <Quote className="h-4 w-4" />
@@ -519,7 +519,7 @@ const ForumPost: React.FC<ForumPostProps> = ({
                   <button
                     type="button"
                     onClick={() => formatText('list')}
-                    className="rounded p-2 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                    className="rounded-sm p-2 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                     title={t.forum.post.list}
                   >
                     <List className="h-4 w-4" />
@@ -530,7 +530,7 @@ const ForumPost: React.FC<ForumPostProps> = ({
                   <button
                     type="button"
                     onClick={() => fileInputRef?.current?.click()}
-                    className="rounded p-2 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                    className="rounded-sm p-2 text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                     title={t.forum.topic.uploadFile}
                   >
                     <Paperclip className="h-4 w-4" />

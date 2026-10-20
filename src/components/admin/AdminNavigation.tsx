@@ -189,11 +189,11 @@ export const AdminNavigation: React.FC<AdminNavigationProps> = ({
             }
           }}
         >
-          <Icon className="mr-3 h-5 w-5 flex-shrink-0" />
+          <Icon className="mr-3 h-5 w-5 shrink-0" />
           <span className="flex-1">{item.label}</span>
 
           {item.badge && item.badge > 0 && (
-            <span className="inline-flex items-center justify-center rounded-full bg-red-600 px-2 py-1 text-xs font-bold leading-none text-white">
+            <span className="inline-flex items-center justify-center rounded-full bg-red-600 px-2 py-1 text-xs leading-none font-bold text-white">
               {item.badge}
             </span>
           )}
@@ -221,7 +221,7 @@ export const AdminNavigation: React.FC<AdminNavigationProps> = ({
   return (
     <>
       {/* Mobile menu button */}
-      <div className="fixed left-4 top-4 z-50 lg:hidden">
+      <div className="fixed top-4 left-4 z-50 lg:hidden">
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="rounded-md border border-gray-200 bg-white p-2 text-gray-700 shadow-lg hover:bg-gray-50"
@@ -237,7 +237,7 @@ export const AdminNavigation: React.FC<AdminNavigationProps> = ({
       {/* Mobile overlay */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
@@ -319,11 +319,11 @@ export const AdminNavigation: React.FC<AdminNavigationProps> = ({
         {/* Search */}
         <div className="border-b border-gray-200 p-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
             <input
               type="text"
               placeholder={language === 'es' ? 'Buscar...' : 'Search...'}
-              className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-gray-300 py-2 pr-4 pl-10 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
             />
           </div>
         </div>
@@ -426,7 +426,7 @@ export const AdminNavigation: React.FC<AdminNavigationProps> = ({
               </button>
 
               {isUserMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                <div className="absolute top-full right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
                   <div className="border-b border-gray-200 px-4 py-2">
                     <p className="text-sm font-medium text-gray-900">
                       {userProfile?.firstName} {userProfile?.lastName}

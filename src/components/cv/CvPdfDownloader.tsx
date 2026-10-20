@@ -135,14 +135,14 @@ export default function CvPdfDownloader({
       {error && (
         <div
           role="alert"
-          className="absolute bottom-[76px] right-0 mb-2 w-72 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-lg dark:border-red-800 dark:bg-red-900/90 dark:text-red-300"
+          className="absolute right-0 bottom-[76px] mb-2 w-72 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-lg dark:border-red-800 dark:bg-red-900/90 dark:text-red-300"
           style={{ animation: 'slideUp 0.2s ease' }}
         >
           <div className="flex items-start justify-between gap-2">
             <span>{error}</span>
             <button
               onClick={() => setError(null)}
-              className="flex-shrink-0 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200"
+              className="shrink-0 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200"
               type="button"
               aria-label={lang === 'es' ? 'Cerrar' : 'Dismiss'}
             >
@@ -167,7 +167,7 @@ export default function CvPdfDownloader({
       {/* Dropdown menu */}
       {open && (
         <div
-          className="absolute bottom-[76px] right-0 w-64 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700"
+          className="absolute right-0 bottom-[76px] w-64 overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700"
           style={{ animation: 'slideUp 0.2s ease' }}
         >
           {/* Color picker section */}

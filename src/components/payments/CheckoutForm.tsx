@@ -338,7 +338,7 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
               type="text"
               value={customerInfo['name']}
               onChange={(e) => handleInputChange('name', e.target.value)}
-              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${
                 errors.name ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('paymentfullNamePlaceholder')}
@@ -356,7 +356,7 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
               type="email"
               value={customerInfo['email']}
               onChange={(e) => handleInputChange('email', e.target.value)}
-              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('paymentemailPlaceholder')}
@@ -376,7 +376,7 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
               onChange={(e) =>
                 handleInputChange('rfc', e.target.value.toUpperCase())
               }
-              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${
                 errors.rfc ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="XAXX010101000"
@@ -397,7 +397,7 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
               onChange={(e) =>
                 handleInputChange('address.line1', e.target.value)
               }
-              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${
                 errors.address ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('paymentaddressPlaceholder')}
@@ -417,7 +417,7 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
               onChange={(e) =>
                 handleInputChange('address.city', e.target.value)
               }
-              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${
                 errors.city ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('paymentcityPlaceholder')}
@@ -437,7 +437,7 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
               onChange={(e) =>
                 handleInputChange('address.state', e.target.value)
               }
-              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${
                 errors.state ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder={t('paymentstatePlaceholder')}
@@ -457,7 +457,7 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({
               onChange={(e) =>
                 handleInputChange('address.postal_code', e.target.value)
               }
-              className={`w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full rounded-md border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${
                 errors.postalCode ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="12345"

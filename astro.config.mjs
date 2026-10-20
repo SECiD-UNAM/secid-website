@@ -3,6 +3,7 @@ import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import compress from '@playform/compress';
 import node from '@astrojs/node';
+import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
@@ -29,7 +30,8 @@ export default defineConfig({
   // Integrations
   integrations: [
     react(),
-    // Tailwind CSS processed via PostCSS (postcss.config.cjs)
+    // Tailwind CSS 4 runs as a Vite plugin (vite.plugins below); only
+    // cssnano is left in postcss.config.cjs.
     sitemap({
       i18n: {
         defaultLocale: 'es',
@@ -54,6 +56,7 @@ export default defineConfig({
 
   // Vite configuration
   vite: {
+    plugins: [tailwindcss()],
     ssr: {
       external: ['firebase', 'firebase-admin'],
     },

@@ -73,15 +73,11 @@ export const BadgeSystem: React.FC<BadgeSystemProps> = ({
   const renderBadge = (badge: Badge, isEarned: boolean) => (
     <div
       key={badge.id}
-      className={`
-        relative rounded-lg border-2 p-4 transition-all duration-300
-        ${
-          isEarned
-            ? `${getBadgeColor(badge.tier)} border-current shadow-md`
-            : 'border-gray-200 bg-gray-50 text-gray-400'
-        }
-        ${isEarned ? 'transform cursor-pointer hover:scale-105' : ''}
-      `}
+      className={`relative rounded-lg border-2 p-4 transition-all duration-300 ${
+        isEarned
+          ? `${getBadgeColor(badge.tier)} border-current shadow-md`
+          : 'border-gray-200 bg-gray-50 text-gray-400'
+      } ${isEarned ? 'transform cursor-pointer hover:scale-105' : ''} `}
       title={badge['description']}
     >
       <div className="text-center">
@@ -89,12 +85,12 @@ export const BadgeSystem: React.FC<BadgeSystemProps> = ({
         <h3 className="mb-1 text-sm font-semibold">{badge['name']}</h3>
         <p className="text-xs opacity-75">{badge.tier}</p>
         {!isEarned && (
-          <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-gray-200 bg-opacity-50">
+          <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-gray-200/50">
             <span className="text-2xl">🔒</span>
           </div>
         )}
         {isEarned && recentAchievements.some((a) => a.badgeId === badge.id) && (
-          <div className="absolute -right-2 -top-2 flex h-6 w-6 animate-bounce items-center justify-center rounded-full bg-red-500 text-xs text-white">
+          <div className="absolute -top-2 -right-2 flex h-6 w-6 animate-bounce items-center justify-center rounded-full bg-red-500 text-xs text-white">
             NEW
           </div>
         )}

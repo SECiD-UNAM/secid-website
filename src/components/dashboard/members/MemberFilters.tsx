@@ -306,9 +306,9 @@ function MultiSelectFilter({
           )}
         </span>
         {isOpen ? (
-          <ChevronUpIcon className="ml-1 h-4 w-4 flex-shrink-0" />
+          <ChevronUpIcon className="ml-1 h-4 w-4 shrink-0" />
         ) : (
-          <ChevronDownIcon className="ml-1 h-4 w-4 flex-shrink-0" />
+          <ChevronDownIcon className="ml-1 h-4 w-4 shrink-0" />
         )}
       </button>
 
@@ -328,7 +328,7 @@ function MultiSelectFilter({
                   type="checkbox"
                   checked={selected.includes(option)}
                   onChange={() => toggleOption(option)}
-                  className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600"
+                  className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600"
                 />
                 <span className="truncate">{option}</span>
               </label>
@@ -353,7 +353,7 @@ function CheckboxFilter({ label, checked, onChange }: CheckboxFilterProps) {
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
-        className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600"
+        className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600"
       />
       <span>{label}</span>
     </label>
@@ -399,7 +399,7 @@ export const MemberFilters: React.FC<MemberFiltersProps> = ({
           <FunnelIcon className="h-5 w-5" />
           <span>{t.filters}</span>
           {activeCount > 0 && (
-            <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-primary-600 px-1.5 text-xs font-medium text-white">
+            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary-600 px-1.5 text-xs font-medium text-white">
               {activeCount}
             </span>
           )}
@@ -413,7 +413,7 @@ export const MemberFilters: React.FC<MemberFiltersProps> = ({
 
       {/* Filter Panel */}
       {isExpanded && (
-        <div className="space-y-4 border-t border-gray-200 px-4 pb-4 pt-4 dark:border-gray-700">
+        <div className="space-y-4 border-t border-gray-200 px-4 pt-4 pb-4 dark:border-gray-700">
           {/* Multi-select filters in responsive grid */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <MultiSelectFilter
@@ -496,7 +496,7 @@ export const MemberFilters: React.FC<MemberFiltersProps> = ({
             <div className="flex items-center gap-2">
               <label
                 htmlFor="joinedAfter"
-                className="whitespace-nowrap text-sm text-gray-700 dark:text-gray-300"
+                className="text-sm whitespace-nowrap text-gray-700 dark:text-gray-300"
               >
                 {t.joinedAfter}
               </label>

@@ -225,7 +225,7 @@ export default function AssessmentResults({
 
         {/* Quick Stats */}
         <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
-          <div className="rounded-lg bg-white p-6 text-center shadow">
+          <div className="rounded-lg bg-white p-6 text-center shadow-sm">
             <div className="mb-2 text-2xl font-bold text-gray-900">
               {result?.categoryScores?.reduce(
                 (sum, cat) => sum + cat.correctAnswers,
@@ -237,7 +237,7 @@ export default function AssessmentResults({
             </div>
           </div>
 
-          <div className="rounded-lg bg-white p-6 text-center shadow">
+          <div className="rounded-lg bg-white p-6 text-center shadow-sm">
             <div className="mb-2 text-2xl font-bold text-gray-900">
               {result.percentileRank}%
             </div>
@@ -246,7 +246,7 @@ export default function AssessmentResults({
             </div>
           </div>
 
-          <div className="rounded-lg bg-white p-6 text-center shadow">
+          <div className="rounded-lg bg-white p-6 text-center shadow-sm">
             <div className="mb-2 text-2xl font-bold text-gray-900">
               {userRank >= 0 ? `#${userRank + 1}` : '--'}
             </div>
@@ -255,7 +255,7 @@ export default function AssessmentResults({
             </div>
           </div>
 
-          <div className="rounded-lg bg-white p-6 text-center shadow">
+          <div className="rounded-lg bg-white p-6 text-center shadow-sm">
             <div className="mb-2 text-2xl font-bold text-gray-900">
               {result?.badges?.length}
             </div>
@@ -267,7 +267,7 @@ export default function AssessmentResults({
 
         {/* Certificate Section */}
         {result.passed && assessment?.mode === 'certification' && (
-          <div className="mb-8 rounded-lg bg-white p-6 shadow">
+          <div className="mb-8 rounded-lg bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-yellow-100">
@@ -427,7 +427,7 @@ function OverviewTab({ result, assessment: _assessment }: OverviewTabProps) {
   return (
     <div className="space-y-6">
       {/* Performance Summary */}
-      <div className="rounded-lg bg-white p-6 shadow">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
         <h3 className="mb-4 text-lg font-medium text-gray-900">
           {t('results.overview.performance', 'Resumen de Rendimiento')}
         </h3>
@@ -471,7 +471,7 @@ function OverviewTab({ result, assessment: _assessment }: OverviewTabProps) {
 
       {/* Strengths and Weaknesses */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="rounded-lg bg-white p-6 shadow">
+        <div className="rounded-lg bg-white p-6 shadow-sm">
           <h3 className="mb-4 flex items-center text-lg font-medium text-gray-900">
             <svg
               className="mr-2 h-5 w-5 text-green-600"
@@ -491,7 +491,7 @@ function OverviewTab({ result, assessment: _assessment }: OverviewTabProps) {
             <ul className="space-y-2">
               {result?.strengths?.map((strength, index) => (
                 <li key={index} className="flex items-start space-x-2">
-                  <div className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-green-500"></div>
+                  <div className="mt-2 h-2 w-2 shrink-0 rounded-full bg-green-500"></div>
                   <span className="text-sm text-gray-700">{strength}</span>
                 </li>
               ))}
@@ -506,7 +506,7 @@ function OverviewTab({ result, assessment: _assessment }: OverviewTabProps) {
           )}
         </div>
 
-        <div className="rounded-lg bg-white p-6 shadow">
+        <div className="rounded-lg bg-white p-6 shadow-sm">
           <h3 className="mb-4 flex items-center text-lg font-medium text-gray-900">
             <svg
               className="mr-2 h-5 w-5 text-red-600"
@@ -526,7 +526,7 @@ function OverviewTab({ result, assessment: _assessment }: OverviewTabProps) {
             <ul className="space-y-2">
               {result?.weaknesses?.map((weakness, index) => (
                 <li key={index} className="flex items-start space-x-2">
-                  <div className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-red-500"></div>
+                  <div className="mt-2 h-2 w-2 shrink-0 rounded-full bg-red-500"></div>
                   <span className="text-sm text-gray-700">{weakness}</span>
                 </li>
               ))}
@@ -544,7 +544,7 @@ function OverviewTab({ result, assessment: _assessment }: OverviewTabProps) {
 
       {/* Badges Earned */}
       {result?.badges?.length > 0 && (
-        <div className="rounded-lg bg-white p-6 shadow">
+        <div className="rounded-lg bg-white p-6 shadow-sm">
           <h3 className="mb-4 text-lg font-medium text-gray-900">
             {t('results.overview.badges', 'Insignias Obtenidas')}
           </h3>
@@ -586,7 +586,7 @@ function BreakdownTab({ result }: BreakdownTabProps) {
   return (
     <div className="space-y-6">
       {/* Category Performance */}
-      <div className="rounded-lg bg-white p-6 shadow">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
         <h3 className="mb-4 text-lg font-medium text-gray-900">
           {t('results.breakdown.categories', 'Rendimiento por Categoría')}
         </h3>
@@ -600,7 +600,7 @@ function BreakdownTab({ result }: BreakdownTabProps) {
             return (
               <div key={index}>
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-medium capitalize text-gray-900">
+                  <span className="text-sm font-medium text-gray-900 capitalize">
                     {categoryScore.category.replace('_', ' ')}
                   </span>
                   <span className="text-sm text-gray-500">
@@ -629,7 +629,7 @@ function BreakdownTab({ result }: BreakdownTabProps) {
       </div>
 
       {/* Difficulty Performance */}
-      <div className="rounded-lg bg-white p-6 shadow">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
         <h3 className="mb-4 text-lg font-medium text-gray-900">
           {t('results.breakdown.difficulty', 'Rendimiento por Dificultad')}
         </h3>
@@ -644,7 +644,7 @@ function BreakdownTab({ result }: BreakdownTabProps) {
             return (
               <div key={index}>
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-medium capitalize text-gray-900">
+                  <span className="text-sm font-medium text-gray-900 capitalize">
                     {t(
                       `difficulty.${difficultyScore.difficulty}`,
                       difficultyScore.difficulty
@@ -676,7 +676,7 @@ function BreakdownTab({ result }: BreakdownTabProps) {
       </div>
 
       {/* Question Results */}
-      <div className="rounded-lg bg-white p-6 shadow">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
         <h3 className="mb-4 text-lg font-medium text-gray-900">
           {t('results.breakdown.questions', 'Resultados por Pregunta')}
         </h3>
@@ -856,7 +856,7 @@ function RecommendationsTab({ result }: RecommendationsTabProps) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-lg bg-white p-6 shadow">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
         <h3 className="mb-4 text-lg font-medium text-gray-900">
           {t('results.recommendations.title', 'Recomendaciones Personalizadas')}
         </h3>
@@ -957,7 +957,7 @@ function RecommendationsTab({ result }: RecommendationsTabProps) {
 
       {/* Skill Level Updates */}
       {result?.skillLevelUpdates?.length > 0 && (
-        <div className="rounded-lg bg-white p-6 shadow">
+        <div className="rounded-lg bg-white p-6 shadow-sm">
           <h3 className="mb-4 text-lg font-medium text-gray-900">
             {t(
               'results.recommendations.skillUpdates',
@@ -986,7 +986,7 @@ function RecommendationsTab({ result }: RecommendationsTabProps) {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-medium capitalize text-blue-900">
+                    <p className="text-sm font-medium text-blue-900 capitalize">
                       {update.skill.replace('_', ' ')}
                     </p>
                     <p className="text-xs text-blue-700">

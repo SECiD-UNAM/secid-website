@@ -255,7 +255,7 @@ export const TwoFactorVerification: React.FC<TwoFactorVerificationProps> = ({
                 placeholder="123456"
                 autoComplete="one-time-code"
                 {...registerCode('code')}
-                className="block w-full rounded-md border border-gray-300 px-3 py-2 text-center font-mono text-lg shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                className="block w-full rounded-md border border-gray-300 px-3 py-2 text-center font-mono text-lg shadow-xs focus:border-primary-500 focus:ring-primary-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               />
               {codeErrors['code'] && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -333,7 +333,7 @@ export const TwoFactorVerification: React.FC<TwoFactorVerificationProps> = ({
                 maxLength={8}
                 placeholder="12345678"
                 {...registerBackup('backupCode')}
-                className="block w-full rounded-md border border-gray-300 px-3 py-2 text-center font-mono text-lg shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                className="block w-full rounded-md border border-gray-300 px-3 py-2 text-center font-mono text-lg shadow-xs focus:border-primary-500 focus:ring-primary-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               />
               {backupErrors.backupCode && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">

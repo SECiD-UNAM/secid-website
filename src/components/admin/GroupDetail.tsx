@@ -89,11 +89,11 @@ function GroupDetailInner({ lang, groupId }: GroupDetailInnerProps) {
   if (loading) {
     return (
       <div className="mx-auto max-w-4xl animate-pulse space-y-6">
-        <div className="h-8 w-1/3 rounded bg-gray-200 dark:bg-gray-700" />
-        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <div className="h-8 w-1/3 rounded-sm bg-gray-200 dark:bg-gray-700" />
+        <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
           <div className="space-y-4">
-            <div className="h-6 w-1/2 rounded bg-gray-200 dark:bg-gray-700" />
-            <div className="h-4 w-2/3 rounded bg-gray-200 dark:bg-gray-700" />
+            <div className="h-6 w-1/2 rounded-sm bg-gray-200 dark:bg-gray-700" />
+            <div className="h-4 w-2/3 rounded-sm bg-gray-200 dark:bg-gray-700" />
           </div>
         </div>
         <div className="h-64 rounded-lg bg-gray-200 dark:bg-gray-700" />
@@ -158,7 +158,7 @@ function GroupDetailInner({ lang, groupId }: GroupDetailInnerProps) {
       </div>
 
       {/* Group Info Card */}
-      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+      <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -188,7 +188,7 @@ function GroupDetailInner({ lang, groupId }: GroupDetailInnerProps) {
       </div>
 
       {/* Permissions Matrix (read-only) */}
-      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+      <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
         <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
           {t('permissions', lang)}
         </h2>
@@ -201,7 +201,7 @@ function GroupDetailInner({ lang, groupId }: GroupDetailInnerProps) {
       </div>
 
       {/* Member Manager */}
-      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+      <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
         <GroupMemberManager lang={lang} groupId={group.id} />
       </div>
     </div>

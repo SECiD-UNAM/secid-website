@@ -116,7 +116,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, lang = 'es' }) => {
 
   return (
     <div
-      className={`rounded-lg bg-white p-6 shadow transition-all hover:shadow-lg dark:bg-gray-800 ${job.featured ? 'border-2 border-primary-500' : ''}`}
+      className={`rounded-lg bg-white p-6 shadow-sm transition-all hover:shadow-lg dark:bg-gray-800 ${job.featured ? 'border-2 border-primary-500' : ''}`}
     >
       {/* Featured Badge */}
       {job.featured && (
@@ -223,7 +223,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, lang = 'es' }) => {
           {job.requirements.slice(0, 4).map((req, index) => (
             <span
               key={index}
-              className="rounded bg-gray-100 px-2 py-1 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+              className="rounded-sm bg-gray-100 px-2 py-1 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300"
             >
               {req}
             </span>
@@ -242,7 +242,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, lang = 'es' }) => {
           {job.tags.slice(0, 5).map((tag) => (
             <span
               key={tag}
-              className="rounded bg-primary-100 px-2 py-1 text-xs text-primary-700 dark:bg-primary-900/20 dark:text-primary-400"
+              className="rounded-sm bg-primary-100 px-2 py-1 text-xs text-primary-700 dark:bg-primary-900/20 dark:text-primary-400"
             >
               #{tag}
             </span>

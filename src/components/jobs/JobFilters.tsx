@@ -361,7 +361,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
                   onChange={() =>
                     handleCheckboxChange('locationType', type.value)
                   }
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+                  className="rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
                 />
                 <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                   {type.label}
@@ -386,7 +386,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
                   onChange={() =>
                     handleCheckboxChange('employmentType', type.value)
                   }
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+                  className="rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
                 />
                 <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                   {type.label}
@@ -411,7 +411,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
                   onChange={() =>
                     handleCheckboxChange('experienceLevel', level.value)
                   }
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+                  className="rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
                 />
                 <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                   {level.label}
@@ -444,7 +444,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
                   onChange={(e) =>
                     handleSalaryChange('min', parseInt(e.target.value) || 0)
                   }
-                  className="w-full rounded border-gray-300 px-2 py-1 text-xs dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full rounded-sm border-gray-300 px-2 py-1 text-xs dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                   placeholder="0"
                 />
               </div>
@@ -464,7 +464,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
                       parseInt(e.target.value) || 200000
                     )
                   }
-                  className="w-full rounded border-gray-300 px-2 py-1 text-xs dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full rounded-sm border-gray-300 px-2 py-1 text-xs dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                   placeholder="200000"
                 />
               </div>
@@ -562,7 +562,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
                   onChange={() =>
                     handleCheckboxChange('industry', industry.value)
                   }
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+                  className="rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
                 />
                 <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                   {industry.label}
@@ -587,7 +587,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
                   onChange={() =>
                     handleCheckboxChange('companySize', size.value)
                   }
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+                  className="rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
                 />
                 <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                   {size.label}
@@ -612,7 +612,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
                   onChange={() =>
                     handleCheckboxChange('benefits', benefit.value)
                   }
-                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+                  className="rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
                 />
                 <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                   {benefit.label}
@@ -640,7 +640,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
       {/* Mobile Filter Button */}
       <button
         onClick={() => setShowMobileFilters(!showMobileFilters)}
-        className="mb-4 inline-flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 lg:hidden"
+        className="mb-4 inline-flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 lg:hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
       >
         <FunnelIcon className="mr-2 h-5 w-5" />
         {lang === 'es' ? 'Filtros' : 'Filters'}
@@ -655,12 +655,12 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
           1030 in secid-components.css), which otherwise covers the drawer
           header and its close button; 1050 mirrors --z-modal. */}
       {showMobileFilters && (
-        <div className="fixed inset-0 z-[1050] overflow-hidden lg:hidden">
+        <div className="fixed inset-0 z-1050 overflow-hidden lg:hidden">
           <div
-            className="absolute inset-0 bg-black bg-opacity-50"
+            className="absolute inset-0 bg-black/50"
             onClick={() => setShowMobileFilters(false)}
           />
-          <div className="absolute right-0 top-0 h-full w-80 overflow-y-auto bg-white shadow-xl dark:bg-gray-800">
+          <div className="absolute top-0 right-0 h-full w-80 overflow-y-auto bg-white shadow-xl dark:bg-gray-800">
             <div className="p-6">
               <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -683,7 +683,7 @@ export const JobFilters: React.FC<JobFiltersProps> = ({
       )}
 
       {/* Desktop Filters */}
-      <div className="hidden rounded-lg bg-white p-6 shadow dark:bg-gray-800 lg:block">
+      <div className="hidden rounded-lg bg-white p-6 shadow-sm lg:block dark:bg-gray-800">
         <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
           {lang === 'es' ? 'Filtros' : 'Filters'}
         </h2>

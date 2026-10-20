@@ -46,7 +46,7 @@ export function CvCertificationsSection({
                   </p>
                 </div>
                 <span
-                  className="flex-shrink-0 text-sm"
+                  className="shrink-0 text-sm"
                   style={{ color: 'var(--color-text-muted)' }}
                 >
                   {cert.date}

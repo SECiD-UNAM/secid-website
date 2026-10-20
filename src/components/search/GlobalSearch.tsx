@@ -322,7 +322,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black bg-opacity-50" />
+          <div className="fixed inset-0 bg-black/50" />
         </Transition.Child>
 
         {/* Modal */}
@@ -409,7 +409,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
                                 className={clsx(
                                   'flex items-center space-x-2 rounded-lg border px-3 py-2 text-sm font-medium transition-all',
                                   isSelected
-                                    ? 'border-blue-200 bg-blue-50 text-blue-700 shadow-sm'
+                                    ? 'border-blue-200 bg-blue-50 text-blue-700 shadow-xs'
                                     : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
                                 )}
                               >
@@ -453,7 +453,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
                             onClick={() => handleResultClick(result)}
                             className={clsx(
                               'w-full rounded-lg border p-4 text-left transition-all',
-                              'hover:border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500',
+                              'hover:border-gray-300 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-hidden',
                               selectedResult === index &&
                                 'border-blue-200 bg-blue-50'
                             )}
@@ -474,7 +474,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
                                   </h4>
                                   <span
                                     className={clsx(
-                                      'inline-flex items-center rounded px-2 py-0.5 text-xs font-medium',
+                                      'inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-medium',
                                       getResultTypeColor(result['type'])
                                     )}
                                   >
@@ -586,7 +586,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
                                     {search.query}
                                   </span>
                                   {search.trending && (
-                                    <span className="inline-flex items-center rounded bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+                                    <span className="inline-flex items-center rounded-sm bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
                                       🔥 Trending
                                     </span>
                                   )}

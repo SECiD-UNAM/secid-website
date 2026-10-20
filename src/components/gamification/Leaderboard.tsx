@@ -101,22 +101,16 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
   ) => (
     <div
       key={entry['userId']}
-      className={`
-        flex items-center justify-between rounded-lg border p-4 transition-all duration-200
-        ${
-          isCurrentUser
-            ? 'border-blue-200 bg-blue-50 shadow-md'
-            : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
-        }
-        ${position <= 3 ? 'ring-2 ring-yellow-200' : ''}
-      `}
+      className={`flex items-center justify-between rounded-lg border p-4 transition-all duration-200 ${
+        isCurrentUser
+          ? 'border-blue-200 bg-blue-50 shadow-md'
+          : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-xs'
+      } ${position <= 3 ? 'ring-2 ring-yellow-200' : ''} `}
     >
       <div className="flex items-center space-x-4">
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <div
-            className={`
-            flex h-12 w-12 items-center justify-center rounded-full text-lg font-bold
-            ${
+            className={`flex h-12 w-12 items-center justify-center rounded-full text-lg font-bold ${
               position === 1
                 ? 'bg-yellow-100 text-yellow-800'
                 : position === 2
@@ -124,15 +118,14 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
                   : position === 3
                     ? 'bg-orange-100 text-orange-800'
                     : 'bg-gray-50 text-gray-600'
-            }
-          `}
+            } `}
           >
             {getPositionIcon(position)}
           </div>
         </div>
 
         <div className="flex items-center space-x-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-purple-500 font-bold text-white">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-blue-400 to-purple-500 font-bold text-white">
             {entry.displayName.charAt(0).toUpperCase()}
           </div>
           <div>
@@ -207,14 +200,11 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
               <button
                 key={type}
                 onClick={() => setActiveType(type)}
-                className={`
-                flex items-center space-x-2 rounded-md px-4 py-2 font-medium transition-colors
-                ${
+                className={`flex items-center space-x-2 rounded-md px-4 py-2 font-medium transition-colors ${
                   activeType === type
                     ? 'bg-blue-600 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }
-              `}
+                } `}
               >
                 <span>{getTypeIcon(type)}</span>
                 <span>{getTypeLabel(type)}</span>
@@ -233,14 +223,11 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
             <button
               key={periodOption.key}
               onClick={() => setPeriod(periodOption.key as any)}
-              className={`
-                rounded-md px-3 py-1 text-sm transition-colors
-                ${
-                  period === periodOption.key
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }
-              `}
+              className={`rounded-md px-3 py-1 text-sm transition-colors ${
+                period === periodOption.key
+                  ? 'bg-gray-900 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              } `}
             >
               {periodOption.label}
             </button>
@@ -304,7 +291,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({
 
       {/* Motivational Footer */}
       {userRank && userRank.rank > 10 && (
-        <div className="mt-6 rounded-lg border border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 p-4">
+        <div className="mt-6 rounded-lg border border-blue-200 bg-linear-to-r from-blue-50 to-purple-50 p-4">
           <div className="flex items-center space-x-3">
             <span className="text-2xl">🚀</span>
             <div>

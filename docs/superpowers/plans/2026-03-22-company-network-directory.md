@@ -545,7 +545,7 @@ export const CompanyDrawer: React.FC<Props> = ({
 
       {/* Drawer */}
       <div
-        className={`fixed bottom-0 right-0 top-0 z-50 w-full max-w-md transform overflow-y-auto bg-white shadow-2xl transition-transform dark:bg-gray-900 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-0 right-0 bottom-0 z-50 w-full max-w-md transform overflow-y-auto bg-white shadow-2xl transition-transform dark:bg-gray-900 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
@@ -621,7 +621,7 @@ export const CompanyDrawer: React.FC<Props> = ({
             <>
               {/* Current Members */}
               <div className="mb-6">
-                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                <h3 className="mb-3 text-sm font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                   {lang === 'es'
                     ? `Miembros actuales (${current.length})`
                     : `Current members (${current.length})`}
@@ -650,7 +650,7 @@ export const CompanyDrawer: React.FC<Props> = ({
               {/* Alumni */}
               {alumni.length > 0 && (
                 <div className="mb-6">
-                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <h3 className="mb-3 text-sm font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                     Alumni ({alumni.length})
                   </h3>
                   <div className="space-y-2">
@@ -871,7 +871,7 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
       {/* Search + Filter */}
       <div className="mb-6 flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+          <MagnifyingGlassIcon className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             value={search}
@@ -879,15 +879,15 @@ export const CompanyList: React.FC<Props> = ({ lang = 'es' }) => {
             placeholder={
               lang === 'es' ? 'Buscar empresa...' : 'Search company...'
             }
-            className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-4 text-gray-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:ring-primary-800"
+            className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pr-4 pl-10 text-gray-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:ring-primary-800"
           />
         </div>
         <div className="relative">
-          <FunnelIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+          <FunnelIcon className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
           <select
             value={industryFilter}
             onChange={(e) => setIndustryFilter(e.target.value)}
-            className="rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-8 text-gray-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:ring-primary-800"
+            className="rounded-lg border border-gray-300 bg-white py-2.5 pr-8 pl-10 text-gray-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:ring-primary-800"
           >
             <option value="">
               {lang === 'es' ? 'Todas las industrias' : 'All industries'}

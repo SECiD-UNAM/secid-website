@@ -392,7 +392,7 @@ export const AdminDashboard: React.FC = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {/* Users */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-xs dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -415,7 +415,7 @@ export const AdminDashboard: React.FC = () => {
         {/* Pending member approvals — Phase 0 #2 */}
         <a
           href={`/${language === 'es' ? 'es' : 'en'}/dashboard/admin/members?status=pending`}
-          className="block rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-colors hover:bg-orange-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-orange-900/10"
+          className="block rounded-lg border border-gray-200 bg-white p-6 shadow-xs transition-colors hover:bg-orange-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-orange-900/10"
         >
           <div className="flex items-center justify-between">
             <div>
@@ -449,7 +449,7 @@ export const AdminDashboard: React.FC = () => {
         </a>
 
         {/* Jobs */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-xs dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -470,7 +470,7 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Events */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-xs dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -490,7 +490,7 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Pending Reports */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-xs dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -512,7 +512,7 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-xs dark:border-gray-700 dark:bg-gray-800">
         <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
           {language === 'es' ? 'Acciones Rápidas' : 'Quick Actions'}
         </h2>
@@ -570,7 +570,7 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Recent Activity */}
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div className="rounded-lg border border-gray-200 bg-white shadow-xs dark:border-gray-700 dark:bg-gray-800">
         <div className="border-b border-gray-200 p-6 dark:border-gray-700">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             {language === 'es' ? 'Actividad Reciente' : 'Recent Activity'}

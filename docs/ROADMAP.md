@@ -131,7 +131,7 @@ Playwright solo incluía 7 archivos por su `testMatch`.
 
 ## Bloque E — Deuda mayor (planear aparte)
 
-- [ ] E16. Majors de dependencias pendientes de PR #92
+- [x] E16. Majors de dependencias pendientes de PR #92
       ([known-issues/npm-audit-2026-10-18.md](./known-issues/npm-audit-2026-10-18.md)).
       Fase 1 hecha (PR #133, 2026-10-19): Vitest 1 → 5 (solo dev; un solo
       `vite` 7 en el árbol, `sequence.concurrent` apagado, umbrales de
@@ -145,8 +145,14 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       Ya no queda ninguna advertencia en el runtime de producción: raíz
       16 → 14 (0 críticas), solo prod 12 → 10. Astro queda en `~7.3`
       porque 7.4 y `@astrojs/react` 7.1 exigen Node 22.22 (subir `.nvmrc`
-      y `NODE_VERSION` es decisión del owner). Fase 2b pendiente: Tailwind
-      4 (limpia la familia `braces`/`chokidar`/`postcss-selector-parser`).
+      y `NODE_VERSION` es decisión del owner). Fase 2b hecha (PR #**PR2**,
+      2026-10-19): Tailwind CSS 3 → 4 con `@tailwindcss/vite`, tema en
+      `src/styles/tailwind.css` (`@theme`), renombres de utilidades vía
+      `npx @tailwindcss/upgrade`, variante `dark` que acepta `.dark` y
+      `[data-theme='dark']`, y defaults de v3 (borde, ring, placeholder,
+      cursor de botón) conservados; capturas de `/es/`, `/es/login` y
+      `/es/dashboard` idénticas antes/después. Raíz 14 → 11, solo prod
+      10 → 6; lo que queda son herramientas de build/dev (ver el doc).
 - [ ] E17. MCP de SECiD según
       [specs/secid-mcp-and-assistant-skill.md](./specs/secid-mcp-and-assistant-skill.md),
       solo si las operaciones de miembros se vuelven frecuentes. La skill
@@ -307,9 +313,8 @@ Dev, en este orden y cada paso un PR con auto-merge:
 6. F19 → F20 → F21 (3–4 días) cuando haya eventos, mensajes de contacto o
    un comunicado real que mandar; F22 solo si se decide conservar el centro
    de notificaciones.
-7. E16 fase 2b (Tailwind 4; la fase 1 — Vitest 5 y Firebase Admin 14 — está
-   en PR #133 y la 2a — Astro 7 — en PR #140) después del paso 3, con el
-   e2e completo bloqueante para detectar regresiones visuales.
+7. ~~E16 fase 2b~~ — hecho: fase 1 (Vitest 5, Firebase Admin 14) en PR
+   #133, 2a (Astro 7) en PR #140 y 2b (Tailwind 4) en PR #**PR2**.
 
 Owner, cuando pueda (C8–C11, ~30 min) y en su fecha (D12–D15). E17/E18 sin
 fecha.

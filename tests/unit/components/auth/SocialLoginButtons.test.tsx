@@ -687,7 +687,7 @@ describe('SocialLoginButtons', { concurrent: false }, () => {
 
       const buttons = screen.getAllByRole('button');
       buttons.forEach((button) => {
-        expect(button).toHaveClass('shadow-sm');
+        expect(button).toHaveClass('shadow-xs');
         expect(button).toHaveClass('hover:shadow-md');
       });
     });

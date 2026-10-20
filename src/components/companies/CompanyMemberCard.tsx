@@ -65,8 +65,8 @@ export const CompanyMemberCard: React.FC<Props> = ({
       <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50">
         <div className="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-600" />
         <div className="flex-1">
-          <div className="h-4 w-24 rounded bg-gray-300 dark:bg-gray-600" />
-          <div className="mt-1 h-3 w-16 rounded bg-gray-200 dark:bg-gray-700" />
+          <div className="h-4 w-24 rounded-sm bg-gray-300 dark:bg-gray-600" />
+          <div className="mt-1 h-3 w-16 rounded-sm bg-gray-200 dark:bg-gray-700" />
         </div>
         <span className="text-xs text-gray-400 dark:text-gray-500">
           {t.signInToView}

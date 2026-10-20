@@ -288,7 +288,7 @@ const ConversationComponent: React.FC<ConversationProps> = ({
             <div
               className={`mb-1 text-xs text-gray-500 ${isOwn ? 'text-right' : 'text-left'}`}
             >
-              <div className="rounded border-l-2 border-gray-300 bg-gray-100 px-2 py-1">
+              <div className="rounded-sm border-l-2 border-gray-300 bg-gray-100 px-2 py-1">
                 {t('messaging.replyingTo')}:{' '}
                 {replyToMsg.content.substring(0, 50)}
                 {replyToMsg.content.length > 50 && '...'}
@@ -310,7 +310,7 @@ const ConversationComponent: React.FC<ConversationProps> = ({
                 <textarea
                   ref={editTextareaRef}
                   defaultValue={message.content}
-                  className="w-full resize-none border-none bg-transparent focus:outline-none"
+                  className="w-full resize-none border-none bg-transparent focus:outline-hidden"
                   rows={Math.max(1, Math.ceil(message.content.length / 50))}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
@@ -329,13 +329,13 @@ const ConversationComponent: React.FC<ConversationProps> = ({
                         handleEditMessage(message.id, textarea.value);
                       }
                     }}
-                    className="rounded bg-green-600 px-2 py-1 text-xs text-white"
+                    className="rounded-sm bg-green-600 px-2 py-1 text-xs text-white"
                   >
                     {t('common.save')}
                   </button>
                   <button
                     onClick={() => setEditingMessageId(null)}
-                    className="rounded bg-gray-600 px-2 py-1 text-xs text-white"
+                    className="rounded-sm bg-gray-600 px-2 py-1 text-xs text-white"
                   >
                     {t('common.cancel')}
                   </button>
@@ -343,7 +343,7 @@ const ConversationComponent: React.FC<ConversationProps> = ({
               </div>
             ) : (
               <>
-                <div className="break-words">{message.content}</div>
+                <div className="wrap-break-word">{message.content}</div>
 
                 {/* Attachments */}
                 {message.attachments.length > 0 && (
@@ -357,14 +357,14 @@ const ConversationComponent: React.FC<ConversationProps> = ({
                           <img
                             src={attachment.fileUrl}
                             alt={attachment.fileName}
-                            className="max-w-xs rounded"
+                            className="max-w-xs rounded-sm"
                           />
                         ) : (
                           <a
                             href={attachment.fileUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center space-x-2 rounded bg-white bg-opacity-20 px-2 py-1"
+                            className="flex items-center space-x-2 rounded-sm bg-white/20 px-2 py-1"
                           >
                             <svg
                               className="h-4 w-4"
@@ -388,12 +388,12 @@ const ConversationComponent: React.FC<ConversationProps> = ({
                 )}
 
                 {/* Message actions */}
-                <div className="absolute right-0 top-0 translate-x-full transform opacity-0 transition-opacity group-hover:opacity-100">
-                  <div className="flex items-center space-x-1 rounded bg-white p-1 shadow-lg">
+                <div className="absolute top-0 right-0 translate-x-full transform opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="flex items-center space-x-1 rounded-sm bg-white p-1 shadow-lg">
                     {/* Reply */}
                     <button
                       onClick={() => setReplyToMessage(message)}
-                      className="rounded p-1 text-gray-600 hover:text-blue-600"
+                      className="rounded-sm p-1 text-gray-600 hover:text-blue-600"
                       title={t('messaging.reply')}
                     >
                       <svg
@@ -419,7 +419,7 @@ const ConversationComponent: React.FC<ConversationProps> = ({
                             showEmojiPicker === message.id ? null : message.id
                           )
                         }
-                        className="rounded p-1 text-gray-600 hover:text-yellow-600"
+                        className="rounded-sm p-1 text-gray-600 hover:text-yellow-600"
                         title={t('messaging.addReaction')}
                       >
                         <svg
@@ -438,7 +438,7 @@ const ConversationComponent: React.FC<ConversationProps> = ({
                       </button>
 
                       {showEmojiPicker === message.id && (
-                        <div className="absolute bottom-full right-0 z-10 mb-2 rounded-lg border bg-white p-2 shadow-lg">
+                        <div className="absolute right-0 bottom-full z-10 mb-2 rounded-lg border bg-white p-2 shadow-lg">
                           <div className="grid grid-cols-6 gap-1">
                             {['👍', '❤️', '😂', '😮', '😢', '😡'].map(
                               (emoji) => (
@@ -448,7 +448,7 @@ const ConversationComponent: React.FC<ConversationProps> = ({
                                     handleReaction(message.id, emoji);
                                     setShowEmojiPicker(null);
                                   }}
-                                  className="rounded p-1 hover:bg-gray-100"
+                                  className="rounded-sm p-1 hover:bg-gray-100"
                                 >
                                   {emoji}
                                 </button>
@@ -463,7 +463,7 @@ const ConversationComponent: React.FC<ConversationProps> = ({
                     {isOwn && (
                       <button
                         onClick={() => setEditingMessageId(message.id)}
-                        className="rounded p-1 text-gray-600 hover:text-green-600"
+                        className="rounded-sm p-1 text-gray-600 hover:text-green-600"
                         title={t('messaging.edit')}
                       >
                         <svg
@@ -486,7 +486,7 @@ const ConversationComponent: React.FC<ConversationProps> = ({
                     {isOwn && (
                       <button
                         onClick={() => handleDeleteMessage(message.id)}
-                        className="rounded p-1 text-gray-600 hover:text-red-600"
+                        className="rounded-sm p-1 text-gray-600 hover:text-red-600"
                         title={t('messaging.delete')}
                       >
                         <svg

@@ -53,7 +53,7 @@ export function CvAwardsSection({
                 </div>
                 {award.year && (
                   <span
-                    className="flex-shrink-0 text-sm"
+                    className="shrink-0 text-sm"
                     style={{ color: 'var(--color-text-muted)' }}
                   >
                     {award.year}

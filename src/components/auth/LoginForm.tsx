@@ -408,7 +408,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       {isDemoMode() && (
         <div className="rounded-md border border-yellow-300 bg-yellow-50 p-4 dark:border-yellow-700 dark:bg-yellow-900/20">
           <div className="flex">
-            <AlertCircle className="mr-3 mt-0.5 h-5 w-5 text-yellow-500" />
+            <AlertCircle className="mt-0.5 mr-3 h-5 w-5 text-yellow-500" />
             <p className="text-sm text-yellow-800 dark:text-yellow-300">
               {lang === 'es'
                 ? 'La autenticación no está configurada. Contacta al administrador.'
@@ -429,7 +429,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 
       {/* Forgot Password Modal */}
       {showForgotPassword && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 dark:bg-gray-800">
             <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-white">
               {lang === 'es' ? 'Recuperar contraseña' : 'Recover password'}
@@ -449,7 +449,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                   placeholder={
                     lang === 'es' ? 'Correo electrónico' : 'Email address'
                   }
-                  className="mb-4 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:outline-none focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="mb-4 w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-primary-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                 />
                 <div className="flex space-x-3">
                   <Button
@@ -501,7 +501,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         {error && (
           <div className="rounded-md border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
             <div className="flex">
-              <AlertCircle className="mr-3 mt-0.5 h-5 w-5 text-red-400" />
+              <AlertCircle className="mt-0.5 mr-3 h-5 w-5 text-red-400" />
               <p className="text-sm text-red-800 dark:text-red-400">{error}</p>
             </div>
           </div>
@@ -520,7 +520,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               type="email"
               autoComplete="email"
               {...register('email')}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white sm:text-sm"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-xs focus:border-primary-500 focus:ring-primary-500 focus:outline-hidden sm:text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
             />
             {errors['email'] && (
               <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -553,7 +553,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                     200
                   );
                 }}
-                className="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white sm:text-sm"
+                className="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 shadow-xs focus:border-primary-500 focus:ring-primary-500 focus:outline-hidden sm:text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white"
               />
               <button
                 type="button"
@@ -654,7 +654,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
               id="remember-me"
               type="checkbox"
               {...register('rememberMe')}
-              className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
+              className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
             />
             <label
               htmlFor="remember-me"

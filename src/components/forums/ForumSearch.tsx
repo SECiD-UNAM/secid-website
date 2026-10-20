@@ -279,13 +279,13 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
           <form onSubmit={handleSearch} className="mb-4">
             <div className="flex gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+                <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
                 <input
                   type="text"
                   value={localQuery}
                   onChange={(e) => setLocalQuery(e.target.value)}
                   placeholder={t.forum.searchPlaceholder}
-                  className="w-full rounded-lg border border-gray-300 bg-white py-3 pl-10 pr-4 text-gray-900 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full rounded-lg border border-gray-300 bg-white py-3 pr-4 pl-10 text-gray-900 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                 />
               </div>
               <button
@@ -394,7 +394,7 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
                             }));
                           }
                         }}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
+                        className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
                       />
                       <span className="text-sm text-gray-700 dark:text-gray-300">
                         {category['name']}
@@ -489,7 +489,7 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
                           hasAttachments: e.target.checked,
                         }))
                       }
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
+                      className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300">
                       Has attachments
@@ -536,7 +536,7 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
                     onClick={() => setActiveTab('all')}
                     className={`rounded-md px-4 py-2 text-sm transition-colors ${
                       activeTab === 'all'
-                        ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-600 dark:text-white'
+                        ? 'bg-white text-gray-900 shadow-xs dark:bg-gray-600 dark:text-white'
                         : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
                     }`}
                   >
@@ -546,7 +546,7 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
                     onClick={() => setActiveTab('topics')}
                     className={`rounded-md px-4 py-2 text-sm transition-colors ${
                       activeTab === 'topics'
-                        ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-600 dark:text-white'
+                        ? 'bg-white text-gray-900 shadow-xs dark:bg-gray-600 dark:text-white'
                         : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
                     }`}
                   >
@@ -556,7 +556,7 @@ const ForumSearch: React.FC<ForumSearchProps> = ({
                     onClick={() => setActiveTab('posts')}
                     className={`rounded-md px-4 py-2 text-sm transition-colors ${
                       activeTab === 'posts'
-                        ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-600 dark:text-white'
+                        ? 'bg-white text-gray-900 shadow-xs dark:bg-gray-600 dark:text-white'
                         : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
                     }`}
                   >

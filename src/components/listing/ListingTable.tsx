@@ -31,7 +31,7 @@ export function ListingTable<T>({
   return (
     <div className={`overflow-x-auto ${className}`}>
       <table className="w-full text-left text-sm">
-        <thead className="border-b-2 border-gray-200 text-xs uppercase text-gray-500 dark:border-gray-700 dark:text-gray-400">
+        <thead className="border-b-2 border-gray-200 text-xs text-gray-500 uppercase dark:border-gray-700 dark:text-gray-400">
           <tr>
             {columns.map((col) => (
               <th

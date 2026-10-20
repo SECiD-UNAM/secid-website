@@ -283,7 +283,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
               type="checkbox"
               checked={isSelected}
               onChange={(e) => handleResultSelect(result.id, e.target.checked)}
-              className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="mt-1 h-4 w-4 rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
             />
 
             <div className="min-w-0 flex-1">
@@ -324,7 +324,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
 
               {result?.highlights?.length > 0 && (
                 <div className="mb-3">
-                  <div className="rounded border-l-2 border-yellow-200 bg-yellow-50 p-2 text-sm text-gray-700">
+                  <div className="rounded-sm border-l-2 border-yellow-200 bg-yellow-50 p-2 text-sm text-gray-700">
                     <strong>Matches:</strong> {result.highlights?.[0].snippet}
                   </div>
                 </div>
@@ -372,13 +372,13 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             type="checkbox"
             checked={isSelected}
             onChange={(e) => handleResultSelect(result.id, e.target.checked)}
-            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="h-4 w-4 rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
           />
           <div className="min-w-0 flex-1">
             <div className="mb-1 flex items-center space-x-2">
               <span
                 className={clsx(
-                  'inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium',
+                  'inline-flex items-center rounded-sm px-1.5 py-0.5 text-xs font-medium',
                   config.bgColor,
                   config.color
                 )}
@@ -625,7 +625,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                             : filters.contentTypes.filter((t) => t !== type);
                           handleFilterChange({ contentTypes: newTypes });
                         }}
-                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="h-4 w-4 rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                       <span className="ml-2 text-sm text-gray-700">
                         {label} ({count})
@@ -655,7 +655,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                             : currentCategories.filter((c) => c !== category);
                           handleFilterChange({ category: newCategories });
                         }}
-                        className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="h-4 w-4 rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                       <span className="ml-2 text-sm text-gray-700">
                         {category} ({count})
@@ -727,12 +727,12 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                     )}
                     value={searchWithinResults}
                     onChange={(e) => setSearchWithinResults(e.target.value)}
-                    className="rounded border border-gray-300 py-1 pl-3 pr-8 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                    className="rounded-sm border border-gray-300 py-1 pr-8 pl-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                   />
                   {searchWithinResults && (
                     <button
                       onClick={() => setSearchWithinResults('')}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-gray-600"
+                      className="absolute top-1/2 right-2 -translate-y-1/2 transform text-gray-400 hover:text-gray-600"
                     >
                       ×
                     </button>
@@ -750,7 +750,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                       filteredResults.length > 0
                     }
                     onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   <span className="ml-2 text-gray-700">
                     Select all ({selectedResults.size} selected)
@@ -769,7 +769,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
                         direction: direction as 'asc' | 'desc',
                       });
                     }}
-                    className="rounded border border-gray-300 px-3 py-1 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                    className="rounded-sm border border-gray-300 px-3 py-1 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                   >
                     {SORT_OPTIONS.map((option) => (
                       <option

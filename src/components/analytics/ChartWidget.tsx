@@ -383,7 +383,7 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
   return (
     <div
       className={clsx(
-        'rounded-lg border border-gray-200 bg-white shadow-sm',
+        'rounded-lg border border-gray-200 bg-white shadow-xs',
         className
       )}
     >

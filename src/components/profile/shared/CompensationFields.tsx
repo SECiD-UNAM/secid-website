@@ -229,7 +229,7 @@ export const CompensationFields: React.FC<Props> = ({
 
       {/* Expanded form */}
       {isExpanded && (
-        <div className="space-y-5 border-t border-gray-200 px-4 pb-5 pt-4 dark:border-gray-700">
+        <div className="space-y-5 border-t border-gray-200 px-4 pt-4 pb-5 dark:border-gray-700">
           {/* Privacy notice */}
           <p className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
             <LockClosedIcon className="h-3.5 w-3.5 shrink-0" />
@@ -343,7 +343,7 @@ export const CompensationFields: React.FC<Props> = ({
           {/* Auto-calculated net salary */}
           {netResult && (
             <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+              <p className="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
                 {lang === 'es'
                   ? 'Cálculo estimado (neto)'
                   : 'Estimated calculation (net)'}

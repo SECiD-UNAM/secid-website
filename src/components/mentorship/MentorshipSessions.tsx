@@ -1033,7 +1033,7 @@ export default function MentorshipSessions({
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* -- Basic Information -- */}
-          <section className="rounded-xl bg-white p-5 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+          <section className="rounded-xl bg-white p-5 shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
             <h3 className={sectionHeadingClass}>
               {t.mentorship.sessions.basicInfo}
             </h3>
@@ -1126,7 +1126,7 @@ export default function MentorshipSessions({
           </section>
 
           {/* -- Session Type -- */}
-          <section className="rounded-xl bg-white p-5 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+          <section className="rounded-xl bg-white p-5 shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
             <h3 className={sectionHeadingClass}>
               {t.mentorship.sessions.sessionType}
             </h3>
@@ -1226,7 +1226,7 @@ export default function MentorshipSessions({
           </section>
 
           {/* -- Agenda -- */}
-          <section className="rounded-xl bg-white p-5 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+          <section className="rounded-xl bg-white p-5 shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
             <h3 className={sectionHeadingClass}>
               {t.mentorship.sessions.agenda}
             </h3>
@@ -1247,7 +1247,7 @@ export default function MentorshipSessions({
                     <button
                       type="button"
                       onClick={() => removeAgendaItem(item)}
-                      className="shrink-0 rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
+                      className="shrink-0 rounded-sm p-1 text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
                     >
                       <XIcon />
                     </button>
@@ -1282,7 +1282,7 @@ export default function MentorshipSessions({
           </section>
 
           {/* -- Resources -- */}
-          <section className="rounded-xl bg-white p-5 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+          <section className="rounded-xl bg-white p-5 shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
             <h3 className={sectionHeadingClass}>
               {t.mentorship.sessions.resources}
             </h3>
@@ -1309,7 +1309,7 @@ export default function MentorshipSessions({
                     <button
                       type="button"
                       onClick={() => removeResource(index)}
-                      className="ml-auto shrink-0 rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
+                      className="ml-auto shrink-0 rounded-sm p-1 text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
                     >
                       <XIcon />
                     </button>
@@ -1371,7 +1371,7 @@ export default function MentorshipSessions({
           </section>
 
           {/* -- Notes -- */}
-          <section className="rounded-xl bg-white p-5 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+          <section className="rounded-xl bg-white p-5 shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
             <h3 className={sectionHeadingClass}>
               {t.mentorship.sessions.notes}
             </h3>
@@ -1480,7 +1480,7 @@ export default function MentorshipSessions({
       <div className="space-y-4">
         {filteredSessions.length === 0 ? (
           /* Empty state */
-          <div className="flex flex-col items-center justify-center rounded-xl bg-white py-16 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+          <div className="flex flex-col items-center justify-center rounded-xl bg-white py-16 shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
             <CalendarIcon className="mb-4 text-gray-300 dark:text-gray-600" />
             <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
               {t.mentorship.sessions.noSessions}
@@ -1499,7 +1499,7 @@ export default function MentorshipSessions({
             return (
               <div
                 key={session.id}
-                className="rounded-xl bg-white p-5 shadow-sm transition-all hover:shadow-md dark:border dark:border-gray-700/30 dark:bg-gray-800"
+                className="rounded-xl bg-white p-5 shadow-xs transition-all hover:shadow-md dark:border dark:border-gray-700/30 dark:bg-gray-800"
               >
                 {/* Card header */}
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -1580,7 +1580,7 @@ export default function MentorshipSessions({
                   {/* Agenda */}
                   {session.agenda && session.agenda.length > 0 && (
                     <div>
-                      <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                      <h4 className="mb-1.5 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                         {t.mentorship.sessions.agenda}
                       </h4>
                       <ul className="space-y-1">
@@ -1606,7 +1606,7 @@ export default function MentorshipSessions({
                   {/* Resources */}
                   {ext.resources && ext.resources.length > 0 && (
                     <div>
-                      <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                      <h4 className="mb-1.5 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                         {t.mentorship.sessions.resources}
                       </h4>
                       <div className="flex flex-wrap gap-2">
@@ -1635,7 +1635,7 @@ export default function MentorshipSessions({
                   {/* Homework */}
                   {session.homework && session.homework.length > 0 && (
                     <div>
-                      <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                      <h4 className="mb-1.5 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                         {t.mentorship.sessions.homework}
                       </h4>
                       <div className="space-y-1">

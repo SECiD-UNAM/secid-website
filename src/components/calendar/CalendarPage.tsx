@@ -164,7 +164,7 @@ function ActivityBadge({
   if (compact) {
     return (
       <div
-        className={`rounded border px-1.5 py-0.5 text-xs font-medium ${colorClass} ${textClass} truncate`}
+        className={`rounded-sm border px-1.5 py-0.5 text-xs font-medium ${colorClass} ${textClass} truncate`}
         title={
           activity.topic ?? t(isJC ? 'journalClub' : 'knowledgeExchange', lang)
         }
@@ -179,7 +179,7 @@ function ActivityBadge({
     <div
       className={`flex items-start gap-3 rounded-lg border p-4 ${colorClass} ${past ? 'opacity-65' : ''}`}
     >
-      <div className={`mt-0.5 flex-shrink-0 ${iconClass}`}>
+      <div className={`mt-0.5 shrink-0 ${iconClass}`}>
         {isJC ? (
           <BookOpenIcon className="h-5 w-5" />
         ) : (
@@ -189,7 +189,7 @@ function ActivityBadge({
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <span
-            className={`text-xs font-semibold uppercase tracking-wide ${iconClass}`}
+            className={`text-xs font-semibold tracking-wide uppercase ${iconClass}`}
           >
             {t(isJC ? 'journalClub' : 'knowledgeExchange', lang)}
           </span>
@@ -446,7 +446,7 @@ export default function CalendarPage({ lang = 'es' }: CalendarPageProps) {
       {/* Both views side by side on desktop, stacked on mobile */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
         {/* Month view */}
-        <div className="rounded-xl bg-white p-4 shadow dark:bg-gray-800">
+        <div className="rounded-xl bg-white p-4 shadow-sm dark:bg-gray-800">
           <h2 className="mb-4 text-base font-semibold text-gray-700 dark:text-gray-300">
             {t('monthView', lang)}
           </h2>
@@ -454,7 +454,7 @@ export default function CalendarPage({ lang = 'es' }: CalendarPageProps) {
         </div>
 
         {/* List view */}
-        <div className="rounded-xl bg-white p-4 shadow dark:bg-gray-800">
+        <div className="rounded-xl bg-white p-4 shadow-sm dark:bg-gray-800">
           <h2 className="mb-4 text-base font-semibold text-gray-700 dark:text-gray-300">
             {t('listView', lang)}
           </h2>
