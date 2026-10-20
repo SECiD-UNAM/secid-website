@@ -11,8 +11,11 @@
  *     mail; already confirmed → nothing resent; pending or unsubscribed →
  *     fresh token + mail;
  *   - confirm flips pending → confirmed and burns the token;
- *   - unsubscribe flips any status → unsubscribed;
- *   - docs without `status` (written before F21) count as confirmed.
+ *   - unsubscribe flips any status → unsubscribed on EVERY doc of that
+ *     email (pre-F21 the form added a doc per submission, so one address
+ *     can own several);
+ *   - docs without `status` (written before F21) count as confirmed;
+ *   - emails are normalized (trim + lowercase) before any lookup.
  *
  * The module takes the Firestore handle as a parameter, so only FieldValue
  * and the email helpers are mocked.
@@ -259,6 +262,48 @@ describe('upsertPendingSubscription', { concurrent: false }, () => {
     expect(doc!.confirmTokenHash).not.toBe('old');
     expect(H.sendEmail).toHaveBeenCalledTimes(1);
   });
+
+  it('normalizes the email before looking it up', async () => {
+    H.state.docs.set('newsletter/s1', {
+      email: 'ana@example.com',
+      status: 'confirmed',
+    });
+    await upsertPendingSubscription(db, {
+      ...input,
+      email: ' Ana@Example.COM ',
+    });
+    expect(subs()).toHaveLength(1);
+    expect(H.sendEmail).not.toHaveBeenCalled();
+  });
+
+  it('with duplicate docs, a confirmed one wins and nothing is resent', async () => {
+    H.state.docs.set('newsletter/s1', {
+      email: 'ana@example.com',
+      status: 'pending',
+      confirmTokenHash: 'old',
+    });
+    H.state.docs.set('newsletter/s2', { email: 'ana@example.com' });
+    await upsertPendingSubscription(db, input);
+    expect(subs()).toHaveLength(2);
+    expect(H.sendEmail).not.toHaveBeenCalled();
+    expect(H.state.docs.get('newsletter/s1')!.confirmTokenHash).toBe('old');
+  });
+
+  it('with duplicate docs, an unsubscribed one means a new confirmation is required', async () => {
+    H.state.docs.set('newsletter/s1', { email: 'ana@example.com' });
+    H.state.docs.set('newsletter/s2', {
+      email: 'ana@example.com',
+      status: 'unsubscribed',
+    });
+    await upsertPendingSubscription(db, input);
+    expect(subs()).toHaveLength(2);
+    expect(H.sendEmail).toHaveBeenCalledTimes(1);
+    expect(subs().filter((d) => d.status === 'pending')).toHaveLength(1);
+    const pending = subs().find((d) => d.status === 'pending')!;
+    expect(
+      hashToken(linkFrom(lastMail().html, '/api/newsletter/confirm'))
+    ).toBe(pending.confirmTokenHash);
+  });
 });
 
 describe('confirmSubscription', { concurrent: false }, () => {
@@ -281,6 +326,28 @@ describe('confirmSubscription', { concurrent: false }, () => {
 
     // Second use of the same link is rejected.
     expect(await confirmSubscription(db, token)).toEqual({ ok: false });
+  });
+
+  it('confirms every doc of that email so a legacy duplicate cannot keep it blocked', async () => {
+    H.state.docs.set('newsletter/s1', { email: 'ana@example.com' });
+    H.state.docs.set('newsletter/s2', {
+      email: 'ana@example.com',
+      status: 'unsubscribed',
+    });
+    await upsertPendingSubscription(db, {
+      email: 'ana@example.com',
+      name: 'Ana',
+      interests: [],
+      lang: 'es',
+      ipHash: 'x',
+    });
+    const token = linkFrom(lastMail().html, '/api/newsletter/confirm');
+
+    expect(await confirmSubscription(db, token)).toEqual({
+      ok: true,
+      lang: 'es',
+    });
+    expect(subs().map((d) => d.status)).toEqual(['confirmed', 'confirmed']);
   });
 
   it('rejects unknown or malformed tokens', async () => {
@@ -311,6 +378,36 @@ describe('unsubscribeByToken', { concurrent: false }, () => {
       ok: true,
       lang: 'es',
     });
+  });
+
+  it('marks every doc of that email unsubscribed, including legacy duplicates', async () => {
+    const token = newToken();
+    H.state.docs.set('newsletter/s1', {
+      email: 'ana@example.com',
+      status: 'confirmed',
+      unsubscribeToken: token,
+    });
+    H.state.docs.set('newsletter/s2', { email: 'ana@example.com' });
+    H.state.docs.set('newsletter/s3', {
+      email: 'ana@example.com',
+      status: 'pending',
+      confirmTokenHash: 'h',
+    });
+    H.state.docs.set('newsletter/other', { email: 'luis@example.com' });
+
+    expect(await unsubscribeByToken(db, token)).toEqual({
+      ok: true,
+      lang: 'es',
+    });
+
+    for (const id of ['s1', 's2', 's3']) {
+      expect(H.state.docs.get(`newsletter/${id}`)).toMatchObject({
+        status: 'unsubscribed',
+        unsubscribedAt: H.SERVER_TIMESTAMP,
+      });
+    }
+    expect(H.state.docs.get('newsletter/s3')!.confirmTokenHash).toBeUndefined();
+    expect(H.state.docs.get('newsletter/other')!.status).toBeUndefined();
   });
 
   it('rejects an unknown token', async () => {

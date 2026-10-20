@@ -6,15 +6,19 @@
  *   - RBAC: `newsletter:publish` (`nl:p.a`, newsletter-editor / content-
  *     editor / admin wildcard) is required.
  *   - Recipients are `newsletter/` docs that are confirmed or legacy (no
- *     status); pending, unsubscribed, QA plus-tag and duplicate emails are
- *     excluded.
+ *     status); pending, QA plus-tag and duplicate emails are excluded, and
+ *     an email with ANY unsubscribed doc (legacy duplicates) is excluded
+ *     entirely.
  *   - The issue's HTML content is sanitized and every email carries that
  *     recipient's own unsubscribe link (legacy docs get a token minted).
- *   - An issue that already has `sentAt` is refused unless `force: true`;
- *     a send records sentAt / recipientCount / sentBy on the issue.
+ *   - The send is claimed in a transaction (`sendingAt`): a concurrent
+ *     call is refused, a finished issue (`sentAt`) is refused unless
+ *     `force: true`, and mail docs have deterministic ids so a retry after
+ *     a partial failure never mails anyone twice.
  *   - dryRun only counts.
  *
- * Mocking strategy mirrors announcements.test.ts.
+ * email-service.ts is NOT mocked: it writes to the same in-memory
+ * Firestore, so the tests see the real `mail/` docs and their ids.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -29,7 +33,6 @@ const PATHS = vi.hoisted(() => {
   return {
     init: path.resolve('functions/src/init.ts'),
     env: path.resolve('functions/src/env.ts'),
-    emailService: path.resolve('functions/src/email-service.ts'),
     firebaseAdminFirestore: path.join(
       functionsModules,
       'firebase-admin/lib/esm/firestore/index.js'
@@ -50,10 +53,29 @@ const H = vi.hoisted(() => {
       this.code = code;
     }
   }
-  const state = { docs: new Map<string, Data>(), autoId: 0 };
+  const state = {
+    docs: new Map<string, Data>(),
+    autoId: 0,
+    /** Commits that touch `mail/` so far; set failMailCommit to break one. */
+    mailCommits: 0,
+    failMailCommit: 0,
+  };
   const SERVER_TIMESTAMP = { __sentinel: 'serverTimestamp' };
-  const FieldValue = { serverTimestamp: () => SERVER_TIMESTAMP };
+  const DELETE = { __sentinel: 'delete' };
+  const FieldValue = {
+    serverTimestamp: () => SERVER_TIMESTAMP,
+    delete: () => DELETE,
+  };
+  type Op = { kind: 'set' | 'update' | 'create'; path: string; payload: Data };
 
+  function applyUpdate(path: string, payload: Data) {
+    const next = { ...(state.docs.get(path) ?? {}) };
+    for (const [k, v] of Object.entries(payload)) {
+      if (v === DELETE) delete next[k];
+      else next[k] = v;
+    }
+    state.docs.set(path, next);
+  }
   function snapshot(path: string) {
     const data = state.docs.get(path);
     return {
@@ -68,14 +90,20 @@ const H = vi.hoisted(() => {
       id: path.split('/').pop() as string,
       path,
       get: async () => snapshot(path),
-      update: async (payload: Data) => {
-        state.docs.set(path, { ...(state.docs.get(path) ?? {}), ...payload });
+      set: async (payload: Data) => {
+        state.docs.set(path, payload);
       },
+      update: async (payload: Data) => applyUpdate(path, payload),
     };
   }
   function collectionRef(path: string): any {
     return {
-      doc: (id: string) => docRef(`${path}/${id}`),
+      doc: (id?: string) => docRef(`${path}/${id ?? `auto-${++state.autoId}`}`),
+      add: async (payload: Data) => {
+        const ref = docRef(`${path}/auto-${++state.autoId}`);
+        state.docs.set(ref.path, payload);
+        return ref;
+      },
       get: async () => {
         const docs = [...state.docs.keys()]
           .filter(
@@ -88,49 +116,54 @@ const H = vi.hoisted(() => {
       },
     };
   }
-  const batches: Array<Array<{ path: string; payload: Data }>> = [];
+  function commit(ops: Op[]) {
+    if (ops.some((op) => op.path.startsWith('mail/'))) {
+      state.mailCommits += 1;
+      if (state.mailCommits === state.failMailCommit) {
+        throw new Error('simulated batch failure');
+      }
+    }
+    for (const op of ops) {
+      if (op.kind === 'create' && state.docs.has(op.path)) {
+        throw new Error(`ALREADY_EXISTS: ${op.path}`);
+      }
+    }
+    for (const op of ops) {
+      if (op.kind === 'update') applyUpdate(op.path, op.payload);
+      else state.docs.set(op.path, op.payload);
+    }
+  }
   const db = {
     collection: (name: string) => collectionRef(name),
+    getAll: async (...refs: Array<{ path: string }>) =>
+      refs.map((r) => snapshot(r.path)),
+    runTransaction: async (fn: (tx: any) => Promise<unknown>) =>
+      fn({
+        get: async (ref: { path: string }) => snapshot(ref.path),
+        update: (ref: { path: string }, payload: Data) =>
+          applyUpdate(ref.path, payload),
+      }),
     batch: () => {
-      const ops: Array<{ path: string; payload: Data }> = [];
+      const ops: Op[] = [];
+      const push =
+        (kind: Op['kind']) => (ref: { path: string }, payload: Data) => {
+          ops.push({ kind, path: ref.path, payload });
+        };
       return {
-        update: (ref: { path: string }, payload: Data) => {
-          ops.push({ path: ref.path, payload });
-        },
-        commit: async () => {
-          for (const op of ops) {
-            state.docs.set(op.path, {
-              ...(state.docs.get(op.path) ?? {}),
-              ...op.payload,
-            });
-          }
-          batches.push(ops);
-        },
+        set: push('set'),
+        update: push('update'),
+        create: push('create'),
+        commit: async () => commit(ops),
       };
     },
   };
-  const QA_PLUS_TAGS = /^[^@]+\+(qa|secidtest|test)[^@]*@/i;
-  const sendBatchEmails = vi.fn(async () => undefined);
-  return {
-    state,
-    db,
-    batches,
-    FieldValue,
-    SERVER_TIMESTAMP,
-    FakeHttpsError,
-    sendBatchEmails,
-    isQaRecipient: (email: string) => QA_PLUS_TAGS.test(email),
-  };
+  return { state, db, FieldValue, SERVER_TIMESTAMP, FakeHttpsError };
 });
 
 vi.mock(PATHS.init, () => ({}));
 vi.mock(PATHS.env, () => ({
   getAppUrl: () => 'https://secid.test',
   ALLOWED_CALLABLE_ORIGINS: [],
-}));
-vi.mock(PATHS.emailService, () => ({
-  sendBatchEmails: H.sendBatchEmails,
-  isQaRecipient: H.isQaRecipient,
 }));
 vi.mock(PATHS.firebaseAdminFirestore, () => ({
   getFirestore: () => H.db,
@@ -160,11 +193,20 @@ const NL_EDITOR = {
 const MEMBER = { uid: 'member-uid', token: { rbac: { p: 'nl:v.a,ev:v.a' } } };
 const ISSUE = 'issue-1';
 
-type Mail = { to: string; subject: string; html: string };
+type Mail = { id: string; to: string; subject: string; html: string };
 function sentMails(): Mail[] {
-  return (H.sendBatchEmails.mock.calls as unknown as Array<[Mail[]]>).flatMap(
-    (c) => c[0]
-  );
+  return [...H.state.docs.entries()]
+    .filter(([p]) => p.startsWith('mail/'))
+    .map(([p, d]) => ({
+      id: p.slice('mail/'.length),
+      to: d.to,
+      subject: d.message.subject,
+      html: d.message.html,
+    }));
+}
+
+function issueDoc() {
+  return H.state.docs.get(`newsletter_archive/${ISSUE}`)!;
 }
 
 function seedIssue(overrides: Record<string, unknown> = {}) {
@@ -191,12 +233,12 @@ function seedSub(id: string, overrides: Record<string, unknown> = {}) {
 }
 
 // { concurrent: false }: vitest.config.ts sets sequence.concurrent=true, but
-// every test here shares the in-memory Firestore and the sendBatchEmails spy.
+// every test here shares the in-memory Firestore.
 beforeEach(() => {
   H.state.docs.clear();
   H.state.autoId = 0;
-  H.batches.length = 0;
-  H.sendBatchEmails.mockClear();
+  H.state.mailCommits = 0;
+  H.state.failMailCommit = 0;
   seedIssue();
   seedSub('ana');
   seedSub('luis');
@@ -240,10 +282,23 @@ describe('sendNewsletterIssue — recipients', { concurrent: false }, () => {
     });
 
     expect(result).toEqual({ recipientCount: 3 });
-    expect(H.sendBatchEmails).not.toHaveBeenCalled();
-    expect(
-      H.state.docs.get(`newsletter_archive/${ISSUE}`)!.sentAt
-    ).toBeUndefined();
+    expect(sentMails()).toHaveLength(0);
+    expect(issueDoc().sentAt).toBeUndefined();
+  });
+
+  it('skips an email entirely when any of its (legacy duplicate) docs is unsubscribed', async () => {
+    // Pre-F21 the public form added a doc per submission, so one address
+    // can own several docs; an unsubscribe on one must win over the rest,
+    // whatever the casing or spacing the legacy docs stored.
+    seedSub('legacy-ana', { email: 'Ana@Example.com ', status: undefined });
+    seedSub('gone-ana', { email: 'ana@example.com', status: 'unsubscribed' });
+    seedSub('legacy-eva', { email: 'eva@example.com', status: undefined });
+    seedSub('gone-eva', { email: ' EVA@example.com', status: 'unsubscribed' });
+
+    const result = await send({ auth: NL_EDITOR, data: { issueId: ISSUE } });
+
+    expect(result).toEqual({ recipientCount: 1 });
+    expect(sentMails().map((m) => m.to)).toEqual(['luis@example.com']);
   });
 });
 
@@ -283,23 +338,27 @@ describe('sendNewsletterIssue — sending', { concurrent: false }, () => {
   it('records the send on the issue and refuses to send twice without force', async () => {
     const first = await send({ auth: NL_EDITOR, data: { issueId: ISSUE } });
     expect(first).toEqual({ recipientCount: 2 });
-    expect(H.state.docs.get(`newsletter_archive/${ISSUE}`)).toMatchObject({
+    expect(issueDoc()).toMatchObject({
       sentAt: H.SERVER_TIMESTAMP,
       recipientCount: 2,
       sentBy: 'nl-uid',
     });
+    expect(issueDoc().sendingAt).toBeUndefined();
+    expect(issueDoc().sendingBy).toBeUndefined();
 
     await expect(
       send({ auth: NL_EDITOR, data: { issueId: ISSUE } })
     ).rejects.toMatchObject({ code: 'failed-precondition' });
-    expect(H.sendBatchEmails).toHaveBeenCalledTimes(1);
+    expect(sentMails()).toHaveLength(2);
 
+    // force is a new delivery: new mail docs, not a no-op on the old ids.
     const again = await send({
       auth: NL_EDITOR,
       data: { issueId: ISSUE, force: true },
     });
     expect(again).toEqual({ recipientCount: 2 });
-    expect(H.sendBatchEmails).toHaveBeenCalledTimes(2);
+    expect(sentMails()).toHaveLength(4);
+    expect(new Set(sentMails().map((m) => m.id)).size).toBe(4);
   });
 
   it('dry run is allowed on an already-sent issue', async () => {
@@ -309,5 +368,68 @@ describe('sendNewsletterIssue — sending', { concurrent: false }, () => {
       data: { issueId: ISSUE, dryRun: true },
     });
     expect(result).toEqual({ recipientCount: 2 });
+  });
+});
+
+describe('sendNewsletterIssue — claim and retry', { concurrent: false }, () => {
+  it('refuses a second call while the issue is being sent', async () => {
+    seedIssue({ sendingAt: new Date(), sendingBy: 'other-editor' });
+
+    await expect(
+      send({ auth: ADMIN, data: { issueId: ISSUE } })
+    ).rejects.toMatchObject({ code: 'failed-precondition' });
+    await expect(
+      send({ auth: ADMIN, data: { issueId: ISSUE, force: true } })
+    ).rejects.toMatchObject({ code: 'failed-precondition' });
+    expect(sentMails()).toHaveLength(0);
+    expect(issueDoc().sendingBy).toBe('other-editor');
+  });
+
+  it('treats a claim older than the function timeout as abandoned', async () => {
+    seedIssue({
+      sendingAt: new Date(Date.now() - 20 * 60 * 1000),
+      sendingBy: 'crashed-run',
+    });
+
+    const result = await send({ auth: ADMIN, data: { issueId: ISSUE } });
+
+    expect(result).toEqual({ recipientCount: 2 });
+    expect(issueDoc().sentAt).toBe(H.SERVER_TIMESTAMP);
+    expect(issueDoc().sendingAt).toBeUndefined();
+  });
+
+  it('releases the claim on failure and a retry does not mail anyone twice', async () => {
+    // 401 subscribers → two mail batches (400 + 1); the second one fails.
+    for (let i = 0; i < 399; i += 1) seedSub(`sub-${i}`);
+    H.state.failMailCommit = 2;
+
+    await expect(
+      send({ auth: NL_EDITOR, data: { issueId: ISSUE } })
+    ).rejects.toThrow('simulated batch failure');
+    expect(sentMails()).toHaveLength(400);
+    expect(issueDoc().sentAt).toBeUndefined();
+    expect(issueDoc().sendingAt).toBeUndefined();
+
+    const retry = await send({ auth: NL_EDITOR, data: { issueId: ISSUE } });
+
+    expect(retry).toEqual({ recipientCount: 401 });
+    const mails = sentMails();
+    expect(mails).toHaveLength(401);
+    expect(new Set(mails.map((m) => m.to)).size).toBe(401);
+    expect(issueDoc()).toMatchObject({
+      sentAt: H.SERVER_TIMESTAMP,
+      recipientCount: 401,
+    });
+  });
+
+  it('uses deterministic mail doc ids (issue, delivery, hashed email)', async () => {
+    await send({ auth: NL_EDITOR, data: { issueId: ISSUE } });
+    const ids = sentMails()
+      .map((m) => m.id)
+      .sort();
+    expect(ids).toHaveLength(2);
+    for (const id of ids) {
+      expect(id).toMatch(/^issue-1_1_[a-f0-9]{16}$/);
+    }
   });
 });

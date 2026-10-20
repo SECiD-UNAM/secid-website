@@ -1,7 +1,7 @@
 /**
  * F21 — newsletter double opt-in.
  *
- * `newsletter/{id}` subscription docs (one per email) carry:
+ * `newsletter/{id}` subscription docs carry:
  *   status               'pending' | 'confirmed' | 'unsubscribed'
  *                        (absent = legacy doc written before F21, treated
  *                        as confirmed — those addresses opted in through
@@ -15,6 +15,11 @@
  *                        The doc itself is readable by newsletter editors
  *                        only (firestore.rules). Minted at subscribe time,
  *                        or by sendNewsletterIssue for legacy docs.
+ *
+ * One email may own several docs: before F21 the public form did a plain
+ * `add()` per submission. Every status change therefore applies to ALL
+ * docs of the email (compared after trim + lowercase), and an email with
+ * any `unsubscribed` doc is never mailed (newsletter-send.ts).
  *
  * The public endpoints that consume the tokens are confirmNewsletter /
  * unsubscribeNewsletter (hosting rewrites /api/newsletter/confirm and
@@ -49,6 +54,11 @@ export interface SubscribeInput {
 
 export type TokenResult = { ok: true; lang: Lang } | { ok: false };
 
+interface SubscriptionDoc {
+  ref: DocumentReference;
+  data: DocumentData;
+}
+
 const TOKEN_RE = /^[a-f0-9]{64}$/;
 
 export function newToken(): string {
@@ -57,6 +67,11 @@ export function newToken(): string {
 
 export function hashToken(token: string): string {
   return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+/** The one form every email takes before it is compared or stored. */
+export function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
 }
 
 export function confirmUrl(token: string): string {
@@ -73,11 +88,27 @@ export function isMailableSubscription(data: DocumentData): boolean {
   return data.status === undefined || data.status === 'confirmed';
 }
 
-async function findByField(
+function langOf(data: DocumentData): Lang {
+  return data.lang === 'en' ? 'en' : 'es';
+}
+
+async function queryByField(
   db: Firestore,
   field: string,
   value: string
-): Promise<{ ref: DocumentReference; data: DocumentData } | null> {
+): Promise<SubscriptionDoc[]> {
+  const snap = await db
+    .collection('newsletter')
+    .where(field, '==', value)
+    .get();
+  return snap.docs.map((doc) => ({ ref: doc.ref, data: doc.data() }));
+}
+
+async function findByToken(
+  db: Firestore,
+  field: string,
+  value: string
+): Promise<SubscriptionDoc | null> {
   const snap = await db
     .collection('newsletter')
     .where(field, '==', value)
@@ -85,6 +116,46 @@ async function findByField(
     .get();
   const doc = snap.docs[0];
   return doc ? { ref: doc.ref, data: doc.data() } : null;
+}
+
+/**
+ * Every doc of an email, legacy duplicates included. Firestore cannot
+ * match case-insensitively, so the lookup runs on the normalized form and
+ * on the exact string a known doc stored (when they differ).
+ */
+async function listByEmail(
+  db: Firestore,
+  ...emails: string[]
+): Promise<SubscriptionDoc[]> {
+  const byPath = new Map<string, SubscriptionDoc>();
+  for (const email of new Set(emails.filter(Boolean))) {
+    for (const doc of await queryByField(db, 'email', email)) {
+      byPath.set(doc.ref.path, doc);
+    }
+  }
+  return [...byPath.values()];
+}
+
+/** The forms of a doc's email worth querying: as stored and normalized. */
+function emailVariants(data: DocumentData): string[] {
+  const stored = typeof data.email === 'string' ? data.email : '';
+  return [stored, normalizeEmail(stored)];
+}
+
+async function updateAll(
+  docs: SubscriptionDoc[],
+  payload: DocumentData
+): Promise<void> {
+  await Promise.all(docs.map((doc) => doc.ref.update(payload)));
+}
+
+/** Confirmed (or legacy) first, then pending, then unsubscribed. */
+function pickSubscriptionDoc(docs: SubscriptionDoc[]): SubscriptionDoc | null {
+  const rank = (doc: SubscriptionDoc): number => {
+    if (isMailableSubscription(doc.data)) return 0;
+    return doc.data.status === 'pending' ? 1 : 2;
+  };
+  return [...docs].sort((a, b) => rank(a) - rank(b))[0] ?? null;
 }
 
 async function sendConfirmation(
@@ -104,15 +175,18 @@ async function sendConfirmation(
 /**
  * Public-form subscribe. New address → pending doc + confirmation mail.
  * Already confirmed (or legacy) → no-op, so the form cannot be used to
- * spam an existing subscriber. Pending or unsubscribed → fresh token and
- * a new confirmation mail.
+ * spam an existing subscriber. Pending, or unsubscribed on any of the
+ * email's docs → fresh token and a new confirmation mail.
  */
 export async function upsertPendingSubscription(
   db: Firestore,
   input: SubscribeInput
 ): Promise<void> {
-  const existing = await findByField(db, 'email', input.email);
-  if (existing && isMailableSubscription(existing.data)) return;
+  const email = normalizeEmail(input.email);
+  const docs = await listByEmail(db, email);
+  const blocked = docs.some((doc) => doc.data.status === 'unsubscribed');
+  const target = pickSubscriptionDoc(docs);
+  if (target && !blocked && isMailableSubscription(target.data)) return;
 
   const token = newToken();
   const pending = {
@@ -121,11 +195,11 @@ export async function upsertPendingSubscription(
     confirmSentAt: FieldValue.serverTimestamp(),
     lang: input.lang,
   };
-  if (existing) {
-    await existing.ref.update(pending);
+  if (target) {
+    await target.ref.update(pending);
   } else {
     await db.collection('newsletter').add({
-      email: input.email,
+      email,
       name: input.name,
       interests: input.interests,
       subscribedAt: FieldValue.serverTimestamp(),
@@ -135,40 +209,48 @@ export async function upsertPendingSubscription(
       ...pending,
     });
   }
-  await sendConfirmation(input.email, input.name, input.lang, token);
+  await sendConfirmation(email, input.name, input.lang, token);
 }
 
-/** One-time confirmation link: pending → confirmed, token burned. */
+/**
+ * One-time confirmation link: pending → confirmed, token burned. Every
+ * doc of the email is confirmed, so a legacy duplicate that was
+ * unsubscribed earlier does not keep the re-subscribed address blocked.
+ */
 export async function confirmSubscription(
   db: Firestore,
   token: string
 ): Promise<TokenResult> {
   if (!TOKEN_RE.test(token)) return { ok: false };
-  const found = await findByField(db, 'confirmTokenHash', hashToken(token));
+  const found = await findByToken(db, 'confirmTokenHash', hashToken(token));
   if (!found || found.data.status !== 'pending') return { ok: false };
-  await found.ref.update({
+  const docs = await listByEmail(db, ...emailVariants(found.data));
+  await updateAll(docs.length ? docs : [found], {
     status: 'confirmed',
     confirmedAt: FieldValue.serverTimestamp(),
     confirmTokenHash: FieldValue.delete(),
   });
-  return { ok: true, lang: found.data.lang === 'en' ? 'en' : 'es' };
+  return { ok: true, lang: langOf(found.data) };
 }
 
-/** Per-subscriber unsubscribe link; idempotent. */
+/** Per-subscriber unsubscribe link; idempotent; covers every doc of the email. */
 export async function unsubscribeByToken(
   db: Firestore,
   token: string
 ): Promise<TokenResult> {
   if (!TOKEN_RE.test(token)) return { ok: false };
-  const found = await findByField(db, 'unsubscribeToken', token);
+  const found = await findByToken(db, 'unsubscribeToken', token);
   if (!found) return { ok: false };
-  if (found.data.status !== 'unsubscribed') {
-    await found.ref.update({
-      status: 'unsubscribed',
-      unsubscribedAt: FieldValue.serverTimestamp(),
-    });
-  }
-  return { ok: true, lang: found.data.lang === 'en' ? 'en' : 'es' };
+  const docs = await listByEmail(db, ...emailVariants(found.data));
+  const open = (docs.length ? docs : [found]).filter(
+    (doc) => doc.data.status !== 'unsubscribed'
+  );
+  await updateAll(open, {
+    status: 'unsubscribed',
+    unsubscribedAt: FieldValue.serverTimestamp(),
+    confirmTokenHash: FieldValue.delete(),
+  });
+  return { ok: true, lang: langOf(found.data) };
 }
 
 // ---------------------------------------------------------------------------

@@ -62,6 +62,40 @@ export async function sendBatchEmails(emails: EmailData[]): Promise<void> {
   await batch.commit();
 }
 
+export interface IdentifiedEmail extends EmailData {
+  /** Caller-chosen `mail/{id}`; the same id is never queued twice. */
+  id: string;
+}
+
+/**
+ * Queue mail docs under caller-chosen ids, skipping the ones that already
+ * exist, so a retried bulk send never writes a second doc for the same
+ * recipient. `create()` keeps the guarantee under a race: the batch fails
+ * instead of overwriting. Resolves to the number of docs written.
+ */
+export async function queueEmailsOnce(
+  emails: IdentifiedEmail[]
+): Promise<number> {
+  const db = getFirestore();
+  const mailCollection = db.collection('mail');
+  const wanted = emails.filter((email) => !isQaRecipient(email.to));
+  if (wanted.length === 0) return 0;
+
+  const refs = wanted.map((email) => mailCollection.doc(email.id));
+  const existing = new Set(
+    (await db.getAll(...refs)).filter((snap) => snap.exists).map((s) => s.id)
+  );
+  const batch = db.batch();
+  let written = 0;
+  wanted.forEach((email, i) => {
+    if (existing.has(email.id)) return;
+    batch.create(refs[i], toMailDoc(email));
+    written += 1;
+  });
+  if (written > 0) await batch.commit();
+  return written;
+}
+
 /**
  * Generate job match notification email HTML
  */

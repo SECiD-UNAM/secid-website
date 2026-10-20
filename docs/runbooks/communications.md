@@ -111,7 +111,12 @@ Cada correo de newsletter lleva un enlace propio
 `/api/newsletter/unsubscribe?token=…` (`unsubscribeNewsletter`) con el
 `unsubscribeToken` del suscriptor (aleatorio, estable entre ediciones; a los
 docs antiguos se les genera en el primer envío). Pone `status: 'unsubscribed'`
-y es idempotente. La lista solo la leen quienes tienen `newsletter:edit`.
+en **todos** los docs de ese correo (antes de F21 el formulario creaba un doc
+por envío, así que un correo puede tener varios) y es idempotente. El envío
+excluye cualquier correo que tenga al menos un doc `unsubscribed`, aunque
+conserve un doc antiguo sin `status`; si vuelve a suscribirse, confirmar
+pone `confirmed` en todos sus docs. Los correos se comparan sin espacios y
+en minúsculas. La lista solo la leen quienes tienen `newsletter:edit`.
 
 ### Enviar una edición
 
@@ -126,10 +131,21 @@ Backend: callable `sendNewsletterIssue({ issueId, dryRun?, force? })`
 2. **Enviar a suscriptores** muestra cuántos suscriptores confirmados (o
    antiguos sin `status`) recibirán el correo, uno por dirección, y pide
    confirmación.
-3. Al confirmar, la edición guarda `sentAt`, `recipientCount` y `sentBy`
-   (solo la function puede escribirlos). Un segundo envío de la misma
-   edición se rechaza; el botón **Volver a enviar** lo hace explícitamente
-   con `force: true`.
+3. Al confirmar, la function reclama la edición en una transacción
+   (`sendingAt`, `sendingBy`, `sendRun`): un segundo clic o otra persona
+   editora recibe "being sent right now" mientras dura el envío (hasta 5
+   min, el timeout de la function). Al terminar guarda `sentAt`,
+   `recipientCount`, `sentBy` y `sentRun` (solo la function puede
+   escribirlos). Un segundo envío de la misma edición se rechaza; el botón
+   **Volver a enviar** lo hace explícitamente con `force: true`.
+4. Los docs `mail/` llevan id determinista
+   `{issueId}_{run}_{sha256(correo)[0..16]}`. Si un envío falla a medias
+   (un lote lanza error, timeout), la edición queda sin `sentAt` y con el
+   reclamo liberado; **repetir el envío** solo escribe los docs que faltan,
+   nadie recibe la edición dos veces. `force` empieza un `run` nuevo (ids
+   nuevos), por eso sí vuelve a mandar.
 
 Verificar: el texto "Último envío: … a N suscriptores" en la sección y los
-docs `mail/`. Revertir: igual que los comunicados.
+docs `mail/`. Si una edición se queda con `sendingAt` (la function murió
+sin liberar el reclamo), a los 5 minutos se considera abandonado y se puede
+volver a enviar. Revertir: igual que los comunicados.

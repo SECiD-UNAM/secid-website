@@ -42,15 +42,26 @@ async function mailTo(to: string, subject: RegExp) {
   );
 }
 
-/** Mirrors isMailableSubscription + the QA/duplicate filter of the callable. */
+/**
+ * Mirrors loadSubscribers in functions/src/newsletter-send.ts: confirmed or
+ * legacy docs, one per email, minus QA plus-tags and minus any email that
+ * has an unsubscribed doc (legacy duplicates).
+ */
 async function expectedSubscriberCount(): Promise<number> {
-  const seen = new Set<string>();
-  for (const doc of await listCollection('newsletter')) {
-    const email = String(doc.email ?? '')
+  const docs = await listCollection('newsletter');
+  const emailOf = (doc: { email?: unknown }) =>
+    String(doc.email ?? '')
       .trim()
       .toLowerCase();
+  const blocked = new Set(
+    docs.filter((d) => d.status === 'unsubscribed').map(emailOf)
+  );
+  const seen = new Set<string>();
+  for (const doc of docs) {
+    const email = emailOf(doc);
     if (!email || /^[^@]+\+(qa|secidtest|test)[^@]*@/i.test(email)) continue;
     if (doc.status !== undefined && doc.status !== 'confirmed') continue;
+    if (blocked.has(email)) continue;
     seen.add(email);
   }
   return seen.size;
