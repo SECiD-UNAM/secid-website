@@ -14,7 +14,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 // Mock Stripe
 vi.mock('stripe', () => {

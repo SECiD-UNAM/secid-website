@@ -15,6 +15,11 @@ export default defineConfig({
     mode: 'standalone',
   }),
 
+  // Astro 7 changed the default from `true` (HTML-aware) to `'jsx'`, which
+  // also strips whitespace between inline elements. Keep the HTML-aware
+  // behaviour so rendered markup stays identical to the Astro 6 output.
+  compressHTML: true,
+
   // Build configuration
   build: {
     format: 'directory',
@@ -39,7 +44,7 @@ export default defineConfig({
       // html-minifier-terser strips the `<!-- -->` text-node separators React
       // emits inside prerendered islands, so the client saw different text
       // nodes and threw hydration errors #425/#418/#423 on /signup (issue
-      // #82). Astro's own compressHTML (default on) already minifies safely.
+      // #82). Astro's own compressHTML (`true` above) already minifies safely.
       HTML: false,
       Image: true,
       JavaScript: true,

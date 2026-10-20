@@ -10,7 +10,7 @@ _UNAM's Data Science Alumni Society Platform_
 [![CI](https://img.shields.io/github/actions/workflow/status/SECiD-UNAM/secid-website/ci.yml?branch=main&logo=github&label=CI)](https://github.com/SECiD-UNAM/secid-website/actions/workflows/ci.yml)
 [![Deploy](https://img.shields.io/github/actions/workflow/status/SECiD-UNAM/secid-website/cd.yml?branch=main&logo=firebase&label=Deploy%20secid.mx)](https://github.com/SECiD-UNAM/secid-website/actions/workflows/cd.yml)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fsecid.mx&logo=astro&logoColor=white)](https://secid.mx)
-[![Astro](https://img.shields.io/badge/Astro-5.x-BC52EE?logo=astro&logoColor=white)](https://astro.build)
+[![Astro](https://img.shields.io/badge/Astro-7.x-BC52EE?logo=astro&logoColor=white)](https://astro.build)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.x-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
