@@ -838,6 +838,13 @@ export { getSalaryStats } from './get-salary-stats';
 // F20 — member announcements (RBAC announcements:publish)
 export { sendAnnouncement } from './announcements';
 
+// F21 — newsletter double opt-in (public links) and issue delivery
+export {
+  confirmNewsletter,
+  unsubscribeNewsletter,
+} from './newsletter-subscriptions';
+export { sendNewsletterIssue } from './newsletter-send';
+
 // Member inscription survey: scheduled aggregation + admin-triggered refresh
 export {
   aggregateSurveyResponses,

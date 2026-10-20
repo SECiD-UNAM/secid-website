@@ -27,6 +27,11 @@ export interface NewsletterIssue {
   updatedBy?: string;
   createdAt: Date;
   updatedAt: Date;
+  // Send receipt written by the sendNewsletterIssue callable (F21); the
+  // client can read it but firestore.rules reject any client write to it.
+  sentAt?: Date | null;
+  recipientCount?: number;
+  sentBy?: string;
 }
 
 function toIssue(doc: {
@@ -37,6 +42,7 @@ function toIssue(doc: {
   return {
     id: doc.id,
     ...data,
+    sentAt: (data.sentAt as { toDate?: () => Date })?.toDate?.() || null,
     publishedAt:
       (data.publishedAt as { toDate?: () => Date })?.toDate?.() || new Date(),
     createdAt:

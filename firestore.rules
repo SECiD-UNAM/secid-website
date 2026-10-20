@@ -642,8 +642,14 @@ service cloud.firestore {
     // (POST /api/forms/newsletter), which enforces per-IP rate limit and
     // optional CAPTCHA before the Admin SDK writes here. Reads stay RBAC-
     // gated; admin update/delete unchanged.
+    // F21: docs carry status ('pending' | 'confirmed' | 'unsubscribed';
+    // absent = legacy, treated as confirmed), confirmTokenHash and
+    // unsubscribeToken, all written by the Cloud Functions. The
+    // subscriber list is PII, so reading needs newsletter edit-all
+    // (newsletter-editor, content-editor, moderator, admin) — `nl:v.a` is
+    // what every member carries for the public archive.
     match /newsletter/{subscriptionId} {
-      allow read: if isAuthenticated() && !hasRBACDeny('nl', 'v') && hasRBACAllowAll('nl', 'v');
+      allow read: if isAuthenticated() && !hasRBACDeny('nl', 'e') && hasRBACAllowAll('nl', 'e');
       allow create: if false;
       allow update, delete: if isAuthenticated() && !hasRBACDeny('nl', 'd') && hasRBACAllowAll('nl', 'd');
     }
@@ -660,17 +666,27 @@ service cloud.firestore {
     // ============================================
 
     // Newsletter archive — public read for published, RBAC-only for management
+    // F21: sentAt / recipientCount / sentBy are the send receipt that
+    // sendNewsletterIssue writes with the Admin SDK; no client may set them.
+    function hasNoSendReceipt() {
+      return !request.resource.data.keys().hasAny(['sentAt', 'recipientCount', 'sentBy']);
+    }
+    function keepsSendReceipt() {
+      return !request.resource.data.diff(resource.data).affectedKeys()
+        .hasAny(['sentAt', 'recipientCount', 'sentBy']);
+    }
     match /newsletter_archive/{issueId} {
       allow read: if resource.data.status == 'published' ||
         (isAuthenticated() && hasRBACAllow('nl', 'v'));
       allow create: if isAuthenticated() && hasRBACAllow('nl', 'c')
         && !hasRBACDeny('nl', 'c')
         && request.resource.data.createdBy == request.auth.uid
-        && request.resource.data.createdAt == request.time;
+        && request.resource.data.createdAt == request.time
+        && hasNoSendReceipt();
       allow update: if isAuthenticated() && !hasRBACDeny('nl', 'e') && (
         hasRBACAllowAll('nl', 'e') ||
         (hasRBACAllow('nl', 'e') && resource.data.createdBy == request.auth.uid)
-      );
+      ) && keepsSendReceipt();
       allow delete: if isAuthenticated() && !hasRBACDeny('nl', 'd') && (
         hasRBACAllowAll('nl', 'd') ||
         (hasRBACAllow('nl', 'd') && resource.data.createdBy == request.auth.uid)

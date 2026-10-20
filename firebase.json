@@ -192,6 +192,20 @@
           "functionId": "sendContactMessage",
           "region": "us-central1"
         }
+      },
+      {
+        "source": "/api/newsletter/confirm",
+        "function": {
+          "functionId": "confirmNewsletter",
+          "region": "us-central1"
+        }
+      },
+      {
+        "source": "/api/newsletter/unsubscribe",
+        "function": {
+          "functionId": "unsubscribeNewsletter",
+          "region": "us-central1"
+        }
       }
     ],
     "headers": [

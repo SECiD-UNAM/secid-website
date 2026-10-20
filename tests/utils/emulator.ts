@@ -51,6 +51,51 @@ function toDoc(d: RestDocument) {
   };
 }
 
+/** Plain JS → Firestore REST `Value` (same shapes scripts/seed-emulator.js encodes). */
+function encodeValue(value: unknown): RestValue {
+  if (value === null || value === undefined) return { nullValue: null };
+  if (value instanceof Date) return { timestampValue: value.toISOString() };
+  if (typeof value === 'boolean') return { booleanValue: value };
+  if (typeof value === 'number') {
+    return Number.isInteger(value)
+      ? { integerValue: String(value) }
+      : { doubleValue: value };
+  }
+  if (typeof value === 'string') return { stringValue: value };
+  if (Array.isArray(value)) {
+    return { arrayValue: { values: value.map(encodeValue) } };
+  }
+  return {
+    mapValue: { fields: encodeFields(value as Record<string, unknown>) },
+  };
+}
+
+function encodeFields(data: Record<string, unknown>) {
+  return Object.fromEntries(
+    Object.entries(data)
+      .filter(([, v]) => v !== undefined)
+      .map(([k, v]) => [k, encodeValue(v)])
+  );
+}
+
+/**
+ * Create or overwrite `collectionId/id` as the server would (owner bearer,
+ * rules bypassed) — for fixtures a spec needs that the seed does not
+ * provide, e.g. a newsletter issue to send.
+ */
+export async function setDocument(
+  collectionId: string,
+  id: string,
+  data: Record<string, unknown>
+) {
+  const res = await fetch(`${BASE}/documents/${collectionId}/${id}`, {
+    method: 'PATCH',
+    headers: HEADERS,
+    body: JSON.stringify({ fields: encodeFields(data) }),
+  });
+  if (!res.ok) throw new Error(`PATCH ${collectionId}/${id} → ${res.status}`);
+}
+
 /** Every document of a top-level collection (one page, up to 300). */
 export async function listCollection(collectionId: string) {
   const res = await fetch(`${BASE}/documents/${collectionId}?pageSize=300`, {
