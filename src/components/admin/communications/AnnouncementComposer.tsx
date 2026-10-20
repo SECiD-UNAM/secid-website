@@ -28,7 +28,7 @@ function Preview({ markdown, lang }: { markdown: string; lang: Lang }) {
   const html = useMemo(() => renderMarkdown(markdown), [markdown]);
   return (
     <div
-      className="prose prose-sm max-w-none rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4 dark:prose-invert dark:border-gray-600 dark:bg-gray-900"
+      className="prose prose-sm max-w-none rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-900 dark:prose-invert"
       data-testid="announcement-preview"
     >
       {html ? (
@@ -151,7 +151,7 @@ export default function AnnouncementComposer({ lang, onSent }: Props) {
     });
 
   return (
-    <section className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+    <section className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
       {toast && (
         <div
           role="status"

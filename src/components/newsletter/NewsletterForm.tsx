@@ -169,12 +169,12 @@ export default function NewsletterForm({
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="rounded-lg bg-white p-6 shadow dark:bg-gray-800"
+            className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800"
           >
-            <div className="mb-4 h-6 w-1/3 rounded bg-gray-200 dark:bg-gray-700" />
+            <div className="mb-4 h-6 w-1/3 rounded-sm bg-gray-200 dark:bg-gray-700" />
             <div className="space-y-3">
-              <div className="h-10 rounded bg-gray-200 dark:bg-gray-700" />
-              <div className="h-10 rounded bg-gray-200 dark:bg-gray-700" />
+              <div className="h-10 rounded-sm bg-gray-200 dark:bg-gray-700" />
+              <div className="h-10 rounded-sm bg-gray-200 dark:bg-gray-700" />
             </div>
           </div>
         ))}
@@ -220,7 +220,8 @@ export default function NewsletterForm({
   // -- Form -------------------------------------------------------------------
   const inputClass =
     'w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white';
-  const sectionClass = 'rounded-lg bg-white p-6 shadow dark:bg-gray-800 mb-6';
+  const sectionClass =
+    'rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800 mb-6';
 
   return (
     <form
@@ -229,7 +230,7 @@ export default function NewsletterForm({
     >
       {submitError && (
         <div className="flex items-center gap-2 rounded-lg border border-red-300 bg-red-50 p-4 text-red-700 dark:border-red-700 dark:bg-red-900/20 dark:text-red-400">
-          <ExclamationCircleIcon className="h-5 w-5 flex-shrink-0" />
+          <ExclamationCircleIcon className="h-5 w-5 shrink-0" />
           <span>{submitError}</span>
         </div>
       )}

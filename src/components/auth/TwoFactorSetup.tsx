@@ -206,7 +206,7 @@ export const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({
                   : 'Scan the QR code with your authenticator app:'}
               </p>
 
-              <div className="inline-block rounded-lg border bg-white p-4 shadow-sm">
+              <div className="inline-block rounded-lg border bg-white p-4 shadow-xs">
                 <img
                   src={setupData.qrCodeUrl}
                   alt="QR Code"
@@ -221,7 +221,7 @@ export const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({
               </p>
 
               <div className="mt-2 flex items-center justify-center space-x-2">
-                <code className="rounded bg-gray-100 px-2 py-1 font-mono text-sm dark:bg-gray-700">
+                <code className="rounded-sm bg-gray-100 px-2 py-1 font-mono text-sm dark:bg-gray-700">
                   {setupData.secret}
                 </code>
                 <Button
@@ -254,7 +254,7 @@ export const TwoFactorSetup: React.FC<TwoFactorSetupProps> = ({
                   maxLength={6}
                   placeholder="123456"
                   {...register('code')}
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-center font-mono text-lg shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-center font-mono text-lg shadow-xs focus:border-primary-500 focus:ring-primary-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                 />
                 {errors['code'] && (
                   <p className="mt-1 text-sm text-red-600 dark:text-red-400">

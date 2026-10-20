@@ -158,7 +158,7 @@ export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
         label: lang === 'es' ? 'Bruto Mensual' : 'Monthly Gross',
         sortable: true,
         accessor: (row) => (
-          <span className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+          <span className="font-medium whitespace-nowrap text-gray-900 dark:text-white">
             {formatMoney(row.monthlyGross, row.currency)}
           </span>
         ),
@@ -195,7 +195,7 @@ export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
             {row.benefits.slice(0, 3).map((b) => (
               <span
                 key={b}
-                className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-600 dark:bg-gray-700 dark:text-gray-400"
+                className="rounded-sm bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-600 dark:bg-gray-700 dark:text-gray-400"
               >
                 {b}
               </span>
@@ -217,7 +217,7 @@ export function SalaryAdminTable({ rawData, lang = 'es' }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between border-b border-red-200 px-4 py-3 dark:border-red-800">
         <div className="flex items-center gap-2">
-          <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700 dark:bg-red-900/30 dark:text-red-400">
+          <span className="rounded-sm bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700 dark:bg-red-900/30 dark:text-red-400">
             ADMIN
           </span>
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white">

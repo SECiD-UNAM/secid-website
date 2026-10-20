@@ -113,7 +113,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
   return (
     <div
       className={clsx(
-        'rounded-lg border shadow-sm transition-shadow hover:shadow-md',
+        'rounded-lg border shadow-xs transition-shadow hover:shadow-md',
         getCardColor(),
         getSizeClasses(),
         className

@@ -343,7 +343,7 @@ const btnDanger =
 const btnGhost =
   'inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300 disabled:cursor-not-allowed disabled:opacity-50';
 const cardClass =
-  'rounded-xl bg-white p-5 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800';
+  'rounded-xl bg-white p-5 shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800';
 const errorBoxClass =
   'rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20';
 const successBoxClass =
@@ -823,7 +823,7 @@ export default function MentorshipRequestComponent({
     }
     return (
       <div
-        className={`flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br ${gradient} text-lg font-semibold text-white`}
+        className={`flex h-14 w-14 items-center justify-center rounded-full bg-linear-to-br ${gradient} text-lg font-semibold text-white`}
       >
         {profile?.displayName ? (
           getInitials(profile.displayName)

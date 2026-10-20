@@ -166,7 +166,7 @@ function renderFilterInput(
             type="checkbox"
             checked={!!value}
             onChange={(e) => onChange(e.target.checked || undefined)}
-            className="rounded border-gray-300"
+            className="rounded-sm border-gray-300"
           />
           <span className="text-sm text-gray-600 dark:text-gray-400">
             {def.label}

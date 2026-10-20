@@ -149,7 +149,7 @@ export const JoinPage: React.FC<JoinPageProps> = ({ lang = 'es' }) => {
                 ].join(' ')}
               >
                 <div
-                  className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg ${path.iconBg}`}
+                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${path.iconBg}`}
                 >
                   <Icon className={`h-6 w-6 ${path.iconColor}`} />
                 </div>
@@ -161,7 +161,7 @@ export const JoinPage: React.FC<JoinPageProps> = ({ lang = 'es' }) => {
                     {path.description}
                   </p>
                 </div>
-                <ArrowRight className="h-5 w-5 flex-shrink-0 text-gray-400 dark:text-gray-500" />
+                <ArrowRight className="h-5 w-5 shrink-0 text-gray-400 dark:text-gray-500" />
               </a>
             );
           })}

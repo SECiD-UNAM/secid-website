@@ -129,7 +129,7 @@ export const AdminAuthGuard: React.FC<AdminAuthGuardProps> = ({
 
           <div className="mb-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
             <div className="flex items-start">
-              <AlertTriangle className="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-600" />
+              <AlertTriangle className="mt-0.5 mr-3 h-5 w-5 shrink-0 text-yellow-600" />
               <div className="text-sm text-yellow-800">
                 <p className="mb-1 font-medium">
                   {language === 'es'
@@ -167,14 +167,14 @@ export const AdminAuthGuard: React.FC<AdminAuthGuardProps> = ({
           <div className="flex flex-col gap-3 sm:flex-row">
             <button
               onClick={() => (window.location.href = '/')}
-              className="flex-1 rounded-lg bg-gray-600 px-4 py-2 text-white transition-colors hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              className="flex-1 rounded-lg bg-gray-600 px-4 py-2 text-white transition-colors hover:bg-gray-700 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-hidden"
             >
               {language === 'es' ? 'Ir al Inicio' : 'Go Home'}
             </button>
 
             <button
               onClick={() => (window.location.href = '/contact')}
-              className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden"
             >
               {language === 'es' ? 'Contactar Soporte' : 'Contact Support'}
             </button>

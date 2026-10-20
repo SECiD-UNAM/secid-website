@@ -198,7 +198,7 @@ describe('CompanyLogo - className prop', () => {
   it('TC-company-logo-015: applies custom className to outer container', () => {
     /** Verifies: AC-className */
     const { container } = render(
-      <CompanyLogo company={{ name: 'Custom' }} className="mr-2 mt-4" />
+      <CompanyLogo company={{ name: 'Custom' }} className="mt-4 mr-2" />
     );
 
     const wrapper = container.firstElementChild as HTMLElement;

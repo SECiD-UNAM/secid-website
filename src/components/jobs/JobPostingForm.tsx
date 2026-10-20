@@ -464,18 +464,15 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
           ].map((step, index) => (
             <div key={step.num} className="flex items-center">
               <div
-                className={`
-                flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium
-                ${
+                className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium ${
                   currentStep >= step.num
                     ? 'bg-primary-600 text-white'
                     : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
-                }
-              `}
+                } `}
               >
                 {step.num}
               </div>
-              <div className="ml-2 mr-4 hidden md:block">
+              <div className="mr-4 ml-2 hidden md:block">
                 <p
                   className={`text-xs ${currentStep >= step.num ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}
                 >
@@ -484,14 +481,11 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
               </div>
               {index < 4 && (
                 <div
-                  className={`
-                  h-1 w-12 md:w-20
-                  ${
+                  className={`h-1 w-12 md:w-20 ${
                     currentStep > step.num
                       ? 'bg-primary-600'
                       : 'bg-gray-200 dark:bg-gray-700'
-                  }
-                `}
+                  } `}
                 ></div>
               )}
             </div>
@@ -848,7 +842,7 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
                             tags: [...prev.tags, tag],
                           }))
                         }
-                        className="rounded bg-white px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-500"
+                        className="rounded-sm bg-white px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-500"
                       >
                         +{tag}
                       </button>
@@ -1033,7 +1027,7 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
                         applicationMethod: e.target.value as any,
                       }))
                     }
-                    className="mr-3 mt-1"
+                    className="mt-1 mr-3"
                   />
                   <div>
                     <span className="font-medium text-gray-900 dark:text-white">
@@ -1060,7 +1054,7 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
                         applicationMethod: e.target.value as any,
                       }))
                     }
-                    className="mr-3 mt-1"
+                    className="mt-1 mr-3"
                   />
                   <div>
                     <span className="font-medium text-gray-900 dark:text-white">
@@ -1087,7 +1081,7 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
                         applicationMethod: e.target.value as any,
                       }))
                     }
-                    className="mr-3 mt-1"
+                    className="mt-1 mr-3"
                   />
                   <div>
                     <span className="font-medium text-gray-900 dark:text-white">
@@ -1184,7 +1178,7 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
                       featured: e.target.checked,
                     }))
                   }
-                  className="mr-3 mt-1"
+                  className="mt-1 mr-3"
                 />
                 <div>
                   <div className="flex items-center">
@@ -1301,7 +1295,7 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
 
             <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
               <div className="flex">
-                <InformationCircleIcon className="mr-2 h-5 w-5 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
+                <InformationCircleIcon className="mr-2 h-5 w-5 shrink-0 text-yellow-600 dark:text-yellow-400" />
                 <div className="text-sm">
                   <p className="mb-1 font-medium text-yellow-900 dark:text-yellow-100">
                     {lang === 'es' ? 'Proceso de revisión' : 'Review process'}
@@ -1318,7 +1312,7 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
             {formData.featured && (
               <div className="rounded-lg border border-primary-200 bg-primary-50 p-4 dark:border-primary-800 dark:bg-primary-900/20">
                 <div className="flex">
-                  <SparklesIcon className="mr-2 h-5 w-5 flex-shrink-0 text-primary-600 dark:text-primary-400" />
+                  <SparklesIcon className="mr-2 h-5 w-5 shrink-0 text-primary-600 dark:text-primary-400" />
                   <div className="text-sm">
                     <p className="mb-1 font-medium text-primary-900 dark:text-primary-100">
                       {lang === 'es' ? 'Empleo destacado' : 'Featured job'}
@@ -1364,7 +1358,7 @@ export const JobPostingForm: React.FC<JobPostingFormProps> = ({
               {submitting ? (
                 <>
                   <svg
-                    className="-ml-1 mr-2 h-5 w-5 animate-spin"
+                    className="mr-2 -ml-1 h-5 w-5 animate-spin"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"

@@ -355,16 +355,13 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
       <a
         key={item.href}
         href={accessible ? item.href : '#'}
-        className={`
-          flex items-center justify-between rounded-lg px-4 py-2 text-sm font-medium transition-colors
-          ${
-            active
-              ? 'bg-primary-100 text-primary-700 dark:border-l-2 dark:border-primary-500 dark:bg-primary-900/20 dark:text-primary-400'
-              : accessible
-                ? 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                : 'cursor-not-allowed text-gray-400 opacity-50 dark:text-gray-600'
-          }
-        `}
+        className={`flex items-center justify-between rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+          active
+            ? 'bg-primary-100 text-primary-700 dark:border-l-2 dark:border-primary-500 dark:bg-primary-900/20 dark:text-primary-400'
+            : accessible
+              ? 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+              : 'cursor-not-allowed text-gray-400 opacity-50 dark:text-gray-600'
+        } `}
         onClick={!accessible ? (e) => e.preventDefault() : undefined}
       >
         <div className="flex items-center">
@@ -390,14 +387,11 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           )}
           {item.badge && accessible && (
             <span
-              className={`
-              rounded-full px-2 py-1 text-xs font-semibold
-              ${
+              className={`rounded-full px-2 py-1 text-xs font-semibold ${
                 typeof item.badge === 'number'
                   ? 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
                   : 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400'
-              }
-            `}
+              } `}
             >
               {item.badge}
             </span>
@@ -409,7 +403,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
 
   const sidebarContent = (
     <div className="flex h-full flex-col">
-      <div className="flex-1 space-y-1 overflow-y-auto px-4 pb-4 pt-4">
+      <div className="flex-1 space-y-1 overflow-y-auto px-4 pt-4 pb-4">
         {/* Main menu items */}
         <div className="space-y-1">{menuItems.map(renderMenuItem)}</div>
 
@@ -418,7 +412,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           <>
             <div className="my-4 border-t border-gray-200 dark:border-gray-700"></div>
             <div className="space-y-1">
-              <p className="px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <p className="px-4 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                 {lang === 'es' ? 'Contenido' : 'Content'}
               </p>
               {contentItems.map((item) => {
@@ -436,7 +430,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           <>
             <div className="my-4 border-t border-gray-200 dark:border-gray-700"></div>
             <div className="space-y-1">
-              <p className="px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <p className="px-4 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                 {lang === 'es' ? 'Administración' : 'Administration'}
               </p>
               {adminItems.map((item) => {
@@ -490,7 +484,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
     <>
       {/* Desktop sidebar */}
       <aside
-        className={`fixed bottom-0 left-0 z-30 hidden w-64 border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:block ${isBeta ? 'top-24' : 'top-16'}`}
+        className={`fixed bottom-0 left-0 z-30 hidden w-64 border-r border-gray-200 bg-white pb-4 lg:block dark:border-gray-800 dark:bg-gray-800 ${isBeta ? 'top-24' : 'top-16'}`}
       >
         {sidebarContent}
       </aside>
@@ -503,7 +497,7 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
             onClick={onClose}
           />
           <aside
-            className={`fixed bottom-0 left-0 z-50 w-64 border-r border-gray-200 bg-white pb-4 dark:border-gray-800 dark:bg-gray-800 lg:hidden ${isBeta ? 'top-24' : 'top-16'}`}
+            className={`fixed bottom-0 left-0 z-50 w-64 border-r border-gray-200 bg-white pb-4 lg:hidden dark:border-gray-800 dark:bg-gray-800 ${isBeta ? 'top-24' : 'top-16'}`}
           >
             <div className="flex items-center justify-end px-4 py-2">
               <button

@@ -281,7 +281,7 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
             onClick={() => setBillingCycle('monthly')}
             className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
               billingCycle === 'monthly'
-                ? 'bg-white text-gray-900 shadow-sm'
+                ? 'bg-white text-gray-900 shadow-xs'
                 : 'text-gray-700 hover:text-gray-900'
             }`}
           >
@@ -291,7 +291,7 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
             onClick={() => setBillingCycle('yearly')}
             className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
               billingCycle === 'yearly'
-                ? 'bg-white text-gray-900 shadow-sm'
+                ? 'bg-white text-gray-900 shadow-xs'
                 : 'text-gray-700 hover:text-gray-900'
             }`}
           >
@@ -381,7 +381,7 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
                 <ul className="mb-8 space-y-3">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start">
-                      <CheckIcon className="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-green-500" />
+                      <CheckIcon className="mt-0.5 mr-3 h-5 w-5 shrink-0 text-green-500" />
                       <span className="text-sm text-gray-600">{feature}</span>
                     </li>
                   ))}
@@ -435,7 +435,7 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
                 onClick={() => setSelectedCommission(commission.id)}
               >
                 <div
-                  className={`mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg ${commission.color} bg-opacity-10`}
+                  className={`mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg ${commission.color}`}
                 >
                   <div className={commission.color}>{commission.icon}</div>
                 </div>
@@ -457,7 +457,7 @@ export const PricingPlans: React.FC<PricingPlansProps> = ({
                   ))}
                 </ul>
                 {selectedCommission === commission.id && (
-                  <div className="absolute right-2 top-2">
+                  <div className="absolute top-2 right-2">
                     <CheckIcon className="h-6 w-6 text-blue-500" />
                   </div>
                 )}

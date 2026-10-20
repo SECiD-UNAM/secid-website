@@ -70,14 +70,14 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
 
   if (loading) {
     return (
-      <div className="rounded-xl bg-white p-6 shadow dark:border dark:border-gray-700/30 dark:bg-gray-800">
+      <div className="rounded-xl bg-white p-6 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
         <div className="animate-pulse space-y-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="flex space-x-3">
               <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700"></div>
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
-                <div className="h-3 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
+                <div className="h-4 w-3/4 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
+                <div className="h-3 w-1/2 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
               </div>
             </div>
           ))}
@@ -88,7 +88,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
 
   if (activities.length === 0) {
     return (
-      <div className="rounded-xl bg-white p-6 shadow dark:border dark:border-gray-700/30 dark:bg-gray-800">
+      <div className="rounded-xl bg-white p-6 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
         <p className="text-center text-gray-500 dark:text-gray-400">
           {lang === 'es' ? 'No hay actividad reciente' : 'No recent activity'}
         </p>
@@ -97,7 +97,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
   }
 
   return (
-    <div className="rounded-xl bg-white shadow dark:border dark:border-gray-700/30 dark:bg-gray-800">
+    <div className="rounded-xl bg-white shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
       <div className="p-6">
         <div className="flow-root">
           <ul className="-mb-8">
@@ -110,7 +110,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
                   <div className="relative pb-8">
                     {!isLast && (
                       <span
-                        className="absolute left-5 top-5 -ml-px h-full w-0.5 bg-gray-200 dark:bg-gray-700"
+                        className="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200 dark:bg-gray-700"
                         aria-hidden="true"
                       />
                     )}

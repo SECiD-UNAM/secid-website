@@ -42,7 +42,7 @@ export function ErrorView({
       style={{ background: 'var(--color-surface-light)' }}
     >
       <div
-        className="mx-auto max-w-md rounded-2xl p-8 text-center shadow-sm"
+        className="mx-auto max-w-md rounded-2xl p-8 text-center shadow-xs"
         style={{ background: 'var(--color-surface)' }}
       >
         <div
@@ -87,7 +87,7 @@ export function AccessDeniedView({
       style={{ background: 'var(--color-surface-light)' }}
     >
       <div
-        className="mx-auto max-w-md rounded-2xl p-8 text-center shadow-sm"
+        className="mx-auto max-w-md rounded-2xl p-8 text-center shadow-xs"
         style={{ background: 'var(--color-surface)' }}
       >
         <div

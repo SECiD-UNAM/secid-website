@@ -236,7 +236,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   // Render loading state
   if (loading && !data) {
     return (
-      <div className={clsx('rounded-lg bg-white p-8 shadow', className)}>
+      <div className={clsx('rounded-lg bg-white p-8 shadow-sm', className)}>
         <div className="flex items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500" />
           <span className="ml-3 text-gray-600">
@@ -250,7 +250,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   // Render error state
   if (error && !data) {
     return (
-      <div className={clsx('rounded-lg bg-white p-8 shadow', className)}>
+      <div className={clsx('rounded-lg bg-white p-8 shadow-sm', className)}>
         <div className="text-center">
           <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-red-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">
@@ -274,7 +274,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   return (
     <div className={clsx('space-y-6', className)}>
       {/* Header */}
-      <div className="rounded-lg bg-white shadow">
+      <div className="rounded-lg bg-white shadow-sm">
         <div className="border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -329,7 +329,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                 <div className="relative">
                   <button
                     onClick={() => handleExport('csv')}
-                    className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                    className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-xs hover:bg-gray-50"
                   >
                     <ArrowDownTrayIcon className="mr-2 h-4 w-4" />
                     {t('analytics.export', 'Export')}
@@ -342,7 +342,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               <button
                 onClick={loadData}
                 disabled={loading}
-                className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:opacity-50"
+                className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-blue-700 disabled:opacity-50"
               >
                 <ArrowPathIcon
                   className={clsx('mr-2 h-4 w-4', loading && 'animate-spin')}
@@ -421,11 +421,11 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               key={tab.id}
               className={({ selected }) =>
                 clsx(
-                  'w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-700',
-                  'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2',
+                  'w-full rounded-lg py-2.5 text-sm leading-5 font-medium text-blue-700',
+                  'ring-opacity-60 ring-white ring-offset-2 ring-offset-blue-400 focus:ring-2 focus:outline-hidden',
                   selected
-                    ? 'bg-white shadow'
-                    : 'text-blue-100 hover:bg-white/[0.12] hover:text-white'
+                    ? 'bg-white shadow-sm'
+                    : 'text-blue-100 hover:bg-white/12 hover:text-white'
                 )
               }
             >

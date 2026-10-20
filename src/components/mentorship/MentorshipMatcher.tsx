@@ -182,7 +182,7 @@ function MatchCard({
 
       {/* Mentor Info */}
       <div className="mb-4 flex items-start gap-3">
-        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
           {result.mentor.profileImage ? (
             <img
               src={result.mentor.profileImage}
@@ -230,7 +230,7 @@ function MatchCard({
 
       {/* Compatibility Breakdown */}
       <div className="mb-4">
-        <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+        <h4 className="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">
           {t?.mentorship?.matcher?.compatibilityBreakdown ?? 'Compatibility'}
         </h4>
         {(
@@ -242,7 +242,7 @@ function MatchCard({
           ] as const
         ).map(([key, value]) => (
           <div key={key} className="mb-1 flex items-center gap-2 text-xs">
-            <span className="w-20 capitalize text-gray-500">
+            <span className="w-20 text-gray-500 capitalize">
               {t?.mentorship?.matcher?.[key] ?? key}
             </span>
             <div className="h-1.5 flex-1 rounded-full bg-gray-100 dark:bg-gray-700">
@@ -261,7 +261,7 @@ function MatchCard({
       {/* Match Reasons */}
       {result.reasons.length > 0 && (
         <div className="mb-4">
-          <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
+          <h4 className="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">
             {t?.mentorship?.matcher?.whyThisMatch ?? 'Why this match'}
           </h4>
           <ul className="space-y-0.5 text-xs text-gray-600 dark:text-gray-400">

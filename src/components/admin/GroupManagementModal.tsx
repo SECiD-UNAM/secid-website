@@ -116,7 +116,7 @@ export const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
     [...currentGroups].some((g) => !selectedGroups.has(g));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="mx-4 w-full max-w-md rounded-lg bg-white shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
@@ -166,7 +166,7 @@ export const GroupManagementModal: React.FC<GroupManagementModalProps> = ({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => handleToggleGroup(groupEmail)}
-                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="h-4 w-4 rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <div className="ml-3 flex-1">
                       <p className="text-sm font-medium text-gray-900">

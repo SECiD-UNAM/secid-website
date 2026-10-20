@@ -279,10 +279,10 @@ const DirectMessages: React.FC<DirectMessagesProps> = ({
                 setSearchQuery(e.target.value);
                 handleSearch(e.target.value);
               }}
-              className="w-full rounded-md border border-gray-300 py-2 pl-10 pr-4 focus:border-blue-500 focus:ring-blue-500"
+              className="w-full rounded-md border border-gray-300 py-2 pr-4 pl-10 focus:border-blue-500 focus:ring-blue-500"
             />
             <svg
-              className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+              className="absolute top-2.5 left-3 h-5 w-5 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -379,7 +379,7 @@ const DirectMessages: React.FC<DirectMessagesProps> = ({
                               {getConversationTitle(conversation)}
                             </h3>
                             {unreadCount > 0 && (
-                              <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-2 py-1 text-xs font-bold leading-none text-white">
+                              <span className="inline-flex items-center justify-center rounded-full bg-blue-600 px-2 py-1 text-xs leading-none font-bold text-white">
                                 {unreadCount}
                               </span>
                             )}
@@ -431,7 +431,7 @@ const DirectMessages: React.FC<DirectMessagesProps> = ({
 
                         {/* Context Menu */}
                         <div className="group relative ml-2">
-                          <button className="rounded-full p-1 opacity-0 transition-opacity hover:bg-gray-200 group-hover:opacity-100">
+                          <button className="rounded-full p-1 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-gray-200">
                             <svg
                               className="h-4 w-4 text-gray-400"
                               fill="currentColor"
@@ -441,7 +441,7 @@ const DirectMessages: React.FC<DirectMessagesProps> = ({
                             </svg>
                           </button>
 
-                          <div className="pointer-events-none absolute right-0 top-full z-50 mt-1 w-48 rounded-md border border-gray-200 bg-white py-1 opacity-0 shadow-lg transition-opacity group-hover:pointer-events-auto group-hover:opacity-100">
+                          <div className="pointer-events-none absolute top-full right-0 z-50 mt-1 w-48 rounded-md border border-gray-200 bg-white py-1 opacity-0 shadow-lg transition-opacity group-hover:pointer-events-auto group-hover:opacity-100">
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();

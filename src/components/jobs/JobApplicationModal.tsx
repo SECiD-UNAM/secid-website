@@ -300,15 +300,15 @@ export const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-center justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
+      <div className="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
         {/* Background overlay */}
         <div
-          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity dark:bg-gray-900 dark:bg-opacity-75"
+          className="fixed inset-0 bg-gray-500/75 transition-opacity dark:bg-gray-900/75"
           onClick={handleClose}
         ></div>
 
         {/* Modal panel */}
-        <div className="my-8 inline-block w-full max-w-2xl transform overflow-hidden rounded-xl bg-white text-left align-middle shadow-xl transition-all dark:bg-gray-800">
+        <div className="relative my-8 inline-block w-full max-w-2xl transform overflow-hidden rounded-xl bg-white text-left align-middle shadow-xl transition-all dark:bg-gray-800">
           {/* Header */}
           <div className="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
             <div className="flex items-center justify-between">
@@ -337,27 +337,21 @@ export const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
                 {[1, 2, 3, 4].map((step) => (
                   <div key={step} className="flex items-center">
                     <div
-                      className={`
-                      flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium
-                      ${
+                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
                         currentStep >= step
                           ? 'bg-primary-600 text-white'
                           : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
-                      }
-                    `}
+                      } `}
                     >
                       {step}
                     </div>
                     {step < 4 && (
                       <div
-                        className={`
-                        mx-2 h-1 w-full
-                        ${
+                        className={`mx-2 h-1 w-full ${
                           currentStep > step
                             ? 'bg-primary-600'
                             : 'bg-gray-200 dark:bg-gray-700'
-                        }
-                      `}
+                        } `}
                         style={{ width: '100px' }}
                       ></div>
                     )}
@@ -440,7 +434,7 @@ export const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
                       </label>
                       <div className="flex w-full items-center justify-center">
                         <label className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600">
-                          <div className="flex flex-col items-center justify-center pb-6 pt-5">
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
                             {applicationData.resumeFile ? (
                               <>
                                 <DocumentIcon className="mb-2 h-10 w-10 text-primary-600 dark:text-primary-400" />
@@ -828,7 +822,7 @@ export const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
 
                     <div className="rounded-lg border border-primary-200 bg-primary-50 p-4 dark:border-primary-800 dark:bg-primary-900/20">
                       <div className="flex">
-                        <SparklesIcon className="mr-2 h-5 w-5 flex-shrink-0 text-primary-600 dark:text-primary-400" />
+                        <SparklesIcon className="mr-2 h-5 w-5 shrink-0 text-primary-600 dark:text-primary-400" />
                         <div className="text-sm">
                           <p className="mb-1 font-medium text-primary-900 dark:text-primary-100">
                             {lang === 'es'
@@ -886,7 +880,7 @@ export const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
                       {submitting ? (
                         <>
                           <svg
-                            className="-ml-1 mr-2 h-4 w-4 animate-spin"
+                            className="mr-2 -ml-1 h-4 w-4 animate-spin"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"

@@ -183,7 +183,7 @@ export const CompanyAutocomplete: React.FC<CompanyAutocompleteProps> = ({
       />
 
       {loading && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+        <div className="absolute top-1/2 right-3 -translate-y-1/2">
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-primary-600" />
         </div>
       )}
@@ -286,7 +286,7 @@ export const CompanyAutocomplete: React.FC<CompanyAutocompleteProps> = ({
                     setNewDomain('');
                     setCreateError(null);
                   }}
-                  className="rounded px-3 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600"
+                  className="rounded-sm px-3 py-1 text-xs text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600"
                 >
                   {lang === 'es' ? 'Cancelar' : 'Cancel'}
                 </button>
@@ -295,7 +295,7 @@ export const CompanyAutocomplete: React.FC<CompanyAutocompleteProps> = ({
                   onClick={handleCreateNew}
                   disabled={isSubmitting}
                   className={
-                    'rounded bg-primary-600 px-3 py-1 text-xs font-medium text-white ' +
+                    'rounded-sm bg-primary-600 px-3 py-1 text-xs font-medium text-white ' +
                     'hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50'
                   }
                 >

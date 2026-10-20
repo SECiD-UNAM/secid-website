@@ -392,7 +392,7 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
                     <input
                       type={showPasswords.current ? 'text' : 'password'}
                       {...register('currentPassword')}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 focus:border-primary-500 focus:outline-none focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 focus:border-primary-500 focus:ring-primary-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     />
                     <button
                       type="button"
@@ -426,7 +426,7 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
                     <input
                       type={showPasswords.new ? 'text' : 'password'}
                       {...register('newPassword')}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 focus:border-primary-500 focus:outline-none focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 focus:border-primary-500 focus:ring-primary-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     />
                     <button
                       type="button"
@@ -462,7 +462,7 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
                     <input
                       type={showPasswords.confirm ? 'text' : 'password'}
                       {...register('confirmPassword')}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 focus:border-primary-500 focus:outline-none focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 focus:border-primary-500 focus:ring-primary-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     />
                     <button
                       type="button"
@@ -523,7 +523,7 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
 
               <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
                 <div className="flex items-start space-x-3">
-                  <Smartphone className="mt-0.5 h-8 w-8 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
+                  <Smartphone className="mt-0.5 h-8 w-8 shrink-0 text-yellow-600 dark:text-yellow-400" />
                   <div>
                     <h3 className="font-medium text-yellow-800 dark:text-yellow-300">
                       {lang === 'es'
@@ -599,7 +599,7 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
                       <div className="flex items-center space-x-3">
                         {getProviderIcon(providerId)}
                         <div>
-                          <h3 className="font-medium capitalize text-gray-900 dark:text-white">
+                          <h3 className="font-medium text-gray-900 capitalize dark:text-white">
                             {providerId}
                           </h3>
                           {isLinked && linkedAccount ? (
@@ -796,7 +796,7 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
                                   ? 'Intento fallido'
                                   : 'Failed attempt'}
                             </h3>
-                            <span className="rounded bg-gray-100 px-2 py-1 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+                            <span className="rounded-sm bg-gray-100 px-2 py-1 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300">
                               {entry.provider}
                             </span>
                           </div>

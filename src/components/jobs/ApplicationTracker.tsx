@@ -261,7 +261,7 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
 
       {/* Statistics Cards */}
       <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-        <div className="rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+        <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
           <div className="text-2xl font-bold text-gray-900 dark:text-white">
             {stats['total']}
           </div>
@@ -270,7 +270,7 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
           </div>
         </div>
 
-        <div className="rounded-lg bg-yellow-50 p-4 shadow dark:bg-yellow-900/20">
+        <div className="rounded-lg bg-yellow-50 p-4 shadow-sm dark:bg-yellow-900/20">
           <div className="text-2xl font-bold text-yellow-700 dark:text-yellow-400">
             {stats.submitted}
           </div>
@@ -279,7 +279,7 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
           </div>
         </div>
 
-        <div className="rounded-lg bg-blue-50 p-4 shadow dark:bg-blue-900/20">
+        <div className="rounded-lg bg-blue-50 p-4 shadow-sm dark:bg-blue-900/20">
           <div className="text-2xl font-bold text-blue-700 dark:text-blue-400">
             {stats.reviewed}
           </div>
@@ -288,7 +288,7 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
           </div>
         </div>
 
-        <div className="rounded-lg bg-purple-50 p-4 shadow dark:bg-purple-900/20">
+        <div className="rounded-lg bg-purple-50 p-4 shadow-sm dark:bg-purple-900/20">
           <div className="text-2xl font-bold text-purple-700 dark:text-purple-400">
             {stats.shortlisted}
           </div>
@@ -297,7 +297,7 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
           </div>
         </div>
 
-        <div className="rounded-lg bg-red-50 p-4 shadow dark:bg-red-900/20">
+        <div className="rounded-lg bg-red-50 p-4 shadow-sm dark:bg-red-900/20">
           <div className="text-2xl font-bold text-red-700 dark:text-red-400">
             {stats.rejected}
           </div>
@@ -306,7 +306,7 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
           </div>
         </div>
 
-        <div className="rounded-lg bg-green-50 p-4 shadow dark:bg-green-900/20">
+        <div className="rounded-lg bg-green-50 p-4 shadow-sm dark:bg-green-900/20">
           <div className="text-2xl font-bold text-green-700 dark:text-green-400">
             {stats.hired}
           </div>
@@ -372,7 +372,7 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
 
       {/* Applications List */}
       {filteredApplications.length === 0 ? (
-        <div className="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
+        <div className="rounded-lg bg-white p-8 text-center shadow-sm dark:bg-gray-800">
           <BriefcaseIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
           <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
             {filter === 'all'
@@ -401,7 +401,7 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
           {filteredApplications.map((application) => (
             <div
               key={application['id']}
-              className="rounded-lg bg-white p-6 shadow transition-all hover:shadow-lg dark:bg-gray-800"
+              className="rounded-lg bg-white p-6 shadow-sm transition-all hover:shadow-lg dark:bg-gray-800"
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">

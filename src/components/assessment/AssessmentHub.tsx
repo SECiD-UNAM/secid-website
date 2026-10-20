@@ -171,9 +171,9 @@ function AssessmentHubContent({
       {/* Quick Stats */}
       {progress && (
         <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
-          <div className="rounded-lg bg-white p-6 shadow">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
                   <svg
                     className="h-5 w-5 text-blue-600"
@@ -199,9 +199,9 @@ function AssessmentHubContent({
             </div>
           </div>
 
-          <div className="rounded-lg bg-white p-6 shadow">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
                   <svg
                     className="h-5 w-5 text-green-600"
@@ -227,9 +227,9 @@ function AssessmentHubContent({
             </div>
           </div>
 
-          <div className="rounded-lg bg-white p-6 shadow">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100">
                   <svg
                     className="h-5 w-5 text-yellow-600"
@@ -251,9 +251,9 @@ function AssessmentHubContent({
             </div>
           </div>
 
-          <div className="rounded-lg bg-white p-6 shadow">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
             <div className="flex items-center">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100">
                   <svg
                     className="h-5 w-5 text-purple-600"
@@ -314,7 +314,7 @@ function AssessmentHubContent({
       {activeTab === 'explore' && (
         <div className="space-y-6">
           {/* Search and Filters */}
-          <div className="rounded-lg bg-white p-6 shadow">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
               {/* Search */}
               <div className="lg:col-span-2">
@@ -330,7 +330,7 @@ function AssessmentHubContent({
                     id="search"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 leading-5 placeholder-gray-500 focus:border-blue-500 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="block w-full rounded-md border border-gray-300 bg-white py-2 pr-3 pl-10 leading-5 placeholder-gray-500 focus:border-blue-500 focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:outline-hidden"
                     placeholder={t(
                       'assessment.search.placeholder',
                       'Buscar evaluaciones...'
@@ -369,7 +369,7 @@ function AssessmentHubContent({
                       )
                     )
                   }
-                  className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+                  className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-blue-500 focus:outline-hidden"
                 >
                   <option value="python">Python</option>
                   <option value="sql">SQL</option>
@@ -397,7 +397,7 @@ function AssessmentHubContent({
                       )
                     )
                   }
-                  className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+                  className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-blue-500 focus:outline-hidden"
                 >
                   <option value="beginner">Principiante</option>
                   <option value="intermediate">Intermedio</option>
@@ -523,7 +523,7 @@ function AssessmentCard({
   };
 
   return (
-    <div className="rounded-lg bg-white shadow transition-shadow duration-200 hover:shadow-md">
+    <div className="rounded-lg bg-white shadow-sm transition-shadow duration-200 hover:shadow-md">
       <div className="p-6">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex space-x-2">
@@ -591,14 +591,14 @@ function ProgressTab({
   return (
     <div className="space-y-6">
       {/* Skill Levels */}
-      <div className="rounded-lg bg-white p-6 shadow">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
         <h3 className="mb-4 text-lg font-medium text-gray-900">
           {t('assessment.progress.skills', 'Niveles de Habilidad')}
         </h3>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {Object.entries(progress.skillLevels).map(([skill, level]) => (
             <div key={skill} className="flex items-center space-x-3">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
                   <span className="text-sm font-medium text-blue-600">
                     {Math.round(level)}
@@ -607,7 +607,7 @@ function ProgressTab({
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium capitalize text-gray-900">
+                  <p className="text-sm font-medium text-gray-900 capitalize">
                     {skill.replace('_', ' ')}
                   </p>
                   <span className="text-sm text-gray-500">
@@ -627,7 +627,7 @@ function ProgressTab({
       </div>
 
       {/* Recent Activity */}
-      <div className="rounded-lg bg-white p-6 shadow">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-medium text-gray-900">
             {t('assessment.progress.recent', 'Actividad Reciente')}
@@ -676,7 +676,7 @@ function ProgressTab({
       </div>
 
       {/* Certificates */}
-      <div className="rounded-lg bg-white p-6 shadow">
+      <div className="rounded-lg bg-white p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-medium text-gray-900">
             {t('assessment.progress.certificates', 'Certificados')}
@@ -734,7 +734,7 @@ function LeaderboardTab({ leaderboard, currentUserId }: LeaderboardTabProps) {
   const { t } = useTranslations();
 
   return (
-    <div className="rounded-lg bg-white shadow">
+    <div className="rounded-lg bg-white shadow-sm">
       <div className="border-b border-gray-200 px-6 py-4">
         <h3 className="text-lg font-medium text-gray-900">
           {t('assessment.leaderboard.title', 'Clasificación Global')}
@@ -754,7 +754,7 @@ function LeaderboardTab({ leaderboard, currentUserId }: LeaderboardTabProps) {
             }`}
           >
             <div className="flex items-center space-x-4">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div
                   className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
                     entry.rank <= 3

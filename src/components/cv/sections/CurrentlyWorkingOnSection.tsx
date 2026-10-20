@@ -40,7 +40,7 @@ export function CvCurrentlyWorkingOnSection({
                 &#x1F393;
               </span>
               <h3
-                className="text-sm font-semibold uppercase tracking-wider"
+                className="text-sm font-semibold tracking-wider uppercase"
                 style={{ color: 'var(--color-primary)' }}
               >
                 {labels.currentEducation}
@@ -90,7 +90,7 @@ export function CvCurrentlyWorkingOnSection({
                 &#x1F680;
               </span>
               <h3
-                className="text-sm font-semibold uppercase tracking-wider"
+                className="text-sm font-semibold tracking-wider uppercase"
                 style={{ color: 'var(--color-primary)' }}
               >
                 {labels.activeProjects}

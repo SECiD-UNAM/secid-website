@@ -126,10 +126,10 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="animate-pulse rounded-xl bg-white p-6 shadow dark:border dark:border-gray-700/30 dark:bg-gray-800"
+            className="animate-pulse rounded-xl bg-white p-6 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800"
           >
-            <div className="mb-4 h-4 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
-            <div className="h-8 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
+            <div className="mb-4 h-4 w-3/4 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
+            <div className="h-8 w-1/2 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
           </div>
         ))}
       </div>
@@ -143,7 +143,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
         return (
           <div
             key={stat['name']}
-            className="rounded-xl bg-white p-6 shadow transition-all hover:-translate-y-1 hover:shadow-lg dark:border dark:border-gray-700/30 dark:bg-gray-800"
+            className="rounded-xl bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg dark:border dark:border-gray-700/30 dark:bg-gray-800"
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">

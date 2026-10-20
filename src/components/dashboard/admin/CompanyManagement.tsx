@@ -599,7 +599,7 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
           </button>
           <button
             onClick={openAddModal}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden dark:focus:ring-offset-gray-800"
           >
             <PlusIcon className="h-4 w-4" />
             {t(lang, 'Agregar empresa', 'Add Company')}
@@ -692,7 +692,7 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
                             .length
                       }
                       onChange={toggleSelectAll}
-                      className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+                      className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
                       title={t(
                         lang,
                         'Seleccionar todas pendientes',
@@ -720,7 +720,7 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
                             type="checkbox"
                             checked={selectedIds.has(company.id)}
                             onChange={() => toggleSelect(company.id)}
-                            className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+                            className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
                           />
                         ) : (
                           <div className="h-4 w-4" />
@@ -728,7 +728,7 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
                       </td>
 
                       {/* Logo + Name */}
-                      <td className="whitespace-nowrap px-4 py-3">
+                      <td className="px-4 py-3 whitespace-nowrap">
                         <div className="flex items-center gap-3">
                           <CompanyLogo company={company} size="sm" />
                           <span className="text-sm font-medium text-gray-900 dark:text-white">
@@ -738,22 +738,22 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
                       </td>
 
                       {/* Domain */}
-                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                      <td className="px-4 py-3 text-sm whitespace-nowrap text-gray-600 dark:text-gray-400">
                         {company.domain}
                       </td>
 
                       {/* Industry */}
-                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                      <td className="px-4 py-3 text-sm whitespace-nowrap text-gray-600 dark:text-gray-400">
                         {company.industry ?? '-'}
                       </td>
 
                       {/* Member count */}
-                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                      <td className="px-4 py-3 text-sm whitespace-nowrap text-gray-600 dark:text-gray-400">
                         {company.memberCount}
                       </td>
 
                       {/* Submitted By */}
-                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                      <td className="px-4 py-3 text-sm whitespace-nowrap text-gray-600 dark:text-gray-400">
                         {company.createdBy ? (
                           (() => {
                             const profile = creatorProfiles[company.createdBy];
@@ -790,7 +790,7 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
                       </td>
 
                       {/* Status badge */}
-                      <td className="whitespace-nowrap px-4 py-3">
+                      <td className="px-4 py-3 whitespace-nowrap">
                         <StatusBadge
                           pending={company.pendingReview}
                           lang={lang}
@@ -798,7 +798,7 @@ export const CompanyManagement: React.FC<Props> = ({ lang }) => {
                       </td>
 
                       {/* Actions */}
-                      <td className="whitespace-nowrap px-4 py-3">
+                      <td className="px-4 py-3 whitespace-nowrap">
                         <div className="flex items-center gap-1">
                           {/* Edit */}
                           <ActionButton
@@ -987,7 +987,7 @@ function TabButton({
       onClick={onClick}
       className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
         active
-          ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-600 dark:text-white'
+          ? 'bg-white text-gray-900 shadow-xs dark:bg-gray-600 dark:text-white'
           : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
       }`}
     >
@@ -1009,7 +1009,7 @@ function TabButton({
 
 function Th({ children }: { children: React.ReactNode }) {
   return (
-    <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+    <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
       {children}
     </th>
   );
@@ -1058,7 +1058,7 @@ function ActionButton({
       title={title}
       onClick={onClick}
       disabled={disabled}
-      className={`rounded p-1.5 transition-colors disabled:opacity-50 ${className}`}
+      className={`rounded-sm p-1.5 transition-colors disabled:opacity-50 ${className}`}
     >
       {children}
     </button>
@@ -1133,7 +1133,7 @@ function CompanyModal({
           </h2>
           <button
             onClick={onClose}
-            className="rounded p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="rounded-sm p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           >
             <XMarkIcon className="h-5 w-5" />
           </button>
@@ -1261,7 +1261,7 @@ function CompanyModal({
             disabled={
               saving || !formData.name.trim() || !formData.domain.trim()
             }
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 dark:focus:ring-offset-gray-800"
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden disabled:opacity-50 dark:focus:ring-offset-gray-800"
           >
             {saving && <ArrowPathIcon className="h-4 w-4 animate-spin" />}
             {isEdit

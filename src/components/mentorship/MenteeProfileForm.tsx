@@ -328,7 +328,7 @@ export default function MenteeProfileForm({
                 }))
               }
               placeholder="Your display name"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               required
             />
           </div>
@@ -348,7 +348,7 @@ export default function MenteeProfileForm({
               }
               placeholder="Tell mentors about yourself, your background, and what you're looking for (min. 30 characters)"
               rows={4}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               required
             />
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -416,7 +416,7 @@ export default function MenteeProfileForm({
                   yearsOfExperience: parseInt(e.target.value) || 0,
                 }))
               }
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
         </div>
@@ -537,7 +537,7 @@ export default function MenteeProfileForm({
                   hoursPerWeek: parseInt(e.target.value) || 1,
                 }))
               }
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
 

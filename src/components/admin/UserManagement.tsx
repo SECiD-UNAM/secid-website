@@ -388,7 +388,7 @@ export const UserManagement: React.FC = () => {
               }
               setSelectedUsers(next);
             }}
-            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
           />
         ),
       },
@@ -397,7 +397,7 @@ export const UserManagement: React.FC = () => {
         label: lang === 'es' ? 'Usuario' : 'User',
         accessor: (user) => (
           <div className="flex items-center">
-            <div className="h-10 w-10 flex-shrink-0">
+            <div className="h-10 w-10 shrink-0">
               {user.photoURL ? (
                 <img
                   className="h-10 w-10 rounded-full"
@@ -426,7 +426,7 @@ export const UserManagement: React.FC = () => {
         accessor: (user) => (
           <div className="flex items-center">
             {getRoleIcon(user.role)}
-            <span className="ml-2 text-sm capitalize text-gray-900">
+            <span className="ml-2 text-sm text-gray-900 capitalize">
               {user.role}
             </span>
           </div>
@@ -475,7 +475,7 @@ export const UserManagement: React.FC = () => {
         label: lang === 'es' ? 'Membresía' : 'Membership',
         sortable: true,
         accessor: (user) => (
-          <span className="text-sm capitalize text-gray-900">
+          <span className="text-sm text-gray-900 capitalize">
             {user.membershipTier}
           </span>
         ),
@@ -619,14 +619,14 @@ export const UserManagement: React.FC = () => {
         <div className="mt-4 flex space-x-3 sm:mt-0">
           <button
             onClick={exportUsers}
-            className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-xs hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden"
           >
             <Download className="mr-2 h-4 w-4" />
             {lang === 'es' ? 'Exportar' : 'Export'}
           </button>
           <button
             onClick={() => setShowUserModal(true)}
-            className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden"
           >
             <Plus className="mr-2 h-4 w-4" />
             {lang === 'es' ? 'Nuevo Usuario' : 'New User'}
@@ -635,7 +635,7 @@ export const UserManagement: React.FC = () => {
       </div>
 
       {/* Search + Filters */}
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-xs">
         <div className="mb-4">
           <ListingSearch
             query={query}
@@ -666,7 +666,7 @@ export const UserManagement: React.FC = () => {
               <select
                 value={bulkAction}
                 onChange={(e) => setBulkAction(e.target.value)}
-                className="rounded-md border-blue-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="rounded-md border-blue-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
               >
                 <option value="">
                   {lang === 'es' ? 'Seleccionar acción' : 'Select action'}
@@ -720,7 +720,7 @@ export const UserManagement: React.FC = () => {
                 setSelectedUsers(new Set());
               }
             }}
-            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
           />
           <span className="text-xs text-gray-500">
             {lang === 'es' ? 'Seleccionar todo' : 'Select all'}
@@ -755,7 +755,7 @@ export const UserManagement: React.FC = () => {
 
       {/* Users Table */}
       {!loading && (
-        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xs">
           <ListingTable<User>
             items={users}
             columns={columns}
@@ -779,7 +779,7 @@ export const UserManagement: React.FC = () => {
       )}
 
       {/* Stats */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-xs">
         <h3 className="mb-4 text-lg font-medium text-gray-900">
           {lang === 'es' ? 'Resumen' : 'Summary'}
         </h3>

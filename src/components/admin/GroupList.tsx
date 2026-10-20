@@ -163,12 +163,12 @@ export default function GroupList({ lang = 'es' }: GroupListProps) {
     return (
       <div className="mx-auto max-w-5xl">
         <div className="animate-pulse space-y-4">
-          <div className="h-10 w-1/3 rounded bg-gray-200 dark:bg-gray-700" />
-          <div className="h-12 rounded bg-gray-200 dark:bg-gray-700" />
+          <div className="h-10 w-1/3 rounded-sm bg-gray-200 dark:bg-gray-700" />
+          <div className="h-12 rounded-sm bg-gray-200 dark:bg-gray-700" />
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-16 rounded bg-gray-200 dark:bg-gray-700"
+              className="h-16 rounded-sm bg-gray-200 dark:bg-gray-700"
             />
           ))}
         </div>
@@ -205,13 +205,13 @@ export default function GroupList({ lang = 'es' }: GroupListProps) {
 
       {/* Search */}
       <div className="relative">
-        <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <MagnifyingGlassIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t('searchPlaceholder', lang)}
-          className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-sm text-gray-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+          className="w-full rounded-lg border border-gray-300 bg-white py-2 pr-4 pl-10 text-sm text-gray-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
         />
       </div>
 
@@ -222,13 +222,13 @@ export default function GroupList({ lang = 'es' }: GroupListProps) {
 
       {/* Table */}
       {filtered.length === 0 ? (
-        <div className="rounded-lg bg-white p-12 text-center shadow dark:bg-gray-800">
+        <div className="rounded-lg bg-white p-12 text-center shadow-sm dark:bg-gray-800">
           <p className="text-gray-500 dark:text-gray-400">
             {t('noGroups', lang)}
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg bg-white shadow dark:bg-gray-800">
+        <div className="overflow-x-auto rounded-lg bg-white shadow-sm dark:bg-gray-800">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900/50">
               <tr>
@@ -255,7 +255,7 @@ export default function GroupList({ lang = 'es' }: GroupListProps) {
                   key={group.id}
                   className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
                 >
-                  <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-900 dark:text-white">
+                  <td className="px-4 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-white">
                     {group.name}
                   </td>
                   <td className="max-w-xs truncate px-4 py-3 text-gray-700 dark:text-gray-300">
@@ -276,7 +276,7 @@ export default function GroupList({ lang = 'es' }: GroupListProps) {
                         <a
                           href={`/${lang}/dashboard/admin/groups/${group.id}`}
                           title={t('view', lang)}
-                          className="rounded p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-blue-400"
+                          className="rounded-sm p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-blue-400"
                         >
                           <EyeIcon className="h-4 w-4" />
                         </a>
@@ -285,7 +285,7 @@ export default function GroupList({ lang = 'es' }: GroupListProps) {
                         <a
                           href={`/${lang}/dashboard/admin/groups/edit/${group.id}`}
                           title={t('edit', lang)}
-                          className="rounded p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-primary-400"
+                          className="rounded-sm p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-primary-400"
                         >
                           <PencilSquareIcon className="h-4 w-4" />
                         </a>
@@ -295,7 +295,7 @@ export default function GroupList({ lang = 'es' }: GroupListProps) {
                           type="button"
                           onClick={() => handleDelete(group)}
                           title={t('delete', lang)}
-                          className="rounded p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-red-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-red-400"
+                          className="rounded-sm p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-red-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-red-400"
                         >
                           <TrashIcon className="h-4 w-4" />
                         </button>

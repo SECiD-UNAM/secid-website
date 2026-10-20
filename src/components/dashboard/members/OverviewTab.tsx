@@ -205,7 +205,7 @@ function HorizontalBarCard({
             className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300"
           >
             <span
-              className="inline-block h-3 w-3 rounded-sm"
+              className="inline-block h-3 w-3 rounded-xs"
               style={{
                 backgroundColor:
                   COMPOSITION_COLORS[i % COMPOSITION_COLORS.length],
@@ -291,7 +291,7 @@ function GenerationBarCard({
             className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-300"
           >
             <span
-              className="inline-block h-3 w-3 rounded-sm"
+              className="inline-block h-3 w-3 rounded-xs"
               style={{
                 backgroundColor:
                   GENERATION_COLORS[i % GENERATION_COLORS.length],

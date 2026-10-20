@@ -241,7 +241,7 @@ export default function ResourceDetail({
   return (
     <div className="mx-auto max-w-4xl">
       {/* Header */}
-      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6 shadow-xs dark:border-gray-700 dark:bg-gray-800">
         <div className="mb-4 flex items-start justify-between">
           <div className="flex-1">
             <div className="mb-2 flex items-center gap-3">
@@ -379,7 +379,7 @@ export default function ResourceDetail({
       </div>
 
       {/* Content Tabs */}
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div className="rounded-lg border border-gray-200 bg-white shadow-xs dark:border-gray-700 dark:bg-gray-800">
         <div className="border-b border-gray-200 dark:border-gray-700">
           <div className="flex space-x-8 px-6">
             {['overview', 'reviews', 'versions'].map((tab) => (

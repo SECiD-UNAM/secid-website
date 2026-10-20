@@ -240,7 +240,7 @@ export default function NotificationCenter({
       <button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="relative rounded-lg p-2 text-gray-600 transition-colors hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="relative rounded-lg p-2 text-gray-600 transition-colors hover:text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-hidden"
         aria-label={t('notifications.toggle')}
         aria-expanded={isOpen}
         aria-haspopup="dialog"
@@ -249,7 +249,7 @@ export default function NotificationCenter({
 
         {/* Unread Count Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] animate-pulse items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
+          <span className="absolute -top-1 -right-1 flex h-[18px] min-w-[18px] animate-pulse items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
@@ -276,7 +276,7 @@ export default function NotificationCenter({
               </h3>
               <button
                 onClick={() => setIsOpen(false)}
-                className="rounded p-1 text-gray-400 hover:text-gray-600"
+                className="rounded-sm p-1 text-gray-400 hover:text-gray-600"
                 aria-label={t('common.close')}
               >
                 <X className="h-5 w-5" />
@@ -289,7 +289,7 @@ export default function NotificationCenter({
                 onClick={() => setActiveTab('recent')}
                 className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                   activeTab === 'recent'
-                    ? 'bg-white text-gray-900 shadow-sm'
+                    ? 'bg-white text-gray-900 shadow-xs'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -302,7 +302,7 @@ export default function NotificationCenter({
                 }}
                 className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                   activeTab === 'history'
-                    ? 'bg-white text-gray-900 shadow-sm'
+                    ? 'bg-white text-gray-900 shadow-xs'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -312,7 +312,7 @@ export default function NotificationCenter({
                 onClick={() => setActiveTab('settings')}
                 className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                   activeTab === 'settings'
-                    ? 'bg-white text-gray-900 shadow-sm'
+                    ? 'bg-white text-gray-900 shadow-xs'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -333,7 +333,7 @@ export default function NotificationCenter({
                         <select
                           value={filterBy}
                           onChange={(e) => setFilterBy(e.target.value as any)}
-                          className="rounded border-gray-300 px-2 py-1 text-xs"
+                          className="rounded-sm border-gray-300 px-2 py-1 text-xs"
                         >
                           <option value="all">
                             {t('notifications.filter.all')}
@@ -349,7 +349,7 @@ export default function NotificationCenter({
                         <select
                           value={sortBy}
                           onChange={(e) => setSortBy(e.target.value as any)}
-                          className="rounded border-gray-300 px-2 py-1 text-xs"
+                          className="rounded-sm border-gray-300 px-2 py-1 text-xs"
                         >
                           <option value="date">
                             {t('notifications.sort.date')}
@@ -368,14 +368,14 @@ export default function NotificationCenter({
                           <>
                             <button
                               onClick={handleDeleteSelected}
-                              className="rounded p-1 text-red-600 hover:text-red-800"
+                              className="rounded-sm p-1 text-red-600 hover:text-red-800"
                               title={t('notifications.deleteSelected')}
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
                             <button
                               onClick={clearSelection}
-                              className="rounded p-1 text-gray-600 hover:text-gray-800"
+                              className="rounded-sm p-1 text-gray-600 hover:text-gray-800"
                               title={t('notifications.clearSelection')}
                             >
                               <X className="h-4 w-4" />
@@ -386,7 +386,7 @@ export default function NotificationCenter({
                         {unreadCount > 0 && (
                           <button
                             onClick={handleMarkAllAsRead}
-                            className="rounded p-1 text-blue-600 hover:text-blue-800"
+                            className="rounded-sm p-1 text-blue-600 hover:text-blue-800"
                             title={t('notifications.markAllRead')}
                           >
                             <Check className="h-4 w-4" />
@@ -395,7 +395,7 @@ export default function NotificationCenter({
 
                         <div className="relative">
                           <button
-                            className="rounded p-1 text-gray-600 hover:text-gray-800"
+                            className="rounded-sm p-1 text-gray-600 hover:text-gray-800"
                             title={t('notifications.moreActions')}
                           >
                             <MoreHorizontal className="h-4 w-4" />

@@ -343,7 +343,7 @@ export const MemberDirectory: React.FC<MemberDirectoryProps> = ({
           </div>
 
           {/* Search and Filters */}
-          <div className="rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800 sm:p-4">
+          <div className="rounded-lg border border-gray-200 bg-white p-3 sm:p-4 dark:border-gray-700 dark:bg-gray-800">
             <div className="flex flex-col gap-3 sm:gap-4">
               <div className="flex-1">
                 <MemberSearch

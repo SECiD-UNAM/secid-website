@@ -50,7 +50,7 @@ export function Sidebar({
       }}
     >
       {/* Profile section */}
-      <div className="flex flex-col items-center px-5 pb-6 pt-8">
+      <div className="flex flex-col items-center px-5 pt-8 pb-6">
         {personal.profileImage ? (
           <img
             src={personal.profileImage}
@@ -143,7 +143,7 @@ export function Sidebar({
       </nav>
 
       {/* Bottom section: back link */}
-      <div className="px-5 pb-6 pt-2">
+      <div className="px-5 pt-2 pb-6">
         <div
           style={{
             height: '1px',
@@ -178,7 +178,7 @@ export function Sidebar({
     <>
       {/* Desktop sidebar */}
       <aside
-        className="fixed left-0 top-0 z-40 hidden h-screen w-[260px] lg:block"
+        className="fixed top-0 left-0 z-40 hidden h-screen w-[260px] lg:block"
         style={{
           background: 'var(--color-surface)',
           borderRight: '1px solid var(--color-border)',
@@ -197,7 +197,7 @@ export function Sidebar({
 
       {/* Mobile sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-40 h-screen w-[260px] transition-transform duration-300 lg:hidden ${
+        className={`fixed top-0 left-0 z-40 h-screen w-[260px] transition-transform duration-300 lg:hidden ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
         style={{

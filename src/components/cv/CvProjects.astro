@@ -29,7 +29,7 @@ const featuredLabel = lang === 'es' ? 'Destacado' : 'Featured';
               {project.title}
             </h3>
 
-            <div class="flex flex-shrink-0 items-center gap-2">
+            <div class="flex shrink-0 items-center gap-2">
               {project.featured && (
                 <span class="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-400">
                   <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
@@ -53,7 +53,7 @@ const featuredLabel = lang === 'es' ? 'Destacado' : 'Featured';
           {project.technologies.length > 0 && (
             <div class="mb-3 flex flex-wrap gap-1.5">
               {project.technologies.map((tech) => (
-                <span class="rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                <span class="rounded-sm bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300">
                   {tech}
                 </span>
               ))}

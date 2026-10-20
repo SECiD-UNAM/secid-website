@@ -103,7 +103,7 @@ export default function PendingBlogPosts({ lang = 'es' }: Props) {
       {posts.map((post) => (
         <div
           key={post.id}
-          className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+          className="rounded-lg border border-gray-200 bg-white p-4 shadow-xs dark:border-gray-700 dark:bg-gray-800"
         >
           <div className="flex items-start justify-between gap-4">
             <div className="flex min-w-0 flex-1 items-start gap-3">
@@ -117,18 +117,18 @@ export default function PendingBlogPosts({ lang = 'es' }: Props) {
                 <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
                   {t.by} {post.authorName}
                   {post.lang && (
-                    <span className="ml-2 inline-flex items-center rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                    <span className="ml-2 inline-flex items-center rounded-sm bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-700 dark:text-gray-300">
                       {post.lang.toUpperCase()}
                     </span>
                   )}
                 </p>
               </div>
             </div>
-            <div className="flex flex-shrink-0 items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2">
               <button
                 onClick={() => handleAction(post.id, 'approved')}
                 disabled={actioningId === post.id}
-                className="inline-flex items-center gap-1.5 rounded-md border border-transparent bg-green-600 px-3 py-2 text-sm font-medium leading-4 text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-md border border-transparent bg-green-600 px-3 py-2 text-sm leading-4 font-medium text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <CheckCircle className="h-4 w-4" />
                 {t.approve}
@@ -136,7 +136,7 @@ export default function PendingBlogPosts({ lang = 'es' }: Props) {
               <button
                 onClick={() => handleAction(post.id, 'rejected')}
                 disabled={actioningId === post.id}
-                className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
               >
                 <XCircle className="h-4 w-4" />
                 {t.reject}

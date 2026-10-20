@@ -109,7 +109,7 @@ export const PointsTracker: React.FC<PointsTrackerProps> = ({
       <div className="space-y-6">
         {/* Main Stats */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
+          <div className="rounded-lg bg-linear-to-r from-blue-500 to-blue-600 p-6 text-white">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-blue-100">Total Points</p>
@@ -121,7 +121,7 @@ export const PointsTracker: React.FC<PointsTrackerProps> = ({
             </div>
           </div>
 
-          <div className="rounded-lg bg-gradient-to-r from-green-500 to-green-600 p-6 text-white">
+          <div className="rounded-lg bg-linear-to-r from-green-500 to-green-600 p-6 text-white">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-green-100">Current Level</p>
@@ -131,7 +131,7 @@ export const PointsTracker: React.FC<PointsTrackerProps> = ({
             </div>
           </div>
 
-          <div className="rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 p-6 text-white">
+          <div className="rounded-lg bg-linear-to-r from-purple-500 to-purple-600 p-6 text-white">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-purple-100">Current Streak</p>
@@ -158,7 +158,7 @@ export const PointsTracker: React.FC<PointsTrackerProps> = ({
             </div>
             <div className="h-3 w-full rounded-full bg-gray-200">
               <div
-                className="h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500 ease-out"
+                className="h-3 rounded-full bg-linear-to-r from-blue-500 to-purple-500 transition-all duration-500 ease-out"
                 style={{ width: `${levelProgress.progress}%` }}
               ></div>
             </div>
@@ -335,14 +335,11 @@ export const PointsTracker: React.FC<PointsTrackerProps> = ({
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key as any)}
-              className={`
-                flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors
-                ${
-                  activeTab === tab.key
-                    ? 'bg-white text-blue-600 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }
-              `}
+              className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === tab.key
+                  ? 'bg-white text-blue-600 shadow-xs'
+                  : 'text-gray-600 hover:text-gray-900'
+              } `}
             >
               {tab.label}
             </button>

@@ -1,7 +1,283 @@
-/* Tailwind CSS - Clean import without legacy template */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+@plugin '@headlessui/tailwindcss';
+
+/*
+  Dark mode is driven by src/lib/theme/theme-manager.ts and the inline
+  script in ModernLayout.astro, which set both `class="dark"` and
+  `data-theme="dark"` on <html>. The hand-written CSS in
+  public/assets/css/secid-components.css keys off `[data-theme='dark']`;
+  the `dark:` utilities must follow the same switch, so the variant
+  accepts either marker (v3 only knew the class).
+*/
+@custom-variant dark (&:is(.dark *, [data-theme='dark'] *));
+
+/*
+  Every @theme block here is `inline`: utilities then carry the literal
+  value (`.rounded-lg { border-radius: .5rem }`, like Tailwind 3 did)
+  instead of `var(--radius-lg)`. That matters because the hand-written
+  public/assets/css/secid-components.css declares its own `--radius-*`,
+  `--shadow-*` and `--shadow-glow*` custom properties on `:root` with
+  different values (e.g. `--radius-lg: 0.75rem`), and an unlayered `:root`
+  beats Tailwind's `@layer theme`, so with plain `@theme` every `rounded-*`
+  and `shadow-*` utility silently picked up the site's values and grew one
+  step. The defaults below are copied from node_modules/tailwindcss/theme.css
+  so that Tailwind's own scale keeps winning inside utilities; the
+  hand-written CSS keeps using its own variables as before.
+*/
+@theme inline {
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
+
+  --shadow-2xs: 0 1px rgb(0 0 0 / 0.05);
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl:
+    0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+
+@theme inline {
+  /*
+    Tailwind v3 defaulted the ring colour to blue-500 at 50% opacity; v4
+    defaults to `currentColor`. Several `focus:ring-2` usages carry no
+    `ring-<colour>` class, so keep the v3 default for them.
+  */
+  --default-ring-color: rgb(59 130 246 / 0.5);
+
+  --color-primary-50: #fff4f1;
+  --color-primary-100: #ffe4dd;
+  --color-primary-200: #ffcabc;
+  --color-primary-300: #ffa48e;
+  --color-primary-400: #ff7b52;
+  --color-primary-500: #f65425;
+  --color-primary-600: #e63d14;
+  --color-primary-700: #c22f0e;
+  --color-primary-800: #9a2a12;
+  --color-primary-900: #7d2814;
+  --color-primary-950: #441006;
+
+  --color-secondary-50: #f0f5f8;
+  --color-secondary-100: #dce7ef;
+  --color-secondary-200: #bdd1e0;
+  --color-secondary-300: #92b3ca;
+  --color-secondary-400: #7a9bb8;
+  --color-secondary-500: #5b7f99;
+  --color-secondary-600: #465d73;
+  --color-secondary-700: #3d5064;
+  --color-secondary-800: #385061;
+  --color-secondary-900: #2e4050;
+  --color-secondary-950: #1e2b35;
+
+  --color-accent-50: #fff9f0;
+  --color-accent-100: #fff0d6;
+  --color-accent-200: #ffe0ad;
+  --color-accent-300: #ffca7a;
+  --color-accent-400: #fdb157;
+  --color-accent-500: #f59e2e;
+  --color-accent-600: #e08416;
+  --color-accent-700: #b86610;
+  --color-accent-800: #955114;
+  --color-accent-900: #7a4314;
+  --color-accent-950: #422007;
+
+  --color-success-50: #e8f8e8;
+  --color-success-100: #d1f1d1;
+  --color-success-200: #a3e3a3;
+  --color-success-300: #75d575;
+  --color-success-400: #47c747;
+  --color-success-500: #2ca02c;
+  --color-success-600: #238023;
+  --color-success-700: #1a601a;
+  --color-success-800: #124012;
+  --color-success-900: #092009;
+  --color-success-950: #041004;
+
+  --color-warning-50: #fffaeb;
+  --color-warning-100: #fff5d6;
+  --color-warning-200: #ffebad;
+  --color-warning-300: #ffe085;
+  --color-warning-400: #ffd65c;
+  --color-warning-500: #ffbb33;
+  --color-warning-600: #cc9629;
+  --color-warning-700: #99701f;
+  --color-warning-800: #664b14;
+  --color-warning-900: #33250a;
+  --color-warning-950: #1a1305;
+
+  --color-error-50: #fde8e8;
+  --color-error-100: #fbd1d1;
+  --color-error-200: #f7a3a3;
+  --color-error-300: #f37575;
+  --color-error-400: #ef4747;
+  --color-error-500: #d62728;
+  --color-error-600: #ab1f20;
+  --color-error-700: #801718;
+  --color-error-800: #561010;
+  --color-error-900: #2b0808;
+  --color-error-950: #150404;
+
+  --color-gray-50: #fafafa;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #e5e5e5;
+  --color-gray-300: #d4d4d4;
+  --color-gray-400: #a3a3a3;
+  --color-gray-500: #737373;
+  --color-gray-600: #525252;
+  --color-gray-700: #404040;
+  --color-gray-800: #262626;
+  --color-gray-900: #171717;
+  --color-gray-950: #0f0f0f;
+
+  --font-sans:
+    Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
+  --font-heading:
+    Poppins, Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    sans-serif;
+  --font-mono: JetBrains Mono, SF Mono, Monaco, Inconsolata, monospace;
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.6rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.8rem;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: 2.5rem;
+  --text-5xl: 3rem;
+  --text-5xl--line-height: 1.2;
+  --text-6xl: 3.75rem;
+  --text-6xl--line-height: 1.2;
+  --text-7xl: 4.5rem;
+  --text-7xl--line-height: 1.2;
+  --text-8xl: 6rem;
+  --text-8xl--line-height: 1.2;
+  --text-9xl: 8rem;
+  --text-9xl--line-height: 1.2;
+
+  --animate-fade-in: fadeIn 0.5s ease-in-out;
+  --animate-fade-out: fadeOut 0.5s ease-in-out;
+  --animate-slide-in: slideIn 0.3s ease-out;
+  --animate-slide-out: slideOut 0.3s ease-in;
+  --animate-bounce-in: bounceIn 0.5s ease-out;
+  --animate-spin-slow: spin 2s linear infinite;
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  --shadow-inner-lg: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  --shadow-glow-sm: 0 0 12px rgba(246, 84, 37, 0.25);
+  --shadow-glow: 0 0 20px rgba(246, 84, 37, 0.3);
+  --shadow-glow-lg: 0 0 40px rgba(246, 84, 37, 0.4);
+  --shadow-glow-secondary: 0 0 12px rgba(91, 127, 153, 0.25);
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes slideIn {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+  @keyframes slideOut {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes bounceIn {
+    0% {
+      transform: scale(0.3);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    70% {
+      transform: scale(0.9);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+/*
+  Other Preflight defaults that changed in v4 (upgrade guide, "Preflight
+  changes"), kept at their v3 values so pages render the same:
+  - placeholder text was gray-400, v4 uses the text colour at 50%;
+  - buttons had `cursor: pointer`, v4 uses `cursor: default`;
+  - <dialog> was centred by `margin: auto`, v4 resets it to 0.
+*/
+@layer base {
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-400);
+  }
+
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+
+  dialog {
+    margin: auto;
+  }
+}
 
 /* ---- Beta Banner ---- */
 .beta-banner {

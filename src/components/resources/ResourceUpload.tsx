@@ -540,7 +540,7 @@ export default function ResourceUpload({
             type="checkbox"
             checked={formData.hasPreview || false}
             onChange={(e) => handleInputChange('hasPreview', e.target.checked)}
-            className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500"
+            className="h-4 w-4 rounded-sm text-blue-600 focus:ring-blue-500"
           />
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {t?.resources?.includePreview || 'Include Preview File'}
@@ -788,7 +788,7 @@ export default function ResourceUpload({
             {formData.prerequisites.map((prereq, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between rounded bg-gray-100 px-3 py-2 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+                className="flex items-center justify-between rounded-sm bg-gray-100 px-3 py-2 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
               >
                 <span>{prereq}</span>
                 <button
@@ -806,7 +806,7 @@ export default function ResourceUpload({
   );
 
   return (
-    <div className="mx-auto max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+    <div className="mx-auto max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-xs dark:border-gray-700 dark:bg-gray-800">
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">

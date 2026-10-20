@@ -167,7 +167,7 @@ export const EmailVerificationBanner: React.FC<
     <div className={`mb-6 rounded-lg border p-4 ${t.wrap}`}>
       <div className="flex items-start gap-3">
         <svg
-          className={`mt-0.5 h-5 w-5 flex-shrink-0 ${t.icon}`}
+          className={`mt-0.5 h-5 w-5 shrink-0 ${t.icon}`}
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={1.5}

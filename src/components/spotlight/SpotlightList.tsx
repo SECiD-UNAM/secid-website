@@ -55,7 +55,7 @@ export default function SpotlightList({ lang = 'es' }: SpotlightListProps) {
       <div className="mb-6">
         <div className="relative">
           <svg
-            className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400"
+            className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={1.5}
@@ -72,7 +72,7 @@ export default function SpotlightList({ lang = 'es' }: SpotlightListProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={lang === 'es' ? 'Buscar...' : 'Search...'}
-            className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+            className="w-full rounded-lg border border-gray-300 bg-white py-2.5 pr-4 pl-10 text-sm text-gray-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
           />
         </div>
       </div>

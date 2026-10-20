@@ -282,19 +282,19 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                           {t('payments.transaction')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                           {t('payments.amount')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                           {t('paymentsstatus')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                           {t('payments.date')}
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                        <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                           {t('payments.actions')}
                         </th>
                       </tr>
@@ -302,7 +302,7 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
                     <tbody className="divide-y divide-gray-200 bg-white">
                       {filteredTransactions.map((transaction) => (
                         <tr key={transaction.id} className="hover:bg-gray-50">
-                          <td className="whitespace-nowrap px-6 py-4">
+                          <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <span className="mr-3 text-2xl">
                                 {getTypeIcon(transaction['type'])}
@@ -311,13 +311,13 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
                                 <div className="text-sm font-medium text-gray-900">
                                   {transaction['description']}
                                 </div>
-                                <div className="text-sm capitalize text-gray-500">
+                                <div className="text-sm text-gray-500 capitalize">
                                   {transaction['type']}
                                 </div>
                               </div>
                             </div>
                           </td>
-                          <td className="whitespace-nowrap px-6 py-4">
+                          <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-gray-900">
                               {formatCurrency(
                                 transaction.amount,
@@ -325,17 +325,17 @@ const BillingHistory: React.FC<BillingHistoryProps> = ({ currentUser }) => {
                               )}
                             </div>
                           </td>
-                          <td className="whitespace-nowrap px-6 py-4">
+                          <td className="px-6 py-4 whitespace-nowrap">
                             <span
-                              className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold leading-5 ${getStatusColor(transaction['status'])}`}
+                              className={`inline-flex rounded-full px-2 py-1 text-xs leading-5 font-semibold ${getStatusColor(transaction['status'])}`}
                             >
                               {t(`payments.${transaction['status']}`)}
                             </span>
                           </td>
-                          <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                          <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
                             {formatDate(transaction['createdAt'])}
                           </td>
-                          <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
+                          <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
                             {transaction['status'] === 'succeeded' &&
                               transaction['type'] !== 'refund' && (
                                 <button

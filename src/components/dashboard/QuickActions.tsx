@@ -123,14 +123,11 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ lang = 'es' }) => {
           <a
             key={action.title}
             href={isDisabled ? '#' : action.href}
-            className={`
-              group relative block overflow-hidden rounded-xl bg-white p-6 shadow transition-all hover:shadow-lg dark:border dark:border-gray-700/30 dark:bg-gray-800
-              ${isDisabled ? 'cursor-not-allowed opacity-50' : 'hover:-translate-y-1 hover:scale-105'}
-            `}
+            className={`group relative block overflow-hidden rounded-xl bg-white p-6 shadow transition-all hover:shadow-lg dark:border dark:border-gray-700/30 dark:bg-gray-800 ${isDisabled ? 'cursor-not-allowed opacity-50' : 'hover:-translate-y-1 hover:scale-105'} `}
             onClick={isDisabled ? (e) => e.preventDefault() : undefined}
           >
             {/* Top gradient stripe on hover */}
-            <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-primary-500 to-accent-400 opacity-0 transition-opacity group-hover:opacity-100" />
+            <div className="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-primary-500 to-accent-400 opacity-0 transition-opacity group-hover:opacity-100" />
             <div className="flex items-start space-x-4">
               <div
                 className={`rounded-lg p-3 ${getColorClasses(action.color)}`}

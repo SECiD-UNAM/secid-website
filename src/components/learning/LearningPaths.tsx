@@ -189,10 +189,10 @@ const LearningPaths: React.FC<LearningPathsProps> = ({ currentUser }) => {
           alt={path.title}
           className="h-48 w-full object-cover"
         />
-        <div className="absolute left-4 top-4">
+        <div className="absolute top-4 left-4">
           <span className="text-2xl">{getCategoryIcon(path.category)}</span>
         </div>
-        <div className="absolute right-4 top-4">
+        <div className="absolute top-4 right-4">
           <span
             className={`rounded-full px-2 py-1 text-xs font-medium ${getDifficultyColor(path.difficulty)}`}
           >
@@ -232,7 +232,7 @@ const LearningPaths: React.FC<LearningPathsProps> = ({ currentUser }) => {
                 className="flex items-start text-sm text-gray-600"
               >
                 <svg
-                  className="mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-green-500"
+                  className="mt-0.5 mr-2 h-4 w-4 shrink-0 text-green-500"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -281,10 +281,10 @@ const LearningPaths: React.FC<LearningPathsProps> = ({ currentUser }) => {
             alt={course.title}
             className="h-48 w-full object-cover"
           />
-          <div className="absolute left-4 top-4">
+          <div className="absolute top-4 left-4">
             <span className="text-2xl">{getCategoryIcon(course.category)}</span>
           </div>
-          <div className="absolute right-4 top-4">
+          <div className="absolute top-4 right-4">
             <span
               className={`rounded-full px-2 py-1 text-xs font-medium ${getDifficultyColor(course.difficulty)}`}
             >

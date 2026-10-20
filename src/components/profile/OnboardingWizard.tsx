@@ -172,7 +172,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       </div>
 
       {/* Card */}
-      <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-xs dark:border-gray-700 dark:bg-gray-800">
         {/* Title */}
         <div className="mb-6 text-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -291,7 +291,7 @@ function WelcomeStep({
               <UserCircleIcon className="h-16 w-16 text-gray-400" />
             </div>
           )}
-          <label className="absolute bottom-0 right-0 cursor-pointer rounded-full bg-primary-600 p-1.5 transition-colors hover:bg-primary-700">
+          <label className="absolute right-0 bottom-0 cursor-pointer rounded-full bg-primary-600 p-1.5 transition-colors hover:bg-primary-700">
             <CameraIcon className="h-5 w-5 text-white" />
             <input
               type="file"

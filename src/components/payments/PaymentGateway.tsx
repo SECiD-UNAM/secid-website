@@ -315,7 +315,7 @@ const PaymentGateway: React.FC<PaymentGatewayProps> = ({
               onClick={() => setBillingInterval('month')}
               className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                 billingInterval === 'month'
-                  ? 'bg-white text-gray-900 shadow-sm'
+                  ? 'bg-white text-gray-900 shadow-xs'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -325,7 +325,7 @@ const PaymentGateway: React.FC<PaymentGatewayProps> = ({
               onClick={() => setBillingInterval('year')}
               className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                 billingInterval === 'year'
-                  ? 'bg-white text-gray-900 shadow-sm'
+                  ? 'bg-white text-gray-900 shadow-xs'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -389,7 +389,7 @@ const PaymentGateway: React.FC<PaymentGatewayProps> = ({
                     {tier.features.map((feature, index) => (
                       <li key={index} className="flex items-start">
                         <svg
-                          className="mr-2 mt-0.5 h-5 w-5 flex-shrink-0 text-green-500"
+                          className="mt-0.5 mr-2 h-5 w-5 shrink-0 text-green-500"
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >

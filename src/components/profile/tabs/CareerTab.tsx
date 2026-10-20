@@ -558,7 +558,7 @@ const WorkEntryForm: React.FC<{
               endDate: isCurrent ? undefined : entry.endDate,
             });
           }}
-          className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600"
+          className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600"
         />
         <span className="text-sm text-gray-700 dark:text-gray-300">
           {lang === 'es' ? 'Trabajo aquí actualmente' : 'I currently work here'}

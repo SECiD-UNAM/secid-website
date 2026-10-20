@@ -1418,7 +1418,7 @@ export function ListingSearch({
     <div role="search" className={`relative w-full ${className}`}>
       <div className="relative">
         <svg
-          className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+          className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -1436,14 +1436,14 @@ export function ListingSearch({
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
           placeholder={t.search.placeholder}
-          className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-10 text-gray-900 placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+          className="w-full rounded-lg border border-gray-300 bg-white py-2 pr-10 pl-10 text-gray-900 placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
           aria-label={t.search.placeholder}
         />
         {query && (
           <button
             type="button"
             onClick={() => onQueryChange('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600"
             aria-label={t.search.clearLabel}
           >
             <svg
@@ -2024,7 +2024,7 @@ export function ListingSort({
     <div className={`flex items-center gap-2 ${className}`}>
       <label
         htmlFor="listing-sort"
-        className="whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
+        className="text-sm whitespace-nowrap text-gray-500 dark:text-gray-400"
       >
         {t.sort.label}
       </label>
@@ -2215,7 +2215,7 @@ export function ListingTable<T>({
   return (
     <div className={`overflow-x-auto ${className}`}>
       <table className="w-full text-left text-sm">
-        <thead className="border-b-2 border-gray-200 text-xs uppercase text-gray-500 dark:border-gray-700 dark:text-gray-400">
+        <thead className="border-b-2 border-gray-200 text-xs text-gray-500 uppercase dark:border-gray-700 dark:text-gray-400">
           <tr>
             {columns.map((col) => (
               <th

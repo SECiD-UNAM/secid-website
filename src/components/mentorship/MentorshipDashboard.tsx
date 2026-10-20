@@ -228,7 +228,7 @@ export default function MentorshipDashboard({
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`relative whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-medium transition-colors sm:px-4 ${
+              className={`relative border-b-2 px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-colors sm:px-4 ${
                 activeTab === tab.key
                   ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                   : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
@@ -237,7 +237,7 @@ export default function MentorshipDashboard({
               <span className="hidden sm:inline">{tab.label}</span>
               <span className="sm:hidden">{tab.shortLabel}</span>
               {tab.key === 'matches' && pendingCount > 0 && (
-                <span className="ml-1.5 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-red-100 px-1 text-[10px] font-semibold text-red-600 dark:bg-red-900/30 dark:text-red-400">
+                <span className="ml-1.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-red-100 px-1 text-[10px] font-semibold text-red-600 dark:bg-red-900/30 dark:text-red-400">
                   {pendingCount}
                 </span>
               )}

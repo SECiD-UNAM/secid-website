@@ -102,7 +102,7 @@ export default function AuthNavButtons({
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setOpen(!open)}
-          className="flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+          className="flex items-center rounded-full focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:outline-hidden"
           aria-label={lang === 'es' ? 'Menú de usuario' : 'User menu'}
           aria-expanded={open}
           aria-haspopup="true"

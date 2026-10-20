@@ -342,7 +342,7 @@ export default function NotificationSettings({
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
         {/* Sidebar */}
         <div className="lg:col-span-1">
-          <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-xs">
             <h3 className="mb-4 text-sm font-medium text-gray-900">
               {t('notificationssettings.categories')}
             </h3>
@@ -381,7 +381,7 @@ export default function NotificationSettings({
 
         {/* Main Content */}
         <div className="lg:col-span-3">
-          <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="rounded-lg border border-gray-200 bg-white shadow-xs">
             {/* Global Settings */}
             {activeCategory === 'system' && (
               <div className="p-6">
@@ -410,7 +410,7 @@ export default function NotificationSettings({
                           !settings?.globalSettings?.doNotDisturb
                         )
                       }
-                      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden ${
                         settings?.globalSettings?.doNotDisturb
                           ? 'bg-blue-600'
                           : 'bg-gray-200'
@@ -450,7 +450,7 @@ export default function NotificationSettings({
                           !settings?.globalSettings?.soundEnabled
                         )
                       }
-                      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden ${
                         settings?.globalSettings?.soundEnabled
                           ? 'bg-blue-600'
                           : 'bg-gray-200'
@@ -486,7 +486,7 @@ export default function NotificationSettings({
                           !settings?.globalSettings?.groupSimilar
                         )
                       }
-                      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden ${
                         settings?.globalSettings?.groupSimilar
                           ? 'bg-blue-600'
                           : 'bg-gray-200'
@@ -548,7 +548,7 @@ export default function NotificationSettings({
                               !settings?.emailSettings?.digestEnabled
                             )
                           }
-                          className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden ${
                             settings?.emailSettings?.digestEnabled
                               ? 'bg-blue-600'
                               : 'bg-gray-200'
@@ -640,7 +640,7 @@ export default function NotificationSettings({
                               }));
                               setHasChanges(true);
                             }}
-                            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden ${
                               settings?.pushSettings?.browserEnabled
                                 ? 'bg-blue-600'
                                 : 'bg-gray-200'
@@ -713,7 +713,7 @@ export default function NotificationSettings({
                               !settings['preferences'][type].enabled
                             )
                           }
-                          className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden ${
                             settings['preferences'][type].enabled
                               ? 'bg-blue-600'
                               : 'bg-gray-200'

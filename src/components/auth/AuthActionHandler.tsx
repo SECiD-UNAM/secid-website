@@ -171,7 +171,7 @@ export const AuthActionHandler: React.FC<AuthActionHandlerProps> = ({
 
   return (
     <div
-      className={`mx-auto w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-800 ${className}`}
+      className={`mx-auto w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-xs dark:border-gray-700 dark:bg-gray-800 ${className}`}
     >
       {phase === 'loading' && (
         <div className="text-center">
@@ -237,7 +237,7 @@ interface ResetFormData {
 }
 
 const inputClass =
-  'mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white sm:text-sm';
+  'mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-xs focus:border-primary-500 focus:outline-hidden focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white sm:text-sm';
 const labelClass = 'block text-sm font-medium text-gray-700 dark:text-gray-300';
 
 const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
@@ -299,7 +299,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
           className="rounded-md border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20"
         >
           <div className="flex">
-            <AlertCircle className="mr-3 mt-0.5 h-5 w-5 text-red-400" />
+            <AlertCircle className="mt-0.5 mr-3 h-5 w-5 text-red-400" />
             <p className="text-sm text-red-800 dark:text-red-400">
               {submitError}
             </p>

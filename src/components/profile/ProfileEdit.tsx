@@ -697,7 +697,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center whitespace-nowrap border-b-2 px-1 py-2 text-sm font-medium transition-colors ${
+              className={`flex items-center border-b-2 px-1 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
                 activeTab === tab.id
                   ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                   : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
@@ -711,7 +711,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
       </div>
 
       {/* Tab Content */}
-      <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+      <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
         {activeTab === 'personal' && (
           <PersonalTab
             formData={formData}
@@ -782,7 +782,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
               {saving ? (
                 <>
                   <svg
-                    className="-ml-1 mr-2 h-5 w-5 animate-spin"
+                    className="mr-2 -ml-1 h-5 w-5 animate-spin"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -816,7 +816,7 @@ export const ProfileEdit: React.FC<ProfileEditProps> = ({
 
       {/* Admin Section */}
       {isAdmin && (
-        <div className="mt-6 rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <div className="mt-6 rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
           <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
             {lang === 'es' ? 'Administraci\u00f3n' : 'Administration'}
           </h3>

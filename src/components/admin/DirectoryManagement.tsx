@@ -449,7 +449,7 @@ export const DirectoryManagement: React.FC = () => {
         <div className="mt-4 flex space-x-3 sm:mt-0">
           <button
             onClick={exportCSV}
-            className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+            className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-xs hover:bg-gray-50"
           >
             <Download className="mr-2 h-4 w-4" />
             {es ? 'Exportar CSV' : 'Export CSV'}
@@ -519,7 +519,7 @@ export const DirectoryManagement: React.FC = () => {
                 setActiveTab(tab.key as any);
                 if (tab.key === 'groups' && !groupData) loadGoogleGroups();
               }}
-              className={`whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium ${
+              className={`border-b-2 px-1 py-4 text-sm font-medium whitespace-nowrap ${
                 activeTab === tab.key
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
@@ -538,7 +538,7 @@ export const DirectoryManagement: React.FC = () => {
 
       {/* Google Groups Tab */}
       {activeTab === 'groups' && (
-        <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div className="rounded-lg border border-gray-200 bg-white shadow-xs">
           <div className="border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-medium text-gray-900">
@@ -595,7 +595,7 @@ export const DirectoryManagement: React.FC = () => {
                       {data.members.slice(0, 10).map((m: any) => (
                         <span
                           key={m.email}
-                          className="inline-flex items-center rounded bg-gray-50 px-2 py-0.5 text-xs text-gray-600"
+                          className="inline-flex items-center rounded-sm bg-gray-50 px-2 py-0.5 text-xs text-gray-600"
                         >
                           {m.email}
                           {m.role === 'OWNER' && (
@@ -630,10 +630,10 @@ export const DirectoryManagement: React.FC = () => {
       {activeTab !== 'groups' && (
         <>
           {/* Filters */}
-          <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-xs">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
                   value={searchTerm}
@@ -643,7 +643,7 @@ export const DirectoryManagement: React.FC = () => {
                       ? 'Buscar por nombre, email o número de cuenta...'
                       : 'Search by name, email or student ID...'
                   }
-                  className="w-full rounded-md border-gray-300 pl-10 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-md border-gray-300 pl-10 shadow-xs focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
@@ -654,7 +654,7 @@ export const DirectoryManagement: React.FC = () => {
                     onChange={(e) =>
                       setStatusFilter(e.target.value as MemberStatus | 'all')
                     }
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="all">
                       {es ? 'Todos los estados' : 'All statuses'}
@@ -671,7 +671,7 @@ export const DirectoryManagement: React.FC = () => {
               <div className="flex items-center">
                 <button
                   onClick={() => loadUsers()}
-                  className="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
+                  className="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-blue-700"
                 >
                   <Filter className="mr-2 h-4 w-4" />
                   {es ? 'Filtrar' : 'Filter'}
@@ -691,7 +691,7 @@ export const DirectoryManagement: React.FC = () => {
                   <select
                     value={bulkAction}
                     onChange={(e) => setBulkAction(e.target.value)}
-                    className="rounded-md border-blue-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="rounded-md border-blue-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="">
                       {es ? 'Seleccionar acción' : 'Select action'}
@@ -730,12 +730,12 @@ export const DirectoryManagement: React.FC = () => {
           )}
 
           {/* Table */}
-          <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xs">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                       <input
                         type="checkbox"
                         checked={
@@ -751,25 +751,25 @@ export const DirectoryManagement: React.FC = () => {
                             setSelectedUsers(new Set());
                           }
                         }}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                       {es ? 'Usuario' : 'User'}
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                       {es ? 'Tipo' : 'Type'}
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium uppercase text-gray-500">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                       {es ? 'Estado' : 'Status'}
                     </th>
-                    <th className="hidden px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 lg:table-cell">
+                    <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase lg:table-cell">
                       {es ? 'No. Cuenta' : 'Student ID'}
                     </th>
-                    <th className="hidden px-4 py-3 text-left text-xs font-medium uppercase text-gray-500 md:table-cell">
+                    <th className="hidden px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase md:table-cell">
                       {es ? 'Registro' : 'Joined'}
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium uppercase text-gray-500">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">
                       {es ? 'Acciones' : 'Actions'}
                     </th>
                   </tr>
@@ -800,12 +800,12 @@ export const DirectoryManagement: React.FC = () => {
                                 else next.delete(user.uid);
                                 setSelectedUsers(next);
                               }}
-                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
                             />
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center">
-                              <div className="h-9 w-9 flex-shrink-0">
+                              <div className="h-9 w-9 shrink-0">
                                 {user.photoURL ? (
                                   <img
                                     className="h-9 w-9 rounded-full"
@@ -866,14 +866,14 @@ export const DirectoryManagement: React.FC = () => {
                                 <>
                                   <button
                                     onClick={() => handleApprove(user)}
-                                    className="rounded p-1 text-green-600 hover:bg-green-50"
+                                    className="rounded-sm p-1 text-green-600 hover:bg-green-50"
                                     title={es ? 'Aprobar' : 'Approve'}
                                   >
                                     <UserCheck className="h-4 w-4" />
                                   </button>
                                   <button
                                     onClick={() => handleReject(user)}
-                                    className="rounded p-1 text-red-600 hover:bg-red-50"
+                                    className="rounded-sm p-1 text-red-600 hover:bg-red-50"
                                     title={es ? 'Rechazar' : 'Reject'}
                                   >
                                     <UserX className="h-4 w-4" />
@@ -885,7 +885,7 @@ export const DirectoryManagement: React.FC = () => {
                                 onClick={() =>
                                   setExpandedUser(isExpanded ? null : user.uid)
                                 }
-                                className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                                className="rounded-sm p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
                                 title={es ? 'Ver detalles' : 'View details'}
                               >
                                 <ChevronRight
@@ -913,7 +913,7 @@ export const DirectoryManagement: React.FC = () => {
                             <td colSpan={7} className="bg-gray-50 px-8 py-4">
                               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                                 <div>
-                                  <h4 className="text-xs font-medium uppercase text-gray-500">
+                                  <h4 className="text-xs font-medium text-gray-500 uppercase">
                                     {es ? 'Datos Académicos' : 'Academic Data'}
                                   </h4>
                                   <dl className="mt-2 space-y-1 text-sm">
@@ -942,7 +942,7 @@ export const DirectoryManagement: React.FC = () => {
                                   </dl>
                                 </div>
                                 <div>
-                                  <h4 className="text-xs font-medium uppercase text-gray-500">
+                                  <h4 className="text-xs font-medium text-gray-500 uppercase">
                                     {es ? 'Verificación' : 'Verification'}
                                   </h4>
                                   <dl className="mt-2 space-y-1 text-sm">
@@ -967,7 +967,7 @@ export const DirectoryManagement: React.FC = () => {
                                   </dl>
                                 </div>
                                 <div>
-                                  <h4 className="text-xs font-medium uppercase text-gray-500">
+                                  <h4 className="text-xs font-medium text-gray-500 uppercase">
                                     {es ? 'Ciclo de Vida' : 'Lifecycle'}
                                   </h4>
                                   <dl className="mt-2 space-y-1 text-sm">
@@ -1134,7 +1134,7 @@ function ActionMenu({
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+        className="rounded-sm p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
       >
         <MoreHorizontal className="h-4 w-4" />
       </button>

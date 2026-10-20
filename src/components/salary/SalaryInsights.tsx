@@ -270,7 +270,7 @@ export function SalaryInsights({ lang = 'es' }: Props) {
   if (!overview || overview.dataPointCount === 0) {
     return (
       <div className="space-y-6">
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-50 to-white p-12 dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-gray-200 bg-linear-to-br from-gray-50 to-white p-12 dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
           <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30">
             <svg
               className="h-10 w-10 text-primary-600 dark:text-primary-400"
@@ -294,7 +294,7 @@ export function SalaryInsights({ lang = 'es' }: Props) {
           </p>
           <a
             href={profileEditUrl}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-6 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-700"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-6 py-3 text-sm font-medium text-white shadow-xs transition-colors hover:bg-primary-700"
           >
             <svg
               className="h-4 w-4"

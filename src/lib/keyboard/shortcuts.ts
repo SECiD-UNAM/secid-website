@@ -404,7 +404,7 @@ class KeyboardShortcutManager {
     const modal = document.createElement('div');
     modal.id = 'keyboard-shortcuts-modal';
     modal.className =
-      'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+      'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
     modal.style.zIndex = '9999';
 
     const content = document['createElement']('div');
@@ -442,7 +442,7 @@ class KeyboardShortcutManager {
                       ${shortcut.keys
                         .map(
                           (key) => `
-                        <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs font-mono">
+                        <kbd class="px-2 py-1 bg-gray-100 border border-gray-300 rounded-sm text-xs font-mono">
                           ${this.formatKeyForDisplay(key)}
                         </kbd>
                       `
@@ -463,8 +463,8 @@ class KeyboardShortcutManager {
       
       <div class="p-6 border-t border-gray-200 bg-gray-50">
         <p class="text-sm text-gray-600">
-          Press <kbd class="px-1 py-0.5 bg-gray-200 border border-gray-300 rounded text-xs">?</kbd> 
-          or <kbd class="px-1 py-0.5 bg-gray-200 border border-gray-300 rounded text-xs">Esc</kbd> 
+          Press <kbd class="px-1 py-0.5 bg-gray-200 border border-gray-300 rounded-sm text-xs">?</kbd> 
+          or <kbd class="px-1 py-0.5 bg-gray-200 border border-gray-300 rounded-sm text-xs">Esc</kbd> 
           to close this dialog
         </p>
       </div>

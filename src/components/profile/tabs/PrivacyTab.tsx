@@ -31,7 +31,7 @@ export const PrivacyTab: React.FC<PrivacyTabProps> = ({
                   profileVisible: e.target.checked,
                 }))
               }
-              className="mr-3 mt-1"
+              className="mt-1 mr-3"
             />
             <div>
               <label
@@ -59,7 +59,7 @@ export const PrivacyTab: React.FC<PrivacyTabProps> = ({
                   contactVisible: e.target.checked,
                 }))
               }
-              className="mr-3 mt-1"
+              className="mt-1 mr-3"
             />
             <div>
               <label
@@ -89,7 +89,7 @@ export const PrivacyTab: React.FC<PrivacyTabProps> = ({
                   jobSearching: e.target.checked,
                 }))
               }
-              className="mr-3 mt-1"
+              className="mt-1 mr-3"
             />
             <div>
               <label
@@ -117,7 +117,7 @@ export const PrivacyTab: React.FC<PrivacyTabProps> = ({
                   mentorshipAvailable: e.target.checked,
                 }))
               }
-              className="mr-3 mt-1"
+              className="mt-1 mr-3"
             />
             <div>
               <label
@@ -160,7 +160,7 @@ export const PrivacyTab: React.FC<PrivacyTabProps> = ({
                       | 'private',
                   }))
                 }
-                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 shadow-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               >
                 <option value="public">
                   {lang === 'es' ? 'Público' : 'Public'}
@@ -194,7 +194,7 @@ export const PrivacyTab: React.FC<PrivacyTabProps> = ({
                   emailNotifications: e.target.checked,
                 }))
               }
-              className="mr-3 mt-1"
+              className="mt-1 mr-3"
             />
             <div>
               <label
@@ -224,7 +224,7 @@ export const PrivacyTab: React.FC<PrivacyTabProps> = ({
                   jobMatchNotifications: e.target.checked,
                 }))
               }
-              className="mr-3 mt-1"
+              className="mt-1 mr-3"
             />
             <div>
               <label
@@ -252,7 +252,7 @@ export const PrivacyTab: React.FC<PrivacyTabProps> = ({
                   eventNotifications: e.target.checked,
                 }))
               }
-              className="mr-3 mt-1"
+              className="mt-1 mr-3"
             />
             <div>
               <label

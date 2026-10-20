@@ -143,7 +143,7 @@ describe('StatsCard', { concurrent: false }, () => {
       const card = container.firstElementChild as HTMLElement;
       expect(card.className).toContain('rounded-xl');
       expect(card.className).toContain('bg-white');
-      expect(card.className).toContain('shadow-sm');
+      expect(card.className).toContain('shadow-xs');
       expect(card.className).toContain('hover:-translate-y-0.5');
     });
   });

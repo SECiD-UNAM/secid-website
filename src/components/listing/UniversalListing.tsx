@@ -102,7 +102,7 @@ export function UniversalListing<T>({
             className="flex-1"
           />
         )}
-        <div className="flex flex-shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           {showSort && sortOptions.length > 0 && (
             <ListingSort
               sort={listing.sort}

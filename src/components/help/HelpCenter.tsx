@@ -407,14 +407,11 @@ Remember: Job searching is a skill that improves with practice!
           <div className="mb-6 flex items-center space-x-4">
             <button
               onClick={() => handleFeedback(article.id, 'helpful')}
-              className={`
-                flex items-center space-x-2 rounded-md border px-4 py-2 transition-colors
-                ${
-                  feedback[article.id] === 'helpful'
-                    ? 'border-green-300 bg-green-100 text-green-800'
-                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                }
-              `}
+              className={`flex items-center space-x-2 rounded-md border px-4 py-2 transition-colors ${
+                feedback[article.id] === 'helpful'
+                  ? 'border-green-300 bg-green-100 text-green-800'
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              } `}
             >
               <svg
                 className="h-4 w-4"
@@ -434,14 +431,11 @@ Remember: Job searching is a skill that improves with practice!
 
             <button
               onClick={() => handleFeedback(article.id, 'not-helpful')}
-              className={`
-                flex items-center space-x-2 rounded-md border px-4 py-2 transition-colors
-                ${
-                  feedback[article.id] === 'not-helpful'
-                    ? 'border-red-300 bg-red-100 text-red-800'
-                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                }
-              `}
+              className={`flex items-center space-x-2 rounded-md border px-4 py-2 transition-colors ${
+                feedback[article.id] === 'not-helpful'
+                  ? 'border-red-300 bg-red-100 text-red-800'
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+              } `}
             >
               <svg
                 className="h-4 w-4"
@@ -488,7 +482,7 @@ Remember: Job searching is a skill that improves with practice!
                 <button
                   key={relatedArticle.id}
                   onClick={() => setSelectedArticle(relatedArticle.id)}
-                  className="rounded-lg border border-gray-200 p-4 text-left transition-all hover:border-blue-300 hover:shadow-sm"
+                  className="rounded-lg border border-gray-200 p-4 text-left transition-all hover:border-blue-300 hover:shadow-xs"
                 >
                   <h4 className="mb-2 font-medium text-gray-900">
                     {relatedArticle.title}
@@ -538,7 +532,7 @@ Remember: Job searching is a skill that improves with practice!
             placeholder="Search for help articles..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="block w-full rounded-lg border border-gray-300 bg-white py-3 pl-10 pr-3 leading-5 placeholder-gray-500 focus:border-blue-500 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="block w-full rounded-lg border border-gray-300 bg-white py-3 pr-3 pl-10 leading-5 placeholder-gray-500 focus:border-blue-500 focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:outline-hidden"
           />
         </div>
       </div>
@@ -591,7 +585,7 @@ Remember: Job searching is a skill that improves with practice!
               <button
                 key={article.id}
                 onClick={() => setSelectedArticle(article.id)}
-                className="w-full rounded-lg border border-gray-200 p-6 text-left transition-all hover:border-blue-300 hover:shadow-sm"
+                className="w-full rounded-lg border border-gray-200 p-6 text-left transition-all hover:border-blue-300 hover:shadow-xs"
               >
                 <div className="mb-2 flex items-start justify-between">
                   <h3 className="text-lg font-semibold text-gray-900">
