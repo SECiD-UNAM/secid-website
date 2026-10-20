@@ -139,9 +139,14 @@ Playwright solo incluía 7 archivos por su `testMatch`.
       el remapeo AST de coverage-v8 cuenta las funciones y ramas reales de
       los archivos sin pruebas) y Firebase Admin 13 → 14 (API modular en
       todas las functions). `npm audit`: raíz 22 → 16, functions 10 → 4.
-      Fase 2 pendiente: Astro 7 + `@astrojs/node` 11 (las únicas
-      advertencias del runtime de producción) y Tailwind 4, cuando el e2e
-      `smoke` sea bloqueante.
+      Fase 2a hecha (PR #140, 2026-10-19): Astro 6 → 7.3 + `@astrojs/node`
+      11 + `@astrojs/react` 7 + Vite 8 (`compressHTML: true` fijado para
+      conservar el HTML de Astro 6; `express` fuera de devDependencies).
+      Ya no queda ninguna advertencia en el runtime de producción: raíz
+      16 → 14 (0 críticas), solo prod 12 → 10. Astro queda en `~7.3`
+      porque 7.4 y `@astrojs/react` 7.1 exigen Node 22.22 (subir `.nvmrc`
+      y `NODE_VERSION` es decisión del owner). Fase 2b pendiente: Tailwind
+      4 (limpia la familia `braces`/`chokidar`/`postcss-selector-parser`).
 - [ ] E17. MCP de SECiD según
       [specs/secid-mcp-and-assistant-skill.md](./specs/secid-mcp-and-assistant-skill.md),
       solo si las operaciones de miembros se vuelven frecuentes. La skill
@@ -302,9 +307,9 @@ Dev, en este orden y cada paso un PR con auto-merge:
 6. F19 → F20 → F21 (3–4 días) cuando haya eventos, mensajes de contacto o
    un comunicado real que mandar; F22 solo si se decide conservar el centro
    de notificaciones.
-7. E16 fase 2 (Tailwind 4, Astro 7; la fase 1 — Vitest 5 y Firebase Admin
-   14 — ya está en PR #133) después del paso 3, cuando el e2e completo sea
-   bloqueante y pueda detectar regresiones de los majors.
+7. E16 fase 2b (Tailwind 4; la fase 1 — Vitest 5 y Firebase Admin 14 — está
+   en PR #133 y la 2a — Astro 7 — en PR #140) después del paso 3, con el
+   e2e completo bloqueante para detectar regresiones visuales.
 
 Owner, cuando pueda (C8–C11, ~30 min) y en su fecha (D12–D15). E17/E18 sin
 fecha.

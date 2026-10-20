@@ -8,7 +8,7 @@ SECiD (Sociedad de Egresados en Ciencia de Datos) is UNAM's Data Science Alumni 
 
 ## Architecture
 
-**Astro 4.x hybrid SSR** application with React 18 islands, Firebase backend, and Stripe payments.
+**Astro 7.x hybrid SSR** application with React 18 islands, Firebase backend, and Stripe payments.
 
 - **Frontend**: Astro pages (`.astro`) + React components (`.tsx`) + Tailwind CSS
 - **Backend**: Firebase (Auth, Firestore, Storage, Cloud Functions) + Stripe
@@ -121,7 +121,7 @@ Or use skills:
 ## Tech Stack Preferences
 
 - **Language**: TypeScript 5.x, JavaScript (ES modules)
-- **Frameworks**: Astro 4.x, React 18, Tailwind CSS 3.x
+- **Frameworks**: Astro 7.x, React 18, Tailwind CSS 3.x
 - **Backend**: Firebase, Stripe
 - **Testing**: Vitest, Playwright
 - **Linting**: ESLint, Prettier
