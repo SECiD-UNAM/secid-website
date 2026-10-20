@@ -30,7 +30,7 @@ export function ListingSort({
     <div className={`flex items-center gap-2 ${className}`}>
       <label
         htmlFor="listing-sort"
-        className="whitespace-nowrap text-sm text-gray-500 dark:text-gray-400"
+        className="text-sm whitespace-nowrap text-gray-500 dark:text-gray-400"
       >
         {t.sort.label}
       </label>

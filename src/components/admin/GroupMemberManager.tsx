@@ -320,10 +320,10 @@ export default function GroupMemberManager({
       </h2>
 
       {/* Search to add users */}
-      <div className="rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+      <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
         <div className="flex gap-2">
           <div className="relative flex-1">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <MagnifyingGlassIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               value={searchQuery}
@@ -335,7 +335,7 @@ export default function GroupMemberManager({
                 }
               }}
               placeholder={t('searchUsers', lang)}
-              className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-sm text-gray-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white py-2 pr-4 pl-10 text-sm text-gray-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
           <button
@@ -406,7 +406,7 @@ export default function GroupMemberManager({
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-12 rounded bg-gray-200 dark:bg-gray-700"
+              className="h-12 rounded-sm bg-gray-200 dark:bg-gray-700"
             />
           ))}
         </div>
@@ -415,7 +415,7 @@ export default function GroupMemberManager({
           {error}
         </div>
       ) : members.length === 0 ? (
-        <div className="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
+        <div className="rounded-lg bg-white p-8 text-center shadow-sm dark:bg-gray-800">
           <UserCircleIcon className="mx-auto mb-2 h-12 w-12 text-gray-300 dark:text-gray-600" />
           <p className="text-gray-500 dark:text-gray-400">
             {t('noMembers', lang)}
@@ -426,7 +426,7 @@ export default function GroupMemberManager({
           <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
             {members.length} {t('memberCount', lang)}
           </p>
-          <div className="divide-y divide-gray-200 rounded-lg bg-white shadow dark:divide-gray-700 dark:bg-gray-800">
+          <div className="divide-y divide-gray-200 rounded-lg bg-white shadow-sm dark:divide-gray-700 dark:bg-gray-800">
             {members.map((member) => (
               <div
                 key={member.uid}

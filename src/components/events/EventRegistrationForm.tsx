@@ -529,9 +529,9 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
   if (loading) {
     return (
       <div className="fixed inset-0 z-50 overflow-y-auto">
-        <div className="flex min-h-screen items-center justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity dark:bg-gray-900 dark:bg-opacity-75"></div>
-          <div className="my-8 inline-block w-full max-w-2xl transform overflow-hidden rounded-xl bg-white text-left align-middle shadow-xl transition-all dark:bg-gray-800">
+        <div className="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+          <div className="fixed inset-0 bg-gray-500/75 transition-opacity dark:bg-gray-900/75"></div>
+          <div className="relative my-8 inline-block w-full max-w-2xl transform overflow-hidden rounded-xl bg-white text-left align-middle shadow-xl transition-all dark:bg-gray-800">
             <div className="p-8 text-center">
               <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent"></div>
               <p className="text-gray-600 dark:text-gray-400">
@@ -546,15 +546,15 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-center justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
+      <div className="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
         {/* Background overlay */}
         <div
-          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity dark:bg-gray-900 dark:bg-opacity-75"
+          className="fixed inset-0 bg-gray-500/75 transition-opacity dark:bg-gray-900/75"
           onClick={handleClose}
         ></div>
 
         {/* Modal panel */}
-        <div className="my-8 inline-block w-full max-w-3xl transform overflow-hidden rounded-xl bg-white text-left align-middle shadow-xl transition-all dark:bg-gray-800">
+        <div className="relative my-8 inline-block w-full max-w-3xl transform overflow-hidden rounded-xl bg-white text-left align-middle shadow-xl transition-all dark:bg-gray-800">
           {/* Header */}
           <div className="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
             <div className="flex items-center justify-between">
@@ -583,27 +583,21 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
                 {[1, 2, 3, 4].map((step) => (
                   <div key={step} className="flex items-center">
                     <div
-                      className={`
-                      flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium
-                      ${
+                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
                         currentStep >= step
                           ? 'bg-primary-600 text-white'
                           : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
-                      }
-                    `}
+                      } `}
                     >
                       {step}
                     </div>
                     {step < 4 && (
                       <div
-                        className={`
-                        mx-2 h-1 w-full
-                        ${
+                        className={`mx-2 h-1 w-full ${
                           currentStep > step
                             ? 'bg-primary-600'
                             : 'bg-gray-200 dark:bg-gray-700'
-                        }
-                      `}
+                        } `}
                         style={{ width: '80px' }}
                       ></div>
                     )}
@@ -1042,7 +1036,7 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
                       eventDetails.registrationFee > 0 && (
                         <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-900/20">
                           <div className="flex">
-                            <CreditCardIcon className="mr-2 h-5 w-5 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
+                            <CreditCardIcon className="mr-2 h-5 w-5 shrink-0 text-yellow-600 dark:text-yellow-400" />
                             <div className="text-sm">
                               <p className="mb-1 font-medium text-yellow-900 dark:text-yellow-100">
                                 {lang === 'es'
@@ -1072,7 +1066,7 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
                               acceptTerms: e.target.checked,
                             }))
                           }
-                          className="mr-3 mt-1 text-primary-600 focus:ring-primary-500"
+                          className="mt-1 mr-3 text-primary-600 focus:ring-primary-500"
                           required
                         />
                         <label
@@ -1097,7 +1091,7 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
                               acceptPrivacyPolicy: e.target.checked,
                             }))
                           }
-                          className="mr-3 mt-1 text-primary-600 focus:ring-primary-500"
+                          className="mt-1 mr-3 text-primary-600 focus:ring-primary-500"
                           required
                         />
                         <label
@@ -1122,7 +1116,7 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
                               allowMarketing: e.target.checked,
                             }))
                           }
-                          className="mr-3 mt-1 text-primary-600 focus:ring-primary-500"
+                          className="mt-1 mr-3 text-primary-600 focus:ring-primary-500"
                         />
                         <label
                           htmlFor="allowMarketing"
@@ -1137,7 +1131,7 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
 
                     <div className="rounded-lg border border-primary-200 bg-primary-50 p-4 dark:border-primary-800 dark:bg-primary-900/20">
                       <div className="flex">
-                        <SparklesIcon className="mr-2 h-5 w-5 flex-shrink-0 text-primary-600 dark:text-primary-400" />
+                        <SparklesIcon className="mr-2 h-5 w-5 shrink-0 text-primary-600 dark:text-primary-400" />
                         <div className="text-sm">
                           <p className="mb-1 font-medium text-primary-900 dark:text-primary-100">
                             {lang === 'es' ? '¡Casi listo!' : 'Almost there!'}
@@ -1193,7 +1187,7 @@ export const EventRegistrationForm: React.FC<EventRegistrationFormProps> = ({
                       {submitting ? (
                         <>
                           <svg
-                            className="-ml-1 mr-2 h-4 w-4 animate-spin"
+                            className="mr-2 -ml-1 h-4 w-4 animate-spin"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"

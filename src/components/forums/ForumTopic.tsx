@@ -280,7 +280,7 @@ const ForumTopic: React.FC<ForumTopicProps> = ({
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse">
-            <div className="mb-4 h-8 w-1/4 rounded bg-gray-300 dark:bg-gray-700"></div>
+            <div className="mb-4 h-8 w-1/4 rounded-sm bg-gray-300 dark:bg-gray-700"></div>
             <div className="mb-4 h-32 rounded-lg bg-gray-300 dark:bg-gray-700"></div>
             {[...Array(3)].map((_, i) => (
               <div
@@ -349,7 +349,7 @@ const ForumTopic: React.FC<ForumTopicProps> = ({
           {/* Topic Header */}
           <div className="flex items-start gap-4">
             {/* Author Avatar */}
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 dark:bg-gray-600">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-300 dark:bg-gray-600">
               {topic.authorAvatar ? (
                 <img
                   src={topic.authorAvatar}
@@ -370,7 +370,7 @@ const ForumTopic: React.FC<ForumTopicProps> = ({
                   <CheckCircle className="h-5 w-5 text-green-500" />
                 )}
 
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white lg:text-3xl">
+                <h1 className="text-2xl font-bold text-gray-900 lg:text-3xl dark:text-white">
                   {topic.title}
                 </h1>
               </div>
@@ -515,7 +515,7 @@ const ForumTopic: React.FC<ForumTopicProps> = ({
               <div className="p-6">
                 <div className="flex items-start gap-4">
                   {/* Author Avatar */}
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-300 dark:bg-gray-600">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-300 dark:bg-gray-600">
                     {post.authorAvatar ? (
                       <img
                         src={post.authorAvatar}

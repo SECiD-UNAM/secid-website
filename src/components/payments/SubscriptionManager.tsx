@@ -214,7 +214,7 @@ const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({
                 <span className="text-gray-500">
                   {t('paymentsbillingCycle')}
                 </span>
-                <div className="font-medium capitalize text-gray-900">
+                <div className="font-medium text-gray-900 capitalize">
                   {currentTier?.interval}
                 </div>
               </div>

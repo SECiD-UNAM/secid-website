@@ -461,7 +461,7 @@ export const Settings: React.FC = () => {
           <button
             onClick={saveSettings}
             disabled={saving}
-            className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+            className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden disabled:opacity-50"
           >
             {saving ? (
               <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
@@ -511,7 +511,7 @@ export const Settings: React.FC = () => {
               <button
                 key={tab['id']}
                 onClick={() => setActiveTab(tab['id'])}
-                className={`flex items-center whitespace-nowrap border-b-2 px-1 py-2 text-sm font-medium ${
+                className={`flex items-center border-b-2 px-1 py-2 text-sm font-medium whitespace-nowrap ${
                   activeTab === tab['id']
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
@@ -526,7 +526,7 @@ export const Settings: React.FC = () => {
       </div>
 
       {/* Tab Content */}
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+      <div className="rounded-lg border border-gray-200 bg-white shadow-xs">
         {/* General Settings */}
         {activeTab === 'general' && (
           <div className="space-y-6 p-6">
@@ -545,7 +545,7 @@ export const Settings: React.FC = () => {
                   onChange={(e) =>
                     updateSettingsField('general', 'siteName', e.target.value)
                   }
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
@@ -563,7 +563,7 @@ export const Settings: React.FC = () => {
                       e.target.value
                     )
                   }
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
@@ -583,7 +583,7 @@ export const Settings: React.FC = () => {
                     )
                   }
                   rows={3}
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
@@ -603,7 +603,7 @@ export const Settings: React.FC = () => {
                       parseInt(e.target.value)
                     )
                   }
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
@@ -622,7 +622,7 @@ export const Settings: React.FC = () => {
                       e.target.value
                     )
                   }
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
                 >
                   <option value="es">Español</option>
                   <option value="en">English</option>
@@ -649,7 +649,7 @@ export const Settings: React.FC = () => {
                         e.target.checked
                       )
                     }
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   <span className="ml-2 text-sm text-gray-700">
                     {language === 'es'
@@ -669,7 +669,7 @@ export const Settings: React.FC = () => {
                         e.target.checked
                       )
                     }
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   <span className="ml-2 text-sm text-gray-700">
                     {language === 'es'
@@ -689,7 +689,7 @@ export const Settings: React.FC = () => {
                         e.target.checked
                       )
                     }
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   <span className="ml-2 text-sm text-gray-700">
                     {language === 'es'
@@ -709,7 +709,7 @@ export const Settings: React.FC = () => {
                         e.target.checked
                       )
                     }
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   <span className="ml-2 text-sm text-gray-700">
                     {language === 'es'
@@ -729,7 +729,7 @@ export const Settings: React.FC = () => {
                         e.target.checked
                       )
                     }
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   <span className="ml-2 text-sm text-gray-700">
                     {language === 'es' ? 'Foro Habilitado' : 'Forum Enabled'}
@@ -752,7 +752,7 @@ export const Settings: React.FC = () => {
               <button
                 onClick={testEmailConfiguration}
                 disabled={testEmailSending}
-                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-xs hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden disabled:opacity-50"
               >
                 {testEmailSending ? (
                   <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
@@ -774,7 +774,7 @@ export const Settings: React.FC = () => {
                   onChange={(e) =>
                     updateSettingsField('email', 'smtpHost', e.target.value)
                   }
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
@@ -792,7 +792,7 @@ export const Settings: React.FC = () => {
                       parseInt(e.target.value)
                     )
                   }
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
@@ -806,7 +806,7 @@ export const Settings: React.FC = () => {
                   onChange={(e) =>
                     updateSettingsField('email', 'smtpUser', e.target.value)
                   }
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
@@ -825,7 +825,7 @@ export const Settings: React.FC = () => {
                         e.target.value
                       )
                     }
-                    className="w-full rounded-md border-gray-300 pr-10 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full rounded-md border-gray-300 pr-10 shadow-xs focus:border-blue-500 focus:ring-blue-500"
                   />
                   <button
                     type="button"
@@ -851,7 +851,7 @@ export const Settings: React.FC = () => {
                   onChange={(e) =>
                     updateSettingsField('email', 'fromEmail', e.target.value)
                   }
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
 
@@ -865,7 +865,7 @@ export const Settings: React.FC = () => {
                   onChange={(e) =>
                     updateSettingsField('email', 'fromName', e.target.value)
                   }
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -882,7 +882,7 @@ export const Settings: React.FC = () => {
                       e.target.checked
                     )
                   }
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
                 <span className="ml-2 text-sm text-gray-700">
                   {language === 'es' ? 'Email Habilitado' : 'Email Enabled'}
@@ -903,7 +903,7 @@ export const Settings: React.FC = () => {
               </h3>
               <button
                 onClick={createBackup}
-                className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
+                className="inline-flex items-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-blue-700"
               >
                 <Plus className="mr-2 h-4 w-4" />
                 {language === 'es' ? 'Crear Respaldo' : 'Create Backup'}

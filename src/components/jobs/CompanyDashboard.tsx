@@ -283,7 +283,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
 
       {/* Stats Cards */}
       <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -297,7 +297,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
           </div>
         </div>
 
-        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -311,7 +311,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
           </div>
         </div>
 
-        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -325,7 +325,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
           </div>
         </div>
 
-        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -386,7 +386,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
         <div className="space-y-6">
           {/* Top Performing Job */}
           {stats.topPerformingJob && (
-            <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+            <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
               <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                 <SparklesIcon className="mr-2 inline h-5 w-5 text-yellow-500" />
                 {lang === 'es' ? 'Empleo más popular' : 'Top performing job'}
@@ -414,7 +414,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
           )}
 
           {/* Recent Applications */}
-          <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+          <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
             <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
               {lang === 'es' ? 'Aplicaciones recientes' : 'Recent applications'}
             </h3>
@@ -430,7 +430,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
       {activeTab === 'jobs' && (
         <div className="space-y-4">
           {jobPosts.length === 0 ? (
-            <div className="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
+            <div className="rounded-lg bg-white p-8 text-center shadow-sm dark:bg-gray-800">
               <BriefcaseIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
               <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
                 {lang === 'es'
@@ -454,7 +454,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
             jobPosts.map((job) => (
               <div
                 key={job['id']}
-                className="rounded-lg bg-white p-6 shadow transition-all hover:shadow-lg dark:bg-gray-800"
+                className="rounded-lg bg-white p-6 shadow-sm transition-all hover:shadow-lg dark:bg-gray-800"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -584,7 +584,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
         <div>
           {selectedJob ? (
             <div className="space-y-6">
-              <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+              <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
                 <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
                   {lang === 'es' ? 'Aplicaciones para:' : 'Applications for:'}
                 </h3>
@@ -602,7 +602,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
               </div>
 
               {applications.length === 0 ? (
-                <div className="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
+                <div className="rounded-lg bg-white p-8 text-center shadow-sm dark:bg-gray-800">
                   <UsersIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                   <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
                     {lang === 'es'
@@ -620,7 +620,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                   {applications.map((application) => (
                     <div
                       key={application['id']}
-                      className="rounded-lg bg-white p-6 shadow dark:bg-gray-800"
+                      className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800"
                     >
                       <div className="mb-4 flex items-start justify-between">
                         <div>
@@ -703,7 +703,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
               )}
             </div>
           ) : (
-            <div className="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
+            <div className="rounded-lg bg-white p-8 text-center shadow-sm dark:bg-gray-800">
               <DocumentTextIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
               <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
                 {lang === 'es' ? 'Selecciona un empleo' : 'Select a job'}
@@ -719,7 +719,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
       )}
 
       {activeTab === 'analytics' && (
-        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
           <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
             {lang === 'es'
               ? 'Análisis de rendimiento'

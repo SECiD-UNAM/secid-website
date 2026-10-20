@@ -109,7 +109,7 @@ export class ErrorBoundary extends Component<Props, ErrorBoundaryState> {
               later.
             </p>
             {error && (
-              <details className="mb-6 rounded bg-gray-50 p-3 text-left text-sm">
+              <details className="mb-6 rounded-sm bg-gray-50 p-3 text-left text-sm">
                 <summary className="cursor-pointer font-medium">
                   Error Details
                 </summary>
@@ -182,7 +182,7 @@ export class ErrorBoundary extends Component<Props, ErrorBoundaryState> {
     return (
       <div className="rounded-lg border-2 border-dashed border-red-200 bg-red-50 p-6">
         <div className="flex items-start">
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <svg
               className="h-5 w-5 text-red-400"
               viewBox="0 0 20 20"
@@ -215,7 +215,7 @@ export class ErrorBoundary extends Component<Props, ErrorBoundaryState> {
             <div className="mt-3 flex space-x-2">
               <button
                 onClick={this.handleReset}
-                className="rounded bg-red-100 px-2 py-1 text-xs text-red-800 transition-colors hover:bg-red-200"
+                className="rounded-sm bg-red-100 px-2 py-1 text-xs text-red-800 transition-colors hover:bg-red-200"
               >
                 Retry
               </button>

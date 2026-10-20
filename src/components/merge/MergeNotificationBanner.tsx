@@ -35,7 +35,7 @@ export const MergeNotificationBanner: React.FC<
     <>
       <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
         <div className="flex items-start gap-3">
-          <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600 dark:text-blue-400" />
+          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
           <div className="flex-1">
             <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
               {lang === 'es'

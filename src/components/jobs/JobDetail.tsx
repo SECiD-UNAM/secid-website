@@ -255,14 +255,14 @@ export const JobDetail: React.FC<JobDetailProps> = ({ jobId, lang = 'es' }) => {
   if (loading) {
     return (
       <div className="animate-pulse">
-        <div className="mb-8 h-8 w-1/4 rounded bg-gray-200 dark:bg-gray-700"></div>
+        <div className="mb-8 h-8 w-1/4 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
         <div className="rounded-lg bg-white p-8 shadow-lg dark:bg-gray-800">
-          <div className="mb-4 h-10 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
-          <div className="mb-8 h-6 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
+          <div className="mb-4 h-10 w-3/4 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
+          <div className="mb-8 h-6 w-1/2 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
           <div className="space-y-4">
-            <div className="h-4 w-full rounded bg-gray-200 dark:bg-gray-700"></div>
-            <div className="h-4 w-5/6 rounded bg-gray-200 dark:bg-gray-700"></div>
-            <div className="h-4 w-4/6 rounded bg-gray-200 dark:bg-gray-700"></div>
+            <div className="h-4 w-full rounded-sm bg-gray-200 dark:bg-gray-700"></div>
+            <div className="h-4 w-5/6 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
+            <div className="h-4 w-4/6 rounded-sm bg-gray-200 dark:bg-gray-700"></div>
           </div>
         </div>
       </div>
@@ -470,7 +470,7 @@ export const JobDetail: React.FC<JobDetailProps> = ({ jobId, lang = 'es' }) => {
 
               {job.responsibilities && job.responsibilities.length > 0 && (
                 <>
-                  <h3 className="mb-4 mt-8 text-lg font-semibold text-gray-900 dark:text-white">
+                  <h3 className="mt-8 mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                     {lang === 'es' ? 'Responsabilidades' : 'Responsibilities'}
                   </h3>
                   <ul className="list-inside list-disc space-y-2 text-gray-700 dark:text-gray-300">
@@ -481,7 +481,7 @@ export const JobDetail: React.FC<JobDetailProps> = ({ jobId, lang = 'es' }) => {
                 </>
               )}
 
-              <h3 className="mb-4 mt-8 text-lg font-semibold text-gray-900 dark:text-white">
+              <h3 className="mt-8 mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                 {lang === 'es' ? 'Requisitos' : 'Requirements'}
               </h3>
               <ul className="list-inside list-disc space-y-2 text-gray-700 dark:text-gray-300">
@@ -492,7 +492,7 @@ export const JobDetail: React.FC<JobDetailProps> = ({ jobId, lang = 'es' }) => {
 
               {job.benefits && job.benefits.length > 0 && (
                 <>
-                  <h3 className="mb-4 mt-8 text-lg font-semibold text-gray-900 dark:text-white">
+                  <h3 className="mt-8 mb-4 text-lg font-semibold text-gray-900 dark:text-white">
                     {lang === 'es' ? 'Beneficios' : 'Benefits'}
                   </h3>
                   <ul className="list-inside list-disc space-y-2 text-gray-700 dark:text-gray-300">

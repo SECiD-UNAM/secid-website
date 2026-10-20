@@ -154,7 +154,7 @@ export const VerifyAlternateEmail: React.FC<VerifyAlternateEmailProps> = ({
   const loginHref = `/${lang}/login`;
 
   return (
-    <div className="mx-auto w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm dark:border-gray-700 dark:bg-gray-800">
+    <div className="mx-auto w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-xs dark:border-gray-700 dark:bg-gray-800">
       {state === 'loading' && (
         <>
           <ArrowPathIcon className="mx-auto h-10 w-10 animate-spin text-primary-500" />

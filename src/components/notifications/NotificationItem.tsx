@@ -145,7 +145,7 @@ export default function NotificationItem({
               type="checkbox"
               checked={isSelected}
               onChange={handleSelectChange}
-              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4 rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
               onClick={(e) => e.stopPropagation()}
             />
           </div>
@@ -153,7 +153,7 @@ export default function NotificationItem({
 
         {/* Icon */}
         <div
-          className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${priorityBgColor}`}
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${priorityBgColor}`}
         >
           <IconComponent className={`h-5 w-5 ${priorityColor}`} />
         </div>
@@ -173,13 +173,13 @@ export default function NotificationItem({
                 </p>
 
                 {notification.priority === 'urgent' && (
-                  <span className="flex-shrink-0">
+                  <span className="shrink-0">
                     <AlertTriangle className="h-4 w-4 text-red-500" />
                   </span>
                 )}
 
                 {notification.priority === 'high' && (
-                  <span className="flex-shrink-0">
+                  <span className="shrink-0">
                     <Star className="h-4 w-4 text-orange-500" />
                   </span>
                 )}
@@ -255,14 +255,14 @@ export default function NotificationItem({
             {/* Time and Actions */}
             <div className="ml-2 flex items-center space-x-2">
               {compact && (
-                <span className="whitespace-nowrap text-xs text-gray-500">
+                <span className="text-xs whitespace-nowrap text-gray-500">
                   {timeAgo}
                 </span>
               )}
 
               {/* Unread Indicator */}
               {!notification.isRead && (
-                <div className="h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />
+                <div className="h-2 w-2 shrink-0 rounded-full bg-blue-500" />
               )}
 
               {/* Quick Actions (shown on hover) */}
@@ -273,7 +273,7 @@ export default function NotificationItem({
                       e.stopPropagation();
                       onClick(notification);
                     }}
-                    className="rounded p-1 text-gray-400 hover:text-blue-600"
+                    className="rounded-sm p-1 text-gray-400 hover:text-blue-600"
                     title={t('notifications.markAsRead')}
                   >
                     <CheckCircle className="h-4 w-4" />
@@ -282,7 +282,7 @@ export default function NotificationItem({
 
                 <button
                   onClick={handleDelete}
-                  className="rounded p-1 text-gray-400 hover:text-red-600"
+                  className="rounded-sm p-1 text-gray-400 hover:text-red-600"
                   title={t('notifications.delete')}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -313,7 +313,7 @@ export default function NotificationItem({
                 {notification.deliveryMethods.map((method) => (
                   <span
                     key={method}
-                    className="inline-flex items-center rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
+                    className="inline-flex items-center rounded-sm bg-gray-100 px-2 py-0.5 text-xs text-gray-600"
                   >
                     {method === 'email' && <Mail className="mr-1 h-3 w-3" />}
                     {method === 'push' && (
@@ -336,13 +336,13 @@ export default function NotificationItem({
 
       {/* Group Indicator */}
       {notification.groupId && (
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500" />
+        <div className="absolute right-0 bottom-0 left-0 h-0.5 bg-linear-to-r from-blue-500 to-purple-500" />
       )}
 
       {/* Scheduled Indicator */}
       {notification.scheduledFor &&
         new Date(notification.scheduledFor) > new Date() && (
-          <div className="absolute right-2 top-2">
+          <div className="absolute top-2 right-2">
             <Clock className="h-4 w-4 text-orange-500" />
           </div>
         )}

@@ -403,7 +403,7 @@ const MessageComposer: React.FC<MessageComposerProps> = ({
         <button
           onClick={() => fileInputRef?.current?.click()}
           disabled={disabled || uploading}
-          className="flex-shrink-0 p-2 text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="shrink-0 p-2 text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
           title={t('messaging.attachFile')}
         >
           <svg
@@ -436,7 +436,7 @@ const MessageComposer: React.FC<MessageComposerProps> = ({
           />
 
           {/* Emoji Button */}
-          <div className="absolute right-2 top-2">
+          <div className="absolute top-2 right-2">
             <button
               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
               disabled={disabled || uploading}
@@ -460,13 +460,13 @@ const MessageComposer: React.FC<MessageComposerProps> = ({
 
             {/* Emoji Picker */}
             {showEmojiPicker && (
-              <div className="absolute bottom-full right-0 z-50 mb-2 w-64 rounded-lg border border-gray-200 bg-white p-3 shadow-lg">
+              <div className="absolute right-0 bottom-full z-50 mb-2 w-64 rounded-lg border border-gray-200 bg-white p-3 shadow-lg">
                 <div className="grid max-h-32 grid-cols-8 gap-1 overflow-y-auto">
                   {emojis.map((emoji, index) => (
                     <button
                       key={index}
                       onClick={() => insertEmoji(emoji)}
-                      className="flex h-8 w-8 items-center justify-center rounded p-1 text-lg hover:bg-gray-100"
+                      className="flex h-8 w-8 items-center justify-center rounded-sm p-1 text-lg hover:bg-gray-100"
                     >
                       {emoji}
                     </button>
@@ -485,7 +485,7 @@ const MessageComposer: React.FC<MessageComposerProps> = ({
             disabled ||
             uploading
           }
-          className="flex-shrink-0 rounded-lg bg-blue-600 p-2 text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="shrink-0 rounded-lg bg-blue-600 p-2 text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           title={t('messaging.send')}
         >
           {uploading ? (

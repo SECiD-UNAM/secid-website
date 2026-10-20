@@ -22,14 +22,14 @@ export function CvAboutSection({ personal }: { personal: CVData['personal'] }) {
         {/* Text column */}
         <div className="flex-1">
           <h1
-            className="text-5xl font-bold uppercase leading-tight tracking-wide md:text-6xl"
+            className="text-5xl leading-tight font-bold tracking-wide uppercase md:text-6xl"
             style={{ color: 'var(--color-text)' }}
           >
             {name.full}
           </h1>
 
           {(title || location) && (
-            <div className="mb-6 mt-3 flex items-center gap-2">
+            <div className="mt-3 mb-6 flex items-center gap-2">
               <span className="inline-block h-2.5 w-2.5 animate-pulse rounded-full bg-green-500" />
               <span
                 className="text-lg"
@@ -80,7 +80,7 @@ export function CvAboutSection({ personal }: { personal: CVData['personal'] }) {
         </div>
 
         {/* Profile image */}
-        <div className="flex flex-shrink-0 justify-center md:justify-end">
+        <div className="flex shrink-0 justify-center md:justify-end">
           {profileImage ? (
             <img
               src={profileImage}

@@ -229,7 +229,7 @@ function MentorshipOverview({
       {/* --- 2. Two-column content --- */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Upcoming Sessions */}
-        <div className="rounded-xl bg-white shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+        <div className="rounded-xl bg-white shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
           <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-gray-700/30">
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
               Upcoming Sessions
@@ -299,7 +299,7 @@ function MentorshipOverview({
         </div>
 
         {/* Active Matches */}
-        <div className="rounded-xl bg-white shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+        <div className="rounded-xl bg-white shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
           <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-gray-700/30">
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
               Active Matches
@@ -366,7 +366,7 @@ function MentorshipOverview({
 
       {/* --- 3. Global Stats --- */}
       {globalStats && (
-        <div className="rounded-xl bg-white p-5 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+        <div className="rounded-xl bg-white p-5 shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
           <h3 className="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
             Program Statistics
           </h3>

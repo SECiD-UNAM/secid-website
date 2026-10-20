@@ -287,7 +287,7 @@ export default function CvPageClient({ lang }: CvPageClientProps) {
       {/* Mobile hamburger button */}
       <button
         onClick={() => setSidebarOpen((prev) => !prev)}
-        className="fixed left-4 top-4 z-50 inline-flex items-center justify-center rounded-lg p-2 shadow-md lg:hidden"
+        className="fixed top-4 left-4 z-50 inline-flex items-center justify-center rounded-lg p-2 shadow-md lg:hidden"
         style={{
           background: 'var(--color-surface)',
           border: '1px solid var(--color-border)',

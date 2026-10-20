@@ -84,7 +84,7 @@ export default function StatsCard({
     <div className="rounded-xl bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border dark:border-gray-700/30 dark:bg-gray-800">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          <p className="text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
             {label}
           </p>
           <p className={`mt-1 text-2xl font-bold ${accentStyles[accent]}`}>
@@ -613,7 +613,7 @@ export default function MenteeProfileForm({
               onChange={(e) =>
                 setFormData((p) => ({ ...p, displayName: e.target.value }))
               }
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               placeholder="Your display name"
             />
             {fieldError('displayName') && (
@@ -637,7 +637,7 @@ export default function MenteeProfileForm({
                 setFormData((p) => ({ ...p, bio: e.target.value }))
               }
               rows={3}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               placeholder="Tell mentors about yourself, your background, and what you're looking for..."
             />
             <p className="mt-1 text-xs text-gray-400">
@@ -1387,7 +1387,7 @@ export default function MentorshipProfileTab({
                 <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
                   {menteeProfile.displayName}
                 </h4>
-                <p className="text-sm capitalize text-gray-500">
+                <p className="text-sm text-gray-500 capitalize">
                   {menteeProfile.currentLevel} ·{' '}
                   {menteeProfile.background?.yearsOfExperience || 0} years
                   experience
@@ -1397,7 +1397,7 @@ export default function MentorshipProfileTab({
                 {menteeProfile.bio}
               </p>
               <div>
-                <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-gray-500">
+                <p className="mb-1.5 text-xs font-medium tracking-wider text-gray-500 uppercase">
                   Goals
                 </p>
                 <div className="flex flex-wrap gap-1.5">
@@ -1412,7 +1412,7 @@ export default function MentorshipProfileTab({
                 </div>
               </div>
               <div>
-                <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-gray-500">
+                <p className="mb-1.5 text-xs font-medium tracking-wider text-gray-500 uppercase">
                   Interests
                 </p>
                 <div className="flex flex-wrap gap-1.5">
@@ -2173,7 +2173,7 @@ export default function MentorshipSessionsTab({
         <>
           {upcoming.length > 0 && (
             <div>
-              <h3 className="mb-3 text-sm font-medium uppercase tracking-wider text-gray-500">
+              <h3 className="mb-3 text-sm font-medium tracking-wider text-gray-500 uppercase">
                 Upcoming
               </h3>
               <div className="space-y-2">
@@ -2192,7 +2192,7 @@ export default function MentorshipSessionsTab({
                           {session.duration} min
                         </p>
                       </div>
-                      <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium capitalize text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                      <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700 capitalize dark:bg-blue-900/30 dark:text-blue-300">
                         {session.type}
                       </span>
                     </div>
@@ -2203,7 +2203,7 @@ export default function MentorshipSessionsTab({
           )}
           {past.length > 0 && (
             <div>
-              <h3 className="mb-3 text-sm font-medium uppercase tracking-wider text-gray-500">
+              <h3 className="mb-3 text-sm font-medium tracking-wider text-gray-500 uppercase">
                 Past
               </h3>
               <div className="space-y-2">
@@ -2222,7 +2222,7 @@ export default function MentorshipSessionsTab({
                           {session.duration} min
                         </p>
                       </div>
-                      <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium capitalize text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                      <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600 capitalize dark:bg-gray-700 dark:text-gray-400">
                         {session.status}
                       </span>
                     </div>
@@ -2477,7 +2477,7 @@ export default function MentorshipDashboard() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`relative whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-medium transition-colors sm:px-4 ${
+              className={`relative border-b-2 px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-colors sm:px-4 ${
                 activeTab === tab.key
                   ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                   : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'

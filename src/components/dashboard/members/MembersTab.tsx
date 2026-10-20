@@ -182,7 +182,7 @@ function SortableHeader({
 
   return (
     <th
-      className="cursor-pointer select-none px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+      className="cursor-pointer px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase transition-colors select-none hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
       onClick={() => onSort(column)}
     >
       <span className="inline-flex items-center gap-1">
@@ -503,20 +503,20 @@ export const MembersTab: React.FC<MembersTabProps> = ({
     <div className="space-y-4">
       {/* Search */}
       <div className="relative">
-        <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
+        <MagnifyingGlassIcon className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={t.searchPlaceholder}
           aria-label={t.searchAriaLabel}
-          className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-9 text-sm text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500 dark:focus:border-primary-400"
+          className="w-full rounded-lg border border-gray-300 bg-white py-2 pr-9 pl-9 text-sm text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 focus:outline-hidden dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500 dark:focus:border-primary-400"
         />
         {searchQuery && (
           <button
             type="button"
             onClick={() => setSearchQuery('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+            className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
             aria-label={t.clearSearchAriaLabel}
           >
             <XMarkIcon className="h-4 w-4" />
@@ -598,7 +598,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
                   direction={sortDirection}
                   onSort={handleSort}
                 />
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                <th className="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
                   {lang === 'es' ? 'Vínculos' : 'Links'}
                 </th>
               </tr>
@@ -624,29 +624,29 @@ export const MembersTab: React.FC<MembersTabProps> = ({
                       </td>
 
                       {/* Name */}
-                      <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
+                      <td className="px-4 py-3 text-sm font-medium whitespace-nowrap text-gray-900 dark:text-white">
                         {member.displayName}
                       </td>
 
                       {/* Email */}
-                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
+                      <td className="px-4 py-3 text-sm whitespace-nowrap text-gray-600 dark:text-gray-300">
                         {(member.privacy.showEmail || isAdmin) && member.email
                           ? member.email
                           : '—'}
                       </td>
 
                       {/* Company */}
-                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
+                      <td className="px-4 py-3 text-sm whitespace-nowrap text-gray-600 dark:text-gray-300">
                         {member.profile.company || '—'}
                       </td>
 
                       {/* Campus */}
-                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
+                      <td className="px-4 py-3 text-sm whitespace-nowrap text-gray-600 dark:text-gray-300">
                         {member.campus || '—'}
                       </td>
 
                       {/* Generation */}
-                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
+                      <td className="px-4 py-3 text-sm whitespace-nowrap text-gray-600 dark:text-gray-300">
                         {member.generation || '—'}
                       </td>
 
@@ -656,13 +656,13 @@ export const MembersTab: React.FC<MembersTabProps> = ({
                       </td>
 
                       {/* Status */}
-                      <td className="whitespace-nowrap px-4 py-3 text-sm capitalize text-gray-600 dark:text-gray-300">
+                      <td className="px-4 py-3 text-sm whitespace-nowrap text-gray-600 capitalize dark:text-gray-300">
                         {status}
                       </td>
 
                       {/* Social Links */}
                       <td
-                        className="whitespace-nowrap px-4 py-3"
+                        className="px-4 py-3 whitespace-nowrap"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <div className="flex items-center gap-2">

@@ -153,7 +153,7 @@ export default function SkillAssessment({
         <div className="mb-4 flex items-center space-x-3">
           <span className="text-4xl">{getSkillIcon(skillCategory)}</span>
           <div>
-            <h1 className="text-3xl font-bold capitalize text-gray-900">
+            <h1 className="text-3xl font-bold text-gray-900 capitalize">
               {skillCategory.replace('_', ' ')}{' '}
               {t('assessment.skill.assessments', 'Evaluaciones')}
             </h1>
@@ -171,7 +171,7 @@ export default function SkillAssessment({
         {/* Skill Overview */}
         <div className="space-y-6 lg:col-span-1">
           {/* Current Level */}
-          <div className="rounded-lg bg-white p-6 shadow">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
             <h2 className="mb-4 text-lg font-medium text-gray-900">
               {t('assessment.skill.currentLevel', 'Nivel Actual')}
             </h2>
@@ -239,7 +239,7 @@ export default function SkillAssessment({
           </div>
 
           {/* Recommended Next Steps */}
-          <div className="rounded-lg bg-white p-6 shadow">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
             <h2 className="mb-4 text-lg font-medium text-gray-900">
               {t('assessment.skill.recommendations', 'Recomendaciones')}
             </h2>
@@ -249,7 +249,7 @@ export default function SkillAssessment({
                 <p className="mb-1 text-sm font-medium text-blue-900">
                   {t('assessment.skill.suggestedLevel', 'Nivel Sugerido')}
                 </p>
-                <p className="text-sm capitalize text-blue-800">
+                <p className="text-sm text-blue-800 capitalize">
                   {getDifficultyRecommendation(skillLevel)}
                 </p>
               </div>
@@ -282,7 +282,7 @@ export default function SkillAssessment({
 
           {/* Certificates */}
           {skillCertificates.length > 0 && (
-            <div className="rounded-lg bg-white p-6 shadow">
+            <div className="rounded-lg bg-white p-6 shadow-sm">
               <h2 className="mb-4 text-lg font-medium text-gray-900">
                 {t('assessment.skill.certificates', 'Certificados')}
               </h2>
@@ -330,7 +330,7 @@ export default function SkillAssessment({
         {/* Assessments List */}
         <div className="space-y-6 lg:col-span-2">
           {/* Filters */}
-          <div className="rounded-lg bg-white p-6 shadow">
+          <div className="rounded-lg bg-white p-6 shadow-sm">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-medium text-gray-900">
                 {t(
@@ -346,7 +346,7 @@ export default function SkillAssessment({
                     e.target.value as DifficultyLevel | 'all'
                   )
                 }
-                className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+                className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 focus:outline-hidden"
               >
                 <option value="all">
                   {t('assessment.skill.allLevels', 'Todos los niveles')}
@@ -415,7 +415,7 @@ export default function SkillAssessment({
 
           {/* Learning Path */}
           {filteredAssessments.length > 0 && (
-            <div className="rounded-lg bg-white p-6 shadow">
+            <div className="rounded-lg bg-white p-6 shadow-sm">
               <h2 className="mb-4 text-lg font-medium text-gray-900">
                 {t(
                   'assessment.skill.learningPath',
@@ -680,7 +680,7 @@ function LearningPath({
           <div key={assessment.id} className="flex items-center space-x-4">
             {/* Step Indicator */}
             <div
-              className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-medium ${
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-medium ${
                 isCompleted
                   ? 'bg-green-500 text-white'
                   : isCurrent

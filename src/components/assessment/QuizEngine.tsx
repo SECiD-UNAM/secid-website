@@ -334,7 +334,7 @@ export default function QuizEngine({
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow">
+      <div className="bg-white shadow-sm">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center space-x-4">
@@ -695,7 +695,7 @@ function MultipleChoiceQuestion({
             type="checkbox"
             checked={selectedAnswers.includes(option.id)}
             onChange={(e) => handleOptionChange(option.id, e.target.checked)}
-            className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="mt-1 h-4 w-4 rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
           />
           <div className="flex-1">
             <span className="text-gray-900">{option.text}</span>
@@ -869,7 +869,7 @@ function CodingChallengeQuestion({
           value={code}
           onChange={(e) => onAnswerChange(e.target.value)}
           rows={12}
-          className="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+          className="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm shadow-xs focus:border-blue-500 focus:ring-blue-500 focus:outline-hidden"
           placeholder={
             question?.codingChallenge?.starterCode ||
             `# ${t('assessment.writeCode', 'Escribe tu código aquí...')}`
@@ -981,7 +981,7 @@ function FillBlankQuestion({
             type="text"
             value={answers[index] || ''}
             onChange={(e) => handleAnswerChange(index, e.target.value)}
-            className={`flex-1 rounded-md border px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-blue-500 ${
+            className={`flex-1 rounded-md border px-3 py-2 focus:border-blue-500 focus:ring-blue-500 focus:outline-hidden ${
               showExplanation
                 ? question.fillBlanks?.[index]?.toLowerCase() ===
                   answers[index]?.toLowerCase()
@@ -1021,7 +1021,7 @@ function PracticalScenarioQuestion({
         value={textAnswer}
         onChange={(e) => onAnswerChange(e.target.value)}
         rows={8}
-        className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+        className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-xs focus:border-blue-500 focus:ring-blue-500 focus:outline-hidden"
         placeholder={t(
           'assessment.describeApproach',
           'Describe tu enfoque y solución...'

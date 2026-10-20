@@ -570,7 +570,7 @@ export const ContentModeration: React.FC = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-6">
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-xs dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center">
             <Clock className="h-5 w-5 text-yellow-600" />
             <div className="ml-3">
@@ -584,7 +584,7 @@ export const ContentModeration: React.FC = () => {
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-xs dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center">
             <CheckCircle className="h-5 w-5 text-green-600" />
             <div className="ml-3">
@@ -598,7 +598,7 @@ export const ContentModeration: React.FC = () => {
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-xs dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center">
             <XCircle className="h-5 w-5 text-red-600" />
             <div className="ml-3">
@@ -612,7 +612,7 @@ export const ContentModeration: React.FC = () => {
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-xs dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center">
             <Flag className="h-5 w-5 text-orange-600" />
             <div className="ml-3">
@@ -626,7 +626,7 @@ export const ContentModeration: React.FC = () => {
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-xs dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center">
             <Ban className="h-5 w-5 text-red-600" />
             <div className="ml-3">
@@ -640,7 +640,7 @@ export const ContentModeration: React.FC = () => {
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-xs dark:border-gray-700 dark:bg-gray-800">
           <div className="flex items-center">
             <Clock className="h-5 w-5 text-blue-600" />
             <div className="ml-3">
@@ -705,7 +705,7 @@ export const ContentModeration: React.FC = () => {
       {activeTab === 'content' && (
         <div className="space-y-6">
           {/* Filters */}
-          <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+          <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-xs dark:border-gray-700 dark:bg-gray-800">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -716,7 +716,7 @@ export const ContentModeration: React.FC = () => {
                   onChange={(e) =>
                     setFilters((prev) => ({ ...prev, type: e.target.value }))
                   }
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                 >
                   <option value="all">
                     {language === 'es' ? 'Todos' : 'All'}
@@ -745,7 +745,7 @@ export const ContentModeration: React.FC = () => {
                   onChange={(e) =>
                     setFilters((prev) => ({ ...prev, status: e.target.value }))
                   }
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                 >
                   <option value="pending">
                     {language === 'es' ? 'Pendiente' : 'Pending'}
@@ -774,7 +774,7 @@ export const ContentModeration: React.FC = () => {
                       priority: e.target.value,
                     }))
                   }
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  className="w-full rounded-md border-gray-300 shadow-xs focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                 >
                   <option value="all">
                     {language === 'es' ? 'Todas' : 'All'}
@@ -799,7 +799,7 @@ export const ContentModeration: React.FC = () => {
                   {language === 'es' ? 'Buscar' : 'Search'}
                 </label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                   <input
                     type="text"
                     value={filters.search}
@@ -814,7 +814,7 @@ export const ContentModeration: React.FC = () => {
                         ? 'Buscar contenido...'
                         : 'Search content...'
                     }
-                    className="w-full rounded-md border-gray-300 pl-10 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    className="w-full rounded-md border-gray-300 pl-10 shadow-xs focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                   />
                 </div>
               </div>
@@ -862,7 +862,7 @@ export const ContentModeration: React.FC = () => {
             {filteredModerationItems.map((item) => (
               <div
                 key={item['id']}
-                className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+                className="rounded-lg border border-gray-200 bg-white p-6 shadow-xs dark:border-gray-700 dark:bg-gray-800"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex flex-1 items-start space-x-3">
@@ -878,14 +878,14 @@ export const ContentModeration: React.FC = () => {
                         }
                         setSelectedItems(newSelected);
                       }}
-                      className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="mt-1 rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
 
                     <div className="flex-1">
                       <div className="mb-2 flex items-center space-x-3">
                         <div className="flex items-center space-x-2">
                           {getTypeIcon(item['type'])}
-                          <span className="text-sm font-medium capitalize text-gray-600 dark:text-gray-400">
+                          <span className="text-sm font-medium text-gray-600 capitalize dark:text-gray-400">
                             {item['type'].replace('_', ' ')}
                           </span>
                         </div>
@@ -929,7 +929,7 @@ export const ContentModeration: React.FC = () => {
                       onClick={() =>
                         handleModerationAction('approve', item['id'])
                       }
-                      className="inline-flex items-center rounded-md border border-transparent bg-green-600 px-3 py-2 text-sm font-medium leading-4 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                      className="inline-flex items-center rounded-md border border-transparent bg-green-600 px-3 py-2 text-sm leading-4 font-medium text-white hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-hidden"
                     >
                       <CheckCircle className="mr-1 h-4 w-4" />
                       {language === 'es' ? 'Aprobar' : 'Approve'}
@@ -945,7 +945,7 @@ export const ContentModeration: React.FC = () => {
                         if (reason)
                           handleModerationAction('reject', item['id'], reason);
                       }}
-                      className="inline-flex items-center rounded-md border border-transparent bg-red-600 px-3 py-2 text-sm font-medium leading-4 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                      className="inline-flex items-center rounded-md border border-transparent bg-red-600 px-3 py-2 text-sm leading-4 font-medium text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-hidden"
                     >
                       <XCircle className="mr-1 h-4 w-4" />
                       {language === 'es' ? 'Rechazar' : 'Reject'}
@@ -961,7 +961,7 @@ export const ContentModeration: React.FC = () => {
                         if (reason)
                           handleModerationAction('flag', item['id'], reason);
                       }}
-                      className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                      className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-hidden dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                     >
                       <Flag className="mr-1 h-4 w-4" />
                       {language === 'es' ? 'Marcar' : 'Flag'}
@@ -995,13 +995,13 @@ export const ContentModeration: React.FC = () => {
             {reports.map((report) => (
               <div
                 key={report['id']}
-                className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+                className="rounded-lg border border-gray-200 bg-white p-6 shadow-xs dark:border-gray-700 dark:bg-gray-800"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="mb-2 flex items-center space-x-3">
                       <Flag className="h-5 w-5 text-red-500" />
-                      <span className="text-sm font-medium capitalize text-gray-600 dark:text-gray-400">
+                      <span className="text-sm font-medium text-gray-600 capitalize dark:text-gray-400">
                         {report.reportedItemType.replace('_', ' ')} Report
                       </span>
                       <span className="text-sm text-gray-500">
@@ -1033,7 +1033,7 @@ export const ContentModeration: React.FC = () => {
                         if (action)
                           handleReportAction('resolve', report['id'], action);
                       }}
-                      className="inline-flex items-center rounded-md border border-transparent bg-green-600 px-3 py-2 text-sm font-medium leading-4 text-white hover:bg-green-700"
+                      className="inline-flex items-center rounded-md border border-transparent bg-green-600 px-3 py-2 text-sm leading-4 font-medium text-white hover:bg-green-700"
                     >
                       {language === 'es' ? 'Resolver' : 'Resolve'}
                     </button>
@@ -1042,7 +1042,7 @@ export const ContentModeration: React.FC = () => {
                       onClick={() =>
                         handleReportAction('dismiss', report['id'])
                       }
-                      className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                      className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                     >
                       {language === 'es' ? 'Descartar' : 'Dismiss'}
                     </button>
@@ -1070,7 +1070,7 @@ export const ContentModeration: React.FC = () => {
 
       {/* Blog Tab */}
       {activeTab === 'blog' && (
-        <div className="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="rounded-lg border border-gray-200 bg-white shadow-xs dark:border-gray-700 dark:bg-gray-800">
           <div className="border-b border-gray-200 p-6 dark:border-gray-700">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               {language === 'es'

@@ -212,7 +212,7 @@ export const JobBoard: React.FC<JobBoardProps> = ({ lang = 'es', filters }) => {
           lang={lang}
           className="flex-1"
         />
-        <div className="flex flex-shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <ListingSort
             sort={listing.sort}
             options={sortOptions}

@@ -278,7 +278,7 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({
             {/* Search */}
             <div className="mb-6">
               <div className="relative">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+                <MagnifyingGlassIcon className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
                 <input
                   type="text"
                   value={searchQuery}
@@ -288,7 +288,7 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({
                       ? 'Buscar conexiones...'
                       : 'Search connections...'
                   }
-                  className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-gray-900 placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
+                  className="w-full rounded-lg border border-gray-300 bg-white py-2 pr-4 pl-10 text-gray-900 placeholder-gray-500 focus:border-transparent focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
                 />
               </div>
             </div>
@@ -314,7 +314,7 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({
                     className="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
                   >
                     <div className="mb-3 flex items-center space-x-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 font-semibold text-white">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br from-primary-500 to-secondary-500 font-semibold text-white">
                         {member.initials}
                       </div>
                       <div className="min-w-0 flex-1">
@@ -382,7 +382,7 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-start space-x-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 font-semibold text-white">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br from-primary-500 to-secondary-500 font-semibold text-white">
                           {/* Would show sender's initials */}?
                         </div>
                         <div>
@@ -461,7 +461,7 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({
                       }`}
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-sm font-semibold text-white">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-primary-500 to-secondary-500 text-sm font-semibold text-white">
                           ?
                         </div>
                         <div className="min-w-0 flex-1">
@@ -496,7 +496,7 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({
                   <div className="border-b border-gray-200 p-4 dark:border-gray-700">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-sm font-semibold text-white">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-to-br from-primary-500 to-secondary-500 text-sm font-semibold text-white">
                           ?
                         </div>
                         <h4 className="font-semibold text-gray-900 dark:text-white">
@@ -619,7 +619,7 @@ export const NetworkingHub: React.FC<NetworkingHubProps> = ({
                     className="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
                   >
                     <div className="mb-3 flex items-center space-x-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 font-semibold text-white">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br from-primary-500 to-secondary-500 font-semibold text-white">
                         {recommendation.member.initials}
                       </div>
                       <div className="min-w-0 flex-1">

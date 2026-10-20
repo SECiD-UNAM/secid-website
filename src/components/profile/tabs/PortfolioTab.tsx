@@ -245,7 +245,7 @@ const ProjectCard: React.FC<{
     <div className="group relative rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
       {/* Featured star badge */}
       {project.featured && (
-        <div className="absolute right-3 top-3">
+        <div className="absolute top-3 right-3">
           <StarIconSolid
             className="h-5 w-5 text-amber-400"
             aria-label={lang === 'es' ? 'Destacado' : 'Featured'}
@@ -325,7 +325,7 @@ const ProjectCard: React.FC<{
       )}
 
       {/* Hover actions */}
-      <div className="absolute bottom-3 right-3 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+      <div className="absolute right-3 bottom-3 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
         <button
           type="button"
           onClick={onEdit}
@@ -499,7 +499,7 @@ const ProjectEntryForm: React.FC<{
           type="checkbox"
           checked={entry.featured}
           onChange={(e) => onUpdate({ featured: e.target.checked })}
-          className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600"
+          className="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600"
         />
         <StarIcon className="h-4 w-4 text-amber-400" />
         <span className="text-sm text-gray-700 dark:text-gray-300">

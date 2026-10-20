@@ -83,7 +83,7 @@ export default function SurveyPromptBanner({ lang = 'es' }: Props) {
 
   return (
     <div className="mb-6 flex items-start gap-3 rounded-xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-800/50 dark:bg-blue-900/20">
-      <ClipboardDocumentListIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600 dark:text-blue-400" />
+      <ClipboardDocumentListIcon className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
       <div className="flex-1">
         <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-100">
           {t.titleIncomplete}
@@ -117,7 +117,7 @@ export default function SurveyPromptBanner({ lang = 'es' }: Props) {
           dismissFor(DISMISS_DAYS);
           setShow(false);
         }}
-        className="flex-shrink-0 text-blue-600 hover:text-blue-800 dark:text-blue-300"
+        className="shrink-0 text-blue-600 hover:text-blue-800 dark:text-blue-300"
       >
         <XMarkIcon className="h-5 w-5" />
       </button>

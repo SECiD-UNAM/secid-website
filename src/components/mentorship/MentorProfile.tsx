@@ -524,7 +524,7 @@ export default function MentorProfile({
       <div className="space-y-6">
         {/* Header card */}
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-          <div className="bg-gradient-to-r from-primary-50 to-amber-50 px-6 py-8 dark:from-primary-900/10 dark:to-amber-900/10">
+          <div className="bg-linear-to-r from-primary-50 to-amber-50 px-6 py-8 dark:from-primary-900/10 dark:to-amber-900/10">
             <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
               {/* Avatar */}
               {profile.profileImage ? (
@@ -534,7 +534,7 @@ export default function MentorProfile({
                   className="h-24 w-24 rounded-full object-cover ring-4 ring-white dark:ring-gray-800"
                 />
               ) : (
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-amber-400 ring-4 ring-white dark:ring-gray-800">
+                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-br from-primary-500 to-amber-400 ring-4 ring-white dark:ring-gray-800">
                   <svg
                     className="h-10 w-10 text-white"
                     fill="none"
@@ -865,7 +865,7 @@ export default function MentorProfile({
               className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400"
             >
               <svg
-                className="h-4 w-4 flex-shrink-0"
+                className="h-4 w-4 shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -885,7 +885,7 @@ export default function MentorProfile({
         <div className="mb-6 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
           <p className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
             <svg
-              className="h-4 w-4 flex-shrink-0"
+              className="h-4 w-4 shrink-0"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -1151,7 +1151,7 @@ export default function MentorProfile({
                     duration: e.target.value,
                   }))
                 }
-                className={`w-full rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:w-32`}
+                className={`w-full rounded-lg border border-gray-300 px-3 py-2 text-sm sm:w-32 dark:border-gray-600 dark:bg-gray-700 dark:text-white`}
               />
               <button
                 type="button"

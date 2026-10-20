@@ -49,7 +49,7 @@ export function CvProjectsSection({
               >
                 {project.title}
               </h3>
-              <div className="flex flex-shrink-0 items-center gap-2">
+              <div className="flex shrink-0 items-center gap-2">
                 {project.featured && (
                   <span
                     className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"

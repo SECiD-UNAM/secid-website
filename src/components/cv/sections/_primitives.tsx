@@ -27,7 +27,7 @@ export function GradientDivider() {
 export function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
     <h2
-      className="mb-8 text-3xl font-bold uppercase tracking-wide"
+      className="mb-8 text-3xl font-bold tracking-wide uppercase"
       style={{ color: 'var(--color-text)' }}
     >
       {children}

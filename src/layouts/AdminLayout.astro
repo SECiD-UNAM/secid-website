@@ -66,7 +66,7 @@ const {
         </div>
 
         <!-- Page Content -->
-        <main class="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50 p-6">
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
           <div class="mx-auto max-w-7xl">
             <!-- Admin Breadcrumbs -->
             <div id="admin-breadcrumbs" class="mb-6">
@@ -83,14 +83,14 @@ const {
     </div>
 
     <!-- Admin Notifications -->
-    <div id="admin-notifications" class="fixed right-4 top-4 z-50">
+    <div id="admin-notifications" class="fixed top-4 right-4 z-50">
       <!-- This will be replaced by React component for toast notifications -->
     </div>
 
     <!-- Loading Overlay -->
     <div
       id="admin-loading"
-      class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-50"
+      class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black/50"
     >
       <div class="flex items-center space-x-3 rounded-lg bg-white p-6">
         <div
@@ -125,7 +125,7 @@ const {
         const showSessionBanner = (message, actionLabel, onAction) => {
           const banner = document.createElement('div');
           banner.className =
-            'fixed top-4 right-4 bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded shadow-lg z-50 flex items-center space-x-3';
+            'fixed top-4 right-4 bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-sm shadow-lg z-50 flex items-center space-x-3';
           banner.setAttribute('role', 'alert');
 
           const text = document.createElement('span');
@@ -270,7 +270,7 @@ const {
         // Show user-friendly error message
         const errorDiv = document.createElement('div');
         errorDiv.className =
-          'fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-50';
+          'fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm z-50';
         errorDiv.innerHTML = `
           <strong>Error del Sistema:</strong> ${e.message}
           <button onclick="this.parentElement.remove()" class="ml-4 text-red-500 hover:text-red-700">&times;</button>

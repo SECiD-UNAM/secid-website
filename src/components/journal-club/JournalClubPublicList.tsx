@@ -183,13 +183,13 @@ function StaticSessionCard({
 
           {/* Date */}
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <CalendarIcon className="h-4 w-4 flex-shrink-0" />
+            <CalendarIcon className="h-4 w-4 shrink-0" />
             <span>{formattedDate}</span>
           </div>
 
           {/* Presenter */}
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <UserIcon className="h-4 w-4 flex-shrink-0" />
+            <UserIcon className="h-4 w-4 shrink-0" />
             <span>
               {presenterIsTBD ? (
                 <em className="text-gray-400">{t('tbd', lang)}</em>
@@ -220,7 +220,7 @@ function FirestoreSessionCard({
   }
 
   return (
-    <article className="rounded-lg border-l-4 border-blue-500 bg-white p-6 shadow transition-shadow hover:shadow-md dark:bg-gray-800">
+    <article className="rounded-lg border-l-4 border-blue-500 bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:bg-gray-800">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex-1 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
@@ -256,7 +256,7 @@ function FirestoreSessionCard({
               {session.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded bg-primary-50 px-2 py-0.5 text-xs text-primary-700 dark:bg-primary-900/20 dark:text-primary-400"
+                  className="rounded-sm bg-primary-50 px-2 py-0.5 text-xs text-primary-700 dark:bg-primary-900/20 dark:text-primary-400"
                 >
                   {tag}
                 </span>
@@ -342,8 +342,8 @@ export default function JournalClubPublicList({
     return (
       <div className="mx-auto max-w-4xl">
         <div className="animate-pulse space-y-6">
-          <div className="h-8 w-1/3 rounded bg-gray-200 dark:bg-gray-700" />
-          <div className="h-4 w-2/3 rounded bg-gray-200 dark:bg-gray-700" />
+          <div className="h-8 w-1/3 rounded-sm bg-gray-200 dark:bg-gray-700" />
+          <div className="h-4 w-2/3 rounded-sm bg-gray-200 dark:bg-gray-700" />
           {[1, 2, 3].map((i) => (
             <div
               key={i}

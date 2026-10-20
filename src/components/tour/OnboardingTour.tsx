@@ -377,7 +377,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
     <div className={className}>
       {/* Overlay */}
       <div
-        className="z-10000 fixed inset-0 bg-black bg-opacity-50"
+        className="fixed inset-0 z-10000 bg-black/50"
         style={{ zIndex: 10000 }}
       >
         {/* Highlighted area */}
@@ -491,7 +491,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
       </div>
 
       {/* Tour launcher (floating button) */}
-      <div className="fixed bottom-4 right-4 z-50">
+      <div className="fixed right-4 bottom-4 z-50">
         <div className="relative">
           <button
             onClick={() => {
@@ -522,7 +522,7 @@ export const OnboardingTour: React.FC<OnboardingTourProps> = ({
 
           {/* Available tours indicator */}
           {tours.some((tour) => !completedTours.has(tour.id)) && (
-            <div className="absolute -right-1 -top-1 h-3 w-3 animate-pulse rounded-full bg-red-500" />
+            <div className="absolute -top-1 -right-1 h-3 w-3 animate-pulse rounded-full bg-red-500" />
           )}
         </div>
       </div>

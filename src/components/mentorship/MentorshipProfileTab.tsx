@@ -63,7 +63,7 @@ function EditButton({ onClick }: { onClick: () => void }) {
 
 function CardWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-xl bg-white p-6 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+    <div className="rounded-xl bg-white p-6 shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
       {children}
     </div>
   );
@@ -88,7 +88,7 @@ function Initials({ name }: { name: string }) {
     .slice(0, 2);
 
   return (
-    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-amber-400 text-2xl font-bold text-white">
+    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-primary-500 to-amber-400 text-2xl font-bold text-white">
       {initials}
     </div>
   );
@@ -103,7 +103,7 @@ function MentorProfileView({
 }) {
   return (
     <CardWrapper>
-      <div className="-mx-6 -mt-6 mb-6 rounded-t-xl bg-gradient-to-r from-primary-50 to-amber-50 px-6 py-4 dark:from-primary-900/10 dark:to-amber-900/10">
+      <div className="-mx-6 -mt-6 mb-6 rounded-t-xl bg-linear-to-r from-primary-50 to-amber-50 px-6 py-4 dark:from-primary-900/10 dark:to-amber-900/10">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             Mentor Profile
@@ -192,7 +192,7 @@ function MenteeProfileView({
 
   return (
     <CardWrapper>
-      <div className="-mx-6 -mt-6 mb-6 rounded-t-xl bg-gradient-to-r from-secondary-50 to-blue-50 px-6 py-4 dark:from-secondary-900/10 dark:to-blue-900/10">
+      <div className="-mx-6 -mt-6 mb-6 rounded-t-xl bg-linear-to-r from-secondary-50 to-blue-50 px-6 py-4 dark:from-secondary-900/10 dark:to-blue-900/10">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             Mentee Profile
@@ -230,7 +230,7 @@ function MenteeProfileView({
 
       {profile.goals && profile.goals.length > 0 && (
         <div className="mt-6">
-          <p className="mb-2 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">
+          <p className="mb-2 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">
             Goals
           </p>
           <div className="flex flex-wrap gap-2">
@@ -248,7 +248,7 @@ function MenteeProfileView({
 
       {profile.interests && profile.interests.length > 0 && (
         <div className="mt-4">
-          <p className="mb-2 text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">
+          <p className="mb-2 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">
             Interests
           </p>
           <div className="flex flex-wrap gap-2">
@@ -296,7 +296,7 @@ function RoleSelectionCard({
       className={`group flex-1 rounded-xl border-2 border-gray-200 p-6 text-left transition-all hover:shadow-md dark:border-gray-700 ${hoverBorderColor}`}
     >
       <div
-        className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${gradientFrom} ${gradientTo} text-2xl`}
+        className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br ${gradientFrom} ${gradientTo} text-2xl`}
       >
         {emoji}
       </div>

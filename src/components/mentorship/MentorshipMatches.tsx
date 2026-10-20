@@ -49,7 +49,7 @@ function formatDate(date: Date): string {
 
 function EmptyState({ onBrowse }: { onBrowse: () => void }) {
   return (
-    <div className="rounded-xl bg-white p-12 text-center shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+    <div className="rounded-xl bg-white p-12 text-center shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
       <svg
         className="mx-auto mb-4 h-12 w-12 text-gray-300 dark:text-gray-600"
         fill="none"
@@ -123,11 +123,11 @@ function MatchCard({
   const displayGoals = (match.goals || []).slice(0, 3);
 
   return (
-    <div className="rounded-xl bg-white p-5 shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+    <div className="rounded-xl bg-white p-5 shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
       <div className="flex items-start justify-between gap-4">
         {/* Left side */}
         <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-amber-400 text-sm font-bold text-white">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-primary-500 to-amber-400 text-sm font-bold text-white">
             {getInitials(match.id)}
           </div>
           <div className="min-w-0">
@@ -225,7 +225,7 @@ function MentorshipMatches({ matches, onSwitchTab }: MentorshipMatchesProps) {
       <FilterPills active={filter} counts={counts} onChange={setFilter} />
 
       {filtered.length === 0 ? (
-        <div className="rounded-xl bg-white py-12 text-center shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+        <div className="rounded-xl bg-white py-12 text-center shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
           <p className="text-sm text-gray-400 dark:text-gray-500">
             No {filter} matches
           </p>

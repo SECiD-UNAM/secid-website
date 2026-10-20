@@ -74,7 +74,7 @@ export const CompanyDrawer: React.FC<Props> = ({
 
       {/* Drawer */}
       <div
-        className={`fixed bottom-0 right-0 top-0 z-50 w-full max-w-md transform overflow-y-auto bg-white shadow-2xl transition-transform dark:bg-gray-900 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-0 right-0 bottom-0 z-50 w-full max-w-md transform overflow-y-auto bg-white shadow-2xl transition-transform dark:bg-gray-900 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
@@ -150,7 +150,7 @@ export const CompanyDrawer: React.FC<Props> = ({
             <>
               {/* Current Members */}
               <div className="mb-6">
-                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                <h3 className="mb-3 text-sm font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                   {t.currentMembersCount(current.length)}
                 </h3>
                 {current.length > 0 ? (
@@ -175,7 +175,7 @@ export const CompanyDrawer: React.FC<Props> = ({
               {/* Alumni */}
               {alumni.length > 0 && (
                 <div className="mb-6">
-                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <h3 className="mb-3 text-sm font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                     {t.formerMembersCount(alumni.length)}
                   </h3>
                   <div className="space-y-2">

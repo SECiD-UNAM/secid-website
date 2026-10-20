@@ -246,8 +246,8 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
     return (
       <div className="py-8">
         <div className="animate-pulse">
-          <div className="mb-4 h-8 w-1/4 rounded bg-gray-300 dark:bg-gray-700"></div>
-          <div className="mb-8 h-4 w-1/2 rounded bg-gray-300 dark:bg-gray-700"></div>
+          <div className="mb-4 h-8 w-1/4 rounded-sm bg-gray-300 dark:bg-gray-700"></div>
+          <div className="mb-8 h-4 w-1/2 rounded-sm bg-gray-300 dark:bg-gray-700"></div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
               <div
@@ -267,13 +267,13 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
       <div className="mb-8 flex flex-col gap-4 sm:flex-row">
         <form onSubmit={handleSearch} className="flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+            <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.forum.searchPlaceholder}
-              className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 text-gray-900 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full rounded-lg border border-gray-300 bg-white py-2 pr-4 pl-10 text-gray-900 focus:border-transparent focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
         </form>
@@ -281,7 +281,7 @@ const ForumHome: React.FC<ForumHomeProps> = ({ language, currentUser }) => {
         {currentUser && (
           <a
             href={`/${language}/forum/new-topic`}
-            className="flex items-center gap-2 whitespace-nowrap rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
+            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 whitespace-nowrap text-white transition-colors hover:bg-blue-600"
           >
             <Plus className="h-5 w-5" />
             {t.forum.createTopic}

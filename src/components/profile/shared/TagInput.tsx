@@ -154,7 +154,7 @@ export const TagInput: React.FC<TagInputProps> = ({
               setTimeout(() => setShowSuggestions(false), 150);
             }}
             placeholder={tags.length === 0 ? placeholder : ''}
-            className="min-w-[120px] flex-1 border-none bg-transparent text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
+            className="min-w-[120px] flex-1 border-none bg-transparent text-gray-900 outline-hidden placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
           />
         )}
       </div>

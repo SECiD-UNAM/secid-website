@@ -378,7 +378,7 @@ function EventCardGrid({
 }) {
   const t = TRANSLATIONS[lang];
   return (
-    <div className="overflow-hidden rounded-lg bg-white shadow transition-all hover:shadow-lg dark:bg-gray-800">
+    <div className="overflow-hidden rounded-lg bg-white shadow-sm transition-all hover:shadow-lg dark:bg-gray-800">
       {event.imageUrl ? (
         <img
           src={event.imageUrl}
@@ -386,7 +386,7 @@ function EventCardGrid({
           className="h-48 w-full object-cover"
         />
       ) : (
-        <div className="flex h-48 w-full items-center justify-center bg-gradient-to-br from-primary-400 to-primary-600">
+        <div className="flex h-48 w-full items-center justify-center bg-linear-to-br from-primary-400 to-primary-600">
           <CalendarIcon className="h-16 w-16 text-white opacity-50" />
         </div>
       )}
@@ -406,7 +406,7 @@ function EventCardGrid({
               <a
                 href={`/${lang}/dashboard/events/edit/${event.id}`}
                 title={t.edit}
-                className="rounded p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-primary-400"
+                className="rounded-sm p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-primary-400"
               >
                 <PencilSquareIcon className="h-4 w-4" />
               </a>
@@ -416,7 +416,7 @@ function EventCardGrid({
                 type="button"
                 onClick={() => actions.onDelete(event)}
                 title={t.delete}
-                className="rounded p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-red-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-red-400"
+                className="rounded-sm p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-red-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-red-400"
               >
                 <TrashIcon className="h-4 w-4" />
               </button>
@@ -500,7 +500,7 @@ function EventCardList({
 }) {
   const t = TRANSLATIONS[lang];
   return (
-    <div className="rounded-lg bg-white p-6 shadow transition-all hover:shadow-lg dark:bg-gray-800">
+    <div className="rounded-lg bg-white p-6 shadow-sm transition-all hover:shadow-lg dark:bg-gray-800">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="mb-2 flex items-center gap-3">
@@ -553,7 +553,7 @@ function EventCardList({
             <a
               href={`/${lang}/dashboard/events/edit/${event.id}`}
               title={t.edit}
-              className="rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-primary-400"
+              className="rounded-sm p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-primary-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-primary-400"
             >
               <PencilSquareIcon className="h-4 w-4" />
             </a>
@@ -563,7 +563,7 @@ function EventCardList({
               type="button"
               onClick={() => actions.onDelete(event)}
               title={t.delete}
-              className="rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-red-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-red-400"
+              className="rounded-sm p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-red-600 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-red-400"
             >
               <TrashIcon className="h-4 w-4" />
             </button>
@@ -735,7 +735,7 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
 
       {/* Calendar view (custom domain code) */}
       {calendarMode && (
-        <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
           <p className="text-center text-gray-600 dark:text-gray-400">
             <CalendarIcon className="mx-auto mb-4 h-12 w-12 text-gray-400" />
             {t.calendarPlaceholder}
@@ -747,7 +747,7 @@ export const EventList: React.FC<EventListProps> = ({ lang = 'es' }) => {
       {!calendarMode && (
         <>
           {/* Toolbar: search + time filter tabs + view toggle */}
-          <div className="mb-6 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+          <div className="mb-6 rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
               {/* Search */}
               <div className="flex-1">

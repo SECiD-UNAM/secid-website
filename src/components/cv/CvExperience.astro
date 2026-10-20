@@ -41,8 +41,8 @@ const currentLabel = lang === 'es' ? 'Actual' : 'Current';
               </p>
             </div>
 
-            <div class="flex flex-shrink-0 items-center gap-2">
-              <span class="whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+            <div class="flex shrink-0 items-center gap-2">
+              <span class="text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
                 {exp.startDate} &ndash; {exp.endDate || currentLabel}
               </span>
               {exp.current && (
@@ -62,7 +62,7 @@ const currentLabel = lang === 'es' ? 'Actual' : 'Current';
           {exp.technologies && exp.technologies.length > 0 && (
             <div class="mt-3 flex flex-wrap gap-1.5">
               {exp.technologies.map((tech) => (
-                <span class="rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                <span class="rounded-sm bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
                   {tech}
                 </span>
               ))}

@@ -23,7 +23,7 @@ function NeedProfileState({
 }) {
   const t = useTranslations();
   return (
-    <div className="rounded-xl bg-white p-12 text-center shadow-sm dark:border dark:border-gray-700/30 dark:bg-gray-800">
+    <div className="rounded-xl bg-white p-12 text-center shadow-xs dark:border dark:border-gray-700/30 dark:bg-gray-800">
       <svg
         className="mx-auto mb-4 h-12 w-12 text-gray-300 dark:text-gray-600"
         fill="none"

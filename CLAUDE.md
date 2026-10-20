@@ -121,7 +121,7 @@ Or use skills:
 ## Tech Stack Preferences
 
 - **Language**: TypeScript 5.x, JavaScript (ES modules)
-- **Frameworks**: Astro 7.x, React 18, Tailwind CSS 3.x
+- **Frameworks**: Astro 7.x, React 18, Tailwind CSS 4.x
 - **Backend**: Firebase, Stripe
 - **Testing**: Vitest, Playwright
 - **Linting**: ESLint, Prettier

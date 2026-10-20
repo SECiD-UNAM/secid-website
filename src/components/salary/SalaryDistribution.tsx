@@ -125,7 +125,7 @@ export function SalaryDistribution({ distribution, lang = 'es' }: Props) {
           <div className="text-lg font-bold text-primary-600 dark:text-primary-400">
             {formatCurrency(s.mean)}
           </div>
-          <div className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+          <div className="text-[10px] font-medium tracking-wider text-gray-400 uppercase">
             {lang === 'es' ? 'Media' : 'Mean'}
           </div>
         </div>
@@ -133,7 +133,7 @@ export function SalaryDistribution({ distribution, lang = 'es' }: Props) {
           <div className="text-lg font-bold text-primary-600 dark:text-primary-400">
             {formatCurrency(s.median)}
           </div>
-          <div className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+          <div className="text-[10px] font-medium tracking-wider text-gray-400 uppercase">
             {lang === 'es' ? 'Mediana' : 'Median'}
           </div>
         </div>
@@ -141,7 +141,7 @@ export function SalaryDistribution({ distribution, lang = 'es' }: Props) {
           <div className="text-lg font-bold text-primary-600 dark:text-primary-400">
             {formatCurrency(s.max - s.min)}
           </div>
-          <div className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+          <div className="text-[10px] font-medium tracking-wider text-gray-400 uppercase">
             {lang === 'es' ? 'Rango' : 'Range'}
           </div>
         </div>
@@ -149,7 +149,7 @@ export function SalaryDistribution({ distribution, lang = 'es' }: Props) {
           <div className="text-lg font-bold text-primary-600 dark:text-primary-400">
             {s.n}
           </div>
-          <div className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+          <div className="text-[10px] font-medium tracking-wider text-gray-400 uppercase">
             n
           </div>
         </div>

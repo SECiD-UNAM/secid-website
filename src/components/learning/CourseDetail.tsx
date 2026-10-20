@@ -257,7 +257,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({
         )}
 
         {quizAttempt && (
-          <div className="mt-3 rounded bg-gray-50 p-3">
+          <div className="mt-3 rounded-sm bg-gray-50 p-3">
             <div className="mb-2 flex items-center">
               {question.correctAnswers.includes(userAnswer) ? (
                 <svg
@@ -432,7 +432,7 @@ const CourseDetail: React.FC<CourseDetailProps> = ({
                       {course.learningObjectives.map((objective, index) => (
                         <li key={index} className="flex items-start">
                           <svg
-                            className="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-green-500"
+                            className="mt-0.5 mr-3 h-5 w-5 shrink-0 text-green-500"
                             fill="currentColor"
                             viewBox="0 0 20 20"
                           >
