@@ -9,6 +9,7 @@ import {
   getNewsletter,
 } from '@/lib/newsletter';
 import type { NewsletterIssue } from '@/lib/newsletter';
+import NewsletterSendPanel from './NewsletterSendPanel';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -213,6 +214,9 @@ export default function NewsletterForm({
     );
   }
 
+  // F21: the send panel needs the stored issue (id + send receipt).
+  const storedIssue = newsletter ?? fetchedNewsletter;
+
   // -- Form -------------------------------------------------------------------
   const inputClass =
     'w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white';
@@ -304,6 +308,11 @@ export default function NewsletterForm({
           </Field>
         </div>
       </fieldset>
+
+      {/* F21: send to confirmed subscribers (newsletter:publish only) */}
+      {isEdit && storedIssue && (
+        <NewsletterSendPanel lang={lang} issue={storedIssue} />
+      )}
 
       {/* Submit */}
       <div className="flex justify-end">

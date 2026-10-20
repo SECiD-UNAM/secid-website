@@ -147,3 +147,112 @@ export function renderMarkdown(markdown: string): string {
   const escaped = escapeHtml(markdown.replace(/\r\n?/g, '\n'));
   return parseBlocks(escaped).map(renderBlock).join('');
 }
+
+// ---------------------------------------------------------------------------
+// HTML sanitizer for newsletter issue bodies (F21)
+// ---------------------------------------------------------------------------
+
+/**
+ * Newsletter issues are authored as HTML (NewsletterForm → `content`) and
+ * shown on the site through DOMPurify; the email path has no DOM, so this
+ * allowlist does the same job. The input is tokenized into tags and text
+ * once, left to right, and the output is rebuilt from scratch: allowlisted
+ * tags are re-emitted with only `href`/`src` (http(s)/mailto) and `alt`,
+ * every other tag is dropped, the content of script/style/iframe/object/
+ * embed is skipped until the matching close tag, and bare `<` / `>` in
+ * text are escaped. Nothing is ever removed from the original string with
+ * a regex replace, so split or nested markup cannot recombine.
+ */
+const ALLOWED_TAGS = new Set([
+  'p',
+  'br',
+  'hr',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'strong',
+  'b',
+  'em',
+  'i',
+  'u',
+  'a',
+  'ul',
+  'ol',
+  'li',
+  'blockquote',
+  'code',
+  'pre',
+  'img',
+  'table',
+  'thead',
+  'tbody',
+  'tr',
+  'th',
+  'td',
+]);
+const VOID_TAGS = new Set(['br', 'hr', 'img']);
+/** Elements whose text content must not reach the output either. */
+const SKIP_CONTENT_TAGS = new Set([
+  'script',
+  'style',
+  'iframe',
+  'object',
+  'embed',
+  'noscript',
+  'template',
+]);
+const TAG_RE = /<\/?([a-zA-Z][a-zA-Z0-9]*)\b([^>]*)>/g;
+const ATTR_RE = /([a-zA-Z-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+))/g;
+
+function safeAttrs(tag: string, raw: string): string {
+  let out = '';
+  let m: RegExpExecArray | null;
+  ATTR_RE.lastIndex = 0;
+  while ((m = ATTR_RE.exec(raw)) !== null) {
+    const name = (m[1] ?? '').toLowerCase();
+    const value = m[2] ?? m[3] ?? m[4] ?? '';
+    if ((name === 'href' && tag === 'a') || (name === 'src' && tag === 'img')) {
+      if (SAFE_HREF.test(value)) out += ` ${name}="${escapeHtml(value)}"`;
+    } else if (name === 'alt' && tag === 'img') {
+      out += ` alt="${escapeHtml(value)}"`;
+    }
+  }
+  return out;
+}
+
+/** Re-emits an allowlisted tag from its parsed parts; anything else → ''. */
+function emitTag(closing: boolean, tag: string, rawAttrs: string): string {
+  if (!ALLOWED_TAGS.has(tag)) return '';
+  if (closing) return VOID_TAGS.has(tag) ? '' : `</${tag}>`;
+  return `<${tag}${safeAttrs(tag, rawAttrs)}>`;
+}
+
+/** Escapes bare angle brackets in text while keeping existing entities. */
+function escapeText(text: string): string {
+  return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/** HTML → HTML restricted to the allowlist above. */
+export function sanitizeHtml(html: string): string {
+  const out: string[] = [];
+  let last = 0;
+  let skipping: string | null = null;
+  let m: RegExpExecArray | null;
+  TAG_RE.lastIndex = 0;
+  while ((m = TAG_RE.exec(html)) !== null) {
+    const closing = m[0].startsWith('</');
+    const tag = (m[1] ?? '').toLowerCase();
+    if (!skipping) out.push(escapeText(html.slice(last, m.index)));
+    last = m.index + m[0].length;
+    if (skipping) {
+      if (closing && tag === skipping) skipping = null;
+    } else if (!closing && SKIP_CONTENT_TAGS.has(tag)) {
+      skipping = tag;
+    } else {
+      out.push(emitTag(closing, tag, m[2] ?? ''));
+    }
+  }
+  if (!skipping) out.push(escapeText(html.slice(last)));
+  return out.join('');
+}

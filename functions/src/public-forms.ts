@@ -4,6 +4,7 @@ import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import * as crypto from 'crypto';
 import { isAllowedOrigin } from './env';
 import { verifyCaptcha } from './captcha';
+import { upsertPendingSubscription } from './newsletter-subscriptions';
 
 const db = getFirestore();
 
@@ -127,12 +128,12 @@ export const subscribeNewsletter = onRequest(
       return;
     }
 
-    await db.collection('newsletter').add({
+    // F21 double opt-in: the doc starts as `pending` and a confirmation
+    // email carries the one-time link; see newsletter-subscriptions.ts.
+    await upsertPendingSubscription(db, {
       email,
       name,
       interests,
-      subscribedAt: FieldValue.serverTimestamp(),
-      source: 'website',
       lang,
       ipHash: hashKey(['newsletter', ip]),
     });

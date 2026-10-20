@@ -518,3 +518,89 @@ export function generateAnnouncementEmail(params: AnnouncementParams): {
     }),
   };
 }
+
+// ---------------------------------------------------------------------------
+// F21 — newsletter double opt-in and issue delivery
+// ---------------------------------------------------------------------------
+
+interface NewsletterConfirmParams {
+  recipientName: string;
+  confirmUrl: string;
+  lang?: Lang;
+}
+
+/** Sent by subscribeNewsletter; the link is a one-time token. */
+export function generateNewsletterConfirmEmail(
+  params: NewsletterConfirmParams
+): { subject: string; html: string } {
+  const lang = params.lang ?? 'es';
+  const name = escapeHtml(params.recipientName);
+  return {
+    subject: t(
+      {
+        es: 'Confirma tu suscripción al newsletter de SECiD',
+        en: 'Confirm your SECiD newsletter subscription',
+      },
+      lang
+    ),
+    html: shell({
+      title: t(
+        { es: 'Confirma tu suscripción', en: 'Confirm your subscription' },
+        lang
+      ),
+      bodyHtml: `<p>${t({ es: `Hola ${name},`, en: `Hi ${name},` }, lang)}</p><p>${t(
+        {
+          es: 'Recibimos tu solicitud para suscribirte al newsletter de SECiD. Confirma con el botón para empezar a recibirlo.',
+          en: 'We received your request to subscribe to the SECiD newsletter. Confirm with the button to start receiving it.',
+        },
+        lang
+      )}</p>`,
+      ctaHref: params.confirmUrl,
+      ctaLabel: t(
+        { es: 'Confirmar suscripción', en: 'Confirm subscription' },
+        lang
+      ),
+      footnote: t(
+        {
+          es: 'Si no pediste esta suscripción, ignora este correo y no recibirás nada más.',
+          en: 'If you did not ask for this, ignore this email and nothing else will be sent.',
+        },
+        lang
+      ),
+    }),
+  };
+}
+
+interface NewsletterIssueParams {
+  title: string;
+  /** Sanitized issue HTML (functions/src/markdown.ts sanitizeHtml). */
+  bodyHtml: string;
+  unsubscribeUrl: string;
+  lang?: Lang;
+}
+
+/** One per subscriber: the issue plus that subscriber's unsubscribe link. */
+export function generateNewsletterIssueEmail(params: NewsletterIssueParams): {
+  subject: string;
+  html: string;
+} {
+  const lang = params.lang ?? 'es';
+  const unsubscribe = t(
+    { es: 'cancelar la suscripción', en: 'unsubscribe' },
+    lang
+  );
+  return {
+    subject: params.title,
+    html: shell({
+      title: escapeHtml(params.title),
+      bodyHtml: params.bodyHtml,
+      footnote: `${t(
+        {
+          es: 'Recibes este newsletter porque confirmaste tu suscripción en secid.mx. Puedes',
+          en: 'You receive this newsletter because you confirmed your subscription at secid.mx. You can',
+        },
+        lang
+      )} <a href="${params.unsubscribeUrl}" style="color:#003B5C;">${unsubscribe}</a>.`,
+    }),
+  };
+}
