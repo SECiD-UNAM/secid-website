@@ -20,6 +20,12 @@ jobs:
     environment:
       name: beta
       url: https://beta.secid.mx
+    # Same ordering rule as cd.yml: Hosting rewrites target Cloud Functions,
+    # so wait for the backend job when it runs on this branch.
+    needs: [deploy-backend]
+    if: >-
+      always() && !cancelled() &&
+      (needs.deploy-backend.result == 'success' || needs.deploy-backend.result == 'skipped')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
