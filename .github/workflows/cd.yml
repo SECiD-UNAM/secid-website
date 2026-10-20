@@ -21,6 +21,16 @@ jobs:
     name: Build & Deploy Hosting (secid.mx)
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # firebase.json rewrites (/api/newsletter/*, /api/contact) point at Cloud
+    # Functions; Hosting refuses a version whose rewrite targets a function
+    # that does not exist yet. Deploy Hosting only after the backend job has
+    # created new functions (or when that job is skipped because the backend
+    # is owned by another branch). Seen 2026-10-20 (run 39357386698):
+    # "Cloud Run service `confirmnewsletter` does not exist".
+    needs: [deploy-backend]
+    if: >-
+      always() && !cancelled() &&
+      (needs.deploy-backend.result == 'success' || needs.deploy-backend.result == 'skipped')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
