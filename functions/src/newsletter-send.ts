@@ -157,6 +157,14 @@ function mailDocId(issueId: string, run: number, email: string): string {
   return `${issueId}_${run}_${digest.slice(0, 16)}`;
 }
 
+/** RFC 2369 / 8058: lets mail clients offer their own unsubscribe button. */
+function listUnsubscribeHeaders(url: string): Record<string, string> {
+  return {
+    'List-Unsubscribe': `<${url}>`,
+    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+  };
+}
+
 function buildEmails(
   issueId: string,
   run: number,
@@ -165,13 +173,20 @@ function buildEmails(
 ): IdentifiedEmail[] {
   const bodyHtml = sanitizeHtml(String(issue.content || ''));
   return subscribers.map((s) => {
+    const unsubscribe = unsubscribeUrl(s.unsubscribeToken);
     const { subject, html } = generateNewsletterIssueEmail({
       title: String(issue.title || ''),
       bodyHtml,
-      unsubscribeUrl: unsubscribeUrl(s.unsubscribeToken),
+      unsubscribeUrl: unsubscribe,
       lang: s.lang,
     });
-    return { id: mailDocId(issueId, run, s.email), to: s.email, subject, html };
+    return {
+      id: mailDocId(issueId, run, s.email),
+      to: s.email,
+      subject,
+      html,
+      headers: listUnsubscribeHeaders(unsubscribe),
+    };
   });
 }
 

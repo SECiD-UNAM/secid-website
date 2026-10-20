@@ -12,14 +12,15 @@ import {
  *
  *   1. The public form (src/pages/es/newsletter.astro → POST
  *      /api/forms/newsletter → subscribeNewsletter) leaves a `pending` doc
- *      and queues a confirmation mail whose one-time link
+ *      and queues a confirmation mail whose link
  *      (/api/newsletter/confirm, hosting rewrite → confirmNewsletter)
- *      flips it to `confirmed`.
+ *      shows a button on GET and flips the doc to `confirmed` on POST.
  *   2. An admin opens the issue editor, the "Enviar a suscriptores" panel
  *      (src/components/newsletter/NewsletterSendPanel.tsx) shows the
  *      dry-run count from sendNewsletterIssue, and the real send queues one
- *      mail per subscriber with that subscriber's unsubscribe link, which
- *      flips the doc to `unsubscribed`.
+ *      mail per subscriber (deterministic id, List-Unsubscribe headers)
+ *      with that subscriber's unsubscribe link, whose button flips the
+ *      doc to `unsubscribed`.
  *
  * Serial: step 2 needs the subscriber step 1 confirmed.
  */
@@ -103,16 +104,28 @@ test('public subscribe is pending until the confirmation link is used', async ({
   const token = tokenFrom(confirmation.message.html, '/api/newsletter/confirm');
 
   // The hosting emulator rewrites /api/newsletter/confirm to the function.
+  // Opening the link (what a mail scanner does) changes nothing; the
+  // button on that page posts the confirmation.
   await page.goto(`/api/newsletter/confirm?token=${token}`);
+  await expect(page.locator('body')).toContainText('Confirma tu suscripción');
+  expect(
+    (await queryByField('newsletter', 'email', SUBSCRIBER))[0]!.status
+  ).toBe('pending');
+
+  await page.getByRole('button', { name: 'Confirmar suscripción' }).click();
   await expect(page.locator('body')).toContainText('Suscripción confirmada');
 
   const [confirmed] = await queryByField('newsletter', 'email', SUBSCRIBER);
   expect(confirmed!.status).toBe('confirmed');
-  expect(confirmed!.confirmTokenHash).toBeUndefined();
+  expect(confirmed!.confirmTokenHash).toMatch(/^[a-f0-9]{64}$/);
   expect(confirmed!.confirmedAt).toBeInstanceOf(Date);
 
-  // One-time link.
+  // A second visit explains instead of failing.
   await page.goto(`/api/newsletter/confirm?token=${token}`);
+  await expect(page.locator('body')).toContainText('ya estaba confirmada');
+  await expect(page.getByRole('button')).toHaveCount(0);
+
+  await page.goto('/api/newsletter/confirm?token=0000');
   await expect(page.locator('body')).toContainText('Enlace no válido');
 });
 
@@ -170,11 +183,24 @@ test('admin sends an issue: dry-run count, delivery with unsubscribe link', asyn
   const mail = (await mailTo(SUBSCRIBER, new RegExp(ISSUE_TITLE)))!;
   expect(mail.message.html).toContain('<b>prueba</b>');
   expect(mail.message.html).not.toContain('<script');
+  expect(mail.id).toMatch(new RegExp(`^${ISSUE_ID}_1_[a-f0-9]{16}$`));
 
-  // Unsubscribe through the link that email carries.
+  // Unsubscribe through the link that email carries (same link as the
+  // List-Unsubscribe header): GET shows the button, POST unsubscribes.
   const token = tokenFrom(mail.message.html, '/api/newsletter/unsubscribe');
+  expect(mail.headers).toEqual({
+    'List-Unsubscribe': expect.stringContaining(`unsubscribe?token=${token}>`),
+    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+  });
   await page.goto(`/api/newsletter/unsubscribe?token=${token}`);
+  await expect(page.locator('body')).toContainText('Cancelar suscripción');
+  expect(
+    (await queryByField('newsletter', 'email', SUBSCRIBER))[0]!.status
+  ).toBe('confirmed');
+
+  await page.getByRole('button', { name: 'Cancelar suscripción' }).click();
   await expect(page.locator('body')).toContainText('Suscripción cancelada');
   const [gone] = await queryByField('newsletter', 'email', SUBSCRIBER);
   expect(gone!.status).toBe('unsubscribed');
+  expect(gone!.confirmTokenHash).toBeUndefined();
 });

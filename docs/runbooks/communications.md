@@ -92,9 +92,14 @@ lo procesó, borrar los docs `mail/` pendientes desde la consola.
    (rate limit por IP + CAPTCHA). La function escribe `newsletter/{id}` con
    `status: 'pending'` y `confirmTokenHash` (sha256 del token; el token solo
    viaja en el correo) y manda el correo de confirmación.
-2. El enlace `/api/newsletter/confirm?token=…` (`confirmNewsletter`) pone
-   `status: 'confirmed'`, `confirmedAt` y borra el hash: el enlace es de un
-   solo uso. Responde una página corta en el idioma del suscriptor.
+2. El enlace `/api/newsletter/confirm?token=…` (`confirmNewsletter`) abre
+   una página corta en el idioma del suscriptor con el botón **Confirmar
+   suscripción**; el botón hace un POST que pone `status: 'confirmed'` y
+   `confirmedAt`. Abrir el enlace sin pulsar no cambia nada (los escáneres
+   de correo corporativo visitan todos los enlaces). El hash se conserva
+   para que un segundo clic diga "ya estaba confirmada" en vez de fallar;
+   solo actúa sobre docs `pending`, se cambia en cada nueva alta y se borra
+   al darse de baja.
 3. Si alguien vuelve a mandar el formulario con un correo ya confirmado no
    pasa nada (no se puede usar el formulario para molestar a un suscriptor);
    si estaba pendiente o dado de baja, se genera un token nuevo y se reenvía
@@ -110,7 +115,11 @@ reenviar manualmente — no hay herramienta para eso hoy.
 Cada correo de newsletter lleva un enlace propio
 `/api/newsletter/unsubscribe?token=…` (`unsubscribeNewsletter`) con el
 `unsubscribeToken` del suscriptor (aleatorio, estable entre ediciones; a los
-docs antiguos se les genera en el primer envío). Pone `status: 'unsubscribed'`
+docs antiguos se les genera en el primer envío), en el pie del correo y en
+las cabeceras `List-Unsubscribe` / `List-Unsubscribe-Post` (campo `headers`
+del doc `mail/`), para que Gmail y compañía muestren su propio botón de
+baja. Al abrirlo muestra el botón **Cancelar suscripción**; el POST (del
+botón o del one-click del cliente de correo) pone `status: 'unsubscribed'`
 en **todos** los docs de ese correo (antes de F21 el formulario creaba un doc
 por envío, así que un correo puede tener varios) y es idempotente. El envío
 excluye cualquier correo que tenga al menos un doc `unsubscribed`, aunque

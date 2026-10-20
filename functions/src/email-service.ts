@@ -6,13 +6,16 @@ export interface EmailData {
   html: string;
   /** Optional Reply-To; the extension reads it from the top-level field. */
   replyTo?: string;
+  /** Optional custom SMTP headers (e.g. List-Unsubscribe), top-level `headers` map. */
+  headers?: Record<string, string>;
 }
 
 /** Shape of a `mail/{id}` doc as the firestore-send-email extension expects it. */
-function toMailDoc({ to, subject, html, replyTo }: EmailData) {
+function toMailDoc({ to, subject, html, replyTo, headers }: EmailData) {
   return {
     to,
     ...(replyTo ? { replyTo } : {}),
+    ...(headers ? { headers } : {}),
     message: { subject, html },
     createdAt: FieldValue.serverTimestamp(),
   };

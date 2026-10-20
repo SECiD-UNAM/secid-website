@@ -324,6 +324,19 @@ describe('sendNewsletterIssue — sending', { concurrent: false }, () => {
     expect(ana.html).not.toContain('tok-luis');
   });
 
+  it('sets List-Unsubscribe headers (RFC 8058 one-click) on every mail doc', async () => {
+    await send({ auth: NL_EDITOR, data: { issueId: ISSUE } });
+
+    const doc = [...H.state.docs.entries()].find(
+      ([p, d]) => p.startsWith('mail/') && d.to === 'ana@example.com'
+    )![1];
+    expect(doc.headers).toEqual({
+      'List-Unsubscribe':
+        '<https://secid.test/api/newsletter/unsubscribe?token=tok-ana>',
+      'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    });
+  });
+
   it('mints an unsubscribe token for legacy docs that have none', async () => {
     seedSub('legacy', { status: undefined, unsubscribeToken: undefined });
     await send({ auth: ADMIN, data: { issueId: ISSUE } });

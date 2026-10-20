@@ -137,6 +137,8 @@ import {
   upsertPendingSubscription,
   confirmSubscription,
   unsubscribeByToken,
+  confirmNewsletter,
+  unsubscribeNewsletter,
 } from '../../../functions/src/newsletter-subscriptions';
 
 const db = H.db as any;
@@ -318,14 +320,36 @@ describe('confirmSubscription', { concurrent: false }, () => {
     const token = linkFrom(lastMail().html, '/api/newsletter/confirm');
 
     const result = await confirmSubscription(db, token);
-    expect(result).toEqual({ ok: true, lang: 'en' });
+    expect(result).toEqual({ ok: true, lang: 'en', already: false });
     const [doc] = subs();
     expect(doc!.status).toBe('confirmed');
     expect(doc!.confirmedAt).toBe(H.SERVER_TIMESTAMP);
-    expect(doc!.confirmTokenHash).toBeUndefined();
+    // The hash stays so a second click can say "already confirmed"; it
+    // can only ever act on a pending doc.
+    expect(doc!.confirmTokenHash).toBe(hashToken(token));
 
-    // Second use of the same link is rejected.
+    expect(await confirmSubscription(db, token)).toEqual({
+      ok: true,
+      lang: 'en',
+      already: true,
+    });
+    expect(subs()).toHaveLength(1);
+  });
+
+  it('a confirm link cannot act once the address unsubscribed', async () => {
+    await upsertPendingSubscription(db, {
+      email: 'ana@example.com',
+      name: 'Ana',
+      interests: [],
+      lang: 'es',
+      ipHash: 'x',
+    });
+    const token = linkFrom(lastMail().html, '/api/newsletter/confirm');
+    await confirmSubscription(db, token);
+    await unsubscribeByToken(db, subs()[0]!.unsubscribeToken);
+
     expect(await confirmSubscription(db, token)).toEqual({ ok: false });
+    expect(subs()[0]!.status).toBe('unsubscribed');
   });
 
   it('confirms every doc of that email so a legacy duplicate cannot keep it blocked', async () => {
@@ -346,6 +370,7 @@ describe('confirmSubscription', { concurrent: false }, () => {
     expect(await confirmSubscription(db, token)).toEqual({
       ok: true,
       lang: 'es',
+      already: false,
     });
     expect(subs().map((d) => d.status)).toEqual(['confirmed', 'confirmed']);
   });
@@ -368,6 +393,7 @@ describe('unsubscribeByToken', { concurrent: false }, () => {
     expect(await unsubscribeByToken(db, token)).toEqual({
       ok: true,
       lang: 'es',
+      already: false,
     });
     expect(subs()[0]).toMatchObject({
       status: 'unsubscribed',
@@ -377,6 +403,7 @@ describe('unsubscribeByToken', { concurrent: false }, () => {
     expect(await unsubscribeByToken(db, token)).toEqual({
       ok: true,
       lang: 'es',
+      already: true,
     });
   });
 
@@ -398,6 +425,7 @@ describe('unsubscribeByToken', { concurrent: false }, () => {
     expect(await unsubscribeByToken(db, token)).toEqual({
       ok: true,
       lang: 'es',
+      already: false,
     });
 
     for (const id of ['s1', 's2', 's3']) {
@@ -412,5 +440,124 @@ describe('unsubscribeByToken', { concurrent: false }, () => {
 
   it('rejects an unknown token', async () => {
     expect(await unsubscribeByToken(db, newToken())).toEqual({ ok: false });
+  });
+});
+
+// The links in the emails: mail-security scanners prefetch every URL with
+// a GET, so GET only renders a page with a button and the change happens
+// on the POST that button sends (also what RFC 8058 one-click uses).
+type Handler = (req: unknown, res: unknown) => Promise<void>;
+const confirmHttp = confirmNewsletter as unknown as Handler;
+const unsubscribeHttp = unsubscribeNewsletter as unknown as Handler;
+
+async function http(
+  handler: Handler,
+  method: 'GET' | 'POST',
+  token: string,
+  body: Record<string, unknown> = {}
+): Promise<{ status: number; html: string }> {
+  const out = { status: 0, html: '' };
+  const res = {
+    status(code: number) {
+      out.status = code;
+      return res;
+    },
+    type() {
+      return res;
+    },
+    send(html: string) {
+      out.html = html;
+    },
+  };
+  await handler({ method, query: { token }, body }, res);
+  return out;
+}
+
+describe('confirmNewsletter (HTTP)', { concurrent: false }, () => {
+  async function pendingToken(): Promise<string> {
+    await upsertPendingSubscription(db, {
+      email: 'ana@example.com',
+      name: 'Ana',
+      interests: [],
+      lang: 'es',
+      ipHash: 'x',
+    });
+    return linkFrom(lastMail().html, '/api/newsletter/confirm');
+  }
+
+  it('GET only shows the button; POST confirms; a repeat says already confirmed', async () => {
+    const token = await pendingToken();
+
+    const page = await http(confirmHttp, 'GET', token);
+    expect(page.status).toBe(200);
+    expect(page.html).toContain('method="post"');
+    expect(page.html).toContain('Confirmar suscripción');
+    expect(subs()[0]!.status).toBe('pending');
+
+    const done = await http(confirmHttp, 'POST', token);
+    expect(done.status).toBe(200);
+    expect(done.html).toContain('Suscripción confirmada');
+    expect(subs()[0]!.status).toBe('confirmed');
+
+    for (const method of ['GET', 'POST'] as const) {
+      const again = await http(confirmHttp, method, token);
+      expect(again.status).toBe(200);
+      expect(again.html).toContain('ya estaba confirmada');
+      expect(again.html).not.toContain('method="post"');
+    }
+  });
+
+  it('renders in the subscriber language and rejects unknown tokens', async () => {
+    await upsertPendingSubscription(db, {
+      email: 'ana@example.com',
+      name: 'Ana',
+      interests: [],
+      lang: 'en',
+      ipHash: 'x',
+    });
+    const token = linkFrom(lastMail().html, '/api/newsletter/confirm');
+    expect((await http(confirmHttp, 'GET', token)).html).toContain(
+      'Confirm subscription'
+    );
+
+    const bad = await http(confirmHttp, 'GET', newToken());
+    expect(bad.status).toBe(400);
+    expect(bad.html).toContain('Enlace no válido');
+    expect((await http(confirmHttp, 'POST', 'zzz')).status).toBe(400);
+  });
+});
+
+describe('unsubscribeNewsletter (HTTP)', { concurrent: false }, () => {
+  it('GET only shows the button; POST (form or one-click) unsubscribes', async () => {
+    const token = newToken();
+    H.state.docs.set('newsletter/s1', {
+      email: 'ana@example.com',
+      status: 'confirmed',
+      lang: 'en',
+      unsubscribeToken: token,
+    });
+
+    const page = await http(unsubscribeHttp, 'GET', token);
+    expect(page.status).toBe(200);
+    expect(page.html).toContain('method="post"');
+    expect(page.html).toContain('Unsubscribe');
+    expect(subs()[0]!.status).toBe('confirmed');
+
+    const done = await http(unsubscribeHttp, 'POST', token, {
+      'List-Unsubscribe': 'One-Click',
+    });
+    expect(done.status).toBe(200);
+    expect(done.html).toContain('Unsubscribed');
+    expect(subs()[0]!.status).toBe('unsubscribed');
+
+    const again = await http(unsubscribeHttp, 'GET', token);
+    expect(again.status).toBe(200);
+    expect(again.html).toContain('Unsubscribed');
+    expect(again.html).not.toContain('method="post"');
+  });
+
+  it('rejects unknown tokens on GET and POST', async () => {
+    expect((await http(unsubscribeHttp, 'GET', newToken())).status).toBe(400);
+    expect((await http(unsubscribeHttp, 'POST', newToken())).status).toBe(400);
   });
 });
