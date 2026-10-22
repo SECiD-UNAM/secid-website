@@ -105,26 +105,29 @@ commit no se crea; no lo saltes con `--no-verify`.
 `.github/workflows/ci.yml` corre en cada PR hacia `main`, `develop` y
 `feature/hub`:
 
-| Job                       | Qué hace                                            | Bloquea |
-| ------------------------- | --------------------------------------------------- | ------- |
-| Code Quality & Linting    | `type-check`, ESLint (solo informa), `format:check` | sí      |
-| Unit & Integration Tests  | `vitest run` en 4 shards                            | sí      |
-| Firestore Rules Tests     | `tests/rules` contra el emulador                    | sí      |
-| Build Validation          | `astro build` (+ build de functions, solo informa)  | sí      |
-| E2E Tests                 | Playwright en Chromium                              | no      |
-| Dependency Security Check | `npm audit`                                         | no      |
-| Test Summary              | resumen de los jobs anteriores                      | sí      |
+| Job                       | Qué hace                                                     | Bloquea |
+| ------------------------- | ------------------------------------------------------------ | ------- |
+| Code Quality & Linting    | `type-check`, ESLint (raíz y `functions/`), `format:check`   | sí      |
+| Unit & Integration Tests  | `vitest run --coverage` en 4 shards                          | sí      |
+| Coverage                  | une los shards y aplica `scripts/ci/coverage-thresholds.mjs` | sí      |
+| Firestore Rules Tests     | `tests/rules` contra el emulador                             | sí      |
+| Build Validation          | `astro build` + `tsc` de `functions/`                        | sí      |
+| E2E Tests (chromium)      | Playwright completo contra los emuladores con seed           | sí      |
+| E2E Tests (smoke)         | Playwright, suite smoke                                      | sí      |
+| Dependency Security Check | `npm audit`                                                  | no      |
+| Test Summary              | resumen de los jobs anteriores                               | no      |
 
 `security.yml` añade Secret Scanning, CodeQL y Semgrep en PRs a `main`.
 
-**Checks obligatorios en `main`** (branch protection): `Build Validation`,
-`Code Quality & Linting`, `Secret Scanning`, `CodeQL`, `Test Summary` y
-`Firestore Rules Tests`. La rama **debe estar al día con `main`**
+**Checks obligatorios en `main`** (branch protection, 12): `Build Validation`,
+`Code Quality & Linting`, `Secret Scanning`, `CodeQL`, `Firestore Rules Tests`,
+`Unit & Integration Tests (shard 1/4 … 4/4)`, `Coverage`, `E2E Tests (smoke)` y
+`E2E Tests (chromium)`. La rama **debe estar al día con `main`**
 (`git merge origin/main` o rebase) o GitHub no deja mergear.
 
-Nota: en CI, ESLint usa `continue-on-error`, así que un error de lint no
-pone el check en rojo. El hook de pre-commit es la barrera real: mantén
-`npm run lint` en verde igualmente.
+Nota: un error de ESLint sí pone el check en rojo (0 errores permitidos);
+los warnings solo informan. El hook de pre-commit corre lo mismo en los
+archivos en stage, así que mantén `npm run lint` en verde antes de subir.
 
 ### Auto-merge
 
