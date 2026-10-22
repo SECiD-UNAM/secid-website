@@ -306,7 +306,7 @@ Dev, en este orden y cada paso un PR con auto-merge:
 1. ~~B8~~ hecho (PR #113).
 2. ~~A5(c)~~ hecho (PRs #114, #115).
 3. ~~A5(a)~~ hecho (PRs #117 y #119); `continue-on-error` quitado del job
-   chromium en PR #119; falta (owner) hacerlo requerido en `main`.
+   chromium en PR #119; requerido en `main` desde el 2026-10-21 (owner).
 4. ~~B5~~ hecho (PR #121); lint bloqueante en CI.
 5. ~~G23 → G24 → G26~~ hecho (PRs #122, #125, #126); G25 es decisión de
    producto (lanzar foros u ocultarlos).
