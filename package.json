@@ -98,7 +98,7 @@
     "zustand": "^4.5.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^9.9.0",
+    "@faker-js/faker": "^10.6.0",
     "@firebase/rules-unit-testing": "^5.0.1",
     "@playwright/test": "^1.54.2",
     "@tailwindcss/forms": "^0.5.7",
@@ -177,6 +177,8 @@
     "yaml": "^2.8.3",
     "sharp": "^0.35.5",
     "svgo": "^4.1.0",
-    "@grpc/grpc-js": "^1.14.6"
+    "@grpc/grpc-js": "^1.14.6",
+    "deepmerge-ts": "^8.0.0",
+    "postcss-selector-parser": "^7.1.6"
   }
 }
