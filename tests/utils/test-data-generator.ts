@@ -126,8 +126,8 @@ export class TestDataGenerator {
         ],
         { min: 3, max: 8 }
       ),
-      linkedIn: `https://linkedin.com/in/${faker.internet.userName()}`,
-      github: `https://github.com/${faker.internet.userName()}`,
+      linkedIn: `https://linkedin.com/in/${faker.internet.username()}`,
+      github: `https://github.com/${faker.internet.username()}`,
       website: faker.internet.url(),
       ...overrides,
     };
