@@ -227,11 +227,10 @@ jobs:
       - name: Check Cloud Functions build
         run: |
           cd functions && npm ci && npm run build
-        continue-on-error: true
 
   # End-to-End Tests (only on PRs and main): the full suite against the
-  # Firebase emulators with seeded users (docs/ROADMAP.md A4). The blocking
-  # gate is still the e2e-smoke job below.
+  # Firebase emulators with seeded users (docs/ROADMAP.md A4/A5). Both this
+  # job and e2e-smoke below are required checks on main.
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
